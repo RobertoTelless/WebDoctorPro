@@ -1,0 +1,659 @@
+﻿@using Presentation.Extensions
+@using CrossCutting;
+@model EntitiesServices.Model.PACIENTE_CONSULTA
+@{
+    Layout = "~/Views/Shared/_Layout_Admin.cshtml";
+    ViewBag.Title = "WebDoctor - Consultas - Confirmação";
+    ViewBag.MetaDescription = "WebDoctor - Consultas - Confirmação e cancelamento de consulta";
+    ViewBag.MetaKeywords = "WebDoctor, consulta, confirmacao, cancelamento";
+}
+
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="modal fade" id="modalCancelar" tabindex="-1" role="dialog" aria-labelledby="modalCancelarLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalCancelarLabel">Justificar Cancelamento</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Fechar">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="textoJustificativa">Justificativa do Cancelamento:</label>
+                        <textarea class="form-control" id="textoJustificativa" rows="5" required></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
+                    <button type="button" class="btn btn-danger" id="btnConfirmarCancelamento">Confirmar Cancelamento</button>
+                </div>
+            </div>
+        </div>
+    </div>    
+    <div class="modalContainer">
+        <div id="modal" class="modal" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        @*Titulo gerado dinamicamente*@
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        @*Gerado dinamicamente*@
+                    </div>
+                    <div class="modal-footer">
+                        <button onclick="limpaModal()" type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @if ((String)Session["ModuloAtual"] == "Dashboard Inicial")
+    {
+        <div class="page-title">
+            <ol class="breadcrumb">
+                <li>
+                    <a href="@Url.Action("MontarTelaPaciente", "Paciente")">Dashboard</a>
+                </li>
+                <li class="active">
+                    <strong>Confirmação de Consultas</strong>
+                </li>
+            </ol>
+            <br />
+        </div>
+    }
+    else
+    {
+        <div class="page-title">
+            <ol class="breadcrumb">
+                <li>
+                    <a href="@Url.Action("MontarTelaPaciente", "Paciente")">Dashboard</a>
+                </li>
+                <li>
+                    <a href="@Url.Action("MontarTelaConsultas", "Paciente")">Consultas</a>
+                </li>
+                <li class="active">
+                    <strong>Confirmação de Consultas</strong>
+                </li>
+            </ol>
+            <br />
+        </div>
+    }
+
+    <div class="row">
+        <div class="col-lg-12 col-md-12 col-xs-12">
+            <div class="col-lg-12 col-md-12 col-xs-12 ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>Filtros</h5>
+                </div>
+
+                @using (Html.BeginForm("FiltrarConfirmarConsultas", "Paciente", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal" }))
+                {
+                    <div class="ibox-content">
+                        <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                            <div class="col-lg-2 col-md-2 col-xs-12">
+                                Tipo de Consulta
+                                @Html.DropDownListFor(m => m.VACO_CD_ID, (SelectList)ViewBag.TipoConsulta, "Selecionar", new { @class = "form-control", autofocus = true })
+                            </div>
+                            <div class="col-lg-4 col-md-4 col-xs-12">
+                                Nome do Paciente
+                                @Html.TextBoxFor(m => m.PACO_TX_RESUMO, new { @class = "form-control", autofocus = true })
+                            </div>
+                            <div class="col-lg-2 col-md-2 col-xs-12">
+                                Data Inicial
+                                @Html.TextBoxFor(m => m.PACO_DT_DUMMY, new { @class = "form-control date-picker", autofocus = true, @id = "dn" })
+                            </div>
+                            <div class="col-lg-2 col-md-2 col-xs-12">
+                                Data Final
+                                @Html.TextBoxFor(m => m.PACO_DT_PROXIMA, new { @class = "form-control date-picker", autofocus = true, @id = "dn1" })
+                            </div>
+                            <div class="col-lg-2 col-md-2 col-xs-12">
+                                Situação
+                                @Html.DropDownListFor(m => m.PACO_IN_CONFIRMADA, (SelectList)ViewBag.Confirmada, "Selecionar", new { @class = "form-control" })
+                            </div>
+                        </div>
+                        @if (ViewBag.VerTudo == 1)
+                        {
+                            <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                <div class="col-lg-4 col-md-4 col-xs-12">
+                                    Profissional
+                                    @Html.DropDownListFor(m => m.USUA_CD_ID, (SelectList)ViewBag.Usuario, "Selecionar", new { @class = "form-control" })
+                                </div>
+                            </div>
+                        }
+                        <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                            <div class="col-lg-12 col-md-12 col-xs-12">
+                                @Html.ButtonActionSubmit(text: "Filtrar")
+                                @Html.ButtonLinkIndex(text: "Retirar Filtro", controller: "Paciente", action: "RetirarFiltroConfirmar")
+                                @Html.ButtonLinkIndex(text: "Voltar", controller: "Paciente", action: "VoltarCentrais")
+                                <a href="@Url.Action((String)Session["AjudaNivel"])" class="btn btn-sm btn-danger" target="_blank">Ajuda</a>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+
+    <div class="row">
+        <div class="col-lg-12 col-md-12 col-xs-12">
+            <div class="col-lg-12 col-md-12 col-xs-12 ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>Confirmação/Cancelamento de Consultas</h5>
+                </div>
+                <div class="ibox-content">
+                    @if (!ViewData.ModelState.IsValid)
+                    {
+                        <div class="alert alert-danger">
+                            <button type="button" class="close" data-dismiss="alert">Fechar</button>
+                            @Html.ValidationSummary(false, "", new { @class = "text-danger" })
+                        </div>
+                    }
+                    @if (TempData["TemMensagem"] != null)
+                    {
+                        <div class="alert alert-success">
+                            <button type="button" class="close" data-dismiss="alert">Fechar</button>
+                            <span>@TempData["MensagemAcerto"]</span>
+                        </div>
+                    }                    
+                    <div class="row">
+                        <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Consultas de Hoje</h4>
+                        @if (ViewBag.Hoje != null &&(ViewBag.Hoje as List<EntitiesServices.Model.PACIENTE_CONSULTA>).Count > 0)
+                        {
+                            <table class="table table-striped table-bordered table-hover dataTables-example">
+                                <thead style="background-color:lightsteelblue">
+                                    <tr>
+                                        <th style="width: auto">Data da Consulta</th>
+                                        <th style="width: auto">Início</th>
+                                        <th style="width: auto">Término</th>
+                                        <th style="width: auto">Paciente </th>
+                                        <th style="width: auto">Tipo de Consulta</th>
+                                        <th style="width: auto">E-Mail</th>
+                                        <th style="width: auto">Celular</th>
+                                        @if (ViewBag.VerTudo == 1)
+                                        {
+                                            <th style="width: auto">Profissional</th>
+                                        }
+                                        <th style="width: auto">Situação</th>
+                                        <th class="td-one-action">Ações</th>
+                                        <th style="width: 0.01px"></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var cond in (ViewBag.Hoje as List<EntitiesServices.Model.PACIENTE_CONSULTA>).OrderByDescending(p => p.PACO_DT_CONSULTA.Date).ThenBy(p => p.PACO_HR_INICIO))
+                                    {   
+                                        <tr>
+                                            @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_PACIENTE_CONSULTA_ACESSO == 1)
+                                            {
+                                                <td style="width: auto"><a href="@Url.Action("VerConsultaCompleta", "Paciente", new { id = cond.PACO_CD_ID })" />@cond.PACO_DT_CONSULTA.ToShortDateString()</td>
+                                            }
+                                            else
+                                            {
+                                                <td style="width: auto">@cond.PACO_DT_CONSULTA.ToShortDateString()</td>
+                                            }
+                                            <td style="width: auto">@cond.PACO_HR_INICIO.ToString()</td>
+                                            <td style="width: auto">@cond.PACO_HR_FINAL.ToString()</td>
+                                            <td style="width: auto">@cond.PACIENTE.PACI_NM_NOME</td>
+                                            @if (cond.VALOR_CONSULTA != null)
+                                            {
+                                                <td style="width: auto"><span class="badge badge-primary">@cond.VALOR_CONSULTA.VACO_NM_NOME</span></td>
+                                            }
+                                            else
+                                            {
+                                                <td style="width: auto"><span class="badge badge-primary">-</span></td>
+                                            }
+
+                                            @if (ViewBag.EMail == 1)
+                                            {
+                                                if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PAERF_IN_PACIENTE_MENSAGEM == 1)
+                                                {
+                                                    <td style="width: auto; cursor: pointer; text-decoration: underline;"><a href="@Url.Action("EnviarEMailPaciente", "Paciente", new { id = cond.PACIENTE.PACI__CD_ID })" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Enviar mensagem de e-mail para o paciente" />@cond.PACIENTE.PACI_NM_EMAIL</td>
+                                                }
+                                                else
+                                                {
+                                                    <td style="width: auto">@cond.PACIENTE.PACI_NM_EMAIL</td>
+                                                }
+                                            }
+                                            else
+                                            {
+                                                <td style="width: auto">@cond.PACIENTE.PACI_NM_EMAIL</td>
+                                            }
+
+                                            @if (ViewBag.SMS == 1)
+                                            {
+                                                if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PAERF_IN_PACIENTE_MENSAGEM == 1)
+                                                {
+                                                    <td style="width: auto; cursor: pointer; text-decoration: underline;"><a href="@Url.Action("EnviarSMSPaciente", "Paciente", new { id = cond.PACIENTE.PACI__CD_ID })" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Enviar mensagem de SMS para o paciente"/>@cond.PACIENTE.PACI_NR_CELULAR</td>
+                                                }
+                                                else
+                                                {
+                                                    <td style="width: auto">@cond.PACIENTE.PACI_NR_CELULAR</td>
+                                                }
+                                            }
+                                            else
+                                            {
+                                                <td style="width: auto">@cond.PACIENTE.PACI_NR_CELULAR</td>
+                                            }
+                                            @if (ViewBag.VerTudo == 1)
+                                            {
+                                                if (cond.USUARIO != null)
+                                                {
+                                                    <td style="width: auto;">@cond.USUARIO.USUA_NM_NOME</td>
+                                                }
+                                                else
+                                                {
+                                                    <td style="width: auto">-</td>
+                                                }
+                                            }
+                                            @if (cond.PACO_IN_CONFIRMADA == 1)
+                                            {
+                                                <td style="width: auto"><span class="badge badge-primary">Confirmada</span></td>
+                                            }
+                                            else if (cond.PACO_IN_CONFIRMADA == 2)
+                                            {
+                                                <td style="width: auto"><span class="badge badge-warning">Cancelada</span></td>
+                                            }
+                                            else
+                                            {
+                                                <td style="width: auto"><span class="badge badge-warning">Pendente</span></td>
+                                            }
+                                            <td style="width: auto" class="td-one-action">
+                                                @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_PACIENTE_CONSULTA_ACESSO == 1)
+                                                {
+                                                    @Html.TableLinkDetails(cond.PACO_CD_ID, "EditarConsultaCompleta", "fa-edit", "Ver")
+                                                }
+                                                @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_PACIENTE_CONSULTA_ALTERAR == 1)
+                                                {
+                                                    if (cond.PACO_IN_ATIVO == 1 & cond.PACO_IN_CONFIRMADA == 0)
+                                                    {
+                                                        <span style="color: #337ab7; cursor:pointer;" alt="Confirmar" class="tbl-link fa-lg fa fa-check" onclick="ShowModalConfirmar('/Paciente/ConfirmarConsulta/@cond.PACO_CD_ID')" title="Confirmar Consulta"></span>
+                                                    }
+                                                    if (cond.PACO_IN_ATIVO == 1 & cond.PACO_IN_CONFIRMADA < 2)
+                                                    {
+                                                        <span style="color: #337ab7; cursor:pointer;" alt="Mensagem" class="tbl-link fa-lg fa fa-times" onclick="ShowModalCancelar('/Paciente2/CancelarConsulta/@cond.PACO_CD_ID')" title="Cancelar Consulta"></span>     
+                                                        @*<span style="color: #337ab7; cursor:pointer;" alt="Cancelar" class="tbl-link fa-lg fa fa-times" onclick="ShowModalCancelar('/Paciente/CancelarConsulta/@cond.PACO_CD_ID')" title="Cancelar Consulta"></span>*@
+                                                    }
+                                                }
+                                                @if (cond.PACO_IN_ATIVO == 1 & cond.PACO_IN_CONFIRMADA == 0)
+                                                {
+                                                    <span style="color: #337ab7; cursor:pointer;" alt="Mensagem" class="tbl-link fa-lg fa fa-mail-forward" onclick="ShowModalEnviar('/Paciente2/EnviarEMailConfirmacao/@cond.PACO_CD_ID')" title="Enviar Confirmação"></span>
+                                                }
+                                            </td>
+                                            <td style="width: 0.05px"></td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        }
+                        else
+                        {
+                            <div class="row">
+                                <div class="col-lg-1 col-md-1 col-xs-2">
+                                </div>
+                                <div style="border: 5px solid #F6A54A; padding: 10px; border-radius: 8px 8px; " class="col-lg-10 col-md-10 col-xs-12">
+                                    <h2 style="font-weight: bold">Sua pesquisa não retornou nenhum resultado ou nenhuma consulta cadastrada para hoje</h2>
+                                    @Html.ButtonLinkIndex(text: "Retirar Filtro", controller: "Paciente", action: "RetirarFiltroConfirmarConsulta")
+                                </div>
+                                <div class="col-lg-1 col-md-1 col-xs-2">
+                                </div>
+                            </div>
+                        }
+                    </div>
+                
+                    <div class="row">
+                        <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Consultas nos próximos @ViewBag.NumDias dias</h4>
+                        @if (ViewBag.Dias != null &&(ViewBag.Dias as List<EntitiesServices.Model.PACIENTE_CONSULTA>).Count > 0)
+                        {
+                            <table class="table table-striped table-bordered table-hover dataTables-example">
+                                <thead style="background-color:lightsteelblue">
+                                    <tr>
+                                        <th style="width: auto">Data da Consulta</th>
+                                        <th style="width: auto">Início</th>
+                                        <th style="width: auto">Término</th>
+                                        <th style="width: auto">Paciente </th>
+                                        <th style="width: auto">Tipo de Consulta</th>
+                                        <th style="width: auto">E-Mail</th>
+                                        <th style="width: auto">Celular</th>
+                                        @if (ViewBag.VerTudo == 1)
+                                        {
+                                            <th style="width: auto">Profissional</th>
+                                        }
+                                        <th style="width: auto">Situação</th>
+                                        <th class="td-one-action">Ações</th>
+                                        <th style="width: 0.01px"></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var cond in (ViewBag.Dias as List<EntitiesServices.Model.PACIENTE_CONSULTA>).OrderByDescending(p => p.PACO_DT_CONSULTA.Date).ThenBy(p => p.PACO_HR_INICIO))
+                                    {   
+                                        <tr>
+                                            @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_PACIENTE_CONSULTA_ACESSO == 1)
+                                            {
+                                                    <td style="width: auto"><a href="@Url.Action("EditarConsultaCompleta", "Paciente", new { id = cond.PACO_CD_ID })" />@cond.PACO_DT_CONSULTA.ToShortDateString()</td>
+                                            }
+                                            else
+                                            {
+                                                <td style="width: auto">@cond.PACO_DT_CONSULTA.ToShortDateString()</td>
+                                            }
+                                            <td style="width: auto">@cond.PACO_HR_INICIO.ToString()</td>
+                                            <td style="width: auto">@cond.PACO_HR_FINAL.ToString()</td>
+                                            <td style="width: auto">@cond.PACIENTE.PACI_NM_NOME</td>
+                                            @if (cond.VALOR_CONSULTA != null)
+                                            {
+                                                <td style="width: auto"><span class="badge badge-primary">@cond.VALOR_CONSULTA.VACO_NM_NOME</span></td>
+                                            }
+                                            else
+                                            {
+                                                <td style="width: auto"><span class="badge badge-primary">-</span></td>
+                                            }
+                                            @if (ViewBag.EMail == 1)
+                                            {
+                                                if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PAERF_IN_PACIENTE_MENSAGEM == 1)
+                                                {
+                                                    <td style="width: auto; cursor: pointer; text-decoration: underline;"><a href="@Url.Action("EnviarEMailPaciente", "Paciente", new { id = cond.PACIENTE.PACI__CD_ID })" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Enviar mensagem de e-mail para o paciente"/>@cond.PACIENTE.PACI_NM_EMAIL</td>
+                                                }
+                                                else
+                                                {
+                                                    <td style="width: auto">@cond.PACIENTE.PACI_NM_EMAIL</td>
+                                                }
+                                            }
+                                            else
+                                            {
+                                                <td style="width: auto">@cond.PACIENTE.PACI_NM_EMAIL</td>
+                                            }
+
+                                            @if (ViewBag.SMS == 1)
+                                            {
+                                                if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PAERF_IN_PACIENTE_MENSAGEM == 1)
+                                                {
+                                                    <td style="width: auto; cursor: pointer; text-decoration: underline;"><a href="@Url.Action("EnviarSMSPaciente", "Paciente", new { id = cond.PACIENTE.PACI__CD_ID })" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Enviar mensagem de SMS para o paciente"/>@cond.PACIENTE.PACI_NR_CELULAR</td>
+                                                }
+                                                else
+                                                {
+                                                    <td style="width: auto">@cond.PACIENTE.PACI_NR_CELULAR</td>
+                                                }
+                                            }
+                                            else
+                                            {
+                                                <td style="width: auto">@cond.PACIENTE.PACI_NR_CELULAR</td>
+                                            }
+                                            @if (ViewBag.VerTudo == 1)
+                                            {
+                                                if (cond.USUARIO != null)
+                                                {
+                                                    <td style="width: auto;">@cond.USUARIO.USUA_NM_NOME</td>
+                                                }
+                                                else
+                                                {
+                                                    <td style="width: auto">-</td>
+                                                }
+                                            }
+                                            @if (cond.PACO_IN_CONFIRMADA == 1)
+                                            {
+                                                <td style="width: auto"><span class="badge badge-primary">Confirmada</span></td>
+                                            }
+                                            else if (cond.PACO_IN_CONFIRMADA == 2)
+                                            {
+                                                <td style="width: auto"><span class="badge badge-warning">Cancelada</span></td>
+                                            }
+                                            else
+                                            {
+                                                <td style="width: auto"><span class="badge badge-warning">Pendente</span></td>
+                                            }
+                                            <td style="width: auto" class="td-one-action">
+                                                @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_PACIENTE_CONSULTA_ACESSO == 1)
+                                                {
+                                                    @Html.TableLinkDetails(cond.PACO_CD_ID, "EditarConsultaCompleta", "fa-edit", "Ver")
+                                                }
+                                                @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_PACIENTE_CONSULTA_ALTERAR == 1)
+                                                {
+                                                    if (cond.PACO_IN_ATIVO == 1 & cond.PACO_IN_CONFIRMADA == 0)
+                                                    {
+                                                        <span style="color: #337ab7; cursor:pointer;" alt="Confirmar" class="tbl-link fa-lg fa fa-check" onclick="ShowModalConfirmar('/Paciente/ConfirmarConsulta/@cond.PACO_CD_ID')" title="Confirmar Consulta"></span>
+                                                    }
+                                                    if (cond.PACO_IN_ATIVO == 1 & cond.PACO_IN_CONFIRMADA < 2)
+                                                    {
+                                                        <span style="color: #337ab7; cursor:pointer;" alt="Mensagem" class="tbl-link fa-lg fa fa-times" onclick="ShowModalCancelar('/Paciente2/CancelarConsulta/@cond.PACO_CD_ID')" title="Cancelar Consulta"></span>     
+                                                        @*<span style="color: #337ab7; cursor:pointer;" alt="Cancelar" class="tbl-link fa-lg fa fa-times" onclick="ShowModalCancelar('/Paciente/CancelarConsulta/@cond.PACO_CD_ID')" title="Cancelar Consulta"></span>*@
+                                                    }
+                                                }
+                                                @if (cond.PACO_IN_ATIVO == 1 & cond.PACO_IN_CONFIRMADA == 0)
+                                                {
+                                                    <span style="color: #337ab7; cursor:pointer;" alt="Mensagem" class="tbl-link fa-lg fa fa-mail-forward" onclick="ShowModalEnviar('/Paciente2/EnviarEMailConfirmacao/@cond.PACO_CD_ID')" title="Enviar Confirmação"></span>
+                                                }
+                                            </td>
+                                            <td style="width: 0.05px"></td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        }
+                        else
+                        {
+                            <div class="row">
+                                <div class="col-lg-1 col-md-1 col-xs-2">
+                                    &nbsp;
+                                </div>
+                                <div style="border: 5px solid #F6A54A; padding: 10px; border-radius: 8px 8px; " class="col-lg-10 col-md-10 col-xs-12">
+                                    <h2 style="font-weight: bold">Sua pesquisa não retornou nenhum resultado ou nenhuma consulta cadastrada para até @ViewBag.NumDias dias</h2>
+                                    @Html.ButtonLinkIndex(text: "Retirar Filtro", controller: "Paciente", action: "RetirarFiltroConfirmarConsulta")
+                                </div>
+                                <div class="col-lg-1 col-md-1 col-xs-2">
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <link href="~/Content/themes/base/jquery-ui.min.css" rel="stylesheet" />
+    <link href="~/Content/themes/base/all.css" rel="stylesheet" />
+    <link href="~/Content/jquery.datetimepicker.css" rel="stylesheet" />
+    @Styles.Render("~/Content/plugins/dataTables/dataTablesStyles")
+    @Styles.Render("~/plugins/jasnyBootstrapStyles")
+    @Styles.Render("~/plugins/toastrStyles")
+
+}
+@section Scripts {
+    <script src="~/Scripts/jquery.datetimepicker.full.min.js"></script>
+    <script type="text/javascript" src="~/Scripts/jquery.datetimepicker"></script>
+
+    @Scripts.Render("~/plugins/toastr")
+    <script src="~/Scripts/jquery-ui-1.12.1.min.js"></script>
+    @Scripts.Render("~/plugins/dataTables")
+    @Scripts.Render("~/bundles/inputmask")
+    @Scripts.Render("~/plugins/jasnyBootstrap")
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.maskedinput/1.4.1/jquery.maskedinput.js"></script>
+    <script src="~/Scripts/uploadAnexo.js"></script>
+   
+    <script type="text/javascript" src="~/Scripts/moment.min.js"></script>
+    <script type="text/javascript" src="~/Scripts/bootstrap.min.js"></script>
+   
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('[data-toggle="popover"]').popover();
+        });
+    </script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-toggle="popover"]'));
+            var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
+                return new bootstrap.Popover(popoverTriggerEl);
+            });
+        });
+    </script>
+
+    <!-- Handler de fechamento do browser -->
+    <script type="text/javascript">
+        window.onbeforeunload = function ()
+        {
+            navigator.sendBeacon('../ControleAcesso/LogSessionTime');
+        }; 
+    </script>
+
+    <script type="text/javascript">
+        var urlDeCancelamento; // Variável global para armazenar a URL de cancelamento
+
+        // Função chamada no evento onclick do <span>
+        function ShowModalCancelar(url) {
+            urlDeCancelamento = url; // Armazena a URL com o ID do paciente
+            $('#modalCancelar').modal('show');
+        }
+
+        $(document).ready(function () {
+            // Lógica para o botão de confirmação dentro da modal
+            $('#btnConfirmarCancelamento').click(function () {
+                var justificativa = $('#textoJustificativa').val();
+                
+                if (justificativa.trim() === "") {
+                    alert("Por favor, digite uma justificativa para o cancelamento.");
+                    return;
+                }
+
+                $.ajax({
+                    url: urlDeCancelamento,
+                    type: 'POST',
+                    data: { justificativa: justificativa }, // Alterado para enviar como form data
+                    success: function (response) {
+                        $('#modalCancelar').modal('hide');
+                        if (response.success) {
+                            //alert("Consulta cancelada com sucesso!");
+                            // Recarrega a página ou atualiza a tabela para refletir a mudança
+                            window.location.reload(); 
+                        } else {
+                            //alert("Erro ao cancelar a consulta: " + response.message);
+                            window.location.reload(); 
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        $('#modalCancelar').modal('hide');
+                    //    alert("Ocorreu um erro na requisição AJAX: " + error);
+                    }
+                });
+            });
+
+            // Limpa o textarea quando a modal é fechada
+            $('#modalCancelar').on('hidden.bs.modal', function () {
+                $('#textoJustificativa').val('');
+            });
+        });
+    </script>
+
+
+    <script type="text/javascript" language="javascript">
+        $(function () {
+            $('.date-picker').datepicker(
+                {
+                    dateFormat: 'dd/mm/yy',
+                    dayNames: ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'],
+                    dayNamesMin: ['D', 'S', 'T', 'Q', 'Q', 'S', 'S', 'D'],
+                    dayNamesShort: ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'],
+                    monthNames: ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'],
+                    monthNamesShort: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'],
+                    nextText: 'Proximo',
+                    prevText: 'Anterior',
+                    showOn: "focus"
+                }
+            )
+                .css("display", "normal")
+                .next("button").button({
+                    icons: { primary: "ui-icon-calendar" },
+                    label: "Selecione uma data",
+                    text: false
+                });
+        });
+    </script>
+    <script type="text/javascript">
+        $(function () {
+            $("#dn").mask("99/99/9999");
+            $("#dn1").mask("99/99/9999");
+        });
+    </script>
+
+    <script>
+        $(function () {
+            limpaModal();
+        });
+
+        function limpaModal() {
+            $('#btnModal').remove();
+            $('#modalTitle').remove();
+        }
+
+        function ShowModalExcluirConsulta(url) {
+            $('#modal').find('.modal-footer').prepend('<a id="btnModal" alt="Desativar" class="btn btn-primary" href="' + url + '" target="_self" title="Desativar">Confirmar</a>');
+            $('#modal').find('.modal-body').html('Confirma exclusão de Consulta?');
+            $('#modal').find('.modal-header').prepend('<h5 id="modalTitle" class="modal-title">Confimar Exclusão</h5>');
+            $('#modal').modal('show');
+        }
+        function ShowModalConfirmar(url) {
+            $('#modal').find('.modal-footer').prepend('<a id="btnModal" alt="Desativar" class="btn btn-primary" href="' + url + '" target="_self" title="Desativar">Confirmar</a>');
+            $('#modal').find('.modal-body').html('Confirma Consulta?');
+            $('#modal').find('.modal-header').prepend('<h5 id="modalTitle" class="modal-title">Confimar Consulta</h5>');
+            $('#modal').modal('show');
+        }
+        //function ShowModalCancelar(url) {
+        //    $('#modal').find('.modal-footer').prepend('<a id="btnModal" alt="Desativar" class="btn btn-primary" href="' + url + '" target="_self" title="Desativar">Confirmar</a>');
+        //    $('#modal').find('.modal-body').html('Confirma cancelamento de consulta?');
+        //    $('#modal').find('.modal-header').prepend('<h5 id="modalTitle" class="modal-title">Confimar Consulta</h5>');
+        //    $('#modal').modal('show');
+        //}
+        function ShowModalEnviar(url) {
+            $('#modal').find('.modal-footer').prepend('<a id="btnModal" alt="Desativar" class="btn btn-primary" href="' + url + '" target="_self" title="Desativar">Confirmar</a>');
+            $('#modal').find('.modal-body').html('Confirma Envio de mensagem de Confirmação?');
+            $('#modal').find('.modal-header').prepend('<h5 id="modalTitle" class="modal-title">Confimar Consulta</h5>');
+            $('#modal').modal('show');
+        }
+    </script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            $('.dataTables-example').DataTable({
+                pageLength: 25,
+                dom: '<"html5buttons"B>lTfgitp',
+                buttons: [
+                    { extend: 'excel', title: 'Consulta_Planilha' },
+                    {
+                        extend: 'print',
+                        customize: function (win) {
+                            $(win.document.body).addClass('white-bg');
+                            $(win.document.body).css('font-size', '10px');
+
+                            $(win.document.body).find('table')
+                                    .addClass('compact')
+                                    .css('font-size', 'inherit');
+                        }
+                    }
+                ]
+            });         
+        });
+    </script>
+    <!-- Handler de fechamento do browser -->
+    <script type="text/javascript">
+        window.onbeforeunload = function ()
+        {
+            navigator.sendBeacon('../ControleAcesso/LogSessionTime');
+        }; 
+    </script>
+}
+
+@if (ViewBag.Message != null)
+{
+    <script type="text/javascript">
+            window.onload = function () {
+                alert("@ViewBag.Message");
+            };
+    </script>
+}
+

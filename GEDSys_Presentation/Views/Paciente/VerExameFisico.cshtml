@@ -1,0 +1,438 @@
+﻿@using Presentation.Extensions
+@model ERP_Condominios_Solution.ViewModels.PacienteExameFisicoViewModel
+@{
+    Layout = "~/Views/Shared/_Layout_Admin.cshtml";
+    ViewBag.Title = "WebDoctor - Paciente - Exame Físico";
+    ViewBag.MetaDescription = "WebDoctor - Paciente - Exame Físico - Visualização de exame físico do paciente";
+    ViewBag.MetaKeywords = "WebDoctor, paciente, exame , fisico";
+}
+
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="page-title">
+        <ol class="breadcrumb">
+            <li>
+                <a href="@Url.Action("MontarTelaPaciente", "BaseAdmin")">Dashboard</a>
+            </li>
+            <li>
+                <a href="@Url.Action("MontarTelaCentralPaciente", "Paciente")">Central de Pacientes</a>
+            </li>
+            <li>
+                <a href="@Url.Action("EditarPaciente", "Paciente")">Pacientes - Edição</a>
+            </li>
+            <li class="active">
+                <strong>Pacientes - Exames Físicos</strong>
+            </li>
+        </ol>
+        <br />
+    </div>
+
+    <div class="row">
+        <div class="col-lg-12 col-md-12 col-xs-12">
+            <div class="col-lg-12 col-md-12 col-xs-12 ibox float-e-margins">
+                <div class="ibox-title">
+                    <div style="text-align: center;" class="col-lg-12 col-md-12 col-xs-12">
+                        <h5>Exame Físico - Visualização</h5>
+                        <span style="color:green; font-weight: 500; font-size: 20px;">@Model.PACIENTE.PACI_NM_NOME</span>
+                    </div>
+                </div>
+                @using (Html.BeginForm("VerExameFisico", "Paciente", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal", @id="pwd-container1" }))
+                {
+                    <div class="ibox-content">
+                        @Html.AntiForgeryToken()
+                        @if (!ViewData.ModelState.IsValid)
+                        {
+                            <div class="alert alert-danger">
+                                <button type="button" class="close" data-dismiss="alert">Fechar</button>
+                                @Html.ValidationSummary(false, "Erros Encontrados:", new { @class = "text-danger" })
+                            </div>
+                        }
+                        <div class="form-group">
+                            @Html.ButtonLinkIndex(text: "Imprimir Exame Físico", action: "GerarExameFisicoPDF", controller: "Paciente")
+                            @if ((Int32)Session["VoltarPesquisa"] == 1)
+                            {
+                                @Html.ButtonLinkIndex(text: "Voltar", action: "PesquisarTudo", controller: "BaseAdmin")
+                            }
+                            else
+                            {
+                                if ((Int32)Session["EditarVer"] == 1)
+                                {
+                                    @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarVerPaciente", controller: "Paciente")
+                                }
+                                else
+                                {
+                                    @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarAnexoPaciente", controller: "Paciente")
+                                }
+                            }
+                        </div>
+
+                        @*Paciente*@
+                        <div class="row">
+                            <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Paciente</h4>
+                            <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">                
+                                <div class="col-lg-4 col-md-4 col-xs-12">
+                                    Nome do Paciente
+                                    @Html.TextBoxFor(m => m.PACIENTE.PACI_NM_NOME, new { @class = "form-control", @readonly = "readonly", @style = "color: green; font-weight: bold" })
+                                </div>
+                                <div class="col-lg-2 col-md-2 col-xs-12">
+                                    Data Nascimento
+                                    @Html.TextBoxFor(m => m.PACIENTE.PACI_DT_NASCIMENTO, "{0:dd/MM/yyyy}", new { @class = "form-control", @readonly = "readonly" })
+                                </div>
+                                @if (Model.PACIENTE.PACI_NR_CPF != null)
+                                {
+                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                        CPF
+                                        @Html.TextBoxFor(m => m.PACIENTE.PACI_NR_CPF, new { @class = "form-control", @readonly = "readonly" })
+                                    </div>
+                                }
+                                @if (Model.PACIENTE.PACI_NR_CELULAR != null)
+                                {
+                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                        Celular
+                                        @Html.TextBoxFor(m => m.PACIENTE.PACI_NR_CELULAR, new { @class = "form-control", @readonly = "readonly" })
+                                    </div>
+                                }
+                                @if (Model.PACIENTE.PACI_NR_TELEFONE != null)
+                                {
+                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                        Telefone
+                                        @Html.TextBoxFor(m => m.PACIENTE.PACI_NR_TELEFONE, new { @class = "form-control", @readonly = "readonly" })
+                                    </div>
+                                }
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Consulta</h4>
+                            <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">                
+                                <div class="col-lg-2 col-md-2 col-xs-12">
+                                    @Html.HiddenFor(m => m.PACI_CD_ID)
+                                    @Html.HiddenFor(m => m.PACO_CD_ID)
+                                    @Html.HiddenFor(m => m.PAEF_DT_DATA)
+                                    @Html.HiddenFor(m => m.USUA_CD_ID)
+                                    @Html.HiddenFor(m => m.ASSI_CD_ID)
+                                    @Html.HiddenFor(m => m.PAEF_IN_ATIVO)
+                                    @Html.HiddenFor(m => m.PAEF_CD_ID)
+                                    Data da Consulta
+                                    @Html.TextBoxFor(m => m.PAEF_DT_DATA, "{0:dd/MM/yyyy}", new { @class = "form-control", @readonly = "readonly" })
+                                </div>
+                                <div class="col-lg-2 col-md-2 col-xs-12">
+                                    Tipo de Consulta
+                                    @Html.TextBoxFor(m => m.TipoConsulta, new { @class = "form-control", @readonly = "readonly" })
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Exame Físico</h4>
+                                <div class="col-lg-6 col-md-6 col-xs-12">
+                                    <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                        <div class="col-lg-3 col-md-3 col-xs-12">
+                                            Pressão Diastólica (mmHg)
+                                            @Html.TextBoxFor(m => m.PAEF_NR_PA_ALTA, new { @class = "form-control", @readonly = "readonly" })
+                                        </div>
+                                        <div class="col-lg-3 col-md-3 col-xs-12">
+                                            Pressão Sistólica (mmHg)
+                                            @Html.TextBoxFor(m => m.PAEF_NR_PA_BAIXA, new { @class = "form-control", @readonly = "readonly" })
+                                        </div>
+                                        <div class="col-lg-3 col-md-3 col-xs-12">
+                                            Frequencia Cardíaca
+                                            @Html.TextBoxFor(m => m.PAEF_NR_FREQUENCIA_CARDIACA, new { @class = "form-control", @readonly = "readonly" })
+                                        </div>
+                                        <div class="col-lg-3 col-md-3 col-xs-12">
+                                            Temperatura (oC)
+                                            @Html.TextBoxFor(m => m.PAEF_NR_TEMPERATURA, new { @class = "form-control", @readonly = "readonly" })
+                                        </div>
+                                    </div>
+                                    <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                        <div class="col-lg-3 col-md-3 col-xs-12">
+                                            Peso (Kg)
+                                            @Html.TextBoxFor(m => m.PAEF_NR_PESO, new { @class = "form-control", @readonly = "readonly" })
+                                        </div>
+                                        <div class="col-lg-3 col-md-3 col-xs-12">
+                                            Altura (Cm)
+                                            @Html.TextBoxFor(m => m.PAEF_NR_ALTURA, new { @class = "form-control", @readonly = "readonly" })
+                                        </div>
+                                        <div class="col-lg-3 col-md-3 col-xs-12">
+                                            IMC
+                                            @Html.TextBoxFor(m => m.PAEF_VL_IMC, new { @class = "form-control", @readonly="readonly" })
+                                        </div>
+                                    </div>
+                                    <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                        <div class="col-lg-3 col-md-3 col-xs-12">
+                                            Hipertensão
+                                            @Html.TextBoxFor(m => m.HipertensaoT, new { @class = "form-control", @readonly = "readonly" })
+                                        </div>                                                
+                                        <div class="col-lg-3 col-md-3 col-xs-12">
+                                            Hipotensão
+                                            @Html.TextBoxFor(m => m.HipotensaoT, new { @class = "form-control", @readonly = "readonly" })
+                                        </div>                                                
+                                        <div class="col-lg-3 col-md-3 col-xs-12">
+                                            Diabetes
+                                            @Html.TextBoxFor(m => m.DiabeteT, new { @class = "form-control", @readonly = "readonly" })
+                                        </div>                                               
+                                    </div>
+                                    <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                        <div class="col-lg-3 col-md-3 col-xs-12">
+                                            Varizes
+                                            @Html.TextBoxFor(m => m.VarizerT, new { @class = "form-control", @readonly = "readonly" })
+                                        </div>                                                
+                                        <div class="col-lg-3 col-md-3 col-xs-12">
+                                            Epilepsia
+                                            @Html.TextBoxFor(m => m.EpilepsiaT, new { @class = "form-control", @readonly = "readonly" })
+                                        </div>                                               
+                                    </div>                              
+                                    <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                        <div class="col-lg-3 col-md-3 col-xs-12">
+                                            Tabagismo
+                                            @Html.TextBoxFor(m => m.TabagismoT, new { @class = "form-control", @readonly = "readonly" })
+                                        </div>                                                
+                                        <div class="col-lg-9 col-md-9 col-xs-12">
+                                            Frequencia do Tabagismo
+                                            @Html.TextBoxFor(m => m.PAEF_DS_TABAGISMO, new { @class = "form-control", @readonly = "readonly" })
+                                        </div>
+                                    </div>                              
+                                    <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                        <div class="col-lg-3 col-md-3 col-xs-12">
+                                            Gestante
+                                            @Html.TextBoxFor(m => m.GestanteT, new { @class = "form-control", @readonly = "readonly" })
+                                        </div>                                                
+                                        <div class="col-lg-4 col-md-4 col-xs-12">
+                                            Semanas de Gestação
+                                            @Html.TextBoxFor(m => m.PAEF_NR_MES_GESTANTE, new { @class = "form-control", @readonly = "readonly" })
+                                        </div>
+                                    </div>                              
+                                    <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                        <div class="col-lg-3 col-md-3 col-xs-12">
+                                            Alcoolismo
+                                            @Html.TextBoxFor(m => m.AlcoolismoT, new { @class = "form-control", @readonly = "readonly" })
+                                        </div>                                                
+                                        <div class="col-lg-9 col-md-9 col-xs-12">
+                                            Frequencia do Alcoolismo
+                                            @Html.TextBoxFor(m => m.PAEF_DS_ALCOOLISMO, new { @class = "form-control", @readonly = "readonly" })
+                                        </div>
+                                    </div>                              
+                                    <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                        <div class="col-lg-3 col-md-3 col-xs-12">
+                                            Exercício Físico
+                                            @Html.TextBoxFor(m => m.ExercicioFisicoT, new { @class = "form-control", @readonly = "readonly" })
+                                        </div>                                                
+                                        <div class="col-lg-9 col-md-9 col-xs-12">
+                                            Frequencia do Exercício Físico
+                                            @Html.TextBoxFor(m => m.PAEF_DS_EXERCICIO_FISICO, new { @class = "form-control", @readonly = "readonly" })
+                                        </div>
+                                    </div>                              
+                                    <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                        <div class="col-lg-3 col-md-3 col-xs-12">
+                                            Anticoncepcional
+                                            @Html.TextBoxFor(m => m.AnticoncepcionalT, new { @class = "form-control", @readonly = "readonly" })
+                                        </div>                                                
+                                        <div class="col-lg-9 col-md-9 col-xs-12">
+                                            Anticoncepcionais Usados
+                                            @Html.TextBoxFor(m => m.PAEF_DS_ANTICONCEPCIONAL, new { @class = "form-control", @readonly = "readonly" })
+                                        </div>
+                                    </div>                              
+                                    <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                        <div class="col-lg-3 col-md-3 col-xs-12">
+                                            Marcapasso
+                                            @Html.TextBoxFor(m => m.MarcapassoT, new { @class = "form-control", @readonly = "readonly" })
+                                        </div>                                                
+                                        <div class="col-lg-9 col-md-9 col-xs-12">
+                                            Observações
+                                            @Html.TextBoxFor(m => m.PAEF_DS_MARCAPASSO, new { @class = "form-control", @readonly = "readonly" })
+                                        </div>
+                                    </div>                              
+                                    <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                        <div class="col-lg-3 col-md-3 col-xs-12">
+                                            Cirurgias
+                                            @Html.TextBoxFor(m => m.CirurgiaT, new { @class = "form-control", @readonly = "readonly" })
+                                        </div>                                                
+                                        <div class="col-lg-9 col-md-9 col-xs-12">
+                                            Descrição das Cirurgias
+                                            @Html.TextAreaFor(m => m.PAEF_TX_CIRURGIAS, new { @class = "form-control", style = "width: 100%; height: 100px; overflow:auto;", @readonly = "readonly" })
+                                        </div>
+                                    </div>                              
+                                    <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                        <div class="col-lg-3 col-md-3 col-xs-12">
+                                            Antecedente Alérgico
+                                            @Html.TextBoxFor(m => m.AntecedenteAlergicoT, new { @class = "form-control", @readonly = "readonly" })
+                                        </div>                                                
+                                        <div class="col-lg-9 col-md-9 col-xs-12">
+                                            Descrição dos Antecedentes Alérgicos
+                                            @Html.TextAreaFor(m => m.PAEF_DS_ALERGICO, new { @class = "form-control", style = "width: 100%; height: 100px; overflow:auto;", @readonly = "readonly" })
+                                        </div>
+                                    </div>                              
+                                    <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                        <div class="col-lg-3 col-md-3 col-xs-12">
+                                            Antecedente Oncológico
+                                            @Html.TextBoxFor(m => m.AntecedenteOncologicoT, new { @class = "form-control", @readonly = "readonly" })
+                                        </div>                                                
+                                        <div class="col-lg-9 col-md-9 col-xs-12">
+                                            Descrição dos Antecedentes Oncológicos
+                                            @Html.TextAreaFor(m => m.PAEF_DS_ONCOLOGICO, new { @class = "form-control", style = "width: 100%; height: 100px; overflow:auto;", @readonly = "readonly" })
+                                        </div>
+                                    </div>                          
+                                </div>
+
+                                <div class="col-lg-6 col-md-6 col-xs-12">
+                                    <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">                
+                                        <div class="col-lg-12 col-md-12 col-xs-12">
+                                            Resultados de Exames
+                                            @Html.TextAreaFor(m => m.PAEF_TX_RESULTADOS, new { @class = "form-control", style = "width: 100%; height: 600px; overflow:auto;" , @readonly = "readonly"})
+                                        </div>
+                                    </div>
+                                    <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">                
+                                        <div class="col-lg-12 col-md-12 col-xs-12">
+                                            Observações
+                                            @Html.TextAreaFor(m => m.PAEF_DS_EXAME_FISICO, new { @class = "form-control", style = "width: 100%; height: 400px; overflow:auto;", @readonly = "readonly" })
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                }
+            </div>
+         </div>
+    </div>
+</div>
+
+@section Styles {
+    <link href="~/Content/themes/base/all.css" rel="stylesheet" />  
+    @Styles.Render("~/Content/plugins/dataTables/dataTablesStyles")
+    @Styles.Render("~/plugins/jasnyBootstrapStyles")
+    @Styles.Render("~/Content/plugins/iCheck/iCheckStyles")
+    @Styles.Render("~/plugins/touchSpinStyles")
+    @Styles.Render("~/plugins/sweetAlertStyles")
+    @Styles.Render("~/plugins/toastrStyles")
+}
+@section Scripts {
+    @Scripts.Render("~/plugins/toastr")
+    @Scripts.Render("~/plugins/dataTables")
+    @Scripts.Render("~/bundles/inputmask")
+    @Scripts.Render("~/plugins/jasnyBootstrap")
+    @Scripts.Render("~/plugins/sparkline")
+    @Scripts.Render("~/plugins/touchSpin")
+    @Scripts.Render("~/plugins/iCheck")
+    @Scripts.Render("~/plugins/sweetAlert")
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.maskedinput/1.4.1/jquery.maskedinput.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            $('.i-checks').iCheck({
+                checkboxClass: 'icheckbox_square-green',
+                radioClass: 'iradio_square-green',
+            });
+
+        });
+    </script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            var i = -1;
+            var toastCount = 0;
+            var $toastlast;
+            var getMessage = function () {
+                var msg = 'Hi, welcome to Inspinia. This is example of Toastr notification box.';
+                return msg;
+            };
+
+            $('#basictoast').click(function () {
+                // Display a success toast, with a title
+                toastr.success('Edição em andamento!')
+            });
+            $('#showtoast').click(function () {
+                var shortCutFunction = $("#toastTypeGroup input:radio:checked").val();
+                var msg = $('#message').val();
+                var title = $('#title').val() || '';
+                var $showDuration = $('#showDuration');
+                var $hideDuration = $('#hideDuration');
+                var $timeOut = $('#timeOut');
+                var $extendedTimeOut = $('#extendedTimeOut');
+                var $showEasing = $('#showEasing');
+                var $hideEasing = $('#hideEasing');
+                var $showMethod = $('#showMethod');
+                var $hideMethod = $('#hideMethod');
+                var toastIndex = toastCount++;
+                toastr.options = {
+                    closeButton: $('#closeButton').prop('checked'),
+                    debug: $('#debugInfo').prop('checked'),
+                    progressBar: $('#progressBar').prop('checked'),
+                    positionClass: $('#positionGroup input:radio:checked').val() || 'toast-top-right',
+                    onclick: null
+                };
+                if ($('#addBehaviorOnToastClick').prop('checked')) {
+                    toastr.options.onclick = function () {
+                        alert('You can perform some custom action after a toast goes away');
+                    };
+                }
+                if ($showDuration.val().length) {
+                    toastr.options.showDuration = $showDuration.val();
+                }
+                if ($hideDuration.val().length) {
+                    toastr.options.hideDuration = $hideDuration.val();
+                }
+                if ($timeOut.val().length) {
+                    toastr.options.timeOut = $timeOut.val();
+                }
+                if ($extendedTimeOut.val().length) {
+                    toastr.options.extendedTimeOut = $extendedTimeOut.val();
+                }
+                if ($showEasing.val().length) {
+                    toastr.options.showEasing = $showEasing.val();
+                }
+                if ($hideEasing.val().length) {
+                    toastr.options.hideEasing = $hideEasing.val();
+                }
+                if ($showMethod.val().length) {
+                    toastr.options.showMethod = $showMethod.val();
+                }
+                if ($hideMethod.val().length) {
+                    toastr.options.hideMethod = $hideMethod.val();
+                }
+                if (!msg) {
+                    msg = getMessage();
+                }
+                $("#toastrOptions").text("Command: toastr["
+                        + shortCutFunction
+                        + "](\""
+                        + msg
+                        + (title ? "\", \"" + title : '')
+                        + "\")\n\ntoastr.options = "
+                        + JSON.stringify(toastr.options, null, 2)
+                );
+                var $toast = toastr[shortCutFunction](msg, title); // Wire up an event handler to a button in the toast, if it exists
+                $toastlast = $toast;
+                if ($toast.find('#okBtn').length) {
+                    $toast.delegate('#okBtn', 'click', function () {
+                        alert('you clicked me. i was toast #' + toastIndex + '. goodbye!');
+                        $toast.remove();
+                    });
+                }
+                if ($toast.find('#surpriseBtn').length) {
+                    $toast.delegate('#surpriseBtn', 'click', function () {
+                        alert('Surprise! you clicked me. i was toast #' + toastIndex + '. You could perform an action here.');
+                    });
+                }
+            });
+            function getLastToast() {
+                return $toastlast;
+            }
+            $('#clearlasttoast').click(function () {
+                toastr.clear(getLastToast());
+            });
+            $('#cleartoasts').click(function () {
+                toastr.clear();
+            });
+
+        });
+    </script>
+
+
+    @if (ViewBag.Message != null)
+    {
+        <script type="text/javascript">
+            window.onload = function () {
+                  alert("@ViewBag.Message");
+            };
+        </script>
+    }
+}

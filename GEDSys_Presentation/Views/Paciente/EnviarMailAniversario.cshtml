@@ -1,0 +1,398 @@
+﻿@using Presentation.Extensions
+@model ERP_Condominios_Solution.ViewModels.MensagemViewModel
+@{
+    Layout = "~/Views/Shared/_Layout_Admin.cshtml";
+    ViewBag.Title = "WebDoctor - Paciente - Envio";
+    ViewBag.MetaDescription = "WebDoctor - Paciente - Enviar e-mail de aniverário ao paciente";
+    ViewBag.MetaKeywords = "WebDoctor, paciente, e-mail, aniversario";
+}
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="page-title">
+        <ol class="breadcrumb">
+            <li>
+                <a href="@Url.Action("MontarTelaPaciente", "BaseAdmin")">Dashboard</a>
+            </li>
+            <li>
+                <a href="@Url.Action("MontarTelaCentralPaciente", "Paciente")">Central de Pacientes</a>
+            </li>
+            <li class="active">
+                <strong>Pacientes - Aniversariantes</strong>
+            </li>
+        </ol>
+        <br />
+    </div>
+    <div class="row">
+        <div class="col-lg-12 col-md-12 col-xs-12">
+            <div class="col-lg-12 col-md-12 col-xs-12 ibox float-e-margins" style="height: 700px" >
+                <div class="ibox-title">
+                    <div style="text-align: center;" class="col-lg-12 col-md-12 col-xs-12">
+                        <h5>Aniverariantes - Envio de E-Mail</h5>
+                    </div>
+                </div>
+                <div class="ibox-content">
+                    @if (!ViewData.ModelState.IsValid)
+                    {
+                        <div class="alert alert-danger">
+                            <button type="button" class="close" data-dismiss="alert">Fechar</button>
+                            @Html.ValidationSummary(false, "", new { @class = "text-danger" })
+                        </div>
+                    }
+                    <div class="row">
+                        <div class="col-lg-4 col-md-4 col-xs-12">
+                            <div class="col-lg-12 col-md-12 col-xs-12">
+                                <div class="col-lg-12 col-md-12 col-xs-12 ibox float-e-margins" style="border-bottom: solid; border-bottom-color: darkblue; border-bottom-width: 2px; border-left: solid; border-left-color: darkblue; border-left-width: 1px; border-right: solid; border-right-color: darkblue; border-right-width: 1px; border-top: solid; border-top-color: darkblue; border-top-width: 1px; height: 650px; overflow-y: auto;">
+                                    <div class="ibox-title">
+                                        <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Aniversariantes do Dia</h4>
+                                    </div>
+                                    <div class="ibox-content">
+                                        <div class="row" style=" margin-left: -5px; margin-right: -5px;">
+                                            @if (ViewBag.ListaPacienteAnivDia != null && (ViewBag.ListaPacienteAnivDia as List<ERP_Condominios_Solution.ViewModels.ModeloViewModel>).Count > 0)
+                                            {
+                                                <table class="table table-striped table-bordered table-hover">
+                                                    <thead style="background-color:lightsteelblue">
+                                                        <tr>
+                                                            <th style="width: auto">Nome</th>
+                                                            <th style="width: auto">Data </th>
+                                                            <th style="width: auto">E-Mail</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        @foreach (var cond in (ViewBag.ListaPacienteAnivDia as List<ERP_Condominios_Solution.ViewModels.ModeloViewModel>).OrderByDescending(p => p.Nome))
+                                                        {
+                                                            <tr>
+                                                                <td style="width: auto">@cond.Nome</td>
+                                                                <td style="width: auto">@cond.DataEmissao.ToShortDateString()</td>
+                                                                <td style="width: auto">@cond.Nome1</td>
+                                                            </tr>
+                                                        }
+                                                    </tbody>
+                                                </table>
+                                            }
+                                            else
+                                            {
+                                                <div class="row">
+                                                    <div class="col-lg-1 col-md-1 col-xs-12">
+                                                    </div>
+                                                    <div style="border: 5px solid #F6A54A; padding: 10px; border-radius: 8px 8px; " class="col-lg-10 col-md-10 col-xs-8">
+                                                        <h4 style="font-weight: bold">Nenhum Aniversariante no dia</h4>
+                                                    </div>
+                                                    <div class="col-lg-1 col-md-1 col-xs-12">
+                                                    </div>
+                                                </div>
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-8 col-md-8 col-xs-12">
+                            <div class="col-lg-12 col-md-12 col-xs-12">
+                                <div class="col-lg-12 col-md-12 col-xs-12 ibox float-e-margins" style="border-bottom: solid; border-bottom-color: darkblue; border-bottom-width: 2px; border-left: solid; border-left-color: darkblue; border-left-width: 1px; border-right: solid; border-right-color: darkblue; border-right-width: 1px; border-top: solid; border-top-color: darkblue; border-top-width: 1px; height: 650px">
+                                    <div class="ibox-title">
+                                        <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Mensagem de Aniversário</h4>
+                                    </div>
+                                    <div class="ibox-content">
+                                        @if (ViewBag.Mail == 1)
+                                        {
+                                            <h4 style="margin-left: 0px; color: brown; background-color: azure; font-weight:bold">AVISO: Número de mensagens excedeu o limite contratado para o mês corrente</h4>
+                                        }
+                                        @if (ViewBag.Mail == 2)
+                                        {
+                                            <h4 style="margin-left: 0px; color: brown; background-color: azure; font-weight:bold">AVISO: Mensagens para aniversariantes já enviadas para a data corrente</h4>
+                                        }
+                                        @using (Html.BeginForm("EnviarMailAniversario", "Paciente", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal", @id="pwd-container1" }))
+                                        {
+                                            <div class="row">
+                                                <div class="form-group" style=" margin-left: -5px; margin-right: -5px;">                
+                                                    <div class="col-lg-4 col-md-4 col-xs-12">
+                                                        Tipo de E-Mail*
+                                                        @Html.DropDownListFor(m => m.MENS_IN_TIPO_EMAIL, (SelectList)ViewBag.Tipos, "Selecionar", new { @class = "form-control", data_toggle = "popover", data_content = "Selecione o tipo de mensagem a ser enviada, pode ser um texto digitado, um modelo previamente cadastrado ou um arquivo HTML já cadastrado", data_trigger="hover", data_placement="top", autofocus = true, @id = "tipo", onchange = "ValidaTipo($(this).val())" })
+                                                    </div>
+                                                    <div class="col-lg-8 col-md-8 col-xs-12" id="html" style="display: none">
+                                                        Nome do Arquivo HTML a ser enviado
+                                                        @Html.DropDownListFor(m => m.MENS_AQ_ARQUIVO, (SelectList)ViewBag.Modelos, "Selecionar", new { @class = "form-control", data_toggle = "popover", data_content = "Selecione o arquivo HTML a ser enviado. Para cadastrar novos arquivos HTML use o menu lateral em Modelos de E-Mail no bloco Cadastros", data_trigger="hover", data_placement="top", autofocus = true, @id = "temp" })
+                                                    </div>
+                                                    <div class="col-lg-8 col-md-8 col-xs-12" id="template" style="display: none">
+                                                        Modelo da Mensagem
+                                                        @Html.DropDownListFor(m => m.TEEM_CD_ID, (SelectList)ViewBag.Templates, "Selecionar", new { @class = "form-control", data_toggle = "popover", data_content = "Selecione o modelo de mensagem E-Mail a ser enviado. Para cadastrar novos modelos de mensagens use o menu lateral em Modelos de E-Mail no bloco Cadastros", data_trigger="hover", data_placement="top", autofocus = true, @id = "mail", onchange = "GetTextoHTML($(this).val())" })
+                                                    </div>
+                                                </div>
+                                                <div class="form-group" style=" margin-left: -5px; margin-right: -5px;">                
+                                                    <div class="col-lg-8 col-md-8 col-xs-12">
+                                                        @Html.HiddenFor(m => m.ID)
+                                                        @Html.HiddenFor(m => m.MENS_DT_CRIACAO)
+                                                        @Html.HiddenFor(m => m.MENS_IN_TIPO)
+                                                        @Html.HiddenFor(m => m.MENS_NM_NOME)
+                                                        Assunto da mensagem*
+                                                        @Html.TextBoxFor(m => m.MENS_NM_CAMPANHA, new { @class = "form-control", autofocus = true })
+                                                    </div>
+                                                    <div class="col-lg-4 col-md-4 col-xs-12">
+                                                        Link a Anexar
+                                                        @Html.TextBoxFor(m => m.MENS_NM_LINK, new { @class = "form-control", autofocus = true, data_toggle = "popover", data_content = "Se desejar, especifique um link que será anexado ao final da mensagem", data_trigger="hover", data_placement="top" })
+                                                    </div>
+                                                </div>
+                                                <div class="form-group" style=" margin-left: -5px; margin-right: -5px; display: none" id="textoNormal" >                
+                                                    <h4 style="margin-left: 15px; color: brown; background-color: azure; font-weight:normal">Se quiser exibir o nome do paciente na mensagem, inclua a tag {nome} no local desejado</h4>
+                                                    <div class="col-lg-12 col-md-12 col-xs-12">
+                                                        Texto da Mensagem de Aniversário*
+                                                        @Html.TextAreaFor(m => m.MENS_TX_TEXTO, new { @class = "form-control", style = "width: 100%; height: 250px; overflow:auto;", autofocus = true, @id = "texto", data_toggle = "popover", data_content = "Informe o texto da mensagem a ser enviada. Se quiser que o nome do paciente seja exibido na mensagem, inclua a tag {nome} no local desejado", data_trigger="hover", data_placement="top"})
+                                                        @Html.ValidationMessageFor(m => m.MENS_TX_TEXTO, "", new { @style = "color:red" })
+                                                    </div>
+                                                </div>
+                                                <div class="form-group" style=" margin-left: -5px; margin-right: -5px; display: none" id="textoHTML" >                
+                                                    @*<div class="col-lg-12 col-md-12 col-xs-12">
+                                                        Texto do Modelo da Mensagem de Aniversário
+                                                        @Html.TextAreaFor(m => m.MENS_TX_TEXTO, new { @class = "form-control summernote", style = "width: 100%; height: 250px;", @id = "textoHTMLPlano" })
+                                                    </div>*@
+                                                    <div style="display: none;" id="textoHTMLPlano" class="col-lg-12 col-md-12 col-xs-12">
+                                                        Texto do Modelo da Mensagem de Aniversário
+                                                        <input class="form-control summernote" type="text" readonly="readonly" />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="form-group" style=" margin-left: -5px; margin-right: -5px;">
+                                                @if (ViewBag.Mail == 0)
+                                                {
+                                                    @Html.ButtonActionSubmit(text: "Confirma Envio de Mensagens de Aniversário", htmlAttributes: new { id = "basictoast" })
+                                                }
+                                                @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarBasePaciente", controller: "Paciente")
+                                                <a href="@Url.Action((String)Session["AjudaNivel"])"  class="btn btn-sm btn-danger" target="_blank">Ajuda</a>                
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+         </div>
+    </div>
+</div>
+
+@section Styles {
+    <link href="~/Content/themes/base/jquery-ui.min.css" rel="stylesheet" />
+    <link href="~/Content/themes/base/all.css" rel="stylesheet" />
+    @Styles.Render("~/Content/plugins/dataTables/dataTablesStyles")
+    @Styles.Render("~/plugins/jasnyBootstrapStyles")
+    @Styles.Render("~/plugins/toastrStyles")
+
+}
+@section Scripts {
+    @Scripts.Render("~/plugins/toastr")
+    <script src="~/Scripts/jquery-ui-1.12.1.min.js"></script>
+    @Scripts.Render("~/plugins/dataTables")
+    @Scripts.Render("~/bundles/inputmask")
+    @Scripts.Render("~/plugins/jasnyBootstrap")
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.maskedinput/1.4.1/jquery.maskedinput.js"></script>
+    <script src="~/Scripts/uploadAnexo.js"></script>
+
+    @*@Scripts.Render("~/plugins/summernote")
+    <link href="https://cdn.jsdelivr.net/npm/summernote@0.9.0/dist/summernote.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/summernote@0.9.0/dist/summernote.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.bundle.min.js"></script>*@   
+
+    <script type="text/javascript" src="~/Scripts/moment.min.js"></script>
+    <script type="text/javascript" src="~/Scripts/bootstrap.min.js"></script>
+   
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('[data-toggle="popover"]').popover();
+        });
+    </script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-toggle="popover"]'));
+            var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
+                return new bootstrap.Popover(popoverTriggerEl);
+            });
+        });
+    </script>
+
+    <!-- Handler de fechamento do browser -->
+    <script type="text/javascript">
+        window.onbeforeunload = function ()
+        {
+            navigator.sendBeacon('../ControleAcesso/LogSessionTime');
+        }; 
+    </script>
+
+    <script type="text/javascript">
+        function ValidaTipo(tipo) {
+            if (tipo == '1') {
+                $("#html").hide();
+                $("#textoNormal").show();
+                $("#template").hide();
+                $("#link").show();
+                $("#textoHTML").hide();
+            } else if (tipo == '2') {
+                $("#textoNormal").hide();
+                $("#html").show();
+                $("#template").hide();
+                $("#link").show();
+                $("#textoHTML").hide();
+            } else if (tipo == '3') {
+                $("#textoNormal").hide();
+                $("#template").show();
+                $("#html").hide();
+                $("#link").show();
+                $("#textoHTML").show();
+            }
+        }
+        $(document).ready(function () {
+            ValidaTipo($('#tipo').val());
+        });
+    </script>
+
+    <script>
+        function GetTextoHTML(id) {
+            var data = {
+                id: id
+            }
+
+            $.ajax({
+                url: '/Paciente2/GetTextoHTML'
+                , type: 'POST'
+                , data: data
+                , success: function (r) {
+                    $('#textoHTMLPlano > input').val(r.textoHTML);
+                    $('#textoHTMLPlano').show();
+                }
+            });
+        }
+    </script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            //$('.summernote').summernote();
+            $('.summernote').summernote(
+            {
+              toolbar: []
+            //    lineHeights: ['0.2', '0.3', '0.4', '0.5', '0.6', '0.8', '1.0', '1.2', '1.4', '1.5', '2.0', '3.0'],
+            //    fontNames: ['Arial', 'Arial Black', 'Comic Sans MS', 'Courier New', 'Helvetica', 'Impact', 'Lucida Grande', 'Tahoma', 'Times New Roman', 'Verdana'],
+            //    spellCheck: false
+            });
+
+        });
+
+    </script>
+    
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            var i = -1;
+            var toastCount = 0;
+            var $toastlast;
+            var getMessage = function () {
+                var msg = 'Hi, welcome to Inspinia. This is example of Toastr notification box.';
+                return msg;
+            };
+
+            $('#basictoast').click(function () {
+                // Display a success toast, with a title
+                toastr.success('Envio em andamento!')
+            });
+            $('#showtoast').click(function () {
+                var shortCutFunction = $("#toastTypeGroup input:radio:checked").val();
+                var msg = $('#message').val();
+                var title = $('#title').val() || '';
+                var $showDuration = $('#showDuration');
+                var $hideDuration = $('#hideDuration');
+                var $timeOut = $('#timeOut');
+                var $extendedTimeOut = $('#extendedTimeOut');
+                var $showEasing = $('#showEasing');
+                var $hideEasing = $('#hideEasing');
+                var $showMethod = $('#showMethod');
+                var $hideMethod = $('#hideMethod');
+                var toastIndex = toastCount++;
+                toastr.options = {
+                    closeButton: $('#closeButton').prop('checked'),
+                    debug: $('#debugInfo').prop('checked'),
+                    progressBar: $('#progressBar').prop('checked'),
+                    positionClass: $('#positionGroup input:radio:checked').val() || 'toast-top-right',
+                    onclick: null
+                };
+                if ($('#addBehaviorOnToastClick').prop('checked')) {
+                    toastr.options.onclick = function () {
+                        alert('You can perform some custom action after a toast goes away');
+                    };
+                }
+                if ($showDuration.val().length) {
+                    toastr.options.showDuration = $showDuration.val();
+                }
+                if ($hideDuration.val().length) {
+                    toastr.options.hideDuration = $hideDuration.val();
+                }
+                if ($timeOut.val().length) {
+                    toastr.options.timeOut = $timeOut.val();
+                }
+                if ($extendedTimeOut.val().length) {
+                    toastr.options.extendedTimeOut = $extendedTimeOut.val();
+                }
+                if ($showEasing.val().length) {
+                    toastr.options.showEasing = $showEasing.val();
+                }
+                if ($hideEasing.val().length) {
+                    toastr.options.hideEasing = $hideEasing.val();
+                }
+                if ($showMethod.val().length) {
+                    toastr.options.showMethod = $showMethod.val();
+                }
+                if ($hideMethod.val().length) {
+                    toastr.options.hideMethod = $hideMethod.val();
+                }
+                if (!msg) {
+                    msg = getMessage();
+                }
+                $("#toastrOptions").text("Command: toastr["
+                        + shortCutFunction
+                        + "](\""
+                        + msg
+                        + (title ? "\", \"" + title : '')
+                        + "\")\n\ntoastr.options = "
+                        + JSON.stringify(toastr.options, null, 2)
+                );
+                var $toast = toastr[shortCutFunction](msg, title); // Wire up an event handler to a button in the toast, if it exists
+                $toastlast = $toast;
+                if ($toast.find('#okBtn').length) {
+                    $toast.delegate('#okBtn', 'click', function () {
+                        alert('you clicked me. i was toast #' + toastIndex + '. goodbye!');
+                        $toast.remove();
+                    });
+                }
+                if ($toast.find('#surpriseBtn').length) {
+                    $toast.delegate('#surpriseBtn', 'click', function () {
+                        alert('Surprise! you clicked me. i was toast #' + toastIndex + '. You could perform an action here.');
+                    });
+                }
+            });
+            function getLastToast() {
+                return $toastlast;
+            }
+            $('#clearlasttoast').click(function () {
+                toastr.clear(getLastToast());
+            });
+            $('#cleartoasts').click(function () {
+                toastr.clear();
+            });
+
+        });
+    </script>
+
+
+    @if (ViewBag.Message != null)
+    {
+        <script type="text/javascript">
+            window.onload = function () {
+                  alert("@ViewBag.Message");
+            };
+        </script>
+    }
+}
+
+
+
+

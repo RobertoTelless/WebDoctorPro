@@ -1,0 +1,296 @@
+﻿@using Presentation.Extensions
+@model ERP_Condominios_Solution.ViewModels.MovimentoEstoqueProdutoViewModel
+@{
+    Layout = "~/Views/Shared/_Layout_Admin.cshtml";
+}
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="modalContainer">
+        <div id="modal" class="modal" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        @*Titulo gerado dinamicamente*@
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        @*Gerado dinamicamente*@
+                    </div>
+                    <div class="modal-footer">
+                        <button onclick="limpaModal()" type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="page-title">
+        <h3 class="title">Estoques</h3>
+        <br />
+        <ol class="breadcrumb">
+            <li>
+                <a href="@Url.Action("MontarTelaPaciente", "Paciente")">Dashboard</a>
+            </li>
+            <li>
+                <a href="@Url.Action("MontarTelaEstoque", "Estoque")">Central de Estoque</a>
+            </li>
+            <li>
+                <a href="@Url.Action("VerMovimentacoes", "Estoque")">Estoque - Movimentações</a>
+            </li>
+            <li class="active">
+                <strong>Movimentação - Consulta</strong>
+            </li>
+        </ol>
+        <br />
+    </div>
+    <div class="row">
+        <div class="col-lg-12 col-md-12 col-xs-12">
+            <div class="col-lg-12 col-md-12 col-xs-12 ibox float-e-margins">
+                <div class="ibox-title">
+                    <div class="row">
+                        <div style="text-align: center;" class="col-lg-12 col-md-12 col-xs-12">
+                            <h5>Movimentação de Estoque - Consulta</h5>
+                            <span style="color:green; font-weight: 500; font-size: 20px;">@ViewBag.Nome</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="ibox-content">
+                    <div class="form-group">
+                        <br />
+                        @Html.ButtonLinkIndex(text: "Gerar Relatório Detalhe", action: "GerarRelatorioDetalhe", controller: "Estoque")
+                        @Html.ButtonLinkIndex(text: "Voltar", controller: "Estoque", action: "MontarTelaEstoque")
+                    </div>
+                    @if (!ViewData.ModelState.IsValid)
+                    {
+                        <div class="alert alert-danger">
+                            <button type="button" class="close" data-dismiss="alert">Fechar</button>
+                            @Html.ValidationSummary(false, "", new { @class = "text-danger" })
+                        </div>
+                    }
+                    <div class="tabs-container">
+                        <ul class="nav nav-tabs">
+                            <li class="active"><a data-toggle="tab" href="#tab-1">Dados da Movimentação</a></li>
+                            <li class=""><a data-toggle="tab" href="#tab-2">Anotações</a></li>
+                        </ul>
+                        <div class="tab-content">
+
+                            @*Dados Gerais*@
+                            <div id="tab-1" class="tab-pane active">
+                                <div class="panel-body">
+                                    @using (Html.BeginForm("VerMovimentacaoEstoque", "Estoque", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal", @id = "pwd-container1" }))
+                                    {
+                                        <div class="row">
+                                            <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Identificação</h4>
+                                            <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                                <div class="col-lg-3 col-md-3 col-xs-12">
+                                                    Identificador
+                                                    @Html.TextBoxFor(m => m.MOEP_GU_GUID, new { @class = "form-control", @readonly = "readonly", @style = "color: red; font-weight: bold" })
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="row">
+                                            <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Informações da Movimentação</h4>
+                                            <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                                <div class="col-lg-2 col-md-2 col-xs-12">
+                                                    Tipo de Movimentação
+                                                    @Html.TextBoxFor(m => m.TipoMovimento, new { @class = "form-control", autofocus = true, @readonly = "readonly", @style = "color: darkblue; font-weight: bold" })
+                                                </div>
+                                                @if (Model.MOEP_IN_TIPO_MOVIMENTO == 1 || Model.MOEP_IN_TIPO_MOVIMENTO == 2)
+                                                {
+                                                    <div class="col-lg-2 col-md-2 col-xs-12" id="entrada">
+                                                        Classe
+                                                        @Html.TextBoxFor(m => m.TipoEntradaSaida, new { @class = "form-control", autofocus = true, @readonly = "readonly", @style = "color: darkblue; font-weight: bold" })
+                                                    </div>
+                                                }
+                                                <div class="col-lg-3 col-md-3 col-xs-12">
+                                                    Responsável
+                                                    @Html.TextBoxFor(m => m.USUARIO.USUA_NM_NOME, new { @class = "form-control", autofocus = true, @readonly = "readonly" })
+                                                </div>
+                                                <div class="col-lg-2 col-md-2 col-xs-12">
+                                                    Data da Movimentação
+                                                    @Html.TextBoxFor(m => m.MOEP_DT_MOVIMENTO, "{0:dd/MM/yyyy}", new { @class = "form-control", autofocus = true, @readonly = "readonly", @style = "color: brown; font-weight: bold" })
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        if (Model.MOEP_IN_ATIVO == 0)
+                                        {
+                                            <div class="row">
+                                                <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Informações de Exclusão</h4>
+                                                <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                                        Data da Exclusão
+                                                        @Html.TextBoxFor(m => m.MOEP_DT_EXCLUSAO, new { @class = "form-control", autofocus = true, @readonly = "readonly"  })
+                                                    </div>
+                                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                                        Excluído por
+                                                        @Html.TextBoxFor(m => m.USUARIO2.USUA_NM_NOME, new { @class = "form-control", autofocus = true, @readonly = "readonly"  })
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        }
+
+
+                                        if (Model.MOEP_IN_TIPO_MOVIMENTO == 1)
+                                        {
+                                            <div class="row">
+                                                <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Compra Manual</h4>
+                                                <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                                        Quantidade
+                                                        @Html.TextBoxFor(m => m.MOEP_VL_QUANTIDADE_MOVIMENTO, new { @class = "form-control", @readonly = "readonly"  })
+                                                    </div>
+                                                    @if (Model.MOEP_IN_TIPO == 1)
+                                                    {
+                                                        <div class="col-lg-2 col-md-2 col-xs-12">
+                                                            Valor (R$)
+                                                            @Html.TextBoxFor(m => m.MOEP_VL_VALOR_MOVIMENTO,"{0:n2}", new { @class = "form-control", @readonly = "readonly"  })
+                                                        </div>
+                                                        <div class="col-lg-2 col-md-2 col-xs-12">
+                                                            Fornecedor
+                                                            @Html.TextBoxFor(m => m.MOEP_NM_FORNECEDOR, new { @class = "form-control", @readonly = "readonly"  })
+                                                        </div>
+                                                    }
+                                                    @if (Model.MOEP_IN_TIPO == 3)
+                                                    {
+                                                        <div class="col-lg-2 col-md-2 col-xs-12">
+                                                            Fornecedor
+                                                            @Html.TextBoxFor(m => m.MOEP_NM_FORNECEDOR, new { @class = "form-control", @readonly = "readonly"  })
+                                                        </div>
+                                                    }
+                                                </div>
+                                                <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                                    <div class="col-lg-12 col-md-12 col-xs-12">
+                                                        Justificativa
+                                                        @Html.TextAreaFor(m => m.MOEP_DS_JUSTIFICATIVA, new { @class = "form-control", style = "width: 100%; height: 200px;", @readonly = "readonly" })
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        }
+                                   
+                                        if (Model.MOEP_IN_TIPO_MOVIMENTO == 2)
+                                        {
+                                            <div class="row">
+                                                <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Descartes</h4>
+                                                <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                                        Quantidade
+                                                        @Html.TextBoxFor(m => m.MOEP_VL_QUANTIDADE_MOVIMENTO, new { @class = "form-control", autofocus = true, @readonly = "readonly" })
+                                                    </div>
+                                                    @if (Model.MOEP_IN_TIPO == 7)
+                                                    {
+                                                        <div class="col-lg-2 col-md-2 col-xs-12">
+                                                            Fornecedor
+                                                            @Html.TextBoxFor(m => m.MOEP_NM_FORNECEDOR, new { @class = "form-control", @readonly = "readonly"  })
+                                                        </div>
+                                                    }
+                                                </div>
+                                                <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                                    <div class="col-lg-12 col-md-12 col-xs-12">
+                                                        Justificativa
+                                                        @Html.TextAreaFor(m => m.MOEP_DS_JUSTIFICATIVA, new { @class = "form-control", style = "width: 100%; height: 200px;", autofocus = true, @readonly = "readonly" })
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        }                                    
+                                    }
+                                </div>
+                            </div>
+
+                            @*Anotações*@
+                            <div id="tab-2" class="tab-pane">
+                                <div class="panel-body">
+                                    <div class="row">
+                                        <div class="col-lg-12">
+                                            <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Anotações</h4>
+                                            @if (Model.MOVIMENTO_ANOTACAO.Where(p => p.MOAN_IN_ATIVO == 1).ToList().Count > 0)
+                                            {
+                                                foreach (var item in (Model.MOVIMENTO_ANOTACAO.Where(p => p.MOAN_IN_ATIVO == 1)).OrderByDescending(a => a.MOAN_DT_ANOTACAO))
+                                                {
+                                                    <div class="social-feed-box">
+                                                        <div class="social-avatar">
+                                                            <a href="" class="pull-left">
+                                                                <img src="@Url.Content(item.USUARIO.USUA_AQ_FOTO)" style="width: auto; height: auto; max-height: 110px; max-width: 90px;">
+                                                            </a>
+                                                            <span style="color: #337ab7; cursor:pointer;" alt="Excluir" class="tbl-link fa-lg fa fa-trash-o" onclick="ShowModalExcluir('/Estoque/ExcluirAnotacao/@item.MOAN_CD_ID')" title="Excluir"></span>
+                                                            <div class="media-body">
+                                                                <a href="@Url.Action("EditarAnotacao", "Estoque", new { id = item.MOAN_CD_ID })">
+                                                                    @item.USUARIO.USUA_NM_NOME
+                                                                </a>
+                                                                <small class="text-muted">@item.MOAN_DT_ANOTACAO.Value.ToString("dd/MM/yyyy HH:mm")</small>
+                                                            </div>
+                                                        </div>
+                                                        <div class="social-body">
+                                                            <p>
+                                                                @item.MOAN_DS_ANOTACA_
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                }
+                                            }
+                                        </div>
+                                    </div>
+                                    <br />
+                                    <div class="form-group">
+                                        @Html.ButtonLinkIndex(text: "Nova Anotação", action: "IncluirAnotacao", controller: "Estoque")
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section Styles {
+    <link href="~/Content/themes/base/all.css" rel="stylesheet" />
+    @Styles.Render("~/Content/plugins/dataTables/dataTablesStyles")
+    @Styles.Render("~/plugins/jasnyBootstrapStyles")
+    @Styles.Render("~/plugins/toastrStyles")
+}
+@section Scripts {
+    @Scripts.Render("~/plugins/toastr")
+    @Scripts.Render("~/plugins/dataTables")
+    @Scripts.Render("~/bundles/inputmask")
+    @Scripts.Render("~/plugins/jasnyBootstrap")
+    @Scripts.Render("~/plugins/sparkline")
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.maskedinput/1.4.1/jquery.maskedinput.js"></script>
+
+    <script>
+        function mostrarDesc(desc) {
+            $('#modalDescBody').html(desc);
+            $('#modalDesc').modal('show');
+        }
+    </script>
+    <script>
+        $(function () {
+            limpaModal();
+        });
+
+        function limpaModal() {
+            $('#btnModal').remove();
+            $('#modalTitle').remove();
+        }
+
+        function ShowModalExcluir(url) {
+            $('#modal').find('.modal-footer').prepend('<a id="btnModal" alt="Desativar" class="btn btn-primary" href="' + url + '" target="_self" title="Desativar">Confirmar</a>');
+            $('#modal').find('.modal-body').html('Confirma exclusão de Anotação?');
+            $('#modal').find('.modal-header').prepend('<h5 id="modalTitle" class="modal-title">Confimar Exclusão</h5>');
+            $('#modal').modal('show');
+        }
+    </script>
+
+    @if (ViewBag.Message != null)
+    {
+        <script type="text/javascript">
+            window.onload = function () {
+                  alert("@ViewBag.Message");
+            };
+        </script>
+    }
+}

@@ -1,0 +1,152 @@
+﻿@using Presentation.Extensions
+@using CrossCutting;
+@model ERP_Condominios_Solution.ViewModels.LogViewModel
+@{
+    Layout = "~/Views/Shared/_Layout_Admin.cshtml";
+    ViewBag.Title = "WebDoctor - Auditoria - Ver";
+    ViewBag.MetaDescription = "WebDoctor - Registros de Auditoria - Visualização";
+    ViewBag.MetaKeywords = "WebDoctor, Auditoria, Log";
+}
+<div style="z-index: 999;" class="dotContainer">
+    <div style="top: 500px" class="dotWrapper">
+        <div class="circle"></div>
+        <div class="circle"></div>
+        <div class="circle"></div>
+        <div class="shadow"></div>
+        <div class="shadow"></div>
+        <div class="shadow"></div>
+    </div>
+</div>
+
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="modal fade" id="jsonModal" tabindex="-1" role="dialog" aria-labelledby="jsonModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="jsonModalLabel">Registro Formatado</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Fechar">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <pre id="jsonContent" style="white-space: pre-wrap; word-break: break-all;"></pre>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
+                </div>
+            </div>
+        </div>
+    </div> 
+   <div class="page-title"> 
+        <ol class="breadcrumb">
+            <li>
+                <a href="@Url.Action("MontarTelaPaciente", "BaseAdmin")">Dashboard</a>
+            </li>
+            <li>
+                <a href="@Url.Action("MontarTelaLog", "Auditoria")">Auditoria</a>
+            </li>
+            <li class="active">
+                <strong>Auditoria - Visualização</strong>
+            </li>
+        </ol>
+        <br />
+    </div>
+
+    <div class="row">
+        <div class="col-lg-12 col-md-12 col-xs-12 ibox float-e-margins">
+            <div class="ibox-title">
+                <h5>Auditoria - Visualização</h5>
+            </div>           
+            <div class="ibox-content">
+                <div class="row">
+                    <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                        <div class="col-lg-12 col-md-12 col-xs-12">
+                            @Html.ButtonLinkIndex(text: "Voltar", controller: "Auditoria", action: "VoltarBaseLog")
+                            <br />
+                        </div>
+                    </div>
+                    <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">                
+                        <div class="col-lg-3 col-md-3 col-xs-12">
+                            Data
+                            @Html.TextBoxFor(m => m.LOG_DT_DATA, new { @class = "form-control", @readonly="readonly"  })
+                        </div>
+                        <div class="col-lg-2 col-md-2 col-xs-12">
+                            Operação 
+                            @Html.TextBoxFor(m => m.LOG_NM_OPERACAO, new { @class = "form-control", @readonly="readonly"  })
+                        </div>
+                        <div class="col-lg-4 col-md-4 col-xs-12">
+                            Usuário
+                            @Html.TextBoxFor(m => m.USUARIO.USUA_NM_NOME, new { @class = "form-control", @readonly="readonly"  })
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                        <div class="col-lg-6 col-md-6 col-xs-12">
+                            <br />                            
+                            <strong id="jsonLabel" style="cursor: pointer; color: green; text-decoration: underline;">Conteúdo do Registro (Clique para formatar)</strong>
+                            @Html.TextAreaFor(m => m.LOG_TX_REGISTRO, new { @class = "form-control" , @id = "jsonTextarea", style = "width: 95%; height: 500px;", @readonly="readonly"})
+                        </div>
+                        <div class="col-lg-6 col-md-6 col-xs-12">
+                            <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">                
+                                <br />                          
+                                Conteúdo do Registro (Antes da Edição)
+                                @Html.TextAreaFor(m => m.LOG_TX_REGISTRO_ANTES, new { @class = "form-control", style = "width: 95%; height: 500px;", @readonly="readonly"})
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <link href="~/Content/themes/base/all.css" rel="stylesheet" />  
+    @Styles.Render("~/Content/plugins/dataTables/dataTablesStyles")
+    @Styles.Render("~/plugins/jasnyBootstrapStyles")
+}
+
+@section Scripts {
+
+    @Scripts.Render("~/plugins/dataTables")
+    @Scripts.Render("~/bundles/inputmask")
+    @Scripts.Render("~/plugins/jasnyBootstrap")
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.maskedinput/1.4.1/jquery.maskedinput.js"></script>
+
+    <script>
+        $(document).ready(function () {
+        
+            $('#jsonLabel').on('click', function () {            
+                var jsonString = $('#jsonTextarea').val();
+            
+                if (jsonString) {
+                    try {
+                        var jsonObject = JSON.parse(jsonString);                    
+                        var formattedJson = JSON.stringify(jsonObject, null, 2);                    
+                        $('#jsonContent').text(formattedJson);                    
+                        $('#jsonModal').modal('show');
+                    
+                    } catch (e) {
+                        $('#jsonContent').text("Erro: O conteúdo do registro não é um JSON válido.\n\n" + jsonString);
+                        $('#jsonModal').modal('show');
+                    }
+                } else {
+                    $('#jsonContent').text("Registro vazio");
+                    $('#jsonModal').modal('show');
+                }
+            });
+        });
+    </script>
+
+}
+
+@if (ViewBag.Message != null)
+{
+    <script type="text/javascript">
+            window.onload = function () {
+                alert("@ViewBag.Message");
+            };
+    </script>
+}
+

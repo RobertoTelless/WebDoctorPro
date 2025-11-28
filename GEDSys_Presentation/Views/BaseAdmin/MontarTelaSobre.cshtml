@@ -1,0 +1,244 @@
+﻿@using Presentation.Extensions
+@using CrossCutting;
+@model EntitiesServices.Model.CONTROLE_VERSAO
+@{
+    Layout = "~/Views/Shared/_Layout_Admin.cshtml";
+    ViewBag.Title = "WebDoctor - Sobre";
+    ViewBag.MetaDescription = "WebDoctor - Sobre";
+    ViewBag.MetaKeywords = "WebDoctor, sobre, informacao, informação, versão, versao";
+}
+
+<div class="wrapper wrapper-content animated fadeInRight">
+
+    <div class="page-title">
+        <h3 class="title">Diversos</h3>
+        <br />
+        <ol class="breadcrumb">
+            <li>
+                <a href="@Url.Action("MontarTelaPaciente", "Paciente")">Dashboard</a>
+            </li>
+            <li class="active">
+                <strong>Sobre Nós...</strong>
+            </li>
+        </ol>
+        <br />
+    </div>
+
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h3>Sobre Nós...</h3>
+                </div>
+                <br />
+                <div class="form-group">
+                    @Html.ButtonLinkIndex(text: "Voltar", controller: "Paciente", action: "MontarTelaPaciente")
+                    <br />
+                </div>
+                <div class="ibox-content ibox-heading">
+                    <h3><i class="fa fa-edit"></i> Informações da Aplicação e dos Autores</h3>
+                    <small><i class="fa fa-tim"></i> Veja o mapa com as atualizações previstas</small>
+                </div>
+
+                <div class="ibox-content" style="height: 2100px">
+                    @if (!ViewData.ModelState.IsValid)
+                    {
+                        <div class="alert alert-danger">
+                            <button type="button" class="close" data-dismiss="alert">Fechar</button>
+                            @Html.ValidationSummary(false, "", new { @class = "text-danger" })
+                        </div>
+                    }
+                    <div class="col-lg-5 col-md-5 col-xs-12">
+                        <img src="~/Images/Prontuario/Prontuario_Tela_3.jpg" style="width: 100%; height: 100%; max-height: 1400px; max-width: 1400px;">
+                        <div class="col-lg-12 col-md-12 col-xs-12 ibox float-e-margins" style="border-bottom: solid; border-bottom-color: darkgreen; border-bottom-width: 2px; border-left: solid; border-left-color: darkgreen; border-left-width: 1px; border-right: solid; border-right-color: darkgreen; border-right-width: 1px; border-top: solid; border-top-color: darkgreen; border-top-width: 1px">
+                            <div class="ibox-title">
+                                <h4 style="color: saddlebrown; font-weight: bold">Desenvolvido por:</h4>
+                            </div>
+                            <div class="ibox-content">
+                                <div class="row">
+                                    <div class="col-lg-12 col-md-12 col-xs-12">
+                                        <div class="col-lg-3 col-md-3 col-sm-12">
+                                            <img alt="image" class="img-circle" src="~/Images/Logo_RTI.png" style = "width: auto; height: auto; max-height: 100px; max-width: 100px;" />
+                                        </div>
+                                        <div class="col-lg-9 col-md-9 col-sm-12">
+                                            <br />
+                                            <h3>Roberto Telles Informática Ltda</h3>
+                                        </div>
+                                        <br />
+                                    </div>             
+                                    <div class="col-lg-12 col-md-12 col-xs-12">
+                                        <div class="col-lg-3 col-md-3 col-sm-12">
+                                            <img alt="image" class="img-circle" src="~/Images/favicon_SystemBR.jpg" style = "width: auto; height: auto; max-height: 100px; max-width: 130px;" />
+                                        </div>
+                                        <div class="col-lg-9 col-md-9 col-sm-12">
+                                            <br /><br />
+                                            <h3>SystemBR Ltda</h3>
+                                        </div>
+                                        <br />
+                                    </div>             
+                                </div>                                   
+                            </div>
+                        </div>
+                    </div>             
+                    
+                    <div class="col-lg-4 col-md-4 col-xs-12">
+                        <div class="col-lg-12 col-md-12 col-xs-12 ibox float-e-margins" style="border-bottom: solid; border-bottom-color: darkgreen; border-bottom-width: 2px; border-left: solid; border-left-color: darkgreen; border-left-width: 1px; border-right: solid; border-right-color: darkgreen; border-right-width: 1px; border-top: solid; border-top-color: darkgreen; border-top-width: 1px">
+                            <div class="ibox-title">
+                                <h4 style="color: saddlebrown; font-weight: bold">Informações da Versão</h4>
+                            </div>
+                            <div class="ibox-content">
+                                <div class="row">
+                                    <div class="col-lg-12 col-md-12 col-xs-12">
+                                        <h5><b>Aplicação: </b>@Model.COVE_NM_APLICACAO</h5>
+                                        <h5><b>Descrição: </b>@Model.COVE_DS_DESCRICAO</h5>
+                                        <h5><b>Versão: </b>@Model.COVE_NR_VERSAO</h5>
+                                        <h5><b>Data do Build: </b>@Model.COVE_DT_BUILD.Value.ToShortDateString()</h5>
+                                        <h5><b>GUID: </b>@Model.COVE_GU_GUID</h5>
+                                        <h5><b>Copyright ©  2025 RTi & SystemBR</b></h5>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-12 col-md-12 col-xs-12 ibox float-e-margins" style="border-bottom: solid; border-bottom-color: darkgreen; border-bottom-width: 2px; border-left: solid; border-left-color: darkgreen; border-left-width: 1px; border-right: solid; border-right-color: darkgreen; border-right-width: 1px; border-top: solid; border-top-color: darkgreen; border-top-width: 1px">
+                            <div class="ibox-title">
+                                <h4 style="color: saddlebrown; font-weight: bold">Descrição da Aplicação</h4>
+                            </div>
+                            <div class="ibox-content">
+                                <div class="row">
+                                    <div class="col-lg-12 col-md-12 col-xs-12">
+                                        <h4 style="color: green; font-weight: bold">Sistema Integrado de Prontuário e Mensageria</h4>
+                                        <h5>Cadastros:</h5>
+                                        <h5 style=" margin-left: 15px;">   Central de Pacientes</h5>
+                                        <h5 style=" margin-left: 15px;">   Grupos de Pacientes</h5>
+                                        <h5 style=" margin-left: 15px;">   Medicamentos</h5>
+                                        <h5 style=" margin-left: 15px;">   Modelos de Solicitações de Exames</h5>
+                                        <h5 style=" margin-left: 15px;">   Avisos/Lembretes</h5>
+                                        <h5 style=" margin-left: 15px;">   Modelos de E-Mails</h5>
+                                        <h5 style=" margin-left: 15px;">   Modelos de SMS</h5>
+                                        <h5 style=" margin-left: 15px;">   Consultas - Valores</h5>
+                                        <h5>Prontuários:</h5>
+                                        <h5 style=" margin-left: 15px;">   Central de Pacientes</h5>
+                                        <h5 style=" margin-left: 15px;">   Central de Consultas</h5>
+                                        <h5 style=" margin-left: 15px;">   Central de Prescrições</h5>
+                                        <h5 style=" margin-left: 15px;">   Central de Atestados</h5>
+                                        <h5 style=" margin-left: 15px;">   Central de Solicitações de Exames</h5>
+                                        <h5 style=" margin-left: 15px;">   Central de Resultados de Exames</h5>
+                                        <h5>Financeiro:</h5>
+                                        <h5 style=" margin-left: 15px;">   Pagamentos</h5>
+                                        <h5 style=" margin-left: 15px;">   Recebimentos</h5>
+                                        <h5 style=" margin-left: 15px;">   Dashboard</h5>
+                                        <h5 style=" margin-left: 15px;">   Encerramento de Consultas</h5>
+                                        <h5 style=" margin-left: 15px;">   Envio para Contador</h5>
+                                        <h5>Importação:</h5>
+                                        <h5 style=" margin-left: 15px;">   Importação de Fichas de Pacientes</h5>
+                                        <h5 style=" margin-left: 15px;">   Falhas na Importação de Fichas de Pacientes</h5>
+                                        <h5>Mensageria</h5>
+                                        <h5 style="margin-left: 15px;">   Central de Mensageria</h5>
+                                        <h5 style="margin-left: 15px;">   Criação de Mensagens de E-Mail</h5>
+                                        <h5 style=" margin-left: 15px;">   Mensagens automáticas do WebDoctor</h5>
+                                        <h5>Assinante</h5>
+                                        <h5 style="margin-left: 15px;">   Central do Assinante</h5>
+                                        <h5>Administração:</h5>
+                                        <h5 style=" margin-left: 15px;">   Central de Usuários</h5>
+                                        <h5 style=" margin-left: 15px;">   Auditoria</h5>
+                                        <h5 style=" margin-left: 15px;">   Perfis de Acesso</h5>
+                                        <h5 style=" margin-left: 15px;">   Tabelas Auxiliares</h5>
+                                        <h5 style=" margin-left: 15px;">   Resumo de Acessos</h5>
+                                        <h5 style=" margin-left: 15px;">   Resumo de Falhas</h5>
+                                        <h5>E muito mais...</h5>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+           
+                <div class="col-lg-3 col-md-3 col-xs-12">
+                    <div class="col-lg-12 col-md-12 col-xs-12 ibox float-e-margins" style="border-bottom: solid; border-bottom-color: darkgreen; border-bottom-width: 2px; border-left: solid; border-left-color: darkgreen; border-left-width: 1px; border-right: solid; border-right-color: darkgreen; border-right-width: 1px; border-top: solid; border-top-color: darkgreen; border-top-width: 1px">
+                        <div class="ibox-title">
+                            <h4 style="color: saddlebrown; font-weight: bold">Atualizações Publicadas e Previstas</h4>
+                        </div>
+                        <div class="ibox-content">
+                            <div class="row">
+                                <div class="col-lg-12 col-md-12 col-xs-12">
+                                @if ((ViewBag.Time as List<ERP_Condominios_Solution.ViewModels.ModeloViewModel>).Count > 0)
+                                {
+                                    <div id="vertical-timeline" class="vertical-container light-timeline">
+                                        @foreach (var item in (ViewBag.Time as List<ERP_Condominios_Solution.ViewModels.ModeloViewModel>).OrderByDescending(p => p.DataEmissao).Take(5))
+                                        {
+                                            <div class="vertical-timeline-block">
+                                                <div class="vertical-timeline-icon navy-bg">
+                                                    @if (item.Valor == 1)
+                                                    {
+                                                        <i class="fa fa-check"></i>
+                                                    }
+                                                    else
+                                                    {
+                                                        <i class="fa fa-calendar"></i>
+                                                    }
+                                                </div>
+
+                                                <div class="vertical-timeline-content">
+                                                    @if (item.Valor == 1)
+                                                    {
+                                                        <h2 style="color: green; font-weight:bold">@item.Nome</h2>
+                                                    }
+                                                    else
+                                                    {
+                                                        <h2 style="color: brown; font-weight:bold">@item.Nome</h2>
+                                                    }
+                                                    <span class="vertical-date">
+                                                        <small>@item.DataEmissao.ToShortDateString()</small>
+                                                    </span>
+                                                    <p>
+                                                        <br />
+                                                        @item.Nome1
+                                                        <br />
+                                                        @if (item.Valor == 1)
+                                                        {
+                                                            <a href="@Url.Action(item.Nome4)" target="_blank">@item.Nome3</a>
+                                                        }
+                                                        else
+                                                        {
+                                                            @item.Nome3
+                                                        }
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        }
+                                </div>             
+                                }
+                            </div>                                   
+                        </div>
+                    </div>
+                </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+</div>
+@section Styles {
+    <link href="~/Content/themes/base/jquery-ui.min.css" rel="stylesheet" />
+    <link href="~/Content/themes/base/all.css" rel="stylesheet" />
+    @Styles.Render("~/plugins/jasnyBootstrapStyles")
+    @Styles.Render("~/plugins/toastrStyles")
+}
+@section Scripts {
+    <script type="text/javascript" src="~/Scripts/moment.min.js"></script>
+    <script type="text/javascript" src="~/Scripts/bootstrap.min.js"></script>
+    @Scripts.Render("~/plugins/toastr")
+    <script src="~/Scripts/jquery-ui-1.12.1.min.js"></script>
+    @Scripts.Render("~/bundles/inputmask")
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.maskedinput/1.4.1/jquery.maskedinput.js"></script>
+}
+
+@if (ViewBag.Message != null)
+{
+    <script type="text/javascript">
+            window.onload = function () {
+                alert("@ViewBag.Message");
+            };
+    </script>
+}
+

@@ -1,0 +1,509 @@
+﻿@using Presentation.Extensions
+@model ERP_Condominios_Solution.ViewModels.PacienteConsultaViewModel
+@{
+    Layout = "~/Views/Shared/_Layout_Admin.cshtml";
+    ViewBag.Title = "WebDoctor - Paciente - Solicitação de Exame";
+    ViewBag.MetaDescription = "WebDoctor - Paciente - Solicitação de Exame - Lista das solicitações de exames do paciente ";
+    ViewBag.MetaKeywords = "WebDoctor, paciente, solicitacao, exame";
+}
+
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="modalContainer">
+        <div id="modal" class="modal" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        @*Titulo gerado dinamicamente*@
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        @*Gerado dinamicamente*@
+                    </div>
+                    <div class="modal-footer">
+                        <button onclick="limpaModal()" type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="page-title">
+        <ol class="breadcrumb">
+            <li>
+                <a href="@Url.Action("MontarTelaPaciente", "Paciente")">Dashboard Inicial</a>
+            </li>
+            <li>
+                <a href="@Url.Action("ProcederConsulta", "Paciente")">Consulta</a>
+            </li>
+            <li class="active">
+                <strong>Solicitações de Exames</strong>
+            </li>
+        </ol>
+        <br />
+    </div>
+
+    <div class="row">
+        <div class="col-lg-12 col-md-12 col-xs-12">
+            <div class="col-lg-12 col-md-12 col-xs-12 ibox float-e-margins">
+                <div class="ibox-title">
+                    <div style="text-align: center;" class="col-lg-12 col-md-12 col-xs-12">
+                        <h5>Paciente - Solicitações de Exames</h5>
+                        <span style="color:green; font-weight: 500; font-size: 20px;">@ViewBag.NomePaciente</span>
+                    </div>
+                </div>
+                @using (Html.BeginForm("VerListaSolicitacaoConsulta", "Paciente", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal", @id="pwd-container1" }))
+                {
+                    <div class="ibox-content">
+                        @Html.AntiForgeryToken()
+                        @if (!ViewData.ModelState.IsValid)
+                        {
+                            <div class="alert alert-danger">
+                                <button type="button" class="close" data-dismiss="alert">Fechar</button>
+                                @Html.ValidationSummary(false, "Erros Encontrados:", new { @class = "text-danger" })
+                            </div>
+                        }
+                        <div class="row">
+                            <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                <div class="col-lg-12 col-md-12 col-xs-12">
+                                    @if (ViewBag.Classe == 0)
+                                    {
+                                        @Html.ButtonLinkIndex(text: "Nova Solicitação de Exame", controller: "Paciente", action: "IncluirSolicitacao", buttonClass: "primary")
+                                    }
+                                    @Html.ButtonLinkIndex(text: "Ver Todas Solicitações", controller: "Paciente", action: "MontarTelaSolicitacoes")
+                                    @Html.ButtonLinkIndex(text: "Voltar", controller: "Paciente", action: "VoltarProcederConsulta")
+                                    <a href="@Url.Action((String)Session["AjudaNivel"])"  class="btn btn-sm btn-danger" target="_blank">Ajuda</a>                
+                                </div>
+                            </div>
+                        </div>
+                        <br />
+                        <div class="row">
+                            <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Paciente</h4>
+                            <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">                
+                                <div class="col-lg-4 col-md-4 col-xs-12">
+                                    Nome do Paciente
+                                    @Html.TextBoxFor(m => m.PACIENTE.PACI_NM_NOME, new { @class = "form-control", @readonly = "readonly", @style = "color: green; font-weight: bold" })
+                                </div>
+                                <div class="col-lg-2 col-md-2 col-xs-12">
+                                    Data Nascimento
+                                    @Html.TextBoxFor(m => m.PACIENTE.PACI_DT_NASCIMENTO, "{0:dd/MM/yyyy}", new { @class = "form-control", @readonly = "readonly" })
+                                </div>
+                                @if (Model.PACIENTE.PACI_NR_CPF != null)
+                                {
+                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                        CPF
+                                        @Html.TextBoxFor(m => m.PACIENTE.PACI_NR_CPF, new { @class = "form-control", @readonly = "readonly" })
+                                    </div>
+                                }
+                                @if (Model.PACIENTE.PACI_NR_CELULAR != null)
+                                {
+                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                        Celular
+                                        @Html.TextBoxFor(m => m.PACIENTE.PACI_NR_CELULAR, new { @class = "form-control", @readonly = "readonly" })
+                                    </div>
+                                }
+                                @if (Model.PACIENTE.PACI_NR_TELEFONE != null)
+                                {
+                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                        Telefone
+                                        @Html.TextBoxFor(m => m.PACIENTE.PACI_NR_TELEFONE, new { @class = "form-control", @readonly = "readonly" })
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                        @*<br />*@
+                        <div class="row">
+                            <h4 style="margin-left: 0px; color: green; background-color: beige; font-weight:bold">Dados da Consulta</h4>
+                            <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">                
+                                <div class="col-lg-2 col-md-2 col-xs-12">
+                                    Tipo de Consulta
+                                    @Html.TextBoxFor(m => m.TipoConsulta, new { @class = "form-control", @readonly = "readonly"})
+                                </div>
+                                <div class="col-lg-2 col-md-2 col-xs-12">
+                                    @Html.HiddenFor(m => m.PACI_CD_ID)
+                                    @Html.HiddenFor(m => m.PACO_IN_ATIVO)
+                                    @Html.HiddenFor(m => m.PACO_IN_ENCERRADA)
+                                    @Html.HiddenFor(m => m.USUA_CD_ID)
+                                    @Html.HiddenFor(m => m.ASSI_CD_ID)
+                                    @Html.HiddenFor(m => m.PACO_CD_ID)
+                                    Data da Consulta
+                                    @Html.TextBoxFor(m => m.PACO_DT_CONSULTA, "{0:dd/MM/yyyy}", new { @class = "form-control", @id = "dn", @readonly = "readonly", @style = "color: darkblue; font-weight: bold" })
+                                </div>
+                                <div class="col-lg-2 col-md-2 col-xs-12">
+                                    Início
+                                    @Html.TextBoxFor(m => m.PACO_HR_INICIO, new { @class = "form-control", @id = "hora", @readonly = "readonly" })
+                                </div>
+                                <div class="col-lg-2 col-md-2 col-xs-12">
+                                    Final
+                                    @Html.TextBoxFor(m => m.PACO_HR_FINAL, new { @class = "form-control", @id = "hora1", @readonly = "readonly" })
+                                </div>
+                            </div>
+                        </div>
+                        @*<br />*@
+
+                        <div class="row">
+                            <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                <div class="col-lg-12 col-md-12 col-xs-12">
+                                    <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Solicitações de Exames da Consulta</h4>
+                                    @*<br />*@
+                                    @if (Model.PACIENTE_SOLICITACAO.Where(p => p.PASO_IN_ATIVO == 1).ToList().Count > 0)
+                                    {
+                                        <table class="table table-striped table-bordered table-hover dataTables-atestado">
+                                            <thead style="background-color:lightsteelblue">
+                                                <tr>
+                                                    <th style="width: auto">Identificador</th>
+                                                    <th style="width: auto">Data da Emissão</th>
+                                                    <th style="width: auto">Tipo de Exame</th>
+                                                    <th style="width: auto">Nome do Exame</th>
+                                                    <th style="width: auto">Enviado</th>
+                                                    <th style="width: auto">Último Envio</th>
+                                                    <th style="width: auto" class="td-one-action">Ações</th>
+                                                    <th style="width: 0.01px"></th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach (var cond in (Model.PACIENTE_SOLICITACAO.Where(p => p.PASO_IN_ATIVO == 1).OrderByDescending(p => p.PASO_DT_EMISSAO)))
+                                                {
+                                                    <tr>
+                                                        @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_SOLICITACAO_ALTERAR == 1)
+                                                        {
+                                                            if (cond.PASO_IN_ENVIADO == 0)
+                                                            {
+                                                                <td style="width: auto"><a href="@Url.Action("EditarSolicitacao", "Paciente", new { id = cond.PASO_CD_ID })" />@cond.PASO_GU_GUID</td>
+                                                            }
+                                                            else
+                                                            {
+                                                                <td style="width: auto"><a href="@Url.Action("VerSolicitacao", "Paciente", new { id = cond.PASO_CD_ID })" />@cond.PASO_GU_GUID</td>
+                                                            }
+                                                        }
+                                                        else
+                                                        {
+                                                            <td style="width: auto"><a href="@Url.Action("VerSolicitacao", "Paciente", new { id = cond.PASO_CD_ID })" />@cond.PASO_GU_GUID</td>
+                                                        }
+                                                        <td style="width: auto">@cond.PASO_DT_EMISSAO.Value.ToShortDateString() @cond.PASO_DT_EMISSAO.Value.ToShortTimeString()</td>
+                                                        <td style="width: auto">@cond.TIPO_EXAME.TIEX_NM_NOME</td>
+                                                        <td style="width: auto">@cond.PASO_NM_TITULO</td>
+                                                        @if (cond.PASO_IN_ENVIADO == 1)
+                                                        {
+                                                            <td style="width: auto"><span class="badge badge-primary">Sim</span></td>
+
+                                                        }
+                                                        else
+                                                        {
+                                                            <td style="width: auto"><span class="badge badge-warning">Não</span></td>
+
+                                                        }
+                                                        @if (cond.PASO_DT_ENVIO != null)
+                                                        {
+                                                            <td style="width: auto">@cond.PASO_DT_ENVIO.Value.ToShortDateString()</td>
+                                                        }
+                                                        else
+                                                        {
+                                                            <td style="width: auto">-</td>
+                                                        }
+                                                        <td style="width: auto" class="td-one-action">
+                                                            @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_SOLICITACAO_ALTERAR == 1)
+                                                            {
+                                                                if (cond.PASO_IN_ENVIADO == 0)
+                                                                {
+                                                                    @Html.TableLinkDetails(cond.PASO_CD_ID, "EditarSolicitacao", "fa-edit", "Editar")
+                                                                }
+                                                                else
+                                                                {
+                                                                    @Html.TableLinkDetails(cond.PASO_CD_ID, "VerSolicitacao", "fa-search", "Consultar")
+                                                                }
+                                                            }
+                                                            else
+                                                            {
+                                                                @Html.TableLinkDetails(cond.PASO_CD_ID, "VerSolicitacao", "fa-search", "Consultar")
+                                                            }
+
+                                                            @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_SOLICITACAO_ENVIAR == 1)
+                                                            {
+                                                                if (cond.PASO_IN_ATIVO == 1 )
+                                                                {
+                                                                    @Html.TableLinkDetails(cond.PASO_CD_ID, "EnviarSolicitacaoEMail", "fa-send-o", "Enviar Solicitação")
+                                                                }
+	                                                        }
+                                                            @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_SOLICITACAO_ENVIAR == 1)
+                                                            {
+                                                                if (cond.PASO_IN_ATIVO == 1 )
+                                                                {
+                                                                    @Html.TableLinkDetails(cond.PASO_CD_ID, "ImprimirSolicitacao", "fa-print", "Imprimir")
+                                                                }
+	                                                        }
+                                                                    </td>
+                                                                </tr>
+                                                            }
+                                            </tbody>
+                                        </table>
+                                    }
+                                    else
+                                    {
+                                        <div class="row">
+                                            <div class="col-lg-2 col-md-2 col-xs-2">
+
+                                            </div>
+                                            <div style="border: 5px solid #F6A54A; padding: 10px; border-radius: 8px 8px; " class="col-lg-8 col-md-8 col-xs-8">
+                                                <h2 style="font-weight: bold">Nenhuma Solicitacao de Exame cadastrada para esse paciente nessa consulta</h2>
+                                            </div>
+                                            <div class="col-lg-2 col-md-2 col-xs-2">
+
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+         </div>
+    </div>
+</div>
+
+@section Styles {
+    <link href="~/Content/themes/base/jquery-ui.min.css" rel="stylesheet" />
+    <link href="~/Content/themes/base/all.css" rel="stylesheet" />
+    <link href="~/Content/jquery.datetimepicker.css" rel="stylesheet" />
+    @Styles.Render("~/Content/plugins/dataTables/dataTablesStyles")
+    @Styles.Render("~/plugins/jasnyBootstrapStyles")
+    @Styles.Render("~/plugins/toastrStyles")
+    @Styles.Render("~/Content/plugins/iCheck/iCheckStyles")
+    @Styles.Render("~/plugins/touchSpinStyles")
+    @Styles.Render("~/plugins/sweetAlertStyles")
+    @Styles.Render("~/plugins/toastrStyles")
+
+}
+@section Scripts {
+    <script src="~/Scripts/jquery.datetimepicker.full.min.js"></script>
+    <script type="text/javascript" src="~/Scripts/moment.min.js"></script>
+    <script type="text/javascript" src="~/Scripts/bootstrap.min.js"></script>
+    <script type="text/javascript" src="~/Scripts/jquery.datetimepicker"></script>
+
+    @Scripts.Render("~/plugins/toastr")
+    <script src="~/Scripts/jquery-ui-1.12.1.min.js"></script>
+    @Scripts.Render("~/plugins/dataTables")
+    @Scripts.Render("~/bundles/inputmask")
+    @Scripts.Render("~/plugins/jasnyBootstrap")
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.maskedinput/1.4.1/jquery.maskedinput.js"></script>
+    <script src="~/Scripts/uploadAnexo.js"></script>
+    <script src="~/Scripts/jquery-ui-1.12.1.min.js"></script>
+    @Scripts.Render("~/plugins/toastr")
+    @Scripts.Render("~/plugins/dataTables")
+    @Scripts.Render("~/bundles/inputmask")
+    @Scripts.Render("~/plugins/jasnyBootstrap")
+    @Scripts.Render("~/plugins/sparkline")
+    @Scripts.Render("~/plugins/switchery")
+    @Scripts.Render("~/plugins/touchSpin")
+    @Scripts.Render("~/plugins/iCheck")
+    @Scripts.Render("~/plugins/sweetAlert")
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.maskedinput/1.4.1/jquery.maskedinput.js"></script>
+    <script src="~/Scripts/uploadAnexo.js"></script> 
+   
+    <script>
+        $(function () {
+            limpaModal();
+        });
+
+        function limpaModal() {
+            $('#btnModal').remove();
+            $('#modalTitle').remove();
+        }
+
+        function ShowModalExcluirSolicitacao(url) {
+            $('#modal').find('.modal-footer').prepend('<a id="btnModal" alt="Desativar" class="btn btn-primary" href="' + url + '" target="_self" title="Desativar">Confirmar</a>');
+            $('#modal').find('.modal-body').html('Confirma exclusão de Solicitação de Exame?');
+            $('#modal').find('.modal-header').prepend('<h5 id="modalTitle" class="modal-title">Confimar Exclusão</h5>');
+            $('#modal').modal('show');
+        }
+
+        function ShowModalConfirmarEnvioSolicitacao(url) {
+            $('#modal').find('.modal-footer').prepend('<a id="btnModal" alt="Reativar" class="btn btn-primary" href="' + url + '" target="_self" title="Reativar">Confirmar</a>');
+            $('#modal').find('.modal-body').html('Confirma envio da Solicitação de Exame?');
+            $('#modal').find('.modal-header').prepend('<h5 id="modalTitle" class="modal-title">Confimar Envio</h5>');
+            $('#modal').modal('show');
+        }
+    </script>
+    <script type="text/javascript" language="javascript">
+        $(function () {
+            $('.date-picker').datepicker(
+                {
+                    dateFormat: 'dd/mm/yy',
+                    dayNames: ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'],
+                    dayNamesMin: ['D', 'S', 'T', 'Q', 'Q', 'S', 'S', 'D'],
+                    dayNamesShort: ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'],
+                    monthNames: ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'],
+                    monthNamesShort: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'],
+                    nextText: 'Proximo',
+                    prevText: 'Anterior',
+                    showOn: "focus"
+                }
+            )
+                .css("display", "normal")
+                .next("button").button({
+                    icons: { primary: "ui-icon-calendar" },
+                    label: "Selecione uma data",
+                    text: false
+                });
+        });
+    </script>
+    <script type="text/javascript">
+        $(function () {
+            $("#dn").mask("99/99/9999");
+        });
+    </script>
+    <script type="text/javascript">
+        $(function () {
+            $('.time-picker').datetimepicker({
+                datepicker: false,
+                format: 'H:i'
+            });
+            $('.time-picker1').datetimepicker({
+                datepicker: false,
+                format: 'H:i'
+            });
+        });
+    </script>
+    <script type="text/javascript">
+        $(function () {
+            $('#datetimepicker3').click(function () {
+                $('.time-picker').datetimepicker('show');
+            });
+        });
+    </script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            $('.dataTables-atestado').DataTable({
+                pageLength: 10,
+                dom: '<"html5buttons"B>lTfgitp',
+                buttons: [
+                    { extend: 'excel', title: 'Atestado_Planilha' },
+                    {
+                        extend: 'print',
+                        customize: function (win) {
+                            $(win.document.body).addClass('white-bg');
+                            $(win.document.body).css('font-size', '10px');
+
+                            $(win.document.body).find('table')
+                                    .addClass('compact')
+                                    .css('font-size', 'inherit');
+                        }
+                    }
+                ]
+            });          
+        });
+    </script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            var i = -1;
+            var toastCount = 0;
+            var $toastlast;
+            var getMessage = function () {
+                var msg = 'Hi, welcome to Inspinia. This is example of Toastr notification box.';
+                return msg;
+            };
+
+            $('#basictoast').click(function () {
+                // Display a success toast, with a title
+                toastr.success('Edição em andamento!')
+            });
+            $('#showtoast').click(function () {
+                var shortCutFunction = $("#toastTypeGroup input:radio:checked").val();
+                var msg = $('#message').val();
+                var title = $('#title').val() || '';
+                var $showDuration = $('#showDuration');
+                var $hideDuration = $('#hideDuration');
+                var $timeOut = $('#timeOut');
+                var $extendedTimeOut = $('#extendedTimeOut');
+                var $showEasing = $('#showEasing');
+                var $hideEasing = $('#hideEasing');
+                var $showMethod = $('#showMethod');
+                var $hideMethod = $('#hideMethod');
+                var toastIndex = toastCount++;
+                toastr.options = {
+                    closeButton: $('#closeButton').prop('checked'),
+                    debug: $('#debugInfo').prop('checked'),
+                    progressBar: $('#progressBar').prop('checked'),
+                    positionClass: $('#positionGroup input:radio:checked').val() || 'toast-top-right',
+                    onclick: null
+                };
+                if ($('#addBehaviorOnToastClick').prop('checked')) {
+                    toastr.options.onclick = function () {
+                        alert('You can perform some custom action after a toast goes away');
+                    };
+                }
+                if ($showDuration.val().length) {
+                    toastr.options.showDuration = $showDuration.val();
+                }
+                if ($hideDuration.val().length) {
+                    toastr.options.hideDuration = $hideDuration.val();
+                }
+                if ($timeOut.val().length) {
+                    toastr.options.timeOut = $timeOut.val();
+                }
+                if ($extendedTimeOut.val().length) {
+                    toastr.options.extendedTimeOut = $extendedTimeOut.val();
+                }
+                if ($showEasing.val().length) {
+                    toastr.options.showEasing = $showEasing.val();
+                }
+                if ($hideEasing.val().length) {
+                    toastr.options.hideEasing = $hideEasing.val();
+                }
+                if ($showMethod.val().length) {
+                    toastr.options.showMethod = $showMethod.val();
+                }
+                if ($hideMethod.val().length) {
+                    toastr.options.hideMethod = $hideMethod.val();
+                }
+                if (!msg) {
+                    msg = getMessage();
+                }
+                $("#toastrOptions").text("Command: toastr["
+                        + shortCutFunction
+                        + "](\""
+                        + msg
+                        + (title ? "\", \"" + title : '')
+                        + "\")\n\ntoastr.options = "
+                        + JSON.stringify(toastr.options, null, 2)
+                );
+                var $toast = toastr[shortCutFunction](msg, title); // Wire up an event handler to a button in the toast, if it exists
+                $toastlast = $toast;
+                if ($toast.find('#okBtn').length) {
+                    $toast.delegate('#okBtn', 'click', function () {
+                        alert('you clicked me. i was toast #' + toastIndex + '. goodbye!');
+                        $toast.remove();
+                    });
+                }
+                if ($toast.find('#surpriseBtn').length) {
+                    $toast.delegate('#surpriseBtn', 'click', function () {
+                        alert('Surprise! you clicked me. i was toast #' + toastIndex + '. You could perform an action here.');
+                    });
+                }
+            });
+            function getLastToast() {
+                return $toastlast;
+            }
+            $('#clearlasttoast').click(function () {
+                toastr.clear(getLastToast());
+            });
+            $('#cleartoasts').click(function () {
+                toastr.clear();
+            });
+
+        });
+    </script>
+
+
+    @if (ViewBag.Message != null)
+    {
+        <script type="text/javascript">
+            window.onload = function () {
+                  alert("@ViewBag.Message");
+            };
+        </script>
+    }
+}

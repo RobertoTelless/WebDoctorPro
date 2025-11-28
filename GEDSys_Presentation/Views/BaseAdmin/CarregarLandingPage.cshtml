@@ -1,0 +1,1086 @@
+﻿@{
+    Layout = null;
+    ViewBag.Title = "Página Principal";
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+    <title>WebDoctor | @ViewBag.Title</title>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700' rel='stylesheet' type='text/css'>
+
+    <!-- Add jQuery Style direct - used for jQGrid plugin -->
+    <link href="@Url.Content("~/Scripts/plugins/jquery-ui/jquery-ui.min.css")" rel="stylesheet" type="text/css" />
+    <link rel="shortcut icon" href="~/Images/Prontuario/prontuario_icon_3.png">
+    <link href="~/Content/Custom.css" rel="stylesheet" />
+    <!-- Primary Inspinia style -->
+    @Styles.Render("~/Content/css")
+    @Styles.Render("~/font-awesome/css")
+    <link href="~/Content/Custom.css" rel="stylesheet" />
+</head>
+
+
+<body id="page-top" class="landing-page">
+    <div class="navbar-wrapper">
+        <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
+            <div class="container">
+                <div class="navbar-header page-scroll">
+                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                </div>
+                <div id="navbar" class="navbar-collapse collapse">
+                    <ul class="nav navbar-nav navbar-right">
+                        <li><a class="page-scroll" href="#page-top">Início</a></li>
+                        <li><a class="page-scroll" href="#features">Funcionalidades</a></li>
+                        <li><a class="page-scroll" href="#pricing" data-toggle="popover" data-trigger="hover" data-placement="bottom" data-content="Estamos com promoção imperdível em nossos preços! Confira!">Planos & Preços</a></li>
+                        <li><a class="page-scroll" style="color: yellow" onclick="location.href='@Url.Action("MontarTelaCompraBasicoNova", "BaseAdmin")'">Contratar</a></li>
+                        <li><a class="page-scroll pisca" style="color: aquamarine" onclick="location.href='@Url.Action("MontarTelaDemo", "BaseAdmin")'">Solicitar Demonstração</a></li>
+                        <li><a class="page-scroll" style="color: greenyellow" onclick="location.href='@Url.Action("MontarTelaFaleConoscoInicio", "BaseAdmin")'">Solicitar Informações</a></li>
+                        <li><a class="page-scroll" style="color: gold" onclick="location.href='@Url.Action("Login", "ControleAcesso")'">Login</a></li>
+                    </ul>
+                    <a class="btn btn-warning btn-lg" href="@Url.Action("LoginAreaPaciente", "AreaPaciente")">Área do Paciente</a>&nbsp;&nbsp;
+                    <a class="btn btn-warning btn-lg" href="@Url.Action("MontarTelaValidacaoDocumento", "ValidacaoDocumento")">Validar Documentos</a>
+                </div>
+            </div>
+        </nav>
+    </div>
+    <div id="inSlider" class="carousel carousel-fade" data-ride="carousel">
+        <ol class="carousel-indicators">
+            <li data-target="#inSlider" data-slide-to="0" class="active"></li>
+            <li data-target="#inSlider" data-slide-to="1"></li>
+        </ol>
+        <div class="carousel-inner" role="listbox">
+            <div class="item active">
+                <div class="container">
+                    <div class="carousel-caption blank">
+                        <h2>WebDoctorPro</h2>
+                        <p style="color:brown; font-weight:bold">Promoção por tempo limitado!!!</p>
+                        <p><a class="btn btn-lg btn-primary" href="#pricing" role="button">Leia Mais</a></p>
+                    </div>
+                    <div class="carousel-image wow zoomIn">
+                        <img src="~/Images/Prontuario/Postagem_Promocao_v1.jpg" style="width: 700px; height: 400px; max-height: 400px; max-width: 700px;" alt="prin" />
+                    </div>
+                </div>
+                <!-- Set background for slide in css -->
+                <div>
+                    <img src="~/Images/landing/header_one.jpg" style="width: 100%; height: 100%;" />
+                </div>
+            </div>
+
+            <!--<div class="item">
+                <div class="container">
+                    <div class="carousel-caption blank">
+                        <h2>WebDoctorPro</h2>
+                        <p>Pacientes</p>
+                        <p>Cadastre seus pacientes</p>
+                        <p>Crie atestados e solicitações de exanes</p>
+                        <p>Crie prescrições normais e controladas</p>
+                        <p>Inclua resultados de exames com imagens</p>
+                        <p>Envie mensagens de e-mail e SMS para seus pacientes</p>
+                        <p><a class="btn btn-lg btn-primary" href="#Paciente" role="button">Leia mais</a></p>
+                    </div>
+                    <div class="carousel-image wow zoomIn">
+                        <img src="~/Images/Prontuario/Site_Paciente_Resumo.jpg" style="width: 700px; height: 400px; max-height: 400px; max-width: 700px;" alt="kan" />
+                    </div>
+                </div>-->
+                <!-- Set background for slide in css -->
+                <!--<div>
+                    <img src="~/Images/landing/header_two.jpg" style="width: 100%; height: 100%;" />
+                </div>-->
+            </div>
+        </div>
+
+        <a class="left carousel-control" href="#inSlider" role="button" data-slide="prev">
+            <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
+            <span class="sr-only">Anterior</span>
+        </a>
+        <a class="right carousel-control" href="#inSlider" role="button" data-slide="next">
+            <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
+            <span class="sr-only">Próximo</span>
+        </a>
+    </div>
+    <br />  
+
+    <section id="features" class="container services">
+        <div class="row">
+            <div class="col-sm-3">
+                <h2>Cadastros</h2>
+                <p>Tenha suas informações de cadastros organizadas com segurança</p>
+                <p><a class="navy-link" href="#Cadastros" role="button">Detalhes &raquo;</a></p>
+            </div>
+            <div class="col-sm-3">
+                <h2>Pacientes</h2>
+                <p>Cadastre, acompanhe e crie documentos para seus pacientes</p>
+                <p><a class="navy-link" href="#Pacientes" role="button">Detalhes &raquo;</a></p>
+            </div>
+            <div class="col-sm-3">
+                <h2>Consultas</h2>
+                <p>Marcação, confirmação, cancelamento e encerramento de consultas</p>
+                <p><a class="navy-link" href="#Consultas" role="button">Detalhes &raquo;</a></p>
+            </div>
+            <div class="col-sm-3">
+                <h2>Consultas - Executar</h2>
+                <p>Procedimento e revisão de consultas. Preencha e revise anamneses e exames físicos</p>
+                <p><a class="navy-link" href="#Executar" role="button">Detalhes &raquo;</a></p>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-3">
+                <h2>Documentos</h2>
+                <p>Emissão de atestados, solicitações de exames e prescrições. Com validação e assinatura eletrônica.</p>
+                <p><a class="navy-link" href="#Prontuarios" role="button">Detalhes &raquo;</a></p>
+            </div>
+            <div class="col-sm-3">
+                <h2>Financeiro</h2>
+                <p>Visualize e acompanhe seus pagamentos e recebimentos</p>
+                <p><a class="navy-link" href="#Financeiro" role="button">Detalhes &raquo;</a></p>
+            </div>
+            <div class="col-sm-3">
+                <h2>Estoque</h2>
+                <p>Controle e gerenciamento de estoque de materiais e produtos</p>
+                <p><a class="navy-link" href="#Mensageria" role="button">Detalhes &raquo;</a></p>
+            </div>
+            <div class="col-sm-3">
+                <h2>Locação</h2>
+                <p>Funcionaliade completa de locação de produtos</p>
+                <p><a class="navy-link" href="#Adm" role="button">Detalhes &raquo;</a></p>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-3">
+                <h2>Mensageria</h2>
+                <p>Envie mensagens de e-mail para seus pacientes</p>
+                <p><a class="navy-link" href="#Mensageria" role="button">Detalhes &raquo;</a></p>
+            </div>
+            <div class="col-sm-3">
+                <h2>Administração</h2>
+                <p>Gerenciamento de usuários, auditoria e tabelas auxiliares</p>
+                <p><a class="navy-link" href="#Adm" role="button">Detalhes &raquo;</a></p>
+            </div>
+        </div>
+    </section>
+
+    <section class="container features">
+        <div class="row">
+            <div class="col-lg-12 text-center">
+                <div class="navy-line"></div>
+                <h1>Todas as necessidades de seu consultório ou clínica<br /> <span class="navy">Aumente sua eficiência e produtividade</span> </h1>
+                <h3>Cadastros, Prontuários, Mensageria e Funções Financeiras diretos e eficientes</h3>
+            </div>
+        </div>
+        <br />
+        <br />
+        <div class="row">
+            <div class="col-md-3 text-center wow fadeInLeft">
+                <div>
+                    <i class="fa fa-envelope-open-o features-icon"></i>
+                    <h2>Mensageria</h2>
+                    <p>Envio de E-Mails</p>
+                    <p>Agendamento e Recursividade</p>
+                    <p>Envio assíncrono</p>
+                </div>
+                <br />
+                <div>
+                    <i class="fa fa-area-chart features-icon"></i>
+                    <h2>Financeiro</h2>
+                    <p>Pagamentos e Recebimentos</p>
+                    <p>Integração com consultas</p>
+                    <p>Acompanhamento</p>
+                </div>
+                <br />
+                <div>
+                    <i class="fa fa-cubes features-icon"></i>
+                    <h2>Cadastros</h2>
+                    <p>Médicos</p>
+                    <p>Modelos de Mensagens</p>
+                    <p>Medicamentos</p>
+                    <p>E outros...</p>
+                </div>
+                <br />
+                <div>
+                    <i class="fa fa-clipboard features-icon"></i>
+                    <h2>Estoque</h2>
+                    <p>Controle de Estoque</p>
+                    <p>Inventário</p>
+                    <p>Gerenciamento</p>
+                </div>
+                <br />
+            </div>
+            <div class="col-md-6 text-center  wow zoomIn">
+                <img src="~/Images/landing/perspective.png" alt="dashboard" class="img-responsive">
+            </div>
+            <div class="col-md-3 text-center wow fadeInRight">
+                <div>
+                    <i class="fa fa-male features-icon"></i>
+                    <h2>Pacientes</h2>
+                    <p>Informações Pessoais</p>
+                    <p>Contatos</p>
+                    <p>Prontuários</p>
+                </div>
+                <br />
+                <div>
+                    <i class="fa fa-calendar features-icon"></i>
+                    <h2>Consultas</h2>
+                    <p>Marcação</p>
+                    <p>Confirmação e Cancelamento</p>
+                    <p>Anamneses e Exames Físicos</p>
+                    <p>Calendário</p>
+                </div>
+                <br />
+                <div>
+                    <i class="fa fa-edit features-icon"></i>
+                    <h2>Documentos</h2>
+                    <p>Atestados e Prescrições</p>
+                    <p>Solicitações e Resultados</p>
+                    <p>Validação e assinatura eletrônica</p>
+                </div>
+                <br />
+                <div>
+                    <i class="fa fa-check features-icon"></i>
+                    <h2>Locação</h2>
+                    <p>Locação de Produtos</p>
+                    <p>Gerenciamento</p>
+                    <p>Contrato de Locação</p>
+                </div>
+            </div>
+        </div>
+
+        @*Cadastros*@
+        <div class="row">
+            <div class="col-lg-12 text-center"  id="Cadastros">
+                <div class="navy-line"></div>
+                <h1>Cadastros</h1>
+                <h3>Funcionalidades de Cadastros</h3>
+                <p>Pacientes, Grupos, Medicamentos, Médicos, Vídeos, Avisos, Tipos de Consultas, Modelos de Mensagens e mais...</p>
+            </div>
+        </div>
+        <div class="row features-block" >
+            <div class="col-lg-6 features-text wow fadeInLeft">
+                <h2>Cadastros Principais</h2>
+                <p>Grupos - Organize seus pacientes em grupos</p>
+                <p>Medicamentos - A serem usados nas prescrições</p>
+                <p>Solicitações de exames - Modelos previamente preenchidos</p>
+                <p>Modelos de mensagens - E-Mails e SMS</p>
+                <p>Valores de consultas</p>
+                <p>Médicos - Para envio de informações dos pacientes</p>
+                <p>Vídeos</p>
+                <a href="#features" class="btn btn-primary">Voltar</a>
+            </div>
+        </div>
+        <br />
+
+        @*Pacientes*@
+        <div class="row">
+            <div class="col-lg-12 text-center"  id="Pacientes">
+                <div class="navy-line"></div>
+                <h1>Pacientes</h1>
+                <h3>Funcionalidades de Cadastro de Pacientes</h3>
+                <p>Cadastramento, gerenciamento e consultas</p>
+            </div>
+        </div>
+
+        <div class="row features-block" >
+            <div class="col-lg-6 features-text wow fadeInLeft">
+                <h2>Pacientes</h2>
+                <p>Todas as informações do paciente em um único local</p>
+                <p>Dados pessoais e de contato</p>
+                <p>Documentos do paciente - Atestados, Solicitações de Exames e Prescrições</p>
+                <p>Resultados de exames</p>
+                <p>Consultas do paciente</p>
+                <p>Anamnese e exame físico</p>
+                <p>Acompanhamento de consultas</p>
+                <p>Locações do paciente</p>
+            </div>
+            <div class="col-lg-6 features-text wow fadeInLeft">
+                <h2>Pacientes</h2>
+                <p>Cadastre rapidamente seus pacientes</p>
+                <p>Crie consulta no ato da inclusão do paciente</p>
+                <p>Selecione o padrão de anamnese - Segmentada ou Contínua</p>
+                <p>Informe se tem fichas digitalizadas</p>
+                <p>Defina o valor padrão da consulta</p>
+            </div>
+        </div>
+        <div class="row features-block" >
+            <div class="col-lg-6 features-text wow fadeInLeft">
+                <h2>Pacientes</h2>
+                <p>Consulte e altere os dados pessoais</p>
+                <p>Altere o padrão de anamnese</p>
+                <p>Altere o valor padrão da consulta</p>
+                <p>Anexe e visualize documentos ao paciente</p>
+                <p>Inclua ou altere a fotografia do paciente</p>
+                <p>Envie mensagens de e-mail e SMS ao paciente</p>
+            </div>
+            <div class="col-lg-6 features-text wow fadeInLeft">
+                <h2>Pacientes</h2>
+                <p>Visualize e gerencia os grupos do paciente</p>
+                <p>Inclua o paciente em um grupo pré-existente</p>
+                <p>Crie anotações vinculadas ao paciente</p>
+                <p>Gerencia as anotações existentes</p>
+                <p>Visualize e gerencie os contatos do paciente</p>
+                <p>Envie mensagens aos contatos do paciente</p>
+                <p>Visualize o histórico do paciente</p>
+                <p>Visualize e imprima o resumo geral do paciente</p>
+                <p>Dados pessoais, prontuários, atestados, exames, etc..</p>
+                <a href="#features" class="btn btn-primary">Voltar</a>
+            </div>
+        </div>
+        <br />
+
+        @*Consultas*@
+        <div class="row">
+            <div class="col-lg-12 text-center"  id="Consultas">
+                <div class="navy-line"></div>
+                <h1>Consultas</h1>
+                <h3>Funcionalidades de Marcação e Procedimento de Consultas</h3>
+            </div>
+        </div>
+        <div class="row features-block" >
+            <div class="col-lg-6 features-text wow fadeInLeft">
+                <h2>Consultas</h2>
+                <p>Marcação de consultas</p>
+                <p>Permite inclusão de novo paciente na criação da consulta</p>
+                <p>Verificação de datas e horários livres para marcação</p>
+                <p>Visualiação de horários e bloqueios</p>
+                <p>Consultas recorrentes</p>
+                <p>Confirmação de uma consulta marcada</p>
+                <p>Cancelamento de uma consulta marcada</p>
+            </div>
+            <div class="col-lg-6 features-text wow fadeInLeft">
+                <h2>Consultas</h2>
+                <p>Encerramento de consulta</p>
+                <p>Exibe lista das consultas pendentes de encerramento</p>
+                <p>No encerramento, gera lançamento de recebimento</p>
+                <p>Visualize as consultas marcadas para todos os pacientes</p>
+                <p>Visualização da data corrente, mês corrente, futuras e anteriores</p>
+                <p>Visualize as consultas marcadas em formato calendário</p>
+                <p>Visualização por data, semana ou mensal</p>
+                <a href="#features" class="btn btn-primary">Voltar</a>
+            </div>
+        </div>
+        <br />
+
+        @*Consulta - Executar*@
+        <div class="row">
+            <div class="col-lg-12 text-center"  id="Executar">
+                <div class="navy-line"></div>
+                <h1>Consultas - Execução</h1>
+                <h3>Funcionalidades de procedimento e revisão de consultas</h3>
+            </div>
+        </div>
+
+        <div class="row features-block" >
+            <div class="col-lg-6 features-text wow fadeInLeft">
+                <h2>Consultas - Execução</h2>
+                <p>Proceda à execução de uma consulta confirmada</p>
+                <p>Consultas anteriores podem ser revisadas</p>
+                <p>Preenchimento ou revisão da anamnese</p>
+                <p>Visualização da anamnese completa</p>
+                <p>Preenchimento ou revisão do exame físico</p>
+                <p><b style="color: green;">EXTRA</b> - Podemos customizar as perguntas da anamnese para atender suas necessidades!</p>
+            </div>
+            <div class="col-lg-6 features-text wow fadeInLeft">
+                <h2>Consultas - Execução</h2>
+                <p>Emissão de atestados, solicitações de exames e prescrições</p>
+                <p>Inclusão de resultados de exames</p>
+                <p>Impressão do resumo da consulta</p>
+                <p>Anamnese, exame físico e todos os documentos vinculados à consulta</p>
+                <a href="#features" class="btn btn-primary">Voltar</a>
+            </div>
+        </div>
+        <br />
+
+        @*Documentos*@
+        <div class="row">
+            <div class="col-lg-12 text-center"  id="Prontuarios">
+                <div class="navy-line"></div>
+                <h1>Documentos</h1>
+                <h3>Funcionalidades de apoio ao prontuário</h3>
+                <h3>Emissão de atestados, solicitações de exames e prescrições</h3>
+                <h3>Inclusão de resultados de exames</h3>
+            </div>
+        </div>
+        <div class="row features-block" >
+            <div class="col-lg-6 features-text wow fadeInLeft">
+                <h2>Atestados</h2>
+                <p>Emissão de atestados</p>
+                <p>Identificador único</p>
+                <p>Validação por código QR</p>
+                <p>Visualização dos atestados emitidos</p>
+                <p>Envio por e-mail para o paciente</p>
+                <p>Impressão dos atestados emitidos</p>
+            </div>
+            <div class="col-lg-6 features-text wow fadeInLeft">
+                <h2>Solicitações de Exames</h2>
+                <p>Emissão de solicitações de exames</p>
+                <p>As solicitações de exames emitidas são salvas como modelos para reutilização</p>
+                <p>Identificador único</p>
+                <p>Validação por código QR</p>
+                <p>Visualização das solicitações de exames emitidas</p>
+                <p>Envio por e-mail para o paciente</p>
+                <p>Impressão das solicitações de exames emitidas</p>
+                <a href="#features" class="btn btn-primary">Voltar</a>
+            </div>
+        </div>
+        <br />
+
+        <div class="row features-block" >
+            <div class="col-lg-6 features-text wow fadeInLeft">
+                <h2>Prescrições</h2>
+                <p>Emissão de prescrições</p>
+                <p>Normais e controladas (receita branca)</p>
+                <p>Identificador único</p>
+                <p>Validação por código QR</p>
+                <p>Acesso ao emissor de prescrições do órgão de classe</p>
+                <p>Visualização das prescrições emitidas</p>
+                <p>Envio por e-mail para o paciente</p>
+            </div>
+            <div class="col-lg-6 features-text wow fadeInLeft">
+                <h2>Prescrições</h2>
+                <p>Inclusão de itens da prescrição</p>
+                <p>Medicamentos incluídos são salvos para reutilização posterior</p>
+                <p>Impressão de prescrições - Normais e Controladas</p>
+                <a href="#features" class="btn btn-primary">Voltar</a>
+            </div>
+        </div>
+        <br />
+
+        <div class="row features-block" >
+            <div class="col-lg-6 features-text wow fadeInLeft">
+                <h2>Resultados de Exames</h2>
+                <p>Inclusão de resultados de exames</p>
+                <p>Anexação de imagens e laudos</p>
+                <p>Resultados vão automaticamente para a anamese do paciente</p>
+                <p>Visualização de resultados de exames</p>
+                <p>Visualização das imagens e laudos</p>
+                <a href="#features" class="btn btn-primary">Voltar</a>
+            </div>
+        </div>
+        <br />
+
+        @*Financeiro*@
+        <div class="row">
+            <div class="col-lg-12 text-center"  id="Financeiro">
+                <div class="navy-line"></div>
+                <h1>Financeiro</h1>
+                <h3>Funcionalidades Financeiras</h3>
+                <h3>Pagamentos e recebimentos</h3>
+                <h3>Dashboard e relatórios</h3>
+            </div>
+        </div>
+        <div class="row features-block" >
+            <div class="col-lg-6 features-text wow fadeInLeft">
+                <h2>Financeiro - Pagamentos</h2>
+                <p>Dashboard financeiro - Informações e gráficos</p>
+                <p>Criação de lançamentos de pagamentos</p>
+                <p>Pagamentos recorrentes</p>
+                <p>Avisos automaticos de pagamentos vencidos</p>
+                <p>Relatórios</p>
+            </div>
+            <div class="col-lg-6 features-text wow fadeInLeft">
+                <h2>Financeiro - Recebimentos</h2>
+                <p>Dashboard financeiro - Informações e gráficos</p>
+                <p>Criação de lançamentos de recebimentos</p>
+                <p>Consultas encerradas geral lançamento de recebimento automático</p>
+                <p>Relatórios</p>
+                <a href="#features" class="btn btn-primary">Voltar</a>
+            </div>
+        </div>
+        <br />
+
+        @*Mensageria*@
+        <div class="row">
+            <div class="col-lg-12 text-center"  id="Mensageria">
+                <div class="navy-line"></div>
+                <h1>Mensageria</h1>
+                <h3>Envio programado de E-Mails</h3>
+                <h3>Agendamento e Recursividade</h3>
+                <h3>Envio assíncrono</h3>
+            </div>
+        </div>
+        <div class="row features-block" >
+            <div class="col-lg-6 features-text wow fadeInLeft">
+                <h2>Mensageria</h2>
+                <p>Criação de mensagem - Digitada ou usando modelo pré cadastrado</p>
+                <p>Utilização de arquivos HTML pré-existentes</p>
+                <p>Agendamento e recursividade</p>
+                <p>Visualização da mensagem</p>
+                <p>Visualização dos agendamentos</p>
+                <p>Visualização das mensagens enviadas - Automaticas ou sob demanda</p>
+                <p>Envio através de robô assíncrono próprio</p>
+                <a href="#features" class="btn btn-primary">Voltar</a>
+            </div>
+        </div>
+        <br />
+
+        @*Administração*@
+        <div class="row">
+            <div class="col-lg-12 text-center"  id="Adm">
+                <div class="navy-line"></div>
+                <h1>Administração</h1>
+                <h3>Funções administrativas</h3>
+                <h3>Central de usuários e perfis de acesso</h3>
+                <h3>Auditoria</h3>
+                <h3>Tabelas Auxiliares</h3>
+            </div>
+        </div>
+        <div class="row features-block" >
+            <div class="col-lg-6 features-text wow fadeInLeft">
+                <h2>Administração</h2>
+                <p>Central de Usuários</p>
+                <p>Gerenciamento dos usuários</p>
+                <p>Criação e gerenciamento de perfis de acesso</p>
+            </div>
+            <div class="col-lg-6 features-text wow fadeInLeft">
+                <h2>Administração</h2>
+                <p>Central de Auditoria</p>
+                <p>Visualização de todas as transações do WebDoctorPro</p>
+                <a href="#features" class="btn btn-primary">Voltar</a>
+            </div>
+        </div>
+        <br />
+    </section>
+
+    <section class="timeline gray-section">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12 text-center">
+                    <div class="navy-line"></div>
+                    <h1>Roadmap do <b>WebDoctorPro</b></h1>
+                    <p>Veja aqui a previsão de lançamento de novas versões e novas funcionalidades. </p>
+                </div>
+            </div>
+            <div class="row features-block">
+
+                <div class="col-lg-12">
+                    <div id="vertical-timeline" class="vertical-container light-timeline center-orientation">
+                        <div class="vertical-timeline-block">
+                            <div class="vertical-timeline-icon blue-bg">
+                                <i class="fa fa-toggle-on"></i>
+                            </div>
+
+                            <div class="vertical-timeline-content">
+                                <h2>Versão 2.0.0.0</h2>
+                                <p>Versão firme de produção</p>
+                                <a href="@Url.Action((String)Session["Versao4"])" target="_blank" class="btn btn-xs btn-primary"> Mais...</a>
+                                <span class="vertical-date"> 4a Feira <br /> <small>15 de outubro, 2025</small> </span>
+                            </div>
+                        </div>
+                        <div class="vertical-timeline-block">
+                            <div class="vertical-timeline-icon navy-bg">
+                                <i class="fa fa-toggle-off"></i>
+                            </div>
+
+                            <div class="vertical-timeline-content">
+                                <h2>Versão 1.2.2.0</h2>
+                                <p>Nova versão menor com melhorias e ajustes</p>
+                                <a href="@Url.Action((String)Session["Versao3"])" target="_blank" class="btn btn-xs btn-primary"> Mais...</a>
+                                <span class="vertical-date"> 2a Feira <br /> <small>29 de setembro, 2025</small> </span>
+                            </div>
+                        </div>
+                        <div class="vertical-timeline-block">
+                            <div class="vertical-timeline-icon navy-bg">
+                                <i class="fa fa-toggle-off"></i>
+                            </div>
+
+                            <div class="vertical-timeline-content">
+                                <h2>Versão 1.2.1.0</h2>
+                                <p>Nova versão menor com melhorias e ajustes</p>
+                                <a href="@Url.Action((String)Session["Versao2"])" target="_blank" class="btn btn-xs btn-primary"> Mais...</a>
+                                <span class="vertical-date"> 3a Feira <br /> <small>12 de agosto, 2025</small> </span>
+                            </div>
+                        </div>
+                        <div class="vertical-timeline-block">
+                            <div class="vertical-timeline-icon navy-bg">
+                                <i class="fa fa-toggle-off"></i>
+                            </div>
+
+                            <div class="vertical-timeline-content">
+                                <h2>Versão 1.2.0.0</h2>
+                                <p>Nova versão menor com o módulo financeiro e ajustes</p>
+                                <a href="@Url.Action((String)Session["Versao1"])" target="_blank" class="btn btn-xs btn-primary"> Mais...</a>
+                                <span class="vertical-date"> 5a Feira <br /> <small>17 de abril, 2025</small> </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <section id="team" class="gray-section team">
+        <div class="container">
+            <div class="row m-b-lg">
+                <div class="col-lg-12 text-center">
+                    <div class="navy-line"></div>
+                    <h1>Nossa Equipe</h1>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-6 wow fadeInLeft">
+                    <div class="team-member">
+                        <img src="~/Images/landing/FotoOficial.jpg" class="img-responsive img-circle" style="width: 120px; height: 120px; max-height: 120px; max-width: 120px;" alt="">
+                        <h4><span class="navy">Roberto</span> Telles</h4>
+                        <p>RTi Ltda</p>
+                        <ul class="list-inline social-icon">
+                            <li>
+                                <a href="https://wa.me/5521973024096" target="_blank"><i class="fa fa-whatsapp"></i></a>
+                            </li>
+                            <li>
+                                <a href="https://www.facebook.com/profile.php?id=61575727388325" target="_blank"><i class="fa fa-facebook"></i></a>
+                            </li>
+                            <li>
+                                <a href="#"><i class="fa fa-linkedin"></i></a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="col-sm-6">
+                    <div class="team-member wow zoomIn">
+                        <img src="~/Images/clayton.jpg" class="img-responsive img-circle" style="width: 120px; height: 120px; max-height: 120px; max-width: 120px;"  alt="">
+                        <h4><span class="navy">Clayton</span> Sant'Anna</h4>
+                        <p>SystemBR Ltda</p>
+                        <ul class="list-inline social-icon">
+                            <li>
+                                <a href="https://wa.me/5511941706199" target="_blank"><i class="fa fa-whatsapp"></i></a>
+                            </li>
+                            <li>
+                                <a href="https://www.facebook.com/profile.php?id=61575727388325" target="_blank"><i class="fa fa-facebook"></i></a>
+                            </li>
+                            <li>
+                                <a href="#"><i class="fa fa-linkedin"></i></a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 text-center m-t-lg m-b-lg">
+                    <p>Entre em contato conosco para mais informações</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="team" class="gray-section team">
+        <div class="container">
+            <div class="row m-b-lg">
+                <div class="col-lg-12 text-center">
+                    <div class="navy-line"></div>
+                    <h1>Nossos Principais Clientes</h1>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-6 wow fadeInLeft">
+                    <div class="team-member">
+                        <img src="~/Images/sonofisio.png" class="img-responsive" style="width: 120px; height: 160px; max-height: 160px; max-width: 160px;" alt="">
+                        <h4><span class="navy">Sonofísio</span></h4>
+                        @*<ul class="list-inline social-icon">
+                            <li>
+                                <a href="https://wa.me/5521973024096" target="_blank"><i class="fa fa-whatsapp"></i></a>
+                            </li>
+                            <li>
+                                <a href="https://www.facebook.com/profile.php?id=61575727388325" target="_blank"><i class="fa fa-facebook"></i></a>
+                            </li>
+                        </ul>*@
+                    </div>
+                </div>
+                <div class="col-sm-6 wow fadeInLeft">
+                    <div class="team-member">
+                        <img src="~/Images/Foto_amorinha.jpg" class="img-responsive" style="width: 120px; height: 160px; max-height: 160px; max-width: 160px;" alt="">
+                        <h4><span class="navy">Cydia Souza</span></h4>
+                        @*<ul class="list-inline social-icon">
+                            <li>
+                                <a href="https://wa.me/5521973024096" target="_blank"><i class="fa fa-whatsapp"></i></a>
+                            </li>
+                            <li>
+                                <a href="https://www.facebook.com/profile.php?id=61575727388325" target="_blank"><i class="fa fa-facebook"></i></a>
+                            </li>
+                        </ul>*@
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 text-center m-t-lg m-b-lg">
+                    <p>Seja você tambem um assinante do <b>WebDoctorPro</b></p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="testimonials" class="navy-section" style="margin-top: 0; background-image: url('/images/landing/avatar_all.png') ">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12 text-center wow zoomIn">
+                    <i class="fa fa-comment big-icon"></i>
+                    <h1>
+                        Opiniões e Comentários
+                    </h1>
+                    <div class="testimonials-text">
+                        <i>"Diga o que você está achando do WebDoctorPro. Dê sugestões, elogios ou críticas."</i>
+                    </div>
+                    <small>
+                        <strong>14/11/2025 - Roberto Telles</strong>
+                    </small>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="pricing" class="pricing">
+        <div class="container">
+            <div class="row m-b-lg">
+                <div class="col-lg-12 text-center">
+                    <div class="navy-line"></div>
+                    <h1>Planos & Preços</h1>
+                    <p>Diversos planos de assinatura. Veja o que melhor se adapta a você</p>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-12 ">
+                    <h2 style="color:brown; font-weight: bold; text-align:center">Promoção!! Todas as versões com parcelamento em até 12 vezes no cartão de crédito!</h2>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-4 wow zoomIn">
+                    <ul class="pricing-plan list-unstyled">
+                        <li class="pricing-title">
+                            <a class="btn btn-primary btn-xs" href="@Url.Action("MontarTelaCompraBasico", "BaseAdmin")">Plano Básico</a>
+                        </li>
+                        <li class="pricing-desc">
+                            Acesso a todas as funcionalidades com limite de número.
+                        </li>
+                        <li class="pricing-price">
+                            <span>R$ 2.000,00</span> / Ano
+                        </li>
+                        <li class="pricing-price">
+                            Parcelado em até 12x no cartão de crédito
+                        </li>
+                        <li>
+                            Limite de pacientes ativos: 300
+                        </li>
+                        <li>
+                            Funcionalidades de Mensageria: Sim
+                        </li>
+                        <li>
+                            Funcionalidades Financeiras: Não
+                        </li>
+                        <li>
+                            Funcionalidades de Locação: Não
+                        </li>
+                        <li>
+                            Controle de Estoque: Não
+                        </li>
+                        <li>
+                            Limite de usuários ativos: 10
+                        </li>
+                        <li>
+                            Limite de grupos ativos: 5
+                        </li>
+                        <li>
+                            Limite de itens no grupo: 50
+                        </li>
+                        <li>
+                            Envio de e-mails/mês: 300
+                        </li>
+                        <li>
+                            Envio de SMS/mês: 100
+                        </li>
+                        <li>
+                            Documentação on-line
+                        </li>
+                        <li>
+                            <strong>Suporte (Chat) On-Line</strong>
+                        </li>
+                        <li class="plan-action">
+                            <a class="btn btn-primary btn-xs" href="@Url.Action("MontarTelaCompraBasico", "BaseAdmin")">Saiba mais e Contrate Agora</a>
+                        </li>
+                    </ul>
+                </div>
+
+          
+                <div class="col-lg-4 wow zoomIn">
+                    <ul class="pricing-plan list-unstyled">
+                        <li class="pricing-title">
+                            <a class="btn btn-primary btn-xs" href="@Url.Action("MontarTelaCompraBasico", "BaseAdmin")">Plano Super</a>
+                        </li>
+                        <li class="pricing-desc">
+                            Acesso a todas as funcionalidades sem limite de número.
+                        </li>
+                        <li class="pricing-price">
+                            <span>R$ 3.500,00</span> / Ano
+                        </li>
+                        <li class="pricing-price">
+                            Parcelado em até 12x no cartão de crédito
+                        </li>
+                        <li>
+                            Limite de pacientes ativos: Sem limite
+                        </li>
+                        <li>
+                            Funcionalidades de Mensageria: Sim
+                        </li>
+                        <li>
+                            Funcionalidades Financeiras: Não
+                        </li>
+                        <li>
+                            Funcionalidades de Locação: Não
+                        </li>
+                        <li>
+                            Controle de Estoque: Não
+                        </li>
+                        <li>
+                            Limite de usuários ativos: Sem limite
+                        </li>
+                        <li>
+                            Limite de grupos ativos: Sem limite
+                        </li>
+                        <li>
+                            Limite de itens no grupo: Sem limite
+                        </li>
+                        <li>
+                            Envio de e-mails/mês: Sem limite
+                        </li>
+                        <li>
+                            Envio de SMS/mês: 300
+                        </li>
+                        <li>
+                            Documentação on-line
+                        </li>
+                        <li>
+                            <strong>Suporte (Chat) On-Line</strong>
+                        </li>
+                        <li class="plan-action">
+                            <a class="btn btn-primary btn-xs" href="@Url.Action("MontarTelaCompraBasico", "BaseAdmin")">Saiba mais e Contrate Agora</a>
+                        </li>
+                    </ul>
+                </div>
+            
+                <div class="col-lg-4 wow zoomIn">
+                    <ul class="pricing-plan list-unstyled">
+                        <li class="pricing-title">
+                            <a class="btn btn-primary btn-xs" href="@Url.Action("MontarTelaCompraBasico", "BaseAdmin")">Plano Super - Financeiro</a>
+                        </li>
+                        <li class="pricing-desc">
+                            Acesso a todas as funcionalidades sem limite de número.
+                        </li>
+                        <li class="pricing-price">
+                            <span>R$ 4.000,00</span> / Ano
+                        </li>
+                        <li class="pricing-price">
+                            Parcelado em até 12x no cartão de crédito
+                        </li>
+                        <li>
+                            Limite de pacientes ativos: Sem limite
+                        </li>
+                        <li>
+                            Limite de produtos: Sem limite
+                        </li>
+                        <li>
+                            Funcionalidades de Mensageria: Sim
+                        </li>
+                        <li>
+                            Funcionalidades Financeiras: Sim
+                        </li>
+                        <li>
+                            Funcionalidades de Locação: Sim
+                        </li>
+                        <li>
+                            Controle de Estoque: Sim
+                        </li>
+                        <li>
+                            Limite de usuários ativos: Sem limite
+                        </li>
+                        <li>
+                            Limite de grupos ativos: Sem limite
+                        </li>
+                        <li>
+                            Limite de itens no grupo: Sem limite
+                        </li>
+                        <li>
+                            Limite de Pagamentos/Mês: Sem limite
+                        </li>
+                        <li>
+                            Limite de Recebimentos/Mês: Sem limite
+                        </li>
+                        <li>
+                            Limite de locações ativas: Sem limite
+                        </li>
+                        <li>
+                            Envio de e-mails/mês: Sem limite
+                        </li>
+                        <li>
+                            Envio de SMS/mês: 500
+                        </li>
+                        <li>
+                            Documentação on-line
+                        </li>
+                        <li>
+                            Migração Gratuita(*)
+                        </li>
+                        <li>
+                            <strong>Suporte (Chat) On-Line</strong>
+                        </li>
+                        <li class="plan-action">
+                            <a class="btn btn-primary btn-xs" href="@Url.Action("MontarTelaCompraBasico", "BaseAdmin")">Saiba mais e Contrate Agora</a>
+                        </li>
+                    </ul>
+                    <p>(*) A migração de dados de outras plataformas está sujeita à viabilidade técnica</p>
+                </div>          
+            </div>
+        </div>
+    </section>
+
+    <section id="contact" class="gray-section" style="margin-top: 0; background-image: url('/images/landing/word_map.png'); background-repeat: no-repeat; background-position-x:center; background-position-y:center">
+        <div class="container">
+            <div class="row m-b-lg">
+                <div class="col-lg-12 text-center">
+                    <div class="navy-line"></div>
+                    <h1>Contate-nos</h1>
+                    <p>Entre em contato conosco para mais informações ou preencha o formulário abaixo e um especialista entrará em contato com você</p>
+                </div>
+            </div>
+
+            <div class="row m-b-lg">
+                <div class="col-lg-3 col-lg-offset-3">
+                    <img alt="image" src="~/Imagens/Base/Logo_RTI.png" style = "width: auto; height: auto; max-height: 170px; max-width: 170px;" />
+                    <br /><br />
+                    <address>
+                        <abbr title="Phone"><i class="fa fa-phone"></i></abbr> (21) 97302-4096<br />
+                        <a href="https://wa.me/5521973024096" target="_blank"><i class="fa fa-whatsapp"></i> (21) 97302-4096</a><br />
+                        <a href="mailto:suporte@rtiltda.net" target="_blank"><i class="fa fa-envelope"></i> suporte@rtiltda.net</a>
+                    </address>
+                </div>
+
+                <div class="col-lg-3 col-lg-offset-2">
+                    <img alt="image" src="~/Imagens/Base/Logo_SystemBR.jpg" style = "width: auto; height: auto; max-height: 170px; max-width: 170px;" />
+                    <br /><br /><br /><br /><br />
+                    <address>
+                        <abbr title="Phone"><i class="fa fa-phone"></i></abbr> (21) 97302-4096<br />
+                        <a href="https://wa.me/5521973024096" target="_blank"><i class="fa fa-whatsapp"></i> (21) 97302-4096</a><br />
+                        <a href="mailto:clayton@systembr.net" target="_blank"><i class="fa fa-envelope"></i>clayton@systembr.net</a>
+                    </address>
+                </div>
+
+            </div>
+
+            <div class="row">
+                <div class="col-lg-12 text-center">
+                    <a class="btn btn-primary" onclick="location.href='@Url.Action("MontarTelaFaleConoscoInicio", "BaseAdmin")'">Enviar Formulário de Contato</a>
+                    <p class="m-t-sm">
+                        Ou nos siga nas redes sociais
+                    </p>
+                    <ul class="list-inline social-icon">
+                        <li>
+                            <a href="https://wa.me/5521973024096" target="_blank"><i class="fa fa-whatsapp"></i></a>
+                        </li>
+                        <li>
+                            <a href="https://www.facebook.com/profile.php?id=61575727388325" target="_blank"><i class="fa fa-facebook"></i></a>
+                        </li>
+                        <li>
+                            <a href="#"><i class="fa fa-linkedin"></i></a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 text-center m-t-lg m-b-lg">
+                    <p><strong>&copy; 2025 WebDoctorPro</strong><br /> Todos os direitos reservados</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- Section for main scripts render -->
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/bootstrap")
+    @Scripts.Render("~/plugins/slimScroll")
+    @Scripts.Render("~/plugins/wow")
+    @Scripts.Render("~/bundles/inspinia")
+   
+    @if ((Boolean)Session["Close"] == true) 
+    {
+        <script type="text/javascript">
+            window.close();
+        </script>  
+    }
+
+    <script type="text/javascript" src="~/Scripts/moment.min.js"></script>
+    <script type="text/javascript" src="~/Scripts/bootstrap.min.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('[data-toggle="popover"]').popover();
+        });
+    </script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-toggle="popover"]'));
+            var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
+                return new bootstrap.Popover(popoverTriggerEl);
+            });
+        });
+    </script>
+    <script>
+
+        $(document).ready(function () {
+
+            $('body').scrollspy({
+                target: '.navbar-fixed-top',
+                offset: 80
+            });
+
+            // Page scrolling feature
+            $('a.page-scroll').bind('click', function (event) {
+                var link = $(this);
+                $('html, body').stop().animate({
+                    scrollTop: $(link.attr('href')).offset().top - 50
+                }, 500);
+                event.preventDefault();
+                $('#navbar').collapse('hide');
+            });
+        });
+
+        var cbpAnimatedHeader = (function () {
+            var docElem = document.documentElement,
+                    header = document.querySelector('.navbar-default'),
+                    didScroll = false,
+                    changeHeaderOn = 200;
+            function init() {
+                window.addEventListener('scroll', function (event) {
+                    if (!didScroll) {
+                        didScroll = true;
+                        setTimeout(scrollPage, 250);
+                    }
+                }, false);
+            }
+            function scrollPage() {
+                var sy = scrollY();
+                if (sy >= changeHeaderOn) {
+                    $(header).addClass('navbar-scroll')
+                }
+                else {
+                    $(header).removeClass('navbar-scroll')
+                }
+                didScroll = false;
+            }
+            function scrollY() {
+                return window.pageYOffset || docElem.scrollTop;
+            }
+            init();
+
+        })();
+
+    </script>
+
+</body>
+</html>

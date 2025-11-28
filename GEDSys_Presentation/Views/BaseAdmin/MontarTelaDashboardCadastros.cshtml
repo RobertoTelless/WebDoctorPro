@@ -1,0 +1,161 @@
+﻿@using Presentation.Extensions
+@using CrossCutting
+@model EntitiesServices.Model.USUARIO
+@{
+    Layout = "~/Views/Shared/_Layout_Admin.cshtml";
+    ViewBag.Title = "Dashboard Cadastros";
+}
+<div style="z-index: 999;" class="dotContainer">
+    <div style="top: 500px" class="dotWrapper">
+        <div class="circle"></div>
+        <div class="circle"></div>
+        <div class="circle"></div>
+        <div class="shadow"></div>
+        <div class="shadow"></div>
+        <div class="shadow"></div>
+    </div>
+</div>
+<div id="content" class="wraper container-fluid">
+    <div class="col-lg-12 col-md-12 col-sm-12">
+        <div class="col-lg-12 col-md-12 col-sm-12">
+            @*Atalhos*@
+            <div class="row">
+                <h3 style="color:olivedrab; font-weight:bold">Dashboard - Cadastros</h3>
+                <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                    <br />
+                    <div class="col-lg-12 col-md-12 col-xs-12">
+                        @Html.ButtonLinkIndex(text: "Voltar", controller: "BaseAdmin", action: "MontarTelaPaciente")
+                        <a href="@Url.Action((String)Session["AjudaNivel"])"  class="btn btn-sm btn-danger" target="_blank">Ajuda</a>                
+                    </div>
+                    <br /><br />
+                </div>
+            </div>
+
+            @*Estatísticas*@
+            <div class="row">
+                <div class="col-lg-2">
+                    <div class="ibox float-e-margins">
+                        <div class="ibox-title"  style="background-color: darkseagreen; color: darkgreen">
+                            <span class="label label-success pull-right">Hoje</span>
+                            <h5>Pacientes</h5>
+                        </div>
+                        <div class="ibox-content">
+                            <h1 class="no-margins">@ViewBag.Pacientes</h1>
+                            <small>Pacientes</small>
+                            <br />
+                            <br />
+                            @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_ACESSO_PACIENTE == 1)
+                            {
+                                @Html.ButtonLinkIndex(text: "Ver", controller: "Paciente", action: "MontarTelaPaciente", buttonClass: "white", htmlAttributes: new { @id = "cli", OnClick = "Fade()" })
+                            }
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-2">
+                    <div class="ibox float-e-margins">
+                        <div class="ibox-title"  style="background-color: darkseagreen; color: darkgreen">
+                            <span class="label label-success pull-right">Hoje</span>
+                            <h5>Grupos de Pacientes</h5>
+                        </div>
+                        <div class="ibox-content">
+                            <h1 class="no-margins">@ViewBag.Grupos</h1>
+                            <small>Pacientes</small>
+                            <br />
+                            <br />
+                            @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_ACESSO_GRUPO == 1)
+                            {
+                                @Html.ButtonLinkIndex(text: "Ver", controller: "Grupo", action: "MontarTelaGrupo", buttonClass: "white", htmlAttributes: new { @id = "cli", OnClick = "Fade()" })
+                            }
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-2">
+                    <div class="ibox float-e-margins">
+                        <div class="ibox-title"  style="background-color: darkseagreen; color: darkgreen">
+                            <span class="label label-success pull-right">Hoje</span>
+                            <h5>Modelos de Mensagens</h5>
+                        </div>
+                        <div class="ibox-content">
+                            <h1 class="no-margins">@ViewBag.Mails</h1>
+                            <small>Pacientes</small>
+                            <br />
+                            <br />
+                            @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_ACESSO_TEMPLATE == 1)
+                            {
+                                @Html.ButtonLinkIndex(text: "Ver", controller: "TemplateEMail", action: "MontarTelaTemplateEMail", buttonClass: "white", htmlAttributes: new { @id = "cli", OnClick = "Fade()" })
+                            }
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-2">
+                    <div style="display: none; z-index:1000" class="dotContainer">
+                        <div class="spiner-example">
+                            <div class="sk-spinner sk-spinner-three-bounce">
+                                <div class="sk-bounce1"></div>
+                                <div class="sk-bounce2"></div>
+                                <div class="sk-bounce3"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <link href="~/Content/themes/base/jquery-ui.min.css" rel="stylesheet" />
+    <link href="~/Content/themes/base/all.css" rel="stylesheet" />
+    @Styles.Render("~/Content/plugins/dataTables/dataTablesStyles")
+    @Styles.Render("~/plugins/jasnyBootstrapStyles")
+    @Styles.Render("~/plugins/toastrStyles")
+}
+
+@section Scripts {
+
+    @Scripts.Render("~/plugins/toastr")
+    <script src="~/Scripts/jquery-ui-1.12.1.min.js"></script>
+    @Scripts.Render("~/plugins/dataTables")
+    @Scripts.Render("~/bundles/inputmask")
+    @Scripts.Render("~/plugins/jasnyBootstrap")
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.maskedinput/1.4.1/jquery.maskedinput.js"></script>
+
+    <script>
+        $.ajax({
+            url: '../BaseAdmin/GetRefreshTime'
+            , type: 'POST'
+            , success: function (r) {
+                window.setInterval(function () {
+                    window.location.href = "../BaseAdmin/MontarTelaPaciente"
+                }, r * 1000);
+
+                //clearInterval()
+            }
+        });
+    </script>
+    <script>
+        function Fade() {
+            $('.dotContainer').fadeIn("fast");
+            $('#login').css("filter", "blur(4px)");
+        }
+    </script>
+    <script>
+        $(window).on("load", function () {
+            $('.dotContainer').fadeOut("slow");
+            $('#title').css("filter", "blur(0)");
+            $('#content').css("filter", "blur(0)");
+        });
+    </script>
+
+
+@if (ViewBag.Message != null)
+    {
+        <script type="text/javascript">
+            window.onload = function () {
+                  alert("@ViewBag.Message");
+            };
+        </script>
+    }
+}
+

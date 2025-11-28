@@ -1,0 +1,642 @@
+﻿@using Presentation.Extensions
+@model ERP_Condominios_Solution.ViewModels.PacienteConsultaViewModel
+@{
+    Layout = "~/Views/Shared/_Layout_Admin.cshtml";
+    ViewBag.Title = "WebDoctor - Paciente - Consulta - Proceder";
+    ViewBag.MetaDescription = "WebDoctor - Paciente - Consulta - Proceder à consulta do paciente ";
+    ViewBag.MetaKeywords = "WebDoctor, paciente, consulta, procedimento";
+}
+
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="page-title">
+        <ol class="breadcrumb">
+            <li>
+                <a href="@Url.Action("MontarTelaPaciente", "Paciente")">Dashboard</a>
+            </li>
+            <li class="active">
+                <strong>Consultas - Proceder</strong>
+            </li>
+        </ol>
+        <br />
+    </div>
+
+    <div class="row">
+        <div class="col-lg-12 col-md-12 col-xs-12">
+            <div class="col-lg-12 col-md-12 col-xs-12 ibox float-e-margins">
+                <div class="ibox-title">
+                    @if (Model.PACO_DT_CONSULTA.Date == DateTime.Today.Date)
+                    {
+                        <div style="text-align: center;" class="col-lg-12 col-md-12 col-xs-12">
+                            <h5>Consulta -Procedimento</h5>
+                            <span style="color:green; font-weight: 500; font-size: 20px;">@Model.PACIENTE.PACI_NM_NOME</span>
+                        </div>
+                    }
+                    else if (Model.PACO_DT_CONSULTA.Date < DateTime.Today.Date)
+                    {
+                        <div style="text-align: center;" class="col-lg-12 col-md-12 col-xs-12">
+                            <h5>Consulta -Revisão</h5>
+                            <span style="color:green; font-weight: 500; font-size: 20px;">@Model.PACIENTE.PACI_NM_NOME</span>
+                        </div>
+                    }
+                </div>
+                @using (Html.BeginForm("ProcederConsulta", "Paciente", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal", @id="pwd-container1" }))
+                {
+                    <div class="ibox-content">
+                        @Html.AntiForgeryToken()
+                        @if (!ViewData.ModelState.IsValid)
+                        {
+                            <div class="alert alert-danger">
+                                <button type="button" class="close" data-dismiss="alert">Fechar</button>
+                                @Html.ValidationSummary(false, "", new { @class = "text-danger" })
+                            </div>
+                        }
+                        @if (TempData["TemMensagem"] != null)
+                        {
+                            <div class="alert alert-success">
+                                <button type="button" class="close" data-dismiss="alert">Fechar</button>
+                                <span>@TempData["MensagemAcerto"]</span>
+                            </div>
+                        }                    
+                        <div class="row">
+                            <div class="form-group" style=" margin-left: 0px; margin-right: 0px;">    
+                                <a href="@Url.Action("VoltarAnexoPaciente", "Paciente")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acesso à página de edição do paciente" class="btn btn-sm btn-success" OnClick = "Fade()">Paciente</a>                
+                                <a href="@Url.Action("MarcarProximaConsulta", "Paciente")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acesso à página marcação de nova consulta" class="btn btn-sm btn-warning" OnClick = "Fade()">Nova Consulta</a>                
+                                <a href="@Url.Action("VerListaPrescricaoConsulta", "Paciente")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acesso à lista de precrições desta consulta" class="btn btn-sm btn-warning" OnClick = "Fade()">Prescrições</a>                
+                                <a href="@Url.Action("VerListaAtestadoConsulta", "Paciente")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acesso à lista de atestados desta consulta" class="btn btn-sm btn-warning" OnClick = "Fade()">Atestados</a>                
+                                <a href="@Url.Action("VerListaSolicitacaoConsulta", "Paciente")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acesso à lista de solicitacoes de exames desta consulta" class="btn btn-sm btn-warning" OnClick = "Fade()">Solicitacoes de Exames</a>                
+                                <a href="@Url.Action("VerListaExameConsulta", "Paciente")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acesso à lista de resultados de exames desta consulta" class="btn btn-sm btn-warning" OnClick = "Fade()">Resultados de Exames</a>                
+                                <a href="@Url.Action("VerListaGeralConsulta", "Paciente")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acesso à lista de todos os documentos desta consulta" class="btn btn-sm btn-warning" OnClick = "Fade()">Todos Documentos</a>                
+                                <a href="@Url.Action("GerarRelatorioDetalheConsulta", "Paciente2")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Geração do resumo da consulta em PDF" class="btn btn-sm btn-warning" OnClick = "Fade()">Resumo</a>                
+                                <a href="@Url.Action("MontarTelaMedico", "Medico")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Repassar informações deste paciente para outro profissional" class="btn btn-sm btn-warning" OnClick = "Fade()">Repassar Informações</a>                
+                                <a href="@Url.Action("VoltarConsulta", "Paciente")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Volta à página anterior" class="btn btn-sm btn-warning" OnClick = "Fade()">Voltar</a>                
+                                <a href="@Url.Action((String)Session["AjudaNivel"])"  class="btn btn-sm btn-danger" target="_blank">Ajuda</a>                
+                            </div>
+                        </div>
+                        <div class="row" style="width: 100%;">
+                            <div class="col-lg-2 col-md-2 col-xs-12">
+                                @if (!String.IsNullOrEmpty(Model.PACIENTE.PACI_AQ_FOTO))
+                                {
+                                    <img src="@Url.Content(Model.PACIENTE.PACI_AQ_FOTO)" style="width: auto; height: auto; max-height: 270px; max-width: 230px;">
+                                }
+                                else
+                                {
+                                    <img src="~/Images/icon_morador.png" style="width: auto; height: auto; max-height: 230px; max-width: 230px;">
+                                }
+                                <br />
+                                <br />
+                            </div>
+
+                            <div class="col-lg-10 col-md-10 col-xs-12">
+                                <div class="row">
+                                    <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Paciente</h4>
+                                    <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">                
+                                        <div class="col-lg-4 col-md-4 col-xs-12">
+                                            Nome do Paciente
+                                            @Html.TextBoxFor(m => m.PACIENTE.PACI_NM_NOME, new { @class = "form-control", @readonly = "readonly", @style = "color: blue; font-weight: bold" })
+                                        </div>
+                                        <div class="col-lg-2 col-md-2 col-xs-12">
+                                            Data Nascimento
+                                            @Html.TextBoxFor(m => m.PACIENTE.PACI_DT_NASCIMENTO, "{0:dd/MM/yyyy}", new { @class = "form-control", @readonly = "readonly" })
+                                        </div>
+                                        @if (Model.PACIENTE.PACI_NR_CPF != null)
+                                        {
+                                            <div class="col-lg-2 col-md-2 col-xs-12">
+                                                CPF
+                                                @Html.TextBoxFor(m => m.PACIENTE.PACI_NR_CPF, new { @class = "form-control", @readonly = "readonly" })
+                                            </div>
+                                        }
+                                        @if (Model.PACIENTE.PACI_NR_CELULAR != null)
+                                        {
+                                            <div class="col-lg-2 col-md-2 col-xs-12">
+                                                Celular
+                                                @Html.TextBoxFor(m => m.PACIENTE.PACI_NR_CELULAR, new { @class = "form-control", @readonly = "readonly"  })
+                                            </div>
+                                        }
+                                        @if (Model.PACIENTE.PACI_NR_TELEFONE != null)
+                                        {
+                                            <div class="col-lg-2 col-md-2 col-xs-12">
+                                                Telefone
+                                                @Html.TextBoxFor(m => m.PACIENTE.PACI_NR_TELEFONE, new { @class = "form-control", @readonly = "readonly"  })
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">                
+                                        <div class="col-lg-4 col-md-4 col-xs-12">
+                                            Indicado por
+                                            @Html.TextBoxFor(m => m.PACIENTE.PACI_NM_INDICACAO, new { @class = "form-control", @readonly = "readonly" })
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <h4 style="margin-left: 0px; color: green; background-color: beige; font-weight:bold">Informações da Consulta</h4>
+                                    <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">                
+                                        <div class="col-lg-2 col-md-2 col-xs-12">
+                                            Tipo de Consulta
+                                            @Html.TextBoxFor(m => m.VALOR_CONSULTA.VACO_NM_NOME, new { @class = "form-control", @readonly = "readonly"})
+                                        </div>
+                                        <div class="col-lg-2 col-md-2 col-xs-12">
+                                            @Html.HiddenFor(m => m.PACI_CD_ID)
+                                            @Html.HiddenFor(m => m.PACO_IN_ATIVO)
+                                            @Html.HiddenFor(m => m.PACO_IN_ENCERRADA)
+                                            @Html.HiddenFor(m => m.USUA_CD_ID)
+                                            @Html.HiddenFor(m => m.ASSI_CD_ID)
+                                            @Html.HiddenFor(m => m.PACO_CD_ID)
+                                            @Html.HiddenFor(m => m.VACO_CD_ID)
+                                            @Html.HiddenFor(m => m.VACO1_CD_ID)
+                                            @Html.HiddenFor(m => m.PACO_IN_RECORRENTE)
+                                            @Html.HiddenFor(m => m.PACO_IN_RECEBE)
+                                            Data da Consulta
+                                            @Html.TextBoxFor(m => m.PACO_DT_CONSULTA, "{0:dd/MM/yyyy}", new { @class = "form-control", @id = "dn", @readonly = "readonly", @style = "color: darkblue; font-weight: bold" })
+                                        </div>
+                                        <div class="col-lg-2 col-md-2 col-xs-12">
+                                            Início
+                                            @Html.TextBoxFor(m => m.PACO_HR_INICIO, new { @class = "form-control", @id = "hora", @readonly = "readonly" })
+                                        </div>
+                                        <div class="col-lg-2 col-md-2 col-xs-12">
+                                            Final
+                                            @Html.TextBoxFor(m => m.PACO_HR_FINAL, new { @class = "form-control", @id = "hora1", @readonly = "readonly" })
+                                        </div>
+                                        @if (Model.PACO_IN_CONFIRMADA == 1)
+                                        {
+                                            <div class="col-lg-2 col-md-2 col-xs-12" style="color: ">
+                                                Consulta - Status
+                                                @Html.TextBoxFor(m => m.Situacao, new { @class = "form-control", @readonly = "readonly", @style = "color: green; font-weight: bold; background-color: beige" })
+                                            </div>
+                                        }
+                                        else if (Model.PACO_IN_CONFIRMADA == 3)
+                                        {
+                                            <div class="col-lg-2 col-md-2 col-xs-12">
+                                                Consulta - Status
+                                                @Html.TextBoxFor(m => m.Situacao, new { @class = "form-control", @readonly = "readonly", @style = "color: darkblue; font-weight: bold; background-color: aliceblue" })
+                                            </div>
+                                        }
+                                        @if (Model.PACO_IN_CONFIRMADA == 1)
+                                        {
+                                            if ((Int32)Session["Pisca"] == 0)
+                                            {
+                                                <div class="col-lg-2 col-md-2 col-xs-12">
+                                                    <button type="button" class="btn btn-sm btn-success" onclick="if (confirm('Confirma o encerramento dessa consulta?')) { window.location.href='@Url.Action("EncerrarConsulta", "Paciente2")'; }">
+                                                        Encerrar Consulta
+                                                    </button>  
+                                                </div>
+                                            }
+                                            else
+                                            {
+                                                <div class="col-lg-2 col-md-2 col-xs-12">
+                                                    <button type="button" class="btn btn-sm btn-success pisca" onclick="if (confirm('Confirma o encerramento dessa consulta?')) { window.location.href='@Url.Action("EncerrarConsulta", "Paciente2")'; }">
+                                                        Encerrar Consulta
+                                                    </button>  
+                                                </div>
+                                            }
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        </div>                 
+                        
+                        <div class="row">
+                            @if ((Int32)Session["BlocoAnamnese"] == 1)
+                            {
+                                if (ViewBag.FlagEdt == 1)
+                                {
+                                    <div class="col-lg-6 col-md-6 col-xs-12">
+                                        <h4 style="margin-left: -15px; color:green; background-color: beige; font-weight:bold">Anamnese Atualizada</h4>
+                                        <div class="row">
+                                            <div class="form-group" style=" margin-left: 0px; margin-right: 0px;">    
+                                                <a href="@Url.Action("EditarAnamneseCompletaFormProcesso", "Paciente")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Preencher/Revisar a anamnese do paciente" class="btn btn-sm btn-primary" OnClick = "Fade()">Preencher/Revisar</a>                
+                                                <a href="@Url.Action("VerAnamneseCompletaChamada", "Paciente2")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Visualizar a anamnese do paciente" class="btn btn-sm btn-warning" OnClick = "Fade()">Visualizar</a>                
+                                                <a href="@Url.Action("VerAnexoPacienteConsulta", "Paciente2")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Gerenciar/Visualiazar os anexos desta consulta" class="btn btn-sm btn-warning" OnClick = "Fade()">Anexos</a>                
+                                                <a href="@Url.Action("VerInformacaoPreviaPacienteBase", "Paciente2")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Visualizar os avisos de informações prévias do paciente" class="btn btn-sm btn-warning" OnClick = "Fade()">Avisos</a>                
+                                                @if (ViewBag.TemFicha == 1)
+                                                {
+                                                    <a href="@Url.Action("VerFichaPacienteConsulta", "Paciente2")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Consultar as fichas digitalizadas do paciente" class="btn btn-sm btn-warning" OnClick = "Fade()">Fichas</a>                
+                                                }
+                                                <a href="@Url.Action("VerAnotacaoAnamneseBase", "Paciente2")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Gerenciar/Visualiazar as anotações desta consulta" class="btn btn-sm btn-warning" OnClick = "Fade()">Acompanhamento</a>                
+                                                <a href="@Url.Action("GerarAnamnesePDFNova", "Paciente")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Imprimir a anamnese completa" class="btn btn-sm btn-warning" OnClick = "Fade()">Imprimir</a>                
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                                <div class="col-lg-12 col-md-12 col-xs-12">
+                                                    Motivo da Consulta
+                                                    @Html.TextAreaFor(m => m.PAAN_DS_MOTIVO_CONSULTA, new { @class = "form-control", style = "width: 98%; height: 150px; overflow:auto", @readonly="readonly"  })
+                                                </div>
+                                            </div>
+                                            <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                                <div class="col-lg-12 col-md-12 col-xs-12">
+                                                    Queixa Principal
+                                                    @Html.TextAreaFor(m => m.PAAN_DS_QUEIXA_PRINCIPAL, new { @class = "form-control", style = "width: 98%; height: 150px; overflow:auto", @readonly="readonly"  })
+                                                </div>
+                                            </div>
+                                            <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                                <div class="col-lg-12 col-md-12 col-xs-12">
+                                                    História Familiar
+                                                    @Html.TextAreaFor(m => m.PAAN_DS_HISTORIA_FAMILIAR, new { @class = "form-control", style = "width: 98%; height: 150px; overflow:auto", @readonly="readonly"  })
+                                                </div>
+                                            </div>
+                                            <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                                <div class="col-lg-12 col-md-12 col-xs-12">
+                                                    História da Doença Atual
+                                                    @Html.TextAreaFor(m => m.PAAN_DS_HISTORIA_DOENCA_ATUAL, new { @class = "form-control", style = "width: 98%; height: 150px; overflow:auto", @readonly="readonly"  })
+                                                </div>
+                                            </div>
+                                            <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                                <div class="col-lg-12 col-md-12 col-xs-12">
+                                                    Diagnóstico
+                                                    @Html.TextAreaFor(m => m.PAAM_DS_DIAGNOSTICO_1_LONG, new { @class = "form-control", style = "width: 98%; height: 200px; overflow:auto", @readonly="readonly"  })
+                                                </div>
+                                            </div>
+                                            <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                                <div class="col-lg-12 col-md-12 col-xs-12">
+                                                    Conduta Adotada
+                                                    @Html.TextAreaFor(m => m.PAAN_DS_CONDUTA, new { @class = "form-control", style = "width: 98%; height: 200px; overflow:auto", @readonly="readonly"  })
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="col-lg-6 col-md-6 col-xs-12">
+                                        <h4 style="margin-left: -15px; color:green; background-color: beige; font-weight:bold">Anamnese Atualizada</h4>
+                                        <div class="row">
+                                            <div class="form-group" style=" margin-left: 0px; margin-right: 0px;">    
+                                                <a href="@Url.Action("EditarAnamneseCompletaFormContinua", "Paciente2")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Preencher/Revisar a anamnese do paciente" class="btn btn-sm btn-warning" OnClick = "Fade()">Preencher/Revisar</a>                
+                                                <a href="@Url.Action("VerAnexoPacienteConsulta", "Paciente2")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Gerenciar/Visualiazar os anexos desta consulta" class="btn btn-sm btn-warning" OnClick = "Fade()">Anexos</a>                
+                                                <a href="@Url.Action("VerInformacaoPreviaPacienteBase", "Paciente2")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Visualizar os avisos de informações prévias do paciente" class="btn btn-sm btn-warning" OnClick = "Fade()">Avisos</a>                
+                                                @if (ViewBag.TemFicha == 1)
+                                                {
+                                                    <a href="@Url.Action("VerFichaPacienteConsulta", "Paciente2")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Consultar as fichas digitalizadas do paciente" class="btn btn-sm btn-warning" OnClick = "Fade()">Fichas</a>                
+                                                }
+                                                <a href="@Url.Action("VerAnotacaoAnamneseBase", "Paciente2")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Gerenciar/Visualiazar as anotações desta consulta" class="btn btn-sm btn-warning" OnClick = "Fade()">Acompanhamento</a>                
+                                                <a href="@Url.Action("GerarAnamnesePDFNova", "Paciente")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Imprimir a anamnese completa" class="btn btn-sm btn-warning" OnClick = "Fade()">Imprimir</a>                
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                                <div class="col-lg-12 col-md-12 col-xs-12">
+                                                    Anamnese do Paciente
+                                                    @Html.TextAreaFor(m => m.PAAN_TX_COMPLETA, new { @class = "form-control", style = "width: 98%; height: 770px; overflow:auto", @readonly="readonly"  })
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            }
+                            else
+                            {
+                                <div class="col-lg-6 col-md-6 col-xs-12">
+                                    <h4 style="margin-left: -15px; color:green; background-color: beige; font-weight:bold">Anamnese Atualizada</h4>
+                                    <div class="row">
+                                        <div class="form-group" style=" margin-left: 0px; margin-right: 0px;">    
+                                            <a href="@Url.Action("EditarAnamneseCompletaFormProcessoSono", "Paciente2")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Preencher/Revisar a anamnese do paciente" class="btn btn-sm btn-primary" OnClick = "Fade()">Preencher/Revisar</a>                
+                                            <a href="@Url.Action("VerAnamneseCompletaChamadaSono", "Paciente2")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Visualizar a anamnese do paciente" class="btn btn-sm btn-warning" OnClick = "Fade()">Visualizar</a>                
+                                            <a href="@Url.Action("VerAnexoPacienteConsulta", "Paciente2")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Gerenciar/Visualiazar os anexos desta consulta" class="btn btn-sm btn-warning" OnClick = "Fade()">Anexos</a>                
+                                            <a href="@Url.Action("VerInformacaoPreviaPacienteBase", "Paciente2")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Visualizar os avisos de informações prévias do paciente" class="btn btn-sm btn-warning" OnClick = "Fade()">Avisos</a>                
+                                            @if (ViewBag.TemFicha == 1)
+                                            {
+                                                <a href="@Url.Action("VerFichaPacienteConsulta", "Paciente2")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Consultar as fichas digitalizadas do paciente" class="btn btn-sm btn-warning" OnClick = "Fade()">Fichas</a>                
+                                            }
+                                            <a href="@Url.Action("VerAnotacaoAnamneseBase", "Paciente2")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Gerenciar/Visualiazar as anotações desta consulta" class="btn btn-sm btn-warning" OnClick = "Fade()">Acompanhamento</a>                
+                                            <a href="@Url.Action("GerarAnamnesePDFNovaSono", "Paciente2")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Imprimir a anamnese completa" class="btn btn-sm btn-warning" OnClick = "Fade()">Imprimir</a>                
+                                        </div>
+                                    </div>
+                                    <h5 style="margin-left: 0px; color:brown; background-color: beige; font-weight:bold">São exibidas apenas algumas informações da anamnese. Para ver completa selecione a opção de editar/revisar ou a visualização</h5>
+                                    <div class="row">
+                                        <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                            <div class="col-lg-12 col-md-12 col-xs-12">
+                                                Principal queixa do sono
+                                                @Html.TextAreaFor(m => m.PAAM_DS_SONO_PRINCIPAL_QUEIXA, new { @class = "form-control", style = "width: 98%; height: 150px; overflow:auto", @readonly="readonly"  })
+                                            </div>
+                                        </div>
+                                        <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                            <div class="col-lg-12 col-md-12 col-xs-12">
+                                                Sintomas
+                                                @Html.TextAreaFor(m => m.PAAM_DS_SONO_SINTOMAS, new { @class = "form-control", style = "width: 98%; height: 150px; overflow:auto", @readonly="readonly"  })
+                                            </div>
+                                        </div>
+                                        <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                            <div class="col-lg-12 col-md-12 col-xs-12">
+                                                Polissonografia
+                                                @Html.TextAreaFor(m => m.PAAM_DS_SONO_POLISONO, new { @class = "form-control", style = "width: 98%; height: 150px; overflow:auto", @readonly="readonly"  })
+                                            </div>
+                                        </div>
+                                        <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                            <div class="col-lg-12 col-md-12 col-xs-12">
+                                                Medicamentos e outras substâncias em uso
+                                                @Html.TextAreaFor(m => m.PAAM_DS_SONO_MEDICAMENTOS, new { @class = "form-control", style = "width: 98%; height: 150px; overflow:auto", @readonly="readonly"  })
+                                            </div>
+                                        </div>
+                                        <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                            <div class="col-lg-12 col-md-12 col-xs-12">
+                                                Comorbidades
+                                                @Html.TextAreaFor(m => m.PAAM_DS_SONO_COMORBIDADES, new { @class = "form-control", style = "width: 98%; height: 150px; overflow:auto", @readonly="readonly"  })
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+
+                            <div class="col-lg-6 col-md-6 col-xs-12">
+                                <h4 style="margin-left: -15px; color:green; background-color: beige; font-weight:bold">Exame Físico Atualizado</h4>
+                                <div class="row">
+                                    <div class="form-group" style=" margin-left: 0px; margin-right: 0px;">                
+                                        <a href="@Url.Action("EditarFisicoCompletoFormProcesso", "Paciente")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Preencher/Revisar as informações do exame físico do paciente" class="btn btn-sm btn-primary" OnClick = "Fade()">Preencher/Revisar</a>                
+                                        <a href="@Url.Action("VerEvolucaoDadosBasicos", "Paciente2")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Visualizar a evolução do exame físico" class="btn btn-sm btn-warning" OnClick = "Fade()">Evolução do Exame Físico</a>                
+                                        <a href="@Url.Action("GerarExameFisicoPDFNova", "Paciente")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Imprimir as informações do exame físico do paciente" class="btn btn-sm btn-warning" OnClick = "Fade()">Imprimir</a>                
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                        <div class="col-lg-12 col-md-12 col-xs-12">
+                                            Ficha de Avaliacao
+                                            @Html.TextAreaFor(m => m.PAEF_DS_FICHA_AVALIACAO, new { @class = "form-control", style = "width: 100%; height: 80px; overflow:auto;", @readonly="readonly" })
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                        <div class="col-lg-3 col-md-3 col-xs-12">
+                                            Pres.Diastólica (mmHg)
+                                            @Html.TextBoxFor(m => m.PAEF_NR_PA_ALTA, new { @class = "form-control", @readonly="readonly" })
+                                        </div>
+                                        <div class="col-lg-3 col-md-3 col-xs-12">
+                                            Pres. Sistólica (mmHg)
+                                            @Html.TextBoxFor(m => m.PAEF_NR_PA_BAIXA, new { @class = "form-control", @readonly="readonly" })
+                                        </div>
+                                        <div class="col-lg-3 col-md-3 col-xs-12">
+                                            Freq.   Cardíaca (bpm)
+                                            @Html.TextBoxFor(m => m.PAEF_NR_FREQUENCIA_CARDIACA, new { @class = "form-control", @readonly="readonly" })
+                                        </div>
+                                        <div class="col-lg-3 col-md-3 col-xs-12">
+                                            Temperatura (oC)
+                                            @Html.TextBoxFor(m => m.PAEF_NR_TEMPERATURA, new { @class = "form-control", @readonly="readonly" })
+                                        </div>
+                                    </div>
+                                    <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                        <div class="col-lg-3 col-md-3 col-xs-12">
+                                            Peso (Kg)
+                                            @Html.TextBoxFor(m => m.PAEF_NR_PESO, new { @class = "form-control", @readonly="readonly" })
+                                        </div>
+                                        <div class="col-lg-3 col-md-3 col-xs-12">
+                                            Altura (Cm)
+                                            @Html.TextBoxFor(m => m.PAEF_NR_ALTURA, new { @class = "form-control", @readonly="readonly" })
+                                        </div>
+                                        <div class="col-lg-3 col-md-3 col-xs-12">
+                                            IMC (Kg/m2)
+                                            @Html.TextBoxFor(m => m.PAEF_VL_IMC , new { @class = "form-control", @readonly="readonly" })
+                                        </div>
+                                        @if (Model.Idade > 0)
+                                        {
+                                            <div class="col-lg-2 col-md-2 col-xs-12">
+                                                Idade
+                                                @Html.TextBoxFor(m => m.Idade, new { @class = "form-control", @readonly = "readonly" })
+                                            </div>
+                                        }
+                                    </div>
+                                    <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                        <div class="col-lg-12 col-md-12 col-xs-12">
+                                            Resultados de Exames
+                                            @Html.TextAreaFor(m => m.PAEF_TX_RESULTADOS, new { @class = "form-control", style = "width: 100%; height: 400px; overflow:auto", @readonly="readonly"  })
+                                        </div>
+                                    </div>
+                                    <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                        <div class="col-lg-12 col-md-12 col-xs-12">
+                                            Observações
+                                            @Html.TextAreaFor(m => m.PAEF_DS_EXAME_FISICO, new { @class = "form-control", style = "width: 100%; height: 200px; overflow:auto", @readonly="readonly"  })
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                            @if (Model.PACO_IN_CONFIRMADA == 1)
+                            {
+                                if ((Int32)Session["Pisca"] == 0)
+                                {
+                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                        <button type="button" class="btn btn-sm btn-success" onclick="if (confirm('Confirma o encerramento dessa consulta?')) { window.location.href='@Url.Action("EncerrarConsulta", "Paciente2")'; }">
+                                            Encerrar Consulta
+                                        </button>  
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                        <button type="button" class="btn btn-sm btn-success pisca" onclick="if (confirm('Confirma o encerramento dessa consulta?')) { window.location.href='@Url.Action("EncerrarConsulta", "Paciente2")'; }">
+                                            Encerrar Consulta
+                                        </button>  
+                                    </div>
+                                }
+                            }
+                        </div>
+                    </div>
+                }
+            </div>
+         </div>
+    </div>
+</div>
+
+@section Styles {
+    <link href="~/Content/themes/base/jquery-ui.min.css" rel="stylesheet" />
+    <link href="~/Content/themes/base/all.css" rel="stylesheet" />
+    <link href="~/Content/jquery.datetimepicker.css" rel="stylesheet" />
+    @Styles.Render("~/Content/plugins/dataTables/dataTablesStyles")
+    @Styles.Render("~/plugins/jasnyBootstrapStyles")
+    @Styles.Render("~/plugins/toastrStyles")
+    @Styles.Render("~/Content/plugins/iCheck/iCheckStyles")
+    @Styles.Render("~/plugins/touchSpinStyles")
+    @Styles.Render("~/plugins/sweetAlertStyles")
+    @Styles.Render("~/plugins/toastrStyles")
+
+}
+@section Scripts {
+    <script src="~/Scripts/jquery.datetimepicker.full.min.js"></script>
+    <script type="text/javascript" src="~/Scripts/moment.min.js"></script>
+    <script type="text/javascript" src="~/Scripts/bootstrap.min.js"></script>
+    <script type="text/javascript" src="~/Scripts/jquery.datetimepicker"></script>
+
+    @Scripts.Render("~/plugins/toastr")
+    <script src="~/Scripts/jquery-ui-1.12.1.min.js"></script>
+    @Scripts.Render("~/plugins/dataTables")
+    @Scripts.Render("~/bundles/inputmask")
+    @Scripts.Render("~/plugins/jasnyBootstrap")
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.maskedinput/1.4.1/jquery.maskedinput.js"></script>
+    <script src="~/Scripts/uploadAnexo.js"></script>
+    <script src="~/Scripts/jquery-ui-1.12.1.min.js"></script>
+    @Scripts.Render("~/plugins/toastr")
+    @Scripts.Render("~/plugins/dataTables")
+    @Scripts.Render("~/bundles/inputmask")
+    @Scripts.Render("~/plugins/jasnyBootstrap")
+    @Scripts.Render("~/plugins/sparkline")
+    @Scripts.Render("~/plugins/switchery")
+    @Scripts.Render("~/plugins/touchSpin")
+    @Scripts.Render("~/plugins/iCheck")
+    @Scripts.Render("~/plugins/sweetAlert")
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.maskedinput/1.4.1/jquery.maskedinput.js"></script>
+    <script src="~/Scripts/uploadAnexo.js"></script> 
+       
+    <script type="text/javascript" language="javascript">
+        $(function () {
+            $('.date-picker').datepicker(
+                {
+                    dateFormat: 'dd/mm/yy',
+                    dayNames: ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'],
+                    dayNamesMin: ['D', 'S', 'T', 'Q', 'Q', 'S', 'S', 'D'],
+                    dayNamesShort: ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'],
+                    monthNames: ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'],
+                    monthNamesShort: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'],
+                    nextText: 'Proximo',
+                    prevText: 'Anterior',
+                    showOn: "focus"
+                }
+            )
+                .css("display", "normal")
+                .next("button").button({
+                    icons: { primary: "ui-icon-calendar" },
+                    label: "Selecione uma data",
+                    text: false
+                });
+        });
+    </script>
+    <script type="text/javascript">
+        $(function () {
+            $("#dn").mask("99/99/9999");
+            $("#dp").mask("99/99/9999");
+        });
+    </script>
+    <script type="text/javascript">
+        $(function () {
+            $('.time-picker').datetimepicker({
+                datepicker: false,
+                format: 'H:i'
+            });
+            $('.time-picker1').datetimepicker({
+                datepicker: false,
+                format: 'H:i'
+            });
+        });
+    </script>
+    <script type="text/javascript">
+        $(function () {
+            $('#datetimepicker3').click(function () {
+                $('.time-picker').datetimepicker('show');
+            });
+        });
+    </script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            var i = -1;
+            var toastCount = 0;
+            var $toastlast;
+            var getMessage = function () {
+                var msg = 'Hi, welcome to Inspinia. This is example of Toastr notification box.';
+                return msg;
+            };
+
+            $('#basictoast').click(function () {
+                // Display a success toast, with a title
+                toastr.success('Edição em andamento!')
+            });
+            $('#showtoast').click(function () {
+                var shortCutFunction = $("#toastTypeGroup input:radio:checked").val();
+                var msg = $('#message').val();
+                var title = $('#title').val() || '';
+                var $showDuration = $('#showDuration');
+                var $hideDuration = $('#hideDuration');
+                var $timeOut = $('#timeOut');
+                var $extendedTimeOut = $('#extendedTimeOut');
+                var $showEasing = $('#showEasing');
+                var $hideEasing = $('#hideEasing');
+                var $showMethod = $('#showMethod');
+                var $hideMethod = $('#hideMethod');
+                var toastIndex = toastCount++;
+                toastr.options = {
+                    closeButton: $('#closeButton').prop('checked'),
+                    debug: $('#debugInfo').prop('checked'),
+                    progressBar: $('#progressBar').prop('checked'),
+                    positionClass: $('#positionGroup input:radio:checked').val() || 'toast-top-right',
+                    onclick: null
+                };
+                if ($('#addBehaviorOnToastClick').prop('checked')) {
+                    toastr.options.onclick = function () {
+                        alert('You can perform some custom action after a toast goes away');
+                    };
+                }
+                if ($showDuration.val().length) {
+                    toastr.options.showDuration = $showDuration.val();
+                }
+                if ($hideDuration.val().length) {
+                    toastr.options.hideDuration = $hideDuration.val();
+                }
+                if ($timeOut.val().length) {
+                    toastr.options.timeOut = $timeOut.val();
+                }
+                if ($extendedTimeOut.val().length) {
+                    toastr.options.extendedTimeOut = $extendedTimeOut.val();
+                }
+                if ($showEasing.val().length) {
+                    toastr.options.showEasing = $showEasing.val();
+                }
+                if ($hideEasing.val().length) {
+                    toastr.options.hideEasing = $hideEasing.val();
+                }
+                if ($showMethod.val().length) {
+                    toastr.options.showMethod = $showMethod.val();
+                }
+                if ($hideMethod.val().length) {
+                    toastr.options.hideMethod = $hideMethod.val();
+                }
+                if (!msg) {
+                    msg = getMessage();
+                }
+                $("#toastrOptions").text("Command: toastr["
+                        + shortCutFunction
+                        + "](\""
+                        + msg
+                        + (title ? "\", \"" + title : '')
+                        + "\")\n\ntoastr.options = "
+                        + JSON.stringify(toastr.options, null, 2)
+                );
+                var $toast = toastr[shortCutFunction](msg, title); // Wire up an event handler to a button in the toast, if it exists
+                $toastlast = $toast;
+                if ($toast.find('#okBtn').length) {
+                    $toast.delegate('#okBtn', 'click', function () {
+                        alert('you clicked me. i was toast #' + toastIndex + '. goodbye!');
+                        $toast.remove();
+                    });
+                }
+                if ($toast.find('#surpriseBtn').length) {
+                    $toast.delegate('#surpriseBtn', 'click', function () {
+                        alert('Surprise! you clicked me. i was toast #' + toastIndex + '. You could perform an action here.');
+                    });
+                }
+            });
+            function getLastToast() {
+                return $toastlast;
+            }
+            $('#clearlasttoast').click(function () {
+                toastr.clear(getLastToast());
+            });
+            $('#cleartoasts').click(function () {
+                toastr.clear();
+            });
+
+        });
+    </script>
+
+
+    @if (ViewBag.Message != null)
+    {
+        <script type="text/javascript">
+            window.onload = function () {
+                  alert("@ViewBag.Message");
+            };
+        </script>
+    }
+}

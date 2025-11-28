@@ -1,0 +1,576 @@
+﻿@using Presentation.Extensions
+@model ERP_Condominios_Solution.ViewModels.ProdutoViewModel
+@{
+    Layout = "~/Views/Shared/_Layout_Admin.cshtml";
+}
+
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="page-title">
+        <h3 class="title">Materiais/Produtos</h3>
+        <br />
+        <ol class="breadcrumb">
+            <li>
+                <a href="@Url.Action("MontarTelaPaciente", "Paciente")">Dashboard</a>
+            </li>
+            <li>
+                <a href="@Url.Action("MontarTelaProduto", "Produto")">Materiais/Produtos</a>
+            </li>
+            <li class="active">
+                <strong>Materiais/Produtos - Inclusão</strong>
+            </li>
+        </ol>
+        <br />
+    </div>
+
+    @*TABS - PRINCIPAL*@
+    <div class="row">
+        <div class="col-lg-12 col-md-12 col-xs-12">
+            <div class="col-lg-12 col-md-12 col-xs-12 ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>Materiais/Produtos - Inclusão</h5>
+                </div>
+                <div class="ibox-content">
+                    @if (!ViewData.ModelState.IsValid)
+                    {
+                        <div class="alert alert-danger">
+                            <button type="button" class="close" data-dismiss="alert">Fechar</button>
+                            @Html.ValidationSummary(false, "", new { @class = "text-danger" })
+                        </div>
+                    }
+                    <div class="tabs-container">
+                        @using (Html.BeginForm("IncluirProduto", "Produto", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal", @id = "pwd-container1" }))
+                        {
+                            <div class="form-group">
+                                <br />
+                                @Html.ButtonActionSubmit(text: "BtnSubmit", htmlAttributes: new { id = "submit", style = "display: none;" })
+                                <button style="margin-left: 15px;" class="btnSubmit btn btn-sm btn-success" id="basictoast" type="button">Confirma e Prossegue para a Edição do Material/Produto</button>
+                                @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarBaseProduto", controller: "Produto")
+                                <a href="@Url.Action((String)Session["AjudaNivel"])"  class="btn btn-sm btn-danger" target="_blank">Ajuda</a>                
+                            </div>
+                            <ul class="nav nav-tabs">
+                                <li class="active"><a data-toggle="tab" href="#tab-1">Informações do Material/Produto</a></li>
+                            </ul>
+                            <div class="tab-content">
+
+                                @*Dados Gerais*@
+                                <div id="tab-1" class="tab-pane active">
+                                    <div class="panel-body">
+                                        <div class="row">
+                                            <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Identificação</h4>
+                                            <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                                <div class="col-lg-2 col-md-2 col-xs-12">
+                                                    Tipo*
+                                                    @Html.DropDownListFor(m => m.PROD_IN_TIPO_PRODUTO, (SelectList)ViewBag.Tipos, "Selecionar", new { @class = "form-control", autofocus = true, @id = "tipo1", onchange = "ValidaTipo($(this).val())" })
+                                                    @Html.ValidationMessageFor(m => m.PROD_IN_TIPO_PRODUTO, "", new { @style = "color:red" })
+                                                </div>
+                                                <div class="col-lg-3 col-md-3 col-xs-12">
+                                                    @Html.HiddenFor(m => m.PROD_CD_ID)
+                                                    @Html.HiddenFor(m => m.ASSI_CD_ID)
+                                                    @Html.HiddenFor(m => m.PROD_DT_CADASTRO)
+                                                    @Html.HiddenFor(m => m.PROD_DT_ALTERACAO)
+                                                    @Html.HiddenFor(m => m.PROD_IN_ATIVO)
+                                                    @Html.HiddenFor(m => m.PROD_AQ_FOTO)
+                                                    @Html.HiddenFor(m => m.PROD_VL_PRECO_ANTERIOR)
+                                                    @Html.HiddenFor(m => m.PROD_VL_CVM_PESO)
+                                                    @Html.HiddenFor(m => m.PROD_VL_CVM_RECEITA)
+                                                    @Html.HiddenFor(m => m.PROD_VL_CVM_UNITARIO)
+                                                    @Html.HiddenFor(m => m.PROD_VL_ESTOQUE_ATUAL)
+                                                    @Html.HiddenFor(m => m.PROD_IN_PECA)
+                                                    @Html.HiddenFor(m => m.PROD_IN_COMPOSTO)
+                                                    @Html.HiddenFor(m => m.PROD_IN_FRACIONADO)
+                                                    @Html.HiddenFor(m => m.PROD_VL_ESTOQUE_RESERVA)
+                                                    @Html.HiddenFor(m => m.PROD_IN_SISTEMA)
+                                                    Categoria*
+                                                    <div class="input-group">
+                                                        @Html.DropDownListFor(m => m.CAPR_CD_ID, (SelectList)ViewBag.Cats, "Selecionar", new { @class = "form-control", autofocus = true, onchange = "FiltrarSubCategoriaProduto($(this).val())", id = "catProd" })
+                                                        @Html.ValidationMessageFor(m => m.CAPR_CD_ID, "", new { @style = "color:red" })
+                                                        <span class="input-group-addon">
+                                                            @Html.TableLinkAction("IncluirCategoriaProduto", "Produto", null, "glyphicon glyphicon-plus", "Adicionar Categoria")
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-3 col-md-3 col-xs-12">
+                                                    Subcategoria
+                                                    <div class="input-group">
+                                                        @Html.DropDownListFor(m => m.SCPR_CD_ID, (SelectList)ViewBag.Subs, "Selecionar", new { @class = "form-control", autofocus = true, id = "subCatProd" })
+                                                        @Html.ValidationMessageFor(m => m.SCPR_CD_ID, "", new { @style = "color:red" })
+                                                        <span class="input-group-addon">
+                                                            @Html.TableLinkAction("IncluirSubCategoriaProduto", "Produto", null, "glyphicon glyphicon-plus", "Adicionar SubCategoria")
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                                <div class="col-lg-2 col-md-2 col-xs-12">
+                                                    Código (SKU)
+                                                    @Html.TextBoxFor(m => m.PROD_CD_CODIGO, new { @class = "form-control", autofocus = true, @style = "color: green; font-wheight: bold", data_toggle = "popover", data_content = "Informe o código que você atribuirá ao material/produto == OPCIONAL", data_trigger="hover", data_placement="top" })
+                                                    @Html.ValidationMessageFor(m => m.PROD_CD_CODIGO, "", new { @style = "color:red" })
+                                                </div>
+                                                <div class="col-lg-2 col-md-2 col-xs-12">
+                                                    Código Barras
+                                                    @Html.TextBoxFor(m => m.PROD_NR_BARCODE, new { @class = "form-control", autofocus = true, @style = "color: green; font-wheight: bold", data_toggle = "popover", data_content = "Informe o código de barras do material/produto == OPCIONAL", data_trigger="hover", data_placement="top" })
+                                                    @Html.ValidationMessageFor(m => m.PROD_NR_BARCODE, "", new { @style = "color:red" })
+                                                </div>
+                                                <div class="col-lg-2 col-md-2 col-xs-12">
+                                                    Unidade
+                                                    @Html.DropDownListFor(m => m.UNID_CD_ID, (SelectList)ViewBag.Unidades, "Selecionar", new { @class = "form-control", autofocus = true, id = "unid" })
+                                                    @Html.ValidationMessageFor(m => m.UNID_CD_ID, "", new { @style = "color:red" })
+                                                </div>
+                                                <div class="col-lg-6 col-md-6 col-xs-12">
+                                                    Fornecedor
+                                                    @Html.TextBoxFor(m => m.PROD_NM_FORNECEDOR, new { @class = "form-control", autofocus = true, @style = "color: green; font-wheight: bold", data_toggle = "popover", data_content = "Informe o nome do fornecedor deste produto/material == OPCIONAL", data_trigger="hover", data_placement="top" })
+                                                    @Html.ValidationMessageFor(m => m.PROD_NM_FORNECEDOR, "", new { @style = "color:red" })
+                                                </div>
+                                            </div>
+                                            <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                                <div class="col-lg-12 col-md-4 col-xs-12">
+                                                    Nome*
+                                                    @Html.TextBoxFor(m => m.PROD_NM_NOME, new { @class = "form-control", autofocus = true, @style = "color: green; font-wheight: bold" })
+                                                    @Html.ValidationMessageFor(m => m.PROD_NM_NOME, "", new { @style = "color:red" })
+                                                </div>
+                                            </div>
+                                            <div class="form-group" style=" margin-left: -15px; margin-right: -15px;" id="dados">
+                                                <div class="col-lg-3 col-md-3 col-xs-12">
+                                                    Marca
+                                                    @Html.TextBoxFor(m => m.PROD_NM_MARCA, new { @class = "form-control", autofocus = true })
+                                                    @Html.ValidationMessageFor(m => m.PROD_NM_MARCA, "", new { @style = "color:red" })
+                                                </div>
+                                                <div class="col-lg-3 col-md-3 col-xs-12">
+                                                    Modelo
+                                                    @Html.TextBoxFor(m => m.PROD_NM_MODELO, new { @class = "form-control", autofocus = true })
+                                                    @Html.ValidationMessageFor(m => m.PROD_NM_MODELO, "", new { @style = "color:red" })
+                                                </div>
+                                                <div class="col-lg-3 col-md-3 col-xs-12">
+                                                    Fabricante
+                                                    @Html.TextBoxFor(m => m.PROD_NM_FABRICANTE, new { @class = "form-control", autofocus = true })
+                                                    @Html.ValidationMessageFor(m => m.PROD_NM_FABRICANTE, "", new { @style = "color:red" })
+                                                </div>
+                                                <div class="col-lg-3 col-md-3 col-xs-12">
+                                                    Referência
+                                                    @Html.TextBoxFor(m => m.PROD_NR_REFERENCIA, new { @class = "form-control", autofocus = true })
+                                                    @Html.ValidationMessageFor(m => m.PROD_NR_REFERENCIA, "", new { @style = "color:red" })
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Descrição</h4>
+                                            <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                                <div class="col-lg-6 col-md-6 col-xs-12">
+                                                    Descrição do Material/Produto
+                                                    @Html.TextAreaFor(m => m.PROD_DS_DESCRICAO, new { @class = "form-control", style = "width: 100%; height: 50px;", autofocus = true })
+                                                    @Html.ValidationMessageFor(m => m.PROD_DS_DESCRICAO, "", new { @style = "color:red" })
+                                                </div>
+                                                <div class="col-lg-6 col-md-6 col-xs-12">
+                                                    Informações do Material/Produto
+                                                    @Html.TextAreaFor(m => m.PROD_DS_INFORMACOES, new { @class = "form-control", style = "width: 100%; height: 50px;", autofocus = true })
+                                                    @Html.ValidationMessageFor(m => m.PROD_DS_INFORMACOES, "", new { @style = "color:red" })
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="row" id="preco">
+                                            <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Valores</h4>
+                                            <div class="form-group" >       
+                                                <h5 style="color: brown; background-color:antiquewhite; font-weight: bold; margin-left: 15px; margin-right: 15px;">Se for especificado um percentual de desconto o preço de promoção será automaticamente calculado</h5>
+                                            </div>
+                                            <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                                <div class="col-lg-2 col-md-2 col-xs-12" style="color: green; font-weight: bold" id="venda">
+                                                    Preço Venda (R$)
+                                                    @Html.TextBoxFor(m => m.PrecoVenda, new { @class = "form-control", autofocus = true, data_toggle = "popover", data_content = "Informe o preço pelo qual seu produto será vendido", data_trigger="hover", data_placement="top", onfocus="this.select();" })
+                                                    @Html.ValidationMessageFor(m => m.PrecoVenda, "", new { @style = "color:red" })
+                                                </div>
+                                                <div class="col-lg-2 col-md-2 col-xs-12" id="promo">
+                                                    Preço Promoção (R$)
+                                                    @Html.TextBoxFor(m => m.PrecoPromocao, new { @class = "form-control", autofocus = true, data_toggle = "popover", data_content = "Informe o preço promocional para o seu produto", data_trigger="hover", data_placement="top", onfocus="this.select();" })
+                                                    @Html.ValidationMessageFor(m => m.PrecoPromocao, "", new { @style = "color:red" })
+                                                </div>
+                                                <div class="col-lg-2 col-md-2 col-xs-12" id="desc">
+                                                    Desconto (%)
+                                                    @Html.TextBoxFor(m => m.Desconto, new { @class = "form-control", autofocus = true, onfocus="this.select();", data_toggle = "popover", data_content = "Informe o desconto máximo que poderá ser aplicado ao preço de venda", data_trigger="hover", data_placement="top" })
+                                                    @Html.ValidationMessageFor(m => m.Desconto, "", new { @style = "color:red" })
+                                                </div>
+                                                <div class="col-lg-2 col-md-2 col-xs-12" style="color: green; font-weight: bold" id="custo">
+                                                    Preço Custo (R$)
+                                                    @Html.TextBoxFor(m => m.PROD_VL_ULTIMO_CUSTO, new { @class = "form-control", autofocus = true, data_toggle = "popover", data_content = "Informe o preço de custo atual de seu produto", data_trigger="hover", data_placement="top", onfocus="this.select();" })
+                                                    @Html.ValidationMessageFor(m => m.PROD_VL_ULTIMO_CUSTO, "", new { @style = "color:red" })
+                                                </div>
+                                                <div class="col-lg-3 col-md-3 col-xs-12" style="color: green; font-weight: bold" id="estim">
+                                                    Estimativa de Venda ou Consumo/Mês
+                                                    @Html.TextBoxFor(m => m.PROD_VL_MEDIA_VENDA_MENSAL, new { @class = "form-control", autofocus = true, data_toggle = "popover", data_content = "Informe a sua estimativa de mensal para as vendas de seu produto", data_trigger="hover", data_placement="top", onfocus="this.select();" })
+                                                    @Html.ValidationMessageFor(m => m.PROD_VL_MEDIA_VENDA_MENSAL, "", new { @style = "color:red" })
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="row" id="Estoque">
+                                            <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Estoque</h4>
+                                            <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                                <div class="col-lg-2 col-md-2 col-xs-12">
+                                                    Estoque Máximo
+                                                    @Html.TextBoxFor(m => m.PROD_VL_ESTOQUE_MAXIMO, new { @class = "form-control", autofocus = true, onfocus="this.select();" })
+                                                    @Html.ValidationMessageFor(m => m.PROD_VL_ESTOQUE_MAXIMO, "", new { @style = "color:red" })
+                                                </div>
+                                                <div class="col-lg-2 col-md-2 col-xs-12">
+                                                    Estoque Mínimo
+                                                    @Html.TextBoxFor(m => m.PROD_VL_ESTOQUE_MINIMO, new { @class = "form-control", autofocus = true, onfocus="this.select();" })
+                                                    @Html.ValidationMessageFor(m => m.PROD_VL_ESTOQUE_MINIMO, "", new { @style = "color:red" })
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="row">
+                                            <div class="col-lg-6 col-md-6 col-xs-12">
+                                                <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Imagem/Fotografia</h4>
+                                                <div style="margin-left: 15px;" class="col-lg-12 col-md-12 col-xs-12">
+                                                    <div class="form-group">
+                                                        <input type="file" accept=".jpg, .png, .jpeg, .gif|images/*" name="file" id="imgProduto" class="btn btn-sm btn-warning" multiple />
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-lg-6 col-md-6 col-xs-12">
+                                                <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Anexos</h4>
+                                                <div class="col-lg-12 col-md-12 col-xs-12">
+                                                    <input class="btn btn-sm btn-warning" id="inputFile" type="file" multiple />
+                                                    <br />
+                                                    <div class="form-group">
+                                                        <div class="ibox-content">
+                                                            <br />
+                                                            <table style="width: 100%;" class="table table-striped table-bordered table-hover dataTables-example" id="myFiles">
+                                                                <thead style="background-color:lightsteelblue">
+                                                                    <tr>
+                                                                        <td>Nome</td>
+                                                                        <td>Tipo</td>
+                                                                        <td>Ações</td>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody></tbody>
+                                                            </table>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>                                            
+                                            
+                                        <div class="row">
+                                            <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Observações</h4>
+                                            <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                                <div class="col-lg-12 col-md-12 col-xs-12">
+                                                    Observações
+                                                    @Html.TextAreaFor(m => m.PROD_TX_OBSERVACOES, new { @class = "form-control", style = "width: 100%; height: 400px;", autofocus = true })
+                                                    @Html.ValidationMessageFor(m => m.PROD_TX_OBSERVACOES, "", new { @style = "color:red" })
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <br />
+                                    @Html.ButtonActionSubmit(text: "BtnSubmit", htmlAttributes: new { id = "submit", style = "display: none;" })
+                                    <button style="margin-left: 15px;" class="btnSubmit btn btn-sm btn-success" id="basictoast" type="button">Confirma e Prossegue para a Edição do Material/Produto</button>
+                                    @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaProduto", controller: "Produto")
+                                    <a href="@Url.Action((String)Session["AjudaNivel"])"  class="btn btn-sm btn-danger" target="_blank">Ajuda</a>                
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>  
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <link href="~/Content/themes/base/jquery-ui.min.css" rel="stylesheet" />
+    <link href="~/Content/themes/base/all.css" rel="stylesheet" />
+    @Styles.Render("~/Content/plugins/dataTables/dataTablesStyles")
+    @Styles.Render("~/plugins/jasnyBootstrapStyles")
+    @Styles.Render("~/plugins/toastrStyles")
+}
+@section Scripts {
+    @Scripts.Render("~/plugins/toastr")
+    <script src="~/Scripts/jquery-ui-1.12.1.min.js"></script>
+    @Scripts.Render("~/plugins/dataTables")
+    @Scripts.Render("~/bundles/inputmask")
+    @Scripts.Render("~/plugins/jasnyBootstrap")
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.maskedinput/1.4.1/jquery.maskedinput.js"></script>    
+    <script src="~/Scripts/uploadAnexo.js"></script>
+
+    <script type="text/javascript" src="~/Scripts/moment.min.js"></script>
+    <script type="text/javascript" src="~/Scripts/bootstrap.min.js"></script>
+   
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('[data-toggle="popover"]').popover();
+        });
+    </script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-toggle="popover"]'));
+            var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
+                return new bootstrap.Popover(popoverTriggerEl);
+            });
+        });
+    </script>
+
+    <!-- Handler de fechamento do browser -->
+    <script type="text/javascript">
+        window.onbeforeunload = function ()
+        {
+            navigator.sendBeacon('../ControleAcesso/LogSessionTime');
+        }; 
+    </script>
+
+
+    <script type="text/javascript">
+        function ValidaTipo(valTipo) {
+            if (valTipo == '1') {
+                $("#preco").show();
+                $("#venda").hide();
+                $("#promo").hide();
+                $("#desc").hide();
+            } else if (valTipo == '2') {
+                $("#preco").show();
+                $("#venda").show();
+                $("#promo").show();
+                $("#desc").show();
+            }
+
+            var data = {
+                id: valTipo
+            }
+
+            var objCatProduto = $('select#catProd');
+
+            // Requisição para o controller
+            $.ajax({
+                url: '@Url.Action("FiltrarCategoriaTipo", "Produto")'
+                , type: 'POST'
+                , data: data
+                , success: function (r) {
+                    // Remove todos os itens da lista e adiciona o placeholder
+                    objCatProduto.children('option').remove();
+                    objCatProduto.append('<option>Selecionar</option>');
+
+                    // Loop para adicionar Itens específicos à categoria
+                    r.forEach(function (e) {
+                        if (r.length > 1) {
+                            objCatProduto.append('<option value="' + e.CAPR_CD_ID + '">' + e.CAPR_NM_NOME + '</option>');
+                        } else {
+                            objCatProduto.append('<option selected="selected" value="' + e.CAPR_CD_ID + '">' + e.CAPR_NM_NOME + '</option>');
+                        }
+
+                    });
+
+                    //console.log(r);
+                }
+            });
+        }
+        $(document).ready(function () {
+            ValidaTipo($('#tipo1').val());
+        });
+    </script>    
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            var i = -1;
+            var toastCount = 0;
+            var $toastlast;
+            var getMessage = function () {
+                var msg = 'Hi, welcome to Inspinia. This is example of Toastr notification box.';
+                return msg;
+            };
+
+            $('#basictoast').click(function () {
+                // Display a success toast, with a title
+                toastr.success('Inclusão em andamento!')
+            });
+            $('#showtoast').click(function () {
+                var shortCutFunction = $("#toastTypeGroup input:radio:checked").val();
+                var msg = $('#message').val();
+                var title = $('#title').val() || '';
+                var $showDuration = $('#showDuration');
+                var $hideDuration = $('#hideDuration');
+                var $timeOut = $('#timeOut');
+                var $extendedTimeOut = $('#extendedTimeOut');
+                var $showEasing = $('#showEasing');
+                var $hideEasing = $('#hideEasing');
+                var $showMethod = $('#showMethod');
+                var $hideMethod = $('#hideMethod');
+                var toastIndex = toastCount++;
+                toastr.options = {
+                    closeButton: $('#closeButton').prop('checked'),
+                    debug: $('#debugInfo').prop('checked'),
+                    progressBar: $('#progressBar').prop('checked'),
+                    positionClass: $('#positionGroup input:radio:checked').val() || 'toast-top-right',
+                    onclick: null
+                };
+                if ($('#addBehaviorOnToastClick').prop('checked')) {
+                    toastr.options.onclick = function () {
+                        alert('You can perform some custom action after a toast goes away');
+                    };
+                }
+                if ($showDuration.val().length) {
+                    toastr.options.showDuration = $showDuration.val();
+                }
+                if ($hideDuration.val().length) {
+                    toastr.options.hideDuration = $hideDuration.val();
+                }
+                if ($timeOut.val().length) {
+                    toastr.options.timeOut = $timeOut.val();
+                }
+                if ($extendedTimeOut.val().length) {
+                    toastr.options.extendedTimeOut = $extendedTimeOut.val();
+                }
+                if ($showEasing.val().length) {
+                    toastr.options.showEasing = $showEasing.val();
+                }
+                if ($hideEasing.val().length) {
+                    toastr.options.hideEasing = $hideEasing.val();
+                }
+                if ($showMethod.val().length) {
+                    toastr.options.showMethod = $showMethod.val();
+                }
+                if ($hideMethod.val().length) {
+                    toastr.options.hideMethod = $hideMethod.val();
+                }
+                if (!msg) {
+                    msg = getMessage();
+                }
+                $("#toastrOptions").text("Command: toastr["
+                    + shortCutFunction
+                    + "](\""
+                    + msg
+                    + (title ? "\", \"" + title : '')
+                    + "\")\n\ntoastr.options = "
+                    + JSON.stringify(toastr.options, null, 2)
+                );
+                var $toast = toastr[shortCutFunction](msg, title); // Wire up an event handler to a button in the toast, if it exists
+                $toastlast = $toast;
+                if ($toast.find('#okBtn').length) {
+                    $toast.delegate('#okBtn', 'click', function () {
+                        alert('you clicked me. i was toast #' + toastIndex + '. goodbye!');
+                        $toast.remove();
+                    });
+                }
+                if ($toast.find('#surpriseBtn').length) {
+                    $toast.delegate('#surpriseBtn', 'click', function () {
+                        alert('Surprise! you clicked me. i was toast #' + toastIndex + '. You could perform an action here.');
+                    });
+                }
+            });
+            function getLastToast() {
+                return $toastlast;
+            }
+            $('#clearlasttoast').click(function () {
+                toastr.clear(getLastToast());
+            });
+            $('#cleartoasts').click(function () {
+                toastr.clear();
+            });
+
+        });
+    </script>
+
+    <script>
+        function FiltrarSubCategoriaProduto(CAPR_CD_ID) {
+            var data = {
+                id: CAPR_CD_ID
+            }
+
+            var objSubCatProduto = $('select#subCatProd');
+
+            // Requisição para o controller
+            $.ajax({
+                url: '../Produto/FiltrarSubCategoriaProduto'
+                , type: 'POST'
+                , data: data
+                , success: function (r) {
+                    // Remove todos os itens da lista e adiciona o placeholder
+                    objSubCatProduto.children('option').remove();
+                    objSubCatProduto.append('<option>Selecionar</option>');
+
+                    // Loop para adicionar Itens específicos à categoria
+                    r.forEach(function (e) {
+                        objSubCatProduto.append('<option value="' + e.SCPR_CD_ID + '">' + e.SCPR_NM_NOME + '</option>');
+                    });
+
+                    //console.log(r);
+                }
+            });
+        }
+
+        function FiltrarCategoriaProduto(SCPR_CD_ID) {
+            var data = {
+                id: SCPR_CD_ID
+            }
+
+            var objCatProduto = $('select#catProd');
+
+            // Requisição para o controller
+            $.ajax({
+                url: '../Produto/FiltrarCategoriaProduto'
+                , type: 'POST'
+                , data: data
+                , success: function (r) {
+                    // Remove todos os itens da lista e adiciona o placeholder
+                    objCatProduto.children('option').remove();
+                    objCatProduto.append('<option>Selecionar</option>');
+
+                    // Loop para adicionar Itens específicos à categoria
+                    r.forEach(function (e) {
+                        if (r.length > 1) {
+                            objCatProduto.append('<option value="' + e.CAPR_CD_ID + '">' + e.CAPR_NM_NOME + '</option>');
+                        } else {
+                            objCatProduto.append('<option selected="selected" value="' + e.CAPR_CD_ID + '">' + e.CAPR_NM_NOME + '</option>');
+                        }
+
+                    });
+
+                    //console.log(r);
+                }
+            });
+        }
+
+        function FiltrarUnidade(PROD_IN_FRACIONADO) {
+            var data = {
+                id: PROD_IN_FRACIONADO
+            }
+
+            var objUnid = $('select#unid');
+
+            // Requisição para o controller
+            $.ajax({
+                url: '../Produto/FiltrarUnidade'
+                , type: 'POST'
+                , data: data
+                , success: function (r) {
+                    // Remove todos os itens da lista e adiciona o placeholder
+                    objUnid.children('option').remove();
+                    objUnid.append('<option>Selecionar</option>');
+
+                    // Loop para adicionar Itens específicos
+                    r.forEach(function (e) {
+                        objUnid.append('<option value="' + e.UNID_CD_ID + '">' + e.UNID_NM_NOME + '</option>');
+                    });
+                }
+            });
+        }
+    </script>
+
+    <script>
+        SendFilesV2('imgProduto', 'Produto', 'UploadFileToSession');
+    </script>
+
+    @if (ViewBag.Message != null)
+    {
+        <script type="text/javascript">
+            window.onload = function () {
+                  alert("@ViewBag.Message");
+            };
+        </script>
+    }
+}

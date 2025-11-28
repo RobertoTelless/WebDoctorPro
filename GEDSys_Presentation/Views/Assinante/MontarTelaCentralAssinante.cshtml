@@ -1,0 +1,930 @@
+﻿@using Presentation.Extensions
+@model ERP_Condominios_Solution.ViewModels.AssinanteViewModel
+@{
+    Layout = "~/Views/Shared/_Layout_Admin.cshtml";
+}
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div id="containerModalDesc">
+        <div class="modal fade" id="modalDesc" tabindex="-1" role="dialog" aria-labelledby="modalDesc" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="modalDesc">Descrição do Plano</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div id="modalDescBody" class="modal-body">
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="page-title">
+        <h3 class="title">Assinantes</h3>
+        <br />
+        <ol class="breadcrumb">
+            <li>
+                <a href="@Url.Action("MontarTelaPaciente", "BaseAdmin")">Dashboard Inicial</a>
+            </li>
+            <li class="active">
+                <strong>Central do Assinante</strong>
+            </li>
+        </ol>
+        <br />
+    </div>
+
+    <div class="row">
+        <div class="col-lg-12 col-md-12 col-xs-12">
+            <div class="col-lg-12 col-md-12 col-xs-12 ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>Central do Assinante</h5>
+                </div>
+                <div class="ibox-content">
+                    @Html.AntiForgeryToken()
+                    @if (!ViewData.ModelState.IsValid)
+                    {
+                        <div class="alert alert-danger">
+                            <button type="button" class="close" data-dismiss="alert">Fechar</button>
+                            @Html.ValidationSummary(false, "", new { @class = "text-danger" })
+                        </div>
+                    }
+                    <div class="form-group">
+                        @Html.ButtonLinkIndex(text: "Gerar Relatório Detalhe", action: "GerarRelatorioDetalhe", controller: "Assinante")
+                        @Html.ButtonLinkIndex(text: "Contato com Suporte", action: "ContatoSuporte", controller: "Assinante")
+                        @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaPaciente", controller: "BaseAdmin")
+                    </div>
+                    <div class="tabs-container">
+                        <ul class="nav nav-tabs">
+                            <li class="active"><a data-toggle="tab" href="#tab-1">Dados Gerais</a></li>
+                            <li class=""><a data-toggle="tab" href="#tab-2">Logotipo</a></li>
+                            <li class=""><a data-toggle="tab" href="#tab-4">Plano de Assinatura</a></li>
+                            <li class=""><a data-toggle="tab" href="#tab-5">Consumos do Plano</a></li>
+                            <li class=""><a data-toggle="tab" href="#tab-9">Pagamentos</a></li>
+                        </ul>
+
+                        <div class="tab-content">
+                            @*Dados Gerais*@
+                            <div id="tab-1" class="tab-pane active">
+                                <div class="panel-body">
+                                    @using (Html.BeginForm("MontarTelaCentralAssinante", "Assinante", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal", @id = "pwd-container1" }))
+                                    {
+                                        <div class="row" style="width: 100%;">
+                                            <div class="col-lg-3 col-md-3 col-xs-12">
+                                                <div style="text-align: center; margin-top: 20px; line-height: 10px;">
+                                                    @Html.HiddenFor(m => m.ASSI_CD_ID)
+                                                    @Html.HiddenFor(m => m.ASSI_AQ_FOTO)
+                                                    @Html.HiddenFor(m => m.ASSI_IN_ATIVO)
+                                                    @Html.HiddenFor(m => m.ASSI_IN_BLOQUEADO)
+                                                    @Html.HiddenFor(m => m.ASSI_IN_TIPO)
+                                                    @Html.HiddenFor(m => m.ASSI_NM_BAIRRO)
+                                                    @Html.HiddenFor(m => m.ASSI_NM_CIDADE)
+                                                    @Html.HiddenFor(m => m.ASSI_NM_COMPLEMENTO)
+                                                    @Html.HiddenFor(m => m.ASSI_NM_ENDERECO)
+                                                    @Html.HiddenFor(m => m.ASSI_NR_CEP)
+                                                    @Html.HiddenFor(m => m.ASSI_NR_NUMERO)
+                                                    @Html.HiddenFor(m => m.ASSI_TX_OBSERVACOES)
+                                                    @Html.HiddenFor(m => m.UF_CD_ID)
+                                                    @Html.HiddenFor(m => m.TIPE_CD_ID)
+                                                    @Html.HiddenFor(m => m.PLAN_CD_ID)
+                                                    @if (!String.IsNullOrEmpty(Model.ASSI_AQ_FOTO))
+                                                    {
+                                                        <img src="@Url.Content(Model.ASSI_AQ_FOTO)" style="width: auto; height: auto; max-height: 250px; max-width: 250px;">
+                                                    }
+                                                    else
+                                                    {
+                                                        <img src="~/Imagens/Base/icone_imagem.jpg" style="width: auto; height: auto; max-height: 250px; max-width: 250px;">
+                                                    }
+                                                    <br />
+                                                    <br />
+                                                    <br />
+                                                    <br />
+                                                    <br />
+                                                </div>
+                                            </div>
+                                            <div class="col-md-9">
+                                                <div class="row">
+                                                    <h4 style="margin-left: 15px; color:saddlebrown; background-color: beige; font-weight:bold">Identificação</h4>
+                                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                                        Tipo de Pessoa
+                                                        @Html.TextBoxFor(m => m.TIPO_PESSOA.TIPE_NM_NOME, new { @class = "form-control", autofocus = true, @readonly = "readonly" })
+                                                    </div>
+                                                    <div class="col-lg-2 col-md-2 col-xs-12" style="color: green; font-weight: bold">
+                                                        Status
+                                                        @Html.TextBoxFor(m => m.Status, new { @class = "form-control", autofocus = true, @readonly = "readonly" })
+                                                    </div>
+                                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                                        Data Inicial
+                                                        @Html.TextBoxFor(m => m.ASSI_DT_INICIO, "{0:dd/MM/yyyy}", new { @class = "form-control", autofocus = true, @id = "dn", @readonly="readonly" })
+                                                    </div>
+                                                    <div class="col-lg-4 col-md-4 col-xs-12">
+                                                        Plano
+                                                        @Html.TextBoxFor(m => m.PLANO.PLAN_NM_NOME, new { @class = "form-control", autofocus = true, @readonly = "readonly" })
+                                                    </div>
+                                                    @if (ViewBag.Vencer == 0)
+                                                    {
+                                                        <div class="col-lg-2 col-md-2 col-xs-12">
+                                                            Encerramento
+                                                            @Html.TextBoxFor(m => m.PLANO.PLAN_DT_VALIDADE, "{0:dd/MM/yyyy}", new { @class = "form-control", autofocus = true, @readonly="readonly", @style = "color:green; font-weight:bold" })
+                                                        </div>
+                                                    }
+                                                    else if (ViewBag.Vencer == 1)
+                                                    {
+                                                        <div class="col-lg-2 col-md-2 col-xs-12">
+                                                            Encerramento
+                                                            @Html.TextBoxFor(m => m.PLANO.PLAN_DT_VALIDADE, "{0:dd/MM/yyyy}", new { @class = "form-control", autofocus = true, @readonly="readonly", @style = "color:red; font-weight:bold" })
+                                                        </div>
+                                                    }
+                                                    else if (ViewBag.Vencer == 2)
+                                                    {
+                                                        <div class="col-lg-2 col-md-2 col-xs-12">
+                                                            Encerramento
+                                                            @Html.TextBoxFor(m => m.PLANO.PLAN_DT_VALIDADE, "{0:dd/MM/yyyy}", new { @class = "form-control", autofocus = true, @readonly="readonly", @style = "color:brown; font-weight:bold" })
+                                                        </div>
+                                                    }
+                                                </div>
+                                                <br />
+                                                <div class="row">
+                                                    <div class="col-lg-4 col-md-4 col-xs-12">
+                                                        Nome
+                                                        @Html.TextBoxFor(m => m.ASSI_NM_NOME, new { @class = "form-control", @readonly = "readonly", autofocus = true, @style = "color:green; font-weight:bold"})
+                                                    </div>
+                                                    @if (Model.TIPE_CD_ID == 2)
+                                                    {
+                                                        <div class="col-lg-2 col-md-2 col-xs-12">
+                                                            CNPJ
+                                                            @Html.TextBoxFor(m => m.ASSI_NR_CNPJ, new { @class = "form-control", @id = "cnpj", autofocus = true, @readonly = "readonly" })
+                                                        </div>
+                                                        <div class="col-lg-5 col-md-5 col-xs-12" id="RS">
+                                                            Razão Social
+                                                            @Html.TextBoxFor(m => m.ASSI_NM_RAZAO_SOCIAL, new { @class = "form-control", autofocus = true, @readonly = "readonly" })
+                                                        </div>
+                                                    }
+                                                    @if (Model.TIPE_CD_ID == 1)
+                                                    {
+                                                        <div class="col-lg-2 col-md-2 col-xs-12">
+                                                            CPF
+                                                            @Html.TextBoxFor(m => m.ASSI_NR_CPF, new { @class = "form-control", @id = "cpf", autofocus = true, @readonly = "readonly" })
+                                                        </div>
+                                                    }
+                                                </div>
+                                                <br />   
+                                                <div class="row">
+                                                    <h4 style="margin-left: 15px; color:saddlebrown; background-color: beige; font-weight:bold">Endereço</h4>
+                                                    <div class="col-lg-4 col-md-4 col-xs-12">
+                                                        Endereço
+                                                        @Html.TextBoxFor(m => m.ASSI_NM_ENDERECO, new { @class = "form-control", @readonly = "readonly", autofocus = true })
+                                                    </div>
+                                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                                        Número
+                                                        @Html.TextBoxFor(m => m.ASSI_NR_NUMERO, new { @class = "form-control", @readonly = "readonly", autofocus = true })
+                                                    </div>
+                                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                                        Complemento
+                                                        @Html.TextBoxFor(m => m.ASSI_NM_COMPLEMENTO, new { @class = "form-control", @readonly = "readonly", autofocus = true })
+                                                    </div>
+                                                    <div class="col-lg-4 col-md-4 col-xs-12">
+                                                        Bairro
+                                                        @Html.TextBoxFor(m => m.ASSI_NM_BAIRRO, new { @class = "form-control", @readonly = "readonly", autofocus = true })
+                                                    </div>
+                                                </div>
+                                                <br />
+                                                <div class="row">
+                                                    <div class="col-lg-4 col-md-4 col-xs-12">
+                                                        Cidade
+                                                        @Html.TextBoxFor(m => m.ASSI_NM_CIDADE, new { @class = "form-control", @readonly = "readonly", autofocus = true })
+                                                    </div>
+                                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                                        UF
+                                                        @Html.TextBoxFor(m => m.UF.UF_NM_NOME, new { @class = "form-control", @readonly = "readonly", autofocus = true })
+                                                    </div>
+                                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                                        CEP
+                                                        @Html.TextBoxFor(m => m.ASSI_NR_CEP, new { @class = "form-control", @readonly = "readonly", autofocus = true })
+                                                    </div>
+                                                </div>
+                                                <br />   
+
+                                                <div class="row">
+                                                    <h4 style="margin-left: 15px; color:saddlebrown; background-color: beige; font-weight:bold">Contatos</h4>
+                                                    <div class="col-lg-3 col-md-3 col-xs-12">
+                                                        E-Mail*
+                                                        @Html.TextBoxFor(m => m.ASSI_NM_EMAIL, new { @class = "form-control", autofocus = true})
+                                                        @Html.ValidationMessageFor(m => m.ASSI_NM_EMAIL, "", new { @style = "color:red" })
+                                                    </div>
+                                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                                        Telefone
+                                                        @Html.TextBoxFor(m => m.ASSI_NR_TELEFONE, new { @class = "form-control", autofocus = true, @id = "tel"})
+                                                        @Html.ValidationMessageFor(m => m.ASSI_NR_TELEFONE, "", new { @style = "color:red" })
+                                                    </div>
+                                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                                        Celular
+                                                        @Html.TextBoxFor(m => m.ASSI_NR_CELULAR, new { @class = "form-control", autofocus = true, @id = "cel"})
+                                                        @Html.ValidationMessageFor(m => m.ASSI_NR_CELULAR, "", new { @style = "color:red" })
+                                                    </div>
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            @Html.ButtonActionSubmit(text: "Confirma edição do Assinante", htmlAttributes: new { id = "basictoast" })
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+
+                            @*Imagens *@
+                            <div id="tab-2" class="tab-pane">
+                                <div class="panel-body">
+                                    <div class="row">
+                                        <div class="col-lg-3 col-md-3 col-xs-12">
+                                            <div class="form-group">
+                                                <div class="col-lg-12 col-md-12 col-sm-12">
+                                                    <br />
+                                                    @if (!String.IsNullOrEmpty(Model.ASSI_AQ_FOTO))
+                                                    {
+                                                        <img src="@Url.Content(Model.ASSI_AQ_FOTO)" style="width: auto; height: auto; max-height: 250px; max-width: 250px;">
+                                                    }
+                                                    else
+                                                    {
+                                                        <img src="~/Imagens/Base/icone_imagem.jpg" style="width: auto; height: auto; max-height: 250px; max-width: 250px;">
+                                                    }
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-lg-9 col-md-9 col-xs-12">
+                                            <div class="form-group">
+                                                <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Logotipo</h4>
+                                                @using (Html.BeginForm("UploadFotoAssinante", "Assinante", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { enctype = "multipart/form-data", @id = "pwd-container3" }))
+                                                {
+                                                    <div class="form-group">
+                                                        <div class="col-lg-12 col-md-12 col-xs-12">
+                                                            <input style="float: left; margin-right: 5px;" type="file" accept=".jpg, .png, .jpeg, .gif|images/*" name="file" id="file" class="btn btn-sm btn-warning" />
+                                                            <input style="float: left;" type="submit" value="Incluir Logotipo" class="btn btn-sm btn-success" />
+                                                        </div>
+                                                    </div>
+                                                }
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                       
+                            @*Planos*@
+                            <div id="tab-4" class="tab-pane">
+                                <div class="panel-body">
+                                    <div class="row">
+                                        <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                            <div class="col-lg-12 col-md-12 col-xs-12">
+                                                <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Plano de Assinatura</h4>
+                                                <br />
+                                                @if (Model.ASSINANTE_PLANO != null && Model.ASSINANTE_PLANO.Where(p => p.ASPL_IN_SISTEMA == 2).ToList().Count > 0)
+                                                {
+                                                    <table class="table table-striped table-bordered table-hover dataTables-example">
+                                                        <thead style="background-color:lightsteelblue">
+                                                            <tr>
+                                                                <th style="width: auto">Plano</th>
+                                                                <th style="width: auto">Nome</th>
+                                                                <th style="width: auto">Periodicidade</th>
+                                                                <th style="width: auto">Preço (R$)</th>
+                                                                <th style="width: auto">Início</th>
+                                                                <th style="width: auto">Encerramento</th>
+                                                                <th style="width: auto">Validade</th>
+                                                                <th style="width: auto">Situação</th>
+                                                                <th class="td-one-action">Ações</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            @foreach (var cond in (Model.ASSINANTE_PLANO.Where(p => p.ASPL_IN_SISTEMA == 2).ToList()))
+                                                            {
+                                                                if (DateTime.Today.Date.AddDays(30) > cond.ASPL_DT_VALIDADE)
+                                                                {
+                                                                    <tr style="background-color: beige">
+                                                                        <td style="cursor: pointer; text-decoration: underline; color: green;" onclick="mostrarDesc('@cond.PLANO.PLAN_DS_DESCRICAO')">@cond.PLANO.PLAN_NM_EXIBE</td>
+                                                                        <td style="width: auto">@cond.PLANO.PLAN_NM_NOME</td>
+                                                                        <td style="width: auto">@cond.PLANO.PLANO_PERIODICIDADE.PLPE_NM_NOME</td>
+                                                                        @if (cond.ASPL_IN_PRECO == 1)
+                                                                        {
+                                                                            <td style="width: auto">@CrossCutting.Formatters.DecimalFormatter(cond.PLANO.PLAN_VL_PRECO.Value)</td>
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            <td style="width: auto">@CrossCutting.Formatters.DecimalFormatter(cond.PLANO.PLAN_VL_PROMOCAO.Value)</td>
+                                                                        }
+                                                                        <td style="width: auto">@cond.ASPL_DT_INICIO.Value.ToShortDateString()</td>
+                                                                        <td style="width: auto">@cond.ASPL_DT_VALIDADE.Value.ToShortDateString()</td>
+                                                                        @if (cond.ASPL_DT_VALIDADE > DateTime.Today.Date)
+                                                                        {
+                                                                            <td style="width: auto"><span class="badge badge-success">Em Curso</span></td>
+                                                                        }
+                                                                        else if (DateTime.Today.Date.AddDays(30) > cond.ASPL_DT_VALIDADE)
+                                                                        {
+                                                                            <td style="width: auto"><span class="badge badge-danger">Menos de 30 dias</span></td>
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            <td style="width: auto"><span class="badge badge-warning">Encerrado</span></td>
+                                                                        }
+                                                                        @if (cond.ASPL_IN_ATIVO == 1)
+                                                                        {
+                                                                            <td style="width: auto"><span class="badge badge-primary">Ativo</span></td>
+                                                                        }
+                                                                        else if (cond.ASPL_IN_ATIVO == 0)
+                                                                        {
+                                                                            <td style="width: auto"><span class="badge badge-danger">Inativo</span></td>
+                                                                        }
+                                                                        else if (cond.ASPL_IN_ATIVO == 2)
+                                                                        {
+                                                                            <td style="width: auto"><span class="badge badge-warning">Bloqueado</span></td>
+                                                                        }
+                                                                        <td class="td-one-action">
+                                                                            @Html.TableLinkDetails(cond.PLAN_CD_ID, "VerPlanoAtivo", "fa-search", "Ver Plano")
+                                                                        </td>
+                                                                    </tr>
+                                                                }
+                                                                else if (cond.ASPL_DT_VALIDADE > DateTime.Today.Date)
+                                                                {
+                                                                    <tr>
+                                                                        <td style="cursor: pointer; text-decoration: underline; color: green;" onclick="mostrarDesc('@cond.PLANO.PLAN_DS_DESCRICAO')">@cond.PLANO.PLAN_NM_EXIBE</td>
+                                                                        <td style="width: auto">@cond.PLANO.PLAN_NM_NOME</td>
+                                                                        <td style="width: auto">@cond.PLANO.PLANO_PERIODICIDADE.PLPE_NM_NOME</td>
+                                                                        @if (cond.ASPL_IN_PRECO == 1)
+                                                                        {
+                                                                            <td style="width: auto">@CrossCutting.Formatters.DecimalFormatter(cond.PLANO.PLAN_VL_PRECO.Value)</td>
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            <td style="width: auto">@CrossCutting.Formatters.DecimalFormatter(cond.PLANO.PLAN_VL_PROMOCAO.Value)</td>
+                                                                        }
+                                                                        <td style="width: auto">@cond.ASPL_DT_INICIO.Value.ToShortDateString()</td>
+                                                                        <td style="width: auto">@cond.ASPL_DT_VALIDADE.Value.ToShortDateString()</td>
+                                                                        @if (cond.ASPL_DT_VALIDADE > DateTime.Today.Date)
+                                                                        {
+                                                                            <td style="width: auto"><span class="badge badge-success">Em Curso</span></td>
+                                                                        }
+                                                                        else if (DateTime.Today.Date.AddDays(30) > cond.ASPL_DT_VALIDADE)
+                                                                        {
+                                                                            <td style="width: auto"><span class="badge badge-danger">Menos de 30 dias</span></td>
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            <td style="width: auto"><span class="badge badge-warning">Encerrado</span></td>
+                                                                        }
+                                                                        @if (cond.ASPL_IN_ATIVO == 1)
+                                                                        {
+                                                                            <td style="width: auto"><span class="badge badge-primary">Ativo</span></td>
+                                                                        }
+                                                                        else if (cond.ASPL_IN_ATIVO == 0)
+                                                                        {
+                                                                            <td style="width: auto"><span class="badge badge-danger">Inativo</span></td>
+                                                                        }
+                                                                        else if (cond.ASPL_IN_ATIVO == 2)
+                                                                        {
+                                                                            <td style="width: auto"><span class="badge badge-warning">Bloqueado</span></td>
+                                                                        }
+                                                                        <td class="td-one-action">
+                                                                            @Html.TableLinkDetails(cond.PLAN_CD_ID, "VerPlanoAtivo", "fa-search", "Ver Plano")
+                                                                        </td>
+                                                                    </tr>
+                                                                }
+                                                                else
+                                                                {
+                                                                    <tr style="background-color: navajowhite">
+                                                                        <td style="cursor: pointer; text-decoration: underline; color: green;" onclick="mostrarDesc('@cond.PLANO.PLAN_DS_DESCRICAO')">@cond.PLANO.PLAN_NM_EXIBE</td>
+                                                                        <td style="width: auto">@cond.PLANO.PLAN_NM_NOME</td>
+                                                                        <td style="width: auto">@cond.PLANO.PLANO_PERIODICIDADE.PLPE_NM_NOME</td>
+                                                                        @if (cond.ASPL_IN_PRECO == 1)
+                                                                        {
+                                                                            <td style="width: auto">@CrossCutting.Formatters.DecimalFormatter(cond.PLANO.PLAN_VL_PRECO.Value)</td>
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            <td style="width: auto">@CrossCutting.Formatters.DecimalFormatter(cond.PLANO.PLAN_VL_PROMOCAO.Value)</td>
+                                                                        }
+                                                                        <td style="width: auto">@cond.ASPL_DT_INICIO.Value.ToShortDateString()</td>
+                                                                        <td style="width: auto">@cond.ASPL_DT_VALIDADE.Value.ToShortDateString()</td>
+                                                                        @if (cond.ASPL_DT_VALIDADE > DateTime.Today.Date)
+                                                                        {
+                                                                            <td style="width: auto"><span class="badge badge-success">Em Curso</span></td>
+                                                                        }
+                                                                        else if (DateTime.Today.Date.AddDays(30) > cond.ASPL_DT_VALIDADE)
+                                                                        {
+                                                                            <td style="width: auto"><span class="badge badge-danger">Menos de 30 dias</span></td>
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            <td style="width: auto"><span class="badge badge-warning">Encerrado</span></td>
+                                                                        }
+                                                                        @if (cond.ASPL_IN_ATIVO == 1)
+                                                                        {
+                                                                            <td style="width: auto"><span class="badge badge-primary">Ativo</span></td>
+                                                                        }
+                                                                        else if (cond.ASPL_IN_ATIVO == 0)
+                                                                        {
+                                                                            <td style="width: auto"><span class="badge badge-danger">Inativo</span></td>
+                                                                        }
+                                                                        else if (cond.ASPL_IN_ATIVO == 2)
+                                                                        {
+                                                                            <td style="width: auto"><span class="badge badge-warning">Bloqueado</span></td>
+                                                                        }
+                                                                        <td class="td-one-action">
+                                                                            @Html.TableLinkDetails(cond.PLAN_CD_ID, "VerPlanoAtivo", "fa-search", "Ver Plano")
+                                                                        </td>
+                                                                    </tr>
+                                                                }
+                                                            }
+                                                        </tbody>
+                                                    </table>
+                                                }
+                                            </div>
+                                        </div>
+                                        </div>
+                                        <div class="form-group">
+                                            @Html.ButtonLinkIndex(text: "Solicitar Alteração de Plano", action: "SolicitarAlteracaoPlano", controller: "Assinante")
+                                        </div>
+                                </div>
+                            </div>                    
+
+                            @*Pagamentos*@
+                            <div id="tab-9" class="tab-pane">
+                                <div class="panel-body">
+                                    <div class="row">
+                                        <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                            <div class="col-lg-12 col-md-12 col-xs-12">
+                                                <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Pagamentos</h4>
+                                                <br />
+                                                @if (Model.ASSINANTE_PAGAMENTO != null && Model.ASSINANTE_PAGAMENTO.Where(p => p.ASPA_IN_SISTEMA == 2).ToList().Count > 0)
+                                                {
+                                                    <table class="table table-striped table-bordered table-hover dataTables-example">
+                                                        <thead style="background-color:lightsteelblue">
+                                                            <tr>
+                                                                <th style="width: auto">Plano</th>
+                                                                <th style="width: auto">Vencimento</th>
+                                                                <th style="width: auto">Valor (R$)</th>
+                                                                <th style="width: auto">Data de Pagamento</th>
+                                                                <th style="width: auto">Valor Pago (R$)</th>
+                                                                <th style="width: auto">Atraso (Dias)</th>
+                                                                <th style="width: auto">Informado</th>
+                                                                <th class="td-one-action">Ações</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            @foreach (var cond in (Model.ASSINANTE_PAGAMENTO.Where(p => p.ASPA_IN_SISTEMA == 2).ToList()))
+                                                            {
+                                                                <tr>
+                                                                    <td style="width: auto">@cond.PLANO.PLAN_NM_NOME</td>
+                                                                    @if (cond.ASPA_IN_PAGO == 0)
+                                                                    {
+                                                                        <td style="width: auto; cursor: pointer; text-decoration: underline;"><a href="@Url.Action("InformarPagamento", "Assinante", new { id = cond.ASPA_CD_ID })" />@cond.ASPA_DT_VENCIMENTO.Value.ToShortDateString()</td>
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        <td style="width: auto">@cond.ASPA_DT_VENCIMENTO.Value.ToShortDateString()</td>
+                                                                    }
+
+                                                                    <td style="width: auto">@CrossCutting.Formatters.DecimalFormatter(cond.ASPA_VL_VALOR.Value)</td>
+                                                                    @if (cond.ASPA_DT_PAGAMENTO != null)
+                                                                    {
+                                                                        <td style="width: auto">@cond.ASPA_DT_PAGAMENTO.Value.ToShortDateString()</td>
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        <td style="width: auto; color: brown">Em Aberto</td>
+                                                                    }
+                                                                    @if (cond.ASPA_VL_VALOR_PAGO != null)
+                                                                    {
+                                                                        <td style="width: auto; color: green; font-weight: bold">@CrossCutting.Formatters.DecimalFormatter(cond.ASPA_VL_VALOR_PAGO.Value)</td>
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        <td style="width: auto">0,00</td>
+                                                                    }
+                                                                    @if (cond.ASPA_DT_PAGAMENTO == null)
+                                                                    {
+                                                                        if (cond.ASPA_NR_ATRASO > 0)
+                                                                        {
+                                                                            if (cond.ASPA_NR_ATRASO < 30)
+                                                                            {
+                                                                                <td style="width: auto; color: brown; font-weight: bold; background-color: beige">@cond.ASPA_NR_ATRASO</td>
+                                                                            }
+                                                                            else if (cond.ASPA_NR_ATRASO < 90)
+                                                                            {
+                                                                                <td style="width: auto; color: brown; font-weight: bold; background-color: antiquewhite">@cond.ASPA_NR_ATRASO</td>
+                                                                            }
+                                                                            else
+                                                                            {
+                                                                                <td style="width: auto; color: brown; font-weight: bold; background-color: navajowhite">@cond.ASPA_NR_ATRASO</td>
+                                                                            }
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            <td style="width: auto">-</td>
+                                                                        }
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        <td style="width: auto">-</td>
+                                                                    }
+                                                                    @if (cond.ASPA_IN_INFORMADO == 1)
+                                                                    {
+                                                                        <td style="width: auto"><span class="badge badge-primary">Sim</span></td>
+                                                                    }
+                                                                    else 
+                                                                    {
+                                                                        <td style="width: auto">-</td>
+                                                                    }
+                                                                    <td class="td-one-action">
+                                                                        @if (cond.ASPA_IN_INFORMADO == 0 & cond.ASPA_DT_PAGAMENTO == null)
+                                                                        {
+                                                                            @Html.TableLinkDetails(cond.ASPA_CD_ID, "InformarPagamento", "fa-microphone", "Informar Pagamento")
+                                                                        }
+                                                                    </td>
+                                                                </tr>
+                                                            }
+                                                        </tbody>
+                                                    </table>
+                                                }
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>                
+
+                            @*Consumos*@
+                            <div id="tab-5" class="tab-pane">
+                                <div class="panel-body">
+                                    <div class="row">
+                                        <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                            <div class="col-lg-12 col-md-12 col-xs-12">
+                                                <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Consumo do Plano</h4>
+                                                <br />
+                                                <div class="row">
+                                                    <div class="col-lg-2">
+                                                        <div class="ibox float-e-margins" style="border-bottom: solid; border-bottom-color: gainsboro; border-bottom-width: 1px; border-left: solid; border-left-color: gainsboro; border-left-width: 1px; border-right: solid; border-right-color: gainsboro; border-right-width: 1px;">
+                                                            <div class="ibox-title"  style="background-color: darkseagreen; color: darkgreen">
+                                                                <span class="label label-primary pull-right">Hoje</span>
+                                                                <h5>Usuários</h5>
+                                                            </div>
+                                                            <div class="ibox-content">
+                                                                <h1 class="no-margins">@ViewBag.NumUsu</h1>
+                                                                <small>Cadastrados</small>
+                                                                <br />
+                                                                <small style="color: green">Plano: @ViewBag.UsuPlano</small>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-lg-2">
+                                                        <div class="ibox float-e-margins" style="border-bottom: solid; border-bottom-color: gainsboro; border-bottom-width: 1px; border-left: solid; border-left-color: gainsboro; border-left-width: 1px; border-right: solid; border-right-color: gainsboro; border-right-width: 1px;">
+                                                            <div class="ibox-title"  style="background-color: darkseagreen; color: darkgreen">
+                                                                <span class="label label-primary pull-right">Hoje</span>
+                                                                <h5>Clientes</h5>
+                                                            </div>
+                                                            <div class="ibox-content">
+                                                                <h1 class="no-margins">@ViewBag.NumCli</h1>
+                                                                <small>Cadastrados</small>
+                                                                <br />
+                                                                <small style="color: green">Plano: @ViewBag.CliPlano</small>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-lg-2">
+                                                        <div class="ibox float-e-margins" style="border-bottom: solid; border-bottom-color: gainsboro; border-bottom-width: 1px; border-left: solid; border-left-color: gainsboro; border-left-width: 1px; border-right: solid; border-right-color: gainsboro; border-right-width: 1px;">
+                                                            <div class="ibox-title"  style="background-color: darkseagreen; color: darkgreen">
+                                                                <span class="label label-primary pull-right">Hoje</span>
+                                                                <h5>Processos</h5>
+                                                            </div>
+                                                            <div class="ibox-content">
+                                                                <h1 class="no-margins">@ViewBag.NumProc</h1>
+                                                                <small>Ativos</small>
+                                                                <br />
+                                                                <small style="color: green">Plano: @ViewBag.ProcPlano</small>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-lg-2">
+                                                        <div class="ibox float-e-margins" style="border-bottom: solid; border-bottom-color: gainsboro; border-bottom-width: 1px; border-left: solid; border-left-color: gainsboro; border-left-width: 1px; border-right: solid; border-right-color: gainsboro; border-right-width: 1px;">
+                                                            <div class="ibox-title"  style="background-color: darkseagreen; color: darkgreen">
+                                                                <span class="label label-primary pull-right">Hoje</span>
+                                                                <h5>Ações</h5>
+                                                            </div>
+                                                            <div class="ibox-content">
+                                                                <h1 class="no-margins">@ViewBag.NumAcoes</h1>
+                                                                <small>Ativas</small>
+                                                                <br />
+                                                                <small style="color: green">Plano: @ViewBag.AcaoPlano</small>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-lg-2">
+                                                        <div class="ibox float-e-margins" style="border-bottom: solid; border-bottom-color: gainsboro; border-bottom-width: 1px; border-left: solid; border-left-color: gainsboro; border-left-width: 1px; border-right: solid; border-right-color: gainsboro; border-right-width: 1px;">
+                                                            <div class="ibox-title"  style="background-color: darkseagreen; color: darkgreen">
+                                                                <span class="label label-primary pull-right">Hoje</span>
+                                                                <h5>Propostas</h5>
+                                                            </div>
+                                                            <div class="ibox-content">
+                                                                <h1 class="no-margins">@ViewBag.NumProps</h1>
+                                                                <small>Ativas</small>
+                                                                <br />
+                                                                <small style="color: green">Plano: @ViewBag.PropPlano</small>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-lg-2">
+                                                        <div class="ibox float-e-margins" style="border-bottom: solid; border-bottom-color: gainsboro; border-bottom-width: 1px; border-left: solid; border-left-color: gainsboro; border-left-width: 1px; border-right: solid; border-right-color: gainsboro; border-right-width: 1px;">
+                                                            <div class="ibox-title"  style="background-color: darkseagreen; color: darkgreen">
+                                                                <span class="label label-primary pull-right">Hoje</span>
+                                                                <h5>Produtos</h5>
+                                                            </div>
+                                                            <div class="ibox-content">
+                                                                <h1 class="no-margins">@ViewBag.NumProd</h1>
+                                                                <small>Cadastrados</small>
+                                                                <br />
+                                                                <small style="color: green">Plano: @ViewBag.ProdPlano</small>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-lg-2">
+                                                        <div class="ibox float-e-margins" style="border-bottom: solid; border-bottom-color: gainsboro; border-bottom-width: 1px; border-left: solid; border-left-color: gainsboro; border-left-width: 1px; border-right: solid; border-right-color: gainsboro; border-right-width: 1px;">
+                                                            <div class="ibox-title"  style="background-color: darkseagreen; color: darkgreen">
+                                                                <span class="label label-primary pull-right">Hoje</span>
+                                                                <h5>Grupos de Clientes</h5>
+                                                            </div>
+                                                            <div class="ibox-content">
+                                                                <h1 class="no-margins">@ViewBag.NumGru</h1>
+                                                                <small>Cadastrados</small>
+                                                                <br />
+                                                                <small style="color: green">Plano: @ViewBag.GrupoPlano</small>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-lg-2">
+                                                        <div class="ibox float-e-margins" style="border-bottom: solid; border-bottom-color: gainsboro; border-bottom-width: 1px; border-left: solid; border-left-color: gainsboro; border-left-width: 1px; border-right: solid; border-right-color: gainsboro; border-right-width: 1px;">
+                                                            <div class="ibox-title"  style="background-color: darkseagreen; color: darkgreen">
+                                                                <span class="label label-primary pull-right">Hoje</span>
+                                                                <h5>E-Mails</h5>
+                                                            </div>
+                                                            <div class="ibox-content">
+                                                                <h1 class="no-margins">@ViewBag.NumEmail</h1>
+                                                                <small>Mês Corrente</small>
+                                                                <br />
+                                                                <small style="color: green">Plano: @ViewBag.MailPlano</small>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-lg-2">
+                                                        <div class="ibox float-e-margins" style="border-bottom: solid; border-bottom-color: gainsboro; border-bottom-width: 1px; border-left: solid; border-left-color: gainsboro; border-left-width: 1px; border-right: solid; border-right-color: gainsboro; border-right-width: 1px;">
+                                                            <div class="ibox-title"  style="background-color: darkseagreen; color: darkgreen">
+                                                                <span class="label label-primary pull-right">Hoje</span>
+                                                                <h5>SMS</h5>
+                                                            </div>
+                                                            <div class="ibox-content">
+                                                                <h1 class="no-margins">@ViewBag.NumSMS</h1>
+                                                                <small>Mês Corrente</small>
+                                                                <br />
+                                                                <small style="color: green">Plano: @ViewBag.SMSPlano</small>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="row">
+                                                    <div class="form-group" style=" margin-left: 15px; margin-right: 15px;">
+                                                        <div class="col-lg-12 col-md-12 col-xs-12">
+                                                            <h4 style="margin-left: 0px; color:saddlebrown; background-color: beige; font-weight:bold">Usuários Cadastrados</h4>
+                                                            <br />
+                                                            @if (Model.USUARIO != null && Model.USUARIO.Count > 0)
+                                                            {
+                                                                <table class="table table-striped table-bordered table-hover dataTables-example">
+                                                                    <thead style="background-color:lightsteelblue">
+                                                                        <tr>
+                                                                            <th style="width: auto">Nome</th>
+                                                                            <th style="width: auto">Login</th>
+                                                                            <th style="width: auto">Data de Cadastro</th>
+                                                                            <th style="width: auto">Ativo</th>
+                                                                            <th style="width: auto">Bloqueado</th>
+                                                                        </tr>
+                                                                    </thead>
+                                                                    <tbody>
+                                                                        @foreach (var cond in (Model.USUARIO))
+                                                                        {
+                                                                            <tr>
+                                                                                <td style="width: auto">@cond.USUA_NM_NOME</td>
+                                                                                <td style="width: auto">@cond.USUA_NM_LOGIN</td>
+                                                                                <td style="width: auto">@cond.USUA_DT_CADASTRO.Value.ToShortDateString()</td>
+                                                                                @if (cond.USUA_IN_ATIVO == 1)
+                                                                                {
+                                                                                    <td style="width: auto">Sim</td>
+                                                                                }
+                                                                                else
+                                                                                {
+                                                                                    <td style="width: auto">Não</td>
+                                                                                }
+                                                                                @if (cond.USUA_IN_BLOQUEADO == 1)
+                                                                                {
+                                                                                    <td style="width: auto">Sim</td>
+                                                                                }
+                                                                                else
+                                                                                {
+                                                                                    <td style="width: auto">Não</td>
+                                                                                }
+                                                                            </tr>
+                                                                        }
+                                                                    </tbody>
+                                                                </table>
+                                                            }
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>           
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <link href="~/Content/themes/base/jquery-ui.min.css" rel="stylesheet" />
+    <link href="~/Content/themes/base/all.css" rel="stylesheet" />
+    @Styles.Render("~/Content/plugins/dataTables/dataTablesStyles")
+    @Styles.Render("~/plugins/jasnyBootstrapStyles")
+    @Styles.Render("~/plugins/toastrStyles")
+    @Styles.Render("~/plugins/touchSpinStyles")
+    @Styles.Render("~/Content/plugins/iCheck/iCheckStyles")
+}
+
+@section Scripts {
+
+    @Scripts.Render("~/plugins/toastr")
+    <script src="~/Scripts/jquery-ui-1.12.1.min.js"></script>
+    @Scripts.Render("~/plugins/dataTables")
+    @Scripts.Render("~/bundles/inputmask")
+    @Scripts.Render("~/plugins/jasnyBootstrap")
+    @Scripts.Render("~/plugins/touchSpin")
+    @Scripts.Render("~/plugins/iCheck")
+    @Scripts.Render("~/plugins/sparkline")
+    @Scripts.Render("~/plugins/switchery")
+    @Scripts.Render("~/plugins/chartjs")
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.maskedinput/1.4.1/jquery.maskedinput.js"></script>
+   
+    <script>
+        function mostrarDesc(desc) {
+            $('#modalDescBody').html(desc);
+            $('#modalDesc').modal('show');
+        }
+    </script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            $('.dataTables-example').DataTable({
+                pageLength: 25,
+                dom: '<"html5buttons"B>lTfgitp',
+                buttons: [
+                    { extend: 'excel', title: 'Excel' },
+
+                    {
+                        extend: 'print',
+                        customize: function (win) {
+                            $(win.document.body).addClass('white-bg');
+                            $(win.document.body).css('font-size', '10px');
+
+                            $(win.document.body).find('table')
+                                .addClass('compact')
+                                .css('font-size', 'inherit');
+                        }
+                    }
+                ]
+            });
+        });
+    </script>
+
+    <script type="text/javascript">
+        $(function () {
+            $("#tel").mask("(99)9999-9999");
+            $("#cel").mask("(99)99999-9999");           
+        });
+    </script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            var i = -1;
+            var toastCount = 0;
+            var $toastlast;
+            var getMessage = function () {
+                var msg = 'Hi, welcome to Inspinia. This is example of Toastr notification box.';
+                return msg;
+            };
+
+            $('#basictoast').click(function () {
+                // Display a success toast, with a title
+                toastr.success('Edição am andamento!')
+            });
+            $('#showtoast').click(function () {
+                var shortCutFunction = $("#toastTypeGroup input:radio:checked").val();
+                var msg = $('#message').val();
+                var title = $('#title').val() || '';
+                var $showDuration = $('#showDuration');
+                var $hideDuration = $('#hideDuration');
+                var $timeOut = $('#timeOut');
+                var $extendedTimeOut = $('#extendedTimeOut');
+                var $showEasing = $('#showEasing');
+                var $hideEasing = $('#hideEasing');
+                var $showMethod = $('#showMethod');
+                var $hideMethod = $('#hideMethod');
+                var toastIndex = toastCount++;
+                toastr.options = {
+                    closeButton: $('#closeButton').prop('checked'),
+                    debug: $('#debugInfo').prop('checked'),
+                    progressBar: $('#progressBar').prop('checked'),
+                    positionClass: $('#positionGroup input:radio:checked').val() || 'toast-top-right',
+                    onclick: null
+                };
+                if ($('#addBehaviorOnToastClick').prop('checked')) {
+                    toastr.options.onclick = function () {
+                        alert('You can perform some custom action after a toast goes away');
+                    };
+                }
+                if ($showDuration.val().length) {
+                    toastr.options.showDuration = $showDuration.val();
+                }
+                if ($hideDuration.val().length) {
+                    toastr.options.hideDuration = $hideDuration.val();
+                }
+                if ($timeOut.val().length) {
+                    toastr.options.timeOut = $timeOut.val();
+                }
+                if ($extendedTimeOut.val().length) {
+                    toastr.options.extendedTimeOut = $extendedTimeOut.val();
+                }
+                if ($showEasing.val().length) {
+                    toastr.options.showEasing = $showEasing.val();
+                }
+                if ($hideEasing.val().length) {
+                    toastr.options.hideEasing = $hideEasing.val();
+                }
+                if ($showMethod.val().length) {
+                    toastr.options.showMethod = $showMethod.val();
+                }
+                if ($hideMethod.val().length) {
+                    toastr.options.hideMethod = $hideMethod.val();
+                }
+                if (!msg) {
+                    msg = getMessage();
+                }
+                $("#toastrOptions").text("Command: toastr["
+                    + shortCutFunction
+                    + "](\""
+                    + msg
+                    + (title ? "\", \"" + title : '')
+                    + "\")\n\ntoastr.options = "
+                    + JSON.stringify(toastr.options, null, 2)
+                );
+                var $toast = toastr[shortCutFunction](msg, title); // Wire up an event handler to a button in the toast, if it exists
+                $toastlast = $toast;
+                if ($toast.find('#okBtn').length) {
+                    $toast.delegate('#okBtn', 'click', function () {
+                        alert('you clicked me. i was toast #' + toastIndex + '. goodbye!');
+                        $toast.remove();
+                    });
+                }
+                if ($toast.find('#surpriseBtn').length) {
+                    $toast.delegate('#surpriseBtn', 'click', function () {
+                        alert('Surprise! you clicked me. i was toast #' + toastIndex + '. You could perform an action here.');
+                    });
+                }
+            });
+            function getLastToast() {
+                return $toastlast;
+            }
+            $('#clearlasttoast').click(function () {
+                toastr.clear(getLastToast());
+            });
+            $('#cleartoasts').click(function () {
+                toastr.clear();
+            });
+
+        });
+    </script>
+    @if (ViewBag.Message != null)
+    {
+        <script type="text/javascript">
+            window.onload = function () {
+                  alert("@ViewBag.Message");
+            };
+        </script>
+    }
+}
+

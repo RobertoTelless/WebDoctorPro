@@ -1,0 +1,246 @@
+﻿@using Presentation.Extensions
+@using CrossCutting;
+@model EntitiesServices.Model.ACESSO_METODO
+@{
+    Layout = "~/Views/Shared/_Layout_Admin.cshtml";
+    ViewBag.Title = "WebDoctor - Acessos";
+    ViewBag.MetaDescription = "WebDoctor - Acessos - Lista geral de acessos";
+    ViewBag.MetaKeywords = "WebDoctor, acesso, ip";
+}
+
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="page-title">
+        <ol class="breadcrumb">
+            <li>
+                <a href="@Url.Action("MontarTelaPaciente", "Paciente")">Dashboard</a>
+            </li>
+            <li>
+                <a href="@Url.Action("MontarTelaControleAcessoNova", "BaseAdmin")">Acessos - Resumo</a>
+            </li>
+            <li class="active">
+                <strong>Acessos - Total</strong>
+            </li>
+        </ol>
+        <br />
+    </div>  
+
+    <div class="row">
+        <div class="col-lg-12 col-md-12 col-xs-12">
+            <div class="col-lg-12 col-md-12 col-xs-12 ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>Filtros</h5>
+                </div>
+
+                @using (Html.BeginForm("FiltrarAcessoTotal", "BaseAdmin", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal" }))
+                {
+                    <div class="ibox-content">
+                        <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                            @if ((String)Session["PerfilSigla"] == "ADM")
+                            {
+                                <div class="col-lg-2 col-md-2 col-xs-12">
+                                    Usuário
+                                    @Html.DropDownListFor(m => m.USUA_CD_ID, (SelectList)ViewBag.Usuarios, "Selecionar", new { @class = "form-control" , autofocus = true})
+                                </div>
+                            }
+                            @if ((Int32)Session["EscopoAcesso"] < 3)
+                            {
+                                <div class="col-lg-2 col-md-2 col-xs-12">
+                                    Data Início
+                                    @Html.TextBoxFor(m => m.ACES_DT_ACESSO, "{0:dd/MM/yyyy}", new { @class = "form-control date-picker", autofocus = true, @id="data1" })
+                                </div>
+                                <div class="col-lg-2 col-md-2 col-xs-12">
+                                    Data Final
+                                    @Html.TextBoxFor(m => m.ACES_DT_DUMMY, "{0:dd/MM/yyyy}", new { @class = "form-control date-picker", autofocus = true, @id="data2" })
+                                </div>
+                            }
+                            <div class="col-lg-2 col-md-2 col-xs-12">
+                                Sigla da Operação
+                                @Html.TextBoxFor(m => m.ACES_SG_ACESSO, new { @class = "form-control", autofocus = true })
+                            </div>
+                            <div class="col-lg-2 col-md-2 col-xs-12">
+                                Entidade
+                                @Html.TextBoxFor(m => m.ACES_NM_CONTROLLER, new { @class = "form-control", autofocus = true })
+                            </div>
+                            <div class="col-lg-2 col-md-2 col-xs-12">
+                                Função
+                                @Html.TextBoxFor(m => m.ACES_NM_METHOD, new { @class = "form-control", autofocus = true })
+                            </div>
+                        </div>
+                        <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                            <div class="col-lg-12 col-md-12 col-xs-12">
+                                @Html.ButtonActionSubmit(text: "Filtrar")
+                                @Html.ButtonLinkIndex(text: "Retirar Filtro", controller: "BaseAdmin", action: "RetirarFiltroAcessoTotal")
+                                @Html.ButtonLinkIndex(text: "Voltar", controller: "BaseAdmin", action: "MontarTelaControleAcessoNova")
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-12 col-md-12 col-xs-12">
+            <div class="col-lg-12 col-md-12 col-xs-12 ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>Registros de Acessos</h5>
+                </div>
+                <div class="ibox-content">
+                    @if (!ViewData.ModelState.IsValid)
+                    {
+                        <div class="alert alert-danger">
+                            <button type="button" class="close" data-dismiss="alert">Fechar</button>
+                            @Html.ValidationSummary(false, "", new { @class = "text-danger" })
+                        </div>
+                    }
+                    <div class="row">
+                        @if ((Int32)Session["EscopoAcesso"] == 1)
+                        {
+                            <h4 style="color:green; font-weight: bold; background-color:beige">Todos registros de acessos</h4>
+                        }
+                        @if ((Int32)Session["EscopoAcesso"] == 2)
+                        {
+                            <h4 style="color:green; font-weight: bold; background-color:beige">Registros de acesso do mês corrente</h4>
+                        }
+                        @if ((Int32)Session["EscopoAcesso"] == 3)
+                        {
+                            <h4 style="color:green; font-weight: bold; background-color:beige">Registros de acesso da data corrente</h4>
+                        }
+                        @if (ViewBag.Listas != null &&(ViewBag.Listas as List<EntitiesServices.Model.ACESSO_METODO>).Count > 0)
+                        {
+                            <table class="table table-striped table-bordered table-hover dataTables-example">
+                                <thead style="background-color:lightsteelblue">
+                                    <tr>
+                                        <th style="width: auto">Nome do Usuário</th>
+                                        <th style="width: auto">Data do Acesso</th>
+                                        <th style="width: auto">Sigla da Operação</th>
+                                        <th style="width: auto">Entidade (Controlador)</th>
+                                        <th style="width: auto">Função (Método)</th>
+                                        <th style="width: auto">IP</th>
+                                        <th style="width: 0.01px"></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var cond in (ViewBag.Listas as List<EntitiesServices.Model.ACESSO_METODO>).OrderBy(p => p.USUA_CD_ID).ThenByDescending(p => p.ACES_DT_ACESSO))
+                                    {
+                                        <tr>
+                                            <td style="width: auto">@cond.USUARIO.USUA_NM_NOME</td>
+                                            <td style="width: auto">@cond.ACES_DT_ACESSO.Value.ToShortDateString() @cond.ACES_DT_ACESSO.Value.ToShortTimeString()</td>
+                                            <td style="width: auto">@cond.ACES_SG_ACESSO</td>
+                                            <td style="width: auto">@cond.ACES_NM_CONTROLLER</td>
+                                            <td style="width: auto">@cond.ACES_NM_METHOD</td>
+                                            <td style="width: auto">@cond.ACES_IP_IP_LOGIN</td>
+                                            <td style="width: 0.05px"></td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        }
+                        else
+                        {
+                            <div class="row">
+                                <div class="col-lg-2 col-md-2 col-xs-2">
+
+                                </div>
+                                <div style="border: 5px solid #F6A54A; padding: 10px; border-radius: 8px 8px; " class="col-lg-8 col-md-8 col-xs-8">
+                                    <h2 style="font-weight: bold">Sua pesquisa não retornou nenhum resultado ou nenhum acesso registrado</h2>
+                                    @Html.ButtonLinkIndex(text: "Retirar Filtro", controller: "BaseAdmin", action: "RetirarFiltroAcessoTotal")
+                                </div>
+                                <div class="col-lg-2 col-md-2 col-xs-2">
+
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <link href="~/Content/themes/base/jquery-ui.min.css" rel="stylesheet" />
+    <link href="~/Content/themes/base/all.css" rel="stylesheet" />
+    @Styles.Render("~/Content/plugins/dataTables/dataTablesStyles")
+    @Styles.Render("~/plugins/jasnyBootstrapStyles")
+    @Styles.Render("~/plugins/toastrStyles")
+    @Styles.Render("~/plugins/sweetAlertStyles")
+    @Styles.Render("~/plugins/toastrStyles")
+}
+@section Scripts {
+    <script type="text/javascript" src="~/Scripts/moment.min.js"></script>
+    <script type="text/javascript" src="~/Scripts/bootstrap.min.js"></script>
+    <script type="text/javascript" src="~/Scripts/jquery.datetimepicker"></script>
+
+    @Scripts.Render("~/plugins/toastr")
+    <script src="~/Scripts/jquery-ui-1.12.1.min.js"></script>
+    @Scripts.Render("~/plugins/dataTables")
+    @Scripts.Render("~/bundles/inputmask")
+    @Scripts.Render("~/plugins/jasnyBootstrap")
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.maskedinput/1.4.1/jquery.maskedinput.js"></script>
+    @Scripts.Render("~/plugins/sweetAlert")
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            $('.dataTables-example').DataTable({
+                pageLength: 25,
+                dom: '<"html5buttons"B>lTfgitp',
+                buttons: [
+                    { extend: 'excel', title: 'RegistrosAcessos_Planilha' },
+
+                    {
+                        extend: 'print',
+                        customize: function (win) {
+                            $(win.document.body).addClass('white-bg');
+                            $(win.document.body).css('font-size', '10px');
+
+                            $(win.document.body).find('table')
+                                    .addClass('compact')
+                                    .css('font-size', 'inherit');
+                        }
+                    }
+                ]
+            });         
+        });
+    </script>
+    <script type="text/javascript">
+        $(function () {
+            $("#data1").mask("99/99/9999");
+            $("#data2").mask("99/99/9999");
+        });
+    </script>
+    <script type="text/javascript" language="javascript">
+        $(function () {
+            $('.date-picker').datepicker(
+                {
+                    dateFormat: 'dd/mm/yy',
+                    dayNames: ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'],
+                    dayNamesMin: ['D', 'S', 'T', 'Q', 'Q', 'S', 'S', 'D'],
+                    dayNamesShort: ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'],
+                    monthNames: ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'],
+                    monthNamesShort: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'],
+                    nextText: 'Proximo',
+                    prevText: 'Anterior',
+                    showOn: "focus"
+                }
+            )
+                .css("display", "normal")
+                .next("button").button({
+                    icons: { primary: "ui-icon-calendar" },
+                    label: "Selecione uma data",
+                    text: false
+                });
+        });
+    </script>
+}
+
+@if (ViewBag.Message != null)
+{
+    <script type="text/javascript">
+            window.onload = function () {
+                alert("@ViewBag.Message");
+            };
+    </script>
+}
+

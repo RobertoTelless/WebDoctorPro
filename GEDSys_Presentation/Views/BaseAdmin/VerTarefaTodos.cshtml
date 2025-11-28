@@ -1,0 +1,202 @@
+﻿@using Presentation.Extensions
+@using CrossCutting;
+@using EntitiesServices.Work_Classes;
+@*@model EntitiesServices.Model.CRM*@
+@{
+    Layout = "~/Views/Shared/_Layout_Admin.cshtml";
+    ViewBag.Title = "Tarefas";
+}
+
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="page-title">
+        <h3 class="title">Tarefa</h3>
+        <br />
+        <ol class="breadcrumb">
+            <li>
+                <a href="@Url.Action("CarregarBase", "BaseAdmin")">Dashboard</a>
+            </li>
+            <li class="active">
+                <strong>Tarefa - Pendentes</strong>
+            </li>
+        </ol>
+        <br />
+    </div>
+    <div class="row">
+        <div class="col-lg-2">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title"  style="background-color:cornflowerblue; color:darkblue">
+                    <span class="label label-success pull-right">Hoje</span>
+                    <h5>Tarefas</h5>
+                </div>
+                <div class="ibox-content">
+                    <h1 class="no-margins">@ViewBag.Conta</h1>
+                    <small>Pendentes</small>
+                    <br />
+                    <br />
+                </div>
+            </div>
+        </div>
+   </div>
+
+    <div class="row">
+        <div class="col-lg-12 col-md-12 col-xs-12"  id="Lista">
+            <div class="col-lg-12 col-md-12 col-xs-12 ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>Tarefas - Pendentes</h5>
+                </div>
+                <div class="ibox-content">
+                    <div class="form-group">
+                        @Html.ButtonLinkIndex(text: "Voltar", controller: "BaseAdmin", action: "CarregarBase")
+                    </div>
+                    <div class="row">
+                        @if ((ViewBag.Lista as List<EntitiesServices.Model.TAREFA>).Count > 0)
+                        {
+                            <table class="table table-striped table-bordered table-hover dataTables-example1">
+                                <thead style="background-color:lightsteelblue">
+                                    <tr>
+                                        <th style="width: auto">Data de Início</th>
+                                        <th style="width: auto">Tipo</th>
+                                        <th style="width: auto">Título</th>
+                                        <th style="width: auto">Previsto</th>
+                                        <th style="width: auto">Status</th>
+                                        <th style="width: auto">Realizada</th>
+                                        <th style="width: auto">Periodicidade</th>
+                                        <th style="width: auto">Repetições</th>
+                                        <th class="td-one-action">Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var cond in (ViewBag.Lista as List<EntitiesServices.Model.TAREFA>).OrderByDescending(x => x.TARE_DT_CADASTRO))
+                                    {
+                                        <tr>
+                                            <td style="width: auto">@cond.TARE_DT_CADASTRO.ToShortDateString()</td>
+                                            @if (cond.TIPO_TAREFA == null)
+                                            {
+                                                <td style="width: auto">-</td>
+                                            }
+                                            else
+                                            {
+                                                <td style="width: auto">@cond.TIPO_TAREFA.TITR_NM_NOME</td>
+                                            }
+                                            <td style="width: auto"><a href="@Url.Action("EditarTarefa", "Tarefa", new { id = cond.TARE_CD_ID })" />@cond.TARE_NM_TITULO</td>
+                                            <td style="width: auto">@cond.TARE_DT_ESTIMADA.Value.ToShortDateString()</td>
+                                            @if (cond.TARE_IN_STATUS == 1)
+                                            {
+                                                <td style="width: auto"><span class="badge badge-warning">Para Iniciar</span></td>
+                                            }
+                                            else if (cond.TARE_IN_STATUS == 2)
+                                            {
+                                                <td style="width: auto"><span class="badge badge-primary">Em Andamento</span></td>
+                                            }
+                                            else if (cond.TARE_IN_STATUS == 3)
+                                            {
+                                                <td style="width: auto"><span class="badge badge-danger">Suspensa</span></td>
+                                            }
+                                            else if (cond.TARE_IN_STATUS == 4)
+                                            {
+                                                <td style="width: auto"><span class="badge badge-danger">Cancelada</span></td>
+                                            }
+                                            else if (cond.TARE_IN_STATUS == 5)
+                                            {
+                                                <td style="width: auto"><span class="badge badge-success">Encerrada</span></td>
+                                            }
+                                            @if (cond.TARE_DT_REALIZADA != null)
+                                            {
+                                                <td style="width: auto">@cond.TARE_DT_REALIZADA.Value.ToShortDateString()</td>
+                                            }
+                                            else
+                                            {
+                                                <td style="width: auto">-</td>
+                                            }
+                                            @if (cond.PERIODICIDADE_TAREFA != null)
+                                            {
+                                                <td style="width: auto">@cond.PERIODICIDADE_TAREFA.PETA_NM_NOME</td>
+                                                <td style="width: auto">@cond.TARE_NM_ORDEM</td>
+                                            }
+                                            else
+                                            {
+                                                <td style="width: auto">-</td>
+                                                <td style="width: auto">-</td>
+                                            }
+                                            <td class="td-one-action">
+                                                @Html.TableLinkDetails(cond.TARE_CD_ID, "EditarTarefa", "fa-edit", "Editar/Consultar")
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        }
+                        else
+                        {
+                            <div class="row">
+                                <div class="col-lg-3 col-md-3 col-xs-2">
+
+                                </div>
+                                <div style="border: 5px solid #F6A54A; padding: 10px; border-radius: 8px 8px; " class="col-lg-6 col-md-6 col-xs-8">
+                                    <h2 style="font-weight: bold">Nenhuma tarefa pendente</h2>
+                                </div>
+                                <div class="col-lg-3 col-md-3 col-xs-2">
+
+                                </div>
+                            </div>
+                        }
+                </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <link href="~/Content/themes/base/jquery-ui.min.css" rel="stylesheet" />
+    <link href="~/Content/themes/base/all.css" rel="stylesheet" />
+    @Styles.Render("~/Content/plugins/dataTables/dataTablesStyles")
+    @Styles.Render("~/plugins/jasnyBootstrapStyles")
+}
+
+@section Scripts {
+    <script src="~/Scripts/jquery-ui-1.12.1.min.js"></script>
+    @Scripts.Render("~/plugins/dataTables")
+    @Scripts.Render("~/bundles/inputmask")
+    @Scripts.Render("~/plugins/jasnyBootstrap")
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.maskedinput/1.4.1/jquery.maskedinput.js"></script>
+    <script src="~/Scripts/moment.min.js"></script>
+    <script src="~/Scripts/datetime-moment.js"></script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            $('.dataTables-example').DataTable({
+                pageLength: 25,
+                dom: '<"html5buttons"B>lTfgitp',
+                buttons: [
+                    { extend: 'excel', title: 'Tarefa_Planilha' },
+
+                    {
+                        extend: 'print',
+                        customize: function (win) {
+                            $(win.document.body).addClass('white-bg');
+                            $(win.document.body).css('font-size', '10px');
+
+                            $(win.document.body).find('table')
+                                    .addClass('compact')
+                                    .css('font-size', 'inherit');
+                        }
+                    }
+                ]
+
+            });      
+        });
+    </script>
+
+}
+
+@if (ViewBag.Message != null)
+{
+    <script type="text/javascript">
+            window.onload = function () {
+                alert("@ViewBag.Message");
+            };
+    </script>
+}
+

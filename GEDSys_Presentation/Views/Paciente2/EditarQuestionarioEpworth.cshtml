@@ -1,0 +1,520 @@
+﻿@using Presentation.Extensions
+@model ERP_Condominios_Solution.ViewModels.QuestionarioEpworthViewModel
+@{
+    Layout = "~/Views/Shared/_Layout_Admin.cshtml";
+    ViewBag.Title = "WebDoctor - Paciente - Questionarios - Edição";
+    ViewBag.MetaDescription = "WebDoctor - Paciente - Questionarios - Editar questionario Berlim";
+    ViewBag.MetaKeywords = "WebDoctor, paciente, questionario";
+}
+
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="page-title">
+        <ol class="breadcrumb">
+            <li>
+                <a href="@Url.Action("MontarTelaPaciente", "Paciente")">Dashboard</a>
+            </li>
+            <li>
+                <a href="@Url.Action("EditarPaciente", "Paciente")">Paciente - Edição</a>
+            </li>
+            <li class="active">
+                <strong>Questionário Epworth - Edição</strong>
+            </li>
+        </ol>
+        <br />
+    </div>
+
+    <div class="row">
+        <div class="col-lg-12 col-md-12 col-xs-12">
+            <div class="col-lg-12 col-md-12 col-xs-12 ibox float-e-margins">
+                <div class="ibox-title">
+                    <div style="text-align: center;" class="col-lg-12 col-md-12 col-xs-12">
+                        <h5>Questionário Epworth - Edição</h5>
+                        <span style="color:green; font-weight: 500; font-size: 20px;">@Model.PACIENTE.PACI_NM_NOME</span>
+                    </div>
+                </div>
+                @using (Html.BeginForm("EditarQuestionarioEpworth", "Paciente2", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal", @id="pwd-container1" }))
+                {
+                    <div class="ibox-content">
+                        @Html.AntiForgeryToken()
+                        @if (!ViewData.ModelState.IsValid)
+                        {
+                            <div class="alert alert-danger">
+                                <button type="button" class="close" data-dismiss="alert">Fechar</button>
+                                @Html.ValidationSummary(false, "Erros Encontrados:", new { @class = "text-danger" })
+                            </div>
+                        }
+                        <div class="form-group" style=" margin-left: -15px; margin-right: -15px;"> 
+                            @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarAnexoPaciente", controller: "Paciente")
+                            <a href="@Url.Action((String)Session["AjudaNivel"])"  class="btn btn-sm btn-danger" target="_blank">Ajuda</a>                
+                        </div>
+
+                        @*Paciente*@
+                        <div class="row">
+                            <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Identificação do Paciente</h4>
+                            <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">                
+                                @Html.HiddenFor(m => m.ASSI_CD_ID)
+                                @Html.HiddenFor(m => m.PACI_CD_ID)
+                                @Html.HiddenFor(m => m.QUEP_CD_ID)
+                                <div class="col-lg-4 col-md-4 col-xs-12">
+                                    Nome do Paciente
+                                    @Html.TextBoxFor(m => m.PACIENTE.PACI_NM_NOME, new { @class = "form-control", @tabindex = "-1", @readonly = "readonly", @style = "color: green; font-weight: bold" })
+                                </div>
+                                <div class="col-lg-2 col-md-2 col-xs-12">
+                                    Data Nascimento
+                                    @Html.TextBoxFor(m => m.PACIENTE.PACI_DT_NASCIMENTO, "{0:dd/MM/yyyy}", new { @class = "form-control", @tabindex = "-1", @readonly = "readonly" })
+                                </div>
+                                @if (Model.PACIENTE.PACI_NR_CPF != null)
+                                {
+                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                        CPF
+                                        @Html.TextBoxFor(m => m.PACIENTE.PACI_NR_CPF, new { @class = "form-control", @tabindex = "-1", @readonly = "readonly" })+
+                                    </div>
+                                }
+                                @if (Model.PACIENTE.PACI_NR_CELULAR != null)
+                                {
+                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                        Celular
+                                        @Html.TextBoxFor(m => m.PACIENTE.PACI_NR_CELULAR, new { @class = "form-control", @tabindex = "-1", @readonly = "readonly" })
+                                    </div>
+                                }
+                                @if (Model.PACIENTE.PACI_NR_TELEFONE != null)
+                                {
+                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                        Telefone
+                                        @Html.TextBoxFor(m => m.PACIENTE.PACI_NR_TELEFONE, new { @class = "form-control", @tabindex = "-1", @readonly = "readonly" })
+                                    </div>
+                                }
+                            </div>
+                        </div>
+
+
+                        @*Questionario*@
+                        <div class="row">
+                            <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Escala de Sonolência Epworth</h4>
+                            <div class="form-group" style=" margin-left: 5px; margin-right: 5px;">                
+                                @Html.ButtonActionSubmit(text: "Confirma Edição do Questionário Epworth", htmlAttributes: new { id = "basictoast" })
+                            </div>
+                            <div class="row">
+                                <div class="col-lg-12">
+                                    <br />
+        
+                                    @* Títulos *@
+                                    <h3 class="titulo-epworth-cab"><b>@ViewBag.CabEpworth</b></h3>
+                                    <h4 class="titulo-epworth-texto">@ViewBag.TexEpworth</h4>
+                                    <br />
+        
+                                    <div class="col-lg-4">
+            
+                                        @* Tabela de Pontuação - Lado Esquerdo *@
+                                        <table class="tabela-pontuacao-epworth">
+                                            <tr>
+                                                <td rowspan="4" class="barra-verde">
+                                                    &nbsp;
+                                                </td>
+                                                <td class="item-pontuacao-td">
+                                                    <span class="pontuacao-numero">0 - </span>
+                                                    <span class="pontuacao-descricao-normal"><b class="pontuacao-descricao-destaque">nenhuma</b> probabilidade de pegar no sono</span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="item-pontuacao-td">
+                                                    <span class="pontuacao-numero">1 - </span>
+                                                    <span class="pontuacao-descricao-normal"><b class="pontuacao-descricao-destaque">ligeira</b> probabilidade de pegar no sono</span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="item-pontuacao-td">
+                                                    <span class="pontuacao-numero">2 - </span>
+                                                    <span class="pontuacao-descricao-normal"><b class="pontuacao-descricao-destaque">moderada</b> probabilidade de pegar no sono</span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="item-pontuacao-td" style="padding-bottom: 5px;"> @* Mantido inline para o último item do "item-pontuacao-td", idealmente essa classe deveria ser ajustada no CSS. Mantive aqui para ser fiel ao original. *@
+                                                    <span class="pontuacao-numero">3 - </span>
+                                                    <span class="pontuacao-descricao-normal"><b class="pontuacao-descricao-destaque">forte</b> probabilidade de pegar no sono</span>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                        <br />
+            
+                                        @* Critérios de Pontuação - Lado Esquerdo Inferior *@
+                                        <div class="caixa-criterios">
+                                            <div class="criterio-cabecalho">
+                                                Critérios de Pontuação
+                                            </div>
+
+                                            <p class="criterio-paragrafo">
+                                                <span class="criterio-faixa-pontuacao">
+                                                    PONTUAÇÃO DE 0 A 9
+                                                </span>
+                                                <span class="criterio-resultado"> &#10140; Considerado normal,
+                                                </span>
+                                            </p>
+
+                                            <p class="criterio-paragrafo">
+                                                <span class="criterio-faixa-pontuacao">
+                                                    PONTUAÇÃO DE 10 A 24
+                                                </span>
+                                                <span class="criterio-resultado"> &#10140; Procure um médico,
+                                                </span>
+                                                <br>
+                                                <span class="criterio-resultado-complemento">
+                                                    você pode ter distúrbio do sono
+                                                </span>
+                                            </p>
+
+                                        </div>
+                                    </div>
+
+                                    <div class="col-lg-8">
+            
+                                        @* Tabela de Perguntas - Lado Direito *@
+                                        <div class="tabela-perguntas-container">
+                                            <table class="tabela-perguntas" width="100%">
+                                                <thead>
+                                                    <tr>
+                                                        <th class="th-situacao">
+                                                            SITUAÇÃO
+                                                        </th>
+                                                        <th class="th-probabilidade">
+                                                            PROBABILIDADE DE PEGAR NO SONO
+                                                        </th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                        
+                                                    @* Linha 1: Sentado lendo um livro *@
+                                                    <tr>
+                                                        <td class="td-situacao">
+                                                            Sentado lendo um livro;
+                                                        </td>
+                                                        <td class="td-input">
+                                                            <span class="input-wrapper">
+                                                                @Html.TextBoxFor(m => m.QUEP_IN_LIVRO, new { @class = "form-control", autofocus = true, onfocusout = "CalculaTotal()", @id = "livro" })
+                                                                @Html.ValidationMessageFor(m => m.QUEP_IN_LIVRO, "", new { @class = "input-validation-message" })
+                                                            </span>
+                                                        </td>
+                                                    </tr>
+                        
+                                                    @* Linha 2: Sentado vendo televisão *@
+                                                    <tr>
+                                                        <td class="td-situacao">
+                                                            Sentado vendo televisão;
+                                                        </td>
+                                                        <td class="td-input">
+                                                            <span class="input-wrapper">
+                                                                @Html.TextBoxFor(m => m.QUEP_IN_TV, new { @class = "form-control", autofocus = true, onfocusout = "CalculaTotal()", @id = "tv" })
+                                                                @Html.ValidationMessageFor(m => m.QUEP_IN_TV, "", new { @class = "input-validation-message" })
+                                                            </span>
+                                                        </td>
+                                                    </tr>
+
+                                                    @* Linha 3: Sentado inativo em lugar público *@
+                                                    <tr>
+                                                        <td class="td-situacao">
+                                                            Sentado inativo em lugar público (ex: sala de espera ou cinema);
+                                                        </td>
+                                                        <td class="td-input">
+                                                            <span class="input-wrapper">
+                                                                @Html.TextBoxFor(m => m.QUEP_IN_INATIVO, new { @class = "form-control", autofocus = true, onfocusout = "CalculaTotal()", @id = "inativo" })
+                                                                @Html.ValidationMessageFor(m => m.QUEP_IN_INATIVO, "", new { @class = "input-validation-message" })
+                                                            </span>
+                                                        </td>
+                                                    </tr>
+
+                                                    @* Linha 4: Como passageiro num carro *@
+                                                    <tr>
+                                                        <td class="td-situacao">
+                                                            Como passageiro num carro durante uma hora sem parar;
+                                                        </td>
+                                                        <td class="td-input">
+                                                            <span class="input-wrapper">
+                                                                @Html.TextBoxFor(m => m.QUEP_IN_CARRO, new { @class = "form-control", autofocus = true, onfocusout = "CalculaTotal()", @id = "carro" })
+                                                                @Html.ValidationMessageFor(m => m.QUEP_IN_CARRO, "", new { @class = "input-validation-message" })
+                                                            </span>
+                                                        </td>
+                                                    </tr>
+
+                                                    @* Linha 5: Deitado descansando à tarde *@
+                                                    <tr>
+                                                        <td class="td-situacao">
+                                                            Deitado descansando à tarde quando as circunstâncias permite;
+                                                        </td>
+                                                        <td class="td-input">
+                                                            <span class="input-wrapper">
+                                                                @Html.TextBoxFor(m => m.QUEP_IN_DEITADO, new { @class = "form-control", autofocus = true, onfocusout = "CalculaTotal()", @id = "deitado" })
+                                                                @Html.ValidationMessageFor(m => m.QUEP_IN_DEITADO, "", new { @class = "input-validation-message" })
+                                                            </span>
+                                                        </td>
+                                                    </tr>
+
+                                                    @* Linha 6: Sentado conversando com alguem *@
+                                                    <tr>
+                                                        <td class="td-situacao">
+                                                            Sentado conversando com alguem;
+                                                        </td>
+                                                        <td class="td-input">
+                                                            <span class="input-wrapper">
+                                                                @Html.TextBoxFor(m => m.QUEP_IN_CONVERSA, new { @class = "form-control", autofocus = true, onfocusout = "CalculaTotal()", @id = "conversa" })
+                                                                @Html.ValidationMessageFor(m => m.QUEP_IN_CONVERSA, "", new { @class = "input-validation-message" })
+                                                            </span>
+                                                        </td>
+                                                    </tr>
+
+                                                    @* Linha 7: Sentado calmamente após um almoço *@
+                                                    <tr>
+                                                        <td class="td-situacao" style="border-bottom: none;">
+                                                            Sentado calmamente após um almoço ser ter bebido álcool;
+                                                        </td>
+                                                        <td class="td-input" style="border-bottom: none;">
+                                                            <span class="input-wrapper">
+                                                                @Html.TextBoxFor(m => m.QUEP_IN_ALMOCO, new { @class = "form-control", autofocus = true, onfocusout = "CalculaTotal()", @id = "almoco" })
+                                                                @Html.ValidationMessageFor(m => m.QUEP_IN_ALMOCO, "", new { @class = "input-validation-message" })
+                                                            </span>
+                                                        </td>
+                                                    </tr>
+
+                                                    @* Linha 8: Ao volante parado no trânsito *@
+                                                    <tr>
+                                                        <td class="td-situacao" style="border-bottom: none;">
+                                                            Ao volante parado no trânsito durante alguns minutos
+                                                        </td>
+                                                        <td class="td-input" style="border-bottom: none;">
+                                                            <span class="input-wrapper">
+                                                                @Html.TextBoxFor(m => m.QUEP_IN_VOLANTE, new { @class = "form-control", autofocus = true, onfocusout = "CalculaTotal()", @id = "volante" })
+                                                                @Html.ValidationMessageFor(m => m.QUEP_IN_VOLANTE, "", new { @class = "input-validation-message" })
+                                                            </span>
+                                                        </td>
+                                                    </tr>
+
+                                                </tbody>
+                                            </table>
+                
+                                            @* Tabela de Resultado *@
+                                            <table class="tabela-resultado" width="100%">
+                                                <tr>
+                                                    <td class="resultado-area-texto">
+                                                        <span class="resultado-texto-destaque">
+                                                            Resultado
+                                                        </span>
+                                                    </td>
+                                                    <td class="resultado-area-valor">
+                                                        <span class="resultado-valor-destaque" id="resultado">
+                                                            @Model.QUEP_IN_RESULTADO
+                                                        </span>
+                                                    </td>
+                                                </tr>
+                                            </table>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                       </div>
+                    </div>
+                }
+            </div>
+         </div>
+    </div>
+</div>
+
+@section Styles {
+    <link href="~/Content/themes/base/all.css" rel="stylesheet" />  
+    <link rel="stylesheet" href="~/Content/Epworth_Style.css" />
+    @Styles.Render("~/plugins/jasnyBootstrapStyles")
+    @Styles.Render("~/plugins/toastrStyles")
+}
+@section Scripts {
+    @Scripts.Render("~/plugins/toastr")
+    @Scripts.Render("~/bundles/inputmask")
+    @Scripts.Render("~/plugins/jasnyBootstrap")
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.maskedinput/1.4.1/jquery.maskedinput.js"></script>
+   
+    <script type="text/javascript" src="~/Scripts/moment.min.js"></script>
+    <script type="text/javascript" src="~/Scripts/bootstrap.min.js"></script>
+   
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('[data-toggle="popover"]').popover();
+        });
+    </script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-toggle="popover"]'));
+            var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
+                return new bootstrap.Popover(popoverTriggerEl);
+            });
+        });
+    </script>
+
+    <!-- Handler de fechamento do browser -->
+    <script type="text/javascript">
+        window.onbeforeunload = function ()
+        {
+            navigator.sendBeacon('../ControleAcesso/LogSessionTime');
+        }; 
+    </script>
+
+
+    <script>
+        function getValidatedValue(id, maxLimit) {
+                var valorString = $('#' + id).val();
+                var valorNumerico = parseInt(valorString) || 0; 
+
+                if (valorNumerico > maxLimit) {
+                    $('#' + id).val(maxLimit); 
+                    return maxLimit;
+                }
+                return valorNumerico; 
+        }
+
+        //function CalculaTotal() {
+
+        //    const MAX_PONTUACAO = 4;
+        //    var livro = parseInt($('#livro').val()) || 0;
+        //    var tv = parseInt($('#tv').val()) || 0;
+        //    var inativo = parseInt($('#inativo').val()) || 0;
+        //    var carro = parseInt($('#carro').val()) || 0;
+        //    var deitado = parseInt($('#deitado').val()) || 0;
+        //    var conversa = parseInt($('#conversa').val()) || 0;
+        //    var almoco = parseInt($('#almoco').val()) || 0;
+        //    var volante = parseInt($('#volante').val()) || 0;
+        
+        //    var tot = livro + tv + inativo + carro + deitado + conversa + almoco + volante;
+        //    var resultadoFormatado = tot.toFixed(2).replace('.', ',');         
+        //    $('#resultado').text(tot); 
+        //}
+
+        function CalculaTotal() {
+                // O limite máximo para a escala Epworth é geralmente 3, não 4. 
+                // Adaptei para 4, conforme seu pedido, mas verifique o limite correto se for Epworth.
+                const MAX_PONTUACAO = 4; 
+        
+                // Aplica a função de validação a todos os campos
+                var livro = getValidatedValue('livro', MAX_PONTUACAO);
+                var tv = getValidatedValue('tv', MAX_PONTUACAO);
+                var inativo = getValidatedValue('inativo', MAX_PONTUACAO);
+                var carro = getValidatedValue('carro', MAX_PONTUACAO);
+                var deitado = getValidatedValue('deitado', MAX_PONTUACAO);       
+                var conversa = getValidatedValue('conversa', MAX_PONTUACAO); 
+                var almoco = getValidatedValue('almoco', MAX_PONTUACAO);
+                var volante = getValidatedValue('volante', MAX_PONTUACAO);
+        
+                var tot = livro + tv + inativo + carro + deitado + conversa + almoco + volante;
+                $('#resultado').text(tot); 
+            }
+    </script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            var i = -1;
+            var toastCount = 0;
+            var $toastlast;
+            var getMessage = function () {
+                var msg = 'Hi, welcome to Inspinia. This is example of Toastr notification box.';
+                return msg;
+            };
+
+            $('#basictoast').click(function () {
+                // Display a success toast, with a title
+                toastr.success('Edição em andamento!')
+            });
+            $('#showtoast').click(function () {
+                var shortCutFunction = $("#toastTypeGroup input:radio:checked").val();
+                var msg = $('#message').val();
+                var title = $('#title').val() || '';
+                var $showDuration = $('#showDuration');
+                var $hideDuration = $('#hideDuration');
+                var $timeOut = $('#timeOut');
+                var $extendedTimeOut = $('#extendedTimeOut');
+                var $showEasing = $('#showEasing');
+                var $hideEasing = $('#hideEasing');
+                var $showMethod = $('#showMethod');
+                var $hideMethod = $('#hideMethod');
+                var toastIndex = toastCount++;
+                toastr.options = {
+                    closeButton: $('#closeButton').prop('checked'),
+                    debug: $('#debugInfo').prop('checked'),
+                    progressBar: $('#progressBar').prop('checked'),
+                    positionClass: $('#positionGroup input:radio:checked').val() || 'toast-top-right',
+                    onclick: null
+                };
+                if ($('#addBehaviorOnToastClick').prop('checked')) {
+                    toastr.options.onclick = function () {
+                        alert('You can perform some custom action after a toast goes away');
+                    };
+                }
+                if ($showDuration.val().length) {
+                    toastr.options.showDuration = $showDuration.val();
+                }
+                if ($hideDuration.val().length) {
+                    toastr.options.hideDuration = $hideDuration.val();
+                }
+                if ($timeOut.val().length) {
+                    toastr.options.timeOut = $timeOut.val();
+                }
+                if ($extendedTimeOut.val().length) {
+                    toastr.options.extendedTimeOut = $extendedTimeOut.val();
+                }
+                if ($showEasing.val().length) {
+                    toastr.options.showEasing = $showEasing.val();
+                }
+                if ($hideEasing.val().length) {
+                    toastr.options.hideEasing = $hideEasing.val();
+                }
+                if ($showMethod.val().length) {
+                    toastr.options.showMethod = $showMethod.val();
+                }
+                if ($hideMethod.val().length) {
+                    toastr.options.hideMethod = $hideMethod.val();
+                }
+                if (!msg) {
+                    msg = getMessage();
+                }
+                $("#toastrOptions").text("Command: toastr["
+                        + shortCutFunction
+                        + "](\""
+                        + msg
+                        + (title ? "\", \"" + title : '')
+                        + "\")\n\ntoastr.options = "
+                        + JSON.stringify(toastr.options, null, 2)
+                );
+                var $toast = toastr[shortCutFunction](msg, title); // Wire up an event handler to a button in the toast, if it exists
+                $toastlast = $toast;
+                if ($toast.find('#okBtn').length) {
+                    $toast.delegate('#okBtn', 'click', function () {
+                        alert('you clicked me. i was toast #' + toastIndex + '. goodbye!');
+                        $toast.remove();
+                    });
+                }
+                if ($toast.find('#surpriseBtn').length) {
+                    $toast.delegate('#surpriseBtn', 'click', function () {
+                        alert('Surprise! you clicked me. i was toast #' + toastIndex + '. You could perform an action here.');
+                    });
+                }
+            });
+            function getLastToast() {
+                return $toastlast;
+            }
+            $('#clearlasttoast').click(function () {
+                toastr.clear(getLastToast());
+            });
+            $('#cleartoasts').click(function () {
+                toastr.clear();
+            });
+
+        });
+    </script>
+
+
+    @if (ViewBag.Message != null)
+    {
+        <script type="text/javascript">
+            window.onload = function () {
+                  alert("@ViewBag.Message");
+            };
+        </script>
+    }
+}

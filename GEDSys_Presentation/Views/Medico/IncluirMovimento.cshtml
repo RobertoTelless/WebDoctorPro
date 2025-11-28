@@ -1,0 +1,602 @@
+﻿@using Presentation.Extensions
+@model ERP_Condominios_Solution.ViewModels.MedicoEnvioViewModel
+@{
+    Layout = "~/Views/Shared/_Layout_Admin.cshtml";
+    ViewBag.Title = "WebDoctor - Medico - Envio";
+    ViewBag.MetaDescription = "WebDoctor - Medico - Envio";
+    ViewBag.MetaKeywords = "WebDoctor, Medico, envio";
+}
+
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="page-title">
+        <ol class="breadcrumb">
+            <li>
+                <a href="@Url.Action("MontarTelaPaciente", "Paciente")">Dashboard</a>
+            </li>
+            <li>
+                <a href="@Url.Action("MontarTelaMedico", "Medico")">Médicos</a>
+            </li>
+            <li>
+                <a href="@Url.Action("EditarMedico", "Medico")">Médicos - Edição</a>
+            </li>
+            <li class="active">
+                <strong>Médicos - Envio</strong>
+            </li>
+        </ol>
+        <br />
+    </div>
+
+    <div class="row">
+        <div class="col-lg-12 col-md-12 col-xs-12">
+            <div class="col-lg-12 col-md-12 col-xs-12 ibox float-e-margins">
+                <div class="ibox-title">
+                    <div style="text-align: center;" class="col-lg-12 col-md-12 col-xs-12">
+                        <h5>Médico - Envio de Informações - Criação</h5>
+                        <span style="color:green; font-weight: 500; font-size: 20px;">@ViewBag.NomeMedico</span>
+                    </div>
+                </div>
+                @using (Html.BeginForm("IncluirMovimento", "Medico", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal", @id = "pwd-container1" }))
+                {
+                    <div class="ibox-content">
+                        @Html.AntiForgeryToken()
+                        @if (!ViewData.ModelState.IsValid)
+                        {
+                            <div class="alert alert-danger">
+                                <button type="button" class="close" data-dismiss="alert">Fechar</button>
+                                @Html.ValidationSummary(false, "Erros Encontrados:", new { @class = "text-danger" })
+                            </div>
+                        }
+                        @if (TempData["TemMensagem"] != null)
+                        {
+                            <div class="alert alert-success">
+                                <button type="button" class="close" data-dismiss="alert">Fechar</button>
+                                <span>@TempData["MensagemAcerto"]</span>
+                            </div>
+                        }      
+
+                        @Html.HiddenFor(m => m.ASSI_CD_ID)
+                        @Html.HiddenFor(m => m.USUA_CD_ID)
+                        @Html.HiddenFor(m => m.MEEV_IN_ATIVO)
+                        @Html.HiddenFor(m => m.MEEV_GU_IDENTIFICADOR)
+                        @Html.HiddenFor(m => m.MEEV_DT_ENVIO)
+                        @Html.HiddenFor(m => m.MEEV_GU_IDENTIFICADOR)
+                        @Html.HiddenFor(m => m.MEEV_IN_ENVIADO)
+
+                        @if ((Int32)Session["TipoMedicoEnvio"] == 1)
+                        {
+                            <div class="row">
+                                <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Médico</h4>
+                                <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                    <div class="col-lg-4 col-md-4 col-xs-12">
+                                        @Html.HiddenFor(m => m.MEDC_CD_ID)
+                                        Nome do Médico
+                                        @Html.TextBoxFor(m => m.NOME_MEDICO, new { @class = "form-control", @tabindex = "-1", @readonly = "readonly", @style = "color: green; font-weight: bold" })
+                                    </div>
+                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                        CRM
+                                        @Html.TextBoxFor(m => m.CRM, new { @class = "form-control", @tabindex = "-1", @readonly = "readonly" })
+                                    </div>
+                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                        E-Mail
+                                        @Html.TextBoxFor(m => m.MAIL, new { @class = "form-control", @tabindex = "-1", @readonly = "readonly" })
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="row">
+                                <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Médico</h4>
+                                <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                    <div class="col-lg-4 col-md-4 col-xs-12">
+                                        Nome do Médico*
+                                        @Html.DropDownListFor(m => m.MEDC_CD_ID, (SelectList)ViewBag.Medico, "Selecionar", new { @class = "form-control", data_toggle = "popover", data_content = "Selecione um médico ou digite as primeiras letras do nome para acelerar a busca", data_trigger="hover", data_placement="top", autofocus = true, onchange = "GetMedico($(this).val())" })
+                                        @Html.ValidationMessageFor(m => m.MEDC_CD_ID, "", new { @style = "color:red" })
+                                    </div>
+                                    <div style="display: none;" id="crm" class="col-lg-2 col-md-2 col-xs-12">
+                                        CRM
+                                        <input class="form-control" type="text" readonly="readonly" tabindex="-1"/>
+                                    </div>
+                                    <div style="display: none;" id="mail" class="col-lg-2 col-md-2 col-xs-12">
+                                        E-Mail
+                                        <input class="form-control" type="text" readonly="readonly" tabindex="-1"/>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+              
+                        @if ((Int32)Session["TipoMedicoEnvio"] == 2)
+                        {
+                            <div class="row">
+                                <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Paciente</h4>
+                                <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                    <div class="col-lg-4 col-md-4 col-xs-12">
+                                        @Html.HiddenFor(m => m.PACI_CD_ID)
+                                        Nome do Paciente
+                                        @Html.TextBoxFor(m => m.PACIENTE.PACI_NM_NOME, new { @class = "form-control", @tabindex = "-1", @readonly = "readonly", @style = "color: green; font-weight: bold" })
+                                    </div>
+                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                        Data de Nascimento
+                                        @Html.TextBoxFor(m => m.PACIENTE.PACI_DT_NASCIMENTO, "{0:dd/MM/yyyy}", new { @class = "form-control", @tabindex = "-1", @readonly = "readonly" })
+                                    </div>
+                                    @if (Model.PACIENTE.PACI_NR_CPF != null)
+                                    {
+                                        <div class="col-lg-2 col-md-2 col-xs-12">
+                                            CPF
+                                            @Html.TextBoxFor(m => m.PACIENTE.PACI_NR_CPF, new { @class = "form-control", @tabindex = "-1", @readonly = "readonly" })
+                                        </div>
+                                    }
+                                    @if (Model.PACIENTE.PACI_NR_CELULAR != null)
+                                    {
+                                        <div class="col-lg-2 col-md-2 col-xs-12">
+                                            Celular
+                                            @Html.TextBoxFor(m => m.PACIENTE.PACI_NR_CELULAR, new { @class = "form-control", @tabindex = "-1", @readonly = "readonly" })
+                                        </div>
+                                    }
+                                    @if (Model.PACIENTE.PACI_NR_TELEFONE != null)
+                                    {
+                                        <div class="col-lg-2 col-md-2 col-xs-12">
+                                            Telefone
+                                            @Html.TextBoxFor(m => m.PACIENTE.PACI_NR_TELEFONE, new { @class = "form-control", @tabindex = "-1", @readonly = "readonly" })
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="row">
+                                <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Paciente</h4>
+                                <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                    <div class="col-lg-4 col-md-4 col-xs-12">
+                                        Nome do Paciente*
+                                        @Html.DropDownListFor(m => m.PACI_CD_ID, (SelectList)ViewBag.Paciente, "Selecionar", new { @class = "form-control", data_toggle = "popover", data_content = "Selecione um paciente ou digite as primeiras letras do nome para acelerar a busca", data_trigger="hover", data_placement="top", autofocus = true, onchange = "GetPaciente($(this).val())" })
+                                        @Html.ValidationMessageFor(m => m.PACI_CD_ID, "", new { @style = "color:red" })
+                                    </div>
+                                    <div style="display: none;" id="dataNasc" class="col-lg-2 col-md-2 col-xs-12">
+                                        Data de Nascimento
+                                        <input class="form-control" type="text" readonly="readonly" tabindex="-1"/>
+                                    </div>
+                                    <div style="display: none;" id="cpf" class="col-lg-2 col-md-2 col-xs-12">
+                                        CPF
+                                        <input class="form-control" type="text" readonly="readonly" tabindex="-1"/>
+                                    </div>
+                                    <div style="display: none;" id="cel" class="col-lg-2 col-md-2 col-xs-12">
+                                        Celular
+                                        <input class="form-control" type="text" readonly="readonly" tabindex="-1"/>
+                                    </div>
+                                    <div style="display: none;" id="tel" class="col-lg-2 col-md-2 col-xs-12">
+                                        Telefone
+                                        <input class="form-control" type="text" readonly="readonly" tabindex="-1"/>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+
+                        <div class="row">
+                            <div class="col-lg-8 col-md-8 col-xs-12">
+                                <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Informações do Envio</h4>
+                                <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                    @Html.ButtonActionSubmit(text: "BtnSubmit", htmlAttributes: new { id = "submit", style = "display: none;" })
+                                    <button style="margin-left: 15px;" class="btnSubmit btn btn-sm btn-success" id="basictoast" type="button">Confirmar a criação do envio de Informações</button>
+                                    @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarAnexoMedico", controller: "Medico")
+                                    <a href="@Url.Action((String)Session["AjudaNivel"])" class="btn btn-sm btn-danger" target="_blank">Ajuda</a>
+                                </div>
+                                <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                    <div class="col-lg-3 col-md-3 col-xs-12">
+                                        Identificador
+                                        @Html.TextBoxFor(m => m.MEEV_GU_IDENTIFICADOR, new { @class = "form-control", @tabindex = "-1", @readonly = "readonly"})
+                                    </div>
+                                    <div class="col-lg-3 col-md-3 col-xs-12">
+                                        Data do Envio
+                                        @Html.TextBoxFor(m => m.MEEV_DT_ENVIO, "{0:dd/MM/yyyy}", new { @class = "form-control", @tabindex = "-1", @readonly = "readonly"})
+                                    </div>
+                                    <div class="col-lg-3 col-md-3 col-xs-12">
+                                        Envia Anamnese Anexada*
+                                        @Html.DropDownListFor(m => m.MEEV_IN_ANAMNESE, (SelectList)ViewBag.Anamnese, "Selecionar", new { @class = "form-control", data_toggle = "popover", data_content = "Indica se a anamnese do paciante será ou não integralmente anexada à mensagem a ser enviada", data_trigger="hover", data_placement="top", autofocus = true, @id = "tipo" })
+                                        @Html.ValidationMessageFor(m => m.MEEV_IN_ANAMNESE, "", new { @style = "color:red" })
+                                    </div>
+                                </div>
+                                @if((Int32)Session["BlocoAnamnese"] == 1)
+                                {
+                                    <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                        <div class="col-lg-2 col-md-2 col-xs-12">
+                                            Usa Modelo?*
+                                            @Html.DropDownListFor(m => m.MEEV_IN_MODELO, (SelectList)ViewBag.Modelo, "Selecionar", new { @class = "form-control", data_toggle = "popover", data_content = "Indica se este envio usará um modelo de texto pré-definido ou simplesmente digitado", data_trigger="hover", data_placement="top", autofocus = true, @id = "mod", onchange = "ValidaModelo($(this).val())" })
+                                            @Html.ValidationMessageFor(m => m.MEEV_IN_MODELO, "", new { @style = "color:red" })
+                                        </div>
+                                        <div class="col-lg-5 col-md-5 col-xs-12" style="display: none;" id="texto">
+                                            Modelo de Texto
+                                            @Html.DropDownListFor(m => m.METX_CD_ID, (SelectList)ViewBag.Textos, "Selecionar", new { @class = "form-control", data_toggle = "popover", data_content = "Seleciona o modelo de texto a ser usado neste envio", data_trigger="hover", data_placement="top", autofocus = true, @id = "texto", onchange = "GetTexto($(this).val())" })
+                                            @Html.ValidationMessageFor(m => m.METX_CD_ID, "", new { @style = "color:red" })
+                                        </div>
+                                    </div>
+                                }
+                                <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                    <div class="col-lg-12 col-md-12 col-xs-12">
+                                        Título do Envio*
+                                        @Html.TextBoxFor(m => m.MEEV_NM_TITULO, new { @class = "form-control", autofocus = true, data_toggle = "popover", data_content = "Informe um nome que identifique esse envio", data_trigger="hover", data_placement="top" })
+                                        @Html.ValidationMessageFor(m => m.MEEV_NM_TITULO, "", new { @style = "color:red" })
+                                    </div>
+                                </div>
+                                @if((Int32)Session["BlocoAnamnese"] == 1)
+                                { 
+                                    <div class="form-group" style=" margin-left: -15px; margin-right: -15px;" id="digita">
+                                        <div class="col-lg-12 col-md-12 col-xs-12">
+                                            Mensagem*
+                                            @Html.TextAreaFor(m => m.MEEV_TX_MENSAGEM, new { @class = "form-control", style = "width: 100%; height: 280px; overflow:auto;", autofocus = true, @id= "mensDigita", data_toggle = "popover", data_content = "Mensagem que será enviada ao médico", data_trigger="hover", data_placement="top" })
+                                            @Html.ValidationMessageFor(m => m.MEEV_TX_MENSAGEM, "", new { @style = "color:red" })
+                                        </div>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                        <div class="col-lg-2 col-md-2 col-xs-12">
+                                            Pressão Positiva
+                                            @Html.TextBoxFor(m => m.MEEV_NR_PRESSAO_POSITIVA, new { @class = "form-control", autofocus = true})
+                                            @Html.ValidationMessageFor(m => m.MEEV_NR_PRESSAO_POSITIVA, "", new { @style = "color:red" })
+                                        </div>
+                                        <div class="col-lg-2 col-md-2 col-xs-12">
+                                            IAH
+                                            @Html.TextBoxFor(m => m.MEEV_IN_IAH, new { @class = "form-control", autofocus = true})
+                                            @Html.ValidationMessageFor(m => m.MEEV_IN_IAH, "", new { @style = "color:red" })
+                                        </div>
+                                        <div class="col-lg-4 col-md-4 col-xs-12">
+                                            Equipamento
+                                            @Html.TextBoxFor(m => m.MEEV_NM_EQUIPAMENTO, new { @class = "form-control", autofocus = true})
+                                            @Html.ValidationMessageFor(m => m.MEEV_NM_EQUIPAMENTO, "", new { @style = "color:red" })
+                                        </div>
+
+                                        <div class="col-lg-4 col-md-4 col-xs-12">
+                                            Máscara
+                                            @Html.TextBoxFor(m => m.MEEV_NM_MASCARA, new { @class = "form-control", autofocus = true})
+                                            @Html.ValidationMessageFor(m => m.MEEV_NM_MASCARA, "", new { @style = "color:red" })
+                                        </div>
+                                    </div>
+                                    <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                        <div class="col-lg-2 col-md-2 col-xs-12">
+                                            Período - Início
+                                            @Html.TextBoxFor(m => m.MEEV_DT_NOITE_INICIO, "{0:dd/MM/yyyy}", new { @class = "form-control date-picker", autofocus = true, @id = "dn1" })
+                                            @Html.ValidationMessageFor(m => m.MEEV_DT_NOITE_INICIO, "", new { @style = "color:red" })
+                                        </div>
+                                        <div class="col-lg-2 col-md-2 col-xs-12">
+                                            Período - Final
+                                            @Html.TextBoxFor(m => m.MEEV_DT_NOITE_FINAL, "{0:dd/MM/yyyy}", new { @class = "form-control date-picker", autofocus = true, @id = "dn2" })
+                                            @Html.ValidationMessageFor(m => m.MEEV_DT_NOITE_FINAL, "", new { @style = "color:red" })
+                                        </div>
+                                        <div class="col-lg-4 col-md-4 col-xs-12">
+                                            Noites de não utilização
+                                            @Html.TextBoxFor(m => m.MEEV_IN_NUM_NOITES, new { @class = "form-control", autofocus = true})
+                                            @Html.ValidationMessageFor(m => m.MEEV_IN_NUM_NOITES, "", new { @style = "color:red" })
+                                        </div>
+
+                                        <div class="col-lg-4 col-md-4 col-xs-12">
+                                            Parâmetros de Pressão (cmH2O)
+                                            @Html.TextBoxFor(m => m.MEEV_NR_PARAM_PRESSAO, new { @class = "form-control", autofocus = true})
+                                            @Html.ValidationMessageFor(m => m.MEEV_NR_PARAM_PRESSAO, "", new { @style = "color:red" })
+                                        </div>
+                                    </div>
+                                    <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                        <div class="col-lg-4 col-md-4 col-xs-12">
+                                            Média de uso por noite (Horas)
+                                            @Html.TextBoxFor(m => m.MEEV_NR_MEDIA_USO, new { @class = "form-control", autofocus = true})
+                                            @Html.ValidationMessageFor(m => m.MEEV_NR_MEDIA_USO, "", new { @style = "color:red" })
+                                        </div>
+                                        <div class="col-lg-4 col-md-4 col-xs-12">
+                                            Perc. de noites de uso maior ou igual a 4 hs (%)
+                                            @Html.TextBoxFor(m => m.MEEV_NR_PARAM_PRESSAO, new { @class = "form-control", autofocus = true})
+                                            @Html.ValidationMessageFor(m => m.MEEV_NR_PARAM_PRESSAO, "", new { @style = "color:red" })
+                                        </div>
+                                        <div class="col-lg-2 col-md-2 col-xs-12">
+                                            IAH Residual
+                                            @Html.TextBoxFor(m => m.MEEV_NR_IAH_RESIDUAL, new { @class = "form-control", autofocus = true })
+                                            @Html.ValidationMessageFor(m => m.MEEV_NR_IAH_RESIDUAL, "", new { @style = "color:red" })
+                                        </div>
+                                    </div>
+                                    <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                        <div class="col-lg-12 col-md-12 col-xs-12">
+                                            Sintomas Clínicos
+                                            @Html.TextAreaFor(m => m.MEEV_DS_SINTOMAS, new { @class = "form-control", style = "width: 100%; height: 280px; overflow:auto;", autofocus = true })
+                                            @Html.ValidationMessageFor(m => m.MEEV_DS_SINTOMAS, "", new { @style = "color:red" })
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+
+                            <div class="col-lg-4 col-md-4 col-xs-12">
+                                <h4 style="margin-left: -15px; color:green; background-color: beige; font-weight:bold">Anexos</h4>
+                                <input class="btn btn-sm btn-warning" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="ATENÇÃO - Antes de anexar arquivos certifique-se de que eles estejam livres de vírus e outras ameaças.  " style="margin-left: -15px;" id="inputFile" type="file" multiple />
+                                <br />
+                                <div class="form-group" style="margin-left: -15px;">
+                                    <div>
+                                        <table style="width: 100%;" class="table table-striped table-bordered table-hover dataTables-example" id="myFiles">
+                                            <thead style="background-color:lightsteelblue">
+                                                <tr>
+                                                    <td>Nome</td>
+                                                    <td>Tipo</td>
+                                                    <td>Ações</td>
+                                                </tr>
+                                            </thead>
+                                            <tbody></tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <link href="~/Content/themes/base/jquery-ui.min.css" rel="stylesheet" />
+    <link href="~/Content/themes/base/all.css" rel="stylesheet" />
+    @Styles.Render("~/Content/plugins/dataTables/dataTablesStyles")
+    @Styles.Render("~/plugins/jasnyBootstrapStyles")
+    @Styles.Render("~/plugins/toastrStyles")
+
+}
+@section Scripts {
+    @Scripts.Render("~/plugins/toastr")
+    <script src="~/Scripts/jquery-ui-1.12.1.min.js"></script>
+    @Scripts.Render("~/plugins/dataTables")
+    @Scripts.Render("~/bundles/inputmask")
+    @Scripts.Render("~/plugins/jasnyBootstrap")
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.maskedinput/1.4.1/jquery.maskedinput.js"></script>
+    <script src="~/Scripts/uploadAnexo.js"></script>
+
+    <script type="text/javascript" src="~/Scripts/moment.min.js"></script>
+    <script type="text/javascript" src="~/Scripts/bootstrap.min.js"></script>
+   
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('[data-toggle="popover"]').popover();
+        });
+    </script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-toggle="popover"]'));
+            var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
+                return new bootstrap.Popover(popoverTriggerEl);
+            });
+        });
+    </script>
+
+    <!-- Handler de fechamento do browser -->
+    <script type="text/javascript">
+        window.onbeforeunload = function ()
+        {
+            navigator.sendBeacon('../ControleAcesso/LogSessionTime');
+        }; 
+    </script>
+
+    <script type="text/javascript">
+        function ValidaModelo(conv) {
+            if (conv == 0) {
+                $("#digita").show();
+                $("#texto").hide();
+
+            } else {
+                $("#digita").show();
+                $("#texto").show();
+            }
+        }
+        $(document).ready(function () {
+            ValidaModelo($('#mod').val());
+        });
+    </script>
+
+    <script>
+        function GetTexto(id) {
+            var data = {
+                id: id
+            }
+
+            $.ajax({
+                url: '../Medico/GetTexto'
+                , type: 'POST'
+                , data: data
+                , success: function (r) {
+                    $('#mensDigita').val(r.texto);
+
+                    $("#digita").show();
+                }
+            });
+        }
+    </script>
+
+    <script>
+        function GetMedico(id) {
+            var data = {
+                id: id
+            }
+
+            $.ajax({
+                url: '../Medico/GetMedico'
+                , type: 'POST'
+                , data: data
+                , success: function (r) {
+                    $('#crm').val(r.crm);
+                    $('#mail').val(r.crm);
+                }
+            });
+        }
+    </script>
+
+    <script>
+        function GetPaciente(id) {
+            var data = {
+                id: id
+            }
+            var solicitacao = $('select#solic1');
+
+            $.ajax({
+                url: '../Paciente/GetPaciente'
+                , type: 'POST'
+                , data: data
+                , success: function (r) {
+                    $('#dataNasc > input').val(r.dataNasc);
+                    $('#cpf > input').val(r.cpf);
+                    $('#cel > input').val(r.cel);
+                    $('#tel > input').val(r.tel);
+
+                    $('#dataNasc').show();
+                    $('#cpf').show();
+                    $('#cel').show();
+                    $('#tel').show();
+                }
+            });
+        }
+    </script>
+
+    <script type="text/javascript" language="javascript">
+        $(function () {
+            $('.date-picker').datepicker(
+                {
+                    dateFormat: 'dd/mm/yy',
+                    dayNames: ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'],
+                    dayNamesMin: ['D', 'S', 'T', 'Q', 'Q', 'S', 'S', 'D'],
+                    dayNamesShort: ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'],
+                    monthNames: ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'],
+                    monthNamesShort: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'],
+                    nextText: 'Proximo',
+                    prevText: 'Anterior',
+                    showOn: "focus"
+                }
+            )
+                .css("display", "normal")
+                .next("button").button({
+                    icons: { primary: "ui-icon-calendar" },
+                    label: "Selecione uma data",
+                    text: false
+                });
+        });
+    </script>
+
+    <script type="text/javascript">
+        $(function () {
+            $("#dn1").mask("99/99/9999");
+            $("#dn2").mask("99/99/9999");
+        });
+    </script>
+
+    <script>
+        SendFilesV2('imgCliente', 'Medico', 'UploadFileToSession');
+    </script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            var i = -1;
+            var toastCount = 0;
+            var $toastlast;
+            var getMessage = function () {
+                var msg = 'Hi, welcome to Inspinia. This is example of Toastr notification box.';
+                return msg;
+            };
+
+            $('#basictoast').click(function () {
+                // Display a success toast, with a title
+                toastr.success('Inclusão em andamento!')
+            });
+            $('#showtoast').click(function () {
+                var shortCutFunction = $("#toastTypeGroup input:radio:checked").val();
+                var msg = $('#message').val();
+                var title = $('#title').val() || '';
+                var $showDuration = $('#showDuration');
+                var $hideDuration = $('#hideDuration');
+                var $timeOut = $('#timeOut');
+                var $extendedTimeOut = $('#extendedTimeOut');
+                var $showEasing = $('#showEasing');
+                var $hideEasing = $('#hideEasing');
+                var $showMethod = $('#showMethod');
+                var $hideMethod = $('#hideMethod');
+                var toastIndex = toastCount++;
+                toastr.options = {
+                    closeButton: $('#closeButton').prop('checked'),
+                    debug: $('#debugInfo').prop('checked'),
+                    progressBar: $('#progressBar').prop('checked'),
+                    positionClass: $('#positionGroup input:radio:checked').val() || 'toast-top-right',
+                    onclick: null
+                };
+                if ($('#addBehaviorOnToastClick').prop('checked')) {
+                    toastr.options.onclick = function () {
+                        alert('You can perform some custom action after a toast goes away');
+                    };
+                }
+                if ($showDuration.val().length) {
+                    toastr.options.showDuration = $showDuration.val();
+                }
+                if ($hideDuration.val().length) {
+                    toastr.options.hideDuration = $hideDuration.val();
+                }
+                if ($timeOut.val().length) {
+                    toastr.options.timeOut = $timeOut.val();
+                }
+                if ($extendedTimeOut.val().length) {
+                    toastr.options.extendedTimeOut = $extendedTimeOut.val();
+                }
+                if ($showEasing.val().length) {
+                    toastr.options.showEasing = $showEasing.val();
+                }
+                if ($hideEasing.val().length) {
+                    toastr.options.hideEasing = $hideEasing.val();
+                }
+                if ($showMethod.val().length) {
+                    toastr.options.showMethod = $showMethod.val();
+                }
+                if ($hideMethod.val().length) {
+                    toastr.options.hideMethod = $hideMethod.val();
+                }
+                if (!msg) {
+                    msg = getMessage();
+                }
+                $("#toastrOptions").text("Command: toastr["
+                    + shortCutFunction
+                    + "](\""
+                    + msg
+                    + (title ? "\", \"" + title : '')
+                    + "\")\n\ntoastr.options = "
+                    + JSON.stringify(toastr.options, null, 2)
+                );
+                var $toast = toastr[shortCutFunction](msg, title); // Wire up an event handler to a button in the toast, if it exists
+                $toastlast = $toast;
+                if ($toast.find('#okBtn').length) {
+                    $toast.delegate('#okBtn', 'click', function () {
+                        alert('you clicked me. i was toast #' + toastIndex + '. goodbye!');
+                        $toast.remove();
+                    });
+                }
+                if ($toast.find('#surpriseBtn').length) {
+                    $toast.delegate('#surpriseBtn', 'click', function () {
+                        alert('Surprise! you clicked me. i was toast #' + toastIndex + '. You could perform an action here.');
+                    });
+                }
+            });
+            function getLastToast() {
+                return $toastlast;
+            }
+            $('#clearlasttoast').click(function () {
+                toastr.clear(getLastToast());
+            });
+            $('#cleartoasts').click(function () {
+                toastr.clear();
+            });
+
+        });
+    </script>
+
+
+    @if (ViewBag.Message != null)
+    {
+        <script type="text/javascript">
+            window.onload = function () {
+                  alert("@ViewBag.Message");
+            };
+        </script>
+    }
+}

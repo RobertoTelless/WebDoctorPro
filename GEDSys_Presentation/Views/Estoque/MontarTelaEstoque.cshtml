@@ -1,0 +1,542 @@
+﻿@using Presentation.Extensions
+@using CrossCutting;
+@model EntitiesServices.Model.PRODUTO
+@{ Layout = "~/Views/Shared/_Layout_Admin.cshtml"; }
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div id="containerModalDesc">
+        <div class="modal fade" id="modalDesc" tabindex="-1" role="dialog" aria-labelledby="modalDesc" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="modalDesc">Descrição do Produto</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div id="modalDescBody" class="modal-body">
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="page-title">
+        <h3 class="title">Estoques</h3>
+        <br />
+        <ol class="breadcrumb">
+            <li>
+                <a href="@Url.Action("MontarTelaPaciente", "Paciente")">Dashboard</a>
+            </li>
+            <li class="active">
+                <strong>Central de Estoque</strong>
+            </li>
+        </ol>
+        <br />
+    </div>
+
+    <div class="row">
+        <div class="col-lg-2">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title"  style="background-color:darkseagreen; color:darkgreen">
+                    <span class="label label-primary pull-right">Hoje</span>
+                    <h5>Estoque</h5>
+                </div>
+                <div class="ibox-content">
+                    <h1 class="no-margins">@ViewBag.Acima</h1>
+                    <small>Acima do Máximo</small>
+                    <br />
+                    <br />
+                    @Html.ButtonLinkIndex(text: "Ver", controller: "Produto", action: "MontarTelaProdutoAcima", buttonClass: "white", htmlAttributes: new { @id = "aci", OnClick = "Fade1()" })
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-2">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title"  style="background-color: darkseagreen; color: darkgreen">
+                    <span class="label label-primary pull-right">Hoje</span>
+                    <h5>Estoque</h5>
+                </div>
+                <div class="ibox-content">
+                    <h1 class="no-margins">@CrossCutting.Formatters.IntegerFormatter(ViewBag.Abaixo)</h1>
+                    <small>Abaixo do Mínimo</small>
+                    <br />
+                    <br />
+                    @Html.ButtonLinkIndex(text: "Ver", controller: "Produto", action: "MontarTelaProdutoAbaixo", buttonClass: "white", htmlAttributes: new { @id = "aba", OnClick = "Fade1()" })
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-2">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title"  style="background-color:darkseagreen; color:darkgreen">
+                    <span class="label label-primary pull-right">Hoje</span>
+                    <h5>Estoque</h5>
+                </div>
+                <div class="ibox-content">
+                    <h1 class="no-margins">@CrossCutting.Formatters.IntegerFormatter(ViewBag.Zerado)</h1>
+                    <small>Estoque Zerado</small>
+                    <br />
+                    <br />
+                    @Html.ButtonLinkIndex(text: "Ver", controller: "Produto", action: "MontarTelaProdutoZerado", buttonClass: "white", htmlAttributes: new { @id = "zero", OnClick = "Fade1()" })
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-2">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title"  style="background-color:darkseagreen; color:darkgreen">
+                    <span class="label label-primary pull-right">Hoje</span>
+                    <h5>Estoque</h5>
+                </div>
+                <div class="ibox-content">
+                    <h1 class="no-margins">@CrossCutting.Formatters.IntegerFormatter(ViewBag.Esgota)</h1>
+                    <small>Esgotando em até 30 dias</small>
+                    <br />
+                    <br />
+                    @Html.ButtonLinkIndex(text: "Ver", controller: "Produto", action: "MontarTelaProdutoEsgota", buttonClass: "white", htmlAttributes: new { @id = "esg", OnClick = "Fade1()" })
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-12 col-md-12 col-xs-12">
+            <div class="col-lg-12 col-md-12 col-xs-12 ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>Filtros</h5>
+                </div>
+
+                @using (Html.BeginForm("FiltrarEstoque", "Estoque", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal" }))
+                {
+                    <div class="ibox-content">
+                        <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                            <div class="col-lg-2 col-md-2 col-xs-12">
+                                Tipo
+                                @Html.DropDownListFor(m => m.PROD_IN_TIPO_PRODUTO, (SelectList)ViewBag.Tipos, "Selecionar", new { @class = "form-control", autofocus = true })
+                            </div>
+                            <div class="col-lg-3 col-md-3 col-xs-12">
+                                Categoria
+                                @Html.DropDownListFor(m => m.CAPR_CD_ID, (SelectList)ViewBag.Cats, "Selecionar", new { @class = "form-control", autofocus = true, onchange = "FiltrarSubCategoriaProduto($(this).val())", id = "catProd" })
+                            </div>
+                            <div class="col-lg-3 col-md-3 col-xs-12">
+                                Subcategoria
+                                @Html.DropDownListFor(m => m.SCPR_CD_ID, (SelectList)ViewBag.Subs, "Selecionar", new { @class = "form-control", autofocus = true, id = "subCatProd" })
+                            </div>
+                            <div class="col-lg-2 col-md-2 col-xs-12">
+                                Código (SKU)
+                                @Html.TextBoxFor(m => m.PROD_CD_CODIGO, new { @class = "form-control", autofocus = true })
+                            </div>
+                        </div>
+                        <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                            <div class="col-lg-4 col-md-4 col-xs-12">
+                                Nome do Material/Produto
+                                @Html.TextBoxFor(m => m.PROD_NM_NOME, new { @class = "form-control", autofocus = true })
+                            </div>
+                            <div class="col-lg-3 col-md-3 col-xs-12">
+                                Marca
+                                @Html.TextBoxFor(m => m.PROD_NM_MARCA, new { @class = "form-control", autofocus = true })
+                            </div>
+                            <div class="col-lg-3 col-md-3 col-xs-12">
+                                Situação do Estoque
+                                @Html.DropDownListFor(m => m.PROD_IN_COMPOSTO, (SelectList)ViewBag.Sits, "Selecionar", new { @class = "form-control", autofocus = true })
+                            </div>
+                        </div>
+                        <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                            <div class="col-lg-12 col-md-12 col-xs-12">
+                                @Html.ButtonActionSubmit(text: "Filtrar")
+                                @Html.ButtonLinkIndex(text: "Retirar Filtro", controller: "Estoque", action: "RetirarFiltroEstoque", buttonClass: "success")
+                                @Html.ButtonLinkIndex(text: "Exibir Todos", controller: "Estoque", action: "MostrarTodosEstoque", buttonClass: "success")
+                                @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_INCLUIR_MOVIMENTACAO_ESTOQUE == 1)
+                                {
+                                    @Html.ButtonLinkIndex(text: "Nova Movimentação", controller: "Estoque", action: "IncluirMovimentacaoGeral", buttonClass: "primary")
+                                }
+                                @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_VER_MOVIMENTACAO_ESTOQUE == 1)
+                                {
+                                    @Html.ButtonLinkIndex(text: "Ver Movimentações", controller: "Estoque", action: "VerMovimentacoes")
+                                }
+                                @Html.ButtonLinkIndex(text: "Imprimir", controller: "Estoque", action: "GerarRelatorioLista")
+                                @Html.ButtonLinkIndex(text: "Voltar", controller: "Paciente", action: "MontarTelaPaciente")
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-12 col-md-12 col-xs-12" id="central">
+            <div class="col-lg-12 col-md-12 col-xs-12 ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>Central de Estoque</h5>
+                </div>
+                <div class="ibox-content">
+                    @if (!ViewData.ModelState.IsValid)
+                    {
+                        <div class="alert alert-danger">
+                            <button type="button" class="close" data-dismiss="alert">Fechar</button>
+                            @Html.ValidationSummary(false, "", new { @class = "text-danger" })
+                        </div>}
+                        @if (TempData["TemMensagem"] != null)
+                        {
+                            <div class="alert alert-success">
+                                <button type="button" class="close" data-dismiss="alert">Fechar</button>
+                                <span>@TempData["MensagemAcerto"]</span>
+                            </div>
+                        }                    
+                        <div class="row">
+                            @if (ViewBag.Listas != null && (ViewBag.Listas as List<EntitiesServices.Model.PRODUTO>).Count > 0)
+                            {
+                                <table class="table table-striped table-bordered table-hover dataTables-example">
+                                    <thead style="background-color:lightsteelblue">
+                                        <tr>
+                                            <th style="width: auto">Tipo</th>
+                                            <th style="width: auto">Código</th>
+                                            <th style="width: auto">Material/Produto</th>
+                                            <th style="width: auto">Categoria</th>
+                                            <th style="width: auto">Subcategoria</th>
+                                            <th style="width: auto">Estoque Atual</th>
+                                            <th style="width: auto">Estoque Máximo</th>
+                                            <th style="width: auto">Estoque Mínimo</th>
+                                            <th style="width: auto">Estoque Reservado</th>
+                                            <th style="width: auto">Média Venda Mensal</th>
+                                            <th style="width: auto">Esgotamento (Dias)</th>
+                                            <th style="width: auto"></th>
+                                            <th style="width: auto" class="td-one-action">Ações</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var cond in (ViewBag.Listas as List<EntitiesServices.Model.PRODUTO>))
+                                        {
+                                            <tr>
+                                                @if (cond.PROD_IN_TIPO_PRODUTO == 1)
+                                                {
+                                                    <td style="width: auto"><span class="badge badge-primary">Material</span></td>
+                                                }
+                                                else
+                                                {
+                                                    <td style="width: auto"><span class="badge badge-success">Produto</span></td>
+                                                }
+
+                                                <td style="cursor: pointer; text-decoration: underline; color: #337ab7;" onclick="mostrarDesc('@cond.PROD_DS_DESCRICAO')">@cond.PROD_CD_CODIGO</td>
+
+                                                @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_EDICAO_PROD == 1)
+                                                {
+                                                    <td style="width: auto; color:green; font-weight:bold"><a href="@Url.Action("EditarProduto", "Produto", new { id = cond.PROD_CD_ID })" />@cond.PROD_NM_NOME</td>
+                                                }
+                                                else
+                                                {
+                                                    <td style="width: auto; color:green; font-weight:bold"><a href="@Url.Action("ConsultarProduto", "Produto", new { id = cond.PROD_CD_ID })" />@cond.PROD_NM_NOME</td>
+                                                }
+
+
+                                                @if (cond.CATEGORIA_PRODUTO != null)
+                                                {
+                                                    <td style="width: auto">@cond.CATEGORIA_PRODUTO.CAPR_NM_NOME</td>
+                                                }
+                                                else
+                                                {
+                                                    <td style="width: auto">-</td>
+                                                }
+
+                                                @if (cond.SUBCATEGORIA_PRODUTO != null)
+                                                {
+                                                    <td style="width: auto">@cond.SUBCATEGORIA_PRODUTO.SCPR_NM_NOME</td>
+                                                }
+                                                else
+                                                {
+                                                    <td style="width: auto">-</td>
+                                                }
+
+                                                @if (cond.PROD_VL_ESTOQUE_ATUAL != null)
+                                                {
+                                                    if (cond.PROD_VL_ESTOQUE_ATUAL > cond.PROD_VL_ESTOQUE_MAXIMO)
+                                                    {
+                                                        <td style="width: auto; color: darkblue; font-weight:bold; background-color: aliceblue">@CrossCutting.Formatters.IntegerFormatter(cond.PROD_VL_ESTOQUE_ATUAL.Value)</td>
+                                                    }
+                                                    else if (cond.PROD_VL_ESTOQUE_ATUAL < cond.PROD_VL_ESTOQUE_MINIMO)
+                                                    {
+                                                        <td style="width: auto; color: brown; font-weight:bold; background-color: antiquewhite">@CrossCutting.Formatters.IntegerFormatter(cond.PROD_VL_ESTOQUE_ATUAL.Value)</td>
+                                                    }
+                                                    else if (cond.PROD_VL_ESTOQUE_ATUAL <= 0)
+                                                    {
+                                                        <td style="width: auto; color: red; font-weight:bold; background-color:mistyrose">@CrossCutting.Formatters.IntegerFormatter(cond.PROD_VL_ESTOQUE_ATUAL.Value)</td>
+                                                    }
+                                                    else
+                                                    {
+                                                        <td style="width: auto; font-weight:bold">@CrossCutting.Formatters.IntegerFormatter(cond.PROD_VL_ESTOQUE_ATUAL.Value)</td>
+                                                    }
+                                                  }
+
+                                                @if (cond.PROD_VL_ESTOQUE_MAXIMO != null)
+                                                {
+                                                    <td style="width: auto">@CrossCutting.Formatters.IntegerFormatter(cond.PROD_VL_ESTOQUE_MAXIMO.Value)</td>
+                                                }
+                                                else
+                                                {
+                                                    <td style="width: auto">0</td>
+                                                }
+
+                                                @if (cond.PROD_VL_ESTOQUE_MINIMO != null)
+                                                {
+                                                    <td style="width: auto">@CrossCutting.Formatters.IntegerFormatter(cond.PROD_VL_ESTOQUE_MINIMO.Value)</td>
+                                                }
+                                                else
+                                                {
+                                                    <td style="width: auto">0</td>
+                                                }
+                                                @if (cond.PROD_VL_ESTOQUE_RESERVA != null)
+                                                {
+                                                    <td style="width: auto">@CrossCutting.Formatters.IntegerFormatter(cond.PROD_VL_ESTOQUE_RESERVA.Value)</td>
+                                                }
+                                                else
+                                                {
+                                                    <td style="width: auto">0</td>
+                                                }
+
+                                                @if (cond.PROD_VL_MEDIA_VENDA_MENSAL != null)
+                                                {
+                                                    <td style="width: auto">@CrossCutting.Formatters.IntegerFormatter(cond.PROD_VL_MEDIA_VENDA_MENSAL.Value)</td>
+                                                }
+                                                else
+                                                {
+                                                    <td style="width: auto">-</td>
+                                                }
+
+                                                @if (cond.PROD_VL_MEDIA_VENDA_MENSAL != null & cond.PROD_VL_MEDIA_VENDA_MENSAL > 0)
+                                                {
+                                                    if ((cond.PROD_VL_ESTOQUE_ATUAL.Value / cond.PROD_VL_MEDIA_VENDA_MENSAL.Value) * 30 < 30)
+                                                    {
+                                                        <td style="color:brown; font-weight:bold; width: auto">@CrossCutting.Formatters.IntegerFormatter(((cond.PROD_VL_ESTOQUE_ATUAL.Value / cond.PROD_VL_MEDIA_VENDA_MENSAL.Value)) * 30)</td>
+                                                    }
+                                                    else
+                                                    {
+                                                        <td style="color:green; font-weight:bold; width: auto">@CrossCutting.Formatters.IntegerFormatter(((cond.PROD_VL_ESTOQUE_ATUAL.Value / cond.PROD_VL_MEDIA_VENDA_MENSAL.Value)) * 30)</td>
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    <td>-</td>
+                                                }
+
+                                                @if (!String.IsNullOrEmpty(cond.PROD_AQ_FOTO))
+                                                {
+                                                    <td style="width: auto"><img src="@Url.Content(cond.PROD_AQ_FOTO)" style="width: auto; height: auto; max-height: 75px; max-width: 65px;" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Clique Ctrl+Ctrl para ampliar a fotografia"></td>
+                                                }
+                                                else
+                                                {
+                                                    <td style="width: auto"><img src="~/Images/icone_imagem.png" style="width: auto; height: auto; max-height: 65px; max-width: 55px;"  ></td>
+                                                }
+
+                                                <td style="width: auto" class="td-one-action">
+                                                    @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_VER_MOVIMENTACAO_ESTOQUE == 1)
+                                                    {
+                                                        @Html.TableLinkDetails(cond.PROD_CD_ID, "VerMovimentacaoProduto", "fa-calendar-o", "Ver Movimentações")
+                                                    }
+                                                    @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_VER_MOVIMENTACAO_ESTOQUE == 1)
+                                                    {
+                                                        @Html.TableLinkDetails(cond.PROD_CD_ID, "VerHistoricoEstoque", "fa-line-chart", "Ver Histórico")
+                                                    }
+                                                    @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_INCLUIR_MOVIMENTACAO_ESTOQUE == 1)
+                                                    {
+                                                        @Html.TableLinkDetails(cond.PROD_CD_ID, "IncluirMovimentacao", "fa-plus", "Nova Movimentação")
+                                                    }
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            }
+                            else
+                            {
+                                <div class="row">
+                                    <div class="col-lg-2 col-md-2 col-xs-2">
+
+                                    </div>
+                                    <div style="border: 5px solid #F6A54A; padding: 10px; border-radius: 8px 8px; " class="col-lg-8 col-md-8 col-xs-8">
+                                        <h2 style="font-weight: bold">Nenhum produto cadastrado ou sua pesquisa não retornou nenhum resultado</h2>
+                                        @Html.ButtonLinkIndex(text: "Retirar Filtro", controller: "Estoque", action: "RetirarFiltroEstoque")
+                                    </div>
+                                    <div class="col-lg-2 col-md-2 col-xs-2">
+
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section Styles {
+    <link href="~/Content/themes/base/jquery-ui.min.css" rel="stylesheet" />
+    <link href="~/Content/themes/base/all.css" rel="stylesheet" />
+    @Styles.Render("~/Content/plugins/dataTables/dataTablesStyles")
+    @Styles.Render("~/plugins/jasnyBootstrapStyles")
+    @Styles.Render("~/plugins/toastrStyles")
+}
+@section Scripts {
+    @Scripts.Render("~/plugins/toastr")
+    <script src="~/Scripts/jquery-ui-1.12.1.min.js"></script>
+    @Scripts.Render("~/plugins/dataTables")
+    @Scripts.Render("~/bundles/inputmask")
+    @Scripts.Render("~/plugins/jasnyBootstrap")
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.maskedinput/1.4.1/jquery.maskedinput.js"></script>
+
+    <script type="text/javascript" src="~/Scripts/moment.min.js"></script>
+    <script type="text/javascript" src="~/Scripts/bootstrap.min.js"></script>
+   
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('[data-toggle="popover"]').popover();
+        });
+    </script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-toggle="popover"]'));
+            var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
+                return new bootstrap.Popover(popoverTriggerEl);
+            });
+        });
+    </script>
+
+    <!-- Handler de fechamento do browser -->
+    <script type="text/javascript">
+        window.onbeforeunload = function ()
+        {
+            navigator.sendBeacon('../ControleAcesso/LogSessionTime');
+        }; 
+    </script>
+   
+    <script>
+        function mostrarDesc(desc) {
+            $('#modalDescBody').html(desc);
+            $('#modalDesc').modal('show');
+        }
+    </script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            $('.dataTables-example').DataTable({
+                pageLength: 25,
+                dom: '<"html5buttons"B>lTfgitp',
+                buttons: [
+                    { extend: 'excel', title: 'Estoque_Planilha' },
+
+                    {
+                        extend: 'print',
+                        customize: function (win) {
+                            $(win.document.body).addClass('white-bg');
+                            $(win.document.body).css('font-size', '10px');
+
+                            $(win.document.body).find('table')
+                                    .addClass('compact')
+                                    .css('font-size', 'inherit');
+                        }
+                    }
+                ]
+            });         
+        });
+    </script>
+
+    <script>
+        function FiltrarSubCategoriaProduto(CAPR_CD_ID) {
+            var data = {
+                id: CAPR_CD_ID
+            }
+
+            var objSubCatProduto = $('select#subCatProd');
+
+            // Requisição para o controller
+            $.ajax({
+                url: '../Produto/FiltrarSubCategoriaProduto'
+                , type: 'POST'
+                , data: data
+                , success: function (r) {
+                    // Remove todos os itens da lista e adiciona o placeholder
+                    objSubCatProduto.children('option').remove();
+                    objSubCatProduto.append('<option>Selecionar</option>');
+
+                    // Loop para adicionar Itens específicos à categoria
+                    r.forEach(function (e) {
+                        objSubCatProduto.append('<option value="' + e.SCPR_CD_ID + '">' + e.SCPR_NM_NOME + '</option>');
+                    });
+
+                    //console.log(r);
+                }
+            });
+        }
+
+        function FiltrarCategoriaProduto(SCPR_CD_ID) {
+            var data = {
+                id: SCPR_CD_ID
+            }
+
+            var objCatProduto = $('select#catProd');
+
+            // Requisição para o controller
+            $.ajax({
+                url: '../Produto/FiltrarCategoriaProduto'
+                , type: 'POST'
+                , data: data
+                , success: function (r) {
+                    // Remove todos os itens da lista e adiciona o placeholder
+                    objCatProduto.children('option').remove();
+                    objCatProduto.append('<option>Selecionar</option>');
+
+                    // Loop para adicionar Itens específicos à categoria
+                    r.forEach(function (e) {
+                        if (r.length > 1) {
+                            objCatProduto.append('<option value="' + e.CAPR_CD_ID + '">' + e.CAPR_NM_NOME + '</option>');
+                        } else {
+                            objCatProduto.append('<option selected="selected" value="' + e.CAPR_CD_ID + '">' + e.CAPR_NM_NOME + '</option>');
+                        }
+
+                    });
+
+                    //console.log(r);
+                }
+            });
+        }
+
+        function FiltrarUnidade(PROD_IN_FRACIONADO) {
+            var data = {
+                id: PROD_IN_FRACIONADO
+            }
+
+            var objUnid = $('select#unid');
+
+            // Requisição para o controller
+            $.ajax({
+                url: '../Produto/FiltrarUnidade'
+                , type: 'POST'
+                , data: data
+                , success: function (r) {
+                    // Remove todos os itens da lista e adiciona o placeholder
+                    objUnid.children('option').remove();
+                    objUnid.append('<option>Selecionar</option>');
+
+                    // Loop para adicionar Itens específicos
+                    r.forEach(function (e) {
+                        objUnid.append('<option value="' + e.UNID_CD_ID + '">' + e.UNID_NM_NOME + '</option>');
+                    });
+                }
+            });
+        }
+    </script>
+}
+
+@if (ViewBag.Message != null)
+{
+    <script type="text/javascript">
+            window.onload = function () {
+                alert("@ViewBag.Message");
+            };
+    </script>
+}

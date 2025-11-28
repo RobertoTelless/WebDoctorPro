@@ -1,0 +1,280 @@
+﻿@using Presentation.Extensions
+@using CrossCutting;
+@using EntitiesServices.Work_Classes;
+@model EntitiesServices.Model.PRODUTO_ESTOQUE_HISTORICO
+@{
+    Layout = "~/Views/Shared/_Layout_Admin.cshtml";
+}
+
+<div style="z-index: 999;" class="dotContainer">
+    <div style="top: 500px" class="dotWrapper">
+        <div class="circle"></div>
+        <div class="circle"></div>
+        <div class="circle"></div>
+        <div class="shadow"></div>
+        <div class="shadow"></div>
+        <div class="shadow"></div>
+    </div>
+</div>
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="page-title">
+        <h3 class="title">Estoques</h3>
+        <br />
+        <ol class="breadcrumb">
+            <li>
+                <a href="@Url.Action("MontarTelaPaciente", "Paciente")">Dashboard</a>
+            </li>
+            <li>
+                <a href="@Url.Action("MontarTelaEstoque", "Estoque")">Central de Estoque</a>
+            </li>
+            <li class="active">
+                <strong>Evolução do Estoque</strong>
+            </li>
+        </ol>
+        <br />
+    </div>
+
+    <div class="row">
+        <div class="col-lg-12 col-md-12 col-xs-12">
+            <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                <div class="col-lg-12 col-md-12 col-xs-12">                                     
+                    @Html.ButtonLinkIndex(text: "Imprimir", controller: "Estoque", action: "GerarListagemEvolucaoEstoque")
+                    @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaEstoque", controller: "Estoque")                
+                </div>
+            </div>
+            <br />
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-12 col-md-12 col-xs-12"  id="Lista">
+            <div class="col-lg-12 col-md-12 col-xs-12 ibox float-e-margins">
+                <div class="ibox-title">
+                    <div class="row">
+                        <div style="text-align: center;" class="col-lg-12 col-md-12 col-xs-12">
+                            <h5>Evolução do Estoque</h5>
+                            <span style="color:green; font-weight: 500; font-size: 20px;">@ViewBag.Nome</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="ibox-content">
+                    @if (!ViewData.ModelState.IsValid)
+                    {
+                        <div class="alert alert-danger">
+                            <button type="button" class="close" data-dismiss="alert">Fechar</button>
+                            @Html.ValidationSummary(false, "", new { @class = "text-danger" })
+                        </div>
+                    }
+                    <br />
+                    <div class="row">
+                        <div class="col-lg-4 col-md-4 col-xs-12">
+                            @if (ViewBag.Listas != null && (ViewBag.Listas as List<EntitiesServices.Model.PRODUTO_ESTOQUE_HISTORICO>).Count > 0)
+                            {
+                                <table class="table table-striped table-bordered table-hover dataTables-example">
+                                    <thead style="background-color:lightsteelblue">
+                                        <tr>
+                                            <th style="width: auto">Data da Movimentação</th>
+                                            <th style="width: auto">Quantidade</th>
+                                            <th style="width: auto">Tipo</th>
+                                            <th style="width: auto">Origem</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var cond in (ViewBag.Listas as List<EntitiesServices.Model.PRODUTO_ESTOQUE_HISTORICO>).OrderByDescending(p => p.PREH_DT_COMPLETA))
+                                        {
+                                            <tr>                                            
+                                                <td style="width: auto">@cond.PREH_DT_COMPLETA.Value.ToShortDateString() @cond.PREH_DT_COMPLETA.Value.ToShortTimeString()</td>
+                                                <td style="width: auto; font-weight: bold">@CrossCutting.Formatters.IntegerFormatter(cond.PREH_QN_ESTOQUE.Value)</td>
+                                                <td style="width: auto;">@cond.PREH_NM_TIPO</td>
+                                                <td style="width: auto;">@cond.PREH_DS_ORIGEM</td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            }
+                            else
+                            {
+                                <div class="row">
+                                    <div class="col-lg-3 col-md-3 col-xs-2">
+
+                                    </div>
+                                    <div style="border: 5px solid #F6A54A; padding: 10px; border-radius: 8px 8px; " class="col-lg-6 col-md-6 col-xs-8">
+                                        <h2 style="font-weight: bold">Nenhuma movimentação registrada</h2>
+                                    </div>
+                                    <div class="col-lg-3 col-md-3 col-xs-2">
+
+                                    </div>
+                                </div>
+                            }
+                        </div>
+
+                        <div class="col-lg-8 col-md-8 col-xs-12">
+                            <div class="col-lg-12 col-md-12 col-xs-12 ibox float-e-margins" style="border-bottom: solid; border-bottom-color: darkblue; border-bottom-width: 2px; border-left: solid; border-left-color: darkblue; border-left-width: 1px; border-right: solid; border-right-color: darkblue; border-right-width: 1px; border-top: solid; border-top-color: darkblue; border-top-width: 1px">
+                                <div class="ibox-title">
+                                    <h4>Evolução do Estoque Físico</h4>
+                                </div>
+                                <div class="ibox-content">
+                                    <div class="row">
+                                        <canvas id="lineChartEstoqueFisico" height="80"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-12 col-md-12 col-xs-12 ibox float-e-margins" style="border-bottom: solid; border-bottom-color: darkblue; border-bottom-width: 2px; border-left: solid; border-left-color: darkblue; border-left-width: 1px; border-right: solid; border-right-color: darkblue; border-right-width: 1px; border-top: solid; border-top-color: darkblue; border-top-width: 1px">
+                                <div class="ibox-title">
+                                    <h4>Evolução do Estoque Financeiro (R$)</h4>
+                                </div>
+                                <div class="ibox-content">
+                                    <div class="row">
+                                        <canvas id="lineChartEstoqueReal" height="80"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <link href="~/Content/themes/base/jquery-ui.min.css" rel="stylesheet" />
+    <link href="~/Content/themes/base/all.css" rel="stylesheet" />
+    @Styles.Render("~/Content/plugins/dataTables/dataTablesStyles")
+    @Styles.Render("~/plugins/jasnyBootstrapStyles")
+    @Styles.Render("~/plugins/toastrStyles")
+}
+
+@section Scripts {
+
+    @Scripts.Render("~/plugins/toastr")
+    <script src="~/Scripts/jquery-ui-1.12.1.min.js"></script>
+    @Scripts.Render("~/plugins/dataTables")
+    @Scripts.Render("~/bundles/inputmask")
+    @Scripts.Render("~/plugins/jasnyBootstrap")
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.maskedinput/1.4.1/jquery.maskedinput.js"></script> 
+
+    <script type="text/javascript" src="~/Scripts/moment.min.js"></script>
+    <script type="text/javascript" src="~/Scripts/bootstrap.min.js"></script>
+   
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('[data-toggle="popover"]').popover();
+        });
+    </script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-toggle="popover"]'));
+            var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
+                return new bootstrap.Popover(popoverTriggerEl);
+            });
+        });
+    </script>
+
+    <!-- Handler de fechamento do browser -->
+    <script type="text/javascript">
+        window.onbeforeunload = function ()
+        {
+            navigator.sendBeacon('../ControleAcesso/LogSessionTime');
+        }; 
+    </script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            $('.dataTables-example').DataTable({
+                pageLength: 25,
+                dom: '<"html5buttons"B>lTfgitp',
+                buttons: [
+                    { extend: 'excel', title: 'EstoqueHistorico_Planilha' },
+                    {
+                        extend: 'print',
+                        customize: function (win) {
+                            $(win.document.body).addClass('white-bg');
+                            $(win.document.body).css('font-size', '10px');
+
+                            $(win.document.body).find('table')
+                                    .addClass('compact')
+                                    .css('font-size', 'inherit');
+                        }
+                    }
+                ]
+
+            });      
+        });
+    </script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            $.ajax({
+                url: '/Estoque/GetDadosHistorico'
+                , type: 'POST'
+                , success: function (result) {
+                    var lineData = {
+                        labels: result.dias,
+                        datasets: [
+
+                            {
+                                label: "Estoque",
+                                backgroundColor: 'rgba(26,179,148,0.5)',
+                                borderColor: "rgba(26,179,148,0.7)",
+                                pointBackgroundColor: "rgba(26,179,148,1)",
+                                pointBorderColor: "#fff",
+                                data: result.valoresHist
+                            }
+                        ]
+                    };
+
+                    var lineOptions = {
+                        responsive: true
+                    };
+                    var ctx = document.getElementById("lineChartEstoqueFisico").getContext("2d");
+                    new Chart(ctx, { type: 'line', data: lineData, options: lineOptions });
+              }
+            });
+        });
+    </script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            $.ajax({
+                url: '/Estoque/GetDadosHistorico'
+                , type: 'POST'
+                , success: function (result) {
+                    var lineData = {
+                        labels: result.dias,
+                        datasets: [
+
+                            {
+                                label: "Estoque Financeiro (R$)",
+                                backgroundColor: 'rgba(225, 133, 6, 0.5)',
+                                borderColor: "rgba(225, 133, 6,0.7)",
+                                pointBackgroundColor: "rgba(225, 133, 6,1)",
+                                pointBorderColor: "#fff",
+                                data: result.valoresVenda
+                            }
+                        ]
+                    };
+
+                    var lineOptions = {
+                        responsive: true
+                    };
+                    var ctx = document.getElementById("lineChartEstoqueReal").getContext("2d");
+                    new Chart(ctx, { type: 'line', data: lineData, options: lineOptions });
+              }
+            });
+        });
+    </script>
+}
+@if (ViewBag.Message != null)
+{
+    <script type="text/javascript">
+            window.onload = function () {
+                alert("@ViewBag.Message");
+            };
+    </script>
+}
+

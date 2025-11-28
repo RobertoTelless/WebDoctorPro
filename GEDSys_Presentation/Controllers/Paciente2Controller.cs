@@ -1,0 +1,18897 @@
+﻿using ApplicationServices.Interfaces;
+using AutoMapper;
+using Azure.Communication.Email;
+using Canducci.Zip;
+using CRMPresentation.App_Start;
+using CrossCutting;
+using EntitiesServices.Model;
+using EntitiesServices.WorkClasses;
+using ERP_Condominios_Solution.Classes;
+using ERP_Condominios_Solution.Controllers;
+using ERP_Condominios_Solution.ViewModels;
+using GEDSys_Presentation.App_Start;
+using iTextSharp.text;
+using iTextSharp.text.pdf;
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Data.Entity;
+using System.Diagnostics;
+using System.Globalization;
+using System.IO;
+using System.Linq;
+using System.Net;
+using System.Net.Mime;
+using System.Reflection;
+using System.Text;
+using System.Text.RegularExpressions;
+using System.Threading.Tasks;
+using System.Web;
+using System.Web.Mvc;
+using XidNet;
+using Image = iTextSharp.text.Image;
+using OfficeOpenXml;
+using OfficeOpenXml.Style;
+using System.CodeDom;
+#pragma warning disable CS0105 // Usando diretiva exibida anteriormente neste namespace
+using CrossCutting;
+#pragma warning restore CS0105 // Usando diretiva exibida anteriormente neste namespace
+using nClam;
+using System.Security.Cryptography.X509Certificates;
+using iTextSharp.text.pdf.security;
+using Org.BouncyCastle.X509; // Necessário para a conversão de certificados
+using Org.BouncyCastle.Crypto;
+using System.Security.Cryptography;
+using QRCoder;
+using System.Net.Http;
+using Newtonsoft.Json;
+using EntitiesServices.Work_Classes;
+
+namespace GEDSys_Presentation.Controllers
+{
+    public class Paciente2Controller : Controller
+    {
+        private readonly IPacienteAppService baseApp;
+        private readonly ILogAppService logApp;
+        private readonly ITipoPessoaAppService tpApp;
+        private readonly IUsuarioAppService usuApp;
+        private readonly IConfiguracaoAppService confApp;
+        private readonly IGrupoAppService gruApp;
+        private readonly IMensagemEnviadaSistemaAppService meApp;
+        private readonly IEmpresaAppService empApp;
+        private readonly IAssinanteAppService assApp;
+        private readonly IControleMensagemAppService cmApp;
+        private readonly IRecursividadeAppService recuApp;
+        private readonly IMensagemAppService mensApp;
+        private readonly ITipoPacienteAppService tpaApp;
+        private readonly ITemplateEMailAppService temApp;
+        private readonly IConfiguracaoCalendarioAppService calApp;
+        private readonly IConfiguracaoAnamneseAppService anaApp;
+        private readonly ITemplateSMSAppService smsApp;
+        private readonly IRecebimentoAppService recApp;
+        private readonly IAcessoMetodoAppService aceApp;
+        private readonly ITipoAtestadoAppService taApp;
+        private readonly ITipoExameAppService teApp;
+        private readonly IValorConsultaAppService vcApp;
+        private readonly IAvisoLembreteAppService aviApp;
+
+        private String msg;
+        private Exception exception;
+        private PACIENTE objeto = new PACIENTE();
+        private PACIENTE objetoAntes = new PACIENTE();
+        private List<PACIENTE> listaMaster = new List<PACIENTE>();
+        private List<PACIENTE> listaMasterAtraso = new List<PACIENTE>();
+        private List<PACIENTE> listaMasterAusencia = new List<PACIENTE>();
+        private List<PACIENTE_CONSULTA> listaMasterConsulta = new List<PACIENTE_CONSULTA>();
+        private List<PACIENTE_SOLICITACAO> listaMasterSolicitacao = new List<PACIENTE_SOLICITACAO>();
+        private PACIENTE_SOLICITACAO objetoSolicitacao = new PACIENTE_SOLICITACAO();
+        private List<PACIENTE_ATESTADO> listaMasterAtestado = new List<PACIENTE_ATESTADO>();
+        private PACIENTE_ATESTADO objetoAtestado = new PACIENTE_ATESTADO();
+        private List<PACIENTE_EXAMES> listaMasterExame = new List<PACIENTE_EXAMES>();
+        private PACIENTE_EXAMES objetoExame = new PACIENTE_EXAMES();
+        private List<PACIENTE_PRESCRICAO> listaMasterPrescricao = new List<PACIENTE_PRESCRICAO>();
+        private PACIENTE_PRESCRICAO objetoPrescricao = new PACIENTE_PRESCRICAO();
+        private List<PACIENTE_PRESCRICAO_ITEM> listaMasterItem = new List<PACIENTE_PRESCRICAO_ITEM>();
+        private PACIENTE_PRESCRICAO_ITEM objetoItem = new PACIENTE_PRESCRICAO_ITEM();
+        private PACIENTE_CONSULTA objetoConsulta = new PACIENTE_CONSULTA();
+        private List<PACIENTE_CONSULTA> listaMasterCalendario = new List<PACIENTE_CONSULTA>();
+        private MedicamentoViewModel objetoRemedio = new MedicamentoViewModel();
+        private List<MedicamentoViewModel> listaMasterRemedio = new List<MedicamentoViewModel>();
+        private PACIENTE_HISTORICO objetoHistorico = new PACIENTE_HISTORICO();
+        private List<PACIENTE_HISTORICO> listaMasterHistorico = new List<PACIENTE_HISTORICO>();
+        private List<USUARIO> listaMasterUsuario = new List<USUARIO>();
+        private USUARIO objetoUsuario = new USUARIO();
+        private List<PACIENTE_CONSULTA> listaMasterCalendarioMarcacao = new List<PACIENTE_CONSULTA>();
+        private List<AVISO_LEMBRETE> listaMasterAviso = new List<AVISO_LEMBRETE>();
+        private AVISO_LEMBRETE objetoAviso = new AVISO_LEMBRETE();
+        private String extensao;
+
+        public Paciente2Controller(IPacienteAppService baseApps, ILogAppService logApps, ITipoPessoaAppService tpApps, IUsuarioAppService usuApps, IConfiguracaoAppService confApps, IGrupoAppService gruApps, IMensagemEnviadaSistemaAppService meApps, IEmpresaAppService empApps, IAssinanteAppService assApps, IControleMensagemAppService cmApps, IRecursividadeAppService recuApps, IMensagemAppService mensApps, ITipoPacienteAppService tpaApps, ITemplateEMailAppService temApps, IConfiguracaoCalendarioAppService calApps, IConfiguracaoAnamneseAppService anaApps, ITemplateSMSAppService smsApps, IRecebimentoAppService recApps, IAcessoMetodoAppService aceApps, ITipoAtestadoAppService taApps, ITipoExameAppService teApps, IValorConsultaAppService vcApps, IAvisoLembreteAppService aviApps)
+        {
+            baseApp = baseApps;
+            logApp = logApps;
+            tpApp = tpApps;
+            usuApp = usuApps;
+            confApp = confApps;
+            gruApp = gruApps;
+            meApp = meApps;
+            empApp = empApps;
+            assApp = assApps;
+            cmApp = cmApps;
+            recuApp = recuApps;
+            mensApp = mensApps;
+            tpaApp = tpaApps;
+            temApp = temApps;
+            calApp = calApps;
+            anaApp = anaApps;
+            smsApp = smsApps;
+            recApp = recApps;
+            aceApp = aceApps;
+            taApp = taApps;
+            teApp = teApps;
+            vcApp = vcApps;
+            aviApp = aviApps;
+        }
+
+        public ActionResult GerarInformacaoConsulta()
+        {
+            // Verifica se tem usuario logado
+            USUARIO usuario = new USUARIO();
+            if ((String)Session["Ativa"] == null)
+            {
+                return RedirectToAction("Logout", "ControleAcesso");
+            }
+            if ((USUARIO)Session["UserCredentials"] != null)
+            {
+                usuario = (USUARIO)Session["UserCredentials"];
+
+                // Verfifica permissão
+                if (usuario.PERFIL.PERF_IN_PACIENTE_CONSULTA_ACESSO == 0)
+                {
+                    Session["MensPermissao"] = 2;
+                    Session["ModuloPermissao"] = "Paciente - Consulta - Impressão";
+                    return RedirectToAction("ProcederConsulta", "Paciente");
+                }
+            }
+            else
+            {
+                return RedirectToAction("Logout", "ControleAcesso");
+            }
+            Int32 idAss = (Int32)Session["IdAssinante"];
+
+            // Recupera informações
+            PACIENTE_CONSULTA consulta = baseApp.GetConsultaById((Int32)Session["IdConsulta"]);
+            PACIENTE paciente = baseApp.GetItemById(consulta.PACI_CD_ID);
+
+            // Gera consulta HTML
+            String fileName = "Consulta_" + paciente.PACI_NM_NOME + "_" + CrossCutting.StringLibrary.RemoveSlashDateString(consulta.PACO_DT_CONSULTA.ToShortDateString() + ".htm");
+            String caminho = "/Imagens/" + idAss.ToString() + "/Pacientes/" + paciente.PACI__CD_ID.ToString() + "/Consulta/";
+            String path = Path.Combine(Server.MapPath(caminho), fileName);
+            if (System.IO.File.Exists(path))
+            {
+                System.IO.File.Delete(path);
+            }
+            String consultaHTML = GerarInformacaoConsultaHTML();
+            System.IO.File.WriteAllText(path, consultaHTML);
+
+            // Transforma em PDF
+            String fileNamePDF = "Consulta_" + paciente.PACI_NM_NOME + "_" + CrossCutting.StringLibrary.RemoveSlashDateString(consulta.PACO_DT_CONSULTA.ToShortDateString() + ".pdf");
+            String pathPDF = Path.Combine(Server.MapPath(caminho), fileNamePDF);
+            if (System.IO.File.Exists(pathPDF))
+            {
+                System.IO.File.Delete(pathPDF);
+            }
+            PdfCreator envio = new PdfCreator();
+            String consultaPDF = envio.ConvertHtmlToPdf(consultaHTML, fileNamePDF, pathPDF);
+            return RedirectToAction("ProcederConsulta", "Paciente");
+        }
+
+        public String GerarInformacaoConsultaHTML()
+        {
+            // Verifica se tem usuario logado
+            USUARIO usuario = (USUARIO)Session["UserCredentials"];
+            Int32 idAss = (Int32)Session["IdAssinante"];
+            CONFIGURACAO conf = CarregaConfiguracaoGeral();
+
+            // Carrega paciente e prescricao
+            PACIENTE_CONSULTA consulta = baseApp.GetConsultaById((Int32)Session["IdConsulta"]);
+            PACIENTE paciente = baseApp.GetItemById(consulta.PACI_CD_ID);
+            USUARIO responsavel = usuApp.GetItemById(consulta.USUA_CD_ID.Value);
+            EMPRESA empresa = empApp.GetItemById(usuario.EMPR_CD_ID.Value);
+
+            // Monta estrutura base inicio
+            String baseInicio = String.Empty;
+            baseInicio = "<!DOCTYPE html>";
+            baseInicio += "<html>";
+            baseInicio += "<head>";
+            baseInicio += "<meta charset=\"UTF-8\"></meta>";
+            baseInicio += "<title>Prescrição</title>";
+            baseInicio += "<style>";
+            baseInicio += "html, body { height: 297mm; width: 210mm; margin-left: auto; margin-right: auto; }";
+            baseInicio += "header, .header-space, footer, .footer-space {height: 100px; font-weight: bold; width: 100%; padding: 10pt; margin: 10pt 0; }";
+            baseInicio += "header { position: fixed; top: 0; }";
+            baseInicio += "footer { position: fixed; bottom: 0; }";
+            baseInicio += "</style>";
+            baseInicio += "</head>";
+
+            // Monta estrutura base final
+            String baseFinal = String.Empty;
+            baseFinal += "</html>";
+
+            // Monta cabecalho
+            String classe = String.Empty;
+            if (usuario.TIPO_CARTEIRA_CLASSE != null)
+            {
+                classe = usuario.TIPO_CARTEIRA_CLASSE.TICL_NM_NOME + ": " + usuario.USUA_NR_CLASSE;
+            }
+            String header = String.Empty;
+            header += "<header id=\"pageHeader\">";
+            header += "<div style=\"width: 100%; line-height: 0.3\">";
+            header += "<h1 style=\"text-align:center; font-family:Calibri\"><i>" + usuario.USUA_NM_APELIDO + "</i></h1>";
+            header += "<h3 style=\"text-align:center; font-family:Calibri\">" + usuario.USUA_NM_ESPECIALIDADE + "</h3>";
+            header += "<h4 style=\"text-align:center; font-family:Calibri\">" + classe + "</h4>";
+            header += "</div>";
+            header += "<hr />";
+            header += "</header>";
+
+            // Monta rodape
+            String footer = String.Empty;
+            footer += "<footer id=\"pageFooter\">";
+            footer += "<hr />";
+            footer += "<div style=\"width: 84%; float: left; border: 0.5px solid black; height: 90px\">";
+            footer += "<div style=\"line-height: 0.05px\">";
+            footer += "<p style=\"text-align:left; font-family:Calibri; margin-left: 5px\"><b>" + usuario.USUA_NM_APELIDO + "</b></p>";
+            footer += "<p style=\"text-align:left; font-family:Calibri; font-weight:normal; margin-left: 5px\">CPF: " + usuario.USUA_NR_CPF + "</p>";
+
+            String endereco = String.Empty;
+            String enderecoCont = String.Empty;
+            if (empresa.EMPR_NM_ENDERECO != null)
+            {
+                endereco += empresa.EMPR_NM_ENDERECO;
+                if (empresa.EMPR_NM_NUMERO != null)
+                {
+                    endereco += " " + empresa.EMPR_NM_NUMERO;
+                }
+                if (empresa.EMPR_NM_COMPLEMENTO != null)
+                {
+                    endereco += " " + empresa.EMPR_NM_COMPLEMENTO;
+                }
+                if (empresa.EMPR_NM_BAIRRO != null)
+                {
+                    enderecoCont += empresa.EMPR_NM_BAIRRO;
+                }
+                if (empresa.EMPR_NM_CIDADE != null)
+                {
+                    enderecoCont += " - " + empresa.EMPR_NM_CIDADE;
+                }
+                if (empresa.UF != null)
+                {
+                    enderecoCont += " - " + empresa.UF.UF_SG_SIGLA;
+                }
+                if (empresa.EMPR_NR_CEP != null)
+                {
+                    enderecoCont += " - " + empresa.EMPR_NR_CEP;
+                }
+            }
+
+            footer += "<p style=\"text-align:left; font-weight:normal; font-family:Calibri; margin-left: 5px\">" + endereco + "</p>";
+            footer += "<p style=\"text-align:left; font-weight:normal; font-family:Calibri; margin-left: 5px\">" + enderecoCont + "</p>";
+            footer += "</div>";
+            footer += "</div>";
+            footer += "</div>";
+            footer += "</footer>";
+
+            // Monta dados da consulta
+            String cons = String.Empty;
+            cons += "<div class=\"row\">";
+            cons += "<h4 style=\"margin-left: 0px; color:green; background-color: beige; font-weight:bold\">Dados da Consulta</h4>";
+            cons += "<br />";
+            cons += "<table>";
+            cons += "<thead>";
+            cons += "<tr>";
+            cons += "<th>Data da Consulta</th>";
+            cons += "<thResponsável</th>";
+            cons += "</tr>";
+            cons += "</thead>";
+            cons += "<tbody>";
+            cons += "<tr>";
+            cons += "<td>" + consulta.PACO_DT_CONSULTA.ToShortDateString() + "</td>";
+            cons += "<td>" + responsavel.USUA_NM_NOME + "</td>";
+            cons += "</tr>";
+            cons += "</tbody>";
+            cons += "</table>";
+            cons += "</div>";
+
+            // Monta corpo
+            String body = String.Empty;
+            body += "<body>";
+            body += header;
+            body += cons;
+
+            body += footer;
+            body += "</body>";
+
+            // Monta documento
+            String documento = String.Empty;
+            documento = baseInicio + body + baseFinal;
+            return documento;
+        }
+
+        public ActionResult GerarRelatorioDetalheGeral()
+        {
+            Session["TipoResumo"] = 1;
+            GerarRelatorioDetalhe();
+            return null;
+        }
+
+        public ActionResult GerarRelatorioDetalheConsulta()
+        {
+            Session["TipoResumo"] = 2;
+            GerarRelatorioDetalhe();
+            return null;
+        }
+
+        public CONFIGURACAO CarregaConfiguracaoGeral()
+        {
+            try
+            {
+                Int32 idAss = (Int32)Session["IdAssinante"];
+                CONFIGURACAO conf = new CONFIGURACAO();
+                if (Session["Configuracao"] == null)
+                {
+                    conf = confApp.GetAllItems(idAss).FirstOrDefault();
+                }
+                else
+                {
+                    if ((Int32)Session["ConfAlterada"] == 1)
+                    {
+                        conf = confApp.GetAllItems(idAss).FirstOrDefault();
+                    }
+                    else
+                    {
+                        conf = (CONFIGURACAO)Session["Configuracao"];
+                    }
+                }
+                Session["ConfAlterada"] = 0;
+                Session["Configuracao"] = conf;
+                return conf;
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Paciente";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Paciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return null;
+            }
+        }
+
+        public ActionResult GerarRelatorioDetalhe()
+        {
+            try
+            {
+                Int32 idAss = (Int32)Session["IdAssinante"];
+                USUARIO usuario = (USUARIO)Session["UserCredentials"];
+                Int32 tipo = (Int32)Session["TipoResumo"];
+                Int32? idConsulta = null;
+                if (tipo == 2)
+                {
+                    idConsulta = (Int32)Session["IdConsulta"];
+                }
+
+                // Prepara geração
+                CONFIGURACAO conf = CarregaConfiguracaoGeral();
+                String data = DateTime.Today.Date.ToShortDateString();
+                data = data.Substring(0, 2) + data.Substring(3, 2) + data.Substring(6, 4);
+
+                // Recupera consulta
+                Int32 x = (Int32)Session["IdPaciente"];
+                PACIENTE paciente = baseApp.GetItemById((Int32)Session["IdPaciente"]);
+                List<PACIENTE_CONSULTA> listaConsulta = paciente.PACIENTE_CONSULTA.Where(p => p.PACO_IN_ATIVO == 1).ToList();
+                PACIENTE_CONSULTA consulta = null;
+                if (tipo == 2)
+                {
+                    consulta = baseApp.GetConsultaById(idConsulta.Value);
+                }
+
+                // Recupera anamnese e exame físico
+                List<PACIENTE_ANAMNESE> anamneses = paciente.PACIENTE_ANAMNESE.Where(p => p.PAAM_DT_DATA.Date <= DateTime.Today.Date & p.PAAM_IN_ATIVO == 1).ToList();
+                PACIENTE_ANAMNESE anamnese = null;
+                Int32 temAnamnese = 0;
+                if (anamneses.Count() > 0)
+                {
+                    temAnamnese = 1;
+                    anamnese = anamneses.OrderByDescending(p => p.PAAM_DT_DATA).ToList().FirstOrDefault();
+                }
+
+                List<PACIENTE_EXAME_FISICOS> fisicos = paciente.PACIENTE_EXAME_FISICOS.Where(p => p.PAEF_DT_DATA.Value.Date <= DateTime.Today.Date & p.PAEF_IN_ATIVO == 1).ToList();
+                PACIENTE_EXAME_FISICOS fisico = null;
+                Int32 temFisico = 0;
+                if (fisicos.Count() > 0)
+                {
+                    temFisico = 1;
+                    fisico = fisicos.OrderByDescending(p => p.PAEF_DT_DATA).ToList().FirstOrDefault();
+                }
+
+                // Recupera listas de documentos
+                List<PACIENTE_EXAMES> listaExame = new List<PACIENTE_EXAMES>();
+                List<PACIENTE_ATESTADO> listaAtestado = new List<PACIENTE_ATESTADO>();
+                List<PACIENTE_SOLICITACAO> listaSolicitacao = new List<PACIENTE_SOLICITACAO>();
+                List<PACIENTE_PRESCRICAO> listaPrescricao = new List<PACIENTE_PRESCRICAO>();
+                List<PACIENTE_PRESCRICAO_ITEM> listaRemedio = new List<PACIENTE_PRESCRICAO_ITEM>();
+
+                if (tipo == 1)
+                {
+                    listaExame = paciente.PACIENTE_EXAMES.Where(p => p.PAEX_IN_ATIVO == 1).ToList();
+                    listaAtestado = paciente.PACIENTE_ATESTADO.Where(p => p.PAAT_IN_ATIVO == 1).ToList();
+                    listaSolicitacao = paciente.PACIENTE_SOLICITACAO.Where(p => p.PASO_IN_ATIVO == 1).ToList();
+                    listaPrescricao = paciente.PACIENTE_PRESCRICAO.Where(p => p.PAPR_IN_ATIVO == 1).ToList();
+                    listaRemedio = paciente.PACIENTE_PRESCRICAO_ITEM.Where(p => p.PAPI_IN_ATIVO == 1).ToList();
+                }
+                if (tipo == 2)
+                {
+                    listaExame = consulta.PACIENTE_EXAMES.Where(p => p.PAEX_IN_ATIVO == 1).ToList();
+                    listaAtestado = consulta.PACIENTE_ATESTADO.Where(p => p.PAAT_IN_ATIVO == 1).ToList();
+                    listaSolicitacao = consulta.PACIENTE_SOLICITACAO.Where(p => p.PASO_IN_ATIVO == 1).ToList();
+                    listaPrescricao = consulta.PACIENTE_PRESCRICAO.Where(p => p.PAPR_IN_ATIVO == 1).ToList();
+                    //listaRemedio = consulta.PACIENTE_PRESCRICAO_ITEM.Where(p => p.PAPI_IN_ATIVO == 1).ToList();
+                }
+
+                // Monta nome
+                String nomeRel = String.Empty;
+                if (tipo == 1)
+                {
+                    nomeRel = "Paciente_" + paciente.PACI_NM_NOME + "_Resumo.pdf";
+                }
+                else
+                {
+                    nomeRel = "Paciente_" + paciente.PACI_NM_NOME + "Consulta_Resumo.pdf";
+                }
+                String classe = String.Empty;
+                if (usuario.TIPO_CARTEIRA_CLASSE != null)
+                {
+                    classe = usuario.TIPO_CARTEIRA_CLASSE.TICL_NM_NOME + ": " + usuario.USUA_NR_CLASSE;
+                }
+                String nomeMedico = usuario.USUA_NM_NOME;
+                if (usuario.USUA_NM_PREFIXO != null)
+                {
+                    nomeMedico = usuario.USUA_NM_PREFIXO + " " + nomeMedico;
+                }
+                if (usuario.USUA_NM_SUFIXO != null)
+                {
+                    nomeMedico = nomeMedico + " " + usuario.USUA_NM_SUFIXO;
+                }
+                EMPRESA empresa = empApp.GetItemById(usuario.EMPR_CD_ID.Value);
+
+                // Prepara fontes
+                Font meuFont = FontFactory.GetFont("Arial", 8, iTextSharp.text.Font.NORMAL, BaseColor.BLACK);
+                Font meuFont1 = FontFactory.GetFont("Arial", 9, iTextSharp.text.Font.NORMAL, BaseColor.BLACK);
+                Font meuFont2 = FontFactory.GetFont("Arial", 14, iTextSharp.text.Font.NORMAL, BaseColor.BLACK);
+                Font meuFont1Bold = FontFactory.GetFont("Arial", 9, iTextSharp.text.Font.BOLD, BaseColor.BLACK);
+                Font meuFont3Bold = FontFactory.GetFont("Arial", 10, iTextSharp.text.Font.BOLD, BaseColor.BLACK);
+                Font meuFont4Bold = FontFactory.GetFont("Arial", 12, iTextSharp.text.Font.BOLD, BaseColor.BLACK);
+                Font meuFont5Bold = FontFactory.GetFont("Arial", 16, iTextSharp.text.Font.BOLD, BaseColor.BLACK);
+                Font meuFontBold = FontFactory.GetFont("Arial", 8, iTextSharp.text.Font.BOLD, BaseColor.BLACK);
+
+                // Cabeçalho
+                PdfPTable headerTable = null;
+                PdfPCell cell = new PdfPCell();
+                Image image = null;
+                if (conf.CONF_IN_EXIBE_LOGO == 1)
+                {
+                    headerTable = new PdfPTable(new float[] { 20f, 700f });
+                    headerTable.WidthPercentage = 100;
+                    headerTable.HorizontalAlignment = 1;
+                    headerTable.SpacingBefore = 1f;
+                    headerTable.SpacingAfter = 1f;
+
+                    cell = new PdfPCell();
+                    cell.Border = 0;
+                    cell.Colspan = 1;
+                    image = null;
+                    if (conf.CONF_IN_LOGO_EMPRESA == 1)
+                    {
+                        image = Image.GetInstance(Server.MapPath(empresa.EMPR_AQ_LOGO));
+                    }
+                    else
+                    {
+                        image = Image.GetInstance(Server.MapPath("~/Images/Prontuario_Icone_1.png"));
+                    }
+                    image.ScaleAbsolute(80, 80);
+                    cell.AddElement(image);
+                    headerTable.AddCell(cell);
+                }
+                else
+                {
+                    headerTable = new PdfPTable(new float[] { 750f });
+                    headerTable.WidthPercentage = 100;
+                    headerTable.HorizontalAlignment = 1;
+                    headerTable.SpacingBefore = 1f;
+                    headerTable.SpacingAfter = 1f;
+                }
+
+                // Dados do medico
+                PdfPTable table1 = new PdfPTable(new float[] { 120f, 120f, 120f, 120f });
+                table1.WidthPercentage = 100;
+                table1.HorizontalAlignment = 0;
+                table1.SpacingBefore = 1f;
+                table1.SpacingAfter = 1f;
+
+                cell = new PdfPCell(new Paragraph(nomeMedico, meuFont4Bold));
+                cell.Border = 0;
+                cell.Colspan = 4;
+                cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                cell.HorizontalAlignment = Element.ALIGN_CENTER;
+                table1.AddCell(cell);
+                if (usuario.ESPECIALIDADE != null)
+                {
+                    cell = new PdfPCell(new Paragraph(usuario.ESPECIALIDADE.ESPE_NM_NOME, meuFont1));
+                    cell.Border = 0;
+                    cell.Colspan = 4;
+                    cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                    cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                    table1.AddCell(cell);
+                }
+
+                String frase = classe + " CPF: " + usuario.USUA_NR_CPF;
+                cell = new PdfPCell(new Paragraph(frase, meuFont1));
+                cell.Border = 0;
+                cell.Colspan = 4;
+                cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                cell.HorizontalAlignment = Element.ALIGN_CENTER;
+                table1.AddCell(cell);
+                cell = new PdfPCell(new Paragraph(" ", meuFont1));
+                cell.Border = 0;
+                cell.Colspan = 4;
+                cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                cell.HorizontalAlignment = Element.ALIGN_CENTER;
+                table1.AddCell(cell);
+
+                PdfPCell innerTableCell = new PdfPCell(table1);
+                innerTableCell.Border = Rectangle.NO_BORDER;
+                innerTableCell.Colspan = 1;
+                headerTable.AddCell(innerTableCell);
+
+                // Rodape
+                PdfPTable footerTable = new PdfPTable(1);
+                footerTable = new PdfPTable(new float[] { 600f });
+                footerTable.WidthPercentage = 100;
+                footerTable.HorizontalAlignment = 1;
+                footerTable.SpacingBefore = 1f;
+                footerTable.SpacingAfter = 1f;
+
+                // Dados do medico
+                table1 = new PdfPTable(new float[] { 120f, 120f, 120f, 120f });
+                table1.WidthPercentage = 100;
+                table1.HorizontalAlignment = 0;
+                table1.SpacingBefore = 1f;
+                table1.SpacingAfter = 1f;
+
+                cell = new PdfPCell(new Paragraph(usuario.USUA_NM_NOME, meuFontBold));
+                cell.Border = 0;
+                cell.Colspan = 4;
+                cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                table1.AddCell(cell);
+                if (usuario.ESPECIALIDADE != null)
+                {
+                    cell = new PdfPCell(new Paragraph(usuario.ESPECIALIDADE.ESPE_NM_NOME, meuFont1));
+                    cell.Border = 0;
+                    cell.Colspan = 4;
+                    cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                    cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                    table1.AddCell(cell);
+                }
+
+                cell = new PdfPCell(new Paragraph(classe, meuFont));
+                cell.Border = 0;
+                cell.Colspan = 1;
+                cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                table1.AddCell(cell);
+                cell = new PdfPCell(new Paragraph("CPF: " + usuario.USUA_NR_CPF, meuFont));
+                cell.Border = 0;
+                cell.Colspan = 3;
+                cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                table1.AddCell(cell);
+
+                String endereco = String.Empty;
+                String enderecoCont = String.Empty;
+                if (empresa.EMPR_NM_ENDERECO != null)
+                {
+                    endereco += empresa.EMPR_NM_ENDERECO;
+                    if (empresa.EMPR_NM_NUMERO != null)
+                    {
+                        endereco += " " + empresa.EMPR_NM_NUMERO;
+                    }
+                    if (empresa.EMPR_NM_COMPLEMENTO != null)
+                    {
+                        endereco += " " + empresa.EMPR_NM_COMPLEMENTO;
+                    }
+                    if (empresa.EMPR_NM_BAIRRO != null)
+                    {
+                        enderecoCont += empresa.EMPR_NM_BAIRRO;
+                    }
+                    if (empresa.EMPR_NM_CIDADE != null)
+                    {
+                        enderecoCont += " - " + empresa.EMPR_NM_CIDADE;
+                    }
+                    if (empresa.UF != null)
+                    {
+                        enderecoCont += " - " + empresa.UF.UF_SG_SIGLA;
+                    }
+                    if (empresa.EMPR_NR_CEP != null)
+                    {
+                        enderecoCont += " - " + empresa.EMPR_NR_CEP;
+                    }
+                }
+
+                cell = new PdfPCell(new Paragraph(endereco, meuFont));
+                cell.Border = 0;
+                cell.Colspan = 4;
+                cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                table1.AddCell(cell);
+                cell = new PdfPCell(new Paragraph(enderecoCont, meuFont));
+                cell.Border = 0;
+                cell.Colspan = 4;
+                cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                table1.AddCell(cell);
+                cell = new PdfPCell(new Paragraph("Documento assinado digitalmente", meuFont));
+                cell.Border = 0;
+                cell.Colspan = 4;
+                cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                table1.AddCell(cell);
+
+                cell = new PdfPCell(new Paragraph("  ", meuFont));
+                cell.Border = 0;
+                cell.Colspan = 4;
+                cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                table1.AddCell(cell);
+
+                innerTableCell = new PdfPCell(table1);
+                innerTableCell.Border = Rectangle.NO_BORDER;
+                innerTableCell.Colspan = 1;
+                footerTable.AddCell(innerTableCell);
+
+                // Cria documento
+                Document pdfDoc = new Document(PageSize.A4, 10, 10, 70, 100);
+                iTextSharp.text.pdf.PdfWriter pdfWriter = iTextSharp.text.pdf.PdfWriter.GetInstance(pdfDoc, Response.OutputStream);
+                pdfWriter.PageEvent = new CustomPageEventHelper(headerTable, footerTable);
+                pdfDoc.Open();
+
+                Paragraph line1 = new Paragraph("  ");
+                pdfDoc.Add(line1);
+                String titulo = String.Empty;
+                if (tipo == 1)
+                {
+                    titulo = "RESUMO DO PACIENTE";
+                }
+                else
+                {
+                    titulo = "RESUMO DE CONSULTA - " + consulta.PACO_DT_CONSULTA.ToLongDateString();
+                }
+                Chunk chunk3 = new Chunk(titulo, FontFactory.GetFont("Arial", 16, Font.NORMAL, BaseColor.BLACK));
+                Paragraph paragraph = new Paragraph(chunk3);
+                paragraph.Alignment = Element.ALIGN_CENTER;
+                pdfDoc.Add(paragraph);
+
+                line1 = new Paragraph(new Chunk(new iTextSharp.text.pdf.draw.LineSeparator(0.0F, 100.0F, BaseColor.BLACK, Element.ALIGN_LEFT, 1)));
+                pdfDoc.Add(line1);
+
+                // Dados do paciente
+                chunk3 = new Chunk("Informações do Paciente", FontFactory.GetFont("Arial", 13, Font.NORMAL, BaseColor.BLACK));
+                paragraph = new Paragraph(chunk3);
+                paragraph.Alignment = Element.ALIGN_LEFT;
+                pdfDoc.Add(paragraph);
+
+                line1 = new Paragraph("  ");
+                pdfDoc.Add(line1);
+
+                PdfPTable table = new PdfPTable(new float[] { 120f, 120f, 120f, 120f });
+                table.WidthPercentage = 100;
+                table.HorizontalAlignment = 0;
+                table.SpacingBefore = 1f;
+                table.SpacingAfter = 1f;
+
+                cell = new PdfPCell();
+                cell.Border = 0;
+                cell.Colspan = 1;
+                image = Image.GetInstance(Server.MapPath(paciente.PACI_AQ_FOTO));
+                image.ScaleAbsolute(50, 50);
+                cell.AddElement(image);
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph(" ", meuFontBold));
+                cell.Border = 0;
+                cell.Colspan = 3;
+                cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                table.AddCell(cell);
+
+                cell = new PdfPCell(new Paragraph("Identificador: " + paciente.PACI_GU_GUID, meuFont1Bold));
+                cell.Border = 0;
+                cell.Colspan = 4;
+                cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph("Nome do Paciente: " + paciente.PACI_NM_NOME, meuFont1Bold));
+                cell.Border = 0;
+                cell.Colspan = 4;
+                cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph("Nome Social: " + paciente.PACI_NM_SOCIAL, meuFont1));
+                cell.Border = 0;
+                cell.Colspan = 4;
+                cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                table.AddCell(cell);
+
+                cell = new PdfPCell(new Paragraph("Tipo: " + paciente.TIPO_PACIENTE.TIPA_NM_NOME, meuFont1));
+                cell.Border = 0;
+                cell.Colspan = 1;
+                cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph("Menor: " + (paciente.PACI_IN_MENOR == 1 ? "Sim" : "Não"), meuFont1));
+                cell.Border = 0;
+                cell.Colspan = 3;
+                cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                table.AddCell(cell);
+
+                cell = new PdfPCell(new Paragraph("CPF: " + paciente.PACI_NR_CPF, meuFont1Bold));
+                cell.Border = 0;
+                cell.Colspan = 1;
+                cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph("RG: " + paciente.PACI_NR_RG, meuFont1));
+                cell.Border = 0;
+                cell.Colspan = 1;
+                cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph("Indicação: " + paciente.PACI_NM_INDICACAO, meuFont1));
+                cell.Border = 0;
+                cell.Colspan = 2;
+                cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                table.AddCell(cell);
+
+                if (paciente.CONVENIO != null)
+                {
+                    cell = new PdfPCell(new Paragraph("Convênio: " + paciente.CONVENIO.CONV_NM_NOME, meuFont1));
+                    cell.Border = 0;
+                    cell.Colspan = 2;
+                    cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                    cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                    table.AddCell(cell);
+                    cell = new PdfPCell(new Paragraph("Matrícula: " + paciente.PACI_NR_MATRICULA, meuFont1));
+                    cell.Border = 0;
+                    cell.Colspan = 2;
+                    cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                    cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                    table.AddCell(cell);
+                }
+
+                cell = new PdfPCell(new Paragraph("Data de Cadastro: " + paciente.PACI_DT_CADASTRO.Value.ToShortDateString(), meuFont1));
+                cell.Border = 0;
+                cell.Colspan = 1;
+                cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                table.AddCell(cell);
+                if (paciente.PACI_DT_CONSULTA != null)
+                {
+                    cell = new PdfPCell(new Paragraph("Ult.Consulta: " + paciente.PACI_DT_CONSULTA.Value.ToShortDateString(), meuFont1));
+                    cell.Border = 0;
+                    cell.Colspan = 1;
+                    cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                    cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                    table.AddCell(cell);
+                }
+                else
+                {
+                    cell = new PdfPCell(new Paragraph("Ult.Consulta: -", meuFont1));
+                    cell.Border = 0;
+                    cell.Colspan = 1;
+                    cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                    cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                    table.AddCell(cell);
+                }
+                if (paciente.PACI_DT_PREVISAO_RETORNO != null)
+                {
+                    cell = new PdfPCell(new Paragraph("Ret.Previsto: " + paciente.PACI_DT_PREVISAO_RETORNO.Value.ToShortDateString(), meuFont1));
+                    cell.Border = 0;
+                    cell.Colspan = 1;
+                    cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                    cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                    table.AddCell(cell);
+                }
+                else
+                {
+                    cell = new PdfPCell(new Paragraph("Ret.Previsto: -", meuFont1));
+                    cell.Border = 0;
+                    cell.Colspan = 1;
+                    cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                    cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                    table.AddCell(cell);
+                }
+                if (paciente.PACI_DT_NASCIMENTO != null)
+                {
+                    cell = new PdfPCell(new Paragraph("Data Nasc.: " + paciente.PACI_DT_NASCIMENTO.Value.ToShortDateString(), meuFont1));
+                    cell.Border = 0;
+                    cell.Colspan = 1;
+                    cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                    cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                    table.AddCell(cell);
+                }
+                else
+                {
+                    cell = new PdfPCell(new Paragraph("Data Nasc.: -", meuFont1));
+                    cell.Border = 0;
+                    cell.Colspan = 1;
+                    cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                    cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                    table.AddCell(cell);
+                }
+
+                cell = new PdfPCell(new Paragraph("  ", meuFont1));
+                cell.Border = 0;
+                cell.Colspan = 4;
+                cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                table.AddCell(cell);
+
+                if (paciente.PACI_NM_ENDERECO != null)
+                {
+                    String end = paciente.PACI_NM_ENDERECO + " " + paciente.PACI_NR_NUMERO + " " + paciente.PACI_NR_COMPLEMENTO;
+                    cell = new PdfPCell(new Paragraph("Endereço: " + end, meuFont1));
+                    cell.Border = 0;
+                    cell.Colspan = 4;
+                    cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                    cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                    table.AddCell(cell);
+                    cell = new PdfPCell(new Paragraph("Bairro: " + paciente.PACI_NM_BAIRRO, meuFont1));
+                    cell.Border = 0;
+                    cell.Colspan = 2;
+                    cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                    cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                    table.AddCell(cell);
+                    cell = new PdfPCell(new Paragraph("Cidade: " + paciente.PACI_NM_CIDADE, meuFont1));
+                    cell.Border = 0;
+                    cell.Colspan = 2;
+                    cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                    cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                    table.AddCell(cell);
+                    cell = new PdfPCell(new Paragraph("UF: " + paciente.UF.UF_NM_NOME, meuFont1));
+                    cell.Border = 0;
+                    cell.Colspan = 1;
+                    cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                    cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                    table.AddCell(cell);
+                    cell = new PdfPCell(new Paragraph("CEP: " + paciente.PACI_NR_CEP, meuFont1));
+                    cell.Border = 0;
+                    cell.Colspan = 3;
+                    cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                    cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                    table.AddCell(cell);
+                }
+
+                cell = new PdfPCell(new Paragraph("  ", meuFont1));
+                cell.Border = 0;
+                cell.Colspan = 4;
+                cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                table.AddCell(cell);
+
+                cell = new PdfPCell(new Paragraph("E-Mail: " + paciente.PACI_NM_EMAIL, meuFont1));
+                cell.Border = 0;
+                cell.Colspan = 2;
+                cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph("Telefone: " + paciente.PACI_NR_TELEFONE, meuFont1));
+                cell.Border = 0;
+                cell.Colspan = 1;
+                cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph("Celular: " + paciente.PACI_NR_CELULAR, meuFont1));
+                cell.Border = 0;
+                cell.Colspan = 1;
+                cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                table.AddCell(cell);
+
+                cell = new PdfPCell(new Paragraph("  ", meuFont1));
+                cell.Border = 0;
+                cell.Colspan = 4;
+                cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                table.AddCell(cell);
+
+                cell = new PdfPCell(new Paragraph("Nome do Pai: " + paciente.PACI_NM_PAI, meuFont1));
+                cell.Border = 0;
+                cell.Colspan = 2;
+                cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph("Nome da Mãe: " + paciente.PACI_NM_MAE, meuFont1));
+                cell.Border = 0;
+                cell.Colspan = 2;
+                cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                table.AddCell(cell);
+
+                if (paciente.SEXO != null)
+                {
+                    cell = new PdfPCell(new Paragraph("Gênero: " + paciente.SEXO.SEXO_NM_NOME, meuFont1));
+                    cell.Border = 0;
+                    cell.Colspan = 1;
+                    cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                    cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                    table.AddCell(cell);
+                }
+                else
+                {
+                    cell = new PdfPCell(new Paragraph("Gênero: -", meuFont1));
+                    cell.Border = 0;
+                    cell.Colspan = 1;
+                    cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                    cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                    table.AddCell(cell);
+                }
+                if (paciente.COR != null)
+                {
+                    cell = new PdfPCell(new Paragraph("Cor: " + paciente.COR.COR1_NM_NOME, meuFont1));
+                    cell.Border = 0;
+                    cell.Colspan = 1;
+                    cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                    cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                    table.AddCell(cell);
+                }
+                else
+                {
+                    cell = new PdfPCell(new Paragraph("Cor: -", meuFont1));
+                    cell.Border = 0;
+                    cell.Colspan = 1;
+                    cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                    cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                    table.AddCell(cell);
+                }
+                if (paciente.ESTADO_CIVIL != null)
+                {
+                    cell = new PdfPCell(new Paragraph("Est.Civil: " + paciente.ESTADO_CIVIL.ESCI_NM_NOME, meuFont1));
+                    cell.Border = 0;
+                    cell.Colspan = 1;
+                    cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                    cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                    table.AddCell(cell);
+                }
+                else
+                {
+                    cell = new PdfPCell(new Paragraph("Est.Civil: -", meuFont1));
+                    cell.Border = 0;
+                    cell.Colspan = 1;
+                    cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                    cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                    table.AddCell(cell);
+                }
+                if (paciente.GRAU_INSTRUCAO != null)
+                {
+                    cell = new PdfPCell(new Paragraph("Escolaridade: " + paciente.GRAU_INSTRUCAO.GRAU_NM_NOME, meuFont1));
+                    cell.Border = 0;
+                    cell.Colspan = 1;
+                    cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                    cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                    table.AddCell(cell);
+                }
+                else
+                {
+                    cell = new PdfPCell(new Paragraph("Escolaridade: -", meuFont1));
+                    cell.Border = 0;
+                    cell.Colspan = 1;
+                    cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                    cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                    table.AddCell(cell);
+                }
+
+                cell = new PdfPCell(new Paragraph("Profissão: " + paciente.PACI_NM_PROFISSAO, meuFont1));
+                cell.Border = 0;
+                cell.Colspan = 4;
+                cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                table.AddCell(cell);
+
+                if (paciente.NACIONALIDADE != null)
+                {
+                    cell = new PdfPCell(new Paragraph("Nacionalidade: " + paciente.NACIONALIDADE.NACI_NM_PAIS, meuFont1));
+                    cell.Border = 0;
+                    cell.Colspan = 1;
+                    cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                    cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                    table.AddCell(cell);
+                    if (paciente.NACI_CD_ID == 1)
+                    {
+                        if (paciente.MUNICIPIO != null)
+                        {
+                            cell = new PdfPCell(new Paragraph("Naturalidade: " + paciente.MUNICIPIO.MUNI_NM_NOME, meuFont1));
+                            cell.Border = 0;
+                            cell.Colspan = 2;
+                            cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                            cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                            table.AddCell(cell);
+                        }
+                        if (paciente.UF1 != null)
+                        {
+                            cell = new PdfPCell(new Paragraph("UF: " + paciente.UF1.UF_NM_NOME, meuFont1));
+                            cell.Border = 0;
+                            cell.Colspan = 1;
+                            cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                            cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                            table.AddCell(cell);
+                        }
+                    }
+                    else
+                    {
+                        cell = new PdfPCell(new Paragraph("Naturalidade: " + paciente.PACI_NM_NATURALIDADE, meuFont1));
+                        cell.Border = 0;
+                        cell.Colspan = 2;
+                        cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                        cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                        table.AddCell(cell);
+                        cell = new PdfPCell(new Paragraph("UF: " + paciente.PACI_SG_NATURALIDADE_UF, meuFont1));
+                        cell.Border = 0;
+                        cell.Colspan = 2;
+                        cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                        cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                        table.AddCell(cell);
+                    }
+                }
+                pdfDoc.Add(table);
+
+                line1 = new Paragraph(new Chunk(new iTextSharp.text.pdf.draw.LineSeparator(0.0F, 100.0F, BaseColor.BLACK, Element.ALIGN_LEFT, 1)));
+                pdfDoc.Add(line1);
+
+                // Dados das Consultas
+                if (tipo == 1)
+                {
+                    chunk3 = new Chunk("Consultas", FontFactory.GetFont("Arial", 13, Font.NORMAL, BaseColor.BLACK));
+                    paragraph = new Paragraph(chunk3);
+                    paragraph.Alignment = Element.ALIGN_LEFT;
+                    pdfDoc.Add(paragraph);
+
+                    line1 = new Paragraph("  ");
+                    pdfDoc.Add(line1);
+
+                    table = new PdfPTable(new float[] { 60f, 60f, 60f, 60f, 60f });
+                    table.WidthPercentage = 100;
+                    table.HorizontalAlignment = 0;
+                    table.SpacingBefore = 1f;
+                    table.SpacingAfter = 1f;
+
+                    cell = new PdfPCell(new Paragraph("Data", meuFont))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    cell.Colspan = 1;
+                    cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                    table.AddCell(cell);
+                    cell = new PdfPCell(new Paragraph("Hora de Início", meuFont))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    cell.Colspan = 1;
+                    cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                    table.AddCell(cell);
+                    cell = new PdfPCell(new Paragraph("Hora de Término", meuFont))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    cell.Colspan = 1;
+                    cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                    table.AddCell(cell);
+                    cell = new PdfPCell(new Paragraph("Tipo de Consulta", meuFont))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    cell.Colspan = 1;
+                    cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                    table.AddCell(cell);
+                    cell = new PdfPCell(new Paragraph("Situação", meuFont))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    cell.Colspan = 1;
+                    cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                    table.AddCell(cell);
+
+                    foreach (PACIENTE_CONSULTA item in listaConsulta)
+                    {
+                        if (item.PACO_DT_CONSULTA != null)
+                        {
+                            cell = new PdfPCell(new Paragraph(item.PACO_DT_CONSULTA.ToShortDateString(), meuFont))
+                            {
+                                VerticalAlignment = Element.ALIGN_MIDDLE,
+                                HorizontalAlignment = Element.ALIGN_LEFT
+                            };
+                            table.AddCell(cell);
+                        }
+                        else
+                        {
+                            cell = new PdfPCell(new Paragraph("-", meuFont))
+                            {
+                                VerticalAlignment = Element.ALIGN_MIDDLE,
+                                HorizontalAlignment = Element.ALIGN_LEFT
+                            };
+                            table.AddCell(cell);
+                        }
+                        cell = new PdfPCell(new Paragraph(item.PACO_HR_INICIO.ToString(), meuFont))
+                        {
+                            VerticalAlignment = Element.ALIGN_MIDDLE,
+                            HorizontalAlignment = Element.ALIGN_LEFT
+                        };
+                        table.AddCell(cell);
+                        cell = new PdfPCell(new Paragraph(item.PACO_HR_FINAL.ToString(), meuFont))
+                        {
+                            VerticalAlignment = Element.ALIGN_MIDDLE,
+                            HorizontalAlignment = Element.ALIGN_LEFT
+                        };
+                        table.AddCell(cell);
+                        if (item.PACO_IN_TIPO == 1)
+                        {
+                            cell = new PdfPCell(new Paragraph("Presencial", meuFont))
+                            {
+                                VerticalAlignment = Element.ALIGN_MIDDLE,
+                                HorizontalAlignment = Element.ALIGN_LEFT
+                            };
+                            table.AddCell(cell);
+                        }
+                        else
+                        {
+                            cell = new PdfPCell(new Paragraph("Remota", meuFont))
+                            {
+                                VerticalAlignment = Element.ALIGN_MIDDLE,
+                                HorizontalAlignment = Element.ALIGN_LEFT
+                            };
+                            table.AddCell(cell);
+                        }
+                        if (item.PACO_IN_CONFIRMADA == 1)
+                        {
+                            cell = new PdfPCell(new Paragraph("Confirmada", meuFont))
+                            {
+                                VerticalAlignment = Element.ALIGN_MIDDLE,
+                                HorizontalAlignment = Element.ALIGN_LEFT
+                            };
+                            table.AddCell(cell);
+                        }
+                        else if (item.PACO_IN_CONFIRMADA == 2)
+                        {
+                            cell = new PdfPCell(new Paragraph("Cancelada", meuFont))
+                            {
+                                VerticalAlignment = Element.ALIGN_MIDDLE,
+                                HorizontalAlignment = Element.ALIGN_LEFT
+                            };
+                            table.AddCell(cell);
+                        }
+
+                        else
+                        {
+                            cell = new PdfPCell(new Paragraph("Pendente", meuFont))
+                            {
+                                VerticalAlignment = Element.ALIGN_MIDDLE,
+                                HorizontalAlignment = Element.ALIGN_LEFT
+                            };
+                            table.AddCell(cell);
+                        }
+                    }
+                    pdfDoc.Add(table);
+                }
+
+                // Anamnese
+                if (temAnamnese == 1)
+                {
+                    line1 = new Paragraph(new Chunk(new iTextSharp.text.pdf.draw.LineSeparator(0.0F, 100.0F, BaseColor.BLACK, Element.ALIGN_LEFT, 1)));
+                    pdfDoc.Add(line1);
+                    chunk3 = new Chunk("Última Anamnese", FontFactory.GetFont("Arial", 13, Font.NORMAL, BaseColor.BLACK));
+                    paragraph = new Paragraph(chunk3);
+                    paragraph.Alignment = Element.ALIGN_LEFT;
+                    pdfDoc.Add(paragraph);
+
+                    line1 = new Paragraph("  ");
+                    pdfDoc.Add(line1);
+
+                    table = new PdfPTable(new float[] { 100f, 500f });
+                    table.WidthPercentage = 100;
+                    table.HorizontalAlignment = 0;
+                    table.SpacingBefore = 1f;
+                    table.SpacingAfter = 1f;
+
+                    // Dados da anamnese
+                    cell = new PdfPCell(new Paragraph("Motivo da Consulta: ", meuFont1Bold))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    cell.Colspan = 1;
+                    cell.BackgroundColor = BaseColor.WHITE;
+                    table.AddCell(cell);
+                    cell = new PdfPCell(new Paragraph(anamnese.PAAM_DS_MOTIVO_CONSULTA, meuFont1))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    cell.Colspan = 1;
+                    cell.BackgroundColor = BaseColor.WHITE;
+                    table.AddCell(cell);
+
+                    cell = new PdfPCell(new Paragraph("Queixa Principal: ", meuFont1Bold))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    cell.Colspan = 1;
+                    cell.BackgroundColor = BaseColor.WHITE;
+                    table.AddCell(cell);
+                    cell = new PdfPCell(new Paragraph(anamnese.PAAM_DS_QUEIXA_PRINCIPAL, meuFont1))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    cell.Colspan = 1;
+                    cell.BackgroundColor = BaseColor.WHITE;
+                    table.AddCell(cell);
+
+                    cell = new PdfPCell(new Paragraph("História Familiar: ", meuFont1Bold))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    cell.Colspan = 1;
+                    cell.BackgroundColor = BaseColor.WHITE;
+                    table.AddCell(cell);
+                    cell = new PdfPCell(new Paragraph(anamnese.PAAM_DS_HISTORIA_FAMILIAR, meuFont1))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    cell.Colspan = 1;
+                    cell.BackgroundColor = BaseColor.WHITE;
+                    table.AddCell(cell);
+
+                    if (anamnese.PAAM_IN_FLAG_HISTORIA_SOCIAL == 1)
+                    {
+                        cell = new PdfPCell(new Paragraph("História Social: ", meuFont1Bold))
+                        {
+                            VerticalAlignment = Element.ALIGN_MIDDLE,
+                            HorizontalAlignment = Element.ALIGN_LEFT
+                        };
+                        cell.Colspan = 1;
+                        cell.BackgroundColor = BaseColor.WHITE;
+                        table.AddCell(cell);
+                        cell = new PdfPCell(new Paragraph(anamnese.PAAM_DS_HISTORIA_SOCIAL, meuFont1))
+                        {
+                            VerticalAlignment = Element.ALIGN_MIDDLE,
+                            HorizontalAlignment = Element.ALIGN_LEFT
+                        };
+                        cell.Colspan = 1;
+                        cell.BackgroundColor = BaseColor.WHITE;
+                        table.AddCell(cell);
+                    }
+
+                    cell = new PdfPCell(new Paragraph("História da Doença Atual: ", meuFont1Bold))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    cell.Colspan = 1;
+                    cell.BackgroundColor = BaseColor.WHITE;
+                    table.AddCell(cell);
+                    cell = new PdfPCell(new Paragraph(anamnese.PAAM_DS_HISTORIA_DOENCA_ATUAL, meuFont1))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    cell.Colspan = 1;
+                    cell.BackgroundColor = BaseColor.WHITE;
+                    table.AddCell(cell);
+
+                    cell = new PdfPCell(new Paragraph("Medicamentos em Uso: ", meuFont1Bold))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    cell.Colspan = 1;
+                    cell.BackgroundColor = BaseColor.WHITE;
+                    table.AddCell(cell);
+                    cell = new PdfPCell(new Paragraph(anamnese.PAAM_NM_MEDICAMENTO, meuFont1))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    cell.Colspan = 1;
+                    cell.BackgroundColor = BaseColor.WHITE;
+                    table.AddCell(cell);
+
+                    if (anamnese.PAAM_IN_FLAG_HISTORIA_PROGRESSIVA == 1)
+                    {
+                        cell = new PdfPCell(new Paragraph("História Patológica Progressiva: ", meuFont1Bold))
+                        {
+                            VerticalAlignment = Element.ALIGN_MIDDLE,
+                            HorizontalAlignment = Element.ALIGN_LEFT
+                        };
+                        cell.Colspan = 1;
+                        cell.BackgroundColor = BaseColor.WHITE;
+                        table.AddCell(cell);
+                        cell = new PdfPCell(new Paragraph(anamnese.PAAM_DS_HISTORIA_PATOLOGICA_PROGRESSIVA, meuFont1))
+                        {
+                            VerticalAlignment = Element.ALIGN_MIDDLE,
+                            HorizontalAlignment = Element.ALIGN_LEFT
+                        };
+                        cell.Colspan = 1;
+                        cell.BackgroundColor = BaseColor.WHITE;
+                        table.AddCell(cell);
+                    }
+
+                    if (anamnese.PAAM_IN_FLAG_AVALIACAO_CARDIOLOGICA == 1)
+                    {
+                        cell = new PdfPCell(new Paragraph("Avaliação Cardiológica: ", meuFont1Bold))
+                        {
+                            VerticalAlignment = Element.ALIGN_MIDDLE,
+                            HorizontalAlignment = Element.ALIGN_LEFT
+                        };
+                        cell.Colspan = 1;
+                        cell.BackgroundColor = BaseColor.WHITE;
+                        table.AddCell(cell);
+                        cell = new PdfPCell(new Paragraph(anamnese.PAAN_NM_AVALIACAO_CARDIOLOGICA_LONG, meuFont1))
+                        {
+                            VerticalAlignment = Element.ALIGN_MIDDLE,
+                            HorizontalAlignment = Element.ALIGN_LEFT
+                        };
+                        cell.Colspan = 1;
+                        cell.BackgroundColor = BaseColor.WHITE;
+                        table.AddCell(cell);
+                    }
+
+                    if (anamnese.PAAM_IN_FLAG_RESPIRATORIO == 1)
+                    {
+                        cell = new PdfPCell(new Paragraph("Avaliação Respiratória: ", meuFont1Bold))
+                        {
+                            VerticalAlignment = Element.ALIGN_MIDDLE,
+                            HorizontalAlignment = Element.ALIGN_LEFT
+                        };
+                        cell.Colspan = 1;
+                        cell.BackgroundColor = BaseColor.WHITE;
+                        table.AddCell(cell);
+                        cell = new PdfPCell(new Paragraph(anamnese.PAAN_NM_RESPIRATORIO_LONG, meuFont1))
+                        {
+                            VerticalAlignment = Element.ALIGN_MIDDLE,
+                            HorizontalAlignment = Element.ALIGN_LEFT
+                        };
+                        cell.Colspan = 1;
+                        cell.BackgroundColor = BaseColor.WHITE;
+                        table.AddCell(cell);
+                    }
+
+                    if (anamnese.PAAM_IN_FLAG_ABDOMEM == 1)
+                    {
+                        cell = new PdfPCell(new Paragraph("Avaliação do Abdômem: ", meuFont1Bold))
+                        {
+                            VerticalAlignment = Element.ALIGN_MIDDLE,
+                            HorizontalAlignment = Element.ALIGN_LEFT
+                        };
+                        cell.Colspan = 1;
+                        cell.BackgroundColor = BaseColor.WHITE;
+                        table.AddCell(cell);
+                        cell = new PdfPCell(new Paragraph(anamnese.PAAN_NM_ABDOMEM, meuFont1))
+                        {
+                            VerticalAlignment = Element.ALIGN_MIDDLE,
+                            HorizontalAlignment = Element.ALIGN_LEFT
+                        };
+                        cell.Colspan = 1;
+                        cell.BackgroundColor = BaseColor.WHITE;
+                        table.AddCell(cell);
+                    }
+
+                    if (anamnese.PAAM_IN_FLAG_MEMBROS_INFERIORES == 1)
+                    {
+                        cell = new PdfPCell(new Paragraph("Avaliação dos Membros Inferiores: ", meuFont1Bold))
+                        {
+                            VerticalAlignment = Element.ALIGN_MIDDLE,
+                            HorizontalAlignment = Element.ALIGN_LEFT
+                        };
+                        cell.Colspan = 1;
+                        cell.BackgroundColor = BaseColor.WHITE;
+                        table.AddCell(cell);
+                        cell = new PdfPCell(new Paragraph(anamnese.PAAN_NM_MEMBROS_INFERIORES, meuFont1))
+                        {
+                            VerticalAlignment = Element.ALIGN_MIDDLE,
+                            HorizontalAlignment = Element.ALIGN_LEFT
+                        };
+                        cell.Colspan = 1;
+                        cell.BackgroundColor = BaseColor.WHITE;
+                        table.AddCell(cell);
+                    }
+
+                    if (anamnese.PAAM_IN_CAMPO_1 == 1)
+                    {
+                        cell = new PdfPCell(new Paragraph(anamnese.PAAM_NM_CAMPO_1 + ": ", meuFont1Bold))
+                        {
+                            VerticalAlignment = Element.ALIGN_MIDDLE,
+                            HorizontalAlignment = Element.ALIGN_LEFT
+                        };
+                        cell.Colspan = 1;
+                        cell.BackgroundColor = BaseColor.WHITE;
+                        table.AddCell(cell);
+                        cell = new PdfPCell(new Paragraph(anamnese.PAAM_DS_CAMPO_1, meuFont1))
+                        {
+                            VerticalAlignment = Element.ALIGN_MIDDLE,
+                            HorizontalAlignment = Element.ALIGN_LEFT
+                        };
+                        cell.Colspan = 1;
+                        cell.BackgroundColor = BaseColor.WHITE;
+                        table.AddCell(cell);
+                    }
+
+                    if (anamnese.PAAM_IN_CAMPO_2 == 1)
+                    {
+                        cell = new PdfPCell(new Paragraph(anamnese.PAAM_NM_CAMPO_2 + ": ", meuFont1Bold))
+                        {
+                            VerticalAlignment = Element.ALIGN_MIDDLE,
+                            HorizontalAlignment = Element.ALIGN_LEFT
+                        };
+                        cell.Colspan = 1;
+                        cell.BackgroundColor = BaseColor.WHITE;
+                        table.AddCell(cell);
+                        cell = new PdfPCell(new Paragraph(anamnese.PAAM_DS_CAMPO_2, meuFont1))
+                        {
+                            VerticalAlignment = Element.ALIGN_MIDDLE,
+                            HorizontalAlignment = Element.ALIGN_LEFT
+                        };
+                        cell.Colspan = 1;
+                        cell.BackgroundColor = BaseColor.WHITE;
+                        table.AddCell(cell);
+                    }
+
+                    if (anamnese.PAAM_IN_CAMPO_3 == 1)
+                    {
+                        cell = new PdfPCell(new Paragraph(anamnese.PAAM_NM_CAMPO_3 + ": ", meuFont1Bold))
+                        {
+                            VerticalAlignment = Element.ALIGN_MIDDLE,
+                            HorizontalAlignment = Element.ALIGN_LEFT
+                        };
+                        cell.Colspan = 1;
+                        cell.BackgroundColor = BaseColor.WHITE;
+                        table.AddCell(cell);
+                        cell = new PdfPCell(new Paragraph(anamnese.PAAM_DS_CAMPO_3, meuFont1))
+                        {
+                            VerticalAlignment = Element.ALIGN_MIDDLE,
+                            HorizontalAlignment = Element.ALIGN_LEFT
+                        };
+                        cell.Colspan = 1;
+                        cell.BackgroundColor = BaseColor.WHITE;
+                        table.AddCell(cell);
+                    }
+
+                    if (anamnese.PAAM_IN_CAMPO_4 == 1)
+                    {
+                        cell = new PdfPCell(new Paragraph(anamnese.PAAM_NM_CAMPO_4 + ": ", meuFont1Bold))
+                        {
+                            VerticalAlignment = Element.ALIGN_MIDDLE,
+                            HorizontalAlignment = Element.ALIGN_LEFT
+                        };
+                        cell.Colspan = 1;
+                        cell.BackgroundColor = BaseColor.WHITE;
+                        table.AddCell(cell);
+                        cell = new PdfPCell(new Paragraph(anamnese.PAAM_DS_CAMPO_4, meuFont1))
+                        {
+                            VerticalAlignment = Element.ALIGN_MIDDLE,
+                            HorizontalAlignment = Element.ALIGN_LEFT
+                        };
+                        cell.Colspan = 1;
+                        cell.BackgroundColor = BaseColor.WHITE;
+                        table.AddCell(cell);
+                    }
+
+                    if (anamnese.PAAM_IN_CAMPO_5 == 1)
+                    {
+                        cell = new PdfPCell(new Paragraph(anamnese.PAAM_NM_CAMPO_5 + ": ", meuFont1Bold))
+                        {
+                            VerticalAlignment = Element.ALIGN_MIDDLE,
+                            HorizontalAlignment = Element.ALIGN_LEFT
+                        };
+                        cell.Colspan = 1;
+                        cell.BackgroundColor = BaseColor.WHITE;
+                        table.AddCell(cell);
+                        cell = new PdfPCell(new Paragraph(anamnese.PAAM_DS_CAMPO_5, meuFont1))
+                        {
+                            VerticalAlignment = Element.ALIGN_MIDDLE,
+                            HorizontalAlignment = Element.ALIGN_LEFT
+                        };
+                        cell.Colspan = 1;
+                        cell.BackgroundColor = BaseColor.WHITE;
+                        table.AddCell(cell);
+                    }
+
+                    if (anamnese.PAAM_IN_CAMPO_6 == 1)
+                    {
+                        cell = new PdfPCell(new Paragraph(anamnese.PAAM_NM_CAMPO_6 + ": ", meuFont1Bold))
+                        {
+                            VerticalAlignment = Element.ALIGN_MIDDLE,
+                            HorizontalAlignment = Element.ALIGN_LEFT
+                        };
+                        cell.Colspan = 1;
+                        cell.BackgroundColor = BaseColor.WHITE;
+                        table.AddCell(cell);
+                        cell = new PdfPCell(new Paragraph(anamnese.PAAM_DS_CAMPO_6, meuFont1))
+                        {
+                            VerticalAlignment = Element.ALIGN_MIDDLE,
+                            HorizontalAlignment = Element.ALIGN_LEFT
+                        };
+                        cell.Colspan = 1;
+                        cell.BackgroundColor = BaseColor.WHITE;
+                        table.AddCell(cell);
+                    }
+
+                    if (anamnese.PAAM_IN_CAMPO_7 == 1)
+                    {
+                        cell = new PdfPCell(new Paragraph(anamnese.PAAM_NM_CAMPO_7 + ": ", meuFont1Bold))
+                        {
+                            VerticalAlignment = Element.ALIGN_MIDDLE,
+                            HorizontalAlignment = Element.ALIGN_LEFT
+                        };
+                        cell.Colspan = 1;
+                        cell.BackgroundColor = BaseColor.WHITE;
+                        table.AddCell(cell);
+                        cell = new PdfPCell(new Paragraph(anamnese.PAAM_DS_CAMPO_7, meuFont1))
+                        {
+                            VerticalAlignment = Element.ALIGN_MIDDLE,
+                            HorizontalAlignment = Element.ALIGN_LEFT
+                        };
+                        cell.Colspan = 1;
+                        cell.BackgroundColor = BaseColor.WHITE;
+                        table.AddCell(cell);
+                    }
+
+                    if (anamnese.PAAM_IN_CAMPO_8 == 1)
+                    {
+                        cell = new PdfPCell(new Paragraph(anamnese.PAAM_NM_CAMPO_8 + ": ", meuFont1Bold))
+                        {
+                            VerticalAlignment = Element.ALIGN_MIDDLE,
+                            HorizontalAlignment = Element.ALIGN_LEFT
+                        };
+                        cell.Colspan = 1;
+                        cell.BackgroundColor = BaseColor.WHITE;
+                        table.AddCell(cell);
+                        cell = new PdfPCell(new Paragraph(anamnese.PAAM_DS_CAMPO_8, meuFont1))
+                        {
+                            VerticalAlignment = Element.ALIGN_MIDDLE,
+                            HorizontalAlignment = Element.ALIGN_LEFT
+                        };
+                        cell.Colspan = 1;
+                        cell.BackgroundColor = BaseColor.WHITE;
+                        table.AddCell(cell);
+                    }
+
+                    if (anamnese.PAAM_IN_CAMPO_9 == 1)
+                    {
+                        cell = new PdfPCell(new Paragraph(anamnese.PAAM_NM_CAMPO_9 + ": ", meuFont1Bold))
+                        {
+                            VerticalAlignment = Element.ALIGN_MIDDLE,
+                            HorizontalAlignment = Element.ALIGN_LEFT
+                        };
+                        cell.Colspan = 1;
+                        cell.BackgroundColor = BaseColor.WHITE;
+                        table.AddCell(cell);
+                        cell = new PdfPCell(new Paragraph(anamnese.PAAM_DS_CAMPO_9, meuFont1))
+                        {
+                            VerticalAlignment = Element.ALIGN_MIDDLE,
+                            HorizontalAlignment = Element.ALIGN_LEFT
+                        };
+                        cell.Colspan = 1;
+                        cell.BackgroundColor = BaseColor.WHITE;
+                        table.AddCell(cell);
+                    }
+
+                    if (anamnese.PAAM_IN_CAMPO_10 == 1)
+                    {
+                        cell = new PdfPCell(new Paragraph(anamnese.PAAM_NM_CAMPO_10 + ": ", meuFont1Bold))
+                        {
+                            VerticalAlignment = Element.ALIGN_MIDDLE,
+                            HorizontalAlignment = Element.ALIGN_LEFT
+                        };
+                        cell.Colspan = 1;
+                        cell.BackgroundColor = BaseColor.WHITE;
+                        table.AddCell(cell);
+                        cell = new PdfPCell(new Paragraph(anamnese.PAAM_DS_CAMPO_10, meuFont1))
+                        {
+                            VerticalAlignment = Element.ALIGN_MIDDLE,
+                            HorizontalAlignment = Element.ALIGN_LEFT
+                        };
+                        cell.Colspan = 1;
+                        cell.BackgroundColor = BaseColor.WHITE;
+                        table.AddCell(cell);
+                    }
+
+                    cell = new PdfPCell(new Paragraph("Diagnóstico: ", meuFont1Bold))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    cell.Colspan = 1;
+                    cell.BackgroundColor = BaseColor.WHITE;
+                    table.AddCell(cell);
+                    cell = new PdfPCell(new Paragraph(anamnese.PAAM_DS_DIAGNOSTICO_1_LONG, meuFont1))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    cell.Colspan = 1;
+                    cell.BackgroundColor = BaseColor.WHITE;
+                    table.AddCell(cell);
+
+                    cell = new PdfPCell(new Paragraph("Conduta Adotada: ", meuFont1Bold))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    cell.Colspan = 1;
+                    cell.BackgroundColor = BaseColor.WHITE;
+                    table.AddCell(cell);
+                    cell = new PdfPCell(new Paragraph(anamnese.PAAM_DS_CONDUTA, meuFont1))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    cell.Colspan = 1;
+                    cell.BackgroundColor = BaseColor.WHITE;
+                    table.AddCell(cell);
+                    pdfDoc.Add(table);
+                }
+
+                // Exame Físico
+                if (temFisico == 1)
+                {
+                    line1 = new Paragraph(new Chunk(new iTextSharp.text.pdf.draw.LineSeparator(0.0F, 100.0F, BaseColor.BLACK, Element.ALIGN_LEFT, 1)));
+                    pdfDoc.Add(line1);
+                    chunk3 = new Chunk("Último Exame Físico", FontFactory.GetFont("Arial", 13, Font.NORMAL, BaseColor.BLACK));
+                    paragraph = new Paragraph(chunk3);
+                    paragraph.Alignment = Element.ALIGN_LEFT;
+                    pdfDoc.Add(paragraph);
+
+                    line1 = new Paragraph("  ");
+                    pdfDoc.Add(line1);
+
+                    table = new PdfPTable(new float[] { 200f, 700f });
+                    table.WidthPercentage = 100;
+                    table.HorizontalAlignment = 0;
+                    table.SpacingBefore = 1f;
+                    table.SpacingAfter = 1f;
+
+                    // Exame Fisico
+                    cell = new PdfPCell(new Paragraph("Pressão Sanguinea (mmHg): ", meuFont1Bold))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    cell.Colspan = 1;
+                    cell.BackgroundColor = BaseColor.WHITE;
+                    table.AddCell(cell);
+                    cell = new PdfPCell(new Paragraph(fisico.PAEF_NR_PA_ALTA.ToString() + " x " + fisico.PAEF_NR_PA_BAIXA, meuFont1))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    cell.Colspan = 1;
+                    cell.BackgroundColor = BaseColor.WHITE;
+                    table.AddCell(cell);
+
+                    cell = new PdfPCell(new Paragraph("Frequencia Cardiaca (bpm): ", meuFont1Bold))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    cell.Colspan = 1;
+                    cell.BackgroundColor = BaseColor.WHITE;
+                    table.AddCell(cell);
+                    cell = new PdfPCell(new Paragraph(fisico.PAEF_NR_FREQUENCIA_CARDIACA.ToString(), meuFont1))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    cell.Colspan = 1;
+                    cell.BackgroundColor = BaseColor.WHITE;
+                    table.AddCell(cell);
+
+                    cell = new PdfPCell(new Paragraph("Temperatura (oC): ", meuFont1Bold))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    cell.Colspan = 1;
+                    cell.BackgroundColor = BaseColor.WHITE;
+                    table.AddCell(cell);
+                    cell = new PdfPCell(new Paragraph(fisico.PAEF_NR_TEMPERATURA.ToString(), meuFont1))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    cell.Colspan = 1;
+                    cell.BackgroundColor = BaseColor.WHITE;
+                    table.AddCell(cell);
+
+                    cell = new PdfPCell(new Paragraph("Peso (Kg): ", meuFont1Bold))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    cell.Colspan = 1;
+                    cell.BackgroundColor = BaseColor.WHITE;
+                    table.AddCell(cell);
+                    cell = new PdfPCell(new Paragraph(fisico.PAEF_NR_PESO.ToString(), meuFont1))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    cell.Colspan = 1;
+                    cell.BackgroundColor = BaseColor.WHITE;
+                    table.AddCell(cell);
+
+                    cell = new PdfPCell(new Paragraph("Altura (cm): ", meuFont1Bold))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    cell.Colspan = 1;
+                    cell.BackgroundColor = BaseColor.WHITE;
+                    table.AddCell(cell);
+                    cell = new PdfPCell(new Paragraph(fisico.PAEF_NR_ALTURA.ToString(), meuFont1))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    cell.Colspan = 1;
+                    cell.BackgroundColor = BaseColor.WHITE;
+                    table.AddCell(cell);
+
+                    cell = new PdfPCell(new Paragraph("IMC: ", meuFont1Bold))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    cell.Colspan = 1;
+                    cell.BackgroundColor = BaseColor.WHITE;
+                    table.AddCell(cell);
+                    cell = new PdfPCell(new Paragraph(fisico.PAEF_VL_IMC.ToString(), meuFont1))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    cell.Colspan = 1;
+                    cell.BackgroundColor = BaseColor.WHITE;
+                    table.AddCell(cell);
+
+                    cell = new PdfPCell(new Paragraph("Hipertensão: ", meuFont1Bold))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    cell.Colspan = 1;
+                    cell.BackgroundColor = BaseColor.WHITE;
+                    table.AddCell(cell);
+                    cell = new PdfPCell(new Paragraph(fisico.PAEF_IN_HIPERTENSAO == 1 ? "Sim" : "Não", meuFont1))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    cell.Colspan = 1;
+                    cell.BackgroundColor = BaseColor.WHITE;
+                    table.AddCell(cell);
+
+                    cell = new PdfPCell(new Paragraph("Hipotensão: ", meuFont1Bold))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    cell.Colspan = 1;
+                    cell.BackgroundColor = BaseColor.WHITE;
+                    table.AddCell(cell);
+                    cell = new PdfPCell(new Paragraph(fisico.PAEF_IN_HIPOTENSAO == 1 ? "Sim" : "Não", meuFont1))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    cell.Colspan = 1;
+                    cell.BackgroundColor = BaseColor.WHITE;
+                    table.AddCell(cell);
+
+                    cell = new PdfPCell(new Paragraph("Diabetes: ", meuFont1Bold))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    cell.Colspan = 1;
+                    cell.BackgroundColor = BaseColor.WHITE;
+                    table.AddCell(cell);
+                    cell = new PdfPCell(new Paragraph(fisico.PAEF_IN_DIABETE == 1 ? "Sim" : "Não", meuFont1))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    cell.Colspan = 1;
+                    cell.BackgroundColor = BaseColor.WHITE;
+                    table.AddCell(cell);
+
+                    cell = new PdfPCell(new Paragraph("Varizes: ", meuFont1Bold))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    cell.Colspan = 1;
+                    cell.BackgroundColor = BaseColor.WHITE;
+                    table.AddCell(cell);
+                    cell = new PdfPCell(new Paragraph(fisico.PAEF_IN_VARIZES == 1 ? "Sim" : "Não", meuFont1))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    cell.Colspan = 1;
+                    cell.BackgroundColor = BaseColor.WHITE;
+                    table.AddCell(cell);
+
+                    cell = new PdfPCell(new Paragraph("Epilepsia: ", meuFont1Bold))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    cell.Colspan = 1;
+                    cell.BackgroundColor = BaseColor.WHITE;
+                    table.AddCell(cell);
+                    cell = new PdfPCell(new Paragraph(fisico.PAEF_IN_EPILEPSIA == 1 ? "Sim" : "Não", meuFont1))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    cell.Colspan = 1;
+                    cell.BackgroundColor = BaseColor.WHITE;
+                    table.AddCell(cell);
+
+                    cell = new PdfPCell(new Paragraph("Tabagismo: ", meuFont1Bold))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    cell.Colspan = 1;
+                    cell.BackgroundColor = BaseColor.WHITE;
+                    table.AddCell(cell);
+                    cell = new PdfPCell(new Paragraph(fisico.PAEF_IN_TABAGISMO == 1 ? "Sim" : "Não", meuFont1))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    cell.Colspan = 1;
+                    cell.BackgroundColor = BaseColor.WHITE;
+                    table.AddCell(cell);
+
+                    if (fisico.PAEF_IN_TABAGISMO == 1)
+                    {
+                        cell = new PdfPCell(new Paragraph("Tabagismo - Frequência: ", meuFont1Bold))
+                        {
+                            VerticalAlignment = Element.ALIGN_MIDDLE,
+                            HorizontalAlignment = Element.ALIGN_LEFT
+                        };
+                        cell.Colspan = 1;
+                        cell.BackgroundColor = BaseColor.WHITE;
+                        table.AddCell(cell);
+                        cell = new PdfPCell(new Paragraph(fisico.PAEF_DS_TABAGISMO_LONG, meuFont1))
+                        {
+                            VerticalAlignment = Element.ALIGN_MIDDLE,
+                            HorizontalAlignment = Element.ALIGN_LEFT
+                        };
+                        cell.Colspan = 1;
+                        cell.BackgroundColor = BaseColor.WHITE;
+                        table.AddCell(cell);
+                    }
+
+                    cell = new PdfPCell(new Paragraph("Gestante: ", meuFont1Bold))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    cell.Colspan = 1;
+                    cell.BackgroundColor = BaseColor.WHITE;
+                    table.AddCell(cell);
+                    cell = new PdfPCell(new Paragraph(fisico.PAEF_IN_GESTANTE == 1 ? "Sim" : "Não", meuFont1))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    cell.Colspan = 1;
+                    cell.BackgroundColor = BaseColor.WHITE;
+                    table.AddCell(cell);
+
+                    if (fisico.PAEF_IN_GESTANTE == 1)
+                    {
+                        cell = new PdfPCell(new Paragraph("Semanas de Gestação: ", meuFont1Bold))
+                        {
+                            VerticalAlignment = Element.ALIGN_MIDDLE,
+                            HorizontalAlignment = Element.ALIGN_LEFT
+                        };
+                        cell.Colspan = 1;
+                        cell.BackgroundColor = BaseColor.WHITE;
+                        table.AddCell(cell);
+                        cell = new PdfPCell(new Paragraph(fisico.PAEF_NR_MES_GESTANTE.ToString(), meuFont1))
+                        {
+                            VerticalAlignment = Element.ALIGN_MIDDLE,
+                            HorizontalAlignment = Element.ALIGN_LEFT
+                        };
+                        cell.Colspan = 1;
+                        cell.BackgroundColor = BaseColor.WHITE;
+                        table.AddCell(cell);
+                    }
+
+                    cell = new PdfPCell(new Paragraph("Alcoolismo: ", meuFont1Bold))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    cell.Colspan = 1;
+                    cell.BackgroundColor = BaseColor.WHITE;
+                    table.AddCell(cell);
+                    cell = new PdfPCell(new Paragraph(fisico.PAEF_IN_ALCOOLISMO == 1 ? "Sim" : "Não", meuFont1))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    cell.Colspan = 1;
+                    cell.BackgroundColor = BaseColor.WHITE;
+                    table.AddCell(cell);
+
+                    if (fisico.PAEF_IN_ALCOOLISMO == 1)
+                    {
+                        cell = new PdfPCell(new Paragraph("Alcoolismo - Frequência: ", meuFont1Bold))
+                        {
+                            VerticalAlignment = Element.ALIGN_MIDDLE,
+                            HorizontalAlignment = Element.ALIGN_LEFT
+                        };
+                        cell.Colspan = 1;
+                        cell.BackgroundColor = BaseColor.WHITE;
+                        table.AddCell(cell);
+                        cell = new PdfPCell(new Paragraph(fisico.PAEF_DS_ALCOOLISMO_LONG, meuFont1))
+                        {
+                            VerticalAlignment = Element.ALIGN_MIDDLE,
+                            HorizontalAlignment = Element.ALIGN_LEFT
+                        };
+                        cell.Colspan = 1;
+                        cell.BackgroundColor = BaseColor.WHITE;
+                        table.AddCell(cell);
+                    }
+
+                    cell = new PdfPCell(new Paragraph("Exercício Físico: ", meuFont1Bold))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    cell.Colspan = 1;
+                    cell.BackgroundColor = BaseColor.WHITE;
+                    table.AddCell(cell);
+                    cell = new PdfPCell(new Paragraph(fisico.PAEF_IN_EXERCICIO_FISICO == 1 ? "Sim" : "Não", meuFont1))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    cell.Colspan = 1;
+                    cell.BackgroundColor = BaseColor.WHITE;
+                    table.AddCell(cell);
+
+                    if (fisico.PAEF_IN_EXERCICIO_FISICO == 1)
+                    {
+                        cell = new PdfPCell(new Paragraph("Exercício - Frequência: ", meuFont1Bold))
+                        {
+                            VerticalAlignment = Element.ALIGN_MIDDLE,
+                            HorizontalAlignment = Element.ALIGN_LEFT
+                        };
+                        cell.Colspan = 1;
+                        cell.BackgroundColor = BaseColor.WHITE;
+                        table.AddCell(cell);
+                        cell = new PdfPCell(new Paragraph(fisico.PAEF_DS_EXERCICIO_FISICO_LONG, meuFont1))
+                        {
+                            VerticalAlignment = Element.ALIGN_MIDDLE,
+                            HorizontalAlignment = Element.ALIGN_LEFT
+                        };
+                        cell.Colspan = 1;
+                        cell.BackgroundColor = BaseColor.WHITE;
+                        table.AddCell(cell);
+                    }
+
+                    cell = new PdfPCell(new Paragraph("Anticoncepcional: ", meuFont1Bold))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    cell.Colspan = 1;
+                    cell.BackgroundColor = BaseColor.WHITE;
+                    table.AddCell(cell);
+                    cell = new PdfPCell(new Paragraph(fisico.PAEF_IN_ANTICONCEPCIONAL == 1 ? "Sim" : "Não", meuFont1))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    cell.Colspan = 1;
+                    cell.BackgroundColor = BaseColor.WHITE;
+                    table.AddCell(cell);
+
+                    if (fisico.PAEF_IN_ANTICONCEPCIONAL == 1)
+                    {
+                        cell = new PdfPCell(new Paragraph("Anticoncepcionais usados: ", meuFont1Bold))
+                        {
+                            VerticalAlignment = Element.ALIGN_MIDDLE,
+                            HorizontalAlignment = Element.ALIGN_LEFT
+                        };
+                        cell.Colspan = 1;
+                        cell.BackgroundColor = BaseColor.WHITE;
+                        table.AddCell(cell);
+                        cell = new PdfPCell(new Paragraph(fisico.PAEF_DS_ANTICONCEPCIONAL, meuFont1))
+                        {
+                            VerticalAlignment = Element.ALIGN_MIDDLE,
+                            HorizontalAlignment = Element.ALIGN_LEFT
+                        };
+                        cell.Colspan = 1;
+                        cell.BackgroundColor = BaseColor.WHITE;
+                        table.AddCell(cell);
+                    }
+
+                    cell = new PdfPCell(new Paragraph("Marcapasso: ", meuFont1Bold))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    cell.Colspan = 1;
+                    cell.BackgroundColor = BaseColor.WHITE;
+                    table.AddCell(cell);
+                    cell = new PdfPCell(new Paragraph(fisico.PAEF_IN_MARCAPASSO == 1 ? "Sim" : "Não", meuFont1))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    cell.Colspan = 1;
+                    cell.BackgroundColor = BaseColor.WHITE;
+                    table.AddCell(cell);
+
+                    if (fisico.PAEF_IN_MARCAPASSO == 1)
+                    {
+                        cell = new PdfPCell(new Paragraph("Marcapasso - Observações: ", meuFont1Bold))
+                        {
+                            VerticalAlignment = Element.ALIGN_MIDDLE,
+                            HorizontalAlignment = Element.ALIGN_LEFT
+                        };
+                        cell.Colspan = 1;
+                        cell.BackgroundColor = BaseColor.WHITE;
+                        table.AddCell(cell);
+                        cell = new PdfPCell(new Paragraph(fisico.PAEF_DS_MARCAPASSO_LONG, meuFont1))
+                        {
+                            VerticalAlignment = Element.ALIGN_MIDDLE,
+                            HorizontalAlignment = Element.ALIGN_LEFT
+                        };
+                        cell.Colspan = 1;
+                        cell.BackgroundColor = BaseColor.WHITE;
+                        table.AddCell(cell);
+                    }
+
+                    cell = new PdfPCell(new Paragraph("Cirurgias: ", meuFont1Bold))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    cell.Colspan = 1;
+                    cell.BackgroundColor = BaseColor.WHITE;
+                    table.AddCell(cell);
+                    cell = new PdfPCell(new Paragraph(fisico.PAEF_IN_CIRURGIAS == 1 ? "Sim" : "Não", meuFont1))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    cell.Colspan = 1;
+                    cell.BackgroundColor = BaseColor.WHITE;
+                    table.AddCell(cell);
+
+                    if (fisico.PAEF_IN_CIRURGIAS == 1)
+                    {
+                        cell = new PdfPCell(new Paragraph("Cirurgias - Descrição: ", meuFont1Bold))
+                        {
+                            VerticalAlignment = Element.ALIGN_MIDDLE,
+                            HorizontalAlignment = Element.ALIGN_LEFT
+                        };
+                        cell.Colspan = 1;
+                        cell.BackgroundColor = BaseColor.WHITE;
+                        table.AddCell(cell);
+                        cell = new PdfPCell(new Paragraph(fisico.PAEF_TX_CIRURGIAS, meuFont1))
+                        {
+                            VerticalAlignment = Element.ALIGN_MIDDLE,
+                            HorizontalAlignment = Element.ALIGN_LEFT
+                        };
+                        cell.Colspan = 1;
+                        cell.BackgroundColor = BaseColor.WHITE;
+                        table.AddCell(cell);
+                    }
+
+                    cell = new PdfPCell(new Paragraph("Antecedentes Alérgicos: ", meuFont1Bold))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    cell.Colspan = 1;
+                    cell.BackgroundColor = BaseColor.WHITE;
+                    table.AddCell(cell);
+                    cell = new PdfPCell(new Paragraph(fisico.PAEF_IN_ANTE_ALERGICO == 1 ? "Sim" : "Não", meuFont1))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    cell.Colspan = 1;
+                    cell.BackgroundColor = BaseColor.WHITE;
+                    table.AddCell(cell);
+
+                    if (fisico.PAEF_IN_ANTE_ALERGICO == 1)
+                    {
+                        cell = new PdfPCell(new Paragraph("Descrição da Alergia: ", meuFont1Bold))
+                        {
+                            VerticalAlignment = Element.ALIGN_MIDDLE,
+                            HorizontalAlignment = Element.ALIGN_LEFT
+                        };
+                        cell.Colspan = 1;
+                        cell.BackgroundColor = BaseColor.WHITE;
+                        table.AddCell(cell);
+                        cell = new PdfPCell(new Paragraph(fisico.PAEF_DS_ALERGICO_LONG, meuFont1))
+                        {
+                            VerticalAlignment = Element.ALIGN_MIDDLE,
+                            HorizontalAlignment = Element.ALIGN_LEFT
+                        };
+                        cell.Colspan = 1;
+                        cell.BackgroundColor = BaseColor.WHITE;
+                        table.AddCell(cell);
+                    }
+
+                    cell = new PdfPCell(new Paragraph("Antecedentes Oncológicos: ", meuFont1Bold))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    cell.Colspan = 1;
+                    cell.BackgroundColor = BaseColor.WHITE;
+                    table.AddCell(cell);
+                    cell = new PdfPCell(new Paragraph(fisico.PAEF_IN_ANTE_ONCOLOGICO == 1 ? "Sim" : "Não", meuFont1))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    cell.Colspan = 1;
+                    cell.BackgroundColor = BaseColor.WHITE;
+                    table.AddCell(cell);
+
+                    if (fisico.PAEF_IN_ANTE_ONCOLOGICO == 1)
+                    {
+                        cell = new PdfPCell(new Paragraph("Antecedentes: ", meuFont1Bold))
+                        {
+                            VerticalAlignment = Element.ALIGN_MIDDLE,
+                            HorizontalAlignment = Element.ALIGN_LEFT
+                        };
+                        cell.Colspan = 1;
+                        cell.BackgroundColor = BaseColor.WHITE;
+                        table.AddCell(cell);
+                        cell = new PdfPCell(new Paragraph(fisico.PAEF_DS_ONCOLOGICO_LONG, meuFont1))
+                        {
+                            VerticalAlignment = Element.ALIGN_MIDDLE,
+                            HorizontalAlignment = Element.ALIGN_LEFT
+                        };
+                        cell.Colspan = 1;
+                        cell.BackgroundColor = BaseColor.WHITE;
+                        table.AddCell(cell);
+                    }
+
+                    cell = new PdfPCell(new Paragraph("Resultado de Exames: ", meuFont1Bold))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    cell.Colspan = 1;
+                    cell.BackgroundColor = BaseColor.WHITE;
+                    table.AddCell(cell);
+                    cell = new PdfPCell(new Paragraph(fisico.PAEF_TX_RESULTADOS, meuFont1))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    cell.Colspan = 1;
+                    cell.BackgroundColor = BaseColor.WHITE;
+                    table.AddCell(cell);
+
+                    cell = new PdfPCell(new Paragraph("Observações: ", meuFont1Bold))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    cell.Colspan = 1;
+                    cell.BackgroundColor = BaseColor.WHITE;
+                    table.AddCell(cell);
+                    cell = new PdfPCell(new Paragraph(fisico.PAEF_DS_EXAME_FISICO, meuFont1))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    cell.Colspan = 1;
+                    cell.BackgroundColor = BaseColor.WHITE;
+                    table.AddCell(cell);
+
+                    pdfDoc.Add(table);
+                }
+
+                // Resultados de Exames
+                if (listaExame.Count > 0)
+                {
+                    line1 = new Paragraph(new Chunk(new iTextSharp.text.pdf.draw.LineSeparator(0.0F, 100.0F, BaseColor.BLACK, Element.ALIGN_LEFT, 1)));
+                    pdfDoc.Add(line1);
+                    chunk3 = new Chunk("Resultados de Exames", FontFactory.GetFont("Arial", 13, Font.NORMAL, BaseColor.BLACK));
+                    paragraph = new Paragraph(chunk3);
+                    paragraph.Alignment = Element.ALIGN_LEFT;
+                    pdfDoc.Add(paragraph);
+
+                    line1 = new Paragraph("  ");
+                    pdfDoc.Add(line1);
+
+                    // Grid
+                    table = new PdfPTable(new float[] { 60f, 120f, 120f, 120f, 60f, 80f });
+                    table.WidthPercentage = 100;
+                    table.HorizontalAlignment = 0;
+                    table.SpacingBefore = 1f;
+                    table.SpacingAfter = 1f;
+
+                    cell = new PdfPCell(new Paragraph("Data", meuFont))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    cell.Colspan = 1;
+                    cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                    table.AddCell(cell);
+                    cell = new PdfPCell(new Paragraph("Nome do Exame", meuFont))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    cell.Colspan = 1;
+                    cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                    table.AddCell(cell);
+                    cell = new PdfPCell(new Paragraph("Tipo de Exame", meuFont))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    cell.Colspan = 1;
+                    cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                    table.AddCell(cell);
+                    cell = new PdfPCell(new Paragraph("Laboratório", meuFont))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    cell.Colspan = 1;
+                    cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                    table.AddCell(cell);
+                    cell = new PdfPCell(new Paragraph("Anexos", meuFont))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    cell.Colspan = 1;
+                    cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                    table.AddCell(cell);
+                    cell = new PdfPCell(new Paragraph("Data da Consulta", meuFont))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    cell.Colspan = 1;
+                    cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                    table.AddCell(cell);
+
+                    foreach (PACIENTE_EXAMES item in listaExame)
+                    {
+                        if (item.PAEX_DT_DATA != null)
+                        {
+                            cell = new PdfPCell(new Paragraph(item.PAEX_DT_DATA.Value.ToShortDateString(), meuFont))
+                            {
+                                VerticalAlignment = Element.ALIGN_MIDDLE,
+                                HorizontalAlignment = Element.ALIGN_LEFT
+                            };
+                            table.AddCell(cell);
+                        }
+                        else
+                        {
+                            cell = new PdfPCell(new Paragraph("-", meuFont))
+                            {
+                                VerticalAlignment = Element.ALIGN_MIDDLE,
+                                HorizontalAlignment = Element.ALIGN_LEFT
+                            };
+                            table.AddCell(cell);
+                        }
+                        cell = new PdfPCell(new Paragraph(item.PAEX_NM_NOME, meuFont))
+                        {
+                            VerticalAlignment = Element.ALIGN_MIDDLE,
+                            HorizontalAlignment = Element.ALIGN_LEFT
+                        };
+                        table.AddCell(cell);
+                        if (item.TIPO_EXAME != null)
+                        {
+                            cell = new PdfPCell(new Paragraph(item.TIPO_EXAME.TIEX_NM_NOME, meuFont))
+                            {
+                                VerticalAlignment = Element.ALIGN_MIDDLE,
+                                HorizontalAlignment = Element.ALIGN_LEFT
+                            };
+                            table.AddCell(cell);
+                        }
+                        else
+                        {
+                            cell = new PdfPCell(new Paragraph("-", meuFont))
+                            {
+                                VerticalAlignment = Element.ALIGN_MIDDLE,
+                                HorizontalAlignment = Element.ALIGN_LEFT
+                            };
+                            table.AddCell(cell);
+                        }
+                        if (item.LABS_CD_ID != null)
+                        {
+                            cell = new PdfPCell(new Paragraph(item.LABORATORIO.LABS_NM_NOME, meuFont))
+                            {
+                                VerticalAlignment = Element.ALIGN_MIDDLE,
+                                HorizontalAlignment = Element.ALIGN_LEFT
+                            };
+                            table.AddCell(cell);
+                        }
+                        else
+                        {
+                            cell = new PdfPCell(new Paragraph("Não Informado", meuFont))
+                            {
+                                VerticalAlignment = Element.ALIGN_MIDDLE,
+                                HorizontalAlignment = Element.ALIGN_LEFT
+                            };
+                            table.AddCell(cell);
+                        }
+                        if (item.PACIENTE_EXAME_ANEXO.Count > 0)
+                        {
+                            cell = new PdfPCell(new Paragraph(item.PACIENTE_EXAME_ANEXO.Count().ToString(), meuFont))
+                            {
+                                VerticalAlignment = Element.ALIGN_MIDDLE,
+                                HorizontalAlignment = Element.ALIGN_LEFT
+                            };
+                            table.AddCell(cell);
+                        }
+                        else
+                        {
+                            cell = new PdfPCell(new Paragraph("0", meuFont))
+                            {
+                                VerticalAlignment = Element.ALIGN_MIDDLE,
+                                HorizontalAlignment = Element.ALIGN_LEFT
+                            };
+                            table.AddCell(cell);
+                        }
+                        if (item.PACIENTE_CONSULTA != null)
+                        {
+                            cell = new PdfPCell(new Paragraph(item.PACIENTE_CONSULTA.PACO_DT_CONSULTA.ToShortDateString(), meuFont))
+                            {
+                                VerticalAlignment = Element.ALIGN_MIDDLE,
+                                HorizontalAlignment = Element.ALIGN_LEFT
+                            };
+                            table.AddCell(cell);
+                        }
+                        else
+                        {
+                            cell = new PdfPCell(new Paragraph("-", meuFont))
+                            {
+                                VerticalAlignment = Element.ALIGN_MIDDLE,
+                                HorizontalAlignment = Element.ALIGN_LEFT
+                            };
+                            table.AddCell(cell);
+                        }
+
+                    }
+                    pdfDoc.Add(table);
+                }
+
+                // Atestados
+                if (listaAtestado.Count > 0)
+                {
+                    line1 = new Paragraph(new Chunk(new iTextSharp.text.pdf.draw.LineSeparator(0.0F, 100.0F, BaseColor.BLACK, Element.ALIGN_LEFT, 1)));
+                    pdfDoc.Add(line1);
+                    chunk3 = new Chunk("Atestados", FontFactory.GetFont("Arial", 13, Font.NORMAL, BaseColor.BLACK));
+                    paragraph = new Paragraph(chunk3);
+                    paragraph.Alignment = Element.ALIGN_LEFT;
+                    pdfDoc.Add(paragraph);
+
+                    line1 = new Paragraph("  ");
+                    pdfDoc.Add(line1);
+
+                    // Grid
+                    table = new PdfPTable(new float[] { 60f, 110f, 120f, 150f, 60f, 60f, 80f });
+                    table.WidthPercentage = 100;
+                    table.HorizontalAlignment = 0;
+                    table.SpacingBefore = 1f;
+                    table.SpacingAfter = 1f;
+
+                    cell = new PdfPCell(new Paragraph("Data", meuFont))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    cell.Colspan = 1;
+                    cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                    table.AddCell(cell);
+                    cell = new PdfPCell(new Paragraph("Identificador", meuFont))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    cell.Colspan = 1;
+                    cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                    table.AddCell(cell);
+                    cell = new PdfPCell(new Paragraph("Tipo de Atestado", meuFont))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    cell.Colspan = 1;
+                    cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                    table.AddCell(cell);
+                    cell = new PdfPCell(new Paragraph("Título do Atestado", meuFont))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    cell.Colspan = 1;
+                    cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                    table.AddCell(cell);
+                    cell = new PdfPCell(new Paragraph("Enviado", meuFont))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    cell.Colspan = 1;
+                    cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                    table.AddCell(cell);
+                    cell = new PdfPCell(new Paragraph("Último Envio", meuFont))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    cell.Colspan = 1;
+                    cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                    table.AddCell(cell);
+                    cell = new PdfPCell(new Paragraph("Data da Consulta", meuFont))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    cell.Colspan = 1;
+                    cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                    table.AddCell(cell);
+
+                    foreach (PACIENTE_ATESTADO item in listaAtestado)
+                    {
+                        if (item.PAAT_DT_DATA != null)
+                        {
+                            cell = new PdfPCell(new Paragraph(item.PAAT_DT_DATA.Value.ToShortDateString(), meuFont))
+                            {
+                                VerticalAlignment = Element.ALIGN_MIDDLE,
+                                HorizontalAlignment = Element.ALIGN_LEFT
+                            };
+                            table.AddCell(cell);
+                        }
+                        else
+                        {
+                            cell = new PdfPCell(new Paragraph("-", meuFont))
+                            {
+                                VerticalAlignment = Element.ALIGN_MIDDLE,
+                                HorizontalAlignment = Element.ALIGN_LEFT
+                            };
+                            table.AddCell(cell);
+                        }
+                        cell = new PdfPCell(new Paragraph(item.PAAT_GU_GUID, meuFont))
+                        {
+                            VerticalAlignment = Element.ALIGN_MIDDLE,
+                            HorizontalAlignment = Element.ALIGN_LEFT
+                        };
+                        table.AddCell(cell);
+                        if (item.TIPO_ATESTADO != null)
+                        {
+                            cell = new PdfPCell(new Paragraph(item.TIPO_ATESTADO.TIAT_NM_NOME, meuFont))
+                            {
+                                VerticalAlignment = Element.ALIGN_MIDDLE,
+                                HorizontalAlignment = Element.ALIGN_LEFT
+                            };
+                            table.AddCell(cell);
+                        }
+                        else
+                        {
+                            cell = new PdfPCell(new Paragraph("-", meuFont))
+                            {
+                                VerticalAlignment = Element.ALIGN_MIDDLE,
+                                HorizontalAlignment = Element.ALIGN_LEFT
+                            };
+                            table.AddCell(cell);
+                        }
+                        cell = new PdfPCell(new Paragraph(item.PAAT_NM_TITULO, meuFont))
+                        {
+                            VerticalAlignment = Element.ALIGN_MIDDLE,
+                            HorizontalAlignment = Element.ALIGN_LEFT
+                        };
+                        table.AddCell(cell);
+                        if (item.PAAT__IN_ENVIADO == 1)
+                        {
+                            cell = new PdfPCell(new Paragraph("Sim", meuFont))
+                            {
+                                VerticalAlignment = Element.ALIGN_MIDDLE,
+                                HorizontalAlignment = Element.ALIGN_LEFT
+                            };
+                            table.AddCell(cell);
+                        }
+                        else
+                        {
+                            cell = new PdfPCell(new Paragraph("Não", meuFont))
+                            {
+                                VerticalAlignment = Element.ALIGN_MIDDLE,
+                                HorizontalAlignment = Element.ALIGN_LEFT
+                            };
+                            table.AddCell(cell);
+                        }
+                        if (item.PAAT_DT_ENVIO != null)
+                        {
+                            cell = new PdfPCell(new Paragraph(item.PAAT_DT_ENVIO.Value.ToShortDateString(), meuFont))
+                            {
+                                VerticalAlignment = Element.ALIGN_MIDDLE,
+                                HorizontalAlignment = Element.ALIGN_LEFT
+                            };
+                            table.AddCell(cell);
+                        }
+                        else
+                        {
+                            cell = new PdfPCell(new Paragraph("-", meuFont))
+                            {
+                                VerticalAlignment = Element.ALIGN_MIDDLE,
+                                HorizontalAlignment = Element.ALIGN_LEFT
+                            };
+                            table.AddCell(cell);
+                        }
+                        if (item.PACIENTE_CONSULTA != null)
+                        {
+                            cell = new PdfPCell(new Paragraph(item.PACIENTE_CONSULTA.PACO_DT_CONSULTA.ToShortDateString(), meuFont))
+                            {
+                                VerticalAlignment = Element.ALIGN_MIDDLE,
+                                HorizontalAlignment = Element.ALIGN_LEFT
+                            };
+                            table.AddCell(cell);
+                        }
+                        else
+                        {
+                            cell = new PdfPCell(new Paragraph("-", meuFont))
+                            {
+                                VerticalAlignment = Element.ALIGN_MIDDLE,
+                                HorizontalAlignment = Element.ALIGN_LEFT
+                            };
+                            table.AddCell(cell);
+                        }
+                    }
+                    pdfDoc.Add(table);
+                }
+
+                // Solicitações
+                if (listaSolicitacao.Count > 0)
+                {
+                    line1 = new Paragraph(new Chunk(new iTextSharp.text.pdf.draw.LineSeparator(0.0F, 100.0F, BaseColor.BLACK, Element.ALIGN_LEFT, 1)));
+                    pdfDoc.Add(line1);
+                    chunk3 = new Chunk("Solicitações de Exames", FontFactory.GetFont("Arial", 13, Font.NORMAL, BaseColor.BLACK));
+                    paragraph = new Paragraph(chunk3);
+                    paragraph.Alignment = Element.ALIGN_LEFT;
+                    pdfDoc.Add(paragraph);
+
+                    line1 = new Paragraph("  ");
+                    pdfDoc.Add(line1);
+
+                    // Grid
+                    table = new PdfPTable(new float[] { 60f, 110f, 120f, 120f, 60f, 60f, 80f });
+                    table.WidthPercentage = 100;
+                    table.HorizontalAlignment = 0;
+                    table.SpacingBefore = 1f;
+                    table.SpacingAfter = 1f;
+
+                    cell = new PdfPCell(new Paragraph("Data", meuFont))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    cell.Colspan = 1;
+                    cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                    table.AddCell(cell);
+                    cell = new PdfPCell(new Paragraph("Identificador", meuFont))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    cell.Colspan = 1;
+                    cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                    table.AddCell(cell);
+                    cell = new PdfPCell(new Paragraph("Tipo de Exame", meuFont))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    cell.Colspan = 1;
+                    cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                    table.AddCell(cell);
+                    cell = new PdfPCell(new Paragraph("Nome do Exame", meuFont))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    cell.Colspan = 1;
+                    cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                    table.AddCell(cell);
+                    cell = new PdfPCell(new Paragraph("Enviado", meuFont))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    cell.Colspan = 1;
+                    cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                    table.AddCell(cell);
+                    cell = new PdfPCell(new Paragraph("Último Envio", meuFont))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    cell.Colspan = 1;
+                    cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                    table.AddCell(cell);
+                    cell = new PdfPCell(new Paragraph("Data da Consulta", meuFont))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    cell.Colspan = 1;
+                    cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                    table.AddCell(cell);
+
+                    foreach (PACIENTE_SOLICITACAO item in listaSolicitacao)
+                    {
+                        if (item.PASO_DT_EMISSAO != null)
+                        {
+                            cell = new PdfPCell(new Paragraph(item.PASO_DT_EMISSAO.Value.ToShortDateString(), meuFont))
+                            {
+                                VerticalAlignment = Element.ALIGN_MIDDLE,
+                                HorizontalAlignment = Element.ALIGN_LEFT
+                            };
+                            table.AddCell(cell);
+                        }
+                        else
+                        {
+                            cell = new PdfPCell(new Paragraph("-", meuFont))
+                            {
+                                VerticalAlignment = Element.ALIGN_MIDDLE,
+                                HorizontalAlignment = Element.ALIGN_LEFT
+                            };
+                            table.AddCell(cell);
+                        }
+                        cell = new PdfPCell(new Paragraph(item.PASO_GU_GUID, meuFont))
+                        {
+                            VerticalAlignment = Element.ALIGN_MIDDLE,
+                            HorizontalAlignment = Element.ALIGN_LEFT
+                        };
+                        table.AddCell(cell);
+                        if (item.TIPO_EXAME != null)
+                        {
+                            cell = new PdfPCell(new Paragraph(item.TIPO_EXAME.TIEX_NM_NOME, meuFont))
+                            {
+                                VerticalAlignment = Element.ALIGN_MIDDLE,
+                                HorizontalAlignment = Element.ALIGN_LEFT
+                            };
+                            table.AddCell(cell);
+                        }
+                        else
+                        {
+                            cell = new PdfPCell(new Paragraph("-", meuFont))
+                            {
+                                VerticalAlignment = Element.ALIGN_MIDDLE,
+                                HorizontalAlignment = Element.ALIGN_LEFT
+                            };
+                            table.AddCell(cell);
+                        }
+                        cell = new PdfPCell(new Paragraph(item.PASO_NM_TITULO, meuFont))
+                        {
+                            VerticalAlignment = Element.ALIGN_MIDDLE,
+                            HorizontalAlignment = Element.ALIGN_LEFT
+                        };
+                        table.AddCell(cell);
+                        if (item.PASO_IN_ENVIADO == 1)
+                        {
+                            cell = new PdfPCell(new Paragraph("Sim", meuFont))
+                            {
+                                VerticalAlignment = Element.ALIGN_MIDDLE,
+                                HorizontalAlignment = Element.ALIGN_LEFT
+                            };
+                            table.AddCell(cell);
+                        }
+                        else
+                        {
+                            cell = new PdfPCell(new Paragraph("Não", meuFont))
+                            {
+                                VerticalAlignment = Element.ALIGN_MIDDLE,
+                                HorizontalAlignment = Element.ALIGN_LEFT
+                            };
+                            table.AddCell(cell);
+                        }
+                        if (item.PASO_DT_ENVIO != null)
+                        {
+                            cell = new PdfPCell(new Paragraph(item.PASO_DT_ENVIO.Value.ToShortDateString(), meuFont))
+                            {
+                                VerticalAlignment = Element.ALIGN_MIDDLE,
+                                HorizontalAlignment = Element.ALIGN_LEFT
+                            };
+                            table.AddCell(cell);
+                        }
+                        else
+                        {
+                            cell = new PdfPCell(new Paragraph("-", meuFont))
+                            {
+                                VerticalAlignment = Element.ALIGN_MIDDLE,
+                                HorizontalAlignment = Element.ALIGN_LEFT
+                            };
+                            table.AddCell(cell);
+                        }
+                        if (item.PACIENTE_CONSULTA != null)
+                        {
+                            cell = new PdfPCell(new Paragraph(item.PACIENTE_CONSULTA.PACO_DT_CONSULTA.ToShortDateString(), meuFont))
+                            {
+                                VerticalAlignment = Element.ALIGN_MIDDLE,
+                                HorizontalAlignment = Element.ALIGN_LEFT
+                            };
+                            table.AddCell(cell);
+                        }
+                        else
+                        {
+                            cell = new PdfPCell(new Paragraph("-", meuFont))
+                            {
+                                VerticalAlignment = Element.ALIGN_MIDDLE,
+                                HorizontalAlignment = Element.ALIGN_LEFT
+                            };
+                            table.AddCell(cell);
+                        }
+                    }
+                    pdfDoc.Add(table);
+                }
+
+                // Prescrições
+                if (listaPrescricao.Count > 0)
+                {
+                    line1 = new Paragraph(new Chunk(new iTextSharp.text.pdf.draw.LineSeparator(0.0F, 100.0F, BaseColor.BLACK, Element.ALIGN_LEFT, 1)));
+                    pdfDoc.Add(line1);
+                    chunk3 = new Chunk("Prescrições", FontFactory.GetFont("Arial", 13, Font.NORMAL, BaseColor.BLACK));
+                    paragraph = new Paragraph(chunk3);
+                    paragraph.Alignment = Element.ALIGN_LEFT;
+                    pdfDoc.Add(paragraph);
+
+                    line1 = new Paragraph("  ");
+                    pdfDoc.Add(line1);
+
+                    // Grid
+                    table = new PdfPTable(new float[] { 70f, 80f, 110f, 60f, 60f, 60f, 80f });
+                    table.WidthPercentage = 100;
+                    table.HorizontalAlignment = 0;
+                    table.SpacingBefore = 1f;
+                    table.SpacingAfter = 1f;
+
+                    cell = new PdfPCell(new Paragraph("Data", meuFont))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                    table.AddCell(cell);
+                    cell = new PdfPCell(new Paragraph("Tipo de Controle", meuFont))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                    table.AddCell(cell);
+                    cell = new PdfPCell(new Paragraph("Identificador", meuFont))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                    table.AddCell(cell);
+                    cell = new PdfPCell(new Paragraph("Enviado", meuFont))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                    table.AddCell(cell);
+                    cell = new PdfPCell(new Paragraph("Último Envio", meuFont))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                    table.AddCell(cell);
+                    cell = new PdfPCell(new Paragraph("Num.Itens", meuFont))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                    table.AddCell(cell);
+                    cell = new PdfPCell(new Paragraph("Data Consulta", meuFont))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                    table.AddCell(cell);
+
+                    foreach (PACIENTE_PRESCRICAO item in listaPrescricao)
+                    {
+                        if (item.PAPR_DT_EMISSAO_COMPLETA != null)
+                        {
+                            cell = new PdfPCell(new Paragraph(item.PAPR_DT_EMISSAO_COMPLETA.Value.ToShortDateString() + " " + item.PAPR_DT_EMISSAO_COMPLETA.Value.ToShortTimeString(), meuFont))
+                            {
+                                VerticalAlignment = Element.ALIGN_MIDDLE,
+                                HorizontalAlignment = Element.ALIGN_LEFT
+                            };
+                            table.AddCell(cell);
+                        }
+                        else
+                        {
+                            cell = new PdfPCell(new Paragraph("-", meuFont))
+                            {
+                                VerticalAlignment = Element.ALIGN_MIDDLE,
+                                HorizontalAlignment = Element.ALIGN_LEFT
+                            };
+                            table.AddCell(cell);
+                        }
+                        cell = new PdfPCell(new Paragraph(item.TIPO_CONTROLE.TICO_NM_NOME, meuFont))
+                        {
+                            VerticalAlignment = Element.ALIGN_MIDDLE,
+                            HorizontalAlignment = Element.ALIGN_LEFT
+                        };
+                        table.AddCell(cell);
+                        cell = new PdfPCell(new Paragraph(item.PAPR_GU_GUID, meuFont))
+                        {
+                            VerticalAlignment = Element.ALIGN_MIDDLE,
+                            HorizontalAlignment = Element.ALIGN_LEFT
+                        };
+                        table.AddCell(cell);
+                        if (item.PAPR_IN_ENVIADO == 1)
+                        {
+                            cell = new PdfPCell(new Paragraph("Sim", meuFont))
+                            {
+                                VerticalAlignment = Element.ALIGN_MIDDLE,
+                                HorizontalAlignment = Element.ALIGN_LEFT
+                            };
+                            table.AddCell(cell);
+                        }
+                        else
+                        {
+                            cell = new PdfPCell(new Paragraph("Não", meuFont))
+                            {
+                                VerticalAlignment = Element.ALIGN_MIDDLE,
+                                HorizontalAlignment = Element.ALIGN_LEFT
+                            };
+                            table.AddCell(cell);
+                        }
+                        if (item.PAPR_DT_ENVIO != null)
+                        {
+                            cell = new PdfPCell(new Paragraph(item.PAPR_DT_ENVIO.Value.ToShortDateString(), meuFont))
+                            {
+                                VerticalAlignment = Element.ALIGN_MIDDLE,
+                                HorizontalAlignment = Element.ALIGN_LEFT
+                            };
+                            table.AddCell(cell);
+                        }
+                        else
+                        {
+                            cell = new PdfPCell(new Paragraph("-", meuFont))
+                            {
+                                VerticalAlignment = Element.ALIGN_MIDDLE,
+                                HorizontalAlignment = Element.ALIGN_LEFT
+                            };
+                            table.AddCell(cell);
+                        }
+                        if (item.PACIENTE_PRESCRICAO_ITEM != null)
+                        {
+                            cell = new PdfPCell(new Paragraph(item.PACIENTE_PRESCRICAO_ITEM.Count().ToString(), meuFont))
+                            {
+                                VerticalAlignment = Element.ALIGN_MIDDLE,
+                                HorizontalAlignment = Element.ALIGN_LEFT
+                            };
+                            table.AddCell(cell);
+                        }
+                        else
+                        {
+                            cell = new PdfPCell(new Paragraph("-", meuFont))
+                            {
+                                VerticalAlignment = Element.ALIGN_MIDDLE,
+                                HorizontalAlignment = Element.ALIGN_LEFT
+                            };
+                            table.AddCell(cell);
+                        }
+                        if (item.PACIENTE_CONSULTA != null)
+                        {
+                            cell = new PdfPCell(new Paragraph(item.PACIENTE_CONSULTA.PACO_DT_CONSULTA.ToShortDateString(), meuFont))
+                            {
+                                VerticalAlignment = Element.ALIGN_MIDDLE,
+                                HorizontalAlignment = Element.ALIGN_LEFT
+                            };
+                            table.AddCell(cell);
+                        }
+                        else
+                        {
+                            cell = new PdfPCell(new Paragraph("-", meuFont))
+                            {
+                                VerticalAlignment = Element.ALIGN_MIDDLE,
+                                HorizontalAlignment = Element.ALIGN_LEFT
+                            };
+                            table.AddCell(cell);
+                        }
+                    }
+                    pdfDoc.Add(table);
+                }
+
+                // Medicamentos
+                if (tipo == 1)
+                {
+                    if (listaRemedio.Count > 0)
+                    {
+                        line1 = new Paragraph(new Chunk(new iTextSharp.text.pdf.draw.LineSeparator(0.0F, 100.0F, BaseColor.BLACK, Element.ALIGN_LEFT, 1)));
+                        pdfDoc.Add(line1);
+                        chunk3 = new Chunk("Medicamentos Prescritos", FontFactory.GetFont("Arial", 13, Font.NORMAL, BaseColor.BLACK));
+                        paragraph = new Paragraph(chunk3);
+                        paragraph.Alignment = Element.ALIGN_LEFT;
+                        pdfDoc.Add(paragraph);
+
+                        line1 = new Paragraph("  ");
+                        pdfDoc.Add(line1);
+
+                        // Grid
+                        table = new PdfPTable(new float[] { 80f, 110f, 120f, 120f, 60f });
+                        table.WidthPercentage = 100;
+                        table.HorizontalAlignment = 0;
+                        table.SpacingBefore = 1f;
+                        table.SpacingAfter = 1f;
+
+                        cell = new PdfPCell(new Paragraph("Data da Prescrição", meuFont))
+                        {
+                            VerticalAlignment = Element.ALIGN_MIDDLE,
+                            HorizontalAlignment = Element.ALIGN_LEFT
+                        };
+                        cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                        table.AddCell(cell);
+                        cell = new PdfPCell(new Paragraph("Identificador", meuFont))
+                        {
+                            VerticalAlignment = Element.ALIGN_MIDDLE,
+                            HorizontalAlignment = Element.ALIGN_LEFT
+                        };
+                        cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                        table.AddCell(cell);
+                        cell = new PdfPCell(new Paragraph("Medicamento", meuFont))
+                        {
+                            VerticalAlignment = Element.ALIGN_MIDDLE,
+                            HorizontalAlignment = Element.ALIGN_LEFT
+                        };
+                        cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                        table.AddCell(cell);
+                        cell = new PdfPCell(new Paragraph("Nome Genérico", meuFont))
+                        {
+                            VerticalAlignment = Element.ALIGN_MIDDLE,
+                            HorizontalAlignment = Element.ALIGN_LEFT
+                        };
+                        cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                        table.AddCell(cell);
+                        cell = new PdfPCell(new Paragraph("Controlado", meuFont))
+                        {
+                            VerticalAlignment = Element.ALIGN_MIDDLE,
+                            HorizontalAlignment = Element.ALIGN_LEFT
+                        };
+                        cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                        table.AddCell(cell);
+
+                        foreach (PACIENTE_PRESCRICAO_ITEM item in listaRemedio)
+                        {
+                            if (item.PACIENTE_PRESCRICAO.PAPR_DT_EMISSAO_COMPLETA != null)
+                            {
+                                cell = new PdfPCell(new Paragraph(item.PACIENTE_PRESCRICAO.PAPR_DT_EMISSAO_COMPLETA.Value.ToShortDateString() + " " + item.PACIENTE_PRESCRICAO.PAPR_DT_EMISSAO_COMPLETA.Value.ToShortTimeString(), meuFont))
+                                {
+                                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                                    HorizontalAlignment = Element.ALIGN_LEFT
+                                };
+                                table.AddCell(cell);
+                            }
+                            else
+                            {
+                                cell = new PdfPCell(new Paragraph("-", meuFont))
+                                {
+                                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                                    HorizontalAlignment = Element.ALIGN_LEFT
+                                };
+                                table.AddCell(cell);
+                            }
+                            cell = new PdfPCell(new Paragraph(item.PACIENTE_PRESCRICAO.PAPR_GU_GUID, meuFont))
+                            {
+                                VerticalAlignment = Element.ALIGN_MIDDLE,
+                                HorizontalAlignment = Element.ALIGN_LEFT
+                            };
+                            table.AddCell(cell);
+                            cell = new PdfPCell(new Paragraph(item.PAPI_NM_REMEDIO, meuFont))
+                            {
+                                VerticalAlignment = Element.ALIGN_MIDDLE,
+                                HorizontalAlignment = Element.ALIGN_LEFT
+                            };
+                            table.AddCell(cell);
+                            cell = new PdfPCell(new Paragraph(item.PAPI_NM_GENERICO, meuFont))
+                            {
+                                VerticalAlignment = Element.ALIGN_MIDDLE,
+                                HorizontalAlignment = Element.ALIGN_LEFT
+                            };
+                            table.AddCell(cell);
+                            if (item.PACIENTE_PRESCRICAO.TICO_CD_ID == 1)
+                            {
+                                cell = new PdfPCell(new Paragraph("Não", meuFont))
+                                {
+                                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                                    HorizontalAlignment = Element.ALIGN_LEFT
+                                };
+                                table.AddCell(cell);
+                            }
+                            else
+                            {
+                                cell = new PdfPCell(new Paragraph("Sim", meuFont))
+                                {
+                                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                                    HorizontalAlignment = Element.ALIGN_LEFT
+                                };
+                                table.AddCell(cell);
+                            }
+                        }
+                        pdfDoc.Add(table);
+                    }
+                }
+
+                // Finaliza
+                pdfWriter.CloseStream = false;
+                pdfDoc.Close();
+                Response.Buffer = true;
+                Response.ContentType = "application/pdf";
+                Response.AddHeader("content-disposition", "attachment;filename=" + nomeRel);
+                Response.Cache.SetCacheability(HttpCacheability.NoCache);
+                Response.Write(pdfDoc);
+                Response.End();
+                return RedirectToAction("VoltarAnexoPaciente", "Paciente");
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Paciente";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Paciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return RedirectToAction("TrataExcecao", "BaseAdmin");
+            }
+        }
+
+        [HttpGet]
+        public ActionResult MontarTelaMarcacaoConsulta()
+        {
+            try
+            {
+                // Verifica se tem usuario logado
+                USUARIO usuario = new USUARIO();
+                if ((String)Session["Ativa"] == null)
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+                if ((USUARIO)Session["UserCredentials"] != null)
+                {
+                    usuario = (USUARIO)Session["UserCredentials"];
+
+                    // Verfifica permissão
+                    if (usuario.PERFIL.PERF_IN_VISAO_GERAL == 0)
+                    {
+                        Session["MensPermissao"] = 2;
+                        Session["ModuloPermissao"] = "Paciente";
+                        return RedirectToAction("MontarTelaPaciente", "Paciente");
+                    }
+                }
+                else
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+                Int32 idAss = (Int32)Session["IdAssinante"];
+                Session["ModuloAtual"] = "Consulta - Marcação";
+
+                // Mensagem
+                if (Session["MensPaciente"] != null)
+                {
+                    if ((Int32)Session["MensPaciente"] == 1)
+                    {
+                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0016", CultureInfo.CurrentCulture));
+                    }
+                }
+
+
+                // Carrega listas
+                CONFIGURACAO conf = CarregaConfiguracaoGeral();
+                if (Session["ListaUsuarioConsulta"] == null)
+                {
+                    listaMasterUsuario = CarregaUsuario().Where(p => p.USUA_IN_ATIVO == 1 & p.USUA_IN_BLOQUEADO == 0).ToList();
+                    Session["ListaUsuarioConsulta"] = listaMasterUsuario;
+                }
+
+                // Monta demais listas
+                listaMasterUsuario = (List<USUARIO>)Session["ListaUsuarioConsulta"];
+                listaMasterUsuario = listaMasterUsuario.OrderBy(p => p.USUA_NM_NOME).ToList();
+                ViewBag.Listas = listaMasterUsuario;
+                ViewBag.Perfil = usuario.PERFIL.PERF_SG_SIGLA;
+
+                // Acerta estado    
+                Session["MensPaciente"] = null;
+                Session["VoltaPaciente"] = 1;
+                Session["NivelPaciente"] = 1;
+                Session["VoltaMsg"] = 0;
+                Session["TipoSolicitacao"] = 6;
+                Session["VoltarConsulta"] = 4;
+                Session["VoltarPesquisa"] = 0;
+                Session["AjudaNivel"] = "../BaseAdmin/Ajuda/5/Ajuda5_5.pdf";
+                Session["ModoConsulta"] = 0;
+                Session["VoltaCalendario"] = 0;
+                Session["VoltaConfCalendario"] = 1;
+                Session["VoltaUsu"] = 4;
+                Session["VoltaConfCalendario"] = 5;
+                Session["ListaConsultaGeral"] = null;
+                Session["ListaLog"] = null;
+
+                // Carrega view
+                objetoUsuario = new USUARIO();
+
+                // Grava Acesso
+                ControleAcessoMetodo grava = new ControleAcessoMetodo(aceApp);
+                Int32 voltaX = grava.GravaAcesso(usuario.USUA_CD_ID, usuario.ASSI_CD_ID, "PACIENTE_CONSULTA_MARCACAO", "Paciente2", "MontarTelaMarcacaoConsulta");
+                return View(objetoUsuario);
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Paciente";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Paciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return RedirectToAction("TrataExcecao", "BaseAdmin");
+            }
+        }
+
+        [HttpGet]
+        public ActionResult EditarUsuario(Int32 id)
+        {
+            try
+            {
+                if ((String)Session["Ativa"] == null)
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+                Session["VoltaUsu"] = 4;
+                return RedirectToAction("EditarUsuario", "Usuario", new { id = id });
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Paciente";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Paciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return RedirectToAction("TrataExcecao", "BaseAdmin");
+            }
+        }
+
+        [HttpPost]
+        public ActionResult FiltrarMarcacaoConsulta(USUARIO item)
+        {
+            try
+            {
+                // Executa a operação
+                if ((String)Session["Ativa"] == null)
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+
+                // Sanitização
+                item.USUA_NM_NOME = CrossCutting.UtilitariosGeral.CleanStringGeral(item.USUA_NM_NOME);
+                item.USUA_NM_APELIDO = CrossCutting.UtilitariosGeral.CleanStringGeral(item.USUA_NM_APELIDO);
+
+                Int32 idAss = (Int32)Session["IdAssinante"];
+                List<USUARIO> listaObj = new List<USUARIO>();
+                Tuple<Int32, List<USUARIO>, Boolean> volta = usuApp.ExecuteFilter(item.PERF_CD_ID, item.CAUS_CD_ID, item.USUA_NM_NOME, item.USUA_NM_APELIDO, item.USUA_NR_CPF, idAss);
+                Session["FiltroUsuario"] = item;
+
+                // Verifica retorno
+                if (volta.Item1 == 1)
+                {
+                    Session["MensPaciente"] = 1;
+                    return RedirectToAction("MontarTelaMarcacaoConsulta");
+                }
+
+                // Sucesso
+                Session["MensPaciente"] = 0;
+                listaMasterUsuario = volta.Item2;
+                Session["ListaUsuarioConsulta"] = listaMasterUsuario;
+                return RedirectToAction("MontarTelaMarcacaoConsulta");
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Usuários";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Usuários", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return RedirectToAction("TrataExcecao", "BaseAdmin");
+            }
+        }
+
+        public ActionResult RetirarFiltroMarcacaoConsulta()
+        {
+            try
+            {
+                if ((String)Session["Ativa"] == null)
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+                Session["ListaUsuarioConsulta"] = null;
+                return RedirectToAction("MontarTelaMarcacaoConsulta");
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Paciente";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Paciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return RedirectToAction("TrataExcecao", "BaseAdmin");
+            }
+        }
+
+        [HttpGet]
+        public ActionResult VerCalendarioMarcacaoConsulta(Int32 id)
+        {
+            if ((String)Session["Ativa"] == null)
+            {
+                return RedirectToAction("Logout", "ControleAcesso");
+            }
+
+            try
+            {
+                var usuario = (USUARIO)Session["UserCredentials"];
+                Int32 idAss = (Int32)Session["IdAssinante"];
+                Session["IdMarcacao"] = id;
+                return RedirectToAction("VerCalendarioConsulta");
+
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Paciente";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Paciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return RedirectToAction("TrataExcecao", "BaseAdmin");
+            }
+        }
+
+        public List<USUARIO> CarregaUsuario()
+        {
+            try
+            {
+                Int32 idAss = (Int32)Session["IdAssinante"];
+                List<USUARIO> conf = new List<USUARIO>();
+                if (Session["Usuarios"] == null)
+                {
+                    conf = usuApp.GetAllItens(idAss);
+                }
+                else
+                {
+                    if ((Int32)Session["UsuarioAlterada"] == 1)
+                    {
+                        conf = usuApp.GetAllItens(idAss);
+                    }
+                    else
+                    {
+                        conf = (List<USUARIO>)Session["Usuarios"];
+                    }
+                }
+                conf = conf.Where(p => p.USUA_IN_SISTEMA == 6 || p.USUA_IN_SISTEMA == 0).ToList();
+                Session["UsuarioAlterada"] = 0;
+                Session["Usuarios"] = conf;
+                return conf;
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Paciente";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Paciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return null;
+            }
+        }
+
+        [HttpGet]
+        public ActionResult MontarTelaConsultaGeral(Int32 id)
+        {
+            try
+            {
+                // Verifica se tem usuario logado
+                USUARIO usuario = new USUARIO();
+                if ((String)Session["Ativa"] == null)
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+                if ((USUARIO)Session["UserCredentials"] != null)
+                {
+                    usuario = (USUARIO)Session["UserCredentials"];
+
+                    // Verfifica permissão
+                    if (usuario.PERFIL.PERF_IN_PACIENTE_CONSULTA_ACESSO == 0)
+                    {
+                        Session["MensPermissao"] = 2;
+                        Session["ModuloPermissao"] = "Paciente";
+                        return RedirectToAction("MontarTelaPaciente", "Paciente");
+                    }
+                }
+                else
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+                Int32 idAss = (Int32)Session["IdAssinante"];
+
+                // Mensagem
+                if (Session["MensPaciente"] != null)
+                {
+                    if ((Int32)Session["MensPaciente"] == 1)
+                    {
+                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0016", CultureInfo.CurrentCulture));
+                    }
+                    if ((Int32)Session["MensPaciente"] == 3)
+                    {
+                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0538", CultureInfo.CurrentCulture));
+                    }
+                    if ((Int32)Session["MensPaciente"] == 4)
+                    {
+                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0537", CultureInfo.CurrentCulture));
+                    }
+                    if ((Int32)Session["MensPaciente"] == 888)
+                    {
+                        ModelState.AddModelError("", (String)Session["MsgCRUD"]);
+                    }
+                }
+
+                // Carrega listas
+                CONFIGURACAO conf = CarregaConfiguracaoGeral();
+                Int32 temHoje = 0;
+                List<PACIENTE_CONSULTA> listaHoje = new List<PACIENTE_CONSULTA>();
+                if (Session["ListaConsultaGeral"] == null)
+                {
+                    if (usuario.PERFIL.PERF_IN_VISAO_GERAL == 1 || usuario.PERFIL.PERF_SG_SIGLA == "ADM")
+                    {
+                        listaMasterConsulta = CarregaConsultas().Where(p => p.PACO_IN_ATIVO == 1).ToList();
+                    }
+                    else
+                    {
+                        listaMasterConsulta = CarregaConsultas().Where(p => p.PACO_IN_ATIVO == 1 & p.USUA_CD_ID == id).ToList();
+                    }
+                    listaHoje = listaMasterConsulta.Where(p => p.PACO_DT_CONSULTA.Date == DateTime.Today.Date).ToList();
+                    listaMasterConsulta = listaHoje;
+                    if (listaHoje.Count > 0)
+                    {
+                        temHoje = 1;
+                    }
+                    listaMasterConsulta = listaMasterConsulta.OrderBy(p => p.PACO_DT_CONSULTA).ThenBy(p => p.PACO_HR_INICIO).ToList();
+                    Session["ListaConsultaGeral"] = listaMasterConsulta;
+                    Session["TemHoje"] = temHoje;
+                }
+
+                // Monta demais listas
+                listaMasterConsulta = listaMasterConsulta.OrderBy(p => p.PACO_DT_CONSULTA).ThenBy(p => p.PACO_HR_INICIO).ToList();
+                ViewBag.Listas = (List<PACIENTE_CONSULTA>)Session["ListaConsultaGeral"];
+                var tipo = new List<SelectListItem>();
+                tipo.Add(new SelectListItem() { Text = "Presencial", Value = "1" });
+                tipo.Add(new SelectListItem() { Text = "Remota", Value = "2" });
+                ViewBag.Tipos = new SelectList(tipo, "Value", "Text");
+                var conc = new List<SelectListItem>();
+                conc.Add(new SelectListItem() { Text = "Confirmada", Value = "1" });
+                conc.Add(new SelectListItem() { Text = "Não Confirmada", Value = "0" });
+                conc.Add(new SelectListItem() { Text = "Cancelada", Value = "2" });
+                ViewBag.Encerrada = new SelectList(conc, "Value", "Text");
+                ViewBag.Perfil = usuario.PERFIL.PERF_SG_SIGLA;
+                ViewBag.TipoConsulta = new SelectList(CarregaTipoConsulta(), "VACO_CD_ID", "VACO_NM_NOME");
+                ViewBag.Usuario = new SelectList(CarregaUsuario(), "USUA_CD_ID", "USUA_NM_NOME");
+
+                // Recupera usuario
+                Session["IdUsuarioConsulta"] = id;
+                USUARIO usu = usuApp.GetItemById(id);
+                ViewBag.Nome = usu.USUA_NM_NOME;
+
+                // Acerta estado    
+                Session["MensPaciente"] = null;
+                Session["VoltaPaciente"] = 1;
+                Session["NivelPaciente"] = 1;
+                Session["VoltaMsg"] = 0;
+                Session["TipoSolicitacao"] = 6;
+                Session["VoltarConsulta"] = 4;
+                Session["VoltarPesquisa"] = 0;
+                Session["AjudaNivel"] = "../BaseAdmin/Ajuda/5/Ajuda5.pdf";
+                Session["ModoConsulta"] = 0;
+                Session["VoltaCalendario"] = 0;
+                Session["VoltaConfCalendario"] = 1;
+
+                // Carrega view
+                objetoConsulta = new PACIENTE_CONSULTA();
+
+                // Grava Acesso
+                ControleAcessoMetodo grava = new ControleAcessoMetodo(aceApp);
+                Int32 voltaX = grava.GravaAcesso(usuario.USUA_CD_ID, usuario.ASSI_CD_ID, "PACIENTE_CONSULTA_GERAL", "Paciente2", "MontarTelaConsultaGeral");
+                return View(objetoConsulta);
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Paciente";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Paciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return RedirectToAction("TrataExcecao", "BaseAdmin");
+            }
+        }
+
+        [HttpPost]
+        public ActionResult FiltrarConsultaGeral(PACIENTE_CONSULTA item)
+        {
+            try
+            {
+                if ((String)Session["Ativa"] == null)
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+
+                // Sanitização
+                item.PACO_TX_RESUMO = CrossCutting.UtilitariosGeral.CleanStringGeral(item.PACO_TX_RESUMO);
+
+                // Executa a operação
+                CONFIGURACAO conf = CarregaConfiguracaoGeral();
+                Int32 idAss = (Int32)Session["IdAssinante"];
+                USUARIO usuario = (USUARIO)Session["UserCredentials"];
+                Int32 id = (Int32)Session["IdUsuarioConsulta"];
+                List<PACIENTE_CONSULTA> listaObj = new List<PACIENTE_CONSULTA>();
+                Tuple<Int32, List<PACIENTE_CONSULTA>, Boolean> volta = baseApp.ExecuteFilterTupleConsulta(item.PACO_IN_TIPO, item.PACO_TX_RESUMO, item.PACO_DT_DUMMY, item.PACO_DT_PROXIMA, item.PACO_IN_CONFIRMADA, item.USUA_CD_ID, idAss);
+
+                // Verifica retorno
+                if (volta.Item1 == 1)
+                {
+                    Session["MensPaciente"] = 1;
+                    return RedirectToAction("MontarTelaConsultaGeral", new { id = id });
+                }
+
+                // Sucesso
+                listaMasterConsulta = volta.Item2.ToList();
+                if (usuario.PERFIL.PERF_IN_VISAO_GERAL == 1 || usuario.PERFIL.PERF_SG_SIGLA == "ADM")
+                {
+                    listaMasterConsulta = listaMasterConsulta.ToList();
+                }
+                else
+                {
+                    listaMasterConsulta = listaMasterConsulta.Where(p => p.USUA_CD_ID == id).ToList();
+                }
+                Session["ListaConsultaGeral"] = listaMasterConsulta;
+                return RedirectToAction("MontarTelaConsultaGeral", new { id = id });
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Paciente";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Paciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return RedirectToAction("TrataExcecao", "BaseAdmin");
+            }
+        }
+
+        public ActionResult RetirarFiltroConsultaGeral()
+        {
+            try
+            {
+                if ((String)Session["Ativa"] == null)
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+                USUARIO usuario = (USUARIO)Session["UserCredentials"];
+                Int32 id = (Int32)Session["IdUsuarioConsulta"];
+
+                listaMasterConsulta = CarregaConsultas().Where(p => p.PACO_IN_ATIVO == 1 & p.USUA_CD_ID == id).OrderBy(p => p.PACO_DT_CONSULTA).ToList();
+                Session["ListaConsultaGeral"] = listaMasterConsulta;
+                return RedirectToAction("MontarTelaConsultaGeral", new { id = id });
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Paciente";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Paciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return RedirectToAction("TrataExcecao", "BaseAdmin");
+            }
+        }
+
+        public ActionResult VerConsultaGeralHoje()
+        {
+            try
+            {
+                if ((String)Session["Ativa"] == null)
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+                USUARIO usuario = (USUARIO)Session["UserCredentials"];
+                Int32 id = (Int32)Session["IdUsuarioConsulta"];
+                List<PACIENTE_CONSULTA> listaHoje = new List<PACIENTE_CONSULTA>();
+                if (usuario.PERFIL.PERF_IN_VISAO_GERAL == 1 || usuario.PERFIL.PERF_SG_SIGLA == "ADM")
+                {
+                    listaMasterConsulta = CarregaConsultas().Where(p => p.PACO_IN_ATIVO == 1).ToList();
+                }
+                else
+                {
+                    listaMasterConsulta = CarregaConsultas().Where(p => p.PACO_IN_ATIVO == 1 & p.USUA_CD_ID == id).ToList();
+                }
+                listaHoje = listaMasterConsulta.Where(p => p.PACO_DT_CONSULTA.Date == DateTime.Today.Date).ToList();
+                listaMasterConsulta = listaHoje;
+                Session["ListaConsultaGeral"] = listaMasterConsulta;
+                return RedirectToAction("MontarTelaConsultaGeral", new { id = id });
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Paciente";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Paciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return RedirectToAction("TrataExcecao", "BaseAdmin");
+            }
+        }
+
+        public ActionResult VerConsultaGeralFuturas()
+        {
+            try
+            {
+                if ((String)Session["Ativa"] == null)
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+                USUARIO usuario = (USUARIO)Session["UserCredentials"];
+                Int32 id = (Int32)Session["IdUsuarioConsulta"];
+                List<PACIENTE_CONSULTA> listaHoje = new List<PACIENTE_CONSULTA>();
+                if (usuario.PERFIL.PERF_IN_VISAO_GERAL == 1 || usuario.PERFIL.PERF_SG_SIGLA == "ADM")
+                {
+                    listaMasterConsulta = CarregaConsultas().Where(p => p.PACO_IN_ATIVO == 1).ToList();
+                }
+                else
+                {
+                    listaMasterConsulta = CarregaConsultas().Where(p => p.PACO_IN_ATIVO == 1 & p.USUA_CD_ID == id).ToList();
+                }
+                listaHoje = listaMasterConsulta.Where(p => p.PACO_DT_CONSULTA.Date > DateTime.Today.Date).ToList();
+                if (listaHoje.Count == 0)
+                {
+                    Session["MensPaciente"] = 4;
+                    listaMasterConsulta = new List<PACIENTE_CONSULTA>();
+                }
+                else
+                {
+                    listaMasterConsulta = listaHoje;
+                }
+                Session["ListaConsultaGeral"] = listaMasterConsulta;
+                return RedirectToAction("MontarTelaConsultaGeral", new { id = id });
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Paciente";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Paciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return RedirectToAction("TrataExcecao", "BaseAdmin");
+            }
+        }
+
+        public ActionResult VerConsultaGeralAnteriores()
+        {
+            try
+            {
+                if ((String)Session["Ativa"] == null)
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+                USUARIO usuario = (USUARIO)Session["UserCredentials"];
+                Int32 id = (Int32)Session["IdUsuarioConsulta"];
+                List<PACIENTE_CONSULTA> listaHoje = new List<PACIENTE_CONSULTA>();
+                if (usuario.PERFIL.PERF_IN_VISAO_GERAL == 1 || usuario.PERFIL.PERF_SG_SIGLA == "ADM")
+                {
+                    listaMasterConsulta = CarregaConsultas().Where(p => p.PACO_IN_ATIVO == 1).ToList();
+                }
+                else
+                {
+                    listaMasterConsulta = CarregaConsultas().Where(p => p.PACO_IN_ATIVO == 1 & p.USUA_CD_ID == id).ToList();
+                }
+                listaHoje = listaMasterConsulta.Where(p => p.PACO_DT_CONSULTA.Date < DateTime.Today.Date).ToList();
+                if (listaHoje.Count == 0)
+                {
+                    Session["MensPaciente"] = 3;
+                    listaMasterConsulta = new List<PACIENTE_CONSULTA>();
+                }
+                else
+                {
+                    listaMasterConsulta = listaHoje;
+                }
+                Session["ListaConsultaGeral"] = listaMasterConsulta;
+                return RedirectToAction("MontarTelaConsultaGeral", new { id = id });
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Paciente";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Paciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return RedirectToAction("TrataExcecao", "BaseAdmin");
+            }
+        }
+
+        public ActionResult VerConsultaGeralMes()
+        {
+            try
+            {
+                if ((String)Session["Ativa"] == null)
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+                USUARIO usuario = (USUARIO)Session["UserCredentials"];
+                Int32 id = (Int32)Session["IdUsuarioConsulta"];
+                List<PACIENTE_CONSULTA> listaHoje = new List<PACIENTE_CONSULTA>();
+                if (usuario.PERFIL.PERF_IN_VISAO_GERAL == 1 || usuario.PERFIL.PERF_SG_SIGLA == "ADM")
+                {
+                    listaMasterConsulta = CarregaConsultas().Where(p => p.PACO_IN_ATIVO == 1).ToList();
+                }
+                else
+                {
+                    listaMasterConsulta = CarregaConsultas().Where(p => p.PACO_IN_ATIVO == 1 & p.USUA_CD_ID == id).ToList();
+                }
+                listaHoje = listaMasterConsulta.Where(p => p.PACO_DT_CONSULTA.Date.Month == DateTime.Today.Date.Month & p.PACO_DT_CONSULTA.Date.Year == DateTime.Today.Date.Year).ToList();
+                if (listaHoje.Count == 0)
+                {
+                    Session["MensPaciente"] = 2;
+                }
+                else
+                {
+                    listaMasterConsulta = listaHoje;
+                }
+                Session["ListaConsultaGeral"] = listaMasterConsulta;
+                Session["ListaConsultas"] = listaMasterConsulta;
+                return RedirectToAction("MontarTelaConsultaGeral", new { id = id });
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Paciente";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Paciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return RedirectToAction("TrataExcecao", "BaseAdmin");
+            }
+        }
+
+        public List<PACIENTE_CONSULTA> CarregaConsultas()
+        {
+            try
+            {
+                Int32 idAss = (Int32)Session["IdAssinante"];
+                List<PACIENTE_CONSULTA> conf = new List<PACIENTE_CONSULTA>();
+                if (Session["Consultas"] == null)
+                {
+                    conf = baseApp.GetAllConsultas(idAss);
+                }
+                else
+                {
+                    if ((Int32)Session["ConsultasAlterada"] == 1)
+                    {
+                        conf = baseApp.GetAllConsultas(idAss);
+                    }
+                    else
+                    {
+                        conf = (List<PACIENTE_CONSULTA>)Session["Consultas"];
+                    }
+                }
+                Session["Consultas"] = conf;
+                Session["ConsultasAlterada"] = 0;
+                return conf;
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Paciente";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Paciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return null;
+            }
+        }
+
+        [HttpGet]
+        public ActionResult VerAnotacaoAnamnese()
+        {
+            if ((String)Session["Ativa"] == null)
+            {
+                return RedirectToAction("Logout", "ControleAcesso");
+            }
+
+            try
+            {
+                USUARIO usuario = (USUARIO)Session["UserCredentials"];
+                Int32 idAss = (Int32)Session["IdAssinante"];
+                Int32 idAnamnese = (Int32)Session["IdAnamnese"];
+                PACIENTE_ANAMNESE anamnese = baseApp.GetAnamneseById(idAnamnese);
+                List<PACIENTE_ANAMNESE_ANOTACAO> lista = anamnese.PACIENTE_ANAMNESE_ANOTACAO.Where(p => p.PAAA_IN_ATIVO == 1).OrderByDescending(p => p.PAAA_DT_ANOTACAO).ToList();
+                ViewBag.Listas = lista;
+                Session["IdUltimaAnamnese"] = idAnamnese;
+                Session["NivelPaciente"] = 4;
+                PACIENTE pac = baseApp.GetItemById(anamnese.PACI_CD_ID);
+                ViewBag.NomePaciente = pac.PACI_NM_NOME;
+
+                // Grava Acesso
+                ControleAcessoMetodo grava = new ControleAcessoMetodo(aceApp);
+                Int32 voltaX = grava.GravaAcesso(usuario.USUA_CD_ID, usuario.ASSI_CD_ID, "PACIENTE_ANAMNESE_ANOTACAO", "Paciente2", "VerAnotacaoAnamnese");
+                return View(anamnese);
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Paciente";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Paciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return RedirectToAction("TrataExcecao", "BaseAdmin");
+            }
+        }
+
+        public ActionResult IncluirAnotacaoAnamnese()
+        {
+            try
+            {
+                // Verifica se tem usuario logado
+                USUARIO usuario = new USUARIO();
+                if ((String)Session["Ativa"] == null)
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+                if ((USUARIO)Session["UserCredentials"] != null)
+                {
+                    usuario = (USUARIO)Session["UserCredentials"];
+
+                    // Verfifica permissão
+                    if (usuario.PERFIL.PERF_IN_ANAMNESE_ALTERAR == 0)
+                    {
+                        Session["MensPermissao"] = 2;
+                        Session["ModuloPermissao"] = "Anamnese - Alteração";
+                        return RedirectToAction("VoltarProcederConsulta", "Paciente");
+                    }
+                }
+                else
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+                Int32 idAss = (Int32)Session["IdAssinante"];
+
+                // Verifica se tem anamnsese
+                PACIENTE pac = baseApp.GetItemById((Int32)Session["IdPaciente"]);
+                List<PACIENTE_ANAMNESE> anas = pac.PACIENTE_ANAMNESE.ToList();
+                if (anas.Count == 0)
+                {
+                    //Cria nova anamnese
+                    CONFIGURACAO_ANAMNESE ana = anaApp.GetItemById(idAss);
+                    PACIENTE_ANAMNESE anamnese = new PACIENTE_ANAMNESE();
+                    anamnese.ASSI_CD_ID = usuario.ASSI_CD_ID;
+                    anamnese.PAAM_DT_DATA = DateTime.Today.Date;
+                    anamnese.PAAM_DT_ORIGINAL = DateTime.Today.Date;
+                    anamnese.PAAM_IN_ATIVO = 1;
+                    anamnese.PACI_CD_ID = (Int32)Session["IdPaciente"];
+                    anamnese.USUA_CD_ID = usuario.USUA_CD_ID;
+                    anamnese.PACO_CD_ID = null;
+                    anamnese.PAAM_IN_PREENCHIDA = 0;
+                    anamnese.PAAM_IN_FLAG_MOTIVO_CONSULTA = 1;
+                    anamnese.PAAM_IN_FLAG_MEDICAMENTO = 1;
+                    anamnese.PAAM_IN_FLAG__HISTORIA_FAMILIAR = 1;
+                    anamnese.PAAM_IN_FLAG_HISTORIA_SOCIAL = ana.COAN_IN_HISTORIA_SOCIAL;
+                    anamnese.PAAM_IN_FLAG_AVALIACAO_CARDIOLOGICA = ana.COAN_IN_CARDIOLOGICA;
+                    anamnese.PAAM_IN_FLAG_RESPIRATORIO = ana.COAN_IN_RESPIRATORIA;
+                    anamnese.PAAM_IN_FLAG_ABDOMEM = ana.COAN_IN_ABDOMEM;
+                    anamnese.PAAM_IN_FLAG_MEMBROS_INFERIORES = ana.COAN_IN_MEMBROS;
+                    anamnese.PAAM_IN_FLAG_QUEIXA_PRINCIPAL = 1;
+                    anamnese.PAAM_IN_FLAG_HISTORIA_DOENCA_ATUAL = 1;
+                    anamnese.PAAM_IN_FLAG_HISTORIA_PROGRESSIVA = ana.COAN_IN_HISTORIA_PATOLOGIA;
+                    anamnese.PAAM_IN_FLAG_DIAGNOSTICO_1 = 1;
+                    anamnese.PAAM_IN_CAMPO_1 = ana.COAN_IN_CAMPO_1;
+                    anamnese.PAAM_NM_CAMPO_1 = ana.COAN_NM_CAMPO_1;
+                    anamnese.PAAM_IN_CAMPO_2 = ana.COAN_IN_CAMPO_2;
+                    anamnese.PAAM_NM_CAMPO_2 = ana.COAN_NM_CAMPO_2;
+                    anamnese.PAAM_IN_CAMPO_3 = ana.COAN_IN_CAMPO_3;
+                    anamnese.PAAM_NM_CAMPO_3 = ana.COAN_NM_CAMPO_3;
+                    anamnese.PAAM_IN_CAMPO_4 = ana.COAN_IN_CAMPO_4;
+                    anamnese.PAAM_NM_CAMPO_4 = ana.COAN_NM_CAMPO_4;
+                    anamnese.PAAM_IN_CAMPO_5 = ana.COAN_IN_CAMPO_5;
+                    anamnese.PAAM_NM_CAMPO_5 = ana.COAN_NM_CAMPO_5;
+                    anamnese.PAAM_IN_ALTERADA = 0;
+                    Int32 voltaA = baseApp.ValidateCreateAnamnese(anamnese);
+                    Session["IdAnamnese"] = anamnese.PAAM_CD_ID;
+                }
+
+                // Verifica exame fisico
+                List<PACIENTE_EXAME_FISICOS> fis = pac.PACIENTE_EXAME_FISICOS.ToList();
+                if (fis.Count == 0)
+                {
+                    // Cria novo exame fisico
+                    PACIENTE_EXAME_FISICOS fisico = new PACIENTE_EXAME_FISICOS();
+                    fisico.ASSI_CD_ID = usuario.ASSI_CD_ID;
+                    fisico.PACI_CD_ID = (Int32)Session["IdPaciente"];
+                    fisico.PAEF_DT_DATA = DateTime.Today.Date;
+                    fisico.PAEF_DT_ORIGINAL = DateTime.Today.Date;
+                    fisico.PAEF_IN_ALCOOLISMO = 0;
+                    fisico.PAEF_IN_ALCOOLISMO_FREQUENCIA = 0;
+                    fisico.PAEF_IN_ANTE_ALERGICO = 0;
+                    fisico.PAEF_IN_ANTE_ONCOLOGICO = 0;
+                    fisico.PAEF_IN_ANTICONCEPCIONAL = 0;
+                    fisico.PAEF_IN_ATIVO = 1;
+                    fisico.PAEF_IN_CIRURGIAS = 0;
+                    fisico.PAEF_IN_DIABETE = 0;
+                    fisico.PAEF_IN_EPILEPSIA = 0;
+                    fisico.PAEF_IN_EXERCICIO_FISICO = 0;
+                    fisico.PAEF_IN_EXERCICIO_FISICO_FREQUENCIA = 0;
+                    fisico.PAEF_IN_GESTANTE = 0;
+                    fisico.PAEF_IN_HIPERTENSAO = 0;
+                    fisico.PAEF_IN_HIPOTENSAO = 0;
+                    fisico.PAEF_IN_MARCAPASSO = 0;
+                    fisico.PAEF_IN_TABAGISMO = 0;
+                    fisico.PAEF_IN_VARIZES = 0;
+                    fisico.USUA_CD_ID = usuario.USUA_CD_ID;
+                    fisico.PACO_CD_ID = null;
+                    fisico.PAEF_IN_PREENCHIDO = 0;
+                    fisico.PAEF_VL_IMC = 0;
+                    Int32 voltaF = baseApp.ValidateCreateExameFisico(fisico);
+                }
+
+                // Processa
+                PACIENTE_ANAMNESE item = baseApp.GetAnamneseById((Int32)Session["IdAnamnese"]);
+                USUARIO usuarioLogado = (USUARIO)Session["UserCredentials"];
+                PACIENTE_ANAMNESE_ANOTACAO coment = new PACIENTE_ANAMNESE_ANOTACAO();
+                PacienteAnamneseAnotacaoViewModel vm = Mapper.Map<PACIENTE_ANAMNESE_ANOTACAO, PacienteAnamneseAnotacaoViewModel>(coment);
+                vm.PAAA_DT_ANOTACAO = DateTime.Now;
+                vm.PAAA_IN_ATIVO = 1;
+                vm.PAAM_CD_ID = item.PAAM_CD_ID;
+                vm.USUARIO = usuarioLogado;
+                vm.USUA_CD_ID = usuarioLogado.USUA_CD_ID;
+                vm.ASSI_CD_ID = idAss;
+
+                PACIENTE cli = baseApp.GetItemById(item.PACIENTE.PACI__CD_ID);
+                ViewBag.NomePaciente = cli.PACI_NM_NOME;
+
+                // Grava Acesso
+                ControleAcessoMetodo grava = new ControleAcessoMetodo(aceApp);
+                Int32 voltaX = grava.GravaAcesso(usuario.USUA_CD_ID, usuario.ASSI_CD_ID, "ANAMNESE_ANOTACAO_INCLUIR", "Paciente2", "IncluirAnotacaoAnamnese");
+                return View(vm);
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Paciente";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Paciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return RedirectToAction("TrataExcecao", "BaseAdmin");
+            }
+        }
+
+        [HttpPost]
+        public ActionResult IncluirAnotacaoAnamnese(PacienteAnamneseAnotacaoViewModel vm)
+        {
+            if ((String)Session["Ativa"] == null)
+            {
+                return RedirectToAction("Logout", "ControleAcesso");
+            }
+            Int32 idAss = (Int32)Session["IdAssinante"];
+            USUARIO usuario = (USUARIO)Session["UserCredentials"];
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    // Sanitização
+                    vm.PAAA_TX_ANOTACAO = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(vm.PAAA_TX_ANOTACAO);
+
+                    // Recupera anamnese
+                    PACIENTE_ANAMNESE not = baseApp.GetAnamneseById((Int32)Session["IdAnamnese"]);
+                    PACIENTE_ANAMNESE_ANOTACAO item = Mapper.Map<PacienteAnamneseAnotacaoViewModel, PACIENTE_ANAMNESE_ANOTACAO>(vm);
+                    USUARIO usuarioLogado = (USUARIO)Session["UserCredentials"];
+                    item.ASSI_CD_ID = usuarioLogado.ASSI_CD_ID;
+                    Int32 volta = baseApp.ValidateCreateAnamneseAnotacao(item);
+
+                    // Monta Log
+                    LOG log = new LOG
+                    {
+                        LOG_DT_DATA = DateTime.Now,
+                        ASSI_CD_ID = usuarioLogado.ASSI_CD_ID,
+                        USUA_CD_ID = usuarioLogado.USUA_CD_ID,
+                        LOG_NM_OPERACAO = "iaaPAAM",
+                        LOG_IN_ATIVO = 1,
+                        LOG_TX_REGISTRO = "Paciente: " + not.PACIENTE.PACI_NM_NOME + " | Data: " + item.PAAA_DT_ANOTACAO.ToString() + " | Anotação: " + item.PAAA_TX_ANOTACAO,
+                        LOG_IN_SISTEMA = 6
+                    };
+                    Int32 volta1 = logApp.ValidateCreate(log);
+
+                    // Sucesso
+                    Session["NivelPaciente"] = 13;
+                    Session["VoltarPesquisa"] = 0;
+                    Int32 s = (Int32)Session["VoltarPesquisa"];
+                    if ((Int32)Session["VoltaAnotacaoAnamnese"] == 3)
+                    {
+                        return RedirectToAction("VoltarAnexoPaciente");
+                    }
+                    return RedirectToAction("VerAnotacaoAnamnese");
+                }
+                catch (Exception ex)
+                {
+                    ViewBag.Message = ex.Message;
+                    Session["TipoVolta"] = 2;
+                    Session["VoltaExcecao"] = "Paciente";
+                    Session["Excecao"] = ex;
+                    Session["ExcecaoTipo"] = ex.GetType().ToString();
+                    GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                    Int32 voltaX = grava.GravarLogExcecao(ex, "Paciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                    return RedirectToAction("TrataExcecao", "BaseAdmin");
+                }
+            }
+            else
+            {
+                return View(vm);
+            }
+        }
+
+        [HttpGet]
+        public ActionResult EditarAnotacaoAnamnese(Int32 id)
+        {
+            try
+            {
+                // Verifica se tem usuario logado
+                USUARIO usuario = new USUARIO();
+                if ((String)Session["Ativa"] == null)
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+                if ((USUARIO)Session["UserCredentials"] != null)
+                {
+                    usuario = (USUARIO)Session["UserCredentials"];
+
+                    // Verfifica permissão
+                    if (usuario.PERFIL.PERF_IN_ANAMNESE_ALTERAR == 0)
+                    {
+                        Session["MensPermissao"] = 2;
+                        Session["ModuloPermissao"] = "Anamnese - Alteração";
+                        return RedirectToAction("VoltarProcederConsulta", "Paciente");
+                    }
+                }
+                else
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+                Int32 idAss = (Int32)Session["IdAssinante"];
+
+                // Prepara view
+                Session["NivelPaciente"] = 1;
+                PACIENTE_ANAMNESE_ANOTACAO item = baseApp.GetAnamneseAnotacaoById(id);
+                PacienteAnamneseAnotacaoViewModel vm = Mapper.Map<PACIENTE_ANAMNESE_ANOTACAO, PacienteAnamneseAnotacaoViewModel>(item);
+
+                PACIENTE cli = baseApp.GetItemById(item.PACIENTE_ANAMNESE.PACIENTE.PACI__CD_ID);
+                ViewBag.NomePaciente = cli.PACI_NM_NOME;
+
+                // Grava Acesso
+                ControleAcessoMetodo grava = new ControleAcessoMetodo(aceApp);
+                Int32 voltaX = grava.GravaAcesso(usuario.USUA_CD_ID, usuario.ASSI_CD_ID, "ANAMNESE_ANOTACAO_EDITAR", "Paciente2", "EditarAnotacaoAnamnese");
+                return View(vm);
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Paciente";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Paciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return RedirectToAction("TrataExcecao", "BaseAdmin");
+            }
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult EditarAnotacaoAnamnese(PacienteAnamneseAnotacaoViewModel vm)
+        {
+            if ((String)Session["Ativa"] == null)
+            {
+                return RedirectToAction("Logout", "ControleAcesso");
+            }
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    // Sanitização
+                    vm.PAAA_TX_ANOTACAO = CrossCutting.UtilitariosGeral.CleanStringDocto(vm.PAAA_TX_ANOTACAO);
+
+                    // Executa a operação
+                    USUARIO usuarioLogado = (USUARIO)Session["UserCredentials"];
+                    PACIENTE_ANAMNESE_ANOTACAO item = Mapper.Map<PacienteAnamneseAnotacaoViewModel, PACIENTE_ANAMNESE_ANOTACAO>(vm);
+                    PACIENTE_ANAMNESE copa = baseApp.GetAnamneseById(item.PAAM_CD_ID);
+                    Int32 volta = baseApp.ValidateEditAnamneseAnotacao(item);
+
+                    // Monta Log
+                    LOG log = new LOG
+                    {
+                        LOG_DT_DATA = DateTime.Now,
+                        ASSI_CD_ID = usuarioLogado.ASSI_CD_ID,
+                        USUA_CD_ID = usuarioLogado.USUA_CD_ID,
+                        LOG_NM_OPERACAO = "eaaPAAM",
+                        LOG_IN_ATIVO = 1,
+                        LOG_TX_REGISTRO = "Paciente: " + copa.PACIENTE.PACI_NM_NOME + " | Data: " + item.PAAA_DT_ANOTACAO.ToString() + " | Anotação: " + item.PAAA_TX_ANOTACAO,
+                        LOG_IN_SISTEMA = 6
+                    };
+                    Int32 volta1 = logApp.ValidateCreate(log);
+
+                    // Verifica retorno
+                    Session["AnamneseAlterada"] = 1;
+                    Session["NivelPaciente"] = 1;
+                    return RedirectToAction("VerAnotacaoAnamnese");
+                }
+                catch (Exception ex)
+                {
+                    ViewBag.Message = ex.Message;
+                    Session["TipoVolta"] = 2;
+                    Session["VoltaExcecao"] = "Paciente";
+                    Session["Excecao"] = ex;
+                    Session["ExcecaoTipo"] = ex.GetType().ToString();
+                    GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                    Int32 voltaX = grava.GravarLogExcecao(ex, "Paciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                    return RedirectToAction("TrataExcecao", "BaseAdmin");
+                }
+            }
+            else
+            {
+                return View(vm);
+            }
+        }
+
+        [HttpGet]
+        public ActionResult ExcluirAnotacaoAnamnese(Int32 id)
+        {
+            try
+            {
+                // Verifica se tem usuario logado
+                USUARIO usuario = new USUARIO();
+                if ((String)Session["Ativa"] == null)
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+                if ((USUARIO)Session["UserCredentials"] != null)
+                {
+                    usuario = (USUARIO)Session["UserCredentials"];
+
+                    // Verfifica permissão
+                    if (usuario.PERFIL.PERF_IN_ANAMNESE_ALTERAR == 0)
+                    {
+                        Session["MensPermissao"] = 2;
+                        Session["ModuloPermissao"] = "Anamnese - Alteração";
+                        return RedirectToAction("VoltarProcederConsulta", "Paciente");
+                    }
+                }
+                else
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+                Int32 idAss = (Int32)Session["IdAssinante"];
+
+                USUARIO usuarioLogado = (USUARIO)Session["UserCredentials"];
+                PACIENTE_ANAMNESE_ANOTACAO item = baseApp.GetAnamneseAnotacaoById(id);
+                PACIENTE_ANAMNESE copa = baseApp.GetAnamneseById(item.PAAM_CD_ID);
+                item.PAAA_IN_ATIVO = 0;
+                Int32 volta = baseApp.ValidateEditAnamneseAnotacao(item);
+                Session["AnamneseAlterada"] = 1;
+                Session["NivelPaciente"] = 1;
+
+                // Monta Log
+                LOG log = new LOG
+                {
+                    LOG_DT_DATA = DateTime.Now,
+                    ASSI_CD_ID = usuarioLogado.ASSI_CD_ID,
+                    USUA_CD_ID = usuarioLogado.USUA_CD_ID,
+                    LOG_NM_OPERACAO = "xaaPAAM",
+                    LOG_IN_ATIVO = 1,
+                    LOG_TX_REGISTRO = "Paciente: " + copa.PACIENTE.PACI_NM_NOME + " | Data: " + item.PAAA_DT_ANOTACAO.ToString() + " | Anotação: " + item.PAAA_TX_ANOTACAO,
+                    LOG_IN_SISTEMA = 6
+                };
+                Int32 volta1 = logApp.ValidateCreate(log);
+
+                return RedirectToAction("VerAnotacaoAnamnese");
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Paciente";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Paciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return RedirectToAction("TrataExcecao", "BaseAdmin");
+            }
+        }
+
+        [HttpGet]
+        public ActionResult VerCalendarioConsultaGeral()
+        {
+            if ((String)Session["Ativa"] == null)
+            {
+                return RedirectToAction("Logout", "ControleAcesso");
+            }
+
+            try
+            {
+                var usuario = (USUARIO)Session["UserCredentials"];
+                Int32 idAss = (Int32)Session["IdAssinante"];
+
+                PACIENTE_CONSULTA item = new PACIENTE_CONSULTA();
+                PacienteConsultaViewModel vm = Mapper.Map<PACIENTE_CONSULTA, PacienteConsultaViewModel>(item);
+                Int32 id = (Int32)Session["IdUsuarioConsulta"];
+                USUARIO usu = usuApp.GetItemById(id);
+                ViewBag.Nome = usu.USUA_NM_NOME;
+
+                Session["Consultas"] = null;
+                Session["ConsultasAlterada"] = 1;
+                listaMasterCalendario = CarregaConsultas().Where(p => p.USUA_CD_ID == id).ToList();
+                Session["ListaAgenda"] = listaMasterCalendario;
+                Session["EnviaLink"] = 0;
+                Session["EditaLink"] = 0;
+                Session["NaoFezNada"] = 0;
+                Session["TipoAgenda"] = 1;
+                Session["VoltaCalendario"] = 1;
+
+                // Grava Acesso
+                ControleAcessoMetodo grava = new ControleAcessoMetodo(aceApp);
+                Int32 voltaX = grava.GravaAcesso(usuario.USUA_CD_ID, usuario.ASSI_CD_ID, "PACIENTE_CONSULTA_GERAL_CALENDARIO", "Paciente2", "VerCalendarioConsultaGeral");
+                return View(vm);
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Paciente";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Paciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return RedirectToAction("TrataExcecao", "BaseAdmin");
+            }
+        }
+
+        [HttpPost]
+        public JsonResult GetEventosCalendario()
+        {
+            try
+            {
+                var usuario = (USUARIO)Session["UserCredentials"];
+                Int32 idAss = (Int32)Session["IdAssinante"];
+                List<Hashtable> listaCalendario = new List<Hashtable>();
+
+                Int32 id = (Int32)Session["IdUsuarioConsulta"];
+                Session["Consultas"] = null;
+                Session["ConsultasAlterada"] = 1;
+                listaMasterCalendario = CarregaConsultas().Where(p => p.USUA_CD_ID == id).ToList();
+                Session["ListaAgenda"] = listaMasterCalendario;
+
+                foreach (var item in listaMasterCalendario)
+                {
+                    var hash = new Hashtable();
+
+                    hash.Add("id", item.PACO_CD_ID);
+                    hash.Add("title", item.PACIENTE.PACI_NM_NOME);
+                    hash.Add("start", (item.PACO_DT_CONSULTA + item.PACO_HR_INICIO).Value.ToString("yyyy-MM-dd HH:mm:ss"));
+                    hash.Add("description", (new DateTime() + item.PACO_HR_INICIO).Value.ToString("HH:mm") + " " + (new DateTime() + item.PACO_HR_FINAL).Value.ToString("HH:mm"));
+                    hash.Add("confirm", item.PACO_IN_CONFIRMADA == 1 ? "Sim" : "Não");
+
+                    listaCalendario.Add(hash);
+                }
+                return Json(listaCalendario);
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Consulta";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Consulta", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return null;
+            }
+        }
+
+        [HttpPost]
+        public JsonResult GetDetalhesEvento(Int32 id)
+        {
+            try
+            {
+                var evento = baseApp.GetConsultaById(id);
+
+                var hash = new Hashtable();
+                hash.Add("data", evento.PACO_DT_CONSULTA.ToShortDateString());
+                hash.Add("hora", evento.PACO_HR_INICIO.ToString());
+                hash.Add("final", evento.PACO_HR_FINAL.ToString());
+                hash.Add("titulo", evento.PACIENTE.PACI_NM_NOME);
+                hash.Add("contato", evento.USUARIO == null ? "-" : evento.USUARIO.USUA_NM_NOME);
+                hash.Add("confirm", evento.PACO_IN_CONFIRMADA == 1 ? "Sim" : "Não");
+                return Json(hash);
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Consulta";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Consulta", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return null;
+            }
+        }
+
+        [HttpPost]
+        public JsonResult EditarConsultaOnChange(Int32 id, DateTime data)
+        {
+            try
+            {
+                // Recupera dados   
+                CONFIGURACAO conf = CarregaConfiguracaoGeral();
+                USUARIO usuario = (USUARIO)Session["UserCredentials"];
+                PACIENTE_CONSULTA obj = baseApp.GetConsultaById(id);
+                PACIENTE pac = baseApp.GetItemById(obj.PACI_CD_ID);
+                Session["PacienteConsulta"] = pac;
+                var hash = new Hashtable();
+
+                // Prepara datas
+                TimeSpan ini = obj.PACO_HR_INICIO.Value;
+                TimeSpan fim = obj.PACO_HR_FINAL.Value;
+                TimeSpan difference = fim - ini;
+                Double totalHours = difference.TotalHours;
+                DateTime dataFim = data.AddHours(totalHours);
+
+                // Verifica superposição
+                List<PACIENTE_CONSULTA> lista = CarregaConsultas().Where(p => p.PACO_DT_CONSULTA.Date == data.Date & p.PACO_IN_ATIVO == 1 & p.PACO_CD_ID != obj.PACO_CD_ID).ToList();
+                List<PACIENTE_CONSULTA> lista1 = lista.Where(p => p.PACO_HR_INICIO <= ini & p.PACO_HR_FINAL >= fim).ToList();
+                List<PACIENTE_CONSULTA> lista2 = lista.Where(p => p.PACO_HR_INICIO <= ini & p.PACO_HR_FINAL <= fim & p.PACO_HR_FINAL >= ini).ToList();
+                List<PACIENTE_CONSULTA> lista3 = lista.Where(p => p.PACO_HR_INICIO >= ini & p.PACO_HR_FINAL >= fim & p.PACO_HR_INICIO <= fim).ToList();
+                List<PACIENTE_CONSULTA> lista4 = lista.Where(p => p.PACO_HR_INICIO >= ini & p.PACO_HR_FINAL <= fim).ToList();
+                if (lista1.Count > 0 || lista2.Count > 0 || lista3.Count > 0 || lista4.Count > 0)
+                {
+                    hash.Add("volta", 1);
+                    hash.Add("desc", "Impossível remarcar consulta na data pretendida. Superposição de horários");
+                    return Json(hash);
+                }
+
+                // Monta novo registro
+                PACIENTE_CONSULTA item = new PACIENTE_CONSULTA();
+                item.PACO_CD_ID = id;
+                item.USUA_CD_ID = obj.USUA_CD_ID;
+                item.ASSI_CD_ID = obj.ASSI_CD_ID;
+                item.PACO_IN_TIPO = obj.PACO_IN_TIPO;
+                item.PACO_HR_INICIO = data.TimeOfDay;
+                item.PACO_HR_FINAL = dataFim.TimeOfDay;
+                item.PACO_DT_CONSULTA = data.Date;
+                item.PACO_IN_ATIVO = 1;
+                item.PACI_CD_ID = obj.PACI_CD_ID;
+                Int32 volta = baseApp.ValidateEditConsulta(item);
+
+                // Envia mensagem
+                if (pac.PACI_NM_EMAIL != null & conf.CONF_IN_MENSAGEM_CONSULTA == 1)
+                {
+                    PACIENTE_CONSULTA consMensagem = baseApp.GetConsultaById(id);
+                    Int32 voltaCons = EnviarEMailConsulta(consMensagem, 2);
+                }
+
+                // Monta Log
+                LOG log = new LOG
+                {
+                    LOG_DT_DATA = DateTime.Now,
+                    ASSI_CD_ID = usuario.ASSI_CD_ID,
+                    USUA_CD_ID = usuario.USUA_CD_ID,
+                    LOG_NM_OPERACAO = "ecoPACI",
+                    LOG_IN_ATIVO = 1,
+                    LOG_TX_REGISTRO = Serialization.SerializeJSON<PACIENTE_CONSULTA>(item),
+                    LOG_IN_SISTEMA = 6
+                };
+                Int32 volta1 = logApp.ValidateCreate(log);
+
+                if (volta == 0)
+                {
+                    hash.Add("volta", 1);
+                    hash.Add("desc", "Consulta remarcada com sucesso");
+                    ((List<PACIENTE_CONSULTA>)Session["ListaAgenda"]).Where(x => x.PACO_CD_ID == id).First().PACO_DT_CONSULTA = data;
+                }
+                return Json(hash);
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Consulta";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Consulta", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return Json(0);
+            }
+        }
+
+        public Int32 EnviarEMailConsulta(PACIENTE_CONSULTA consulta, Int32 tipo)
+        {
+            // Recupera informações
+            Int32 idAss = (Int32)Session["IdAssinante"];
+            USUARIO usuario = (USUARIO)Session["UserCredentials"];
+            PACIENTE paciente = (PACIENTE)Session["PacienteConsulta"];
+
+            // Processo
+            try
+            {
+                // Recupera Template
+                TEMPLATE_EMAIL template = null;
+                if (tipo == 1)
+                {
+                    template = temApp.GetByCode("CRIACONS", idAss);
+                }
+                else
+                {
+                    template = temApp.GetByCode("ALTCONS", idAss);
+                }
+
+                // Prepara cabeçalho
+                String cab = template.TEEM_TX_CABECALHO;
+                if (cab.Contains("{nome}"))
+                {
+                    cab = cab.Replace("{nome}", paciente.PACI_NM_NOME);
+                }
+
+                // Prepara assinatura
+                String classe = String.Empty;
+                if (usuario.TIPO_CARTEIRA_CLASSE != null)
+                {
+                    classe = usuario.TIPO_CARTEIRA_CLASSE.TICL_NM_NOME + ": " + usuario.USUA_NR_CLASSE;
+                }
+                String assinatura = "<b>" + usuario.USUA_NM_NOME + "</b><br />";
+                if (usuario.ESPECIALIDADE != null)
+                {
+                    assinatura += usuario.ESPECIALIDADE.ESPE_NM_NOME + "<br />";
+                }
+                else
+                {
+                    assinatura += usuario.USUA_NM_ESPECIALIDADE + "<br />";
+                }
+                assinatura += classe + "  CPF: " + usuario.USUA_NR_CPF + "<br />";
+
+                // Prepara corpo da mensagem
+                String texto = template.TEEM_TX_CORPO;
+                if (texto.Contains("{medico}"))
+                {
+                    texto = texto.Replace("{medico}", usuario.USUA_NM_NOME);
+                }
+                if (texto.Contains("{data}"))
+                {
+                    texto = texto.Replace("{data}", consulta.PACO_DT_CONSULTA.ToLongDateString());
+                }
+                if (texto.Contains("{inicio}"))
+                {
+                    texto = texto.Replace("{inicio}", consulta.PACO_HR_INICIO.ToString());
+                }
+                if (texto.Contains("{final}"))
+                {
+                    texto = texto.Replace("{final}", consulta.PACO_HR_FINAL.ToString());
+                }
+                String emailBody = cab + "<br />" + texto + "<br /><br />" + assinatura;
+
+                // Monta recursividade
+                RECURSIVIDADE rec = new RECURSIVIDADE();
+                rec.ASSI_CD_ID = idAss;
+                rec.MENS_CD_ID = null;
+                rec.EMPR_CD_ID = usuario.EMPR_CD_ID;
+                rec.RECU_IN_TIPO_MENSAGEM = 1;
+                rec.RECU_DT_CRIACAO = DateTime.Today.Date;
+                rec.RECU_IN_TIPO_SMS = 0;
+                rec.RECU_NM_NOME = "Envio de Mensagem para Paciente - " + paciente.PACI_NM_NOME + " - " + DateTime.Now.ToString();
+                rec.RECU_LK_LINK = null;
+                rec.RECU_IN_SISTEMA = 6;
+                rec.EMFI_CD_ID = usuario.EMFI_CD_ID;
+                rec.RECU_IN_TIPO_ENVIO = 5;
+                rec.RECU_TX_TEXTO = emailBody;
+                rec.RECU_IN_ATIVO = 1;
+
+                // Monta destinos
+                RECURSIVIDADE_DESTINO dest1 = new RECURSIVIDADE_DESTINO();
+                dest1.FORN_CD_ID = null;
+                dest1.CLIE_CD_ID = null;
+                dest1.REDE_EM_EMAIL = paciente.PACI_NM_EMAIL;
+                dest1.REDE_NM_NOME = paciente.PACI_NM_NOME;
+                dest1.REDE_TX_CORPO = emailBody;
+                dest1.REDE_IN_ATIVO = 1;
+                dest1.PACI_CD_ID = paciente.PACI__CD_ID;
+                dest1.ASSI_CD_ID = idAss;
+                dest1.USUA_CD_ID = usuario.USUA_CD_ID;
+                rec.RECURSIVIDADE_DESTINO.Add(dest1);
+
+                // Monta Datas
+                RECURSIVIDADE_DATA data1 = new RECURSIVIDADE_DATA();
+                data1.REDA_DT_PROGRAMADA = DateTime.Now.AddMinutes(10);
+                data1.REDA_IN_PROCESSADA = 0;
+                data1.REDA_IN_ATIVO = 1;
+                data1.ASSI_CD_ID = idAss;
+                data1.REDA_IN_SISTEMA = 6;
+                rec.RECURSIVIDADE_DATA.Add(data1);
+
+                // Grava recursividade
+                Int32 voltaRec = recuApp.ValidateCreate(rec, usuario);
+
+                // Grava mensagem enviada
+                MensagemViewModel mens = new MensagemViewModel();
+                mens.NOME = paciente.PACI_NM_NOME;
+                mens.ID = paciente.PACI__CD_ID;
+                mens.MODELO = paciente.PACI_NM_EMAIL;
+                mens.MENS_DT_CRIACAO = DateTime.Today.Date;
+                mens.MENS_IN_TIPO = 1;
+                mens.MENS_NM_CAMPANHA = paciente.PACI_NM_EMAIL;
+                mens.MENS_NM_NOME = "Mensagem para Paciente - Consulta: " + paciente.PACI_NM_NOME;
+                mens.PACI_CD_ID = paciente.PACI__CD_ID;
+                mens.MENS_TX_TEXTO = emailBody;
+
+                EnvioEMailGeralBase envio = new EnvioEMailGeralBase(usuApp, confApp, meApp);
+                String guid = Xid.NewXid().ToString();
+                Int32 volta1 = envio.GravarMensagemEnviada(mens, usuario, mens.MENS_TX_TEXTO, "Succeeded", guid, null, "Confirmação de Consulta de Paciente - " + paciente.PACI_NM_NOME);
+
+                // Monta Log
+                LOG log = new LOG
+                {
+                    LOG_DT_DATA = DateTime.Now,
+                    ASSI_CD_ID = usuario.ASSI_CD_ID,
+                    USUA_CD_ID = usuario.USUA_CD_ID,
+                    LOG_NM_OPERACAO = "emaCONS",
+                    LOG_IN_ATIVO = 1,
+                    LOG_TX_REGISTRO = paciente.PACI_NM_NOME + " | Data:" + DateTime.Today.Date.ToShortDateString(),
+                    LOG_IN_SISTEMA = 6
+                };
+                Int32 volta3 = logApp.ValidateCreate(log);
+
+                // Sucesso
+                Session["NivelPaciente"] = 1;
+                return 1;
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Paciente";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Paciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return 1;
+            }
+        }
+
+        public ActionResult EnviarEMailConfirmacao(Int32 id)
+        {
+            // Recupera informações
+            Int32 idAss = (Int32)Session["IdAssinante"];
+            USUARIO usuario = (USUARIO)Session["UserCredentials"];
+            PACIENTE_CONSULTA consulta = baseApp.GetConsultaById(id);
+            PACIENTE paciente = baseApp.GetItemById(consulta.PACI_CD_ID);
+
+            CONFIGURACAO conf = CarregaConfiguracaoGeral();
+
+            // Verifica se pode confirmar
+            List<PACIENTE_CONSULTA> cons = paciente.PACIENTE_CONSULTA.Where(p => p.PACO_IN_ATIVO == 1 & p.PACO_IN_CONFIRMADA == 1 & p.PACO_IN_ENCERRADA == 0 & p.PACO_DT_CONSULTA.Date < DateTime.Today.Date).ToList();
+            if (cons.Count > 0)
+            {
+                String frase = CRMSys_Base.ResourceManager.GetString("M0593", CultureInfo.CurrentCulture);
+                String frase1 = CRMSys_Base.ResourceManager.GetString("M0594", CultureInfo.CurrentCulture);
+                frase += " de " + paciente.PACI_NM_NOME + " em " + consulta.PACO_DT_CONSULTA.ToShortDateString() + ". " + frase1;
+                Session["MensPaciente"] = 111;
+                Session["MsgCRUD"] = frase;
+                return RedirectToAction("MontarTelaConsultas", "Paciente");
+            }
+
+            // Processo
+            try
+            {
+                // Recupera Template
+                TEMPLATE_EMAIL template = temApp.GetByCode("CONFCONS1", idAss);
+
+                // Prepara cabeçalho
+                String cab = template.TEEM_TX_CABECALHO;
+                if (cab.Contains("{nome}"))
+                {
+                    cab = cab.Replace("{nome}", paciente.PACI_NM_NOME);
+                }
+
+                // Prepara assinatura
+                String classe = String.Empty;
+                if (usuario.TIPO_CARTEIRA_CLASSE != null)
+                {
+                    classe = usuario.TIPO_CARTEIRA_CLASSE.TICL_NM_NOME + ": " + usuario.USUA_NR_CLASSE;
+                }
+                String assinatura = "<b>" + usuario.USUA_NM_NOME + "</b><br />";
+                if (usuario.ESPECIALIDADE != null)
+                {
+                    assinatura += usuario.ESPECIALIDADE.ESPE_NM_NOME + "<br />";
+                }
+                else
+                {
+                    assinatura += usuario.USUA_NM_ESPECIALIDADE + "<br />";
+                }
+                assinatura += classe + "  CPF: " + usuario.USUA_NR_CPF + "<br />";
+
+                // Monta link
+                String linkBase = "https://webdoctorformbase.azurewebsites.net/api/ExibirFormulario";
+                String sufixo = "?CPF=" + paciente.PACI_NR_CPF;
+                sufixo += "&Nome=" + paciente.PACI_NM_NOME;
+                sufixo += "&EMail=" + paciente.PACI_NM_EMAIL;
+                sufixo += "&Celular=" + paciente.PACI_NR_CELULAR;
+                sufixo += "&Zap=" + conf.CONF_IN_ENVIA_EXAME_ZAP.ToString();
+                sufixo += "&ZapNumero=" + conf.CONF_NR_WHAPSAPP;
+                String linkFinal = linkBase + sufixo;
+
+                // Prepara corpo da mensagem
+                String texto = template.TEEM_TX_CORPO;
+                if (texto.Contains("{medico}"))
+                {
+                    texto = texto.Replace("{medico}", usuario.USUA_NM_NOME);
+                }
+                if (texto.Contains("{data}"))
+                {
+                    texto = texto.Replace("{data}", consulta.PACO_DT_CONSULTA.ToLongDateString());
+                }
+                if (texto.Contains("{inicio}"))
+                {
+                    texto = texto.Replace("{inicio}", consulta.PACO_HR_INICIO.ToString());
+                }
+                if (texto.Contains("{final}"))
+                {
+                    texto = texto.Replace("{final}", consulta.PACO_HR_FINAL.ToString());
+                }
+                if (texto.Contains("{idConsulta}"))
+                {
+                    texto = texto.Replace("{idConsulta}", consulta.PACO_CD_ID.ToString());
+                }
+                if (texto.Contains("{idPaciente}"))
+                {
+                    texto = texto.Replace("{idPaciente}", paciente.PACI__CD_ID.ToString());
+                }
+                if (texto.Contains("{idUsuario}"))
+                {
+                    texto = texto.Replace("{idUsuario}", usuario.USUA_CD_ID.ToString());
+                }
+                if (texto.Contains("{link}"))
+                {
+                    texto = texto.Replace("{link}", linkFinal);
+                }
+                String emailBody = cab + "<br />" + texto + "<br /><br />" + assinatura;
+
+                // Monta recursividade
+                RECURSIVIDADE rec = new RECURSIVIDADE();
+                rec.ASSI_CD_ID = idAss;
+                rec.MENS_CD_ID = null;
+                rec.EMPR_CD_ID = usuario.EMPR_CD_ID;
+                rec.RECU_IN_TIPO_MENSAGEM = 1;
+                rec.RECU_DT_CRIACAO = DateTime.Today.Date;
+                rec.RECU_IN_TIPO_SMS = 0;
+                rec.RECU_NM_NOME = "Envio de Mensagem para Paciente - " + paciente.PACI_NM_NOME + " - " + DateTime.Now.ToString();
+                rec.RECU_LK_LINK = null;
+                rec.RECU_IN_SISTEMA = 6;
+                rec.EMFI_CD_ID = usuario.EMFI_CD_ID;
+                rec.RECU_IN_TIPO_ENVIO = 5;
+                rec.RECU_TX_TEXTO = emailBody;
+                rec.RECU_IN_ATIVO = 1;
+
+                // Monta destinos
+                RECURSIVIDADE_DESTINO dest1 = new RECURSIVIDADE_DESTINO();
+                dest1.FORN_CD_ID = null;
+                dest1.CLIE_CD_ID = null;
+                dest1.REDE_EM_EMAIL = paciente.PACI_NM_EMAIL;
+                dest1.REDE_NM_NOME = paciente.PACI_NM_NOME;
+                dest1.REDE_TX_CORPO = emailBody;
+                dest1.REDE_IN_ATIVO = 1;
+                dest1.PACI_CD_ID = paciente.PACI__CD_ID;
+                dest1.ASSI_CD_ID = idAss;
+                dest1.USUA_CD_ID = usuario.USUA_CD_ID;
+                rec.RECURSIVIDADE_DESTINO.Add(dest1);
+
+                // Monta Datas
+                RECURSIVIDADE_DATA data1 = new RECURSIVIDADE_DATA();
+                data1.REDA_DT_PROGRAMADA = DateTime.Now.AddMinutes(10);
+                data1.REDA_IN_PROCESSADA = 0;
+                data1.REDA_IN_ATIVO = 1;
+                data1.ASSI_CD_ID = idAss;
+                data1.REDA_IN_SISTEMA = 6;
+                rec.RECURSIVIDADE_DATA.Add(data1);
+
+                // Grava recursividade
+                Int32 voltaRec = recuApp.ValidateCreate(rec, usuario);
+
+                // Grava mensagem enviada
+                MensagemViewModel mens = new MensagemViewModel();
+                mens.NOME = paciente.PACI_NM_NOME;
+                mens.ID = paciente.PACI__CD_ID;
+                mens.MODELO = paciente.PACI_NM_EMAIL;
+                mens.MENS_DT_CRIACAO = DateTime.Today.Date;
+                mens.MENS_IN_TIPO = 1;
+                mens.MENS_NM_CAMPANHA = paciente.PACI_NM_EMAIL;
+                mens.MENS_NM_NOME = "Mensagem para Paciente - Envio de Confirmação de Consulta: " + paciente.PACI_NM_NOME;
+                mens.PACI_CD_ID = paciente.PACI__CD_ID;
+                mens.MENS_TX_TEXTO = emailBody;
+
+                EnvioEMailGeralBase envio = new EnvioEMailGeralBase(usuApp, confApp, meApp);
+                String guid = Xid.NewXid().ToString();
+                Int32 volta1 = envio.GravarMensagemEnviada(mens, usuario, mens.MENS_TX_TEXTO, "Succeeded", guid, null, "Envio de mensagem de confirmação de Consulta de Paciente - " + paciente.PACI_NM_NOME);
+
+                // Monta Log
+                LOG log = new LOG
+                {
+                    LOG_DT_DATA = DateTime.Now,
+                    ASSI_CD_ID = usuario.ASSI_CD_ID,
+                    USUA_CD_ID = usuario.USUA_CD_ID,
+                    LOG_NM_OPERACAO = "emaCONS",
+                    LOG_IN_ATIVO = 1,
+                    LOG_TX_REGISTRO = paciente.PACI_NM_NOME + " | Data:" + DateTime.Today.Date.ToShortDateString(),
+                    LOG_IN_SISTEMA = 6
+                };
+                Int32 volta3 = logApp.ValidateCreate(log);
+
+                // Mensagem do CRUD
+                Session["MsgCRUD"] = "Enviado ao paciente " + paciente.PACI_NM_NOME.ToUpper() + " uma solicitação de confirmação de consulta para a data: " + consulta.PACO_DT_CONSULTA.ToLongDateString();
+                Session["MensPaciente"] = 888;
+
+                // Sucesso
+                Session["NivelPaciente"] = 3;
+                if ((Int32)Session["TipoSolicitacao"] == 1)
+                {
+                    if ((Int32)Session["VoltaAtestado"] == 1)
+                    {
+                        return RedirectToAction("MontarTelaPaciente");
+                    }
+                    return RedirectToAction("VoltarAnexoPaciente");
+                }
+                if ((Int32)Session["VoltarEnvio"] == 2)
+                {
+                    return RedirectToAction("ConfirmarCancelarConsulta", "Paciente");
+                }
+                return RedirectToAction("MontarTelaConsultas", "Paciente");
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Paciente";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Paciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return RedirectToAction("TrataExcecao", "BaseAdmin");
+            }
+        }
+
+        public ActionResult GerarRelatorioConsultaGeral()
+        {
+            try
+            {
+                if ((String)Session["Ativa"] == null)
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+
+                // Prepara geração
+                CONFIGURACAO conf = CarregaConfiguracaoGeral();
+                Int32 idAss = (Int32)Session["IdAssinante"];
+                String data = DateTime.Today.Date.ToShortDateString();
+                data = data.Substring(0, 2) + data.Substring(3, 2) + data.Substring(6, 4);
+
+                String nomeRel = "ConsultaLista" + "_" + data + ".pdf";
+                List<PACIENTE_CONSULTA> lista = (List<PACIENTE_CONSULTA>)Session["ListaConsultaGeral"];
+
+                Int32 id = (Int32)Session["IdUsuarioConsulta"];
+                USUARIO usu = usuApp.GetItemById(id);
+                String nome = usu.USUA_NM_NOME;
+
+                Font meuFont = FontFactory.GetFont("Arial", 8, iTextSharp.text.Font.NORMAL, BaseColor.BLACK);
+                Font meuFont1 = FontFactory.GetFont("Arial", 9, iTextSharp.text.Font.NORMAL, BaseColor.BLACK);
+                Font meuFont2 = FontFactory.GetFont("Arial", 14, iTextSharp.text.Font.NORMAL, BaseColor.BLACK);
+
+                // Cabeçalho
+                PdfPTable headerTable = new PdfPTable(new float[] { 20f, 700f });
+                headerTable.WidthPercentage = 100;
+                headerTable.HorizontalAlignment = 1;
+                headerTable.SpacingBefore = 1f;
+                headerTable.SpacingAfter = 1f;
+
+                PdfPCell cell = new PdfPCell();
+                cell.Border = 0;
+                cell.Colspan = 1;
+                Image image = null;
+                if (conf.CONF_IN_LOGO_EMPRESA == 1)
+                {
+                    EMPRESA empresa = empApp.GetItemByAssinante(idAss);
+                    image = Image.GetInstance(Server.MapPath(empresa.EMPR_AQ_LOGO));
+                }
+                else
+                {
+                    image = Image.GetInstance(Server.MapPath("~/Images/Prontuario_Icone_1.png"));
+                }
+                image.ScaleAbsolute(50, 50);
+                cell.AddElement(image);
+                cell.Border = PdfPCell.BOTTOM_BORDER;
+                headerTable.AddCell(cell);
+
+                cell = new PdfPCell(new Paragraph("Consultas - " + nome, meuFont2))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_CENTER
+                };
+                cell.Border = 0;
+                cell.Colspan = 1;
+                cell.Border = PdfPCell.BOTTOM_BORDER;
+                headerTable.AddCell(cell);
+
+                // Rodape
+                PdfPTable footerTable = new PdfPTable(1);
+                footerTable.WidthPercentage = 100;
+                footerTable.HorizontalAlignment = 1;
+                footerTable.SpacingBefore = 1f;
+                footerTable.SpacingAfter = 1f;
+
+                cell = new PdfPCell();
+                cell.Border = PdfPCell.TOP_BORDER;
+                cell = new PdfPCell(new Paragraph("Gerado por WebDoctor 1.0 em " + DateTime.Today.Date.ToLongDateString(), meuFont));
+                footerTable.AddCell(cell);
+
+                // Cria documento
+                Document pdfDoc = new Document(PageSize.A4.Rotate(), 10, 10, 60, 40);
+                iTextSharp.text.pdf.PdfWriter pdfWriter = iTextSharp.text.pdf.PdfWriter.GetInstance(pdfDoc, Response.OutputStream);
+                pdfWriter.PageEvent = new CustomPageEventHelper(headerTable, footerTable);
+                pdfDoc.Open();
+
+                Paragraph line1 = new Paragraph("  ");
+                pdfDoc.Add(line1);
+
+                // Grid
+                PdfPTable table = new PdfPTable(new float[] { 60f, 60f, 60f, 120f, 60f, 60f });
+                table.WidthPercentage = 100;
+                table.HorizontalAlignment = 0;
+                table.SpacingBefore = 1f;
+                table.SpacingAfter = 1f;
+
+                cell = new PdfPCell(new Paragraph("Data", meuFont))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph("Hora de Início", meuFont))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph("Hora de Término", meuFont))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph("Nome do Paciente", meuFont))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph("Tipo de Consulta", meuFont))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph("Realizada", meuFont))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                table.AddCell(cell);
+
+                foreach (PACIENTE_CONSULTA item in lista)
+                {
+                    if (item.PACO_DT_CONSULTA != null)
+                    {
+                        cell = new PdfPCell(new Paragraph(item.PACO_DT_CONSULTA.ToShortDateString(), meuFont))
+                        {
+                            VerticalAlignment = Element.ALIGN_MIDDLE,
+                            HorizontalAlignment = Element.ALIGN_LEFT
+                        };
+                        table.AddCell(cell);
+                    }
+                    else
+                    {
+                        cell = new PdfPCell(new Paragraph("-", meuFont))
+                        {
+                            VerticalAlignment = Element.ALIGN_MIDDLE,
+                            HorizontalAlignment = Element.ALIGN_LEFT
+                        };
+                        table.AddCell(cell);
+                    }
+                    cell = new PdfPCell(new Paragraph(item.PACO_HR_INICIO.ToString(), meuFont))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    table.AddCell(cell);
+                    cell = new PdfPCell(new Paragraph(item.PACO_HR_FINAL.ToString(), meuFont))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    table.AddCell(cell);
+                    cell = new PdfPCell(new Paragraph(item.PACIENTE.PACI_NM_NOME, meuFont))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    table.AddCell(cell);
+                    if (item.PACO_IN_TIPO == 1)
+                    {
+                        cell = new PdfPCell(new Paragraph("Presencial", meuFont))
+                        {
+                            VerticalAlignment = Element.ALIGN_MIDDLE,
+                            HorizontalAlignment = Element.ALIGN_LEFT
+                        };
+                        table.AddCell(cell);
+                    }
+                    else
+                    {
+                        cell = new PdfPCell(new Paragraph("Remota", meuFont))
+                        {
+                            VerticalAlignment = Element.ALIGN_MIDDLE,
+                            HorizontalAlignment = Element.ALIGN_LEFT
+                        };
+                        table.AddCell(cell);
+                    }
+                    if (item.PACO_IN_ENCERRADA == 1)
+                    {
+                        cell = new PdfPCell(new Paragraph("SIm", meuFont))
+                        {
+                            VerticalAlignment = Element.ALIGN_MIDDLE,
+                            HorizontalAlignment = Element.ALIGN_LEFT
+                        };
+                        table.AddCell(cell);
+                    }
+                    else
+                    {
+                        cell = new PdfPCell(new Paragraph("Não", meuFont))
+                        {
+                            VerticalAlignment = Element.ALIGN_MIDDLE,
+                            HorizontalAlignment = Element.ALIGN_LEFT
+                        };
+                        table.AddCell(cell);
+                    }
+                }
+                pdfDoc.Add(table);
+
+                // Finaliza
+                pdfWriter.CloseStream = false;
+                pdfDoc.Close();
+                Response.Buffer = true;
+                Response.ContentType = "application/pdf";
+                Response.AddHeader("content-disposition", "attachment;filename=" + nomeRel);
+                Response.Cache.SetCacheability(HttpCacheability.NoCache);
+                Response.Write(pdfDoc);
+                Response.End();
+
+                Session["NivelPaciente"] = 9;
+                return RedirectToAction("MontarTelaConsultaGeral", new { id = id });
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Paciente";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Paciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return RedirectToAction("TrataExcecao", "BaseAdmin");
+            }
+        }
+
+        [HttpGet]
+        public ActionResult IncluirConsultaGeral()
+        {
+            try
+            {
+                // Verifica se tem usuario logado
+                USUARIO usuario = new USUARIO();
+                if ((String)Session["Ativa"] == null)
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+                if ((USUARIO)Session["UserCredentials"] != null)
+                {
+                    usuario = (USUARIO)Session["UserCredentials"];
+
+                    // Verfifica permissão
+                    if (usuario.PERFIL.PERF_IN_PACIENTE_CONSULTA_INCLUIR == 0)
+                    {
+                        Session["MensPermissao"] = 2;
+                        Session["ModuloPermissao"] = "Paciente - Consulta - Inclusão";
+                        return RedirectToAction("VoltarAnexoPaciente");
+                    }
+                }
+                else
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+                Int32 idAss = (Int32)Session["IdAssinante"];
+                Int32 id = (Int32)Session["IdUsuarioConsulta"];
+
+                // Prepara listas
+                ViewBag.TipoConsulta = new SelectList(CarregaTipoConsulta(), "VACO_CD_ID", "VACO_NM_NOME");
+                var tipo = new List<SelectListItem>();
+                tipo.Add(new SelectListItem() { Text = "Presencial", Value = "1" });
+                tipo.Add(new SelectListItem() { Text = "Remota", Value = "2" });
+                ViewBag.Tipo = new SelectList(tipo, "Value", "Text");
+                var novo = new List<SelectListItem>();
+                novo.Add(new SelectListItem() { Text = "Novo Paciente", Value = "1" });
+                novo.Add(new SelectListItem() { Text = "Paciente Cadastrado", Value = "2" });
+                ViewBag.Novo = new SelectList(novo, "Value", "Text");
+                List<PACIENTE> listaPac = CarregaPaciente();
+                if (usuario.PERFIL.PERF_IN_VISAO_GERAL == 1 || usuario.PERFIL.PERF_SG_SIGLA == "ADM")
+                {
+                    listaPac = listaPac.ToList();
+                }
+                else
+                {
+                    listaPac = listaPac.Where(p => p.USUA_CD_ID == usuario.USUA_CD_ID).ToList();
+                }
+                ViewBag.Paciente = new SelectList(listaPac.Where(p => p.PACI_IN_COMPLETADO == 1).ToList(), "PACI__CD_ID", "PACI_NM_NOME");
+
+                // Mensagem
+                if (Session["MensPaciente"] != null)
+                {
+                    if ((Int32)Session["MensPaciente"] == 500)
+                    {
+                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0524", CultureInfo.CurrentCulture));
+                    }
+                    if ((Int32)Session["MensPaciente"] == 501)
+                    {
+                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0526", CultureInfo.CurrentCulture));
+                    }
+                    if ((Int32)Session["MensPaciente"] == 502)
+                    {
+                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0529", CultureInfo.CurrentCulture));
+                    }
+                    if ((Int32)Session["MensPaciente"] == 503)
+                    {
+                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0530", CultureInfo.CurrentCulture));
+                    }
+                    if ((Int32)Session["MensPaciente"] == 504)
+                    {
+                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0545", CultureInfo.CurrentCulture));
+                    }
+                    if ((Int32)Session["MensPaciente"] == 701)
+                    {
+                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0542", CultureInfo.CurrentCulture));
+                    }
+                    if ((Int32)Session["MensPaciente"] == 702)
+                    {
+                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0543", CultureInfo.CurrentCulture));
+                    }
+                    if ((Int32)Session["MensPaciente"] == 703)
+                    {
+                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0544", CultureInfo.CurrentCulture));
+                    }
+                    if ((Int32)Session["MensPaciente"] == 800)
+                    {
+                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0551", CultureInfo.CurrentCulture));
+                    }
+                    if ((Int32)Session["MensPaciente"] == 801)
+                    {
+                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0552", CultureInfo.CurrentCulture));
+                    }
+                    if ((Int32)Session["MensPaciente"] == 802)
+                    {
+                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0553", CultureInfo.CurrentCulture));
+                    }
+                }
+
+                // Prepara view
+                Session["VoltaInfoConsulta"] = 3;
+                Session["NivelPaciente"] = 3;
+                Session["VoltaConfCalendario"] = 2;
+                Session["VoltaBloqueio"] = 3;
+                Session["AjudaNivel"] = "../BaseAdmin/Ajuda/5/Ajuda5_1.pdf";
+                PACIENTE_CONSULTA item = new PACIENTE_CONSULTA();
+                PacienteConsultaViewModel vm = Mapper.Map<PACIENTE_CONSULTA, PacienteConsultaViewModel>(item);
+                vm.PACI_CD_ID = 0;
+                vm.PACIENTE = null;
+                vm.PACO_IN_ATIVO = 1;
+                vm.PACO_DT_CONSULTA = DateTime.Today.Date;
+                vm.USUA_CD_ID = id;
+                vm.ASSI_CD_ID = idAss;
+                vm.PACO_IN_TIPO = 1;
+                vm.PACO_IN_ENCERRADA = 0;
+                vm.PACO_IN_NOVO_PACIENTE = 2;
+                vm.PACO_IN_CONFIRMADA = 0;
+
+                // Grava Acesso
+                ControleAcessoMetodo grava = new ControleAcessoMetodo(aceApp);
+                Int32 voltaX = grava.GravaAcesso(usuario.USUA_CD_ID, usuario.ASSI_CD_ID, "PACIENTE_CONSULTA_GERAL_INCLUIR", "Paciente2", "IncluirConsultaGeral");
+                return View(vm);
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Paciente";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Paciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return RedirectToAction("TrataExcecao", "BaseAdmin");
+            }
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult IncluirConsultaGeral(PacienteConsultaViewModel vm)
+        {
+            if ((String)Session["Ativa"] == null)
+            {
+                return RedirectToAction("Logout", "ControleAcesso");
+            }
+            USUARIO usuario = (USUARIO)Session["UserCredentials"];
+            CONFIGURACAO conf = CarregaConfiguracaoGeral();
+            CONFIGURACAO_CALENDARIO confCal = CarregaConfiguracaoCalendario();
+            Int32 idAss = (Int32)Session["IdAssinante"];
+            Int32 id = (Int32)Session["IdUsuarioConsulta"];
+            var tipo = new List<SelectListItem>();
+            tipo.Add(new SelectListItem() { Text = "Presencial", Value = "1" });
+            tipo.Add(new SelectListItem() { Text = "Remota", Value = "2" });
+            ViewBag.Tipo = new SelectList(tipo, "Value", "Text");
+            var novo = new List<SelectListItem>();
+            novo.Add(new SelectListItem() { Text = "Novo Paciente", Value = "1" });
+            novo.Add(new SelectListItem() { Text = "Paciente Cadastrado", Value = "2" });
+            ViewBag.Novo = new SelectList(novo, "Value", "Text");
+            List<PACIENTE> pacs = CarregaPaciente();
+            ViewBag.Paciente = new SelectList(pacs, "PACI__CD_ID", "PACI_NM_NOME");
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    // Sanitização
+                    vm.PACI_NM_NOME = CrossCutting.UtilitariosGeral.CleanStringDocto(vm.PACI_NM_NOME);
+                    vm.PACI_NR_CPF = CrossCutting.UtilitariosGeral.CleanStringDocto(vm.PACI_NR_CPF);
+                    vm.PACI_NM_EMAIL = CrossCutting.UtilitariosGeral.CleanStringMail(vm.PACI_NM_EMAIL);
+                    vm.PACI_NR_CELULAR = CrossCutting.UtilitariosGeral.CleanStringPhone(vm.PACI_NR_CELULAR);
+                    vm.PACI_NM_INDICADO = CrossCutting.UtilitariosGeral.CleanStringDocto(vm.PACI_NM_INDICADO);
+
+                    // Critica dia util
+                    DateTime dataCons = vm.PACO_DT_CONSULTA;
+                    Int32 dia = (Int32)dataCons.DayOfWeek;
+                    Int32 voltaCal = VerificacaoDataCalendario.ValidaDiaUtil(dia, confCal);
+                    if (voltaCal == 1)
+                    {
+                        Session["MensPaciente"] = 800;
+                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0551", CultureInfo.CurrentCulture));
+                        return View(vm);
+                    }
+
+                    // Critica de horario util
+                    Int32 voltaUtil = VerificacaoDataCalendario.ValidaHoraUtil(dia, vm, confCal);
+                    if (voltaUtil == 1)
+                    {
+                        Session["MensPaciente"] = 801;
+                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0552", CultureInfo.CurrentCulture));
+                        return View(vm);
+                    }
+                    if (voltaUtil == 2)
+                    {
+                        Session["MensPaciente"] = 802;
+                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0553", CultureInfo.CurrentCulture));
+                        return View(vm);
+                    }
+
+                    // Criticas de paciente
+                    if (vm.PACO_IN_NOVO_PACIENTE == 1)
+                    {
+                        if (vm.PACI_NM_NOME == null || vm.PACI_NR_CPF == null || vm.PACI_NR_CELULAR == null)
+                        {
+                            Session["MensPaciente"] = 701;
+                            ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0542", CultureInfo.CurrentCulture));
+                            return View(vm);
+                        }
+                        pacs = pacs.Where(p => p.PACI_NR_CPF == vm.PACI_NR_CPF).ToList();
+                        if (pacs.Count > 0)
+                        {
+                            Session["MensPaciente"] = 702;
+                            ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0543", CultureInfo.CurrentCulture));
+                            return View(vm);
+                        }
+                    }
+                    else if (vm.PACO_IN_NOVO_PACIENTE == 2)
+                    {
+                        if (vm.PACI_CD_ID == 0 || vm.PACI_CD_ID == null)
+                        {
+                            Session["MensPaciente"] = 703;
+                            ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0544", CultureInfo.CurrentCulture));
+                            return View(vm);
+                        }
+                    }
+
+                    // Critica de data
+                    if (vm.PACO_HR_INICIO == null || vm.PACO_HR_FINAL == null)
+                    {
+                        Session["MensPaciente"] = 504;
+                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0545", CultureInfo.CurrentCulture));
+                        return View(vm);
+                    }
+                    if (vm.PACO_DT_CONSULTA.Date < DateTime.Today.Date)
+                    {
+                        Session["MensPaciente"] = 501;
+                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0526", CultureInfo.CurrentCulture));
+                        return View(vm);
+                    }
+                    if (vm.PACO_HR_INICIO == vm.PACO_HR_FINAL)
+                    {
+                        Session["MensPaciente"] = 502;
+                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0529", CultureInfo.CurrentCulture));
+                        return View(vm);
+                    }
+                    if (vm.PACO_HR_INICIO > vm.PACO_HR_FINAL)
+                    {
+                        Session["MensPaciente"] = 503;
+                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0530", CultureInfo.CurrentCulture));
+                        return View(vm);
+                    }
+
+                    // Verifica se já tem consulta na data selecionada para o mesmo paciente e mesmo tipo de consulta
+                    if (vm.PACO_IN_NOVO_PACIENTE == 2)
+                    {
+                        List<PACIENTE_CONSULTA> conPaciente = CarregaConsultas().Where(p => p.USUA_CD_ID == id & p.PACI_CD_ID == vm.PACI_CD_ID & p.PACO_DT_CONSULTA == vm.PACO_DT_CONSULTA & p.PACO_IN_ATIVO == 1 & p.PACO_IN_CONFIRMADA < 2).ToList();
+                        if (conPaciente.Count > 0)
+                        {
+                            Session["MensPaciente"] = 600;
+                            ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0533", CultureInfo.CurrentCulture));
+                            return View(vm);
+                        }
+                    }
+
+                    // Critica de horario
+                    List<PACIENTE_CONSULTA> lista = CarregaConsultas().Where(p => p.USUA_CD_ID == id & p.PACO_DT_CONSULTA.Date == vm.PACO_DT_CONSULTA.Date & p.PACO_IN_ATIVO == 1 & p.PACO_IN_CONFIRMADA < 2).ToList();
+                    List<PACIENTE_CONSULTA> lista1 = lista.Where(p => p.PACO_HR_INICIO > vm.PACO_HR_INICIO & p.PACO_HR_FINAL < vm.PACO_HR_FINAL).ToList();
+                    List<PACIENTE_CONSULTA> lista2 = lista.Where(p => p.PACO_HR_INICIO < vm.PACO_HR_INICIO & p.PACO_HR_FINAL < vm.PACO_HR_FINAL & p.PACO_HR_FINAL > vm.PACO_HR_INICIO).ToList();
+                    List<PACIENTE_CONSULTA> lista3 = lista.Where(p => p.PACO_HR_INICIO > vm.PACO_HR_INICIO & p.PACO_HR_FINAL > vm.PACO_HR_FINAL & p.PACO_HR_INICIO < vm.PACO_HR_FINAL).ToList();
+                    List<PACIENTE_CONSULTA> lista4 = lista.Where(p => p.PACO_HR_INICIO > vm.PACO_HR_INICIO & p.PACO_HR_FINAL < vm.PACO_HR_FINAL).ToList();
+                    if (lista1.Count > 0 || lista2.Count > 0 || lista3.Count > 0 || lista4.Count > 0)
+                    {
+                        Session["MensPaciente"] = 500;
+                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0524", CultureInfo.CurrentCulture));
+                        return View(vm);
+                    }
+
+                    // Verifica bloqueios
+                    List<CONFIGURACAO_CALENDARIO> confs = calApp.GetAllItems(idAss);
+                    CONFIGURACAO_CALENDARIO cal = confs.Where(p => p.USUA_CD_ID == id).FirstOrDefault();
+                    List<CONFIGURACAO_CALENDARIO_BLOQUEIO> bloqs = cal.CONFIGURACAO_CALENDARIO_BLOQUEIO.Where(p => p.COCB_IN_ATIVO == 1).ToList();
+                    Int32 bloqFlag = 0;
+                    foreach (CONFIGURACAO_CALENDARIO_BLOQUEIO bloq in bloqs)
+                    {
+                        if (vm.PACO_DT_CONSULTA >= bloq.COCB_DT_BLOQUEIO_INICIO & vm.PACO_DT_CONSULTA <= bloq.COCB_DT_BLOQUEIO_FINAL)
+                        {
+                            if (bloq.COCB_HR_INICIO == null || bloq.COCB_HR_FINAL == null)
+                            {
+                                bloqFlag = 1;
+                            }
+                            else
+                            {
+                                if (vm.PACO_HR_INICIO >= bloq.COCB_HR_INICIO & vm.PACO_HR_FINAL <= bloq.COCB_HR_FINAL)
+                                {
+                                    bloqFlag = 1;
+                                }
+                            }
+                        }
+                    }
+
+                    if (bloqFlag > 0)
+                    {
+                        Session["MensPaciente"] = 500;
+                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0565", CultureInfo.CurrentCulture));
+                        return View(vm);
+                    }
+
+                    // Grava novo paciente
+                    if (vm.PACO_IN_NOVO_PACIENTE == 1)
+                    {
+                        PACIENTE paciente = new PACIENTE();
+                        paciente.ASSI_CD_ID = idAss;
+                        paciente.TIPA_CD_ID = 1;
+                        paciente.PACI_NM_NOME = vm.PACI_NM_NOME;
+                        paciente.PACI_DT_NASCIMENTO = vm.PACI_DT_NASCIMENTO;
+                        paciente.PACI_NR_CPF = vm.PACI_NR_CPF;
+                        paciente.PACI_NR_CELULAR = vm.PACI_NR_CELULAR;
+                        paciente.PACI_NM_EMAIL = vm.PACI_NM_EMAIL;
+                        paciente.PACI_NM_INDICACAO = vm.PACI_NM_INDICADO;
+                        paciente.PACI_IN_ATIVO = 1;
+                        paciente.PACI_DT_CADASTRO = DateTime.Today.Date;
+                        paciente.PACI_DT_ALTERACAO = DateTime.Today.Date;
+                        paciente.PACI_GU_GUID = Xid.NewXid().ToString();
+                        paciente.USUA_CD_ID = id;
+                        paciente.PACI_DT_ULTIMO_ACESSO = DateTime.Today.Date;
+                        paciente.PACI_DT_PREVISAO_RETORNO = vm.PACO_DT_CONSULTA;
+                        paciente.PACI_DT_CONSULTA = vm.PACO_DT_CONSULTA;
+                        paciente.PACI_DT_ACESSO = DateTime.Now;
+                        paciente.PACI_AQ_FOTO = "~/Images/icon_morador.png";
+                        paciente.PACI_IN_COMPLETADO = 0;
+
+                        Int32 voltaP = baseApp.ValidateCreate(paciente, usuario);
+                        Int32 key = paciente.PACI__CD_ID;
+                        vm.PACI_CD_ID = key;
+
+                        // Cria pastas
+                        String caminho = "/Imagens/" + idAss.ToString() + "/Pacientes/" + key.ToString() + "/Fotos/";
+                        String map = Server.MapPath(caminho);
+                        Directory.CreateDirectory(Server.MapPath(caminho));
+                        caminho = "/Imagens/" + idAss.ToString() + "/Pacientes/" + key.ToString() + "/Anexos/";
+                        Directory.CreateDirectory(Server.MapPath(caminho));
+                        caminho = "/Imagens/" + idAss.ToString() + "/Pacientes/" + key.ToString() + "/Prescricao/";
+                        Directory.CreateDirectory(Server.MapPath(caminho));
+                        caminho = "/Imagens/" + idAss.ToString() + "/Pacientes/" + key.ToString() + "/QRCode/";
+                        Directory.CreateDirectory(Server.MapPath(caminho));
+                        caminho = "/Imagens/" + idAss.ToString() + "/Pacientes/" + key.ToString() + "/Atestado/";
+                        Directory.CreateDirectory(Server.MapPath(caminho));
+                        caminho = "/Imagens/" + idAss.ToString() + "/Pacientes/" + key.ToString() + "/Solicitacao/";
+                        Directory.CreateDirectory(Server.MapPath(caminho));
+                        caminho = "/Imagens/" + idAss.ToString() + "/Pacientes/" + key.ToString() + "/Exames/";
+                        Directory.CreateDirectory(Server.MapPath(caminho));
+                        caminho = "/Imagens/" + idAss.ToString() + "/Pacientes/" + key.ToString() + "/Consultas/";
+                        Directory.CreateDirectory(Server.MapPath(caminho));
+
+                    }
+
+                    // Executa a operação
+                    PACIENTE_CONSULTA item = Mapper.Map<PacienteConsultaViewModel, PACIENTE_CONSULTA>(vm);
+                    Int32 volta = baseApp.ValidateCreateConsulta(item);
+
+                    // Recupera paciente
+                    PACIENTE pac = baseApp.GetItemById(item.PACI_CD_ID);
+
+                    // Acerta estado
+                    Session["PacienteConsulta"] = pac;
+                    Session["PacienteAlterada"] = 1;
+                    Session["NivelPaciente"] = 3;
+                    Session["ConsultasAlterada"] = 1;
+                    Session["ListaConsultaGeral"] = null;
+                    Session["IdPaciente"] = item.PACI_CD_ID;
+                    Session["IdConsulta"] = item.PACO_CD_ID;
+                    Session["VoltaConfCalendario"] = 1;
+                    Session["ListaPacienteBase"] = null;
+
+                    // Verifica se tem consulta anterior para o paciente
+                    List<PACIENTE_CONSULTA> listaAnterior = baseApp.GetAllConsultas(idAss).Where(p => p.USUA_CD_ID == id & p.PACI_CD_ID == item.PACI_CD_ID & p.PACO_IN_ATIVO == 1 & p.PACO_DT_CONSULTA < item.PACO_DT_CONSULTA).OrderBy(p => p.PACO_DT_CONSULTA).ToList();
+                    PACIENTE_CONSULTA consultaAnterior = listaAnterior.LastOrDefault();
+
+                    // Cria anamnese em branco ou copia da ultima consulta
+                    CONFIGURACAO_ANAMNESE ana = anaApp.GetItemById(idAss);
+                    PACIENTE_ANAMNESE anamnese = new PACIENTE_ANAMNESE();
+                    if (consultaAnterior == null)
+                    {
+                        anamnese.ASSI_CD_ID = usuario.ASSI_CD_ID;
+                        anamnese.PAAM_DT_DATA = vm.PACO_DT_CONSULTA;
+                        anamnese.PAAM_IN_ATIVO = 1;
+                        anamnese.PACI_CD_ID = item.PACI_CD_ID;
+                        anamnese.USUA_CD_ID = id;
+                        anamnese.PACO_CD_ID = item.PACO_CD_ID;
+                        anamnese.PAAM_IN_PREENCHIDA = 0;
+                        anamnese.PAAM_IN_FLAG_MOTIVO_CONSULTA = 1;
+                        anamnese.PAAM_IN_FLAG__HISTORIA_FAMILIAR = 1;
+                        anamnese.PAAM_IN_FLAG_HISTORIA_SOCIAL = ana.COAN_IN_HISTORIA_SOCIAL;
+                        anamnese.PAAM_IN_FLAG_AVALIACAO_CARDIOLOGICA = ana.COAN_IN_CARDIOLOGICA;
+                        anamnese.PAAM_IN_FLAG_RESPIRATORIO = ana.COAN_IN_RESPIRATORIA;
+                        anamnese.PAAM_IN_FLAG_ABDOMEM = ana.COAN_IN_ABDOMEM;
+                        anamnese.PAAM_IN_FLAG_MEMBROS_INFERIORES = ana.COAN_IN_MEMBROS;
+                        anamnese.PAAM_IN_FLAG_QUEIXA_PRINCIPAL = 1;
+                        anamnese.PAAM_IN_FLAG_HISTORIA_DOENCA_ATUAL = 1;
+                        anamnese.PAAM_IN_FLAG_HISTORIA_PROGRESSIVA = ana.COAN_IN_HISTORIA_PATOLOGIA;
+                        anamnese.PAAM_IN_FLAG_DIAGNOSTICO_1 = 1;
+                        anamnese.PAAM_IN_CAMPO_1 = ana.COAN_IN_CAMPO_1;
+                        anamnese.PAAM_NM_CAMPO_1 = ana.COAN_NM_CAMPO_1;
+                        anamnese.PAAM_IN_CAMPO_2 = ana.COAN_IN_CAMPO_2;
+                        anamnese.PAAM_NM_CAMPO_2 = ana.COAN_NM_CAMPO_2;
+                        anamnese.PAAM_IN_CAMPO_3 = ana.COAN_IN_CAMPO_3;
+                        anamnese.PAAM_NM_CAMPO_3 = ana.COAN_NM_CAMPO_3;
+                    }
+                    else
+                    {
+                        PACIENTE_ANAMNESE anamneseAnterior = baseApp.GetAllAnamnese(idAss).Where(p => p.PACO_CD_ID == consultaAnterior.PACO_CD_ID).First();
+                        anamnese.ASSI_CD_ID = usuario.ASSI_CD_ID;
+                        anamnese.PAAM_DT_DATA = vm.PACO_DT_CONSULTA;
+                        anamnese.PAAM_IN_ATIVO = 1;
+                        anamnese.PACI_CD_ID = item.PACI_CD_ID;
+                        anamnese.USUA_CD_ID = id;
+                        anamnese.PACO_CD_ID = item.PACO_CD_ID;
+                        anamnese.PAAM_IN_PREENCHIDA = 0;
+                        anamnese.PAAM_DS_CONDUTA = anamneseAnterior.PAAM_DS_CONDUTA;
+                        anamnese.PAAM_DS_DIAGNOSTICO_1 = anamneseAnterior.PAAM_DS_DIAGNOSTICO_1;
+                        anamnese.PAAM_DS_DIAGNOSTICO_2 = anamneseAnterior.PAAM_DS_DIAGNOSTICO_2;
+                        anamnese.PAAM_DS_HISTORIA_DOENCA_ATUAL = anamneseAnterior.PAAM_DS_HISTORIA_DOENCA_ATUAL;
+                        anamnese.PAAM_DS_HISTORIA_FAMILIAR = anamneseAnterior.PAAM_DS_HISTORIA_FAMILIAR;
+                        anamnese.PAAM_DS_HISTORIA_PATOLOGICA_PROGRESSIVA = anamneseAnterior.PAAM_DS_HISTORIA_PATOLOGICA_PROGRESSIVA;
+                        anamnese.PAAM_DS_HISTORIA_SOCIAL = anamneseAnterior.PAAM_DS_HISTORIA_SOCIAL;
+                        anamnese.PAAM_DS_MOTIVO_CONSULTA = anamneseAnterior.PAAM_DS_MOTIVO_CONSULTA;
+                        anamnese.PAAM_DS_QUEIXA_PRINCIPAL = anamneseAnterior.PAAM_DS_QUEIXA_PRINCIPAL;
+                        anamnese.PAAM_TX_OBSERVACOES = anamneseAnterior.PAAM_TX_OBSERVACOES;
+                        anamnese.PAAN_NM_ABDOMEM = anamneseAnterior.PAAN_NM_ABDOMEM;
+                        anamnese.PAAN_NM_AVALIACAO_CARDIOLOGICA = anamneseAnterior.PAAN_NM_AVALIACAO_CARDIOLOGICA;
+                        anamnese.PAAN_NM_MEMBROS_INFERIORES = anamneseAnterior.PAAN_NM_MEMBROS_INFERIORES;
+                        anamnese.PAAN_NM_RESPIRATORIO = anamneseAnterior.PAAN_NM_RESPIRATORIO;
+                        anamnese.PAAM_DT_COPIA = consultaAnterior.PACO_DT_CONSULTA;
+
+                        anamnese.PAAM_IN_FLAG_MOTIVO_CONSULTA = 1;
+                        anamnese.PAAM_IN_FLAG__HISTORIA_FAMILIAR = 1;
+                        anamnese.PAAM_IN_FLAG_HISTORIA_SOCIAL = anamnese.PAAM_IN_FLAG_HISTORIA_SOCIAL;
+                        anamnese.PAAM_IN_FLAG_AVALIACAO_CARDIOLOGICA = anamnese.PAAM_IN_FLAG_AVALIACAO_CARDIOLOGICA;
+                        anamnese.PAAM_IN_FLAG_RESPIRATORIO = anamnese.PAAM_IN_FLAG_RESPIRATORIO;
+                        anamnese.PAAM_IN_FLAG_ABDOMEM = anamnese.PAAM_IN_FLAG_ABDOMEM;
+                        anamnese.PAAM_IN_FLAG_MEMBROS_INFERIORES = anamnese.PAAM_IN_FLAG_MEMBROS_INFERIORES;
+                        anamnese.PAAM_IN_FLAG_QUEIXA_PRINCIPAL = 1;
+                        anamnese.PAAM_IN_FLAG_HISTORIA_DOENCA_ATUAL = 1;
+                        anamnese.PAAM_IN_FLAG_HISTORIA_PROGRESSIVA = anamnese.PAAM_IN_FLAG_HISTORIA_PROGRESSIVA;
+                        anamnese.PAAM_IN_FLAG_DIAGNOSTICO_1 = 1;
+                        anamnese.PAAM_IN_CAMPO_1 = anamnese.PAAM_IN_CAMPO_1;
+                        anamnese.PAAM_NM_CAMPO_1 = anamnese.PAAM_NM_CAMPO_1;
+                        anamnese.PAAM_DS_CAMPO_1 = anamnese.PAAM_DS_CAMPO_1;
+                        anamnese.PAAM_IN_CAMPO_2 = anamnese.PAAM_IN_CAMPO_2;
+                        anamnese.PAAM_NM_CAMPO_2 = anamnese.PAAM_NM_CAMPO_2;
+                        anamnese.PAAM_DS_CAMPO_2 = anamnese.PAAM_DS_CAMPO_2;
+                        anamnese.PAAM_IN_CAMPO_3 = anamnese.PAAM_IN_CAMPO_3;
+                        anamnese.PAAM_NM_CAMPO_3 = anamnese.PAAM_NM_CAMPO_3;
+                        anamnese.PAAM_DS_CAMPO_3 = anamnese.PAAM_DS_CAMPO_3;
+                    }
+                    Int32 voltaA = baseApp.ValidateCreateAnamnese(anamnese);
+
+                    // Cria exame fisico em branco ou copia da ultima consulta
+                    PACIENTE_EXAME_FISICOS fisico = new PACIENTE_EXAME_FISICOS();
+                    if (consultaAnterior == null)
+                    {
+                        fisico.ASSI_CD_ID = usuario.ASSI_CD_ID;
+                        fisico.PACI_CD_ID = item.PACI_CD_ID;
+                        fisico.PAEF_DT_DATA = vm.PACO_DT_CONSULTA;
+                        fisico.PAEF_IN_ALCOOLISMO = 0;
+                        fisico.PAEF_IN_ALCOOLISMO_FREQUENCIA = 0;
+                        fisico.PAEF_IN_ANTE_ALERGICO = 0;
+                        fisico.PAEF_IN_ANTE_ONCOLOGICO = 0;
+                        fisico.PAEF_IN_ANTICONCEPCIONAL = 0;
+                        fisico.PAEF_IN_ATIVO = 1;
+                        fisico.PAEF_IN_CIRURGIAS = 0;
+                        fisico.PAEF_IN_DIABETE = 0;
+                        fisico.PAEF_IN_EPILEPSIA = 0;
+                        fisico.PAEF_IN_EXERCICIO_FISICO = 0;
+                        fisico.PAEF_IN_EXERCICIO_FISICO_FREQUENCIA = 0;
+                        fisico.PAEF_IN_GESTANTE = 0;
+                        fisico.PAEF_IN_HIPERTENSAO = 0;
+                        fisico.PAEF_IN_HIPOTENSAO = 0;
+                        fisico.PAEF_IN_MARCAPASSO = 0;
+                        fisico.PAEF_IN_TABAGISMO = 0;
+                        fisico.PAEF_IN_VARIZES = 0;
+                        fisico.USUA_CD_ID = id;
+                        fisico.PACO_CD_ID = item.PACO_CD_ID;
+                        fisico.PAEF_IN_PREENCHIDO = 0;
+                        fisico.PAEF_VL_IMC = 0;
+                    }
+                    else
+                    {
+                        PACIENTE_EXAME_FISICOS fisicoAnterior = baseApp.GetAllExameFisico(idAss).Where(p => p.PACO_CD_ID == consultaAnterior.PACO_CD_ID).First();
+                        fisico.ASSI_CD_ID = usuario.ASSI_CD_ID;
+                        fisico.PACI_CD_ID = item.PACI_CD_ID;
+                        fisico.PAEF_DT_DATA = vm.PACO_DT_CONSULTA;
+                        fisico.PAEF_IN_ATIVO = 1;
+                        fisico.USUA_CD_ID = id;
+                        fisico.PACO_CD_ID = item.PACO_CD_ID;
+                        fisico.PAEF_IN_PREENCHIDO = 0;
+                        fisico.PAEF_VL_IMC = 0;
+                        fisico.PAEF_DS_ALCOOLISMO = fisicoAnterior.PAEF_DS_ALCOOLISMO;
+                        fisico.PAEF_DS_ALERGICO = fisicoAnterior.PAEF_DS_ALERGICO;
+                        fisico.PAEF_DS_ANTICONCEPCIONAL = fisicoAnterior.PAEF_DS_ANTICONCEPCIONAL;
+                        fisico.PAEF_DS_EXAME_FISICO = fisicoAnterior.PAEF_DS_EXAME_FISICO;
+                        fisico.PAEF_DS_EXERCICIO_FISICO = fisicoAnterior.PAEF_DS_EXERCICIO_FISICO;
+                        fisico.PAEF_DS_MARCAPASSO = fisicoAnterior.PAEF_DS_MARCAPASSO;
+                        fisico.PAEF_DS_ONCOLOGICO = fisicoAnterior.PAEF_DS_ONCOLOGICO;
+                        fisico.PAEF_DS_TABAGISMO = fisicoAnterior.PAEF_DS_TABAGISMO;
+                        fisico.PAEF_IN_ALCOOLISMO = fisicoAnterior.PAEF_IN_ALCOOLISMO;
+                        fisico.PAEF_IN_ALCOOLISMO_FREQUENCIA = fisicoAnterior.PAEF_IN_ALCOOLISMO_FREQUENCIA;
+                        fisico.PAEF_IN_ANTE_ALERGICO = fisicoAnterior.PAEF_IN_ANTE_ALERGICO;
+                        fisico.PAEF_IN_ANTE_ONCOLOGICO = fisicoAnterior.PAEF_IN_ANTE_ONCOLOGICO;
+                        fisico.PAEF_IN_ANTICONCEPCIONAL = fisicoAnterior.PAEF_IN_ANTICONCEPCIONAL;
+                        fisico.PAEF_IN_CIRURGIAS = fisicoAnterior.PAEF_IN_CIRURGIAS;
+                        fisico.PAEF_IN_DIABETE = fisicoAnterior.PAEF_IN_DIABETE;
+                        fisico.PAEF_IN_EPILEPSIA = fisicoAnterior.PAEF_IN_EPILEPSIA;
+                        fisico.PAEF_IN_EXERCICIO_FISICO = fisicoAnterior.PAEF_IN_EXERCICIO_FISICO;
+                        fisico.PAEF_IN_EXERCICIO_FISICO_FREQUENCIA = fisicoAnterior.PAEF_IN_EXERCICIO_FISICO_FREQUENCIA;
+                        fisico.PAEF_IN_GESTANTE = fisicoAnterior.PAEF_IN_GESTANTE;
+                        fisico.PAEF_IN_HIPERTENSAO = fisicoAnterior.PAEF_IN_HIPERTENSAO;
+                        fisico.PAEF_IN_HIPOTENSAO = fisicoAnterior.PAEF_IN_HIPOTENSAO;
+                        fisico.PAEF_IN_MARCAPASSO = fisicoAnterior.PAEF_IN_MARCAPASSO;
+                        fisico.PAEF_IN_TABAGISMO = fisicoAnterior.PAEF_IN_TABAGISMO;
+                        fisico.PAEF_IN_VARIZES = fisicoAnterior.PAEF_IN_VARIZES;
+                        fisico.PAEF_NR_ALTURA = fisicoAnterior.PAEF_NR_ALTURA;
+                        fisico.PAEF_NR_FREQUENCIA_CARDIACA = fisicoAnterior.PAEF_NR_FREQUENCIA_CARDIACA;
+                        fisico.PAEF_NR_MES_GESTANTE = fisicoAnterior.PAEF_NR_MES_GESTANTE;
+                        fisico.PAEF_NR_PA_ALTA = fisicoAnterior.PAEF_NR_PA_ALTA;
+                        fisico.PAEF_NR_PA_BAIXA = fisicoAnterior.PAEF_NR_PA_BAIXA;
+                        fisico.PAEF_NR_PESO = fisicoAnterior.PAEF_NR_PESO;
+                        fisico.PAEF_NR_TEMPERATURA = fisicoAnterior.PAEF_NR_TEMPERATURA;
+                        fisico.PAEF_TX_CIRURGIAS = fisicoAnterior.PAEF_TX_CIRURGIAS;
+                        fisico.PAEF_VL_IMC = fisicoAnterior.PAEF_VL_IMC;
+                        fisico.PAEF_DT_COPIA = fisicoAnterior.PAEF_DT_DATA;
+                        fisico.PAEF_TX_RESULTADOS = fisicoAnterior.PAEF_TX_RESULTADOS;
+                    }
+                    Int32 voltaF = baseApp.ValidateCreateExameFisico(fisico);
+
+                    // Acerta proxima consulta do paciente
+                    List<PACIENTE_CONSULTA> cons = pac.PACIENTE_CONSULTA.Where(p => p.PACO_DT_CONSULTA.Date >= DateTime.Today.Date).ToList();
+                    if (cons.Count == 0)
+                    {
+                        pac.PACI_DT_CONSULTA = item.PACO_DT_CONSULTA;
+                        pac.PACI_DT_PREVISAO_RETORNO = item.PACO_DT_CONSULTA.AddMonths(6);
+                        Int32 voltaP = baseApp.ValidateEdit(pac, pac);
+                    }
+                    else
+                    {
+                        cons = pac.PACIENTE_CONSULTA.Where(p => p.PACO_DT_CONSULTA.Date < item.PACO_DT_CONSULTA.Date).ToList();
+                        if (cons.Count == 0)
+                        {
+                            pac.PACI_DT_CONSULTA = item.PACO_DT_CONSULTA;
+                            pac.PACI_DT_PREVISAO_RETORNO = item.PACO_DT_CONSULTA.AddMonths(6);
+                            Int32 voltaP = baseApp.ValidateEdit(pac, pac);
+                        }
+                    }
+
+                    // Envia mensagem
+                    if (pac.PACI_NM_EMAIL != null & conf.CONF_IN_MENSAGEM_CONSULTA == 1)
+                    {
+                        PACIENTE_CONSULTA consMensagem = baseApp.GetConsultaById((Int32)Session["IdConsulta"]);
+                        Int32 voltaCons = EnviarEMailConsulta(consMensagem, 1);
+                    }
+                    if (pac.PACI_NR_CELULAR != null & conf.CONF_IN_MENSAGEM_CONSULTA == 1)
+                    {
+                        PACIENTE_CONSULTA consMensagem = baseApp.GetConsultaById((Int32)Session["IdConsulta"]);
+                        Int32 voltaCons = EnviarSMSConsulta(consMensagem, 1);
+                    }
+
+                    // Monta Log
+                    LOG log = new LOG
+                    {
+                        LOG_DT_DATA = DateTime.Now,
+                        ASSI_CD_ID = usuario.ASSI_CD_ID,
+                        USUA_CD_ID = id,
+                        LOG_NM_OPERACAO = "icoPACI",
+                        LOG_IN_ATIVO = 1,
+                        LOG_TX_REGISTRO = "Consulta - " + item.PACO_DT_CONSULTA.ToShortDateString(),
+                        LOG_IN_SISTEMA = 6
+                    };
+                    Int32 volta1 = logApp.ValidateCreate(log);
+
+                    // Grava historico
+                    PACIENTE_HISTORICO hist = new PACIENTE_HISTORICO();
+                    hist.ASSI_CD_ID = usuario.ASSI_CD_ID;
+                    hist.USUA_CD_ID = id;
+                    hist.PACI_CD_ID = item.PACI_CD_ID;
+                    hist.PAHI_DT_DATA = DateTime.Now;
+                    hist.PAHI_IN_TIPO = 10;
+                    hist.PAHI_IN_CHAVE = item.PACO_CD_ID;
+                    hist.PAHI_NM_OPERACAO = "Paciente - Inclusão de Consulta";
+                    hist.PAHI_DS_DESCRICAO = "Paciente " + pac.PACI_NM_NOME + " - Consulta incluída " + item.PACO_DT_CONSULTA.ToShortDateString();
+                    Int32 voltaHist = baseApp.ValidateCreateHistorico(hist);
+
+                    Session["ListaPacienteBase"] = null;
+                    Session["PacienteAlterada"] = 1;
+                    Session["ListaPaciente"] = null;
+
+                    // Mensagem do CRUD
+                    Session["MsgCRUD"] = "A consulta do(a) paciente " + pac.PACI_NM_NOME.ToUpper() + " foi marcada com sucesso para " + item.PACO_DT_CONSULTA.ToLongDateString();
+                    Session["MensPaciente"] = 888;
+
+                    if ((Int32)Session["ModoConsulta"] == 1)
+                    {
+                        Session["ConsultaMarcada"] = 1;
+                        Session["ConsultaFrase"] = item.PACO_DT_CONSULTA.ToShortDateString() + " de " + item.PACO_HR_INICIO.ToString() + " até " + item.PACO_HR_FINAL.ToString();
+                        return RedirectToAction("VoltarProcederConsulta");
+                    }
+                    return RedirectToAction("MontarTelaConsultaGeral", new { id = id });
+                }
+                catch (Exception ex)
+                {
+                    ViewBag.Message = ex.Message;
+                    Session["TipoVolta"] = 2;
+                    Session["VoltaExcecao"] = "Paciente";
+                    Session["Excecao"] = ex;
+                    Session["ExcecaoTipo"] = ex.GetType().ToString();
+                    GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                    Int32 voltaX = grava.GravarLogExcecao(ex, "Paciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                    return RedirectToAction("TrataExcecao", "BaseAdmin");
+                }
+            }
+            else
+            {
+                return View(vm);
+            }
+        }
+
+        public List<PACIENTE> CarregaPaciente()
+        {
+            try
+            {
+                Int32 idAss = (Int32)Session["IdAssinante"];
+                List<PACIENTE> conf = new List<PACIENTE>();
+                if (Session["Pacientes"] == null)
+                {
+                    conf = baseApp.GetAllItens(idAss);
+                }
+                else
+                {
+                    if ((Int32)Session["PacienteAlterada"] == 1)
+                    {
+                        conf = baseApp.GetAllItens(idAss);
+                    }
+                    else
+                    {
+                        conf = (List<PACIENTE>)Session["Pacientes"];
+                    }
+                }
+                Session["Pacientes"] = conf;
+                Session["PacienteAlterada"] = 0;
+                return conf;
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Paciente";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Paciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return null;
+            }
+        }
+
+        public CONFIGURACAO_CALENDARIO CarregaConfiguracaoCalendario()
+        {
+            try
+            {
+                Int32 idAss = (Int32)Session["IdAssinante"];
+                CONFIGURACAO_CALENDARIO conf = new CONFIGURACAO_CALENDARIO();
+                conf = calApp.GetAllItems(idAss).FirstOrDefault();
+                Session["ConfiguracaoCalendario"] = conf;
+                return conf;
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Paciente";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Paciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return null;
+            }
+        }
+
+
+        public Int32 EnviarSMSConsulta(PACIENTE_CONSULTA consulta, Int32 tipo)
+        {
+            // Recupera informações
+            Int32 idAss = (Int32)Session["IdAssinante"];
+            USUARIO usuario = (USUARIO)Session["UserCredentials"];
+            PACIENTE paciente = (PACIENTE)Session["PacienteConsulta"];
+
+            // Processo
+            try
+            {
+                // Recupera Template
+                TEMPLATE_SMS template = null;
+                if (tipo == 1)
+                {
+                    template = smsApp.GetByCode("CRIACONS", idAss);
+                }
+                else
+                {
+                    template = smsApp.GetByCode("ALTCONS", idAss);
+                }
+
+                // Prepara assinatura
+                String classe = String.Empty;
+                if (usuario.TIPO_CARTEIRA_CLASSE != null)
+                {
+                    classe = usuario.TIPO_CARTEIRA_CLASSE.TICL_NM_NOME + ": " + usuario.USUA_NR_CLASSE;
+                }
+                String assinatura = usuario.USUA_NM_NOME + " - ";
+                if (usuario.ESPECIALIDADE != null)
+                {
+                    assinatura += usuario.ESPECIALIDADE.ESPE_NM_NOME + "<br />";
+                }
+                else
+                {
+                    assinatura += usuario.USUA_NM_ESPECIALIDADE + "<br />";
+                }
+                assinatura += classe + " - CPF: " + usuario.USUA_NR_CPF;
+
+                // Prepara corpo da mensagem
+                String texto = template.TSMS_TX_CORPO;
+                if (texto.Contains("{nome}"))
+                {
+                    texto = texto.Replace("{nome}", paciente.PACI_NM_NOME);
+                }
+                if (texto.Contains("{medico}"))
+                {
+                    texto = texto.Replace("{medico}", usuario.USUA_NM_NOME);
+                }
+                if (texto.Contains("{data}"))
+                {
+                    texto = texto.Replace("{data}", consulta.PACO_DT_CONSULTA.ToLongDateString());
+                }
+                if (texto.Contains("{inicio}"))
+                {
+                    texto = texto.Replace("{inicio}", consulta.PACO_HR_INICIO.ToString());
+                }
+                String smsBody = texto + ". " + assinatura;
+
+                // Carraga configuracao
+                CONFIGURACAO conf = CarregaConfiguracaoGeral();
+
+                // Decriptografa chaves
+                String login = CrossCutting.Cryptography.Decrypt(conf.CONF_SG_LOGIN_SMS_CRIP);
+                String senha = CrossCutting.Cryptography.Decrypt(conf.CONF_SG_SENHA_SMS_CRIP);
+
+                // Monta token
+                String text = login + ":" + senha;
+                byte[] textBytes = Encoding.UTF8.GetBytes(text);
+                String token = Convert.ToBase64String(textBytes);
+                String auth = "Basic " + token;
+
+                // inicia processo
+                String resposta = String.Empty;
+
+                // processa envio
+                String listaDest = "55" + Regex.Replace(paciente.PACI_NR_CELULAR, "[^a-zA-Z0-9_.]+", "", RegexOptions.Compiled).ToString();
+                //var httpWebRequest = (HttpWebRequest)WebRequest.Create("https://api-v2.smsfire.com.br/sms/send/bulk");
+                //httpWebRequest.Headers["Authorization"] = auth;
+                //httpWebRequest.ContentType = "application/json";
+                //httpWebRequest.Method = "POST";
+                String customId = Cryptography.GenerateRandomPassword(8);
+                String data = String.Empty;
+                String json = String.Empty;
+
+                // Monta o JSON corretamente
+                var payload = new
+                {
+                    destinations = new[]
+                    {
+                        new {
+                            to = listaDest,
+                            text = smsBody,
+                            customId = customId,
+                            from = "WebDoctor"
+                        }
+    }
+                };
+                json = Newtonsoft.Json.JsonConvert.SerializeObject(payload);
+
+                // Prepara requisição
+                var httpWebRequest = (HttpWebRequest)WebRequest.Create("https://api-v2.smsfire.com.br/sms/send/bulk");
+                httpWebRequest.Method = "POST";
+                httpWebRequest.ContentType = "application/json";
+                httpWebRequest.Headers["Authorization"] = auth;
+
+                // Converte JSON em bytes e seta ContentLength
+                var dataBytes = Encoding.UTF8.GetBytes(json);
+                httpWebRequest.ContentLength = dataBytes.Length;
+
+                using (var requestStream = httpWebRequest.GetRequestStream())
+                {
+                    requestStream.Write(dataBytes, 0, dataBytes.Length);
+                }
+
+                // Lê resposta
+                using (var httpResponse = (HttpWebResponse)httpWebRequest.GetResponse())
+                using (var streamReader = new StreamReader(httpResponse.GetResponseStream()))
+                {
+                    resposta = streamReader.ReadToEnd();
+                }
+
+                //// Chama envio
+                //String listaDest = "55" + Regex.Replace(paciente.PACI_NR_CELULAR, "[^a-zA-Z0-9_.]+", "", RegexOptions.Compiled).ToString();
+                //var httpWebRequest = (HttpWebRequest)WebRequest.Create("https://api-v2.smsfire.com.br/sms/send/bulk");
+                //httpWebRequest.Headers["Authorization"] = auth;
+                //httpWebRequest.ContentType = "application/json";
+                //httpWebRequest.Method = "POST";
+                //String customId = Cryptography.GenerateRandomPassword(8);
+                //String data = String.Empty;
+                //String json = String.Empty;
+                //using (var streamWriter = new StreamWriter(httpWebRequest.GetRequestStream()))
+                //{
+                //    json = String.Concat("{\"destinations\": [{\"to\": \"", listaDest, "\", \"text\": \"", texto, "\", \"customId\": \"" + customId + "\", \"from\": \"WebDoctor\"}]}");
+                //    streamWriter.Write(json);
+                //}
+
+                //var httpResponse = (HttpWebResponse)httpWebRequest.GetResponse();
+                //using (var streamReader = new StreamReader(httpResponse.GetResponseStream()))
+                //{
+                //    var result = streamReader.ReadToEnd();
+                //    resposta = result;
+                //}
+
+                // Grava mensagem enviada
+                MensagemViewModel mens = new MensagemViewModel();
+                mens.NOME = paciente.PACI_NM_NOME;
+                mens.ID = paciente.PACI__CD_ID;
+                mens.MODELO = paciente.PACI_NM_EMAIL;
+                mens.MENS_DT_CRIACAO = DateTime.Today.Date;
+                mens.MENS_IN_TIPO = 2;
+                mens.MENS_NM_CAMPANHA = paciente.PACI_NM_EMAIL;
+                mens.MENS_NM_NOME = "Mensagem SMS para Paciente - Consulta: " + paciente.PACI_NM_NOME;
+                mens.PACI_CD_ID = paciente.PACI__CD_ID;
+                mens.MENS_TX_TEXTO = smsBody;
+
+                EnvioEMailGeralBase envio = new EnvioEMailGeralBase(usuApp, confApp, meApp);
+                String guid = Xid.NewXid().ToString();
+                Int32 volta1 = envio.GravarMensagemEnviada(mens, usuario, mens.MENS_TX_TEXTO, "Succeeded", guid, null, "Confirmação de Consulta de Paciente - SMS - " + paciente.PACI_NM_NOME);
+
+                // Monta Log
+                LOG log = new LOG
+                {
+                    LOG_DT_DATA = DateTime.Now,
+                    ASSI_CD_ID = usuario.ASSI_CD_ID,
+                    USUA_CD_ID = usuario.USUA_CD_ID,
+                    LOG_NM_OPERACAO = "smsCONS",
+                    LOG_IN_ATIVO = 1,
+                    LOG_TX_REGISTRO = paciente.PACI_NM_NOME + " | Data:" + DateTime.Today.Date.ToShortDateString(),
+                    LOG_IN_SISTEMA = 6
+                };
+                Int32 volta3 = logApp.ValidateCreate(log);
+
+                // Sucesso
+                Session["NivelPaciente"] = 1;
+                return 1;
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Paciente";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Paciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return 1;
+            }
+        }
+
+        [HttpGet]
+        public ActionResult ExcluirConsulta(Int32 id)
+        {
+            try
+            {
+                // Verifica se tem usuario logado
+                USUARIO usuario = new USUARIO();
+                if ((String)Session["Ativa"] == null)
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+                if ((USUARIO)Session["UserCredentials"] != null)
+                {
+                    usuario = (USUARIO)Session["UserCredentials"];
+
+                    // Verfifica permissão
+                    if (usuario.PERFIL.PERF_IN_PACIENTE_CONSULTA_EXCLUIR == 0)
+                    {
+                        Session["MensPermissao"] = 2;
+                        Session["ModuloPermissao"] = "Paciente - Consulta - Exclusão";
+                        return RedirectToAction("MontarTelaConsultaGeral", new { id = id });
+                    }
+                }
+                else
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+                Int32 idAss = (Int32)Session["IdAssinante"];
+
+                USUARIO usuarioLogado = (USUARIO)Session["UserCredentials"];
+                PACIENTE_CONSULTA item = baseApp.GetConsultaById(id);
+                objetoAntes = (PACIENTE)Session["Paciente"];
+                item.PACO_IN_ATIVO = 0;
+                Int32 volta = baseApp.ValidateEditConsulta(item);
+
+                Session["PacienteAlterada"] = 1;
+                Session["NivelPaciente"] = 3;
+                Session["ListaConsultasGeral"] = null;
+                Session["ConsultasAlterada"] = 1;
+
+                // Acerta paciente
+                PACIENTE cli = baseApp.GetItemById(item.PACI_CD_ID);
+                if (cli.PACI_DT_CONSULTA.Value.Date == item.PACO_DT_CONSULTA.Date)
+                {
+                    cli.PACI_DT_CONSULTA = null;
+                    cli.PACI_DT_PREVISAO_RETORNO = null;
+                    Int32 voltax = baseApp.ValidateEdit(cli, cli);
+                }
+
+                // Monta Log
+                LOG log = new LOG
+                {
+                    LOG_DT_DATA = DateTime.Now,
+                    ASSI_CD_ID = usuarioLogado.ASSI_CD_ID,
+                    USUA_CD_ID = usuarioLogado.USUA_CD_ID,
+                    LOG_NM_OPERACAO = "xcoPACI",
+                    LOG_IN_ATIVO = 1,
+                    LOG_TX_REGISTRO = "Paciente: " + cli.PACI_NM_NOME + " | Data: " + item.PACO_DT_CONSULTA,
+                    LOG_IN_SISTEMA = 6
+                };
+                Int32 volta1 = logApp.ValidateCreate(log);
+
+                // Grava historico
+                PACIENTE_HISTORICO hist = new PACIENTE_HISTORICO();
+                PACIENTE pac = baseApp.GetItemById(item.PACI_CD_ID);
+                hist.ASSI_CD_ID = usuario.ASSI_CD_ID;
+                hist.USUA_CD_ID = usuario.USUA_CD_ID;
+                hist.PACI_CD_ID = item.PACI_CD_ID;
+                hist.PAHI_DT_DATA = DateTime.Now;
+                hist.PAHI_IN_TIPO = 10;
+                hist.PAHI_IN_CHAVE = item.PACO_CD_ID;
+                hist.PAHI_NM_OPERACAO = "Paciente - Exclusão de Consulta";
+                hist.PAHI_DS_DESCRICAO = "Paciente " + pac.PACI_NM_NOME + " - Consulta excluída " + item.PACO_DT_CONSULTA.ToShortDateString();
+                Int32 voltaHist = baseApp.ValidateCreateHistorico(hist);
+
+                // Mensagem do CRUD
+                Session["MsgCRUD"] = "A consulta do(a) paciente " + pac.PACI_NM_NOME.ToUpper() + " marcada para " + item.PACO_DT_CONSULTA.ToLongDateString() + " foi excluída com sucesso";
+                Session["MensPaciente"] = 888;
+
+                // Retorno
+                return RedirectToAction("MontarTelaConsultaGeral", new { id = id });
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Paciente";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Paciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return RedirectToAction("TrataExcecao", "BaseAdmin");
+            }
+        }
+
+        [HttpGet]
+        public ActionResult EditarConsultaCompleta(Int32 id)
+        {
+            try
+            {
+                // Verifica se tem usuario logado
+                USUARIO usuario = new USUARIO();
+                if ((String)Session["Ativa"] == null)
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+                if ((USUARIO)Session["UserCredentials"] != null)
+                {
+                    usuario = (USUARIO)Session["UserCredentials"];
+
+                    // Verfifica permissão
+                    if (usuario.PERFIL.PERF_IN_ATESTADO_INCLUIR == 0)
+                    {
+                        Session["MensPermissao"] = 2;
+                        Session["ModuloPermissao"] = "Paciente - Consulta - Edição";
+                        return RedirectToAction("MontarTelaConsultaGeral", new { id = id });
+                    }
+                }
+                else
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+                Int32 idAss = (Int32)Session["IdAssinante"];
+
+                // Prepara view
+                var tipo = new List<SelectListItem>();
+                tipo.Add(new SelectListItem() { Text = "Presencial", Value = "1" });
+                tipo.Add(new SelectListItem() { Text = "Remota", Value = "2" });
+                ViewBag.Tipo = new SelectList(tipo, "Value", "Text");
+                var confirmada = new List<SelectListItem>();
+                confirmada.Add(new SelectListItem() { Text = "Confirmada", Value = "1" });
+                confirmada.Add(new SelectListItem() { Text = "Não Confirmada", Value = "0" });
+                confirmada.Add(new SelectListItem() { Text = "Cancelada", Value = "2" });
+                ViewBag.Confirmada = new SelectList(confirmada, "Value", "Text");
+
+                Session["IdConsultaGeral"] = id;
+                Session["VoltaInfoConsulta"] = 4;
+                Session["NivelPaciente"] = 3;
+                Session["AjudaNivel"] = "../BaseAdmin/Ajuda/5/Ajuda5_2.pdf";
+                PACIENTE_CONSULTA item = baseApp.GetConsultaById(id);
+                PACIENTE pac = baseApp.GetItemById(item.PACI_CD_ID);
+                Session["IdPaciente"] = item.PACI_CD_ID;
+                Session["IdConsulta"] = item.PACO_CD_ID;
+                Session["Consulta"] = item;
+                PacienteConsultaViewModel vm = Mapper.Map<PACIENTE_CONSULTA, PacienteConsultaViewModel>(item);
+                ViewBag.NomePaciente = pac.PACI_NM_NOME;
+
+                // Grava Acesso
+                ControleAcessoMetodo grava = new ControleAcessoMetodo(aceApp);
+                Int32 voltaX = grava.GravaAcesso(usuario.USUA_CD_ID, usuario.ASSI_CD_ID, "PACIENTE_CONSULTA_GERAL_EDITAR", "Paciente2", "EditarConsultaCompleta");
+                return View(vm);
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Paciente";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Paciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return RedirectToAction("TrataExcecao", "BaseAdmin");
+            }
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult EditarConsultaCompleta(PacienteConsultaViewModel vm)
+        {
+            if ((String)Session["Ativa"] == null)
+            {
+                return RedirectToAction("Logout", "ControleAcesso");
+            }
+            USUARIO usuario = (USUARIO)Session["UserCredentials"];
+            Int32 idAss = (Int32)Session["IdAssinante"];
+            Int32 id = (Int32)Session["IdUsuarioConsulta"];
+            CONFIGURACAO conf = CarregaConfiguracaoGeral();
+            CONFIGURACAO_CALENDARIO confCal = CarregaConfiguracaoCalendario();
+            var tipo = new List<SelectListItem>();
+            tipo.Add(new SelectListItem() { Text = "Presencial", Value = "1" });
+            tipo.Add(new SelectListItem() { Text = "Remota", Value = "2" });
+            ViewBag.Tipo = new SelectList(tipo, "Value", "Text");
+            var confirmada = new List<SelectListItem>();
+            confirmada.Add(new SelectListItem() { Text = "Confirmada", Value = "1" });
+            confirmada.Add(new SelectListItem() { Text = "Não Confirmada", Value = "0" });
+            ViewBag.Confirmada = new SelectList(confirmada, "Value", "Text");
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    // Verifica se houve alteracao
+                    Int32 sai = 0;
+                    PACIENTE_CONSULTA anterior = (PACIENTE_CONSULTA)Session["Consulta"];
+                    if (anterior.PACO_DT_CONSULTA == vm.PACO_DT_CONSULTA & anterior.PACO_HR_INICIO == vm.PACO_HR_INICIO & anterior.PACO_HR_FINAL == vm.PACO_HR_FINAL)
+                    {
+                        sai = 1;
+                    }
+
+                    if (sai == 0)
+                    {
+                        // Critica de data
+                        if (vm.PACO_DT_CONSULTA.Date < DateTime.Today.Date)
+                        {
+                            Session["MensPaciente"] = 501;
+                            ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0526", CultureInfo.CurrentCulture));
+                            return View(vm);
+                        }
+                        if (vm.PACO_HR_INICIO == vm.PACO_HR_FINAL)
+                        {
+                            Session["MensPaciente"] = 502;
+                            ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0529", CultureInfo.CurrentCulture));
+                            return View(vm);
+                        }
+                        if (vm.PACO_HR_INICIO > vm.PACO_HR_FINAL)
+                        {
+                            Session["MensPaciente"] = 503;
+                            ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0530", CultureInfo.CurrentCulture));
+                            return View(vm);
+                        }
+
+                        // Critica dia util
+                        DateTime dataCons = vm.PACO_DT_CONSULTA;
+                        Int32 dia = (Int32)dataCons.DayOfWeek;
+                        Int32 voltaCal = VerificacaoDataCalendario.ValidaDiaUtil(dia, confCal);
+                        if (voltaCal == 1)
+                        {
+                            Session["MensPaciente"] = 800;
+                            ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0551", CultureInfo.CurrentCulture));
+                            return View(vm);
+                        }
+
+                        // Critica de horario util
+                        Int32 voltaUtil = VerificacaoDataCalendario.ValidaHoraUtil(dia, vm, confCal);
+                        if (voltaUtil == 1)
+                        {
+                            Session["MensPaciente"] = 801;
+                            ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0552", CultureInfo.CurrentCulture));
+                            return View(vm);
+                        }
+                        if (voltaUtil == 2)
+                        {
+                            Session["MensPaciente"] = 802;
+                            ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0553", CultureInfo.CurrentCulture));
+                            return View(vm);
+                        }
+
+                        // Verifica se já tem consulta na data selecionada para o mesmo paciente e mesmo tipo de consulta
+                        List<PACIENTE_CONSULTA> conPaciente = CarregaConsultas().Where(p => p.USUA_CD_ID == usuario.USUA_CD_ID & p.PACI_CD_ID == vm.PACI_CD_ID & p.PACO_DT_CONSULTA == vm.PACO_DT_CONSULTA & p.PACO_IN_ATIVO == 1 & p.PACO_IN_CONFIRMADA < 2).ToList();
+                        if (conPaciente.Count > 0)
+                        {
+                            Session["MensPaciente"] = 600;
+                            ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0533", CultureInfo.CurrentCulture));
+                            return View(vm);
+                        }
+
+                        // Critica de horario
+                        List<PACIENTE_CONSULTA> lista = CarregaConsultas().Where(p => p.PACI_CD_ID == vm.PACI_CD_ID & p.PACO_DT_CONSULTA == vm.PACO_DT_CONSULTA & p.PACO_IN_ATIVO == 1).ToList();
+                        List<PACIENTE_CONSULTA> lista1 = lista.Where(p => p.PACO_HR_INICIO <= vm.PACO_HR_INICIO & p.PACO_HR_FINAL >= vm.PACO_HR_FINAL).ToList();
+                        List<PACIENTE_CONSULTA> lista2 = lista.Where(p => p.PACO_HR_INICIO <= vm.PACO_HR_INICIO & p.PACO_HR_FINAL <= vm.PACO_HR_FINAL & p.PACO_HR_FINAL >= vm.PACO_HR_INICIO).ToList();
+                        List<PACIENTE_CONSULTA> lista3 = lista.Where(p => p.PACO_HR_INICIO >= vm.PACO_HR_INICIO & p.PACO_HR_FINAL >= vm.PACO_HR_FINAL & p.PACO_HR_INICIO <= vm.PACO_HR_FINAL).ToList();
+                        List<PACIENTE_CONSULTA> lista4 = lista.Where(p => p.PACO_HR_INICIO >= vm.PACO_HR_INICIO & p.PACO_HR_FINAL <= vm.PACO_HR_FINAL).ToList();
+                        if (lista1.Count > 0 || lista2.Count > 0 || lista3.Count > 0 || lista4.Count > 0)
+                        {
+                            Session["MensPaciente"] = 500;
+                            ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0524", CultureInfo.CurrentCulture));
+                            return View(vm);
+                        }
+
+                        // Verifica bloqueios
+                        List<CONFIGURACAO_CALENDARIO> confs = calApp.GetAllItems(idAss);
+                        CONFIGURACAO_CALENDARIO cal = confs.Where(p => p.USUA_CD_ID == usuario.USUA_CD_ID).FirstOrDefault();
+                        List<CONFIGURACAO_CALENDARIO_BLOQUEIO> bloqs = cal.CONFIGURACAO_CALENDARIO_BLOQUEIO.Where(p => p.COCB_IN_ATIVO == 1).ToList();
+                        Int32 bloqFlag = 0;
+                        foreach (CONFIGURACAO_CALENDARIO_BLOQUEIO bloq in bloqs)
+                        {
+                            if (vm.PACO_DT_CONSULTA >= bloq.COCB_DT_BLOQUEIO_INICIO & vm.PACO_DT_CONSULTA <= bloq.COCB_DT_BLOQUEIO_FINAL)
+                            {
+                                if (bloq.COCB_HR_INICIO == null || bloq.COCB_HR_FINAL == null)
+                                {
+                                    bloqFlag = 1;
+                                }
+                                else
+                                {
+                                    if (vm.PACO_HR_INICIO >= bloq.COCB_HR_INICIO & vm.PACO_HR_FINAL <= bloq.COCB_HR_FINAL)
+                                    {
+                                        bloqFlag = 1;
+                                    }
+                                }
+                            }
+                        }
+
+                        if (bloqFlag > 0)
+                        {
+                            Session["MensPaciente"] = 500;
+                            ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0565", CultureInfo.CurrentCulture));
+                            return View(vm);
+                        }
+
+                        // Executa a operação
+                        PACIENTE_CONSULTA item = Mapper.Map<PacienteConsultaViewModel, PACIENTE_CONSULTA>(vm);
+                        Int32 volta = baseApp.ValidateEditConsulta(item);
+
+                        // Verifica retorno
+                        Session["IdConsulta"] = item.PACO_CD_ID;
+                        Session["PacienteAlterada"] = 1;
+                        Session["NivelPaciente"] = 3;
+                        Session["ConsultasAlterada"] = 1;
+                        Session["IdPaciente"] = item.PACI_CD_ID;
+                        Session["ListaConsultasGeral"] = null;
+                        Session["ListaConsultas"] = null;
+                        Session["PacienteAlterada"] = 1;
+
+                        // Acerta paciente
+                        PACIENTE pac = baseApp.GetItemById(item.PACI_CD_ID);
+                        pac.PACI_DT_PREVISAO_RETORNO = vm.PACO_DT_CONSULTA;
+                        Int32 voltaP = baseApp.ValidateEdit(pac, pac);
+                        Session["PacienteConsulta"] = pac;
+
+                        // Envia mensagem
+                        if (pac.PACI_NM_EMAIL != null & conf.CONF_IN_MENSAGEM_CONSULTA == 1)
+                        {
+                            PACIENTE_CONSULTA consMensagem = baseApp.GetConsultaById((Int32)Session["IdConsulta"]);
+                            Int32 voltaCons = EnviarEMailConsulta(consMensagem, 2);
+                        }
+
+                        // Monta Log
+                        LOG log = new LOG
+                        {
+                            LOG_DT_DATA = DateTime.Now,
+                            ASSI_CD_ID = usuario.ASSI_CD_ID,
+                            USUA_CD_ID = usuario.USUA_CD_ID,
+                            LOG_NM_OPERACAO = "ecoPACI",
+                            LOG_IN_ATIVO = 1,
+                            LOG_TX_REGISTRO = Serialization.SerializeJSON<PACIENTE_CONSULTA>(item),
+                            LOG_IN_SISTEMA = 6
+                        };
+                        Int32 volta1 = logApp.ValidateCreate(log);
+
+                        // Grava historico
+                        PACIENTE_HISTORICO hist = new PACIENTE_HISTORICO();
+                        hist.ASSI_CD_ID = usuario.ASSI_CD_ID;
+                        hist.USUA_CD_ID = usuario.USUA_CD_ID;
+                        hist.PACI_CD_ID = item.PACI_CD_ID;
+                        hist.PAHI_DT_DATA = DateTime.Now;
+                        hist.PAHI_IN_TIPO = 10;
+                        hist.PAHI_IN_CHAVE = item.PACO_CD_ID;
+                        hist.PAHI_NM_OPERACAO = "Paciente - Edição de Consulta";
+                        hist.PAHI_DS_DESCRICAO = "Paciente " + pac.PACI_NM_NOME + " - Consulta editada " + item.PACO_DT_CONSULTA.ToShortDateString();
+                        Int32 voltaHist = baseApp.ValidateCreateHistorico(hist);
+
+                        // Mensagem do CRUD
+                        Session["MsgCRUD"] = "A consulta do(a) paciente " + pac.PACI_NM_NOME.ToUpper() + " marcada para " + item.PACO_DT_CONSULTA.ToLongDateString() + " foi alterada com sucesso";
+                        Session["MensPaciente"] = 888;
+                    }
+
+                    // Retorno
+                    return RedirectToAction("MontarTelaConsultaGeral", new { id = id });
+                }
+                catch (Exception ex)
+                {
+                    ViewBag.Message = ex.Message;
+                    Session["TipoVolta"] = 2;
+                    Session["VoltaExcecao"] = "Paciente";
+                    Session["Excecao"] = ex;
+                    Session["ExcecaoTipo"] = ex.GetType().ToString();
+                    GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                    Int32 voltaX = grava.GravarLogExcecao(ex, "Paciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                    return RedirectToAction("TrataExcecao", "BaseAdmin");
+                }
+            }
+            else
+            {
+                return View(vm);
+            }
+        }
+
+        [HttpGet]
+        public ActionResult VerConsultaCompleta(Int32 id)
+        {
+            try
+            {
+                // Verifica se tem usuario logado
+                USUARIO usuario = new USUARIO();
+                if ((String)Session["Ativa"] == null)
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+                if ((USUARIO)Session["UserCredentials"] != null)
+                {
+                    usuario = (USUARIO)Session["UserCredentials"];
+
+                    // Verfifica permissão
+                    if (usuario.PERFIL.PERF_IN_PACIENTE_CONSULTA_ACESSO == 0)
+                    {
+                        Session["MensPermissao"] = 2;
+                        Session["ModuloPermissao"] = "Paciente - Consulta - Consulta";
+                        return RedirectToAction("MontarTelaConsultaGeral", new { id = id });
+                    }
+                }
+                else
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+                Int32 idAss = (Int32)Session["IdAssinante"];
+
+                // Prepara view
+                Session["NivelPaciente"] = 3;
+                Session["AjudaNivel"] = "../BaseAdmin/Ajuda/5/Ajuda5_2.pdf";
+                PACIENTE_CONSULTA item = baseApp.GetConsultaById(id);
+                PacienteConsultaViewModel vm = Mapper.Map<PACIENTE_CONSULTA, PacienteConsultaViewModel>(item);
+                Session["IdConsulta"] = item.PACO_CD_ID;
+                PACIENTE pac = baseApp.GetItemById(item.PACI_CD_ID);
+                ViewBag.NomePaciente = pac.PACI_NM_NOME;
+
+                // Carrega anamnese
+                PACIENTE_ANAMNESE anamnese = item.PACIENTE_ANAMNESE.ToList().FirstOrDefault();
+                vm.PAAN_DS_MOTIVO_CONSULTA = anamnese.PAAM_DS_MOTIVO_CONSULTA;
+                vm.PAAN_DS_QUEIXA_PRINCIPAL = anamnese.PAAM_DS_QUEIXA_PRINCIPAL;
+                vm.PAAN_DS_HISTORIA_FAMILIAR = anamnese.PAAM_DS_HISTORIA_FAMILIAR;
+                vm.PAAN_DS_HISTORIA_DOENCA_ATUAL = anamnese.PAAM_DS_HISTORIA_DOENCA_ATUAL;
+                vm.PAAN_DS_DIAGNOSTICO_1 = anamnese.PAAM_DS_DIAGNOSTICO_1;
+                vm.PAAN_DS_CONDUTA = anamnese.PAAM_DS_CONDUTA;
+                Session["IdAnamneseConsulta"] = anamnese.PAAM_CD_ID;
+                Session["EditaAnamnese"] = 0;
+
+                // Carrega exame físico
+                PACIENTE_EXAME_FISICOS fisico = item.PACIENTE_EXAME_FISICOS.ToList().FirstOrDefault();
+                vm.PAEF_DT_DATA = fisico.PAEF_DT_DATA;
+                vm.PAEF_NR_PA_ALTA = fisico.PAEF_NR_PA_ALTA;
+                vm.PAEF_NR_PA_BAIXA = fisico.PAEF_NR_PA_BAIXA;
+                vm.PAEF_NR_FREQUENCIA_CARDIACA = fisico.PAEF_NR_FREQUENCIA_CARDIACA;
+                vm.PAEF_NR_PESO = fisico.PAEF_NR_PESO;
+                vm.PAEF_NR_ALTURA = fisico.PAEF_NR_ALTURA;
+                vm.PAEF_VL_IMC = fisico.PAEF_VL_IMC;
+                vm.PAEF_DS_EXAME_FISICO = fisico.PAEF_DS_EXAME_FISICO;
+                Session["IdFisicoConsulta"] = fisico.PAEF_CD_ID;
+                Session["EditaFisico"] = 0;
+
+                // Prepara view
+                objetoAntes = (PACIENTE)Session["Paciente"];
+                Session["Consulta"] = item;
+
+                // Grava Acesso
+                ControleAcessoMetodo grava = new ControleAcessoMetodo(aceApp);
+                Int32 voltaX = grava.GravaAcesso(usuario.USUA_CD_ID, usuario.ASSI_CD_ID, "PACIENTE_CONSULTA_GERAL_VER", "Paciente2", "VerConsultaCompleta");
+                return View(vm);
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Paciente";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Paciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return RedirectToAction("TrataExcecao", "BaseAdmin");
+            }
+        }
+
+        public ActionResult VoltarConsultaCompleta()
+        {
+            if ((String)Session["Ativa"] == null)
+            {
+                return RedirectToAction("Logout", "ControleAcesso");
+            }
+            return RedirectToAction("MontarTelaConsultaGeral", new { id = (Int32)Session["IdUsuarioConsulta"] });
+        }
+
+        public ActionResult VoltarAnexoPaciente()
+        {
+            if ((String)Session["Ativa"] == null)
+            {
+                return RedirectToAction("Logout", "ControleAcesso");
+            }
+            return RedirectToAction("VoltarAnexoPaciente", "Paciente");
+        }
+
+        public void GerarPacientePlanilha()
+        {
+            try
+            {
+                using (ExcelPackage package = new ExcelPackage())
+                {
+                    // Carrega listas
+                    Int32 idAss = (Int32)Session["IdAssinante"];
+
+                    // Prepara planilha
+                    ExcelWorksheet ws1 = package.Workbook.Worksheets.Add("Importação de Pacientes");
+
+                    // Mensagem
+                    ws1.Cells["A1"].Value = "AVISO: Leia as instruções na aba INSTRUÇÕES DE PREENCHIMENTO";
+
+                    ws1.DefaultColWidth = 100;
+                    ws1.Cells[ws1.Dimension.Address].AutoFitColumns(100);
+                    using (ExcelRange rng = ws1.Cells["A1:A1"])
+                    {
+                        rng.Style.Fill.PatternType = ExcelFillStyle.Solid;
+                        rng.Style.Fill.BackgroundColor.SetColor(System.Drawing.Color.PaleGoldenrod);
+
+                        rng.Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                        rng.Style.Border.Left.Style = ExcelBorderStyle.Thin;
+                        rng.Style.Border.Right.Style = ExcelBorderStyle.Thin;
+                        rng.Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+                        rng.Style.Font.Color.SetColor(System.Drawing.Color.Brown);
+                        rng.Style.Font.Bold = true;
+                        rng.Style.Locked = true;
+                    }
+
+                    ExcelWorksheet HiddenWs = package.Workbook.Worksheets.Add("Hidden");
+                    HiddenWs.Cells["A1"].Value = "PacImp@#$%";
+
+                    ws1.Cells["A3"].Value = "NOME*";
+                    ws1.Cells["B3"].Value = "NOME SOCIAL";
+                    ws1.Cells["C3"].Value = "MENOR DE IDADE*";
+                    ws1.Cells["D3"].Value = "RESPONSÁVEL*";
+                    ws1.Cells["E3"].Value = "CPF*";
+                    ws1.Cells["F3"].Value = "RG";
+                    ws1.Cells["G3"].Value = "GÊNERO*";
+                    ws1.Cells["H3"].Value = "NOME PAI";
+                    ws1.Cells["I3"].Value = "NOME MÃE";
+                    ws1.Cells["J3"].Value = "CEP";
+                    ws1.Cells["K3"].Value = "ENDEREÇO";
+                    ws1.Cells["L3"].Value = "NÚMERO";
+                    ws1.Cells["M3"].Value = "COMPLEMENTO";
+                    ws1.Cells["N3"].Value = "BAIRRO";
+                    ws1.Cells["O3"].Value = "CIDADE";
+                    ws1.Cells["P3"].Value = "UF";
+                    ws1.Cells["Q3"].Value = "DATA DE NASCIMENTO*";
+                    ws1.Cells["R3"].Value = "TELEFONE";
+                    ws1.Cells["S3"].Value = "CELULAR";
+                    ws1.Cells["T3"].Value = "E-MAIL";
+                    ws1.Cells["U3"].Value = "INDICAÇÃO";
+                    ws1.Cells["V3"].Value = "SEXO";
+                    ws1.Cells["W3"].Value = "NACIONALIDADE";
+                    ws1.Cells["X3"].Value = "ESTADO CIVIL"; ws1.Cells["Y3"].Value = "PROFISSÃO";
+                    ws1.Cells["Z3"].Value = "NOME DO CONTATO";
+                    ws1.Cells["AA3"].Value = "CELULAR DO CONTATO";
+                    ws1.Cells["AB3"].Value = "TELEFONE DO CONTATO";
+                    ws1.Cells["AC3"].Value = "PARENTESCO DO CONTATO";
+
+                    ws1.DefaultColWidth = 30;
+                    ws1.Cells[ws1.Dimension.Address].AutoFitColumns(30);
+                    using (ExcelRange rng = ws1.Cells["A3:AC3"])
+                    {
+                        rng.Style.Fill.PatternType = ExcelFillStyle.Solid;
+                        rng.Style.Fill.BackgroundColor.SetColor(System.Drawing.Color.DarkSeaGreen);
+
+                        rng.Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                        rng.Style.Border.Left.Style = ExcelBorderStyle.Thin;
+                        rng.Style.Border.Right.Style = ExcelBorderStyle.Thin;
+                        rng.Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+                        rng.Style.Locked = true;
+                    }
+
+                    using (ExcelRange rng = ws1.Cells["A4:AC500"])
+                    {
+                        rng.Style.Fill.PatternType = ExcelFillStyle.Solid;
+                        rng.Style.Fill.BackgroundColor.SetColor(System.Drawing.Color.Gainsboro);
+
+                        rng.Style.Border.Top.Style = ExcelBorderStyle.Hair;
+                        rng.Style.Border.Left.Style = ExcelBorderStyle.Hair;
+                        rng.Style.Border.Right.Style = ExcelBorderStyle.Hair;
+                        rng.Style.Border.Bottom.Style = ExcelBorderStyle.Hair;
+                    }
+
+                    // Cria instruções
+                    ExcelWorksheet ws2 = package.Workbook.Worksheets.Add("Instruções de Preenchimento");
+                    ws2.Cells["A1"].Value = "Informações de Preenchimento:";
+                    ws2.Cells["A2"].Value = "Preencher colunas obrigatórias marcadas com (*)";
+                    ws2.Cells["A3"].Value = "A coluna MENOR DE IDADE deve preenchida com S(im) ou N(ão)";
+                    ws2.Cells["A4"].Value = "A coluna NOME DO RESPONSÁVEL só deve ser preenchida se o paciente for menor dde idade";
+                    ws2.Cells["A5"].Value = "As colunas CPF (obrigatória) e RG devem ser informadas completas, com digitos, pontos e traços";
+                    ws2.Cells["A6"].Value = "A coluna GÊNERO deve preenchida com M(asculino), F(eminino) ou O(utros)";
+                    ws2.Cells["A7"].Value = "A coluna CEP deve ser informada completa, com digitos e traço";
+                    ws2.Cells["A7"].Value = "A coluna UF deve ser informada com a sigla oficial da UF. P.Ex. RJ, SP...";
+                    ws2.Cells["A8"].Value = "A coluna DATA DE NASCIMENTO deve ser informada no formato dd/mm/aaaa. P.Ex. 12/03/1987";
+                    ws2.Cells["A9"].Value = "A coluna TELEFONE deve ser informada no formato (99)9999-9999. P.Ex. (21)2285-4790";
+                    ws2.Cells["A10"].Value = "A coluna CELULAR deve ser informada no formato (99)99999-9999. P.Ex. (21)97302-4096";
+                    ws2.Cells["A11"].Value = "A coluna SEXO deve ser informada como M(asculino), F(eminino) ou O(utros)";
+                    ws2.Cells["A12"].Value = "A coluna ESTADO CIVIL deve ser informada como S(olteiro), C(asado), D(ivorciado), V(iúvo) ou U(nião estável)";
+                    ws2.Cells["A13"].Value = "A coluna PARENTESCO DO CONTATO deve ser informada como C(ônjuge), P(ai), M(ãe), F(ilho), I(rmão), A(vô), A(migo) ou O(utros)";
+
+                    ws2.DefaultColWidth = 200;
+                    ws2.Cells[ws1.Dimension.Address].AutoFitColumns(200);
+                    using (ExcelRange rng = ws2.Cells["A1:A1"])
+                    {
+                        rng.Style.Fill.PatternType = ExcelFillStyle.Solid;
+                        rng.Style.Fill.BackgroundColor.SetColor(System.Drawing.Color.PaleGoldenrod);
+
+                        rng.Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                        rng.Style.Border.Left.Style = ExcelBorderStyle.Thin;
+                        rng.Style.Border.Right.Style = ExcelBorderStyle.Thin;
+                        rng.Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+                        rng.Style.Font.Color.SetColor(System.Drawing.Color.Brown);
+                        rng.Style.Font.Bold = true;
+                        rng.Style.Locked = true;
+                    }
+
+                    using (ExcelRange rng = ws2.Cells["A2:A13"])
+                    {
+                        rng.Style.Fill.PatternType = ExcelFillStyle.Solid;
+                        rng.Style.Fill.BackgroundColor.SetColor(System.Drawing.Color.Beige);
+
+                        rng.Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                        rng.Style.Border.Left.Style = ExcelBorderStyle.Thin;
+                        rng.Style.Border.Right.Style = ExcelBorderStyle.Thin;
+                        rng.Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+                        rng.Style.Font.Color.SetColor(System.Drawing.Color.Green);
+                        rng.Style.Locked = true;
+                    }
+
+                    // Encerra
+                    HiddenWs.Hidden = eWorkSheetHidden.Hidden;
+                    Response.Clear();
+                    Response.ContentType = "application/xlsx";
+                    Response.AddHeader("content-disposition", "attachment; filename=PlanilhaPaciente.xlsx");
+                    Response.BinaryWrite(package.GetAsByteArray());
+                    Response.End();
+                }
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Paciente";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Paciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return;
+            }
+        }
+
+        [HttpGet]
+        public ActionResult EncerrarConsulta()
+        {
+            if ((String)Session["Ativa"] == null)
+            {
+                return RedirectToAction("Logout", "ControleAcesso");
+            }
+
+            try
+            {
+                // Recuperar Consulta
+                CONFIGURACAO conf = CarregaConfiguracaoGeral();
+                USUARIO usuario = (USUARIO)Session["UserCredentials"];
+                Int32 idAss = (Int32)Session["IdAssinante"];
+                PACIENTE_CONSULTA item = baseApp.GetConsultaById((Int32)Session["IdConsulta"]);
+
+                // Recuperar paciente
+                PACIENTE pac = baseApp.GetItemById(item.PACI_CD_ID);
+
+                // Recupera forma de recebimento
+                List<FORMA_RECEBIMENTO> frs = recApp.GetAllForma(idAss);
+                if (frs.Count == 0)
+                {
+                    Session["MensPaciente"] = 62;
+                    return RedirectToAction("VoltarProcederConsulta", "Paciente");
+                }
+                FORMA_RECEBIMENTO fr = frs.Where(p => p.FORE_IN_PADRAO == 1).FirstOrDefault();
+                if (fr == null)
+                {
+                    fr = frs.FirstOrDefault();
+                }
+
+                // Acertar consulta
+                item.PACO_IN_CONFIRMADA = 3;
+                item.PACO_IN_ENCERRADA = 1;
+                Int32 volta = baseApp.ValidateEditConsultaConfirma(item);
+
+                // Acertar paciente
+                pac.PACI_DT_CONSULTA = item.PACO_DT_CONSULTA;
+                pac.PACI_DT_PREVISAO_RETORNO = item.PACO_DT_CONSULTA.AddMonths(conf.CONF_NR_MESES_RETORNO.Value);
+                Int32 volta1 = baseApp.ValidateEdit(pac, pac, usuario);
+
+                // Mensagem do CRUD
+                String crud = "A consulta do(a) paciente " + pac.PACI_NM_NOME.ToUpper() + " em " + item.PACO_DT_CONSULTA.ToLongDateString() + " foi encerrada com sucesso";
+
+                // Gerar recebimento
+                if ((Int32)Session["PermFinanceiro"] == 1)
+                {
+                    List<CONSULTA_RECEBIMENTO> pagMes = CarregaRecebimento().Where(p => p.CORE_IN_ATIVO == 1 & p.USUA_CD_ID == usuario.USUA_CD_ID).ToList();
+                    Int32 num = pagMes.Where(p => p.CORE_DT_RECEBIMENTO.Value.Month == DateTime.Today.Date.Month & p.CORE_DT_RECEBIMENTO.Value.Year == DateTime.Today.Date.Year).ToList().Count;
+                    if ((Int32)Session["NumRecebimentos"] >= num)
+                    {
+                        if (conf.CONF_IN_GERA_RECEBIMENTO == 1 & fr != null & item != null)
+                        {
+                            String nome = "Recebimento de consulta de " + pac.PACI_NM_NOME + " em " + item.PACO_DT_CONSULTA.ToLongDateString();
+                            CONSULTA_RECEBIMENTO rec = new CONSULTA_RECEBIMENTO();
+                            rec.CORE_IN_ATIVO = 1;
+                            rec.CORE_DT_RECEBIMENTO = DateTime.Today.Date;
+                            rec.CORE_GU_GUID = Xid.NewXid().ToString();
+                            rec.USUA_CD_ID = usuario.USUA_CD_ID;
+                            rec.ASSI_CD_ID = idAss;
+                            rec.CORE_IN_CONFERIDO = 0;
+                            rec.CORE_NM_RECEBIMENTO = nome;
+                            rec.PACI_CD_ID = pac.PACI__CD_ID;
+                            rec.PACO_CD_ID = item.PACO_CD_ID;
+                            if (item.VACO_CD_ID != null)
+                            {
+                                rec.VACO_CD_ID = item.VACO_CD_ID;
+                                rec.CORE_VL_VALOR = item.VALOR_CONSULTA.VACO_NR_VALOR;
+                            }
+                            else
+                            {
+                                rec.VACO_CD_ID = null;
+                                rec.CORE_VL_VALOR = 0;
+                            }
+                            rec.FORE_CD_ID = fr.FORE_CD_ID;
+                            recApp.ValidateCreate(rec, usuario);
+
+                            crud += ". Um lançamento de recebimento foi gerado para esta consulta.";
+
+                            // Cria pastas
+                            String caminho = "/Imagens/" + idAss.ToString() + "/Recebimento/" + rec.CORE_CD_ID.ToString() + "/Anexos/";
+                            String map = Server.MapPath(caminho);
+                            Directory.CreateDirectory(Server.MapPath(caminho));
+                        }
+                    }
+                    else
+                    {
+                        crud += ". O lançamento de recebimento não pode ser gerado pois o número de lançamentos do mês excedeu o limite contratado ou não tem nenhuma consulta cadastrada para este paciente";
+                    }
+                }
+
+                // Mensagem do CRUD
+                Session["MsgCRUD"] = crud;
+                Session["MensPaciente"] = 63;
+                Session["ListaRecebimento"] = null;
+                Session["RecebimentoAlterada"] = 1;
+                Session["ListaConsultasGeral"] = null;
+                Session["Consultas"] = null;
+                Session["ConsultasAlterada"] = 1;
+
+                // Monta Log
+                LOG log = new LOG
+                {
+                    LOG_DT_DATA = DateTime.Now,
+                    ASSI_CD_ID = usuario.ASSI_CD_ID,
+                    USUA_CD_ID = usuario.USUA_CD_ID,
+                    LOG_NM_OPERACAO = "encPACO",
+                    LOG_IN_ATIVO = 1,
+                    LOG_TX_REGISTRO = crud,
+                    LOG_IN_SISTEMA = 6
+                };
+                Int32 volta2 = logApp.ValidateCreate(log);
+
+                // Grava historico
+                PACIENTE_HISTORICO hist = new PACIENTE_HISTORICO();
+                hist.ASSI_CD_ID = usuario.ASSI_CD_ID;
+                hist.USUA_CD_ID = usuario.USUA_CD_ID;
+                hist.PACI_CD_ID = item.PACI_CD_ID;
+                hist.PAHI_DT_DATA = DateTime.Now;
+                hist.PAHI_IN_TIPO = 10;
+                hist.PAHI_IN_CHAVE = item.PACO_CD_ID;
+                hist.PAHI_NM_OPERACAO = "Paciente - Encerramento de Consulta";
+                hist.PAHI_DS_DESCRICAO = "Paciente " + pac.PACI_NM_NOME + " - Consulta encerrada " + item.PACO_DT_CONSULTA.ToShortDateString();
+                Int32 voltaHist = baseApp.ValidateCreateHistorico(hist);
+
+                // Retorno
+                return RedirectToAction("VoltarProcederConsulta", "Paciente");
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Paciente";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Paciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return RedirectToAction("TrataExcecao", "BaseAdmin");
+            }
+        }
+
+        [HttpGet]
+        public ActionResult MontarTelaAusencias()
+        {
+            try
+            {
+                // Verifica se tem usuario logado
+                USUARIO usuario = new USUARIO();
+                if ((String)Session["Ativa"] == null)
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+                if ((USUARIO)Session["UserCredentials"] != null)
+                {
+                    usuario = (USUARIO)Session["UserCredentials"];
+
+                    // Verfifica permissão
+                    if (usuario.PERFIL.PERF_IN_ACESSO_PACIENTE == 0)
+                    {
+                        Session["MensPermissao"] = 2;
+                        Session["ModuloPermissao"] = "Paciente";
+                        return RedirectToAction("MontarTelaPaciente", "Paciente");
+                    }
+                }
+                else
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+                Int32 idAss = (Int32)Session["IdAssinante"];
+
+                // Mensagem
+                if (Session["MensPaciente"] != null)
+                {
+                    if ((Int32)Session["MensPaciente"] == 1)
+                    {
+                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0016", CultureInfo.CurrentCulture));
+                    }
+                }
+
+                // Carrega listas
+                CONFIGURACAO conf = CarregaConfiguracaoGeral();
+                if (Session["PacientesAusente"] == null)
+                {
+                    List<PACIENTE> listaCli = CarregaPaciente().Where(p => p.PACI_IN_ATIVO == 1).ToList();
+                    if (usuario.PERFIL.PERF_IN_VISAO_GERAL == 1 || usuario.PERFIL.PERF_SG_SIGLA == "ADM")
+                    {
+                        listaCli = CarregaPaciente().ToList();
+                    }
+                    else
+                    {
+                        listaCli = CarregaPaciente().Where(p => p.USUA_CD_ID == usuario.USUA_CD_ID).ToList();
+                    }
+                    List<PACIENTE> listaBase = listaCli.Where(p => p.PACI_DT_PREVISAO_RETORNO != null).ToList();
+                    List<PACIENTE> listaAusencia = listaBase.Where(p => p.PACI_DT_PREVISAO_RETORNO.Value.AddMonths(conf.CONF_IN_PACIENTE_AUSENCIA.Value) < DateTime.Today.Date).ToList();
+                    listaAusencia = listaAusencia.OrderBy(p => p.PACI_DT_PREVISAO_RETORNO).ThenBy(p => p.PACI_NM_NOME).ToList();
+                    Session["PacientesAusente"] = listaAusencia;
+                }
+
+                // Monta demais listas
+                ViewBag.Calculo = conf.CONF_IN_CALCULA_PROXIMA_CONSULTA;
+                ViewBag.Listas = (List<PACIENTE>)Session["PacientesAusente"];
+                ViewBag.Tipos = new SelectList(CarregaCatPaciente(), "TIPA_CD_ID", "TIPA_NM_NOME");
+                ViewBag.UF = new SelectList(CarregaUF(), "UF_CD_ID", "UF_SG_SIGLA");
+                ViewBag.Sexo = new SelectList(CarregaSexo(), "SEXO_CD_ID", "SEXO_NM_NOME");
+                ViewBag.Convenios = new SelectList(CarregaConvenio(), "CONV_CD_ID", "CONV_NM_NOME");
+                List<SelectListItem> menor = new List<SelectListItem>();
+                menor.Add(new SelectListItem() { Text = "Sim", Value = "1" });
+                menor.Add(new SelectListItem() { Text = "Não", Value = "0" });
+                ViewBag.Menor = new SelectList(menor, "Value", "Text");
+                Session["Paciente"] = null;
+                ViewBag.Usuarios = new SelectList(CarregaUsuario(), "USUA_CD_ID", "USUA_NM_NOME");
+                Session["AjudaNivel"] = "../BaseAdmin/Ajuda/6/Ajuda6_1.pdf";
+                ViewBag.Perfil = usuario.PERFIL.PERF_SG_SIGLA;
+
+                // Acerta estado    
+                Session["MensPaciente"] = null;
+                Session["VoltaPaciente"] = 1;
+                Session["NivelPaciente"] = 1;
+                Session["VoltaMsg"] = 0;
+                Session["TipoSolicitacao"] = 6;
+                Session["VoltarConsulta"] = 4;
+                Session["VoltarPesquisa"] = 0;
+                Session["ModoConsulta"] = 0;
+                Session["VoltaCalendario"] = 0;
+                Session["VoltaConfCalendario"] = 1;
+                Session["VoltaEncerramento"] = 1;
+                Session["VoltaAusencia"] = 1;
+                Session["TipoSolicitacao"] = 99;
+                Session["VoltaMensagem"] = 99;
+
+                // Verifica possibilidade E-Mail
+                ViewBag.EMail = 1;
+                Int32 num = CarregaMensagemEnviada().Where(p => p.MEEN_DT_DATA_ENVIO.Value.Month == DateTime.Today.Date.Month & p.MEEN_DT_DATA_ENVIO.Value.Year == DateTime.Today.Date.Year & p.MEEN_IN_TIPO == 1).ToList().Count;
+                if ((Int32)Session["NumEMail"] <= num)
+                {
+                    ViewBag.EMail = 0;
+                }
+
+                // Verifica possibilidade SMS
+                ViewBag.SMS = 1;
+                num = CarregaMensagemEnviada().Where(p => p.MEEN_DT_DATA_ENVIO.Value.Month == DateTime.Today.Date.Month & p.MEEN_DT_DATA_ENVIO.Value.Year == DateTime.Today.Date.Year & p.MEEN_IN_TIPO == 2).ToList().Count;
+                if ((Int32)Session["NumSMS"] <= num)
+                {
+                    ViewBag.SMS = 0;
+                }
+
+                // Carrega view
+                objeto = new PACIENTE();
+
+                // Grava Acesso
+                ControleAcessoMetodo grava = new ControleAcessoMetodo(aceApp);
+                Int32 voltaX = grava.GravaAcesso(usuario.USUA_CD_ID, usuario.ASSI_CD_ID, "PACIENTE_AUSENCIAS", "Paciente2", "MontarTelaAusencias");
+                return View(objeto);
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Paciente";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Paciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return RedirectToAction("TrataExcecao", "BaseAdmin");
+            }
+        }
+
+        [HttpPost]
+        public ActionResult FiltrarPacienteAusencia(PACIENTE item)
+        {
+            try
+            {
+                if ((String)Session["Ativa"] == null)
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+
+                // Sanitização
+                item.PACI_NM_NOME = CrossCutting.UtilitariosGeral.CleanStringGeral(item.PACI_NM_NOME);
+                item.PACI_NR_CPF = CrossCutting.UtilitariosGeral.CleanStringDocto(item.PACI_NR_CPF);
+                item.PACI_NR_MATRICULA = CrossCutting.UtilitariosGeral.CleanStringDocto(item.PACI_NR_MATRICULA);
+                item.PACI_NM_INDICACAO = CrossCutting.UtilitariosGeral.CleanStringGeral(item.PACI_NM_INDICACAO);
+                item.PACI_NR_CELULAR = CrossCutting.UtilitariosGeral.CleanStringPhone(item.PACI_NR_CELULAR);
+                item.PACI_NM_EMAIL = CrossCutting.UtilitariosGeral.CleanStringMail(item.PACI_NM_EMAIL);
+                item.PACI_NM_CIDADE = CrossCutting.UtilitariosGeral.CleanStringGeral(item.PACI_NM_CIDADE);
+
+                // Executa a operação
+                CONFIGURACAO conf = CarregaConfiguracaoGeral();
+                Int32 idAss = (Int32)Session["IdAssinante"];
+                USUARIO usuario = (USUARIO)Session["UserCredentials"];
+                Session["FiltroAusencia"] = item;
+                List<PACIENTE> listaObj = new List<PACIENTE>();
+                Tuple<Int32, List<PACIENTE>, Boolean> volta = baseApp.ExecuteFilterTuple(item.PACI__CD_ID, item.TIPA_CD_ID, item.SEXO_CD_ID, item.PACI_NM_NOME, item.PACI_NR_CPF, item.CONV_CD_ID, item.PACI_IN_MENOR, item.PACI_NR_CELULAR, item.PACI_NM_EMAIL, item.PACI_NM_CIDADE, item.UF_CD_ID, idAss);
+
+                // Verifica retorno
+                if (volta.Item1 == 1)
+                {
+                    Session["MensPaciente"] = 1;
+                    return RedirectToAction("MontarTelaAusencias");
+                }
+
+                // Trata atraso
+                List<PACIENTE> listaCli = volta.Item2.ToList();
+                List<PACIENTE> listaBase = new List<PACIENTE>();
+                listaBase = listaCli.Where(p => p.PACI_DT_PREVISAO_RETORNO != null & p.PACI_DT_CONSULTA != null).ToList();
+                List<PACIENTE> listaAusencia = listaBase.Where(p => p.PACI_DT_PREVISAO_RETORNO.Value.AddMonths(conf.CONF_IN_PACIENTE_AUSENCIA.Value) < DateTime.Today.Date).ToList();
+                listaAusencia = listaAusencia.OrderBy(p => p.PACI_DT_PREVISAO_RETORNO).ThenBy(p => p.PACI_NM_NOME).ToList();
+
+                // Sucesso
+                listaMaster = listaAusencia;
+                if (usuario.PERFIL.PERF_IN_VISAO_GERAL == 1 || usuario.PERFIL.PERF_SG_SIGLA == "ADM")
+                {
+                    listaMaster = listaMaster.ToList();
+                }
+                else
+                {
+                    listaMaster = listaMaster.Where(p => p.USUA_CD_ID == usuario.USUA_CD_ID).ToList();
+                }
+                Session["PacientesAusente"] = listaAusencia;
+                return RedirectToAction("MontarTelaAusencias");
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Paciente";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Paciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return RedirectToAction("TrataExcecao", "BaseAdmin");
+            }
+        }
+
+        public ActionResult RetirarFiltroPacienteAusencia()
+        {
+            try
+            {
+                if ((String)Session["Ativa"] == null)
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+                Session["PacientesAusente"] = null;
+                Session["FiltroAusencia"] = null;
+                return RedirectToAction("MontarTelaAusencias");
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Paciente";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Paciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return RedirectToAction("TrataExcecao", "BaseAdmin");
+            }
+        }
+
+        public List<TIPO_PACIENTE> CarregaCatPaciente()
+        {
+            try
+            {
+                Int32 idAss = (Int32)Session["IdAssinante"];
+                List<TIPO_PACIENTE> conf = new List<TIPO_PACIENTE>();
+                if (Session["TipoPacientes"] == null)
+                {
+                    conf = baseApp.GetAllTipos(idAss);
+                }
+                else
+                {
+                    if ((Int32)Session["TipoPacienteAlterada"] == 1)
+                    {
+                        conf = baseApp.GetAllTipos(idAss);
+                    }
+                    else
+                    {
+                        conf = (List<TIPO_PACIENTE>)Session["TipoPacientes"];
+                    }
+                }
+                Session["TipoPacientes"] = conf;
+                Session["TipoPacienteAlterada"] = 0;
+                return conf;
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Paciente";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Paciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return null;
+            }
+        }
+
+        public List<UF> CarregaUF()
+        {
+            try
+            {
+                Int32 idAss = (Int32)Session["IdAssinante"];
+                List<UF> conf = new List<UF>();
+                if (Session["UF"] == null)
+                {
+                    conf = baseApp.GetAllUF();
+                }
+                else
+                {
+                    conf = (List<UF>)Session["UF"];
+                }
+                Session["UF"] = conf;
+                return conf;
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Paciente";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Paciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return null;
+            }
+        }
+
+        public List<SEXO> CarregaSexo()
+        {
+            try
+            {
+                Int32 idAss = (Int32)Session["IdAssinante"];
+                List<SEXO> conf = new List<SEXO>();
+                if (Session["Sexos"] == null)
+                {
+                    conf = baseApp.GetAllSexo();
+                }
+                else
+                {
+                    conf = (List<SEXO>)Session["Sexos"];
+                }
+                Session["Sexos"] = conf;
+                return conf;
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Paciente";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Paciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return null;
+            }
+        }
+
+        public List<CONVENIO> CarregaConvenio()
+        {
+            try
+            {
+                Int32 idAss = (Int32)Session["IdAssinante"];
+                List<CONVENIO> conf = new List<CONVENIO>();
+                if (Session["Convenios"] == null)
+                {
+                    conf = baseApp.GetAllConvenio(idAss);
+                }
+                else
+                {
+                    if ((Int32)Session["ConvenioAlterada"] == 1)
+                    {
+                        conf = baseApp.GetAllConvenio(idAss);
+                    }
+                    else
+                    {
+                        conf = (List<CONVENIO>)Session["Convenios"];
+                    }
+                }
+                Session["Convenios"] = conf;
+                Session["ConvenioAlterada"] = 0;
+                return conf;
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Paciente";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Paciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return null;
+            }
+        }
+
+        public List<MENSAGENS_ENVIADAS_SISTEMA> CarregaMensagemEnviada()
+        {
+            try
+            {
+                Int32 idAss = (Int32)Session["IdAssinante"];
+                List<MENSAGENS_ENVIADAS_SISTEMA> conf = new List<MENSAGENS_ENVIADAS_SISTEMA>();
+                if (Session["MensagensEnviadas"] == null)
+                {
+                    conf = meApp.GetAllItens(idAss);
+                }
+                else
+                {
+                    if ((Int32)Session["MensagensEnviadaAlterada"] == 1)
+                    {
+                        conf = meApp.GetAllItens(idAss);
+                    }
+                    else
+                    {
+                        conf = (List<MENSAGENS_ENVIADAS_SISTEMA>)Session["MensagensEnviadas"];
+                    }
+                }
+                conf = conf.Where(p => p.MEEN_IN_SISTEMA == 6).ToList();
+                Session["CatAgendas"] = conf;
+                Session["MensagensEnviadaAlterada"] = 0;
+                return conf;
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Paciente";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Paciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return null;
+            }
+        }
+
+        public ActionResult GerarListagemAusencia()
+        {
+            try
+            {
+                if ((String)Session["Ativa"] == null)
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+
+                // Prepara geração
+                CONFIGURACAO conf = CarregaConfiguracaoGeral();
+                Int32 idAss = (Int32)Session["IdAssinante"];
+                String data = DateTime.Today.Date.ToShortDateString();
+                data = data.Substring(0, 2) + data.Substring(3, 2) + data.Substring(6, 4);
+
+                String nomeRel = "PacienteAusenciaLista" + "_" + data + ".pdf";
+                List<PACIENTE> lista = (List<PACIENTE>)Session["PacientesAusente"];
+                PACIENTE filtro = (PACIENTE)Session["FiltroAusencia"];
+                Font meuFont = FontFactory.GetFont("Arial", 8, iTextSharp.text.Font.NORMAL, BaseColor.BLACK);
+                Font meuFont1 = FontFactory.GetFont("Arial", 9, iTextSharp.text.Font.NORMAL, BaseColor.BLACK);
+                Font meuFont2 = FontFactory.GetFont("Arial", 14, iTextSharp.text.Font.NORMAL, BaseColor.BLACK);
+
+                // Cabeçalho
+                PdfPTable headerTable = new PdfPTable(new float[] { 20f, 700f });
+                headerTable.WidthPercentage = 100;
+                headerTable.HorizontalAlignment = 1;
+                headerTable.SpacingBefore = 1f;
+                headerTable.SpacingAfter = 1f;
+
+                PdfPCell cell = new PdfPCell();
+                cell.Border = 0;
+                cell.Colspan = 1;
+                Image image = null;
+                if (conf.CONF_IN_LOGO_EMPRESA == 1)
+                {
+                    EMPRESA empresa = empApp.GetItemByAssinante(idAss);
+                    image = Image.GetInstance(Server.MapPath(empresa.EMPR_AQ_LOGO));
+                }
+                else
+                {
+                    image = Image.GetInstance(Server.MapPath("~/Images/Prontuario_Icone_1.png"));
+                }
+                image.ScaleAbsolute(50, 50);
+                cell.AddElement(image);
+                cell.Border = PdfPCell.BOTTOM_BORDER;
+                headerTable.AddCell(cell);
+
+                cell = new PdfPCell(new Paragraph("Pacientes - Ausentes por mais de " + conf.CONF_IN_PACIENTE_AUSENCIA.ToString() + " meses após data prevista de retorno", meuFont2))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_CENTER
+                };
+                cell.Border = 0;
+                cell.Colspan = 1;
+                cell.Border = PdfPCell.BOTTOM_BORDER;
+                headerTable.AddCell(cell);
+
+                // Rodape
+                PdfPTable footerTable = new PdfPTable(1);
+                footerTable.WidthPercentage = 100;
+                footerTable.HorizontalAlignment = 1;
+                footerTable.SpacingBefore = 1f;
+                footerTable.SpacingAfter = 1f;
+
+                cell = new PdfPCell();
+                cell.Border = PdfPCell.TOP_BORDER;
+                cell = new PdfPCell(new Paragraph("Gerado por WebDoctor 1.0 em " + DateTime.Today.Date.ToLongDateString(), meuFont));
+                footerTable.AddCell(cell);
+
+                // Cria documento
+                Document pdfDoc = new Document(PageSize.A4.Rotate(), 10, 10, 60, 40);
+                iTextSharp.text.pdf.PdfWriter pdfWriter = iTextSharp.text.pdf.PdfWriter.GetInstance(pdfDoc, Response.OutputStream);
+                pdfWriter.PageEvent = new CustomPageEventHelper(headerTable, footerTable);
+                pdfDoc.Open();
+
+                Paragraph line1 = new Paragraph("  ");
+                pdfDoc.Add(line1);
+
+                // Grid
+                PdfPTable table = new PdfPTable(new float[] { 170f, 60f, 80f, 100f, 80f, 80f, 40f, 80f, 40f, 60f, 60f, 60f });
+                table.WidthPercentage = 100;
+                table.HorizontalAlignment = 0;
+                table.SpacingBefore = 1f;
+                table.SpacingAfter = 1f;
+                cell = new PdfPCell(new Paragraph("Pacientes selecionados pelos parametros de filtro abaixo", meuFont1))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 12;
+                cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                table.AddCell(cell);
+
+                cell = new PdfPCell(new Paragraph("Nome", meuFont))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph("Tipo", meuFont))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph("CPF", meuFont))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph("E-Mail", meuFont))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph("Celular", meuFont))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph("Cidade", meuFont))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph("UF", meuFont))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph("Convênio", meuFont))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph("Menor", meuFont))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph("Ult.Consulta", meuFont))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph("Retorno", meuFont))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph("   ", meuFont))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                table.AddCell(cell);
+
+                foreach (PACIENTE item in lista)
+                {
+                    cell = new PdfPCell(new Paragraph(item.PACI_NM_NOME, meuFont))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    table.AddCell(cell);
+                    cell = new PdfPCell(new Paragraph(item.TIPO_PACIENTE.TIPA_NM_NOME, meuFont))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    table.AddCell(cell);
+                    if (item.PACI_NR_CPF != null)
+                    {
+                        cell = new PdfPCell(new Paragraph(item.PACI_NR_CPF, meuFont))
+                        {
+                            VerticalAlignment = Element.ALIGN_MIDDLE,
+                            HorizontalAlignment = Element.ALIGN_LEFT
+                        };
+                        table.AddCell(cell);
+                    }
+                    else
+                    {
+                        cell = new PdfPCell(new Paragraph("-", meuFont))
+                        {
+                            VerticalAlignment = Element.ALIGN_MIDDLE,
+                            HorizontalAlignment = Element.ALIGN_LEFT
+                        };
+                        table.AddCell(cell);
+                    }
+                    cell = new PdfPCell(new Paragraph(item.PACI_NM_EMAIL, meuFont))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    table.AddCell(cell);
+                    if (item.PACI_NR_CELULAR != null)
+                    {
+                        cell = new PdfPCell(new Paragraph(item.PACI_NR_CELULAR, meuFont))
+                        {
+                            VerticalAlignment = Element.ALIGN_MIDDLE,
+                            HorizontalAlignment = Element.ALIGN_LEFT
+                        };
+                        table.AddCell(cell);
+                    }
+                    else
+                    {
+                        cell = new PdfPCell(new Paragraph("-", meuFont))
+                        {
+                            VerticalAlignment = Element.ALIGN_MIDDLE,
+                            HorizontalAlignment = Element.ALIGN_LEFT
+                        };
+                        table.AddCell(cell);
+                    }
+                    if (item.PACI_NM_CIDADE != null)
+                    {
+                        cell = new PdfPCell(new Paragraph(item.PACI_NM_CIDADE, meuFont))
+                        {
+                            VerticalAlignment = Element.ALIGN_MIDDLE,
+                            HorizontalAlignment = Element.ALIGN_LEFT
+                        };
+                        table.AddCell(cell);
+                    }
+                    else
+                    {
+                        cell = new PdfPCell(new Paragraph("-", meuFont))
+                        {
+                            VerticalAlignment = Element.ALIGN_MIDDLE,
+                            HorizontalAlignment = Element.ALIGN_LEFT
+                        };
+                        table.AddCell(cell);
+                    }
+                    if (item.UF != null)
+                    {
+                        cell = new PdfPCell(new Paragraph(item.UF.UF_SG_SIGLA, meuFont))
+                        {
+                            VerticalAlignment = Element.ALIGN_MIDDLE,
+                            HorizontalAlignment = Element.ALIGN_LEFT
+                        };
+                        table.AddCell(cell);
+                    }
+                    else
+                    {
+                        cell = new PdfPCell(new Paragraph("-", meuFont))
+                        {
+                            VerticalAlignment = Element.ALIGN_MIDDLE,
+                            HorizontalAlignment = Element.ALIGN_LEFT
+                        };
+                        table.AddCell(cell);
+                    }
+                    if (item.CONVENIO != null)
+                    {
+                        cell = new PdfPCell(new Paragraph(item.CONVENIO.CONV_NM_NOME, meuFont))
+                        {
+                            VerticalAlignment = Element.ALIGN_MIDDLE,
+                            HorizontalAlignment = Element.ALIGN_LEFT
+                        };
+                        table.AddCell(cell);
+                    }
+                    else
+                    {
+                        cell = new PdfPCell(new Paragraph("-", meuFont))
+                        {
+                            VerticalAlignment = Element.ALIGN_MIDDLE,
+                            HorizontalAlignment = Element.ALIGN_LEFT
+                        };
+                        table.AddCell(cell);
+                    }
+                    if (item.PACI_IN_MENOR == 1)
+                    {
+                        cell = new PdfPCell(new Paragraph("Sim", meuFont))
+                        {
+                            VerticalAlignment = Element.ALIGN_MIDDLE,
+                            HorizontalAlignment = Element.ALIGN_LEFT
+                        };
+                        table.AddCell(cell);
+                    }
+                    else
+                    {
+                        cell = new PdfPCell(new Paragraph("Não", meuFont))
+                        {
+                            VerticalAlignment = Element.ALIGN_MIDDLE,
+                            HorizontalAlignment = Element.ALIGN_LEFT
+                        };
+                        table.AddCell(cell);
+                    }
+                    if (item.PACI_DT_CONSULTA != null)
+                    {
+                        cell = new PdfPCell(new Paragraph(item.PACI_DT_CONSULTA.Value.ToShortDateString(), meuFont))
+                        {
+                            VerticalAlignment = Element.ALIGN_MIDDLE,
+                            HorizontalAlignment = Element.ALIGN_LEFT
+                        };
+                        table.AddCell(cell);
+                    }
+                    else
+                    {
+                        cell = new PdfPCell(new Paragraph("-", meuFont))
+                        {
+                            VerticalAlignment = Element.ALIGN_MIDDLE,
+                            HorizontalAlignment = Element.ALIGN_LEFT
+                        };
+                        table.AddCell(cell);
+                    }
+                    if (item.PACI_DT_PREVISAO_RETORNO != null)
+                    {
+                        cell = new PdfPCell(new Paragraph(item.PACI_DT_PREVISAO_RETORNO.Value.ToShortDateString(), meuFont))
+                        {
+                            VerticalAlignment = Element.ALIGN_MIDDLE,
+                            HorizontalAlignment = Element.ALIGN_LEFT
+                        };
+                        table.AddCell(cell);
+                    }
+                    else
+                    {
+                        cell = new PdfPCell(new Paragraph("-", meuFont))
+                        {
+                            VerticalAlignment = Element.ALIGN_MIDDLE,
+                            HorizontalAlignment = Element.ALIGN_LEFT
+                        };
+                        table.AddCell(cell);
+                    }
+                    if (System.IO.File.Exists(Server.MapPath(item.PACI_AQ_FOTO)))
+                    {
+                        cell = new PdfPCell();
+                        image = Image.GetInstance(Server.MapPath(item.PACI_AQ_FOTO));
+                        image.ScaleAbsolute(40, 40);
+                        cell.AddElement(image);
+                        table.AddCell(cell);
+                    }
+                    else
+                    {
+                        cell = new PdfPCell(new Paragraph("-", meuFont))
+                        {
+                            VerticalAlignment = Element.ALIGN_MIDDLE,
+                            HorizontalAlignment = Element.ALIGN_LEFT
+                        };
+                        table.AddCell(cell);
+                    }
+                }
+                pdfDoc.Add(table);
+
+                // Linha Horizontal
+                Paragraph line2 = new Paragraph(new Chunk(new iTextSharp.text.pdf.draw.LineSeparator(0.0F, 100.0F, BaseColor.BLACK, Element.ALIGN_LEFT, 1)));
+                pdfDoc.Add(line2);
+
+                // Rodapé
+                Chunk chunk1 = new Chunk("Parâmetros de filtro: ", FontFactory.GetFont("Arial", 10, Font.NORMAL, BaseColor.BLACK));
+                pdfDoc.Add(chunk1);
+
+                String parametros = String.Empty;
+                Int32 ja = 0;
+                if (filtro != null)
+                {
+                    if (filtro.TIPA_CD_ID > 0)
+                    {
+                        TIPO_PACIENTE cat = tpaApp.GetItemById(filtro.TIPA_CD_ID);
+                        parametros += "Tipo: " + cat.TIPA_NM_NOME;
+                        ja = 1;
+                    }
+                    if (filtro.PACI_IN_MENOR != null)
+                    {
+                        if (ja == 0)
+                        {
+                            parametros += "Menor: *" + filtro.PACI_IN_MENOR + "*";
+                            ja = 1;
+                        }
+                        else
+                        {
+                            parametros += " e Menor: *" + filtro.PACI_IN_MENOR + "*";
+                        }
+                    }
+                    if (filtro.PACI_NM_NOME != null)
+                    {
+                        if (ja == 0)
+                        {
+                            parametros += "Nome: *" + filtro.PACI_NM_NOME + "*";
+                            ja = 1;
+                        }
+                        else
+                        {
+                            parametros += " e Nome: *" + filtro.PACI_NM_NOME + "*";
+                        }
+                    }
+                    if (filtro.PACI_NR_CPF != null)
+                    {
+                        if (ja == 0)
+                        {
+                            parametros += "CPF: " + filtro.PACI_NR_CPF;
+                            ja = 1;
+                        }
+                        else
+                        {
+                            parametros += " e CPF: " + filtro.PACI_NR_CPF;
+                        }
+                    }
+                    if (filtro.PACI_NM_EMAIL != null)
+                    {
+                        if (ja == 0)
+                        {
+                            parametros += "E-Mail: *" + filtro.PACI_NM_EMAIL + "*";
+                            ja = 1;
+                        }
+                        else
+                        {
+                            parametros += " e E-Mail: *" + filtro.PACI_NM_EMAIL + "*";
+                        }
+                    }
+                    if (filtro.PACI_NR_CELULAR != null)
+                    {
+                        if (ja == 0)
+                        {
+                            parametros += "Celular: *" + filtro.PACI_NM_EMAIL + "*";
+                            ja = 1;
+                        }
+                        else
+                        {
+                            parametros += " e Celular: *" + filtro.PACI_NR_CELULAR + "*";
+                        }
+                    }
+                    if (filtro.PACI_NM_CIDADE != null)
+                    {
+                        if (ja == 0)
+                        {
+                            parametros += "Cidade: *" + filtro.PACI_NM_CIDADE + "*";
+                            ja = 1;
+                        }
+                        else
+                        {
+                            parametros += " e Cidade: *" + filtro.PACI_NM_CIDADE + "*";
+                        }
+                    }
+                    if (filtro.UF != null)
+                    {
+                        if (ja == 0)
+                        {
+                            parametros += "UF: " + filtro.UF.UF_SG_SIGLA;
+                            ja = 1;
+                        }
+                        else
+                        {
+                            parametros += " e UF: " + filtro.UF.UF_SG_SIGLA;
+                        }
+                    }
+                    if (filtro.CONVENIO != null)
+                    {
+                        if (ja == 0)
+                        {
+                            parametros += "Convênio: *" + filtro.CONVENIO.CONV_NM_NOME + "*";
+                            ja = 1;
+                        }
+                        else
+                        {
+                            parametros += " e Convênio: *" + filtro.CONVENIO.CONV_NM_NOME + "*";
+                        }
+                    }
+                    if (filtro.PACI_NM_INDICACAO != null)
+                    {
+                        if (ja == 0)
+                        {
+                            parametros += "Indicação: *" + filtro.PACI_NM_INDICACAO + "*";
+                            ja = 1;
+                        }
+                        else
+                        {
+                            parametros += " e Indicação: *" + filtro.PACI_NM_INDICACAO + "*";
+                        }
+                    }
+                    if (filtro.SEXO != null)
+                    {
+                        if (ja == 0)
+                        {
+                            parametros += "Gênero: " + filtro.SEXO.SEXO_NM_NOME;
+                            ja = 1;
+                        }
+                        else
+                        {
+                            parametros += " e Gênero: " + filtro.SEXO.SEXO_NM_NOME;
+                        }
+                    }
+                    if (ja == 0)
+                    {
+                        parametros = "Nenhum filtro definido.";
+                    }
+                }
+                else
+                {
+                    parametros = "Nenhum filtro definido.";
+                }
+                Chunk chunk = new Chunk(parametros, FontFactory.GetFont("Arial", 9, Font.NORMAL, BaseColor.BLACK));
+                pdfDoc.Add(chunk);
+
+                // Linha Horizontal
+                Paragraph line3 = new Paragraph(new Chunk(new iTextSharp.text.pdf.draw.LineSeparator(0.0F, 100.0F, BaseColor.BLUE, Element.ALIGN_LEFT, 1)));
+                pdfDoc.Add(line3);
+
+                // Finaliza
+                pdfWriter.CloseStream = false;
+                pdfDoc.Close();
+                Response.Buffer = true;
+                Response.ContentType = "application/pdf";
+                Response.AddHeader("content-disposition", "attachment;filename=" + nomeRel);
+                Response.Cache.SetCacheability(HttpCacheability.NoCache);
+                Response.Write(pdfDoc);
+                Response.End();
+
+                return RedirectToAction("MontarTelaAusencias");
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Paciente";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Paciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return RedirectToAction("TrataExcecao", "BaseAdmin");
+            }
+        }
+
+        public List<CONSULTA_RECEBIMENTO> CarregaRecebimento()
+        {
+            try
+            {
+                Int32 idAss = (Int32)Session["IdAssinante"];
+                List<CONSULTA_RECEBIMENTO> conf = new List<CONSULTA_RECEBIMENTO>();
+                if (Session["Recebimentos"] == null)
+                {
+                    conf = recApp.GetAllItens(idAss);
+                }
+                else
+                {
+                    if ((Int32)Session["RecebimentoAlterada"] == 1)
+                    {
+                        conf = recApp.GetAllItens(idAss);
+                    }
+                    else
+                    {
+                        conf = (List<CONSULTA_RECEBIMENTO>)Session["Recebimentos"];
+                    }
+                }
+                Session["Recebimentos"] = conf;
+                Session["RecebimentoAlterada"] = 0;
+                return conf;
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Paciente";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Paciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return null;
+            }
+        }
+
+        public ActionResult MontarTelaAvisosRTi()
+        {
+            try
+            {
+                // Verifica se tem usuario logado
+                USUARIO usuario = new USUARIO();
+                if ((String)Session["Ativa"] == null)
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+                if ((USUARIO)Session["UserCredentials"] != null)
+                {
+                    usuario = (USUARIO)Session["UserCredentials"];
+
+                    // Verfifica permissão
+                }
+                else
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+                Int32 idAss = (Int32)Session["IdAssinante"];
+
+                // Configuração
+                CONFIGURACAO conf = CarregaConfiguracaoGeral();
+                ViewBag.Perfil = usuario.PERFIL.PERF_SG_SIGLA;
+
+                // Carrega listas
+                if (Session["ListaAvisoRTi"] == null)
+                {
+                    List<MENSAGEM_FABRICANTE> mensFab = usuApp.GetAllMensFab(idAss).OrderBy(p => p.MEFA_IN_TIPO).ThenByDescending(p => p.MEFA_DT_CADASTRO).ToList();
+                    Session["ListaAvisoRTi"] = mensFab;
+                }
+                ViewBag.Listas = (List<MENSAGEM_FABRICANTE>)Session["ListaAvisoRTi"];
+
+                // Monta demais listas
+
+                // Mensagem
+                if (Session["MensPaciente"] != null)
+                {
+                    if ((Int32)Session["MensPaciente"] == 1)
+                    {
+                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0016", CultureInfo.CurrentCulture));
+                    }
+                }
+
+                // Acerta estado
+                Session["MensPaciente"] = null;
+                Session["NivelPaciente"] = 1;
+                Session["VoltaMsg"] = 0;
+                Session["AjudaNivel"] = "../BaseAdmin/Ajuda/3/Ajuda3_6.pdf";
+
+                // Carrega view
+                MENSAGEM_FABRICANTE mens = new MENSAGEM_FABRICANTE();
+
+                // Grava Acesso
+                ControleAcessoMetodo grava = new ControleAcessoMetodo(aceApp);
+                Int32 voltaX = grava.GravaAcesso(usuario.USUA_CD_ID, usuario.ASSI_CD_ID, "AVISO_RTI", "Paciente2", "MontarTelaAvisosRTi");
+                return View(mens);
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Paciente";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Paciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return RedirectToAction("TrataExcecao", "BaseAdmin");
+            }
+        }
+
+        [HttpPost]
+        public JsonResult RedirecionarClasse()
+        {
+            Int32 idAss = (Int32)Session["IdAssinante"];
+            USUARIO usuario = (USUARIO)Session["UserCredentials"];
+            String url = usuario.TIPO_CARTEIRA_CLASSE.TICL_LK_ORGAO;
+
+            if (!url.Contains("www."))
+            {
+                url = "www." + url;
+            }
+            if (!url.Contains("https://"))
+            {
+                url = "https://" + url;
+            }
+            return Json(new { success = true, url = url });
+        }
+
+        public ActionResult MontarAnamneses()
+        {
+            try
+            {
+                if ((String)Session["Ativa"] == null)
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+                Int32 idAss = (Int32)Session["IdAssinante"];
+                USUARIO usuario = (USUARIO)Session["UserCredentials"];
+                List<PACIENTE_ANAMNESE> listaAna = baseApp.GetAllAnamnese(idAss).Where(p => p.PAAM_IN_ATIVO == 1).ToList();
+                foreach (PACIENTE_ANAMNESE item in listaAna)
+                {
+                    String frase = String.Empty;
+                    frase += "=== MOTIVO DA CONSULTA ===" + "\r\n" + item.PAAM_DS_MOTIVO_CONSULTA + "\r\n";
+                    frase += "\r\n" + "=== QUEIXA PRINCIPAL ===" + "\r\n" + item.PAAM_DS_QUEIXA_PRINCIPAL + "\r\n";
+                    frase += "\r\n" + "=== HISTÓRICO FAMILIAR ===" + "\r\n" + item.PAAM_DS_HISTORIA_FAMILIAR + "\r\n";
+                    frase += "\r\n" + "=== HISTÓRIA SOCIAL ===" + "\r\n" + item.PAAM_DS_HISTORIA_SOCIAL + "\r\n";
+                    frase += "\r\n" + "=== HISTÓRIO DA DOENÇA ATUAL ===" + "\r\n" + item.PAAM_DS_HISTORIA_DOENCA_ATUAL + "\r\n";
+                    frase += "\r\n" + "=== MEDICAMENTOS EM USO ===" + "\r\n" + item.PAAM_NM_MEDICAMENTO + "\r\n";
+                    frase += "\r\n" + "=== HISTÓRIA PATOLÓGICA PROGRESSIVA ===" + "\r\n" + item.PAAM_DS_HISTORIA_PATOLOGICA_PROGRESSIVA + "\r\n";
+                    frase += "\r\n" + "=== AVALIAÇÃO CARDIOLÓGICA ===" + "\r\n" + item.PAAN_NM_AVALIACAO_CARDIOLOGICA_LONG + "\r\n";
+                    frase += "\r\n" + "=== AVALIAÇÃO RESPIRATÓRIA  ===" + "\r\n" + item.PAAN_NM_RESPIRATORIO_LONG + "\r\n";
+                    frase += "\r\n" + "=== AVALIAÇÃO DO ABDÔMEM ===" + "\r\n" + item.PAAN_NM_ABDOMEM + "\r\n";
+                    frase += "\r\n" + "=== AVALIAÇÃO DOS MEMBROS INFERIORES ===" + "\r\n" + item.PAAN_NM_MEMBROS_INFERIORES + "\r\n";
+                    if (item.PAAM_IN_CAMPO_1 == 1)
+                    {
+                        frase += "\r\n" + "=== " + item.PAAM_NM_CAMPO_1 + " ===" + "\r\n" + item.PAAM_DS_CAMPO_1 + "\r\n";
+                    }
+                    if (item.PAAM_IN_CAMPO_2 == 1)
+                    {
+                        frase += "\r\n" + "=== " + item.PAAM_NM_CAMPO_2 + " ===" + "\r\n" + item.PAAM_DS_CAMPO_2 + "\r\n";
+                    }
+                    if (item.PAAM_IN_CAMPO_3 == 1)
+                    {
+                        frase += "\r\n" + "=== " + item.PAAM_NM_CAMPO_3 + " ===" + "\r\n" + item.PAAM_DS_CAMPO_3 + "\r\n";
+                    }
+                    if (item.PAAM_IN_CAMPO_4 == 1)
+                    {
+                        frase += "\r\n" + "=== " + item.PAAM_NM_CAMPO_4 + " ===" + "\r\n" + item.PAAM_DS_CAMPO_4 + "\r\n";
+                    }
+                    if (item.PAAM_IN_CAMPO_5 == 1)
+                    {
+                        frase += "\r\n" + "=== " + item.PAAM_NM_CAMPO_5 + " ===" + "\r\n" + item.PAAM_DS_CAMPO_5 + "\r\n";
+                    }
+                    if (item.PAAM_IN_CAMPO_6 == 1)
+                    {
+                        frase += "\r\n" + "=== " + item.PAAM_NM_CAMPO_6 + " ===" + "\r\n" + item.PAAM_DS_CAMPO_6 + "\r\n";
+                    }
+                    if (item.PAAM_IN_CAMPO_7 == 1)
+                    {
+                        frase += "\r\n" + "=== " + item.PAAM_NM_CAMPO_7 + " ===" + "\r\n" + item.PAAM_DS_CAMPO_7 + "\r\n";
+                    }
+                    if (item.PAAM_IN_CAMPO_8 == 1)
+                    {
+                        frase += "\r\n" + "=== " + item.PAAM_NM_CAMPO_8 + " ===" + "\r\n" + item.PAAM_DS_CAMPO_8 + "\r\n";
+                    }
+                    if (item.PAAM_IN_CAMPO_9 == 1)
+                    {
+                        frase += "\r\n" + "=== " + item.PAAM_NM_CAMPO_9 + " ===" + "\r\n" + item.PAAM_DS_CAMPO_9 + "\r\n";
+                    }
+                    if (item.PAAM_IN_CAMPO_10 == 1)
+                    {
+                        frase += "\r\n" + "=== " + item.PAAM_NM_CAMPO_10 + " ===" + "\r\n" + item.PAAM_DS_CAMPO_10 + "\r\n";
+                    }
+                    frase += "\r\n" + "=== DIAGNÓSTICO ===" + "\r\n" + item.PAAM_DS_DIAGNOSTICO_1_LONG + "\r\n";
+                    frase += "\r\n" + "=== CONDUTA ADOTADA ===" + "\r\n" + item.PAAM_DS_CONDUTA + "\r\n";
+
+                    item.PAAM_TX_COMPLETA = frase;
+                    Int32 voltaAna = baseApp.ValidateEditAnamnese(item);
+                }
+                return RedirectToAction("MontarTelaPaciente", "Paciente");
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Paciente";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Paciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return RedirectToAction("TrataExcecao", "BaseAdmin");
+            }
+        }
+
+        public ActionResult VerAnamneseCompletaChamada()
+        {
+            if ((String)Session["Ativa"] == null)
+            {
+                return RedirectToAction("Logout", "ControleAcesso");
+            }
+            return RedirectToAction("VerAnamneseCompleta", new { id = (Int32)Session["IdAnamneseConsulta"] });
+        }
+
+        public ActionResult VerAnexoPacienteConsulta()
+        {
+            if ((String)Session["Ativa"] == null)
+            {
+                return RedirectToAction("Logout", "ControleAcesso");
+            }
+            return RedirectToAction("VerAnexoPacienteProceder", new { id = (Int32)Session["IdPaciente"] });
+        }
+
+        public ActionResult VerAnotacaoAnamneseBase()
+        {
+            if ((String)Session["Ativa"] == null)
+            {
+                return RedirectToAction("Logout", "ControleAcesso");
+            }
+            return RedirectToAction("VerAnotacaoAnamnese");
+        }
+
+        public ActionResult VerExameFisicoBase()
+        {
+            if ((String)Session["Ativa"] == null)
+            {
+                return RedirectToAction("Logout", "ControleAcesso");
+            }
+            return RedirectToAction("EditarExameFisico", "Paciente", new { id = (Int32)Session["IdFisico"] });
+        }
+
+        public ActionResult VerAnamneseBase()
+        {
+            if ((String)Session["Ativa"] == null)
+            {
+                return RedirectToAction("Logout", "ControleAcesso");
+            }
+            if ((Int32)Session["BlocoAnamnese"] == 1)
+            {
+                return RedirectToAction("EditarAnamneseNova", "Paciente", new { id = (Int32)Session["IdAnamnese"] });
+            }
+            else
+            {
+                return RedirectToAction("EditarAnamneseNovaSono", "Paciente2", new { id = (Int32)Session["IdAnamnese"] });
+            }
+        }
+
+        public ActionResult IncluirAnotacaoAnamneseBase()
+        {
+            if ((String)Session["Ativa"] == null)
+            {
+                return RedirectToAction("Logout", "ControleAcesso");
+            }
+            Session["VoltaAnotacaoAnamnese"] = 3;
+            Session["NivelPaciente"] = 13;
+
+            return RedirectToAction("IncluirAnotacaoAnamnese");
+        }
+
+        public ActionResult VerAnamneseCompletaChamadaEdit()
+        {
+            if ((String)Session["Ativa"] == null)
+            {
+                return RedirectToAction("Logout", "ControleAcesso");
+            }
+
+            PACIENTE pac = baseApp.GetItemById((Int32)Session["IdPaciente"]);
+            PACIENTE_ANAMNESE ana = pac.PACIENTE_ANAMNESE.OrderByDescending(p => p.PAAM_DT_DATA).ToList().FirstOrDefault();
+            return RedirectToAction("VerAnamneseCompleta", new { id = ana.PAAM_CD_ID });
+        }
+
+        public ActionResult VerAnamneseCompleta(Int32 id)
+        {
+            try
+            {
+                if ((String)Session["Ativa"] == null)
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+                USUARIO usuario = (USUARIO)Session["UserCredentials"];
+
+                Int32 a = MontarAnamnese(id);
+                PACIENTE_ANAMNESE ana = baseApp.GetAnamneseById(id);
+                PacienteAnamneseViewModel vm = Mapper.Map<PACIENTE_ANAMNESE, PacienteAnamneseViewModel>(ana);
+                Session["Anamnese"] = ana;
+                Session["IdAnamnese"] = id;
+                Session["NivelPaciente"] = 4;
+                vm.PACO_DT_CONSULTA = vm.PACIENTE_CONSULTA.PACO_DT_CONSULTA;
+                vm.PACO_IN_ENCERRADA = vm.PACIENTE_CONSULTA.PACO_IN_ENCERRADA.Value;
+
+                // Grava Acesso
+                ControleAcessoMetodo grava = new ControleAcessoMetodo(aceApp);
+                Int32 voltaX = grava.GravaAcesso(usuario.USUA_CD_ID, usuario.ASSI_CD_ID, "PACIENTE_ANAMNESE_COMPLETA", "Paciente2", "VerAnamneseCompleta");
+                return View(vm);
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Paciente";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Paciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return RedirectToAction("TrataExcecao", "BaseAdmin");
+            }
+        }
+
+        public ActionResult VerAnexoPacienteProceder(Int32 id)
+        {
+            try
+            {
+                if ((String)Session["Ativa"] == null)
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+                USUARIO usuario = (USUARIO)Session["UserCredentials"];
+
+                PACIENTE pac = baseApp.GetItemById(id);
+                PacienteViewModel vm = Mapper.Map<PACIENTE, PacienteViewModel>(pac);
+                ViewBag.NomePaciente = pac.PACI_NM_NOME;
+
+                // Grava Acesso
+                ControleAcessoMetodo grava = new ControleAcessoMetodo(aceApp);
+                Int32 voltaX = grava.GravaAcesso(usuario.USUA_CD_ID, usuario.ASSI_CD_ID, "PACIENTE_ANEXO", "Paciente2", "VerAnexoPaciente");
+                return View(vm);
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Paciente";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Paciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return RedirectToAction("TrataExcecao", "BaseAdmin");
+            }
+        }
+
+        public ActionResult VoltarProcederConsulta()
+        {
+            if ((String)Session["Ativa"] == null)
+            {
+                return RedirectToAction("Logout", "ControleAcesso");
+            }
+            if ((Int32)Session["VoltaImpAnamnese"] == 1)
+            {
+                return RedirectToAction("EditarPaciente", new { id = (Int32)Session["IdPaciente"] });
+            }
+            return RedirectToAction("ProcederConsulta", new { id = (Int32)Session["IdConsulta"] });
+        }
+
+        public Int32 MontarAnamnese(Int32 id)
+        {
+            try
+            {
+                Int32 idAss = (Int32)Session["IdAssinante"];
+                USUARIO usuario = (USUARIO)Session["UserCredentials"];
+                PACIENTE_ANAMNESE item = baseApp.GetAnamneseById(id);
+                String frase = String.Empty;
+                frase += "=== MOTIVO DA CONSULTA ===" + "\r\n" + item.PAAM_DS_MOTIVO_CONSULTA + "\r\n";
+                frase += "\r\n" + "=== QUEIXA PRINCIPAL ===" + "\r\n" + item.PAAM_DS_QUEIXA_PRINCIPAL + "\r\n";
+                frase += "\r\n" + "=== HISTÓRICO FAMILIAR ===" + "\r\n" + item.PAAM_DS_HISTORIA_FAMILIAR + "\r\n";
+                frase += "\r\n" + "=== HISTÓRIA SOCIAL ===" + "\r\n" + item.PAAM_DS_HISTORIA_SOCIAL + "\r\n";
+                frase += "\r\n" + "=== HISTÓRIO DA DOENÇA ATUAL ===" + "\r\n" + item.PAAM_DS_HISTORIA_DOENCA_ATUAL + "\r\n";
+                frase += "\r\n" + "=== MEDICAMENTOS EM USO ===" + "\r\n" + item.PAAM_NM_MEDICAMENTO + "\r\n";
+                frase += "\r\n" + "=== HISTÓRIA PATOLÓGICA PROGRESSIVA ===" + "\r\n" + item.PAAM_DS_HISTORIA_PATOLOGICA_PROGRESSIVA + "\r\n";
+                frase += "\r\n" + "=== AVALIAÇÃO CARDIOLÓGICA ===" + "\r\n" + item.PAAN_NM_AVALIACAO_CARDIOLOGICA_LONG + "\r\n";
+                frase += "\r\n" + "=== AVALIAÇÃO RESPIRATÓRIA  ===" + "\r\n" + item.PAAN_NM_RESPIRATORIO_LONG + "\r\n";
+                frase += "\r\n" + "=== AVALIAÇÃO DO ABDÔMEM ===" + "\r\n" + item.PAAN_NM_ABDOMEM + "\r\n";
+                frase += "\r\n" + "=== AVALIAÇÃO DOS MEMBROS INFERIORES ===" + "\r\n" + item.PAAN_NM_MEMBROS_INFERIORES + "\r\n";
+                if (item.PAAM_IN_CAMPO_1 == 1)
+                {
+                    frase += "\r\n" + "=== " + item.PAAM_NM_CAMPO_1 + " ===" + "\r\n" + item.PAAM_DS_CAMPO_1 + "\r\n";
+                }
+                if (item.PAAM_IN_CAMPO_2 == 1)
+                {
+                    frase += "\r\n" + "=== " + item.PAAM_NM_CAMPO_2 + " ===" + "\r\n" + item.PAAM_DS_CAMPO_2 + "\r\n";
+                }
+                if (item.PAAM_IN_CAMPO_3 == 1)
+                {
+                    frase += "\r\n" + "=== " + item.PAAM_NM_CAMPO_3 + " ===" + "\r\n" + item.PAAM_DS_CAMPO_3 + "\r\n";
+                }
+                if (item.PAAM_IN_CAMPO_4 == 1)
+                {
+                    frase += "\r\n" + "=== " + item.PAAM_NM_CAMPO_4 + " ===" + "\r\n" + item.PAAM_DS_CAMPO_4 + "\r\n";
+                }
+                if (item.PAAM_IN_CAMPO_5 == 1)
+                {
+                    frase += "\r\n" + "=== " + item.PAAM_NM_CAMPO_5 + " ===" + "\r\n" + item.PAAM_DS_CAMPO_5 + "\r\n";
+                }
+                if (item.PAAM_IN_CAMPO_6 == 1)
+                {
+                    frase += "\r\n" + "=== " + item.PAAM_NM_CAMPO_6 + " ===" + "\r\n" + item.PAAM_DS_CAMPO_6 + "\r\n";
+                }
+                if (item.PAAM_IN_CAMPO_7 == 1)
+                {
+                    frase += "\r\n" + "=== " + item.PAAM_NM_CAMPO_7 + " ===" + "\r\n" + item.PAAM_DS_CAMPO_7 + "\r\n";
+                }
+                if (item.PAAM_IN_CAMPO_8 == 1)
+                {
+                    frase += "\r\n" + "=== " + item.PAAM_NM_CAMPO_8 + " ===" + "\r\n" + item.PAAM_DS_CAMPO_8 + "\r\n";
+                }
+                if (item.PAAM_IN_CAMPO_9 == 1)
+                {
+                    frase += "\r\n" + "=== " + item.PAAM_NM_CAMPO_9 + " ===" + "\r\n" + item.PAAM_DS_CAMPO_9 + "\r\n";
+                }
+                if (item.PAAM_IN_CAMPO_10 == 1)
+                {
+                    frase += "\r\n" + "=== " + item.PAAM_NM_CAMPO_10 + " ===" + "\r\n" + item.PAAM_DS_CAMPO_10 + "\r\n";
+                }
+                frase += "\r\n" + "=== DIAGNÓSTICO ===" + "\r\n" + item.PAAM_DS_DIAGNOSTICO_1_LONG + "\r\n";
+                frase += "\r\n" + "=== CONDUTA ADOTADA ===" + "\r\n" + item.PAAM_DS_CONDUTA + "\r\n";
+
+                item.PAAM_TX_COMPLETA = frase;
+                Int32 voltaAna = baseApp.ValidateEditAnamneseConfirma(item);
+                return 1;
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Paciente";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Paciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return 0;
+            }
+        }
+
+        public ActionResult CapturaFotoCamera()
+        {
+            try
+            {
+                if ((String)Session["Ativa"] == null)
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+                USUARIO usuario = (USUARIO)Session["UserCredentials"];
+
+                PACIENTE paciente = baseApp.GetItemById((Int32)Session["IdPaciente"]);
+                return View(paciente);
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Paciente";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Paciente2", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return RedirectToAction("TrataExcecao", "BaseAdmin");
+            }
+        }
+
+        [HttpPost]
+        public JsonResult GravaImagem(string imageData)
+        {
+            try
+            {
+                // Decodifica string em byte array
+                byte[] imageBytes = Convert.FromBase64String(imageData.Replace("data:image/png;base64,", ""));
+
+                // Gera id para imagem
+                string fileName = Guid.NewGuid().ToString() + ".png";
+
+                // Define caminho de gravação
+                PACIENTE paciente = baseApp.GetItemById((Int32)Session["IdPaciente"]);
+                String caminho = "/Imagens/" + paciente.ASSI_CD_ID.ToString() + "/Pacientes/" + paciente.PACI__CD_ID.ToString() + "/Fotos/";
+                String filePath = Path.Combine(Server.MapPath(caminho), fileName);
+
+                // Grava no servidor
+                System.IO.File.WriteAllBytes(filePath, imageBytes);
+
+                // Atualiza paciente
+                paciente.PACI_AQ_FOTO = "~" + caminho + fileName;
+                Int32 volta = baseApp.ValidateEdit(paciente, paciente);
+
+                // Encerra
+                return Json(new { success = true, message = "Imagem armazenada com sucesso!", filePath });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = "Erro na gravação da imagem " + ex.Message });
+            }
+        }
+
+        public ActionResult VoltarCapturaFoto()
+        {
+            if ((String)Session["Ativa"] == null)
+            {
+                return RedirectToAction("Logout", "ControleAcesso");
+            }
+
+            // Trata retorno
+            CONFIGURACAO conf = CarregaConfiguracaoGeral();
+            if ((Int32)Session["VoltaPaciente"] == 99)
+            {
+                return RedirectToAction("IncluirMensagemEMail", "Mensagem");
+            }
+            if ((Int32)Session["VoltaPaciente"] == 3)
+            {
+                Session["VoltaPaciente"] = 0;
+                return RedirectToAction("IncluirPaciente", "Paciente");
+            }
+            Session["NivelPaciente"] = 1;
+            Session["ListaConsultasGeral"] = null;
+            Session["ConsultaAlterada"] = 1;
+
+            if (conf.CONF_IN_INCLUIR_PACIENTE_SEGUE == 0)
+            {
+                return RedirectToAction("VoltarAnexoPaciente");
+            }
+            return RedirectToAction("IncluirPaciente");
+        }
+
+        public ActionResult GerarAnamnesePDFNovaContinua()
+        {
+            try
+            {
+                Int32 idAss = (Int32)Session["IdAssinante"];
+                USUARIO usuario = (USUARIO)Session["UserCredentials"];
+
+                // Prepara geração
+                CONFIGURACAO conf = CarregaConfiguracaoGeral();
+                String data = DateTime.Today.Date.ToShortDateString();
+                data = data.Substring(0, 2) + data.Substring(3, 2) + data.Substring(6, 4);
+
+                // Recupera informações
+                Int32 x = (Int32)Session["IdAnamnese"];
+                PACIENTE_ANAMNESE anamnese = baseApp.GetAnamneseById((Int32)Session["IdAnamnese"]);
+                PACIENTE paciente = baseApp.GetItemById(anamnese.PACI_CD_ID);
+                String nomeRel = "Anamnese_" + paciente.PACI_NM_NOME + "_Consulta_" + anamnese.PACIENTE_CONSULTA.PACO_DT_CONSULTA.ToShortDateString() + ".pdf";
+                String classe = String.Empty;
+                if (usuario.TIPO_CARTEIRA_CLASSE != null)
+                {
+                    classe = usuario.TIPO_CARTEIRA_CLASSE.TICL_NM_NOME + ": " + usuario.USUA_NR_CLASSE;
+                }
+                String nomeMedico = usuario.USUA_NM_NOME;
+                if (usuario.USUA_NM_PREFIXO != null)
+                {
+                    nomeMedico = usuario.USUA_NM_PREFIXO + " " + nomeMedico;
+                }
+                if (usuario.USUA_NM_SUFIXO != null)
+                {
+                    nomeMedico = nomeMedico + " " + usuario.USUA_NM_SUFIXO;
+                }
+                EMPRESA empresa = empApp.GetItemById(usuario.EMPR_CD_ID.Value);
+
+                // Prepara fontes
+                Font meuFont = FontFactory.GetFont("Arial", 8, iTextSharp.text.Font.NORMAL, BaseColor.BLACK);
+                Font meuFont1 = FontFactory.GetFont("Arial", 9, iTextSharp.text.Font.NORMAL, BaseColor.BLACK);
+                Font meuFont2 = FontFactory.GetFont("Arial", 14, iTextSharp.text.Font.NORMAL, BaseColor.BLACK);
+                Font meuFont1Bold = FontFactory.GetFont("Arial", 9, iTextSharp.text.Font.BOLD, BaseColor.BLACK);
+                Font meuFont3Bold = FontFactory.GetFont("Arial", 10, iTextSharp.text.Font.BOLD, BaseColor.BLACK);
+                Font meuFont4Bold = FontFactory.GetFont("Arial", 12, iTextSharp.text.Font.BOLD, BaseColor.BLACK);
+                Font meuFont5Bold = FontFactory.GetFont("Arial", 16, iTextSharp.text.Font.BOLD, BaseColor.BLACK);
+                Font meuFontBold = FontFactory.GetFont("Arial", 8, iTextSharp.text.Font.BOLD, BaseColor.BLACK);
+
+                // Cabeçalho
+                PdfPTable headerTable = null;
+                PdfPCell cell = new PdfPCell();
+                Image image = null;
+                if (conf.CONF_IN_EXIBE_LOGO == 1)
+                {
+                    headerTable = new PdfPTable(new float[] { 20f, 700f });
+                    headerTable.WidthPercentage = 100;
+                    headerTable.HorizontalAlignment = 1;
+                    headerTable.SpacingBefore = 1f;
+                    headerTable.SpacingAfter = 1f;
+
+                    cell = new PdfPCell();
+                    cell.Border = 0;
+                    cell.Colspan = 1;
+                    image = null;
+                    if (conf.CONF_IN_LOGO_EMPRESA == 1)
+                    {
+                        image = Image.GetInstance(Server.MapPath(empresa.EMPR_AQ_LOGO));
+                    }
+                    else
+                    {
+                        image = Image.GetInstance(Server.MapPath("~/Images/Prontuario_Icone_1.png"));
+                    }
+                    image.ScaleAbsolute(80, 80);
+                    cell.AddElement(image);
+                    headerTable.AddCell(cell);
+                }
+                else
+                {
+                    headerTable = new PdfPTable(new float[] { 750f });
+                    headerTable.WidthPercentage = 100;
+                    headerTable.HorizontalAlignment = 1;
+                    headerTable.SpacingBefore = 1f;
+                    headerTable.SpacingAfter = 1f;
+                }
+
+                // Dados do medico
+                PdfPTable table1 = new PdfPTable(new float[] { 120f, 120f, 120f, 120f });
+                table1.WidthPercentage = 100;
+                table1.HorizontalAlignment = 0;
+                table1.SpacingBefore = 1f;
+                table1.SpacingAfter = 1f;
+
+                cell = new PdfPCell(new Paragraph(nomeMedico, meuFont4Bold));
+                cell.Border = 0;
+                cell.Colspan = 4;
+                cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                cell.HorizontalAlignment = Element.ALIGN_CENTER;
+                table1.AddCell(cell);
+                if (usuario.ESPECIALIDADE != null)
+                {
+                    cell = new PdfPCell(new Paragraph(usuario.ESPECIALIDADE.ESPE_NM_NOME, meuFont1));
+                    cell.Border = 0;
+                    cell.Colspan = 4;
+                    cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                    cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                    table1.AddCell(cell);
+                }
+
+                String frase = classe + " CPF: " + usuario.USUA_NR_CPF;
+                cell = new PdfPCell(new Paragraph(frase, meuFont1));
+                cell.Border = 0;
+                cell.Colspan = 4;
+                cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                cell.HorizontalAlignment = Element.ALIGN_CENTER;
+                table1.AddCell(cell);
+                cell = new PdfPCell(new Paragraph(" ", meuFont1));
+                cell.Border = 0;
+                cell.Colspan = 4;
+                cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                cell.HorizontalAlignment = Element.ALIGN_CENTER;
+                table1.AddCell(cell);
+
+                PdfPCell innerTableCell = new PdfPCell(table1);
+                innerTableCell.Border = Rectangle.NO_BORDER;
+                innerTableCell.Colspan = 1;
+                headerTable.AddCell(innerTableCell);
+
+                // Rodape
+                PdfPTable footerTable = new PdfPTable(1);
+                footerTable = new PdfPTable(new float[] { 600f });
+                footerTable.WidthPercentage = 100;
+                footerTable.HorizontalAlignment = 1;
+                footerTable.SpacingBefore = 1f;
+                footerTable.SpacingAfter = 1f;
+
+                // Dados do medico
+                table1 = new PdfPTable(new float[] { 120f, 120f, 120f, 120f });
+                table1.WidthPercentage = 100;
+                table1.HorizontalAlignment = 0;
+                table1.SpacingBefore = 1f;
+                table1.SpacingAfter = 1f;
+
+                cell = new PdfPCell(new Paragraph(usuario.USUA_NM_NOME, meuFontBold));
+                cell.Border = 0;
+                cell.Colspan = 4;
+                cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                table1.AddCell(cell);
+                if (usuario.ESPECIALIDADE != null)
+                {
+                    cell = new PdfPCell(new Paragraph(usuario.ESPECIALIDADE.ESPE_NM_NOME, meuFont1));
+                    cell.Border = 0;
+                    cell.Colspan = 4;
+                    cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                    cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                    table1.AddCell(cell);
+                }
+
+                cell = new PdfPCell(new Paragraph(classe, meuFont));
+                cell.Border = 0;
+                cell.Colspan = 1;
+                cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                table1.AddCell(cell);
+                cell = new PdfPCell(new Paragraph("CPF: " + usuario.USUA_NR_CPF, meuFont));
+                cell.Border = 0;
+                cell.Colspan = 3;
+                cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                table1.AddCell(cell);
+
+                String endereco = String.Empty;
+                String enderecoCont = String.Empty;
+                if (empresa.EMPR_NM_ENDERECO != null)
+                {
+                    endereco += empresa.EMPR_NM_ENDERECO;
+                    if (empresa.EMPR_NM_NUMERO != null)
+                    {
+                        endereco += " " + empresa.EMPR_NM_NUMERO;
+                    }
+                    if (empresa.EMPR_NM_COMPLEMENTO != null)
+                    {
+                        endereco += " " + empresa.EMPR_NM_COMPLEMENTO;
+                    }
+                    if (empresa.EMPR_NM_BAIRRO != null)
+                    {
+                        enderecoCont += empresa.EMPR_NM_BAIRRO;
+                    }
+                    if (empresa.EMPR_NM_CIDADE != null)
+                    {
+                        enderecoCont += " - " + empresa.EMPR_NM_CIDADE;
+                    }
+                    if (empresa.UF != null)
+                    {
+                        enderecoCont += " - " + empresa.UF.UF_SG_SIGLA;
+                    }
+                    if (empresa.EMPR_NR_CEP != null)
+                    {
+                        enderecoCont += " - " + empresa.EMPR_NR_CEP;
+                    }
+                }
+
+                cell = new PdfPCell(new Paragraph(endereco, meuFont));
+                cell.Border = 0;
+                cell.Colspan = 4;
+                cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                table1.AddCell(cell);
+                cell = new PdfPCell(new Paragraph(enderecoCont, meuFont));
+                cell.Border = 0;
+                cell.Colspan = 4;
+                cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                table1.AddCell(cell);
+                cell = new PdfPCell(new Paragraph("Documento assinado digitalmente", meuFont));
+                cell.Border = 0;
+                cell.Colspan = 4;
+                cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                table1.AddCell(cell);
+
+                cell = new PdfPCell(new Paragraph("  ", meuFont));
+                cell.Border = 0;
+                cell.Colspan = 4;
+                cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                table1.AddCell(cell);
+
+                innerTableCell = new PdfPCell(table1);
+                innerTableCell.Border = Rectangle.NO_BORDER;
+                innerTableCell.Colspan = 1;
+                footerTable.AddCell(innerTableCell);
+
+                // Cria documento
+                Document pdfDoc = new Document(PageSize.A4, 10, 10, 70, 120);
+                PdfWriter pdfWriter = PdfWriter.GetInstance(pdfDoc, Response.OutputStream);
+                pdfWriter.PageEvent = new CustomPageEventHelper(headerTable, footerTable);
+                pdfDoc.Open();
+
+                Paragraph line1 = new Paragraph("  ");
+                pdfDoc.Add(line1);
+
+                Chunk chunk3 = new Chunk("A N A M N E S E", FontFactory.GetFont("Arial", 16, Font.NORMAL, BaseColor.BLACK));
+                Paragraph paragraph = new Paragraph(chunk3);
+                paragraph.Alignment = Element.ALIGN_CENTER;
+                pdfDoc.Add(paragraph);
+
+                line1 = new Paragraph(new Chunk(new iTextSharp.text.pdf.draw.LineSeparator(0.0F, 100.0F, BaseColor.BLACK, Element.ALIGN_LEFT, 1)));
+                pdfDoc.Add(line1);
+
+                // Dados Gerais
+                PdfPTable table = new PdfPTable(new float[] { 120f, 120f, 120f, 120f });
+                table.WidthPercentage = 100;
+                table.HorizontalAlignment = 0;
+                table.SpacingBefore = 1f;
+                table.SpacingAfter = 1f;
+
+                cell = new PdfPCell(new Paragraph("Data da Consulta: " + anamnese.PACIENTE_CONSULTA.PACO_DT_CONSULTA.ToLongDateString(), meuFont1Bold));
+                cell.Border = 0;
+                cell.Colspan = 4;
+                cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                table.AddCell(cell);
+                pdfDoc.Add(table);
+
+                // Linha Horizontal
+                line1 = new Paragraph(new Chunk(new iTextSharp.text.pdf.draw.LineSeparator(0.0F, 100.0F, BaseColor.BLACK, Element.ALIGN_LEFT, 1)));
+                pdfDoc.Add(line1);
+
+                // Dados do paciente
+                table = new PdfPTable(new float[] { 120f, 120f, 120f, 120f });
+                table.WidthPercentage = 100;
+                table.HorizontalAlignment = 0;
+                table.SpacingBefore = 1f;
+                table.SpacingAfter = 1f;
+
+                cell = new PdfPCell(new Paragraph("Nome do Paciente: " + paciente.PACI_NM_NOME, meuFont1Bold));
+                cell.Border = 0;
+                cell.Colspan = 4;
+                cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph("CPF: " + paciente.PACI_NR_CPF, meuFont1));
+                cell.Border = 0;
+                cell.Colspan = 4;
+                cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph("Data Nasc.: " + paciente.PACI_DT_NASCIMENTO.Value.ToShortDateString(), meuFont1));
+                cell.Border = 0;
+                cell.Colspan = 4;
+                cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                table.AddCell(cell);
+                pdfDoc.Add(table);
+
+                // Linha Horizontal
+                line1 = new Paragraph("  ");
+                pdfDoc.Add(line1);
+
+                table = new PdfPTable(new float[] { 1000f });
+                table.WidthPercentage = 100;
+                table.HorizontalAlignment = 0;
+                table.SpacingBefore = 1f;
+                table.SpacingAfter = 1f;
+
+                // Dados da anamnese
+                cell = new PdfPCell(new Paragraph(anamnese.PAAM_TX_COMPLETA, meuFont1))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+
+                pdfDoc.Add(table);
+
+                // Finaliza
+                pdfWriter.CloseStream = false;
+                pdfDoc.Close();
+                Response.Buffer = true;
+                Response.ContentType = "application/pdf";
+                Response.AddHeader("content-disposition", "attachment;filename=" + nomeRel);
+                Response.Cache.SetCacheability(HttpCacheability.NoCache);
+                Response.Write(pdfDoc);
+                Response.End();
+                return RedirectToAction("VoltarProcederConsulta");
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Usuários";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Usuários", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return RedirectToAction("TrataExcecao", "BaseAdmin");
+            }
+        }
+
+        public ActionResult EditarAnamneseCompletaFormContinua()
+        {
+            if ((String)Session["Ativa"] == null)
+            {
+                return RedirectToAction("Logout", "ControleAcesso");
+            }
+            return RedirectToAction("EditarAnamneseNovaContinua", new { id = (Int32)Session["IdAnamneseConsulta"] });
+        }
+
+        [HttpGet]
+        public ActionResult EditarAnamneseNovaContinua(Int32 id)
+        {
+            try
+            {
+                // Verifica se tem usuario logado
+                USUARIO usuario = new USUARIO();
+                if ((String)Session["Ativa"] == null)
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+                if ((USUARIO)Session["UserCredentials"] != null)
+                {
+                    usuario = (USUARIO)Session["UserCredentials"];
+
+                    // Verfifica permissão
+                    if (usuario.PERFIL.PERF_IN_ATESTADO_ALTERAR == 0)
+                    {
+                        Session["MensPermissao"] = 2;
+                        Session["ModuloPermissao"] = "Paciente - Anamnese - Edição";
+                        return RedirectToAction("VoltarAnexoPaciente");
+                    }
+                }
+                else
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+                Int32 idAss = (Int32)Session["IdAssinante"];
+
+                // Prepara estado
+                Session["NivelPaciente"] = 4;
+                Session["AjudaNivel"] = "../BaseAdmin/Ajuda/3/Ajuda3_7.pdf";
+                CONFIGURACAO_ANAMNESE anam = CarregaConfiguracaoAnamnese();
+                ViewBag.Formato = anam.COAN_IN_FORMATO_CONTINUA;
+
+                // Recupera anamnese
+                PACIENTE_ANAMNESE item = baseApp.GetAnamneseById(id);
+                objetoAntes = (PACIENTE)Session["Paciente"];
+                Session["Anamnese"] = item;
+                Session["IdAnamnese"] = item.PAAM_CD_ID;
+
+                // Recupera consulta
+                PACIENTE_CONSULTA cons = baseApp.GetConsultaById(item.PACO_CD_ID.Value);
+                Session["PadraoContinua"] = cons.PACIENTE.PACI_IN_PADRAO_CONTINUA;
+
+                // Prepara a view
+                PacienteAnamneseViewModel vm = Mapper.Map<PACIENTE_ANAMNESE, PacienteAnamneseViewModel>(item);
+                vm.PACO_DT_CONSULTA = cons.PACO_DT_CONSULTA;
+                vm.PAAN_TX_COMPLETA_OLD = item.PAAM_TX_COMPLETA;
+                vm.PAAM_TX_TEXTO = String.Empty;
+
+                // Grava Acesso
+                ControleAcessoMetodo grava = new ControleAcessoMetodo(aceApp);
+                Int32 voltaX = grava.GravaAcesso(usuario.USUA_CD_ID, usuario.ASSI_CD_ID, "PACIENTE_ANAMNESE_EDITAR", "Paciente", "EditarAnamnese");
+                return View(vm);
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Paciente";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Paciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return RedirectToAction("TrataExcecao", "BaseAdmin");
+            }
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [ValidateInput(false)]
+        public ActionResult EditarAnamneseNovaContinua(PacienteAnamneseViewModel vm)
+        {
+            if ((String)Session["Ativa"] == null)
+            {
+                return RedirectToAction("Logout", "ControleAcesso");
+            }
+            USUARIO usuarioLogado = (USUARIO)Session["UserCredentials"];
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    // Sanitização
+                    vm.PAAM_TX_TEXTO = CrossCutting.UtilitariosGeral.CleanStringRegistro(vm.PAAM_TX_TEXTO);
+
+                    // Prepara data
+                    String dataHoje = DateTime.Today.Date.ToLongDateString();
+                    if ((Int32)Session["FlagRevisao"] == 0)
+                    {
+                        dataHoje = "*** Consulta em [" + dataHoje + "] ***";
+                    }
+                    else
+                    {
+                        dataHoje = "*** Revisão de Consulta em [" + dataHoje + "] ***";
+                    }
+
+                    // Recupera anamnese anterior
+                    String novo = String.Empty;
+                    String velho = String.Empty;
+                    String tripa = String.Empty;
+                    CONFIGURACAO_ANAMNESE anam = CarregaConfiguracaoAnamnese();
+
+                    // Processa itens
+                    PACIENTE pac = baseApp.GetItemById(vm.PACI_CD_ID);
+                    if (pac.PACI_IN_PADRAO_CONTINUA == 1)
+                    {
+                        if (vm.PAAM_TX_TEXTO != null)
+                        {
+                            velho = vm.PAAN_TX_COMPLETA_OLD;
+                            novo = vm.PAAM_TX_TEXTO;
+                            if (velho == null & novo != String.Empty)
+                            {
+                                vm.PAAM_TX_COMPLETA = dataHoje + "\r\n" + novo;
+                            }
+                            if (velho != null & novo != String.Empty)
+                            {
+                                tripa = velho.Substring(velho.Length - 4, 4);
+                                if (tripa == "\r\n")
+                                {
+                                    velho = velho.Substring(0, velho.Length - 4);
+                                }
+                                vm.PAAM_TX_COMPLETA = velho + "\r\n\r\n" + dataHoje + "\r\n" + novo;
+                            }
+                        }
+                        else
+                        {
+                            velho = vm.PAAN_TX_COMPLETA_OLD;
+                            vm.PAAM_TX_COMPLETA = velho;
+                        }
+                    }
+
+                    // Serializa anamnese
+                    String json = JsonConvert.SerializeObject(vm);
+
+                    // Executa a operação
+                    PACIENTE_ANAMNESE item = Mapper.Map<PacienteAnamneseViewModel, PACIENTE_ANAMNESE>(vm);
+                    item.PAAM_IN_ALTERADA = 1;
+                    Int32 volta = baseApp.ValidateEditAnamnese(item);
+
+                    // Verifica retorno
+                    Session["IdAnamnese"] = item.PAAM_CD_ID;
+                    Session["PacienteAlterada"] = 1;
+                    Session["NivelPaciente"] = 4;
+
+                    // Monta Log
+                    String frase = item.PACI_CD_ID + "|" + item.PACO_CD_ID + "|" + item.USUA_CD_ID + "|" + item.PAAM_CD_ID + "|" + "Edição de anamnese";
+                    LOG log = new LOG
+                    {
+                        LOG_DT_DATA = DateTime.Now,
+                        ASSI_CD_ID = usuarioLogado.ASSI_CD_ID,
+                        USUA_CD_ID = usuarioLogado.USUA_CD_ID,
+                        LOG_NM_OPERACAO = "eanPACI",
+                        LOG_IN_ATIVO = 1,
+                        LOG_TX_REGISTRO = json,
+                        LOG_IN_SISTEMA = 6
+                    };
+                    Int32 volta1 = logApp.ValidateCreate(log);
+
+                    // Grava historico
+                    PACIENTE_HISTORICO hist = new PACIENTE_HISTORICO();
+                    PACIENTE pac1 = baseApp.GetItemById(item.PACI_CD_ID);
+                    hist.ASSI_CD_ID = usuarioLogado.ASSI_CD_ID;
+                    hist.USUA_CD_ID = usuarioLogado.USUA_CD_ID;
+                    hist.PACI_CD_ID = item.PACI_CD_ID;
+                    hist.PAHI_DT_DATA = DateTime.Now;
+                    hist.PAHI_IN_TIPO = 8;
+                    hist.PAHI_IN_CHAVE = item.PAAM_CD_ID;
+                    hist.PAHI_NM_OPERACAO = "Paciente - Edição de Anamnese";
+                    hist.PAHI_DS_DESCRICAO = "Paciente " + pac1.PACI_NM_NOME + " - Anamnese editada " + item.PAAM_DT_DATA.ToShortDateString();
+                    Int32 voltaHist = baseApp.ValidateCreateHistorico(hist);
+
+                    if ((Int32)Session["VoltarPesquisa"] == 1)
+                    {
+                        return RedirectToAction("PesquisarTudo", "BaseAdmin");
+                    }
+                    if ((Int32)Session["VoltaAnamnese"] == 1)
+                    {
+                        return RedirectToAction("VoltarAnexoPaciente", "Paciente");
+                    }
+                    else if ((Int32)Session["VoltaAnamnese"] == 2)
+                    {
+                        return RedirectToAction("VoltarProcederConsulta", "Paciente");
+                    }
+                    return RedirectToAction("VoltarAnexoPaciente", "Paciente");
+                }
+                catch (Exception ex)
+                {
+                    ViewBag.Message = ex.Message;
+                    Session["TipoVolta"] = 2;
+                    Session["VoltaExcecao"] = "Paciente";
+                    Session["Excecao"] = ex;
+                    Session["ExcecaoTipo"] = ex.GetType().ToString();
+                    GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                    Int32 voltaX = grava.GravarLogExcecao(ex, "Paciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                    return RedirectToAction("TrataExcecao", "BaseAdmin");
+                }
+            }
+            else
+            {
+                return View(vm);
+            }
+        }
+
+        public CONFIGURACAO_ANAMNESE CarregaConfiguracaoAnamnese()
+        {
+            try
+            {
+                Int32 idAss = (Int32)Session["IdAssinante"];
+                CONFIGURACAO_ANAMNESE conf = new CONFIGURACAO_ANAMNESE();
+                conf = anaApp.GetAllItems(idAss).FirstOrDefault();
+                Session["ConfiguracaoAnamnese"] = conf;
+                return conf;
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Paciente";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Paciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return null;
+            }
+        }
+
+        public JsonResult GetTipoAtestado(Int32 id)
+        {
+            PACIENTE pac = (PACIENTE)Session["PacienteGet"];
+            var tipo = taApp.GetItemById(id);
+            String texto = tipo.TIAT_TX_TEXTO.Replace("{nome}", pac.PACI_NM_NOME);
+            texto = texto.Replace("{data}", DateTime.Today.Date.ToLongDateString());
+            var hash = new Hashtable();
+            hash.Add("desc", tipo.TIAT_NM_NOME);
+            hash.Add("texto", texto);
+            return Json(hash);
+        }
+
+        public JsonResult GetTipoExame(Int32 id)
+        {
+            var tipo = teApp.GetItemById(id);
+            var hash = new Hashtable();
+            hash.Add("desc", tipo.TIEX_NM_NOME);
+            return Json(hash);
+        }
+
+        public ActionResult GerarRelatorioHistorico()
+        {
+            try
+            {
+                if ((String)Session["Ativa"] == null)
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+
+                // Prepara geração
+                CONFIGURACAO conf = CarregaConfiguracaoGeral();
+                Int32 idAss = (Int32)Session["IdAssinante"];
+                String data = DateTime.Today.Date.ToShortDateString();
+                data = data.Substring(0, 2) + data.Substring(3, 2) + data.Substring(6, 4);
+
+                String nomeRel = "HistoricoLista" + "_" + data + ".pdf";
+                List<PACIENTE_HISTORICO> lista = (List<PACIENTE_HISTORICO>)Session["ListaHistoricoGeral"];
+
+                Font meuFont = FontFactory.GetFont("Arial", 8, iTextSharp.text.Font.NORMAL, BaseColor.BLACK);
+                Font meuFont1 = FontFactory.GetFont("Arial", 9, iTextSharp.text.Font.NORMAL, BaseColor.BLACK);
+                Font meuFont2 = FontFactory.GetFont("Arial", 14, iTextSharp.text.Font.NORMAL, BaseColor.BLACK);
+
+                // Cabeçalho
+                PdfPTable headerTable = new PdfPTable(new float[] { 20f, 700f });
+                headerTable.WidthPercentage = 100;
+                headerTable.HorizontalAlignment = 1;
+                headerTable.SpacingBefore = 1f;
+                headerTable.SpacingAfter = 1f;
+
+                PdfPCell cell = new PdfPCell();
+                cell.Border = 0;
+                cell.Colspan = 1;
+                Image image = null;
+                if (conf.CONF_IN_LOGO_EMPRESA == 1)
+                {
+                    EMPRESA empresa = empApp.GetItemByAssinante(idAss);
+                    image = Image.GetInstance(Server.MapPath(empresa.EMPR_AQ_LOGO));
+                }
+                else
+                {
+                    image = Image.GetInstance(Server.MapPath("~/Images/Prontuario_Icone_1.png"));
+                }
+                image.ScaleAbsolute(50, 50);
+                cell.AddElement(image);
+                cell.Border = PdfPCell.BOTTOM_BORDER;
+                headerTable.AddCell(cell);
+
+                cell = new PdfPCell(new Paragraph("Histórico de Transações", meuFont2))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_CENTER
+                };
+                cell.Border = 0;
+                cell.Colspan = 1;
+                cell.Border = PdfPCell.BOTTOM_BORDER;
+                headerTable.AddCell(cell);
+
+                // Rodape
+                PdfPTable footerTable = new PdfPTable(1);
+                footerTable.WidthPercentage = 100;
+                footerTable.HorizontalAlignment = 1;
+                footerTable.SpacingBefore = 1f;
+                footerTable.SpacingAfter = 1f;
+
+                cell = new PdfPCell();
+                cell.Border = PdfPCell.TOP_BORDER;
+                cell = new PdfPCell(new Paragraph("Gerado por WebDoctor 1.0 em " + DateTime.Today.Date.ToLongDateString(), meuFont));
+                footerTable.AddCell(cell);
+
+                // Cria documento
+                Document pdfDoc = new Document(PageSize.A4.Rotate(), 10, 10, 60, 40);
+                PdfWriter pdfWriter = PdfWriter.GetInstance(pdfDoc, Response.OutputStream);
+                pdfWriter.PageEvent = new CustomPageEventHelper(headerTable, footerTable);
+                pdfDoc.Open();
+
+                Paragraph line1 = new Paragraph("  ");
+                pdfDoc.Add(line1);
+
+
+                // Grid
+                PdfPTable table = new PdfPTable(new float[] { 60f, 120f, 90f, 90f, 150f, 120f, 250f });
+                table.WidthPercentage = 100;
+                table.HorizontalAlignment = 0;
+                table.SpacingBefore = 1f;
+                table.SpacingAfter = 1f;
+
+                cell = new PdfPCell(new Paragraph("Data", meuFont))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph("Nome do Paciente", meuFont))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph("Entidade", meuFont))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph("Chave de Acesso", meuFont))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph("Operação", meuFont))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph("Usuário", meuFont))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph("Descrição", meuFont))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                table.AddCell(cell);
+
+                foreach (PACIENTE_HISTORICO item in lista)
+                {
+                    if (item.PAHI_DT_DATA != null)
+                    {
+                        cell = new PdfPCell(new Paragraph(item.PAHI_DT_DATA.Value.ToShortDateString(), meuFont))
+                        {
+                            VerticalAlignment = Element.ALIGN_MIDDLE,
+                            HorizontalAlignment = Element.ALIGN_LEFT
+                        };
+                        table.AddCell(cell);
+                    }
+                    else
+                    {
+                        cell = new PdfPCell(new Paragraph("-", meuFont))
+                        {
+                            VerticalAlignment = Element.ALIGN_MIDDLE,
+                            HorizontalAlignment = Element.ALIGN_LEFT
+                        };
+                        table.AddCell(cell);
+                    }
+
+                    cell = new PdfPCell(new Paragraph(item.PACIENTE.PACI_NM_NOME, meuFont))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    table.AddCell(cell);
+
+                    if (item.PAHI_IN_TIPO == 1)
+                    {
+                        cell = new PdfPCell(new Paragraph("Paciente", meuFont))
+                        {
+                            VerticalAlignment = Element.ALIGN_MIDDLE,
+                            HorizontalAlignment = Element.ALIGN_LEFT
+                        };
+                        table.AddCell(cell);
+
+                    }
+                    else if (item.PAHI_IN_TIPO == 2)
+                    {
+                        cell = new PdfPCell(new Paragraph("Contato", meuFont))
+                        {
+                            VerticalAlignment = Element.ALIGN_MIDDLE,
+                            HorizontalAlignment = Element.ALIGN_LEFT
+                        };
+                        table.AddCell(cell);
+
+                    }
+                    else if (item.PAHI_IN_TIPO == 3)
+                    {
+                        cell = new PdfPCell(new Paragraph("Prescrição", meuFont))
+                        {
+                            VerticalAlignment = Element.ALIGN_MIDDLE,
+                            HorizontalAlignment = Element.ALIGN_LEFT
+                        };
+                    }
+                    else if (item.PAHI_IN_TIPO == 4)
+                    {
+                        cell = new PdfPCell(new Paragraph("Item de Prescrição", meuFont))
+                        {
+                            VerticalAlignment = Element.ALIGN_MIDDLE,
+                            HorizontalAlignment = Element.ALIGN_LEFT
+                        };
+                        table.AddCell(cell);
+
+                    }
+                    else if (item.PAHI_IN_TIPO == 5)
+                    {
+                        cell = new PdfPCell(new Paragraph("Atestado", meuFont))
+                        {
+                            VerticalAlignment = Element.ALIGN_MIDDLE,
+                            HorizontalAlignment = Element.ALIGN_LEFT
+                        };
+                        table.AddCell(cell);
+                    }
+                    else if (item.PAHI_IN_TIPO == 6)
+                    {
+                        cell = new PdfPCell(new Paragraph("Solicitação de Exame", meuFont))
+                        {
+                            VerticalAlignment = Element.ALIGN_MIDDLE,
+                            HorizontalAlignment = Element.ALIGN_LEFT
+                        };
+                        table.AddCell(cell);
+                    }
+                    else if (item.PAHI_IN_TIPO == 7)
+                    {
+                        cell = new PdfPCell(new Paragraph("Resultado de Exame", meuFont))
+                        {
+                            VerticalAlignment = Element.ALIGN_MIDDLE,
+                            HorizontalAlignment = Element.ALIGN_LEFT
+                        };
+                        table.AddCell(cell);
+                    }
+                    else if (item.PAHI_IN_TIPO == 8)
+                    {
+                        cell = new PdfPCell(new Paragraph("Anamnese", meuFont))
+                        {
+                            VerticalAlignment = Element.ALIGN_MIDDLE,
+                            HorizontalAlignment = Element.ALIGN_LEFT
+                        };
+                        table.AddCell(cell);
+                    }
+                    else if (item.PAHI_IN_TIPO == 9)
+                    {
+                        cell = new PdfPCell(new Paragraph("Exame Físico", meuFont))
+                        {
+                            VerticalAlignment = Element.ALIGN_MIDDLE,
+                            HorizontalAlignment = Element.ALIGN_LEFT
+                        };
+                        table.AddCell(cell);
+                    }
+                    else if (item.PAHI_IN_TIPO == 10)
+                    {
+                        cell = new PdfPCell(new Paragraph("Consulta", meuFont))
+                        {
+                            VerticalAlignment = Element.ALIGN_MIDDLE,
+                            HorizontalAlignment = Element.ALIGN_LEFT
+                        };
+                        table.AddCell(cell);
+                    }
+                    else if (item.PAHI_IN_TIPO == 11)
+                    {
+                        cell = new PdfPCell(new Paragraph("Pagamento", meuFont))
+                        {
+                            VerticalAlignment = Element.ALIGN_MIDDLE,
+                            HorizontalAlignment = Element.ALIGN_LEFT
+                        };
+                        table.AddCell(cell);
+                    }
+                    else if (item.PAHI_IN_TIPO == 12)
+                    {
+                        cell = new PdfPCell(new Paragraph("Recebimento", meuFont))
+                        {
+                            VerticalAlignment = Element.ALIGN_MIDDLE,
+                            HorizontalAlignment = Element.ALIGN_LEFT
+                        };
+                        table.AddCell(cell);
+                    }
+                    else if (item.PAHI_IN_TIPO == 13)
+                    {
+                        cell = new PdfPCell(new Paragraph("Mensagem", meuFont))
+                        {
+                            VerticalAlignment = Element.ALIGN_MIDDLE,
+                            HorizontalAlignment = Element.ALIGN_LEFT
+                        };
+                        table.AddCell(cell);
+                    }
+
+                    cell = new PdfPCell(new Paragraph(item.PAHI_IN_CHAVE.ToString(), meuFont))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    table.AddCell(cell);
+
+                    cell = new PdfPCell(new Paragraph(item.PAHI_NM_OPERACAO.ToString(), meuFont))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    table.AddCell(cell);
+
+                    cell = new PdfPCell(new Paragraph(item.USUARIO.USUA_NM_NOME, meuFont))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    table.AddCell(cell);
+
+                    cell = new PdfPCell(new Paragraph(item.PAHI_DS_DESCRICAO, meuFont))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    table.AddCell(cell);
+                }
+                pdfDoc.Add(table);
+
+                // Finaliza
+                pdfWriter.CloseStream = false;
+                pdfDoc.Close();
+                Response.Buffer = true;
+                Response.ContentType = "application/pdf";
+                Response.AddHeader("content-disposition", "attachment;filename=" + nomeRel);
+                Response.Cache.SetCacheability(HttpCacheability.NoCache);
+                Response.Write(pdfDoc);
+                Response.End();
+
+                Session["NivelPaciente"] = 9;
+                return RedirectToAction("MontarTelaHistoricoGeral", "Paciente");
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Paciente";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Paciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return RedirectToAction("TrataExcecao", "BaseAdmin");
+            }
+        }
+
+        public FileResult DownloadPaciente(Int32 id)
+        {
+            try
+            {
+                PACIENTE_ANEXO item = baseApp.GetAnexoById(id);
+                String arquivo = item.PAAX_AQ_ARQUIVO;
+                Int32 pos = arquivo.LastIndexOf("/") + 1;
+                String nomeDownload = arquivo.Substring(pos);
+                String contentType = string.Empty;
+                if (arquivo.Contains(".pdf"))
+                {
+                    contentType = "application/pdf";
+                }
+                else if (arquivo.Contains(".jpg") || arquivo.Contains(".jpeg"))
+                {
+                    contentType = "image/jpg";
+                }
+                else if (arquivo.Contains(".png"))
+                {
+                    contentType = "image/png";
+                }
+                else if (arquivo.Contains(".docx"))
+                {
+                    contentType = "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+                }
+                else if (arquivo.Contains(".xlsx"))
+                {
+                    contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+                }
+                else if (arquivo.Contains(".pptx"))
+                {
+                    contentType = "application/vnd.openxmlformats-officedocument.presentationml.presentation";
+                }
+                else if (arquivo.Contains(".mp3"))
+                {
+                    contentType = "audio/mpeg";
+                }
+                else if (arquivo.Contains(".mpeg"))
+                {
+                    contentType = "audio/mpeg";
+                }
+                Session["NivelPaciente"] = 2;
+                return File(arquivo, contentType, nomeDownload);
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Paciente";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Paciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return null;
+            }
+        }
+
+        [HttpPost]
+        public ActionResult UploadFilePaciente2(HttpPostedFileBase file)
+        {
+            try
+            {
+                // Inicializa
+                if ((String)Session["Ativa"] == null)
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+                Int32 idNot = (Int32)Session["IdPaciente"];
+                Int32 idAss = (Int32)Session["IdAssinante"];
+
+                // Recupera cliente
+                PACIENTE item = baseApp.GetItemById(idNot);
+                USUARIO usu = (USUARIO)Session["UserCredentials"];
+
+                // Criticas
+                if (file == null)
+                {
+                    Session["MensPaciente"] = 5;
+                    if ((Int32)Session["VoltaAnexo"] == 1)
+                    {
+                        return RedirectToAction("VoltarAnexoPaciente");
+                    }
+                    else
+                    {
+                        return RedirectToAction("VoltarVerAnexoPaciente", "Paciente2");
+                    }
+                }
+
+                // Critica tamanho nome
+                var fileName = Path.GetFileName(file.FileName);
+                if (fileName.Length > 250)
+                {
+                    Session["MensPaciente"] = 6;
+                    if ((Int32)Session["VoltaAnexo"] == 1)
+                    {
+                        return RedirectToAction("VoltarAnexoPaciente");
+                    }
+                    else
+                    {
+                        return RedirectToAction("VoltarVerAnexoPaciente", "Paciente2");
+                    }
+                }
+
+                // Critica tamanho arquivo
+                var fileSize = file.ContentLength;
+                if (fileSize > 50000000)
+                {
+                    Session["MensPaciente"] = 7;
+                    if ((Int32)Session["VoltaAnexo"] == 1)
+                    {
+                        return RedirectToAction("VoltarAnexoPaciente");
+                    }
+                    else
+                    {
+                        return RedirectToAction("VoltarVerAnexoPaciente", "Paciente2");
+                    }
+                }
+
+                //Recupera tipo de arquivo
+                extensao = Path.GetExtension(fileName);
+                String a = extensao;
+                if (!((String)Session["ExtensoesPossiveis"]).Contains(extensao.ToUpper()))
+                {
+                    Session["MensPaciente"] = 12;
+                    if ((Int32)Session["VoltaAnexo"] == 1)
+                    {
+                        return RedirectToAction("VoltarAnexoPaciente");
+                    }
+                    else
+                    {
+                        return RedirectToAction("VoltarVerAnexoPaciente", "Paciente2");
+                    }
+                }
+
+                // Copia arquivo
+                String caminho = "/Imagens/" + item.ASSI_CD_ID.ToString() + "/Pacientes/" + item.PACI__CD_ID.ToString() + "/Anexos/";
+                String path = Path.Combine(Server.MapPath(caminho), fileName);
+                file.SaveAs(path);
+
+                // Gravar registro
+                PACIENTE_ANEXO foto = new PACIENTE_ANEXO();
+                foto.PAAX_AQ_ARQUIVO = "~" + caminho + fileName;
+                foto.PAAX_DT_ANEXO = DateTime.Today;
+                foto.PAAX_IN_ATIVO = 1;
+                Int32 tipo = 3;
+                if (extensao.ToUpper() == ".JPG" || extensao.ToUpper() == ".GIF" || extensao.ToUpper() == ".PNG" || extensao.ToUpper() == ".JPEG")
+                {
+                    tipo = 1;
+                }
+                else if (extensao.ToUpper() == ".MP4" || extensao.ToUpper() == ".AVI" || extensao.ToUpper() == ".MPEG")
+                {
+                    tipo = 2;
+                }
+                else if (extensao.ToUpper() == ".PDF")
+                {
+                    tipo = 3;
+                }
+                else if (extensao.ToUpper() == ".MP3" || extensao.ToUpper() == ".MPEG")
+                {
+                    tipo = 4;
+                }
+                else if (extensao.ToUpper() == ".DOCX" || extensao.ToUpper() == ".DOC" || extensao.ToUpper() == ".ODT")
+                {
+                    tipo = 5;
+                }
+                else if (extensao.ToUpper() == ".XLSX" || extensao.ToUpper() == ".XLS" || extensao.ToUpper() == ".ODS")
+                {
+                    tipo = 6;
+                }
+                else
+                {
+                    tipo = 7;
+                }
+                foto.PAAX_IN_TIPO = tipo;
+                foto.PAAX_NM_TITULO = fileName;
+                foto.PACI_CD_ID = item.PACI__CD_ID;
+
+                item.PACIENTE_ANEXO.Add(foto);
+                objetoAntes = item;
+                Int32 volta = baseApp.ValidateEdit(item, objetoAntes);
+                Session["NivelPaciente"] = 2;
+                Session["PacienteAlterada"] = 1;
+                if ((Int32)Session["VoltaAnexo"] == 1)
+                {
+                    return RedirectToAction("VoltarAnexoPaciente");
+                }
+                else
+                {
+                    return RedirectToAction("VoltarVerAnexoPaciente", "Paciente2");
+                }
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Paciente";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Paciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return RedirectToAction("TrataExcecao", "BaseAdmin");
+            }
+        }
+
+        public ActionResult VoltarVerAnexoPaciente()
+        {
+            if ((String)Session["Ativa"] == null)
+            {
+                return RedirectToAction("Logout", "ControleAcesso");
+            }
+            Session["VoltaTela"] = 1;
+            return RedirectToAction("VerAnexoPacienteProceder", "Paciente2", new { id = (Int32)Session["IdPaciente"] });
+        }
+
+        [HttpPost]
+        public JsonResult FiltrarArquivos(Int32? id)
+        {
+            try
+            {
+                Int32 idAss = (Int32)Session["IdAssinante"];
+
+                // Recupera configuracao
+                CONFIGURACAO conf = CarregaConfiguracaoGeral();
+                String caminho = conf.CONF_FD_FICHAS;
+
+                // Recupera paciente
+                PACIENTE pac = baseApp.GetItemById(id.Value);
+                String nome = pac.PACI_NM_NOME.ToUpper();
+                String cpf = pac.PACI_NR_CPF;
+                cpf = CrossCutting.ValidarNumerosDocumentos.RemoveNaoNumericos(cpf);
+
+                // Padrao arquivo
+                String pattern = nome.ToUpper() + "_" + cpf + "*.pdf";
+
+                // Recupera lista de arquivos
+                string[] files = Directory.GetFiles(caminho, pattern);
+                List<String> fileNames = files.Select(Path.GetFileName).ToList();
+                return Json(fileNames);
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Paciente";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Paciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return null;
+            }
+        }
+
+
+        [HttpGet]
+        public ActionResult ImportarFichas()
+        {
+            try
+            {
+                // Verifica se tem usuario logado
+                USUARIO usuario = new USUARIO();
+                if ((String)Session["Ativa"] == null)
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+                if ((USUARIO)Session["UserCredentials"] != null)
+                {
+                    usuario = (USUARIO)Session["UserCredentials"];
+
+                    // Verfifica permissão
+                    if (usuario.PERFIL.PERF_IN_ACESSO_PACIENTE == 0)
+                    {
+                        Session["MensPermissao"] = 2;
+                        Session["ModuloPermissao"] = "Paciente - Importação - Fichas";
+                        return RedirectToAction("VoltarAnexoPaciente");
+                    }
+                }
+                else
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+                Int32 idAss = (Int32)Session["IdAssinante"];
+                Session["ModuloAtual"] = "Importação - Fichas";
+
+                // Prepara view
+                List<PACIENTE> listaPac = CarregaPaciente();
+                ViewBag.Paciente = new SelectList(listaPac, "PACI__CD_ID", "PACI_NM_NOME");
+                Session["AjudaNivel"] = "../BaseAdmin/Ajuda/7/Ajuda7_1.pdf";
+                ViewBag.Perfil = usuario.PERFIL.PERF_SG_SIGLA;
+
+                // Recupera configuracao
+                CONFIGURACAO conf = CarregaConfiguracaoGeral();
+                String caminho = conf.CONF_FD_FICHAS;
+
+                // Padrao arquivo
+                String pattern = "*.pdf";
+
+                // Recupera lista de arquivos
+                string[] files = Directory.GetFiles(caminho, pattern);
+                List<String> fileNames = files.Select(Path.GetFileName).ToList();
+
+
+
+
+
+                ViewBag.ArquivosFichas = new SelectList(fileNames);
+
+                Session["NivelPaciente"] = 9;
+                PACIENTE item = new PACIENTE();
+                PacienteViewModel vm = Mapper.Map<PACIENTE, PacienteViewModel>(item);
+                vm.Arqs = fileNames;
+
+                // Grava Acesso
+                ControleAcessoMetodo grava = new ControleAcessoMetodo(aceApp);
+                Int32 voltaX = grava.GravaAcesso(usuario.USUA_CD_ID, usuario.ASSI_CD_ID, "IMPORTACAO_FICHA", "Paciente", "ImportarFichas");
+
+                return View(vm);
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Paciente";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Paciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return RedirectToAction("TrataExcecao", "BaseAdmin");
+            }
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult ImportarFichas(PacienteViewModel vm)
+        {
+            if ((String)Session["Ativa"] == null)
+            {
+                return RedirectToAction("Logout", "ControleAcesso");
+            }
+            Int32 idAss = (Int32)Session["IdAssinante"];
+            USUARIO usuarioLogado = (USUARIO)Session["UserCredentials"];
+            List<PACIENTE> listaPac = CarregaPaciente();
+            ViewBag.Paciente = new SelectList(listaPac, "PACI__CD_ID", "PACI_NM_NOME");
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    // Sanitização
+
+                    // Critica
+                    if (vm.Paciente == null)
+                    {
+                        Session["MensPaciente"] = 1;
+                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0551", CultureInfo.CurrentCulture));
+                        return View(vm);
+                    }
+                    if (vm.Ficha_Importar == null)
+                    {
+                        Session["MensPaciente"] = 2;
+                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0551", CultureInfo.CurrentCulture));
+                        return View(vm);
+                    }
+
+                    // Recupera paciente e arquivo
+                    PACIENTE pac = baseApp.GetItemById(vm.Paciente.Value);
+                    String nomeArq = vm.Ficha_Importar.ToUpper();
+
+                    // Atualiza paciente
+                    if (pac.PACI_IN_FICHAS == 0)
+                    {
+                        pac.PACI_IN_FICHAS = 1;
+                        Int32 voltaF = baseApp.ValidateEdit(pac, pac);
+
+                        String caminho = "/Imagens/" + idAss.ToString() + "/Pacientes/" + pac.PACI__CD_ID.ToString() + "/Fichas/";
+                        String map = Server.MapPath(caminho);
+                        Directory.CreateDirectory(Server.MapPath(caminho));
+                    }
+
+                    // Move arquivo
+                    String pasta = "~/Imagens/" + idAss.ToString() + "/Pacientes/" + pac.PACI__CD_ID.ToString() + "/Fichas/";
+                    CONFIGURACAO conf = CarregaConfiguracaoGeral();
+                    String sourceFilePath = conf.CONF_FD_FICHAS + "/" + nomeArq;
+
+                    // Destino
+                    String destFolder = Server.MapPath(pasta);
+                    String destFilePath = Path.Combine(destFolder, Path.GetFileName(sourceFilePath));
+
+                    // Copia
+                    System.IO.File.Copy(sourceFilePath, destFilePath, true);
+
+                    // Monta Log
+                    String frase = "Importação de ficha de paciente: " + pac.PACI_NM_NOME;
+                    LOG log = new LOG
+                    {
+                        LOG_DT_DATA = DateTime.Now,
+                        ASSI_CD_ID = usuarioLogado.ASSI_CD_ID,
+                        USUA_CD_ID = usuarioLogado.USUA_CD_ID,
+                        LOG_NM_OPERACAO = "ficPACI",
+                        LOG_IN_ATIVO = 1,
+                        LOG_TX_REGISTRO = frase,
+                        LOG_IN_SISTEMA = 6
+                    };
+                    Int32 volta1 = logApp.ValidateCreate(log);
+
+                    // Mensagem do CRUD
+                    Session["MsgCRUD"] = "A ficha do(a) paciente " + pac.PACI_NM_NOME.ToUpper() + " foi importada com sucesso.";
+                    Session["MensPaciente"] = 888;
+
+                    // Retorno
+                    return RedirectToAction("MontarTelaPaciente");
+                }
+                catch (Exception ex)
+                {
+                    ViewBag.Message = ex.Message;
+                    Session["TipoVolta"] = 2;
+                    Session["VoltaExcecao"] = "Paciente";
+                    Session["Excecao"] = ex;
+                    Session["ExcecaoTipo"] = ex.GetType().ToString();
+                    GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                    Int32 voltaX = grava.GravarLogExcecao(ex, "Paciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                    return RedirectToAction("TrataExcecao", "BaseAdmin");
+                }
+            }
+            else
+            {
+                return View(vm);
+            }
+        }
+
+        [HttpPost]
+        public ActionResult UploadFichaPaciente(HttpPostedFileBase file)
+        {
+            try
+            {
+                // Inicializa
+                if ((String)Session["Ativa"] == null)
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+                Int32 idNot = (Int32)Session["IdPaciente"];
+                Int32 idAss = (Int32)Session["IdAssinante"];
+
+                // Recupera paciente
+                PACIENTE item = baseApp.GetItemById(idNot);
+                USUARIO usu = (USUARIO)Session["UserCredentials"];
+
+                // Criticas
+                if (file == null)
+                {
+                    Session["MensPaciente"] = 5;
+                    if ((Int32)Session["VoltaAnexo"] == 1)
+                    {
+                        return RedirectToAction("VoltarAnexoPaciente", "Paciente");
+                    }
+                    else
+                    {
+                        return RedirectToAction("VoltarVerAnexoPaciente", "Paciente");
+                    }
+                }
+
+                // Critica tamanho nome
+                var fileName = Path.GetFileName(file.FileName);
+                if (fileName.Length > 250)
+                {
+                    Session["MensPaciente"] = 6;
+                    if ((Int32)Session["VoltaAnexo"] == 1)
+                    {
+                        return RedirectToAction("VoltarAnexoPaciente", "Paciente");
+                    }
+                    else
+                    {
+                        return RedirectToAction("VoltarVerAnexoPaciente", "Paciente");
+                    }
+                }
+
+                // Critica tamanho arquivo
+                var fileSize = file.ContentLength;
+                if (fileSize > 50000000)
+                {
+                    Session["MensPaciente"] = 7;
+                    if ((Int32)Session["VoltaAnexo"] == 1)
+                    {
+                        return RedirectToAction("VoltarAnexoPaciente", "Paciente");
+                    }
+                    else
+                    {
+                        return RedirectToAction("VoltarVerAnexoPaciente", "Paciente2");
+                    }
+                }
+
+                //Recupera tipo de arquivo
+                extensao = Path.GetExtension(fileName);
+                String a = extensao;
+                if (!((String)Session["ExtensoesPossiveisFicha"]).Contains(extensao.ToUpper()))
+                {
+                    Session["MensPaciente"] = 12;
+                    if ((Int32)Session["VoltaAnexo"] == 1)
+                    {
+                        return RedirectToAction("VoltarAnexoPaciente", "Paciente");
+                    }
+                    else
+                    {
+                        return RedirectToAction("VoltarVerAnexoPaciente", "Paciente");
+                    }
+                }
+
+                // Copia arquivo
+                String caminho = "/Imagens/" + item.ASSI_CD_ID.ToString() + "/Pacientes/" + item.PACI__CD_ID.ToString() + "/Fichas/";
+                String path = Path.Combine(Server.MapPath(caminho), fileName);
+                file.SaveAs(path);
+
+                // Gravar registro
+                PACIENTE_FICHA foto = new PACIENTE_FICHA();
+                foto.PAFC_AQ_ARQUIVO = "~" + caminho + fileName;
+                foto.PAFC_DT_FICHA = DateTime.Today;
+                foto.PAFC_IN_ATIVO = 1;
+                Int32 tipo = 3;
+                if (extensao.ToUpper() == ".JPG" || extensao.ToUpper() == ".GIF" || extensao.ToUpper() == ".PNG" || extensao.ToUpper() == ".JPEG")
+                {
+                    tipo = 1;
+                }
+                else if (extensao.ToUpper() == ".PDF")
+                {
+                    tipo = 3;
+                }
+                else
+                {
+                    tipo = 7;
+                }
+                foto.PAFC_IN_TIPO = tipo;
+                foto.PAFC_NM_TITULO = fileName;
+                foto.PACI_CD_ID = item.PACI__CD_ID;
+
+                item.PACIENTE_FICHA.Add(foto);
+                objetoAntes = item;
+                Int32 volta = baseApp.ValidateEdit(item, objetoAntes);
+                Session["NivelPaciente"] = 2;
+                Session["PacienteAlterada"] = 1;
+                if ((Int32)Session["VoltaAnexo"] == 1)
+                {
+                    return RedirectToAction("VoltarAnexoPaciente", "Paciente");
+                }
+                else
+                {
+                    return RedirectToAction("VoltarVerFichaPaciente", "Paciente2");
+                }
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Paciente";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Paciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return RedirectToAction("TrataExcecao", "BaseAdmin");
+            }
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> UploadFichaPacienteVirus(HttpPostedFileBase file)
+        {
+            try
+            {
+                // Inicializa
+                if ((String)Session["Ativa"] == null)
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+                Int32 idNot = (Int32)Session["IdPaciente"];
+                Int32 idAss = (Int32)Session["IdAssinante"];
+
+                // Recupera paciente
+                PACIENTE item = baseApp.GetItemById(idNot);
+                USUARIO usu = (USUARIO)Session["UserCredentials"];
+
+                // Criticas
+                if (file == null)
+                {
+                    Session["MensPaciente"] = 5;
+                    if ((Int32)Session["VoltaAnexo"] == 1)
+                    {
+                        return RedirectToAction("VoltarAnexoPaciente", "Paciente");
+                    }
+                    else
+                    {
+                        return RedirectToAction("VoltarVerAnexoPaciente", "Paciente");
+                    }
+                }
+
+                // Critica tamanho nome
+                var fileName = Path.GetFileName(file.FileName);
+                if (fileName.Length > 250)
+                {
+                    Session["MensPaciente"] = 6;
+                    if ((Int32)Session["VoltaAnexo"] == 1)
+                    {
+                        return RedirectToAction("VoltarAnexoPaciente", "Paciente");
+                    }
+                    else
+                    {
+                        return RedirectToAction("VoltarVerAnexoPaciente", "Paciente");
+                    }
+                }
+
+                // Critica tamanho arquivo
+                var fileSize = file.ContentLength;
+                if (fileSize > 50000000)
+                {
+                    Session["MensPaciente"] = 7;
+                    if ((Int32)Session["VoltaAnexo"] == 1)
+                    {
+                        return RedirectToAction("VoltarAnexoPaciente", "Paciente");
+                    }
+                    else
+                    {
+                        return RedirectToAction("VoltarVerAnexoPaciente", "Paciente2");
+                    }
+                }
+
+                //Recupera tipo de arquivo
+                extensao = Path.GetExtension(fileName);
+                String a = extensao;
+                if (!((String)Session["ExtensoesPossiveisFicha"]).Contains(extensao.ToUpper()))
+                {
+                    Session["MensPaciente"] = 12;
+                    if ((Int32)Session["VoltaAnexo"] == 1)
+                    {
+                        return RedirectToAction("VoltarAnexoPaciente", "Paciente");
+                    }
+                    else
+                    {
+                        return RedirectToAction("VoltarVerAnexoPaciente", "Paciente");
+                    }
+                }
+
+                // Verifica antivirus
+                var clam = new ClamClient("localhost", 3310);
+                var scanResult = await clam.SendAndScanFileAsync(file.InputStream);
+
+                if (scanResult.Result != ClamScanResults.Clean)
+                {
+                    ViewBag.Message = "File is infected or scan failed.";
+                    return View();
+                }
+
+                // Copia arquivo
+                String caminho = "/Imagens/" + item.ASSI_CD_ID.ToString() + "/Pacientes/" + item.PACI__CD_ID.ToString() + "/Fichas/";
+                String path = Path.Combine(Server.MapPath(caminho), fileName);
+                file.SaveAs(path);
+
+                // Gravar registro
+                PACIENTE_FICHA foto = new PACIENTE_FICHA();
+                foto.PAFC_AQ_ARQUIVO = "~" + caminho + fileName;
+                foto.PAFC_DT_FICHA = DateTime.Today;
+                foto.PAFC_IN_ATIVO = 1;
+                Int32 tipo = 3;
+                if (extensao.ToUpper() == ".JPG" || extensao.ToUpper() == ".GIF" || extensao.ToUpper() == ".PNG" || extensao.ToUpper() == ".JPEG")
+                {
+                    tipo = 1;
+                }
+                else if (extensao.ToUpper() == ".PDF")
+                {
+                    tipo = 3;
+                }
+                else
+                {
+                    tipo = 7;
+                }
+                foto.PAFC_IN_TIPO = tipo;
+                foto.PAFC_NM_TITULO = fileName;
+                foto.PACI_CD_ID = item.PACI__CD_ID;
+
+                item.PACIENTE_FICHA.Add(foto);
+                objetoAntes = item;
+                Int32 volta = baseApp.ValidateEdit(item, objetoAntes);
+                Session["NivelPaciente"] = 2;
+                Session["PacienteAlterada"] = 1;
+                if ((Int32)Session["VoltaAnexo"] == 1)
+                {
+                    return RedirectToAction("VoltarAnexoPaciente", "Paciente");
+                }
+                else
+                {
+                    return RedirectToAction("VoltarVerFichaPaciente", "Paciente2");
+                }
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Paciente";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Paciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return RedirectToAction("TrataExcecao", "BaseAdmin");
+            }
+        }
+
+        [HttpGet]
+        public ActionResult ExcluirFicha(Int32 id)
+        {
+            if ((String)Session["Ativa"] == null)
+            {
+                return RedirectToAction("Logout", "ControleAcesso");
+            }
+
+            try
+            {
+                // Recupera informações
+                USUARIO usuarioLogado = (USUARIO)Session["UserCredentials"];
+                PACIENTE_FICHA item = baseApp.GetFichaById(id);
+                PACIENTE pac = baseApp.GetItemById(item.PACI_CD_ID);
+
+                // Exclusão fisica
+                //String caminho = "/Imagens/" + usuarioLogado.ASSI_CD_ID.ToString() + "/Pacientes/" + pac.PACI__CD_ID.ToString() + "/Fichas/";
+                //String filePath = Path.Combine(Server.MapPath(caminho), item.PAFC_NM_TITULO);
+                //if (System.IO.File.Exists(filePath))
+                //{
+                //    System.IO.File.Delete(filePath);
+                //    Session["MensPaciente"] = 69;
+                //}
+                //else
+                //{
+                //    Session["MensPaciente"] = 70;
+                //}
+
+                // Exclui na base de dados
+                item.PAFC_IN_ATIVO = 0;
+                Int32 volta = baseApp.ValidateEditFicha(item);
+
+                // Monta Log
+                LOG log = new LOG
+                {
+                    LOG_DT_DATA = DateTime.Now,
+                    ASSI_CD_ID = usuarioLogado.ASSI_CD_ID,
+                    USUA_CD_ID = usuarioLogado.USUA_CD_ID,
+                    LOG_NM_OPERACAO = "efcPACI",
+                    LOG_IN_ATIVO = 1,
+                    LOG_TX_REGISTRO = "Paciente: " + item.PACIENTE.PACI_NM_NOME + " | Ficha: " + item.PAFC_NM_TITULO + " | Data: " + item.PAFC_DT_FICHA.ToShortDateString(),
+                    LOG_IN_SISTEMA = 6
+                };
+                Int32 volta1 = logApp.ValidateCreate(log);
+
+                Session["NivelPaciente"] = 2;
+                Session["PacienteAlterada"] = 1;
+
+                // Grava historico
+                PACIENTE_HISTORICO hist = new PACIENTE_HISTORICO();
+                hist.ASSI_CD_ID = usuarioLogado.ASSI_CD_ID;
+                hist.USUA_CD_ID = usuarioLogado.USUA_CD_ID;
+                hist.PACI_CD_ID = item.PACIENTE.PACI__CD_ID;
+                hist.PAHI_DT_DATA = DateTime.Now;
+                hist.PAHI_IN_TIPO = 1;
+                hist.PAHI_IN_CHAVE = item.PACIENTE.PACI__CD_ID;
+                hist.PAHI_NM_OPERACAO = "Paciente - Exclusão de Ficha";
+                hist.PAHI_DS_DESCRICAO = "Ficha excluída " + item.PAFC_NM_TITULO;
+                Int32 voltaHist = baseApp.ValidateCreateHistorico(hist);
+
+                if ((Int32)Session["VoltaAnexo"] == 1)
+                {
+                    return RedirectToAction("VoltarAnexoPaciente");
+                }
+                else
+                {
+                    return RedirectToAction("VoltarVerFichaPaciente", "Paciente2");
+                }
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Paciente";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Paciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return RedirectToAction("TrataExcecao", "BaseAdmin");
+            }
+        }
+
+        public ActionResult VoltarVerFichaPaciente()
+        {
+            if ((String)Session["Ativa"] == null)
+            {
+                return RedirectToAction("Logout", "ControleAcesso");
+            }
+            Session["VoltaTela"] = 1;
+            return RedirectToAction("VerFichaPacienteProceder", "Paciente2", new { id = (Int32)Session["IdPaciente"] });
+        }
+
+        public FileResult DownloadFichaPaciente(Int32 id)
+        {
+            try
+            {
+                PACIENTE_FICHA item = baseApp.GetFichaById(id);
+                String arquivo = item.PAFC_AQ_ARQUIVO;
+                Int32 pos = arquivo.LastIndexOf("/") + 1;
+                String nomeDownload = arquivo.Substring(pos);
+                String contentType = string.Empty;
+                if (arquivo.Contains(".pdf"))
+                {
+                    contentType = "application/pdf";
+                }
+                else if (arquivo.Contains(".jpg") || arquivo.Contains(".jpeg"))
+                {
+                    contentType = "image/jpg";
+                }
+                else if (arquivo.Contains(".png"))
+                {
+                    contentType = "image/png";
+                }
+                else if (arquivo.Contains(".docx"))
+                {
+                    contentType = "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+                }
+                else if (arquivo.Contains(".xlsx"))
+                {
+                    contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+                }
+                else if (arquivo.Contains(".pptx"))
+                {
+                    contentType = "application/vnd.openxmlformats-officedocument.presentationml.presentation";
+                }
+                else if (arquivo.Contains(".mp3"))
+                {
+                    contentType = "audio/mpeg";
+                }
+                else if (arquivo.Contains(".mpeg"))
+                {
+                    contentType = "audio/mpeg";
+                }
+                Session["NivelPaciente"] = 2;
+                return File(arquivo, contentType, nomeDownload);
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Paciente";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Paciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return null;
+            }
+        }
+
+        [HttpGet]
+        public ActionResult VerFichaPaciente(Int32 id)
+        {
+            try
+            {
+                if ((String)Session["Ativa"] == null)
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+                USUARIO usuario = (USUARIO)Session["UserCredentials"];
+
+                // Grava Acesso
+                ControleAcessoMetodo grava = new ControleAcessoMetodo(aceApp);
+                Int32 voltaX = grava.GravaAcesso(usuario.USUA_CD_ID, usuario.ASSI_CD_ID, "PACIENTE_VER_ANEXO", "Paciente", "VerAnexoPaciente");
+
+                // Prepara view
+                PACIENTE_ANEXO item = baseApp.GetAnexoById(id);
+                Session["NivelPaciente"] = 2;
+                PACIENTE pac = baseApp.GetItemById(item.PACI_CD_ID);
+                ViewBag.NomePaciente = pac.PACI_NM_NOME;
+                return View(item);
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Paciente";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Paciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return RedirectToAction("TrataExcecao", "BaseAdmin");
+            }
+        }
+
+        public ActionResult VerFichaPacienteConsulta()
+        {
+            if ((String)Session["Ativa"] == null)
+            {
+                return RedirectToAction("Logout", "ControleAcesso");
+            }
+            return RedirectToAction("VerFichaPacienteProceder", new { id = (Int32)Session["IdPaciente"] });
+        }
+
+        public ActionResult VerFichaPacienteProceder(Int32 id)
+        {
+            try
+            {
+                if ((String)Session["Ativa"] == null)
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+                USUARIO usuario = (USUARIO)Session["UserCredentials"];
+
+                PACIENTE pac = baseApp.GetItemById(id);
+                PacienteViewModel vm = Mapper.Map<PACIENTE, PacienteViewModel>(pac);
+                ViewBag.NomePaciente = pac.PACI_NM_NOME;
+
+                // Grava Acesso
+                ControleAcessoMetodo grava = new ControleAcessoMetodo(aceApp);
+                Int32 voltaX = grava.GravaAcesso(usuario.USUA_CD_ID, usuario.ASSI_CD_ID, "PACIENTE_ANEXO", "Paciente2", "VerFichaPacienteProceder");
+                return View(vm);
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Paciente";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Paciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return RedirectToAction("TrataExcecao", "BaseAdmin");
+            }
+        }
+
+        public ActionResult VoltarEditarUltimaAnamneseContinua()
+        {
+            if ((String)Session["Ativa"] == null)
+            {
+                return RedirectToAction("Logout", "ControleAcesso");
+            }
+            return RedirectToAction("EditarAnamneseNovaContinua", new { id = (Int32)Session["IdAnamnese"] });
+        }
+
+        public List<VALOR_CONSULTA> CarregaTipoConsulta()
+        {
+            try
+            {
+                Int32 idAss = (Int32)Session["IdAssinante"];
+                List<VALOR_CONSULTA> conf = new List<VALOR_CONSULTA>();
+                //if (Session["TipoValorConsultas"] == null)
+                //{
+                conf = vcApp.GetAllItens(idAss);
+                //}
+                //else
+                //{
+                //    if ((Int32)Session["TipoValorConsultaAlterada"] == 1)
+                //    {
+                //        conf = vcApp.GetAllItens(idAss);
+                //    }
+                //    else
+                //    {
+                //        conf = (List<VALOR_CONSULTA>)Session["TipoValorConsultas"];
+                //    }
+                //}
+                Session["TipoValorConsultas"] = conf;
+                Session["TipoValorConsultaAlterada"] = 0;
+                return conf;
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Paciente";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Paciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return null;
+            }
+        }
+
+        public ActionResult VerInformacaoPreviaPacienteBase()
+        {
+            if ((String)Session["Ativa"] == null)
+            {
+                return RedirectToAction("Logout", "ControleAcesso");
+            }
+            return RedirectToAction("VerInformacaoPreviaPaciente", new { id = (Int32)Session["IdPaciente"] });
+        }
+
+        [HttpGet]
+        public ActionResult VerInformacaoPreviaPaciente(Int32 id)
+        {
+            try
+            {
+                // Verifica se tem usuario logado
+                USUARIO usuario = new USUARIO();
+                if ((String)Session["Ativa"] == null)
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+                if ((USUARIO)Session["UserCredentials"] != null)
+                {
+                    usuario = (USUARIO)Session["UserCredentials"];
+
+                    // Verfifica permissão
+                }
+                else
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+                Int32 idAss = (Int32)Session["IdAssinante"];
+                Session["ModuloAtual"] = "Avisos";
+
+                // Carrega listas
+                listaMasterAviso = CarregarAviso().Where(p => p.AVIS_IN_ATIVO == 1 & p.USUA_CD_ID == usuario.USUA_CD_ID & p.PACI_CD_ID == id).ToList();
+                ViewBag.Listas = listaMasterAviso;
+                ViewBag.Perfil = usuario.PERFIL.PERF_SG_SIGLA;
+                Session["Aviso"] = null;
+                Session["ListaLog"] = null;
+                ViewBag.Perfil = usuario.PERFIL.PERF_SG_SIGLA;
+                PACIENTE pac = baseApp.GetItemById(id);
+                ViewBag.NomePaciente = pac.PACI_NM_NOME;
+
+                // Grava Acesso
+                ControleAcessoMetodo grava = new ControleAcessoMetodo(aceApp);
+                Int32 voltaX = grava.GravaAcesso(usuario.USUA_CD_ID, usuario.ASSI_CD_ID, "AVISO_PREVIAS", "Paciente", "VerInformacaoPreviaPaciente");
+
+                // Abre view
+                Session["MensAviso"] = null;
+                Session["VoltaAviso"] = 1;
+                objetoAviso = new AVISO_LEMBRETE();
+                return View(objetoAviso);
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Paciente";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Paciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return RedirectToAction("TrataExcecao", "BaseAdmin");
+            }
+        }
+
+        public List<AVISO_LEMBRETE> CarregarAviso()
+        {
+            try
+            {
+                Int32 idAss = (Int32)Session["IdAssinante"];
+                List<AVISO_LEMBRETE> conf = new List<AVISO_LEMBRETE>();
+                if (Session["Avisos"] == null)
+                {
+                    conf = aviApp.GetAllItens(idAss);
+                }
+                else
+                {
+                    if ((Int32)Session["AvisoAlterada"] == 1)
+                    {
+                        conf = aviApp.GetAllItens(idAss);
+                    }
+                    else
+                    {
+                        conf = (List<AVISO_LEMBRETE>)Session["Avisos"];
+                    }
+                }
+                conf = conf.Where(p => p.AVIS_IN_SISTEMA == 6).ToList();
+                Session["AvisoAlterada"] = 0;
+                Session["Avisos"] = conf;
+                return conf;
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Paciente";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Paciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return null;
+            }
+        }
+
+        [HttpGet]
+        public ActionResult VerAvisoPrevia(Int32 id)
+        {
+            try
+            {
+                // Verifica se tem usuario logado
+                if ((String)Session["Ativa"] == null)
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+                USUARIO usuario = (USUARIO)Session["UserCredentials"];
+                Int32 idAss = (Int32)Session["IdAssinante"];
+
+                Session["IdAviso"] = id;
+                AVISO_LEMBRETE item = aviApp.GetItemById(id);
+                AvisoLembreteViewModel vm = Mapper.Map<AVISO_LEMBRETE, AvisoLembreteViewModel>(item);
+
+                // Grava Acesso
+                ControleAcessoMetodo grava = new ControleAcessoMetodo(aceApp);
+                Int32 voltaX = grava.GravaAcesso(usuario.USUA_CD_ID, usuario.ASSI_CD_ID, "AVISO_PREVIA_VER", "Aviso", "VerAvisoPrevia");
+                return View(vm);
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Paciente";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Paciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return RedirectToAction("TrataExcecao", "BaseAdmin");
+            }
+        }
+
+        [HttpGet]
+        public ActionResult IncluirConsulta()
+        {
+            try
+            {
+                // Verifica se tem usuario logado
+                USUARIO usuario = new USUARIO();
+                if ((String)Session["Ativa"] == null)
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+                if ((USUARIO)Session["UserCredentials"] != null)
+                {
+                    usuario = (USUARIO)Session["UserCredentials"];
+
+                    // Verfifica permissão
+                    if (usuario.PERFIL.PERF_IN_PACIENTE_CONSULTA_INCLUIR == 0)
+                    {
+                        Session["MensPermissao"] = 2;
+                        Session["ModuloPermissao"] = "Paciente - Consulta - Inclusão";
+                        return RedirectToAction("VoltarAnexoPaciente", "Paciente2");
+                    }
+                }
+                else
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+                Int32 idAss = (Int32)Session["IdAssinante"];
+                Session["ModuloAtual"] = "Consultas - Inclusão";
+
+                // Prepara listas
+                List<PACIENTE> listaPac = CarregaPaciente();
+                if (usuario.PERFIL.PERF_IN_VISAO_GERAL == 1 || usuario.PERFIL.PERF_SG_SIGLA == "ADM")
+                {
+                    listaPac = listaPac.ToList();
+                }
+                else
+                {
+                    listaPac = listaPac.Where(p => p.USUA_CD_ID == usuario.USUA_CD_ID).ToList();
+                }
+
+                ViewBag.Paciente = new SelectList(listaPac, "PACI__CD_ID", "PACI_NM_NOME");
+                ViewBag.TipoConsulta = new SelectList(CarregaTipoConsulta(), "VACO_CD_ID", "VACO_NM_NOME");
+                ViewBag.TipoConsulta1 = new SelectList(CarregaTipoConsulta(), "VACO_CD_ID", "VACO_NM_NOME");
+                var tipo = new List<SelectListItem>();
+                tipo.Add(new SelectListItem() { Text = "Presencial", Value = "1" });
+                tipo.Add(new SelectListItem() { Text = "Remota", Value = "2" });
+                ViewBag.Tipo = new SelectList(tipo, "Value", "Text");
+                var novo = new List<SelectListItem>();
+                novo.Add(new SelectListItem() { Text = "Novo Paciente", Value = "1" });
+                novo.Add(new SelectListItem() { Text = "Paciente Cadastrado", Value = "2" });
+                ViewBag.Novo = new SelectList(novo, "Value", "Text");
+                List<SelectListItem> menor = new List<SelectListItem>();
+                menor.Add(new SelectListItem() { Text = "Sim", Value = "1" });
+                menor.Add(new SelectListItem() { Text = "Não", Value = "0" });
+                ViewBag.Menor = new SelectList(menor, "Value", "Text");
+                List<SelectListItem> modo = new List<SelectListItem>();
+                modo.Add(new SelectListItem() { Text = "Normal", Value = "1" });
+                modo.Add(new SelectListItem() { Text = "Recursiva", Value = "2" });
+                ViewBag.Modo = new SelectList(modo, "Value", "Text");
+                ViewBag.Usuario = new SelectList(CarregaUsuario(), "USUA_CD_ID", "USUA_NM_NOME");
+
+                var seg = new List<SelectListItem>();
+                seg.Add(new SelectListItem() { Text = "Sim", Value = "1" });
+                seg.Add(new SelectListItem() { Text = "Não", Value = "0" });
+                ViewBag.Segunda = new SelectList(seg, "Value", "Text");
+                var ter = new List<SelectListItem>();
+                ter.Add(new SelectListItem() { Text = "Sim", Value = "1" });
+                ter.Add(new SelectListItem() { Text = "Não", Value = "0" });
+                ViewBag.Terca = new SelectList(ter, "Value", "Text");
+                var qua = new List<SelectListItem>();
+                qua.Add(new SelectListItem() { Text = "Sim", Value = "1" });
+                qua.Add(new SelectListItem() { Text = "Não", Value = "0" });
+                ViewBag.Quarta = new SelectList(qua, "Value", "Text");
+                var qui = new List<SelectListItem>();
+                qui.Add(new SelectListItem() { Text = "Sim", Value = "1" });
+                qui.Add(new SelectListItem() { Text = "Não", Value = "0" });
+                ViewBag.Quinta = new SelectList(qui, "Value", "Text");
+                var sex = new List<SelectListItem>();
+                sex.Add(new SelectListItem() { Text = "Sim", Value = "1" });
+                sex.Add(new SelectListItem() { Text = "Não", Value = "0" });
+                ViewBag.Sexta = new SelectList(sex, "Value", "Text");
+                var sab = new List<SelectListItem>();
+                sab.Add(new SelectListItem() { Text = "Sim", Value = "1" });
+                sab.Add(new SelectListItem() { Text = "Não", Value = "0" });
+                ViewBag.Sabado = new SelectList(sab, "Value", "Text");
+                var dom = new List<SelectListItem>();
+                dom.Add(new SelectListItem() { Text = "Sim", Value = "1" });
+                dom.Add(new SelectListItem() { Text = "Não", Value = "0" });
+                ViewBag.Domingo = new SelectList(dom, "Value", "Text");
+
+                // Mensagem
+                if (Session["MensPaciente"] != null)
+                {
+                    if ((Int32)Session["MensPaciente"] == 500)
+                    {
+                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0524", CultureInfo.CurrentCulture));
+                    }
+                    if ((Int32)Session["MensPaciente"] == 501)
+                    {
+                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0526", CultureInfo.CurrentCulture));
+                    }
+                    if ((Int32)Session["MensPaciente"] == 502)
+                    {
+                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0529", CultureInfo.CurrentCulture));
+                    }
+                    if ((Int32)Session["MensPaciente"] == 503)
+                    {
+                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0530", CultureInfo.CurrentCulture));
+                    }
+                    if ((Int32)Session["MensPaciente"] == 504)
+                    {
+                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0545", CultureInfo.CurrentCulture));
+                    }
+                    if ((Int32)Session["MensPaciente"] == 701)
+                    {
+                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0542", CultureInfo.CurrentCulture));
+                    }
+                    if ((Int32)Session["MensPaciente"] == 702)
+                    {
+                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0543", CultureInfo.CurrentCulture));
+                    }
+                    if ((Int32)Session["MensPaciente"] == 703)
+                    {
+                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0544", CultureInfo.CurrentCulture));
+                    }
+                    if ((Int32)Session["MensPaciente"] == 800)
+                    {
+                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0551", CultureInfo.CurrentCulture));
+                    }
+                    if ((Int32)Session["MensPaciente"] == 801)
+                    {
+                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0552", CultureInfo.CurrentCulture));
+                    }
+                    if ((Int32)Session["MensPaciente"] == 802)
+                    {
+                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0553", CultureInfo.CurrentCulture));
+                    }
+                }
+
+                // Prepara view
+                Session["NivelPaciente"] = 3;
+                Session["MensPaciente"] = null;
+                Session["VoltaConfCalendario"] = 2;
+                Session["VoltaBloqueio"] = 3;
+                Session["VoltaInfoConsulta"] = 1;
+                Session["AjudaNivel"] = "../BaseAdmin/Ajuda/5/Ajuda5_1.pdf";
+                PACIENTE_CONSULTA item = new PACIENTE_CONSULTA();
+                PacienteConsultaViewModel vm = Mapper.Map<PACIENTE_CONSULTA, PacienteConsultaViewModel>(item);
+                if ((Int32)Session["TipoSolicitacao"] == 1)
+                {
+                    PACIENTE pac = baseApp.GetItemById((Int32)Session["IdPaciente"]);
+                    vm.PACI_CD_ID = (Int32)Session["IdPaciente"];
+                    vm.PACIENTE = pac;
+                    vm.VACO_CD_ID = pac.VACO_CD_ID;
+                    ViewBag.NomePaciente = pac.PACI_NM_NOME;
+                }
+                else
+                {
+                    vm.PACI_CD_ID = 0;
+                    vm.PACIENTE = null;
+                    ViewBag.NomePaciente = String.Empty;
+                }
+                vm.PACO_IN_ATIVO = 1;
+                vm.PACO_DT_CONSULTA = DateTime.Today.Date;
+                vm.USUA_CD_ID = usuario.USUA_CD_ID;
+                vm.ASSI_CD_ID = idAss;
+                vm.PACO_IN_TIPO = 1;
+                vm.PACO_IN_ENCERRADA = 0;
+                vm.PACO_IN_NOVO_PACIENTE = 2;
+                vm.PACO_IN_CONFIRMADA = 0;
+                vm.PACI_IN_MENOR = 0;
+                vm.MODO_CONSULTA = 1;
+                vm.DATA_INICIO = DateTime.Today.Date;
+                vm.REPETE = 2;
+                vm.SEGUNDA_FEIRA = 0;
+                vm.TERCA_FEIRA = 0;
+                vm.QUARTA_FEIRA = 0;
+                vm.QUINTA_FEIRA = 0;
+                vm.SEXTA_FEIRA = 0;
+                vm.SABADO = 0;
+                vm.DOMINGO = 0;
+
+                // Grava Acesso
+                ControleAcessoMetodo grava = new ControleAcessoMetodo(aceApp);
+                Int32 voltaX = grava.GravaAcesso(usuario.USUA_CD_ID, usuario.ASSI_CD_ID, "PACIENTE_CONSULTA_INCLUIR", "Paciente", "IncluirConsulta");
+
+                return View(vm);
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Paciente";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Paciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return RedirectToAction("TrataExcecao", "BaseAdmin");
+            }
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult IncluirConsulta(PacienteConsultaViewModel vm)
+        {
+            if ((String)Session["Ativa"] == null)
+            {
+                return RedirectToAction("Logout", "ControleAcesso");
+            }
+            USUARIO usuario = (USUARIO)Session["UserCredentials"];
+            CONFIGURACAO conf = CarregaConfiguracaoGeral();
+            CONFIGURACAO_CALENDARIO confCal = CarregaConfiguracaoCalendario();
+            Int32 idAss = (Int32)Session["IdAssinante"];
+            var tipo = new List<SelectListItem>();
+            tipo.Add(new SelectListItem() { Text = "Presencial", Value = "1" });
+            tipo.Add(new SelectListItem() { Text = "Remota", Value = "2" });
+            ViewBag.Tipo = new SelectList(tipo, "Value", "Text");
+            var novo = new List<SelectListItem>();
+            novo.Add(new SelectListItem() { Text = "Novo Paciente", Value = "1" });
+            novo.Add(new SelectListItem() { Text = "Paciente Cadastrado", Value = "2" });
+            ViewBag.Novo = new SelectList(novo, "Value", "Text");
+            List<PACIENTE> pacs = CarregaPaciente();
+            ViewBag.Paciente = new SelectList(pacs, "PACI__CD_ID", "PACI_NM_NOME");
+            List<SelectListItem> menor = new List<SelectListItem>();
+            menor.Add(new SelectListItem() { Text = "Sim", Value = "1" });
+            menor.Add(new SelectListItem() { Text = "Não", Value = "0" });
+            ViewBag.Menor = new SelectList(menor, "Value", "Text");
+            List<SelectListItem> modo = new List<SelectListItem>();
+            modo.Add(new SelectListItem() { Text = "Normal", Value = "1" });
+            modo.Add(new SelectListItem() { Text = "Recursiva", Value = "2" });
+            ViewBag.Modo = new SelectList(modo, "Value", "Text");
+            ViewBag.TipoConsulta = new SelectList(CarregaTipoConsulta(), "VACO_CD_ID", "VACO_NM_NOME");
+            ViewBag.Usuario = new SelectList(CarregaUsuario(), "USUA_CD_ID", "USUA_NM_NOME");
+
+            var seg = new List<SelectListItem>();
+            seg.Add(new SelectListItem() { Text = "Sim", Value = "1" });
+            seg.Add(new SelectListItem() { Text = "Não", Value = "0" });
+            ViewBag.Segunda = new SelectList(seg, "Value", "Text");
+            var ter = new List<SelectListItem>();
+            ter.Add(new SelectListItem() { Text = "Sim", Value = "1" });
+            ter.Add(new SelectListItem() { Text = "Não", Value = "0" });
+            ViewBag.Terca = new SelectList(ter, "Value", "Text");
+            var qua = new List<SelectListItem>();
+            qua.Add(new SelectListItem() { Text = "Sim", Value = "1" });
+            qua.Add(new SelectListItem() { Text = "Não", Value = "0" });
+            ViewBag.Quarta = new SelectList(qua, "Value", "Text");
+            var qui = new List<SelectListItem>();
+            qui.Add(new SelectListItem() { Text = "Sim", Value = "1" });
+            qui.Add(new SelectListItem() { Text = "Não", Value = "0" });
+            ViewBag.Quinta = new SelectList(qui, "Value", "Text");
+            var sex = new List<SelectListItem>();
+            sex.Add(new SelectListItem() { Text = "Sim", Value = "1" });
+            sex.Add(new SelectListItem() { Text = "Não", Value = "0" });
+            ViewBag.Sexta = new SelectList(sex, "Value", "Text");
+            var sab = new List<SelectListItem>();
+            sab.Add(new SelectListItem() { Text = "Sim", Value = "1" });
+            sab.Add(new SelectListItem() { Text = "Não", Value = "0" });
+            ViewBag.Sabado = new SelectList(sab, "Value", "Text");
+            var dom = new List<SelectListItem>();
+            dom.Add(new SelectListItem() { Text = "Sim", Value = "1" });
+            dom.Add(new SelectListItem() { Text = "Não", Value = "0" });
+            ViewBag.Domingo = new SelectList(dom, "Value", "Text");
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    // Sanitização
+                    vm.PACI_NM_NOME = CrossCutting.UtilitariosGeral.CleanStringDocto(vm.PACI_NM_NOME);
+                    vm.PACI_NR_CPF = CrossCutting.UtilitariosGeral.CleanStringDocto(vm.PACI_NR_CPF);
+                    vm.PACI_NM_EMAIL = CrossCutting.UtilitariosGeral.CleanStringMail(vm.PACI_NM_EMAIL);
+                    vm.PACI_NR_CELULAR = CrossCutting.UtilitariosGeral.CleanStringPhone(vm.PACI_NR_CELULAR);
+                    vm.PACI_NM_INDICADO = CrossCutting.UtilitariosGeral.CleanStringDocto(vm.PACI_NM_INDICADO);
+
+                    // Critica usuario
+                    if (vm.USUA_CD_ID == 0 || vm.USUA_CD_ID == null)
+                    {
+                        vm.USUA_CD_ID = usuario.USUA_CD_ID;
+                    }
+
+                    // Critica dia util
+                    DateTime dataCons = vm.PACO_DT_CONSULTA;
+                    Int32 dia = (Int32)dataCons.DayOfWeek;
+                    Int32 voltaCal = VerificacaoDataCalendario.ValidaDiaUtil(dia, confCal);
+                    if (voltaCal == 1)
+                    {
+                        Session["MensPaciente"] = 800;
+                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0551", CultureInfo.CurrentCulture));
+                        return View(vm);
+                    }
+
+                    // Critica de horario util
+                    Int32 voltaUtil = VerificacaoDataCalendario.ValidaHoraUtil(dia, vm, confCal);
+                    if (voltaUtil == 1)
+                    {
+                        Session["MensPaciente"] = 801;
+                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0552", CultureInfo.CurrentCulture));
+                        return View(vm);
+                    }
+                    if (voltaUtil == 2)
+                    {
+                        Session["MensPaciente"] = 802;
+                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0553", CultureInfo.CurrentCulture));
+                        return View(vm);
+                    }
+
+                    // Criticas de paciente
+                    if ((Int32)Session["TipoSolicitacao"] != 1)
+                    {
+                        if (vm.PACO_IN_NOVO_PACIENTE == 1)
+                        {
+                            if (vm.PACI_NM_NOME == null || vm.PACI_NR_CPF == null || vm.PACI_NR_CELULAR == null)
+                            {
+                                Session["MensPaciente"] = 701;
+                                ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0542", CultureInfo.CurrentCulture));
+                                return View(vm);
+                            }
+                            pacs = pacs.Where(p => p.PACI_NR_CPF == vm.PACI_NR_CPF).ToList();
+                            if (pacs.Count > 0)
+                            {
+                                Session["MensPaciente"] = 702;
+                                ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0543", CultureInfo.CurrentCulture));
+                                return View(vm);
+                            }
+                        }
+                        else if (vm.PACO_IN_NOVO_PACIENTE == 2)
+                        {
+                            if (vm.PACI_CD_ID == 0 || vm.PACI_CD_ID == null)
+                            {
+                                Session["MensPaciente"] = 703;
+                                ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0544", CultureInfo.CurrentCulture));
+                                return View(vm);
+                            }
+                        }
+                    }
+
+                    // Critica de data
+                    if (vm.PACO_HR_INICIO == null || vm.PACO_HR_FINAL == null)
+                    {
+                        Session["MensPaciente"] = 504;
+                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0545", CultureInfo.CurrentCulture));
+                        return View(vm);
+                    }
+                    if (vm.PACO_DT_CONSULTA.Date < DateTime.Today.Date)
+                    {
+                        Session["MensPaciente"] = 501;
+                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0526", CultureInfo.CurrentCulture));
+                        return View(vm);
+                    }
+                    if (vm.PACO_HR_INICIO == vm.PACO_HR_FINAL)
+                    {
+                        Session["MensPaciente"] = 502;
+                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0529", CultureInfo.CurrentCulture));
+                        return View(vm);
+                    }
+                    if (vm.PACO_HR_INICIO > vm.PACO_HR_FINAL)
+                    {
+                        Session["MensPaciente"] = 503;
+                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0530", CultureInfo.CurrentCulture));
+                        return View(vm);
+                    }
+
+                    // Verifica se já tem consulta na data selecionada para o mesmo paciente e mesmo tipo de consulta
+                    if (vm.PACO_IN_NOVO_PACIENTE == 2)
+                    {
+                        List<PACIENTE_CONSULTA> conPaciente = CarregaConsultas().Where(p => p.USUA_CD_ID == vm.USUA_CD_ID & p.PACI_CD_ID == vm.PACI_CD_ID & p.PACO_DT_CONSULTA == vm.PACO_DT_CONSULTA & p.PACO_IN_ATIVO == 1 & p.PACO_IN_CONFIRMADA < 2).ToList();
+                        if (conPaciente.Count > 0)
+                        {
+                            Session["MensPaciente"] = 600;
+                            ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0533", CultureInfo.CurrentCulture));
+                            return View(vm);
+                        }
+                    }
+
+                    // Critica de horario
+                    List<PACIENTE_CONSULTA> lista = baseApp.GetAllConsultas(idAss).Where(p => p.USUA_CD_ID == vm.USUA_CD_ID & p.PACO_DT_CONSULTA.Date == vm.PACO_DT_CONSULTA.Date & p.PACO_IN_ATIVO == 1 & p.PACO_IN_CONFIRMADA < 2).ToList();
+                    List<PACIENTE_CONSULTA> lista1 = lista.Where(p => p.PACO_HR_INICIO >= vm.PACO_HR_INICIO & p.PACO_HR_FINAL >= vm.PACO_HR_FINAL & p.PACO_HR_INICIO < vm.PACO_HR_FINAL).ToList();
+                    List<PACIENTE_CONSULTA> lista2 = lista.Where(p => p.PACO_HR_INICIO <= vm.PACO_HR_INICIO & p.PACO_HR_FINAL >= vm.PACO_HR_FINAL).ToList();
+                    List<PACIENTE_CONSULTA> lista3 = lista.Where(p => p.PACO_HR_INICIO <= vm.PACO_HR_INICIO & p.PACO_HR_FINAL <= vm.PACO_HR_FINAL & p.PACO_HR_FINAL > vm.PACO_HR_INICIO).ToList();
+                    List<PACIENTE_CONSULTA> lista4 = lista.Where(p => p.PACO_HR_INICIO >= vm.PACO_HR_INICIO & p.PACO_HR_FINAL <= vm.PACO_HR_FINAL).ToList();
+                    if (lista1.Count > 0 || lista2.Count > 0 || lista3.Count > 0 || lista4.Count > 0)
+                    {
+                        Session["MensPaciente"] = 500;
+                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0524", CultureInfo.CurrentCulture));
+                        return View(vm);
+                    }
+
+                    // Verifica bloqueios
+                    List<CONFIGURACAO_CALENDARIO> confs = calApp.GetAllItems(idAss);
+                    CONFIGURACAO_CALENDARIO cal = null;
+                    cal = confs.Where(p => p.USUA_CD_ID == vm.USUA_CD_ID).FirstOrDefault();
+                    List<CONFIGURACAO_CALENDARIO_BLOQUEIO> bloqs = cal.CONFIGURACAO_CALENDARIO_BLOQUEIO.Where(p => p.COCB_IN_ATIVO == 1).ToList();
+                    Int32 bloqFlag = 0;
+                    foreach (CONFIGURACAO_CALENDARIO_BLOQUEIO bloq in bloqs)
+                    {
+                        if (vm.PACO_DT_CONSULTA >= bloq.COCB_DT_BLOQUEIO_INICIO & vm.PACO_DT_CONSULTA <= bloq.COCB_DT_BLOQUEIO_FINAL)
+                        {
+                            if (bloq.COCB_HR_INICIO == null || bloq.COCB_HR_FINAL == null)
+                            {
+                                bloqFlag = 1;
+                            }
+                            else
+                            {
+                                if (vm.PACO_HR_INICIO >= bloq.COCB_HR_INICIO & vm.PACO_HR_FINAL <= bloq.COCB_HR_FINAL)
+                                {
+                                    bloqFlag = 1;
+                                }
+                            }
+                        }
+                    }
+
+                    if (bloqFlag > 0)
+                    {
+                        Session["MensPaciente"] = 500;
+                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0565", CultureInfo.CurrentCulture));
+                        return View(vm);
+                    }
+
+                    // Grava novo paciente
+                    if (vm.PACO_IN_NOVO_PACIENTE == 1)
+                    {
+                        PACIENTE paciente = new PACIENTE();
+                        paciente.ASSI_CD_ID = idAss;
+                        paciente.TIPA_CD_ID = 1;
+                        paciente.PACI_NM_NOME = vm.PACI_NM_NOME;
+                        paciente.PACI_DT_NASCIMENTO = vm.PACI_DT_NASCIMENTO;
+                        paciente.PACI_NR_CPF = vm.PACI_NR_CPF;
+                        paciente.PACI_NR_CELULAR = vm.PACI_NR_CELULAR;
+                        paciente.PACI_NM_EMAIL = vm.PACI_NM_EMAIL;
+                        paciente.PACI_NM_INDICACAO = vm.PACI_NM_INDICADO;
+                        paciente.PACI_IN_ATIVO = 1;
+                        paciente.PACI_DT_CADASTRO = DateTime.Today.Date;
+                        paciente.PACI_DT_ALTERACAO = DateTime.Today.Date;
+                        paciente.PACI_GU_GUID = Xid.NewXid().ToString();
+                        paciente.PACI_DT_ULTIMO_ACESSO = DateTime.Today.Date;
+                        paciente.PACI_DT_CONSULTA = vm.PACO_DT_CONSULTA;
+                        paciente.PACI_DT_ACESSO = DateTime.Now;
+                        paciente.PACI_AQ_FOTO = "~/Images/icon_morador.png";
+                        paciente.PACI_IN_COMPLETADO = 0;
+                        paciente.PACI_IN_MENOR = vm.PACI_IN_MENOR;
+                        paciente.USUA_CD_ID = vm.USUA_CD_ID;
+
+                        Int32 voltaP = baseApp.ValidateCreate(paciente, usuario);
+                        Int32 key = paciente.PACI__CD_ID;
+                        vm.PACI_CD_ID = key;
+
+                        // Cria pastas
+                        String caminho = "/Imagens/" + idAss.ToString() + "/Pacientes/" + key.ToString() + "/Fotos/";
+                        String map = Server.MapPath(caminho);
+                        Directory.CreateDirectory(Server.MapPath(caminho));
+                        caminho = "/Imagens/" + idAss.ToString() + "/Pacientes/" + key.ToString() + "/Anexos/";
+                        Directory.CreateDirectory(Server.MapPath(caminho));
+                        caminho = "/Imagens/" + idAss.ToString() + "/Pacientes/" + key.ToString() + "/Prescricao/";
+                        Directory.CreateDirectory(Server.MapPath(caminho));
+                        caminho = "/Imagens/" + idAss.ToString() + "/Pacientes/" + key.ToString() + "/QRCode/";
+                        Directory.CreateDirectory(Server.MapPath(caminho));
+                        caminho = "/Imagens/" + idAss.ToString() + "/Pacientes/" + key.ToString() + "/Atestado/";
+                        Directory.CreateDirectory(Server.MapPath(caminho));
+                        caminho = "/Imagens/" + idAss.ToString() + "/Pacientes/" + key.ToString() + "/Solicitacao/";
+                        Directory.CreateDirectory(Server.MapPath(caminho));
+                        caminho = "/Imagens/" + idAss.ToString() + "/Pacientes/" + key.ToString() + "/Exames/";
+                        Directory.CreateDirectory(Server.MapPath(caminho));
+                        caminho = "/Imagens/" + idAss.ToString() + "/Pacientes/" + key.ToString() + "/Consultas/";
+                        Directory.CreateDirectory(Server.MapPath(caminho));
+
+                    }
+
+                    // Completa campo
+                    vm.PACO_IN_RECORRENTE = 0;
+                    vm.PACO_IN_RECEBE = 1;
+
+                    // Executa a operação
+                    PACIENTE_CONSULTA item = Mapper.Map<PacienteConsultaViewModel, PACIENTE_CONSULTA>(vm);
+                    Int32 volta = baseApp.ValidateCreateConsulta(item);
+
+                    // Recupera paciente
+                    PACIENTE pac = baseApp.GetItemById(item.PACI_CD_ID);
+
+                    // Acerta estado
+                    Session["PacienteConsulta"] = pac;
+                    Session["PacienteAlterada"] = 1;
+                    Session["NivelPaciente"] = 3;
+                    Session["ConsultasAlterada"] = 1;
+                    Session["ListaConsultasGeral"] = null;
+                    Session["IdPaciente"] = item.PACI_CD_ID;
+                    Session["IdConsulta"] = item.PACO_CD_ID;
+                    Session["VoltaConfCalendario"] = 1;
+
+                    // Verifica se já existe anamnese para o paciente
+                    List<PACIENTE_CONSULTA> listaAnterior = baseApp.GetAllConsultas(idAss).Where(p => p.USUA_CD_ID == usuario.USUA_CD_ID & p.PACI_CD_ID == item.PACI_CD_ID & p.PACO_IN_ATIVO == 1 & p.PACO_IN_ENCERRADA == 0 & p.PACO_DT_CONSULTA != item.PACO_DT_CONSULTA).OrderBy(p => p.PACO_DT_CONSULTA).ToList();
+                    PACIENTE_CONSULTA consultaAnterior = listaAnterior.LastOrDefault();
+                    PACIENTE_ANAMNESE anam = pac.PACIENTE_ANAMNESE.Where(p => p.PAAM_IN_ATIVO == 1).FirstOrDefault();
+
+                    // Cria anamnese em branco ou atualiza a da ultima consulta
+                    CONFIGURACAO_ANAMNESE ana = anaApp.GetItemById(idAss);
+                    PACIENTE_ANAMNESE anamnese = new PACIENTE_ANAMNESE();
+                    if (anam == null)
+                    {
+                        anamnese.ASSI_CD_ID = usuario.ASSI_CD_ID;
+                        anamnese.PAAM_DT_DATA = vm.PACO_DT_CONSULTA;
+                        anamnese.PAAM_DT_ORIGINAL = vm.PACO_DT_CONSULTA;
+                        anamnese.PAAM_IN_ATIVO = 1;
+                        anamnese.PACI_CD_ID = item.PACI_CD_ID;
+                        anamnese.USUA_CD_ID = usuario.USUA_CD_ID;
+                        anamnese.PACO_CD_ID = item.PACO_CD_ID;
+                        anamnese.PAAM_IN_PREENCHIDA = 0;
+                        anamnese.PAAM_IN_FLAG_MOTIVO_CONSULTA = 1;
+                        anamnese.PAAM_IN_FLAG_MEDICAMENTO = 1;
+                        anamnese.PAAM_IN_FLAG__HISTORIA_FAMILIAR = 1;
+                        anamnese.PAAM_IN_FLAG_HISTORIA_SOCIAL = ana.COAN_IN_HISTORIA_SOCIAL;
+                        anamnese.PAAM_IN_FLAG_AVALIACAO_CARDIOLOGICA = ana.COAN_IN_CARDIOLOGICA;
+                        anamnese.PAAM_IN_FLAG_RESPIRATORIO = ana.COAN_IN_RESPIRATORIA;
+                        anamnese.PAAM_IN_FLAG_ABDOMEM = ana.COAN_IN_ABDOMEM;
+                        anamnese.PAAM_IN_FLAG_MEMBROS_INFERIORES = ana.COAN_IN_MEMBROS;
+                        anamnese.PAAM_IN_FLAG_QUEIXA_PRINCIPAL = 1;
+                        anamnese.PAAM_IN_FLAG_HISTORIA_DOENCA_ATUAL = 1;
+                        anamnese.PAAM_IN_FLAG_HISTORIA_PROGRESSIVA = ana.COAN_IN_HISTORIA_PATOLOGIA;
+                        anamnese.PAAM_IN_FLAG_DIAGNOSTICO_1 = 1;
+                        anamnese.PAAM_IN_CAMPO_1 = ana.COAN_IN_CAMPO_1;
+                        anamnese.PAAM_NM_CAMPO_1 = ana.COAN_NM_CAMPO_1;
+                        anamnese.PAAM_IN_CAMPO_2 = ana.COAN_IN_CAMPO_2;
+                        anamnese.PAAM_NM_CAMPO_2 = ana.COAN_NM_CAMPO_2;
+                        anamnese.PAAM_IN_CAMPO_3 = ana.COAN_IN_CAMPO_3;
+                        anamnese.PAAM_NM_CAMPO_3 = ana.COAN_NM_CAMPO_3;
+                        anamnese.PAAM_IN_CAMPO_4 = ana.COAN_IN_CAMPO_4;
+                        anamnese.PAAM_NM_CAMPO_4 = ana.COAN_NM_CAMPO_4;
+                        anamnese.PAAM_IN_CAMPO_5 = ana.COAN_IN_CAMPO_5;
+                        anamnese.PAAM_NM_CAMPO_5 = ana.COAN_NM_CAMPO_5;
+                        anamnese.PAAM_IN_ALTERADA = 0;
+                        Int32 voltaA = baseApp.ValidateCreateAnamnese(anamnese);
+                    }
+
+                    // Cria exame fisico em branco ou copia da ultima consulta
+                    PACIENTE_EXAME_FISICOS fisi = pac.PACIENTE_EXAME_FISICOS.Where(p => p.PAEF_IN_ATIVO == 1).FirstOrDefault();
+                    PACIENTE_EXAME_FISICOS fisico = new PACIENTE_EXAME_FISICOS();
+                    if (fisi == null)
+                    {
+                        fisico.ASSI_CD_ID = usuario.ASSI_CD_ID;
+                        fisico.PACI_CD_ID = item.PACI_CD_ID;
+                        fisico.PAEF_DT_DATA = vm.PACO_DT_CONSULTA;
+                        fisico.PAEF_DT_ORIGINAL = vm.PACO_DT_CONSULTA;
+                        fisico.PAEF_IN_ALCOOLISMO = 0;
+                        fisico.PAEF_IN_ALCOOLISMO_FREQUENCIA = 0;
+                        fisico.PAEF_IN_ANTE_ALERGICO = 0;
+                        fisico.PAEF_IN_ANTE_ONCOLOGICO = 0;
+                        fisico.PAEF_IN_ANTICONCEPCIONAL = 0;
+                        fisico.PAEF_IN_ATIVO = 1;
+                        fisico.PAEF_IN_CIRURGIAS = 0;
+                        fisico.PAEF_IN_DIABETE = 0;
+                        fisico.PAEF_IN_EPILEPSIA = 0;
+                        fisico.PAEF_IN_EXERCICIO_FISICO = 0;
+                        fisico.PAEF_IN_EXERCICIO_FISICO_FREQUENCIA = 0;
+                        fisico.PAEF_IN_GESTANTE = 0;
+                        fisico.PAEF_IN_HIPERTENSAO = 0;
+                        fisico.PAEF_IN_HIPOTENSAO = 0;
+                        fisico.PAEF_IN_MARCAPASSO = 0;
+                        fisico.PAEF_IN_TABAGISMO = 0;
+                        fisico.PAEF_IN_VARIZES = 0;
+                        fisico.USUA_CD_ID = usuario.USUA_CD_ID;
+                        fisico.PACO_CD_ID = item.PACO_CD_ID;
+                        fisico.PAEF_IN_PREENCHIDO = 0;
+                        fisico.PAEF_VL_IMC = 0;
+                        Int32 voltaF = baseApp.ValidateCreateExameFisico(fisico);
+                    }
+
+                    // Acerta proxima consulta do paciente
+                    Int32? ret = conf.CONF_NR_MESES_RETORNO;
+                    Int32? calc = conf.CONF_IN_CALCULA_PROXIMA_CONSULTA;
+                    List<PACIENTE_CONSULTA> cons = pac.PACIENTE_CONSULTA.Where(p => p.PACO_DT_CONSULTA.Date >= DateTime.Today.Date & p.PACO_IN_ATIVO == 1 & p.PACO_IN_CONFIRMADA < 2).ToList();
+                    if (cons.Count == 0)
+                    {
+                        pac.PACI_DT_CONSULTA = item.PACO_DT_CONSULTA;
+                        if (calc == 1)
+                        {
+                            pac.PACI_DT_PREVISAO_RETORNO = item.PACO_DT_CONSULTA.AddMonths(ret.Value);
+                        }
+                        else
+                        {
+                            pac.PACI_DT_PREVISAO_RETORNO = null;
+                        }
+                        Int32 voltaP = baseApp.ValidateEdit(pac, pac);
+                    }
+                    else
+                    {
+                        cons = pac.PACIENTE_CONSULTA.Where(p => p.PACO_DT_CONSULTA.Date < item.PACO_DT_CONSULTA.Date & p.PACO_IN_ATIVO == 1 & p.PACO_IN_CONFIRMADA < 2).ToList();
+                        if (cons.Count == 0)
+                        {
+                            pac.PACI_DT_CONSULTA = item.PACO_DT_CONSULTA;
+                            if (calc == 1)
+                            {
+                                pac.PACI_DT_PREVISAO_RETORNO = item.PACO_DT_CONSULTA.AddMonths(ret.Value);
+                            }
+                            else
+                            {
+                                pac.PACI_DT_PREVISAO_RETORNO = null;
+                            }
+                            Int32 voltaP = baseApp.ValidateEdit(pac, pac);
+                        }
+                    }
+
+                    // Envia mensagem
+                    if (pac.PACI_NM_EMAIL != null & conf.CONF_IN_MENSAGEM_CONSULTA == 1)
+                    {
+                        PACIENTE_CONSULTA consMensagem = baseApp.GetConsultaById((Int32)Session["IdConsulta"]);
+                        Int32 voltaCons = EnviarEMailConsulta(consMensagem, 1);
+                    }
+                    if (pac.PACI_NR_CELULAR != null & conf.CONF_IN_MENSAGEM_CONSULTA == 1)
+                    {
+                        PACIENTE_CONSULTA consMensagem = baseApp.GetConsultaById((Int32)Session["IdConsulta"]);
+                        Int32 voltaCons = EnviarSMSConsulta(consMensagem, 1);
+                    }
+                    if (usuario.USUA_NM_EMAIL != null & conf.CONF_IN_MENSAGEM_CONSULTA == 1)
+                    {
+                        PACIENTE_CONSULTA consMensagem = baseApp.GetConsultaById((Int32)Session["IdConsulta"]);
+                        Int32 voltaCons = EnviarEMailConsulta(consMensagem, 5);
+                    }
+
+                    // Monta Log
+                    String frase = item.PACI_CD_ID.ToString() + "|" + item.PACI_CD_ID.ToString() + "|" + item.PACO_DT_CONSULTA.ToString() + "|" + item.PACO_HR_INICIO.ToString() + "|" + item.PACO_HR_FINAL.ToString() + "|" + item.VACO_CD_ID.ToString();
+                    LOG log = new LOG
+                    {
+                        LOG_DT_DATA = DateTime.Now,
+                        ASSI_CD_ID = usuario.ASSI_CD_ID,
+                        USUA_CD_ID = usuario.USUA_CD_ID,
+                        LOG_NM_OPERACAO = "icoPACI",
+                        LOG_IN_ATIVO = 1,
+                        LOG_TX_REGISTRO = frase,
+                        LOG_IN_SISTEMA = 6
+                    };
+                    Int32 volta1 = logApp.ValidateCreate(log);
+
+                    // Grava historico
+                    PACIENTE_HISTORICO hist = new PACIENTE_HISTORICO();
+                    hist.ASSI_CD_ID = usuario.ASSI_CD_ID;
+                    hist.USUA_CD_ID = usuario.USUA_CD_ID;
+                    hist.PACI_CD_ID = item.PACI_CD_ID;
+                    hist.PAHI_DT_DATA = DateTime.Now;
+                    hist.PAHI_IN_TIPO = 10;
+                    hist.PAHI_IN_CHAVE = item.PACO_CD_ID;
+                    hist.PAHI_NM_OPERACAO = "Paciente - Inclusão de Consulta";
+                    hist.PAHI_DS_DESCRICAO = "Paciente: " + pac.PACI_NM_NOME + " - Consulta incluída: " + item.PACO_DT_CONSULTA.ToShortDateString();
+                    Int32 voltaHist = baseApp.ValidateCreateHistorico(hist);
+
+                    Session["ListaPacienteBase"] = null;
+                    Session["PacienteAlterada"] = 1;
+                    Session["ListaPaciente"] = null;
+
+                    // Mensagem do CRUD
+                    Session["MsgCRUD"] = "A consulta do(a) paciente " + pac.PACI_NM_NOME.ToUpper() + " foi marcada com sucesso para " + item.PACO_DT_CONSULTA.ToLongDateString();
+                    Session["MensPaciente"] = 888;
+
+                    if ((Int32)Session["ModoConsulta"] == 1)
+                    {
+                        Session["ConsultaMarcada"] = 1;
+                        Session["ConsultaFrase"] = item.PACO_DT_CONSULTA.ToShortDateString() + " de " + item.PACO_HR_INICIO.ToString() + " até " + item.PACO_HR_FINAL.ToString();
+                        return RedirectToAction("VoltarProcederConsulta", "Paciente");
+                    }
+                    if ((Int32)Session["TipoSolicitacao"] == 1)
+                    {
+                        if ((Int32)Session["VoltaAtestado"] == 1)
+                        {
+                            return RedirectToAction("MontarTelaCentralPaciente", "Paciente");
+                        }
+                        if ((Int32)Session["ProximaConsulta"] == 1)
+                        {
+                            return RedirectToAction("VoltarProcederConsulta", "Paciente");
+                        }
+                        return RedirectToAction("VoltarAnexoPaciente", "Paciente");
+                    }
+                    if ((Int32)Session["TipoSolicitacao"] == 6)
+                    {
+                        return RedirectToAction("MontarTelaConsultas", "Paciente");
+                    }
+                    return RedirectToAction("VoltarAnexoPaciente", "Paciente");
+                }
+                catch (Exception ex)
+                {
+                    ViewBag.Message = ex.Message;
+                    Session["TipoVolta"] = 2;
+                    Session["VoltaExcecao"] = "Paciente";
+                    Session["Excecao"] = ex;
+                    Session["ExcecaoTipo"] = ex.GetType().ToString();
+                    GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                    Int32 voltaX = grava.GravarLogExcecao(ex, "Paciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                    return RedirectToAction("TrataExcecao", "BaseAdmin");
+                }
+            }
+            else
+            {
+                return View(vm);
+            }
+        }
+
+        public ActionResult IncluirConsultaRecursiva()
+        {
+            // Inicialização
+            PacienteConsultaViewModel vm = (PacienteConsultaViewModel)Session["VMConsulta"];
+            USUARIO usuario = (USUARIO)Session["UserCredentials"];
+            CONFIGURACAO conf = CarregaConfiguracaoGeral();
+            Session["UsuarioProf"] = vm.USUA_CD_ID;
+            CONFIGURACAO_CALENDARIO confCal = CarregaConfiguracaoCalendario();
+            Int32 idAss = (Int32)Session["IdAssinante"];
+            PACIENTE pac = baseApp.GetItemById(vm.PACI_CD_ID.Value);
+
+            // Criticas iniciais
+            if (vm.DATA_INICIO == null || vm.DATA_INICIO < DateTime.Today.Date)
+            {
+                vm.DATA_INICIO = DateTime.Today.Date;
+            }
+            if (vm.REPETE == null || vm.REPETE == 0)
+            {
+                vm.REPETE = 3;
+            }
+            if (vm.PACO_IN_RECEBE == 0 || vm.PACO_IN_RECEBE == null)
+            {
+                vm.PACO_IN_RECEBE = 1;
+            }
+
+            // Verifica data inicial
+            DayOfWeek? selec = CalcularPrimeiraData(vm);
+            if (vm.DATA_INICIO.Value.DayOfWeek != selec)
+            {
+                Int32 diasParaLa = ((int)selec - (int)vm.DATA_INICIO.Value.DayOfWeek + 7) % 7;
+                vm.DATA_INICIO = vm.DATA_INICIO.Value.AddDays(diasParaLa);
+                selec = vm.DATA_INICIO.Value.DayOfWeek;
+            }
+            DateTime dataProc = vm.DATA_INICIO.Value;
+            TimeSpan? inicio = null;
+            TimeSpan? final = null;
+
+            // Prepara loop
+            Int32 numeroRodadas = 1;
+            Int32 repete = vm.REPETE.Value;
+            Int32 criada = 0;
+            Int32 primeira = 1;
+            Int32 vai = 0;
+            Session["Primeira"] = primeira;
+
+            // Loop de controle
+            while (numeroRodadas <= repete)
+            {
+                // Seleciona o dia da semana
+                if (selec == DayOfWeek.Monday)
+                {
+                    if (vm.SEGUNDA_FEIRA == 1)
+                    {
+                        inicio = vm.SEG_INICIO;
+                        final = vm.SEG_FINAL;
+                        vm.PACO_DT_CONSULTA = dataProc;
+                        vm.PACO_HR_INICIO = inicio;
+                        vm.PACO_HR_FINAL = final;
+                        numeroRodadas++;
+                        vai = 1;
+                    }
+                }
+                if (selec == DayOfWeek.Tuesday)
+                {
+                    if (vm.TERCA_FEIRA == 1)
+                    {
+                        inicio = vm.TER_INICIO;
+                        final = vm.TER_FINAL;
+                        vm.PACO_DT_CONSULTA = dataProc;
+                        vm.PACO_HR_INICIO = inicio;
+                        vm.PACO_HR_FINAL = final;
+                        numeroRodadas++;
+                        vai = 1;
+                    }
+                }
+                if (selec == DayOfWeek.Wednesday)
+                {
+                    if (vm.QUARTA_FEIRA == 1)
+                    {
+                        inicio = vm.QUA_INICIO;
+                        final = vm.QUA_FINAL;
+                        vm.PACO_DT_CONSULTA = dataProc;
+                        vm.PACO_HR_INICIO = inicio;
+                        vm.PACO_HR_FINAL = final;
+                        numeroRodadas++;
+                        vai = 1;
+                    }
+                }
+                if (selec == DayOfWeek.Thursday)
+                {
+                    if (vm.QUINTA_FEIRA == 1)
+                    {
+                        inicio = vm.QUI_INICIO;
+                        final = vm.QUI_FINAL;
+                        vm.PACO_DT_CONSULTA = dataProc;
+                        vm.PACO_HR_INICIO = inicio;
+                        vm.PACO_HR_FINAL = final;
+                        numeroRodadas++;
+                        vai = 1;
+                    }
+                }
+                if (selec == DayOfWeek.Friday)
+                {
+                    if (vm.SEXTA_FEIRA == 1)
+                    {
+                        inicio = vm.SEX_INICIO;
+                        final = vm.SEX_FINAL;
+                        vm.PACO_DT_CONSULTA = dataProc;
+                        vm.PACO_HR_INICIO = inicio;
+                        vm.PACO_HR_FINAL = final;
+                        numeroRodadas++;
+                        vai = 1;
+                    }
+                }
+                if (selec == DayOfWeek.Saturday)
+                {
+                    if (vm.SABADO == 1)
+                    {
+                        inicio = vm.SAB_INICIO;
+                        final = vm.SAB_FINAL;
+                        vm.PACO_DT_CONSULTA = dataProc;
+                        vm.PACO_HR_INICIO = inicio;
+                        vm.PACO_HR_FINAL = final;
+                        numeroRodadas++;
+                        vai = 1;
+                    }
+                }
+                if (selec == DayOfWeek.Sunday)
+                {
+                    if (vm.DOMINGO == 1)
+                    {
+                        inicio = vm.DOM_INICIO;
+                        final = vm.DOM_FINAL;
+                        vm.PACO_DT_CONSULTA = dataProc;
+                        vm.PACO_HR_INICIO = inicio;
+                        vm.PACO_HR_FINAL = final;
+                        numeroRodadas++;
+                        vai = 1;
+                    }
+                }
+
+                // Processa criação
+                if (vai == 1)
+                {
+                    Int32 volta = ProcessaCriacaoConsulta(vm);
+                    primeira++;
+                    Session["Primeira"] = primeira;
+                    if (volta == 0)
+                    {
+                        criada++;
+                    }
+                }
+
+                // Contorno
+                vai = 0;
+                dataProc = dataProc.AddDays(1);
+                selec = dataProc.DayOfWeek;
+            }
+
+            // Envia mensagem
+            if (pac.PACI_NM_EMAIL != null & conf.CONF_IN_MENSAGEM_CONSULTA == 1)
+            {
+                PACIENTE_CONSULTA consMensagem = baseApp.GetConsultaById((Int32)Session["IdConsulta"]);
+                Int32 voltaCons = EnviarEMailConsulta(consMensagem, 1);
+            }
+            if (pac.PACI_NR_CELULAR != null & conf.CONF_IN_MENSAGEM_CONSULTA == 1)
+            {
+                PACIENTE_CONSULTA consMensagem = baseApp.GetConsultaById((Int32)Session["IdConsulta"]);
+                Int32 voltaCons = EnviarSMSConsulta(consMensagem, 1);
+            }
+            if (usuario.USUA_NM_EMAIL != null & conf.CONF_IN_MENSAGEM_CONSULTA == 1)
+            {
+                PACIENTE_CONSULTA consMensagem = baseApp.GetConsultaById((Int32)Session["IdConsulta"]);
+                Int32 voltaCons = EnviarEMailConsulta(consMensagem, 5);
+            }
+
+            // Retorno
+            Session["MensPaciente"] = 888;
+            Session["MsgCRUD"] = "Foram marcadas " + criada.ToString() + " consultas para o paciente " + pac.PACI_NM_NOME + " a partir de " + vm.DATA_INICIO.Value.ToLongDateString();
+
+            if ((Int32)Session["ModoConsulta"] == 1)
+            {
+                return RedirectToAction("VoltarProcederConsulta", "Paciente");
+            }
+            if ((Int32)Session["TipoSolicitacao"] == 1)
+            {
+                if ((Int32)Session["VoltaAtestado"] == 1)
+                {
+                    return RedirectToAction("MontarTelaCentralPaciente", "Paciente");
+                }
+                if ((Int32)Session["ProximaConsulta"] == 1)
+                {
+                    return RedirectToAction("VoltarProcederConsulta", "Paciente");
+                }
+                return RedirectToAction("VoltarAnexoPaciente", "Paciente");
+            }
+            if ((Int32)Session["TipoSolicitacao"] == 6)
+            {
+                return RedirectToAction("MontarTelaConsultas", "Paciente");
+            }
+            return RedirectToAction("VoltarAnexoPaciente", "Paciente");
+
+        }
+
+        public DayOfWeek? CalcularPrimeiraData(PacienteConsultaViewModel vm)
+        {
+            DayOfWeek? volta = null;
+            if (vm.SEGUNDA_FEIRA == 1)
+            {
+                return DayOfWeek.Monday;
+            }
+            if (vm.TERCA_FEIRA == 1)
+            {
+                return DayOfWeek.Tuesday;
+            }
+            if (vm.QUARTA_FEIRA == 1)
+            {
+                return DayOfWeek.Wednesday;
+            }
+            if (vm.QUINTA_FEIRA == 1)
+            {
+                return DayOfWeek.Thursday;
+            }
+            if (vm.SEXTA_FEIRA == 1)
+            {
+                return DayOfWeek.Friday;
+            }
+            if (vm.SABADO == 1)
+            {
+                return DayOfWeek.Saturday;
+            }
+            if (vm.DOMINGO == 1)
+            {
+                return DayOfWeek.Sunday;
+            }
+            return volta;
+        }
+
+        public Int32 ProcessaCriacaoConsulta(PacienteConsultaViewModel vm)
+        {
+            // Inicialização
+            USUARIO usuario = (USUARIO)Session["UserCredentials"];
+            CONFIGURACAO conf = CarregaConfiguracaoGeral();
+            CONFIGURACAO_CALENDARIO confCal = CarregaConfiguracaoCalendario();
+            Int32 idAss = (Int32)Session["IdAssinante"];
+            List<PACIENTE> pacs = CarregaPaciente();
+
+            // Critica dia util
+            DateTime dataCons = vm.PACO_DT_CONSULTA;
+            Int32 dia = (Int32)dataCons.DayOfWeek;
+            Int32 voltaCal = VerificacaoDataCalendario.ValidaDiaUtil(dia, confCal);
+            if (voltaCal == 1)
+            {
+                ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0551", CultureInfo.CurrentCulture));
+                return 1;
+            }
+
+            // Critica de horario util
+            Int32 voltaUtil = VerificacaoDataCalendario.ValidaHoraUtil(dia, vm, confCal);
+            if (voltaUtil == 1)
+            {
+                ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0552", CultureInfo.CurrentCulture));
+                return 2;
+            }
+            if (voltaUtil == 2)
+            {
+                ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0553", CultureInfo.CurrentCulture));
+                return 3;
+            }
+
+            // Criticas de paciente
+            if ((Int32)Session["Primeira"] == 1)
+            {
+                if ((Int32)Session["TipoSolicitacao"] != 1)
+                {
+                    if (vm.PACO_IN_NOVO_PACIENTE == 1)
+                    {
+                        if (vm.PACI_NM_NOME == null || vm.PACI_NR_CPF == null || vm.PACI_NR_CELULAR == null)
+                        {
+                            Session["MensPaciente"] = 701;
+                            ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0542", CultureInfo.CurrentCulture));
+                            return 4;
+                        }
+                        pacs = pacs.Where(p => p.PACI_NR_CPF == vm.PACI_NR_CPF).ToList();
+                        if (pacs.Count > 0)
+                        {
+                            Session["MensPaciente"] = 702;
+                            ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0543", CultureInfo.CurrentCulture));
+                            return 5;
+                        }
+                    }
+                    else if (vm.PACO_IN_NOVO_PACIENTE == 2)
+                    {
+                        if (vm.PACI_CD_ID == 0 || vm.PACI_CD_ID == null)
+                        {
+                            Session["MensPaciente"] = 703;
+                            ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0544", CultureInfo.CurrentCulture));
+                            return 6;
+                        }
+                    }
+                }
+            }
+
+            // Critica de data
+            if (vm.PACO_HR_INICIO == null || vm.PACO_HR_FINAL == null)
+            {
+                Session["MensPaciente"] = 504;
+                ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0545", CultureInfo.CurrentCulture));
+                return 7;
+            }
+            if (vm.PACO_DT_CONSULTA.Date < DateTime.Today.Date)
+            {
+                Session["MensPaciente"] = 501;
+                ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0526", CultureInfo.CurrentCulture));
+                return 8;
+            }
+            if (vm.PACO_HR_INICIO == vm.PACO_HR_FINAL)
+            {
+                Session["MensPaciente"] = 502;
+                ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0529", CultureInfo.CurrentCulture));
+                return 9;
+            }
+            if (vm.PACO_HR_INICIO > vm.PACO_HR_FINAL)
+            {
+                Session["MensPaciente"] = 503;
+                ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0530", CultureInfo.CurrentCulture));
+                return 10;
+            }
+
+            // Verifica se já tem consulta na data selecionada para o mesmo paciente e mesmo tipo de consulta
+            if (vm.PACO_IN_NOVO_PACIENTE == 2)
+            {
+                List<PACIENTE_CONSULTA> conPaciente = CarregaConsultas().Where(p => p.USUA_CD_ID == vm.USUA_CD_ID & p.PACI_CD_ID == vm.PACI_CD_ID & p.PACO_DT_CONSULTA == vm.PACO_DT_CONSULTA & p.PACO_IN_ATIVO == 1 & p.PACO_IN_CONFIRMADA < 2).ToList();
+                if (conPaciente.Count > 0)
+                {
+                    Session["MensPaciente"] = 600;
+                    ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0533", CultureInfo.CurrentCulture));
+                    return 11;
+                }
+            }
+
+            // Critica de horario
+            List<PACIENTE_CONSULTA> lista = baseApp.GetAllConsultas(idAss).Where(p => p.USUA_CD_ID == vm.USUA_CD_ID & p.PACO_DT_CONSULTA.Date == vm.PACO_DT_CONSULTA.Date & p.PACO_IN_ATIVO == 1 & p.PACO_IN_CONFIRMADA < 2).ToList();
+            List<PACIENTE_CONSULTA> lista1 = lista.Where(p => p.PACO_HR_INICIO >= vm.PACO_HR_INICIO & p.PACO_HR_FINAL >= vm.PACO_HR_FINAL & p.PACO_HR_INICIO < vm.PACO_HR_FINAL).ToList();
+            List<PACIENTE_CONSULTA> lista2 = lista.Where(p => p.PACO_HR_INICIO <= vm.PACO_HR_INICIO & p.PACO_HR_FINAL >= vm.PACO_HR_FINAL).ToList();
+            List<PACIENTE_CONSULTA> lista3 = lista.Where(p => p.PACO_HR_INICIO <= vm.PACO_HR_INICIO & p.PACO_HR_FINAL <= vm.PACO_HR_FINAL & p.PACO_HR_FINAL > vm.PACO_HR_INICIO).ToList();
+            List<PACIENTE_CONSULTA> lista4 = lista.Where(p => p.PACO_HR_INICIO >= vm.PACO_HR_INICIO & p.PACO_HR_FINAL <= vm.PACO_HR_FINAL).ToList();
+            if (lista1.Count > 0 || lista2.Count > 0 || lista3.Count > 0 || lista4.Count > 0)
+            {
+                Session["MensPaciente"] = 500;
+                ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0524", CultureInfo.CurrentCulture));
+                return 12;
+            }
+
+            // Verifica bloqueios
+            List<CONFIGURACAO_CALENDARIO> confs = calApp.GetAllItems(idAss);
+            CONFIGURACAO_CALENDARIO cal = null;
+            cal = confs.Where(p => p.USUA_CD_ID == vm.USUA_CD_ID).FirstOrDefault();
+            List<CONFIGURACAO_CALENDARIO_BLOQUEIO> bloqs = cal.CONFIGURACAO_CALENDARIO_BLOQUEIO.Where(p => p.COCB_IN_ATIVO == 1).ToList();
+            Int32 bloqFlag = 0;
+            foreach (CONFIGURACAO_CALENDARIO_BLOQUEIO bloq in bloqs)
+            {
+                if (vm.PACO_DT_CONSULTA >= bloq.COCB_DT_BLOQUEIO_INICIO & vm.PACO_DT_CONSULTA <= bloq.COCB_DT_BLOQUEIO_FINAL)
+                {
+                    if (bloq.COCB_HR_INICIO == null || bloq.COCB_HR_FINAL == null)
+                    {
+                        bloqFlag = 1;
+                    }
+                    else
+                    {
+                        if (vm.PACO_HR_INICIO >= bloq.COCB_HR_INICIO & vm.PACO_HR_FINAL <= bloq.COCB_HR_FINAL)
+                        {
+                            bloqFlag = 1;
+                        }
+                    }
+                }
+            }
+
+            if (bloqFlag > 0)
+            {
+                Session["MensPaciente"] = 500;
+                ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0565", CultureInfo.CurrentCulture));
+                return 13;
+            }
+
+            // Grava novo paciente
+            if (vm.PACO_IN_NOVO_PACIENTE == 1 & (Int32)Session["Primeira"] == 1)
+            {
+                PACIENTE paciente = new PACIENTE();
+                paciente.ASSI_CD_ID = idAss;
+                paciente.TIPA_CD_ID = 1;
+                paciente.PACI_NM_NOME = vm.PACI_NM_NOME;
+                paciente.PACI_DT_NASCIMENTO = vm.PACI_DT_NASCIMENTO;
+                paciente.PACI_NR_CPF = vm.PACI_NR_CPF;
+                paciente.PACI_NR_CELULAR = vm.PACI_NR_CELULAR;
+                paciente.PACI_NM_EMAIL = vm.PACI_NM_EMAIL;
+                paciente.PACI_NM_INDICACAO = vm.PACI_NM_INDICADO;
+                paciente.PACI_IN_ATIVO = 1;
+                paciente.PACI_DT_CADASTRO = DateTime.Today.Date;
+                paciente.PACI_DT_ALTERACAO = DateTime.Today.Date;
+                paciente.PACI_GU_GUID = Xid.NewXid().ToString();
+                paciente.PACI_DT_ULTIMO_ACESSO = DateTime.Today.Date;
+                paciente.PACI_DT_CONSULTA = vm.PACO_DT_CONSULTA;
+                paciente.PACI_DT_ACESSO = DateTime.Now;
+                paciente.PACI_AQ_FOTO = "~/Images/icon_morador.png";
+                paciente.PACI_IN_COMPLETADO = 0;
+                paciente.PACI_IN_MENOR = vm.PACI_IN_MENOR;
+                paciente.USUA_CD_ID = vm.USUA_CD_ID;
+
+                Int32 voltaP = baseApp.ValidateCreate(paciente, usuario);
+                Int32 key = paciente.PACI__CD_ID;
+                vm.PACI_CD_ID = key;
+
+                // Cria pastas
+                String caminho = "/Imagens/" + idAss.ToString() + "/Pacientes/" + key.ToString() + "/Fotos/";
+                String map = Server.MapPath(caminho);
+                Directory.CreateDirectory(Server.MapPath(caminho));
+                caminho = "/Imagens/" + idAss.ToString() + "/Pacientes/" + key.ToString() + "/Anexos/";
+                Directory.CreateDirectory(Server.MapPath(caminho));
+                caminho = "/Imagens/" + idAss.ToString() + "/Pacientes/" + key.ToString() + "/Prescricao/";
+                Directory.CreateDirectory(Server.MapPath(caminho));
+                caminho = "/Imagens/" + idAss.ToString() + "/Pacientes/" + key.ToString() + "/QRCode/";
+                Directory.CreateDirectory(Server.MapPath(caminho));
+                caminho = "/Imagens/" + idAss.ToString() + "/Pacientes/" + key.ToString() + "/Atestado/";
+                Directory.CreateDirectory(Server.MapPath(caminho));
+                caminho = "/Imagens/" + idAss.ToString() + "/Pacientes/" + key.ToString() + "/Solicitacao/";
+                Directory.CreateDirectory(Server.MapPath(caminho));
+                caminho = "/Imagens/" + idAss.ToString() + "/Pacientes/" + key.ToString() + "/Exames/";
+                Directory.CreateDirectory(Server.MapPath(caminho));
+                caminho = "/Imagens/" + idAss.ToString() + "/Pacientes/" + key.ToString() + "/Consultas/";
+                Directory.CreateDirectory(Server.MapPath(caminho));
+            }
+
+            // Completa campo
+            vm.PACO_IN_RECORRENTE = 1;
+
+            // Executa a operação
+            PACIENTE_CONSULTA item = Mapper.Map<PacienteConsultaViewModel, PACIENTE_CONSULTA>(vm);
+            Int32 volta = baseApp.ValidateCreateConsulta(item);
+
+            // Recupera paciente
+            PACIENTE pac = baseApp.GetItemById(item.PACI_CD_ID);
+
+            // Acerta estado
+            Session["PacienteConsulta"] = pac;
+            Session["PacienteAlterada"] = 1;
+            Session["NivelPaciente"] = 3;
+            Session["ConsultasAlterada"] = 1;
+            Session["ListaConsultasGeral"] = null;
+            Session["IdPaciente"] = item.PACI_CD_ID;
+            Session["IdConsulta"] = item.PACO_CD_ID;
+            Session["VoltaConfCalendario"] = 1;
+
+            // Verifica se é primeira consulta
+            if ((Int32)Session["Primeira"] == 1)
+            {
+                // Verifica se já existe anamnese para o paciente
+                List<PACIENTE_CONSULTA> listaAnterior = baseApp.GetAllConsultas(idAss).Where(p => p.USUA_CD_ID == usuario.USUA_CD_ID & p.PACI_CD_ID == item.PACI_CD_ID & p.PACO_IN_ATIVO == 1 & p.PACO_IN_ENCERRADA == 0 & p.PACO_DT_CONSULTA != item.PACO_DT_CONSULTA).OrderBy(p => p.PACO_DT_CONSULTA).ToList();
+                PACIENTE_CONSULTA consultaAnterior = listaAnterior.LastOrDefault();
+                PACIENTE_ANAMNESE anam = pac.PACIENTE_ANAMNESE.Where(p => p.PAAM_IN_ATIVO == 1).FirstOrDefault();
+
+                // Cria anamnese em branco ou atualiza a da ultima consulta
+                CONFIGURACAO_ANAMNESE ana = anaApp.GetItemById(idAss);
+                PACIENTE_ANAMNESE anamnese = new PACIENTE_ANAMNESE();
+                if (anam == null)
+                {
+                    anamnese.ASSI_CD_ID = usuario.ASSI_CD_ID;
+                    anamnese.PAAM_DT_DATA = vm.PACO_DT_CONSULTA;
+                    anamnese.PAAM_DT_ORIGINAL = vm.PACO_DT_CONSULTA;
+                    anamnese.PAAM_IN_ATIVO = 1;
+                    anamnese.PACI_CD_ID = item.PACI_CD_ID;
+                    anamnese.USUA_CD_ID = usuario.USUA_CD_ID;
+                    anamnese.PACO_CD_ID = item.PACO_CD_ID;
+                    anamnese.PAAM_IN_PREENCHIDA = 0;
+                    anamnese.PAAM_IN_FLAG_MOTIVO_CONSULTA = 1;
+                    anamnese.PAAM_IN_FLAG_MEDICAMENTO = 1;
+                    anamnese.PAAM_IN_FLAG__HISTORIA_FAMILIAR = 1;
+                    anamnese.PAAM_IN_FLAG_HISTORIA_SOCIAL = ana.COAN_IN_HISTORIA_SOCIAL;
+                    anamnese.PAAM_IN_FLAG_AVALIACAO_CARDIOLOGICA = ana.COAN_IN_CARDIOLOGICA;
+                    anamnese.PAAM_IN_FLAG_RESPIRATORIO = ana.COAN_IN_RESPIRATORIA;
+                    anamnese.PAAM_IN_FLAG_ABDOMEM = ana.COAN_IN_ABDOMEM;
+                    anamnese.PAAM_IN_FLAG_MEMBROS_INFERIORES = ana.COAN_IN_MEMBROS;
+                    anamnese.PAAM_IN_FLAG_QUEIXA_PRINCIPAL = 1;
+                    anamnese.PAAM_IN_FLAG_HISTORIA_DOENCA_ATUAL = 1;
+                    anamnese.PAAM_IN_FLAG_HISTORIA_PROGRESSIVA = ana.COAN_IN_HISTORIA_PATOLOGIA;
+                    anamnese.PAAM_IN_FLAG_DIAGNOSTICO_1 = 1;
+                    anamnese.PAAM_IN_CAMPO_1 = ana.COAN_IN_CAMPO_1;
+                    anamnese.PAAM_NM_CAMPO_1 = ana.COAN_NM_CAMPO_1;
+                    anamnese.PAAM_IN_CAMPO_2 = ana.COAN_IN_CAMPO_2;
+                    anamnese.PAAM_NM_CAMPO_2 = ana.COAN_NM_CAMPO_2;
+                    anamnese.PAAM_IN_CAMPO_3 = ana.COAN_IN_CAMPO_3;
+                    anamnese.PAAM_NM_CAMPO_3 = ana.COAN_NM_CAMPO_3;
+                    anamnese.PAAM_IN_CAMPO_4 = ana.COAN_IN_CAMPO_4;
+                    anamnese.PAAM_NM_CAMPO_4 = ana.COAN_NM_CAMPO_4;
+                    anamnese.PAAM_IN_CAMPO_5 = ana.COAN_IN_CAMPO_5;
+                    anamnese.PAAM_NM_CAMPO_5 = ana.COAN_NM_CAMPO_5;
+                    anamnese.PAAM_IN_ALTERADA = 0;
+                    Int32 voltaA = baseApp.ValidateCreateAnamnese(anamnese);
+                }
+
+                // Cria exame fisico em branco ou copia da ultima consulta
+                PACIENTE_EXAME_FISICOS fisi = pac.PACIENTE_EXAME_FISICOS.Where(p => p.PAEF_IN_ATIVO == 1).FirstOrDefault();
+                PACIENTE_EXAME_FISICOS fisico = new PACIENTE_EXAME_FISICOS();
+                if (fisi == null)
+                {
+                    fisico.ASSI_CD_ID = usuario.ASSI_CD_ID;
+                    fisico.PACI_CD_ID = item.PACI_CD_ID;
+                    fisico.PAEF_DT_DATA = vm.PACO_DT_CONSULTA;
+                    fisico.PAEF_DT_ORIGINAL = vm.PACO_DT_CONSULTA;
+                    fisico.PAEF_IN_ALCOOLISMO = 0;
+                    fisico.PAEF_IN_ALCOOLISMO_FREQUENCIA = 0;
+                    fisico.PAEF_IN_ANTE_ALERGICO = 0;
+                    fisico.PAEF_IN_ANTE_ONCOLOGICO = 0;
+                    fisico.PAEF_IN_ANTICONCEPCIONAL = 0;
+                    fisico.PAEF_IN_ATIVO = 1;
+                    fisico.PAEF_IN_CIRURGIAS = 0;
+                    fisico.PAEF_IN_DIABETE = 0;
+                    fisico.PAEF_IN_EPILEPSIA = 0;
+                    fisico.PAEF_IN_EXERCICIO_FISICO = 0;
+                    fisico.PAEF_IN_EXERCICIO_FISICO_FREQUENCIA = 0;
+                    fisico.PAEF_IN_GESTANTE = 0;
+                    fisico.PAEF_IN_HIPERTENSAO = 0;
+                    fisico.PAEF_IN_HIPOTENSAO = 0;
+                    fisico.PAEF_IN_MARCAPASSO = 0;
+                    fisico.PAEF_IN_TABAGISMO = 0;
+                    fisico.PAEF_IN_VARIZES = 0;
+                    fisico.USUA_CD_ID = usuario.USUA_CD_ID;
+                    fisico.PACO_CD_ID = item.PACO_CD_ID;
+                    fisico.PAEF_IN_PREENCHIDO = 0;
+                    fisico.PAEF_VL_IMC = 0;
+                    Int32 voltaF = baseApp.ValidateCreateExameFisico(fisico);
+                }
+            }
+
+            // Monta Log
+            String frase = item.PACI_CD_ID.ToString() + "|" + item.PACI_CD_ID.ToString() + "|" + item.PACO_DT_CONSULTA.ToString() + "|" + item.PACO_HR_INICIO.ToString() + "|" + item.PACO_HR_FINAL.ToString();
+            LOG log = new LOG
+            {
+                LOG_DT_DATA = DateTime.Now,
+                ASSI_CD_ID = usuario.ASSI_CD_ID,
+                USUA_CD_ID = usuario.USUA_CD_ID,
+                LOG_NM_OPERACAO = "icoPACI",
+                LOG_IN_ATIVO = 1,
+                LOG_TX_REGISTRO = frase,
+                LOG_IN_SISTEMA = 6
+            };
+            Int32 volta1 = logApp.ValidateCreate(log);
+
+            // Grava historico
+            PACIENTE_HISTORICO hist = new PACIENTE_HISTORICO();
+            hist.ASSI_CD_ID = usuario.ASSI_CD_ID;
+            hist.USUA_CD_ID = usuario.USUA_CD_ID;
+            hist.PACI_CD_ID = item.PACI_CD_ID;
+            hist.PAHI_DT_DATA = DateTime.Now;
+            hist.PAHI_IN_TIPO = 10;
+            hist.PAHI_IN_CHAVE = item.PACO_CD_ID;
+            hist.PAHI_NM_OPERACAO = "Paciente - Inclusão de Consulta";
+            hist.PAHI_DS_DESCRICAO = "Paciente: " + pac.PACI_NM_NOME + " - Consulta incluída: " + item.PACO_DT_CONSULTA.ToShortDateString();
+            Int32 voltaHist = baseApp.ValidateCreateHistorico(hist);
+
+            Session["ListaPacienteBase"] = null;
+            Session["PacienteAlterada"] = 1;
+            Session["ListaPaciente"] = null;
+            return 0;
+        }
+
+        public Int32 AcertaAnotacao()
+        {
+            Int32 idAss = 35;
+            List<PACIENTE> pacs = baseApp.GetAllItens(35);
+            foreach (PACIENTE item in pacs)
+            {
+                List<PACIENTE_ANOTACAO> anos = item.PACIENTE_ANOTACAO.Where(p => p.USUA_CD_ID > 95).ToList();
+                if (anos.Count > 0)
+                {
+                    foreach (PACIENTE_ANOTACAO ano in anos)
+                    {
+                        Int32 pac = item.PACI__CD_ID;
+                        PACIENTE_ANAMNESE ana = baseApp.GetAllAnamnese(idAss).Where(p => p.PACI_CD_ID == item.PACI__CD_ID).ToList().FirstOrDefault();
+                        PACIENTE_ANAMNESE_ANOTACAO aco = new PACIENTE_ANAMNESE_ANOTACAO();
+                        aco.ASSI_CD_ID = idAss;
+                        aco.PAAM_CD_ID = ana.PAAM_CD_ID;
+                        aco.USUA_CD_ID = ano.USUA_CD_ID;
+                        aco.PAAA_DT_ANOTACAO = ano.PAAN_DT_ANOTACAO;
+                        aco.PAAA_TX_ANOTACAO = ano.PAAN_TX_ANOTACAO;
+                        aco.PAAA_IN_ATIVO = 1;
+
+                        PACIENTE_CONSULTA paco = ana.PACIENTE_CONSULTA;
+                        Int32 id = paco.PACO_CD_ID;
+                        Int32? vaco = paco.VACO_CD_ID;
+
+                        aco.USUARIO = null;
+                        ana.PACIENTE_ANAMNESE_ANOTACAO.Add(aco);
+                        Int32 volta = baseApp.ValidateEditAnamnese(ana);
+
+                        PACIENTE_CONSULTA con = baseApp.GetConsultaById(id);
+                        con.VACO_CD_ID = vaco;
+                        Int32 voltaCon = baseApp.ValidateEditConsulta(con);
+                    }
+                }
+            }
+            return 0;
+        }
+
+        public void Assinar(string caminhoPdfOriginal, string caminhoPdfAssinado, string caminhoCertificadoPfx, string senhaCertificado)
+        {
+            // 1. Carregar o certificado digital do arquivo .pfx
+            System.Security.Cryptography.X509Certificates.X509Certificate2 certificadoDotNet = new System.Security.Cryptography.X509Certificates.X509Certificate2(caminhoCertificadoPfx, senhaCertificado);
+
+            // 2. Converte a cadeia de certificados do .NET para o formato Bouncy Castle
+            Org.BouncyCastle.X509.X509Certificate[] cadeiaDeCertificados = GetBouncyCastleChain(certificadoDotNet);
+
+            // 3. Criar um leitor para o arquivo PDF original
+            PdfReader leitorPdf = new PdfReader(caminhoPdfOriginal);
+
+            // 4. Criar um fluxo de arquivo para o PDF de saída
+            using (FileStream fsAssinado = new FileStream(caminhoPdfAssinado, FileMode.Create, FileAccess.Write))
+            {
+                // 5. Criar um PdfStamper para adicionar a assinatura
+                PdfStamper carimbador = PdfStamper.CreateSignature(leitorPdf, fsAssinado, '\0');
+
+                // 6. Definir a aparência visual da assinatura no PDF (opcional)
+                PdfSignatureAppearance aparencia = carimbador.SignatureAppearance;
+                aparencia.Reason = "Documento Assinado Digitalmente pela Aplicação";
+                aparencia.Location = "Servidor da Aplicação";
+                aparencia.Contact = "Seu Contato";
+
+                // Define a área visível da assinatura
+                aparencia.SetVisibleSignature(new Rectangle(36, 748, 144, 788), 1, "AssinaturaDigital");
+
+                // 7. Criar a assinatura digital e aplicar ao documento
+                // Instancia a nova classe auxiliar que faz a conversão de tipo
+                IExternalSignature assinaturaExterna = new AssinaturaExternaPfx(certificadoDotNet, DigestAlgorithms.SHA256);
+
+                // O método SignDetached agora aceita os tipos corretos
+                MakeSignature.SignDetached(
+                    aparencia,
+                    assinaturaExterna,
+                    new List<Org.BouncyCastle.X509.X509Certificate>(cadeiaDeCertificados),
+                    null,
+                    null,
+                    null,
+                    0,
+                    CryptoStandard.CMS
+                );
+            }
+        }
+
+        // Método auxiliar para converter o certificado do .NET para o formato Bouncy Castle
+        public Org.BouncyCastle.X509.X509Certificate[] GetBouncyCastleChain(System.Security.Cryptography.X509Certificates.X509Certificate2 dotNetCert)
+        {
+            X509CertificateParser parser = new X509CertificateParser();
+            Org.BouncyCastle.X509.X509Certificate bouncyCert = parser.ReadCertificate(dotNetCert.RawData);
+
+            return new Org.BouncyCastle.X509.X509Certificate[] { bouncyCert };
+        }
+
+        public void AssinarNovo(String caminhoPdfOriginal, String caminhoPdfAssinado, String caminhoCertificadoPfx, String senhaCertificado)
+        {
+            System.Security.Cryptography.X509Certificates.X509Certificate2 certificadoDotNet = new System.Security.Cryptography.X509Certificates.X509Certificate2(caminhoCertificadoPfx, senhaCertificado);
+            Org.BouncyCastle.X509.X509Certificate[] cadeiaDeCertificados = GetBouncyCastleChain(certificadoDotNet);
+            PdfReader leitorPdf = new PdfReader(caminhoPdfOriginal);
+
+            using (FileStream fsAssinado = new FileStream(caminhoPdfAssinado, FileMode.Create, FileAccess.Write))
+            {
+                PdfStamper carimbador = PdfStamper.CreateSignature(leitorPdf, fsAssinado, '\0');
+                PdfSignatureAppearance aparencia = carimbador.SignatureAppearance;
+
+                // Define a área visível da assinatura
+                Rectangle retanguloVisivel = new Rectangle(50, 650, 450, 788);
+                aparencia.SetVisibleSignature(retanguloVisivel, 1, "AssinaturaDigital");
+
+                // --- Começo das alterações para a aparência ---
+
+                // 1. Criar o QR Code
+                String qrCodeUrl = "https://prescricao.cfm.org.br/api/documento?_format=application/pdf";
+                QRCodeGenerator qrGenerator = new QRCodeGenerator();
+                QRCodeData qrCodeData = qrGenerator.CreateQrCode(qrCodeUrl, QRCodeGenerator.ECCLevel.Q);
+
+                byte[] qrCodeBytes = new PngByteQRCode(qrCodeData).GetGraphic(5);
+                Image imagemQrCode = Image.GetInstance(qrCodeBytes);
+                imagemQrCode.ScaleToFit(80, 80); // Ajuste o tamanho conforme necessário
+                imagemQrCode.SetAbsolutePosition(retanguloVisivel.Right - 90, retanguloVisivel.Top - 80);
+                carimbador.GetOverContent(1).AddImage(imagemQrCode);
+
+                // 2. Adicionar o selo de Assinatura Qualificada
+                string caminhoSelo = @"C:\Caminho\Para\O\Seu\Selo.png";
+                if (System.IO.File.Exists(caminhoSelo))
+                {
+                    Image seloQualificada = Image.GetInstance(caminhoSelo);
+                    seloQualificada.ScaleToFit(80, 80);
+                    seloQualificada.SetAbsolutePosition(retanguloVisivel.Left + 10, retanguloVisivel.Top - 80);
+                    carimbador.GetOverContent(1).AddImage(seloQualificada);
+                }
+
+                // 3. Adicionar o texto personalizado
+                PdfContentByte contentByte = carimbador.GetOverContent(1);
+                BaseFont fonte = BaseFont.CreateFont(BaseFont.HELVETICA, BaseFont.WINANSI, BaseFont.NOT_EMBEDDED);
+                contentByte.SetFontAndSize(fonte, 8);
+                contentByte.BeginText();
+
+                // Posições para o texto da assinatura
+                contentByte.SetTextMatrix(retanguloVisivel.Left + 100, retanguloVisivel.Top - 10);
+                contentByte.ShowText("Receituário Simples assinado digitalmente por CYDIA ALVES PEREIRA DE SOUZA em 02/09/2025 08:38");
+
+                contentByte.SetTextMatrix(retanguloVisivel.Left + 100, retanguloVisivel.Top - 20);
+                contentByte.ShowText("Conforme MP nº 2.200-2/2001, Resolução Nº CFM 2.299/2021 e Resolução CFM Nº 2.381/2024.");
+
+                contentByte.SetTextMatrix(retanguloVisivel.Left + 100, retanguloVisivel.Top - 30);
+                contentByte.ShowText("O documento médico poderá ser validado em https://validar.iti.gov.br.");
+
+                contentByte.SetTextMatrix(retanguloVisivel.Left + 100, retanguloVisivel.Top - 40);
+                contentByte.ShowText("Farmacêutico, realize a dispensação em: https://prescricao.cfm.org.br/api/documento");
+
+                contentByte.EndText();
+                // --- Fim das alterações da aparência ---
+
+                // 7. Criar a assinatura digital e aplicar ao documento
+                IExternalSignature assinaturaExterna = new AssinaturaExternaPfx(certificadoDotNet, DigestAlgorithms.SHA256);
+
+                MakeSignature.SignDetached(
+                    aparencia,
+                    assinaturaExterna,
+                    new List<Org.BouncyCastle.X509.X509Certificate>(cadeiaDeCertificados),
+                    null,
+                    null,
+                    null,
+                    0,
+                    CryptoStandard.CMS
+                );
+            }
+        }
+
+        public ActionResult VerEvolucaoDadosBasicos()
+        {
+            if ((String)Session["Ativa"] == null)
+            {
+                return RedirectToAction("Logout", "ControleAcesso");
+            }
+
+            // Recupera paciente
+            PACIENTE pac = baseApp.GetItemById((Int32)Session["IdPaciente"]);
+            Session["NivelPaciente"] = 6;
+            ViewBag.NomePaciente = pac.PACI_NM_NOME;
+
+            // Recupera informações
+            List<PACIENTE_DADOS_EXAME_FISICO> dados = pac.PACIENTE_DADOS_EXAME_FISICO.ToList();
+            ViewBag.Listas = dados;
+
+            // Monta evolução de peso
+            List<ModeloViewModel> lista1 = new List<ModeloViewModel>();
+            foreach (PACIENTE_DADOS_EXAME_FISICO dado in dados)
+            {
+                ModeloViewModel mod1 = new ModeloViewModel();
+                mod1.DataEmissao = dado.PDEF_DT_DATA.Value.Date;
+                mod1.ValorDec1 = dado.PDEF_IN_PESO.Value;
+                lista1.Add(mod1);
+            }
+            lista1 = lista1.OrderBy(p => p.DataEmissao).ToList();
+            ViewBag.ListaPeso = lista1;
+            Session["ListaPeso"] = lista1;
+
+            // Monta evolução de pressão
+            List<ModeloViewModel> lista2 = new List<ModeloViewModel>();
+            foreach (PACIENTE_DADOS_EXAME_FISICO dado in dados)
+            {
+                ModeloViewModel mod1 = new ModeloViewModel();
+                mod1.DataEmissao = dado.PDEF_DT_DATA.Value.Date;
+                mod1.ValorDec1 = dado.PDEF_IN_PRESSAO_ALTA.Value;
+                mod1.ValorDec2 = dado.PDEF_IN_PRESSAO_BAIXA.Value;
+                lista2.Add(mod1);
+            }
+            lista2 = lista2.OrderBy(p => p.DataEmissao).ToList();
+            ViewBag.ListaPressao = lista2;
+            Session["ListaPressao"] = lista2;
+
+            // Monta evolução de frequencia
+            List<ModeloViewModel> lista3 = new List<ModeloViewModel>();
+            foreach (PACIENTE_DADOS_EXAME_FISICO dado in dados)
+            {
+                ModeloViewModel mod1 = new ModeloViewModel();
+                mod1.DataEmissao = dado.PDEF_DT_DATA.Value.Date;
+                mod1.ValorDec1 = dado.PDEF_IN_FREQUENCIA.Value;
+                lista3.Add(mod1);
+            }
+            lista3 = lista3.OrderBy(p => p.DataEmissao).ToList();
+            ViewBag.ListaFreq = lista3;
+            Session["ListaFreq"] = lista3;
+
+            // Monta evolução de temperatura
+            List<ModeloViewModel> lista4 = new List<ModeloViewModel>();
+            foreach (PACIENTE_DADOS_EXAME_FISICO dado in dados)
+            {
+                ModeloViewModel mod1 = new ModeloViewModel();
+                mod1.DataEmissao = dado.PDEF_DT_DATA.Value.Date;
+                mod1.ValorDec1 = dado.PDEF_IN_TEMPERATURA.Value;
+                lista4.Add(mod1);
+            }
+            lista4 = lista4.OrderBy(p => p.DataEmissao).ToList();
+            ViewBag.ListaTemperatura = lista4;
+            Session["ListaTemperatura"] = lista4;
+            Session["VoltarEvolucao"] = 4;
+
+            // Ativa view
+            return View(pac);
+        }
+
+        public JsonResult GetDadosPeso()
+        {
+            try
+            {
+                List<ModeloViewModel> listaCP1 = (List<ModeloViewModel>)Session["ListaPeso"];
+                List<String> dias = new List<String>();
+                List<Decimal> valor1 = new List<Decimal>();
+                dias.Add(" ");
+                valor1.Add(0);
+
+                foreach (ModeloViewModel item in listaCP1)
+                {
+                    dias.Add(item.DataEmissao.ToShortDateString());
+                    valor1.Add(item.ValorDec1);
+                }
+
+                Hashtable result = new Hashtable();
+                result.Add("dias", dias);
+                result.Add("valoresPeso", valor1);
+                return Json(result);
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Paciente";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Paciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return null;
+            }
+        }
+
+        public JsonResult GetDadosPressao()
+        {
+            try
+            {
+                List<ModeloViewModel> listaCP1 = (List<ModeloViewModel>)Session["ListaPressao"];
+                List<String> dias = new List<String>();
+                List<Decimal> valor1 = new List<Decimal>();
+                List<Decimal> valor2 = new List<Decimal>();
+                dias.Add(" ");
+                valor1.Add(0);
+                valor2.Add(0);
+
+                foreach (ModeloViewModel item in listaCP1)
+                {
+                    dias.Add(item.DataEmissao.ToShortDateString());
+                    valor1.Add(item.ValorDec1);
+                    valor2.Add(item.ValorDec2);
+                }
+
+                Hashtable result = new Hashtable();
+                result.Add("dias", dias);
+                result.Add("valoresDiastolica", valor1);
+                result.Add("valoresSistolica", valor2);
+                return Json(result);
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Paciente";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Paciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return null;
+            }
+        }
+
+        public JsonResult GetDadosFrequencia()
+        {
+            try
+            {
+                List<ModeloViewModel> listaCP1 = (List<ModeloViewModel>)Session["ListaFreq"];
+                List<String> dias = new List<String>();
+                List<Decimal> valor1 = new List<Decimal>();
+                dias.Add(" ");
+                valor1.Add(0);
+
+                foreach (ModeloViewModel item in listaCP1)
+                {
+                    dias.Add(item.DataEmissao.ToShortDateString());
+                    valor1.Add(item.ValorDec1);
+                }
+
+                Hashtable result = new Hashtable();
+                result.Add("dias", dias);
+                result.Add("valoresFreq", valor1);
+                return Json(result);
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Paciente";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Paciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return null;
+            }
+
+
+        }
+
+        public JsonResult GetDadosTemperatura()
+        {
+            try
+            {
+                List<ModeloViewModel> listaCP1 = (List<ModeloViewModel>)Session["ListaTemperatura"];
+                List<String> dias = new List<String>();
+                List<Decimal> valor1 = new List<Decimal>();
+                dias.Add(" ");
+                valor1.Add(0);
+
+                foreach (ModeloViewModel item in listaCP1)
+                {
+                    dias.Add(item.DataEmissao.ToShortDateString());
+                    valor1.Add(item.ValorDec1);
+                }
+
+                Hashtable result = new Hashtable();
+                result.Add("dias", dias);
+                result.Add("valoresTemp", valor1);
+                return Json(result);
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Paciente";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Paciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return null;
+            }
+        }
+
+        public Int32 GerarSolicitacaoPDFNovaAssina()
+        {
+            try
+            {
+                Int32 idAss = (Int32)Session["IdAssinante"];
+                USUARIO usuario = (USUARIO)Session["UserCredentials"];
+
+                // Prepara geração
+                CONFIGURACAO conf = CarregaConfiguracaoGeral();
+                String data = DateTime.Today.Date.ToShortDateString();
+                data = data.Substring(0, 2) + data.Substring(3, 2) + data.Substring(6, 4);
+
+                // Recupera informações
+                PACIENTE_SOLICITACAO solic = baseApp.GetSolicitacaoById((Int32)Session["IdSolicitacao"]);
+                PACIENTE paciente = baseApp.GetItemById(solic.PACI_CD_ID.Value);
+                String nomeRel = "Solicitacao_" + paciente.PACI_NM_NOME + "_" + solic.PASO_GU_GUID + "_" + CrossCutting.StringLibrary.RemoveSlashDateString(DateTime.Today.Date.ToShortDateString()) + ".pdf";
+                String classe = String.Empty;
+                if (usuario.TIPO_CARTEIRA_CLASSE != null)
+                {
+                    classe = usuario.TIPO_CARTEIRA_CLASSE.TICL_NM_NOME + ": " + usuario.USUA_NR_CLASSE;
+                }
+                String nomeMedico = usuario.USUA_NM_NOME;
+                if (usuario.USUA_NM_PREFIXO != null)
+                {
+                    nomeMedico = usuario.USUA_NM_PREFIXO + " " + nomeMedico;
+                }
+                if (usuario.USUA_NM_SUFIXO != null)
+                {
+                    nomeMedico = nomeMedico + " " + usuario.USUA_NM_SUFIXO;
+                }
+                EMPRESA empresa = empApp.GetItemById(usuario.EMPR_CD_ID.Value);
+                String token = solic.PASO_TK_TOKEN;
+
+                // Atualiza soliictacao
+                PACIENTE_SOLICITACAO atestado1 = baseApp.GetSolicitacaoById(solic.PASO_CD_ID);
+                atestado1.PASO_IN_PDF = 1;
+                atestado1.PASO_DT_GERACAO_PDF = DateTime.Today.Date;
+                atestado1.PASO_IN_ENVIADO = 0;
+                Int32 voltaA = baseApp.ValidateEditSolicitacao(atestado1);
+
+                // Prepara fontes
+                Font meuFont = FontFactory.GetFont("Arial", 8, iTextSharp.text.Font.NORMAL, BaseColor.BLACK);
+                Font meuFont1 = FontFactory.GetFont("Arial", 9, iTextSharp.text.Font.NORMAL, BaseColor.BLACK);
+                Font meuFont2 = FontFactory.GetFont("Arial", 14, iTextSharp.text.Font.NORMAL, BaseColor.BLACK);
+                Font meuFont1Bold = FontFactory.GetFont("Arial", 9, iTextSharp.text.Font.BOLD, BaseColor.BLACK);
+                Font meuFont3Bold = FontFactory.GetFont("Arial", 10, iTextSharp.text.Font.BOLD, BaseColor.BLACK);
+                Font meuFont4Bold = FontFactory.GetFont("Arial", 12, iTextSharp.text.Font.BOLD, BaseColor.BLACK);
+                Font meuFont5Bold = FontFactory.GetFont("Arial", 16, iTextSharp.text.Font.BOLD, BaseColor.BLACK);
+                Font meuFontBold = FontFactory.GetFont("Arial", 8, iTextSharp.text.Font.BOLD, BaseColor.BLACK);
+
+                // Cabeçalho
+                PdfPTable headerTable = null;
+                PdfPCell cell = new PdfPCell();
+                Image image = null;
+                if (conf.CONF_IN_EXIBE_LOGO == 1)
+                {
+                    headerTable = new PdfPTable(new float[] { 20f, 700f });
+                    headerTable.WidthPercentage = 100;
+                    headerTable.HorizontalAlignment = 1;
+                    headerTable.SpacingBefore = 1f;
+                    headerTable.SpacingAfter = 1f;
+
+                    cell = new PdfPCell();
+                    cell.Border = 0;
+                    cell.Colspan = 1;
+                    image = null;
+                    if (conf.CONF_IN_LOGO_EMPRESA == 1)
+                    {
+                        image = Image.GetInstance(Server.MapPath(empresa.EMPR_AQ_LOGO));
+                    }
+                    else
+                    {
+                        image = Image.GetInstance(Server.MapPath("~/Images/Prontuario_Icone_1.png"));
+                    }
+                    image.ScaleAbsolute(80, 80);
+                    cell.AddElement(image);
+                    headerTable.AddCell(cell);
+                }
+                else
+                {
+                    headerTable = new PdfPTable(new float[] { 750f });
+                    headerTable.WidthPercentage = 100;
+                    headerTable.HorizontalAlignment = 1;
+                    headerTable.SpacingBefore = 1f;
+                    headerTable.SpacingAfter = 1f;
+                }
+
+                // Dados do medico
+                PdfPTable table1 = new PdfPTable(new float[] { 120f, 120f, 120f, 120f });
+                table1.WidthPercentage = 100;
+                table1.HorizontalAlignment = 0;
+                table1.SpacingBefore = 1f;
+                table1.SpacingAfter = 1f;
+
+                cell = new PdfPCell(new Paragraph(nomeMedico, meuFont4Bold));
+                cell.Border = 0;
+                cell.Colspan = 4;
+                cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                cell.HorizontalAlignment = Element.ALIGN_CENTER;
+                table1.AddCell(cell);
+                if (usuario.ESPECIALIDADE != null)
+                {
+                    cell = new PdfPCell(new Paragraph(usuario.ESPECIALIDADE.ESPE_NM_NOME, meuFont1));
+                    cell.Border = 0;
+                    cell.Colspan = 4;
+                    cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                    cell.HorizontalAlignment = Element.ALIGN_CENTER;
+                    table1.AddCell(cell);
+                }
+
+                String frase = classe + " CPF: " + usuario.USUA_NR_CPF;
+                cell = new PdfPCell(new Paragraph(frase, meuFont1));
+                cell.Border = 0;
+                cell.Colspan = 4;
+                cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                cell.HorizontalAlignment = Element.ALIGN_CENTER;
+                table1.AddCell(cell);
+                cell = new PdfPCell(new Paragraph(" ", meuFont1));
+                cell.Border = 0;
+                cell.Colspan = 4;
+                cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                cell.HorizontalAlignment = Element.ALIGN_CENTER;
+                table1.AddCell(cell);
+
+                PdfPCell innerTableCell = new PdfPCell(table1);
+                innerTableCell.Border = Rectangle.NO_BORDER;
+                innerTableCell.Colspan = 1;
+                headerTable.AddCell(innerTableCell);
+
+                // Rodape
+                PdfPTable footerTable = new PdfPTable(1);
+                footerTable = new PdfPTable(new float[] { 160f, 600f, 180f });
+                footerTable.WidthPercentage = 100;
+                footerTable.HorizontalAlignment = 1;
+                footerTable.SpacingBefore = 1f;
+                footerTable.SpacingAfter = 1f;
+
+                cell = new PdfPCell();
+                cell.Border = 0;
+                cell.Colspan = 1;
+                image = null;
+                if (solic.PASO_AQ_ARQUIVO_QRCODE != null)
+                {
+                    image = Image.GetInstance(Server.MapPath(solic.PASO_AQ_ARQUIVO_QRCODE));
+                }
+                else
+                {
+                    image = Image.GetInstance(Server.MapPath("~/Imagens/Base/qrcode.png"));
+                }
+                image.ScaleAbsolute(100, 100);
+                cell.AddElement(image);
+                footerTable.AddCell(cell);
+
+                // Dados do medico
+                table1 = new PdfPTable(new float[] { 120f, 120f, 120f, 120f });
+                table1.WidthPercentage = 100;
+                table1.HorizontalAlignment = 0;
+                table1.SpacingBefore = 1f;
+                table1.SpacingAfter = 1f;
+
+                cell = new PdfPCell(new Paragraph(usuario.USUA_NM_NOME, meuFont3Bold));
+                cell.Border = 0;
+                cell.Colspan = 4;
+                cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                table1.AddCell(cell);
+                if (usuario.ESPECIALIDADE != null)
+                {
+                    cell = new PdfPCell(new Paragraph(usuario.ESPECIALIDADE.ESPE_NM_NOME, meuFont1));
+                    cell.Border = 0;
+                    cell.Colspan = 4;
+                    cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                    cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                    table1.AddCell(cell);
+                }
+
+                cell = new PdfPCell(new Paragraph(classe, meuFont));
+                cell.Border = 0;
+                cell.Colspan = 1;
+                cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                table1.AddCell(cell);
+                cell = new PdfPCell(new Paragraph("CPF: " + usuario.USUA_NR_CPF, meuFont));
+                cell.Border = 0;
+                cell.Colspan = 3;
+                cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                table1.AddCell(cell);
+
+                String endereco = String.Empty;
+                String enderecoCont = String.Empty;
+                if (empresa.EMPR_NM_ENDERECO != null)
+                {
+                    endereco += empresa.EMPR_NM_ENDERECO;
+                    if (empresa.EMPR_NM_NUMERO != null)
+                    {
+                        endereco += " " + empresa.EMPR_NM_NUMERO;
+                    }
+                    if (empresa.EMPR_NM_COMPLEMENTO != null)
+                    {
+                        endereco += " " + empresa.EMPR_NM_COMPLEMENTO;
+                    }
+                    if (empresa.EMPR_NM_BAIRRO != null)
+                    {
+                        enderecoCont += empresa.EMPR_NM_BAIRRO;
+                    }
+                    if (empresa.EMPR_NM_CIDADE != null)
+                    {
+                        enderecoCont += " - " + empresa.EMPR_NM_CIDADE;
+                    }
+                    if (empresa.UF != null)
+                    {
+                        enderecoCont += " - " + empresa.UF.UF_SG_SIGLA;
+                    }
+                    if (empresa.EMPR_NR_CEP != null)
+                    {
+                        enderecoCont += " - " + empresa.EMPR_NR_CEP;
+                    }
+                }
+
+                cell = new PdfPCell(new Paragraph(endereco, meuFont));
+                cell.Border = 0;
+                cell.Colspan = 4;
+                cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                table1.AddCell(cell);
+                cell = new PdfPCell(new Paragraph(enderecoCont, meuFont));
+                cell.Border = 0;
+                cell.Colspan = 4;
+                cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                table1.AddCell(cell);
+
+                String fraseAssina = "Documento assinado digitalmente em " + solic.PASO_DT_EMISSAO_COMPLETA.Value.ToShortDateString() + " " + solic.PASO_DT_EMISSAO_COMPLETA.Value.ToShortTimeString() + " conforme MP 2.200-2/01";
+                cell = new PdfPCell(new Paragraph(fraseAssina, meuFontBold));
+                cell.Border = 0;
+                cell.Colspan = 4;
+                cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                table1.AddCell(cell);
+
+                cell = new PdfPCell(new Paragraph("Para validar este documento use o código QR ao lado ou acesse " + conf.CONF_LK_LINK_VALIDACAO + " e use o token de acesso " + token, meuFont));
+                cell.Border = 0;
+                cell.Colspan = 4;
+                cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                table1.AddCell(cell);
+
+                cell = new PdfPCell(new Paragraph("  ", meuFont));
+                cell.Border = 0;
+                cell.Colspan = 4;
+                cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                table1.AddCell(cell);
+
+                innerTableCell = new PdfPCell(table1);
+                innerTableCell.Border = Rectangle.NO_BORDER;
+                innerTableCell.Colspan = 1;
+                footerTable.AddCell(innerTableCell);
+
+                cell = new PdfPCell();
+                cell.Border = 0;
+                cell.Colspan = 1;
+                image = null;
+                image = Image.GetInstance(Server.MapPath("~/Imagens/Base/Selo_Digital.png"));
+                image.ScaleAbsolute(100, 100);
+                cell.AddElement(image);
+                footerTable.AddCell(cell);
+
+                // Cria documento
+                Document pdfDoc = new Document(PageSize.A4, 10, 10, 70, 150);
+                PdfWriter pdfWriter = PdfWriter.GetInstance(pdfDoc, Response.OutputStream);
+                pdfWriter.PageEvent = new CustomPageEventHelper(headerTable, footerTable);
+                pdfDoc.Open();
+
+                Paragraph line1 = new Paragraph("  ");
+                pdfDoc.Add(line1);
+
+                // Dados da solicitação
+                PdfPTable table = new PdfPTable(new float[] { 120f, 120f, 120f, 120f });
+                table.WidthPercentage = 100;
+                table.HorizontalAlignment = 0;
+                table.SpacingBefore = 1f;
+                table.SpacingAfter = 1f;
+
+                if (solic.PASO_IN_DATA == 1)
+                {
+                    cell = new PdfPCell(new Paragraph("Data/Hora da Solicitação: " + solic.PASO_DT_EMISSAO_COMPLETA.Value.ToLongDateString() + " " + solic.PASO_DT_EMISSAO_COMPLETA.Value.ToLongTimeString() + " (GMT-3)", meuFont1Bold));
+                    cell.Border = 0;
+                    cell.Colspan = 4;
+                    cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                    cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                    table.AddCell(cell);
+                }
+                cell = new PdfPCell(new Paragraph("Identificador: " + solic.PASO_GU_GUID, meuFont1Bold));
+                cell.Border = 0;
+                cell.Colspan = 4;
+                cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                table.AddCell(cell);
+                pdfDoc.Add(table);
+
+                line1 = new Paragraph("  ");
+                pdfDoc.Add(line1);
+
+                // Dados do paciente
+                table = new PdfPTable(new float[] { 120f, 120f, 120f, 120f });
+                table.WidthPercentage = 100;
+                table.HorizontalAlignment = 0;
+                table.SpacingBefore = 1f;
+                table.SpacingAfter = 1f;
+
+                cell = new PdfPCell(new Paragraph("Nome do Paciente: " + paciente.PACI_NM_NOME, meuFont3Bold));
+                cell.Border = 0;
+                cell.Colspan = 4;
+                cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph("CPF: " + paciente.PACI_NR_CPF, meuFont1));
+                cell.Border = 0;
+                cell.Colspan = 4;
+                cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph("Data Nasc.: " + paciente.PACI_DT_NASCIMENTO.Value.ToShortDateString(), meuFont1));
+                cell.Border = 0;
+                cell.Colspan = 4;
+                cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                table.AddCell(cell);
+                pdfDoc.Add(table);
+
+                // Linha Horizontal
+                line1 = new Paragraph("  ");
+                pdfDoc.Add(line1);
+
+                // Grid
+                table = new PdfPTable(new float[] { 100f, 500f });
+                table.WidthPercentage = 100;
+                table.HorizontalAlignment = 0;
+                table.SpacingBefore = 1f;
+                table.SpacingAfter = 1f;
+
+                cell = new PdfPCell(new Paragraph("Exame Solicitado: ", meuFont1Bold))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.Border = PdfPCell.NO_BORDER;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph(solic.PASO_NM_TITULO, meuFont1))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.Border = PdfPCell.NO_BORDER;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph("Indicação Clínica: ", meuFont1Bold))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.WHITE;
+                cell.Border = PdfPCell.NO_BORDER;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph(solic.PASO_DS_INDICACAO_CLINICA, meuFont1))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.Border = PdfPCell.NO_BORDER;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+                pdfDoc.Add(table);
+
+                // Texto da solicitacao
+                line1 = new Paragraph("  ");
+                pdfDoc.Add(line1);
+
+                Chunk chunk3 = new Chunk("Especificação do Exame ou Recomendações/Observações:", FontFactory.GetFont("Arial", 10, Font.NORMAL, BaseColor.BLACK));
+                Paragraph paragraph = new Paragraph(chunk3);
+                paragraph.Alignment = Element.ALIGN_LEFT;
+                pdfDoc.Add(paragraph);
+                line1 = new Paragraph("  ");
+                pdfDoc.Add(line1);
+
+                Chunk chunk1 = new Chunk(solic.PASO_TX_TEXTO, FontFactory.GetFont("Arial", 9, Font.NORMAL, BaseColor.BLACK));
+                pdfDoc.Add(chunk1);
+
+                if (solic.PASO_IN_ASSINADO_DIGITAL == 0)
+                {
+                    // Ajusta espaço
+                    line1 = new Paragraph("  ");
+                    pdfDoc.Add(line1);
+                    line1 = new Paragraph("  ");
+                    pdfDoc.Add(line1);
+                    line1 = new Paragraph("  ");
+                    pdfDoc.Add(line1);
+                    line1 = new Paragraph("  ");
+                    pdfDoc.Add(line1);
+
+                    //Assinatura manual
+                    String assinatura = usuario.USUA_NM_PREFIXO + " " + usuario.USUA_NM_NOME + (usuario.USUA_NM_SUFIXO != null ? " " + usuario.USUA_NM_SUFIXO : "");
+                    Chunk chunk4 = new Chunk(assinatura, FontFactory.GetFont("Arial", 12, Font.NORMAL, BaseColor.BLACK));
+                    Paragraph paragraph1 = new Paragraph(chunk4);
+                    paragraph1.Alignment = Element.ALIGN_CENTER;
+                    pdfDoc.Add(paragraph1);
+                }
+
+                // Finaliza
+                pdfWriter.CloseStream = false;
+                pdfDoc.Close();
+                Response.Buffer = true;
+                Response.ContentType = "application/pdf";
+                Response.AddHeader("content-disposition", "attachment;filename=" + nomeRel);
+                Response.Cache.SetCacheability(HttpCacheability.NoCache);
+                Response.Write(pdfDoc);
+                Response.End();
+                return 0;
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Paciente";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Paciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return 1;
+            }
+        }
+
+        public Int32 GerarSolicitacaoPDFTesteAssina()
+        {
+            try
+            {
+                Int32 idAss = (Int32)Session["IdAssinante"];
+                USUARIO usuario = (USUARIO)Session["UserCredentials"];
+
+                // Prepara geração
+                CONFIGURACAO conf = CarregaConfiguracaoGeral();
+                String data = DateTime.Today.Date.ToShortDateString();
+                data = data.Substring(0, 2) + data.Substring(3, 2) + data.Substring(6, 4);
+
+                // Recupera informações
+                PACIENTE_SOLICITACAO solic = baseApp.GetSolicitacaoById((Int32)Session["IdSolicitacao"]);
+                PACIENTE paciente = baseApp.GetItemById(solic.PACI_CD_ID.Value);
+                String nomeRel = "Solicitacao_" + paciente.PACI_NM_NOME + "_" + solic.PASO_GU_GUID + ".pdf";
+                String classe = String.Empty;
+                if (usuario.TIPO_CARTEIRA_CLASSE != null)
+                {
+                    classe = usuario.TIPO_CARTEIRA_CLASSE.TICL_NM_NOME + ": " + usuario.USUA_NR_CLASSE;
+                }
+                String nomeMedico = usuario.USUA_NM_NOME;
+                if (usuario.USUA_NM_PREFIXO != null)
+                {
+                    nomeMedico = usuario.USUA_NM_PREFIXO + " " + nomeMedico;
+                }
+                if (usuario.USUA_NM_SUFIXO != null)
+                {
+                    nomeMedico = nomeMedico + " " + usuario.USUA_NM_SUFIXO;
+                }
+                EMPRESA empresa = empApp.GetItemById(usuario.EMPR_CD_ID.Value);
+                String token = solic.PASO_TK_TOKEN;
+
+                // Atualiza solicitação
+                PACIENTE_SOLICITACAO atestado1 = baseApp.GetSolicitacaoById(solic.PASO_CD_ID);
+                atestado1.PASO_IN_PDF = 1;
+                atestado1.PASO_DT_GERACAO_PDF = DateTime.Today.Date;
+                atestado1.PASO_IN_ENVIADO = 0;
+                Int32 voltaA = baseApp.ValidateEditSolicitacao(atestado1);
+
+                // Prepara fontes
+                Font meuFont = FontFactory.GetFont("Arial", 8, iTextSharp.text.Font.NORMAL, BaseColor.BLACK);
+                Font meuFont1 = FontFactory.GetFont("Arial", 9, iTextSharp.text.Font.NORMAL, BaseColor.BLACK);
+                Font meuFont2 = FontFactory.GetFont("Arial", 14, iTextSharp.text.Font.NORMAL, BaseColor.BLACK);
+                Font meuFont1Bold = FontFactory.GetFont("Arial", 9, iTextSharp.text.Font.BOLD, BaseColor.BLACK);
+                Font meuFont3Bold = FontFactory.GetFont("Arial", 10, iTextSharp.text.Font.BOLD, BaseColor.BLACK);
+                Font meuFont4Bold = FontFactory.GetFont("Arial", 12, iTextSharp.text.Font.BOLD, BaseColor.BLACK);
+                Font meuFont5Bold = FontFactory.GetFont("Arial", 16, iTextSharp.text.Font.BOLD, BaseColor.BLACK);
+                Font meuFontBold = FontFactory.GetFont("Arial", 8, iTextSharp.text.Font.BOLD, BaseColor.BLACK);
+
+                // Caminho de saida
+                String caminho = "/Imagens/" + idAss.ToString() + "/Pacientes/" + paciente.PACI__CD_ID.ToString() + "/Solicitacao/";
+                String filePath = Path.Combine(Server.MapPath(caminho), nomeRel);
+                Directory.CreateDirectory(caminho);
+                Boolean existe = System.IO.File.Exists(filePath);
+                if (existe)
+                {
+                    try
+                    {
+                        System.IO.File.Delete(filePath);
+                    }
+                    catch (Exception)
+                    {
+                        existe = false;
+                    }
+                }
+
+                using (FileStream stream = new FileStream(filePath, FileMode.Create))
+                {
+                    // Cabeçalho
+                    PdfPTable headerTable = null;
+                    PdfPCell cell = new PdfPCell();
+                    Image image = null;
+                    if (conf.CONF_IN_EXIBE_LOGO == 1)
+                    {
+                        headerTable = new PdfPTable(new float[] { 20f, 700f });
+                        headerTable.WidthPercentage = 100;
+                        headerTable.HorizontalAlignment = 1;
+                        headerTable.SpacingBefore = 1f;
+                        headerTable.SpacingAfter = 1f;
+
+                        cell = new PdfPCell();
+                        cell.Border = 0;
+                        cell.Colspan = 1;
+                        image = null;
+                        if (conf.CONF_IN_LOGO_EMPRESA == 1)
+                        {
+                            image = Image.GetInstance(Server.MapPath(empresa.EMPR_AQ_LOGO));
+                        }
+                        else
+                        {
+                            image = Image.GetInstance(Server.MapPath("~/Images/Prontuario_Icone_1.png"));
+                        }
+                        image.ScaleAbsolute(80, 80);
+                        cell.AddElement(image);
+                        headerTable.AddCell(cell);
+                    }
+                    else
+                    {
+                        headerTable = new PdfPTable(new float[] { 750f });
+                        headerTable.WidthPercentage = 100;
+                        headerTable.HorizontalAlignment = 1;
+                        headerTable.SpacingBefore = 1f;
+                        headerTable.SpacingAfter = 1f;
+                    }
+
+                    // Dados do medico
+                    PdfPTable table1 = new PdfPTable(new float[] { 120f, 120f, 120f, 120f });
+                    table1.WidthPercentage = 100;
+                    table1.HorizontalAlignment = 0;
+                    table1.SpacingBefore = 1f;
+                    table1.SpacingAfter = 1f;
+
+                    cell = new PdfPCell(new Paragraph(nomeMedico, meuFont4Bold));
+                    cell.Border = 0;
+                    cell.Colspan = 4;
+                    cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                    cell.HorizontalAlignment = Element.ALIGN_CENTER;
+                    table1.AddCell(cell);
+                    if (usuario.ESPECIALIDADE != null)
+                    {
+                        cell = new PdfPCell(new Paragraph(usuario.ESPECIALIDADE.ESPE_NM_NOME, meuFont1));
+                        cell.Border = 0;
+                        cell.Colspan = 4;
+                        cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                        cell.HorizontalAlignment = Element.ALIGN_CENTER;
+                        table1.AddCell(cell);
+                    }
+
+                    String frase = classe + " CPF: " + usuario.USUA_NR_CPF;
+                    cell = new PdfPCell(new Paragraph(frase, meuFont1));
+                    cell.Border = 0;
+                    cell.Colspan = 4;
+                    cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                    cell.HorizontalAlignment = Element.ALIGN_CENTER;
+                    table1.AddCell(cell);
+                    cell = new PdfPCell(new Paragraph(" ", meuFont1));
+                    cell.Border = 0;
+                    cell.Colspan = 4;
+                    cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                    cell.HorizontalAlignment = Element.ALIGN_CENTER;
+                    table1.AddCell(cell);
+
+                    PdfPCell innerTableCell = new PdfPCell(table1);
+                    innerTableCell.Border = Rectangle.NO_BORDER;
+                    innerTableCell.Colspan = 1;
+                    headerTable.AddCell(innerTableCell);
+
+                    // Rodape
+                    PdfPTable footerTable = new PdfPTable(1);
+                    footerTable = new PdfPTable(new float[] { 160f, 600f, 180f });
+                    footerTable.WidthPercentage = 100;
+                    footerTable.HorizontalAlignment = 1;
+                    footerTable.SpacingBefore = 1f;
+                    footerTable.SpacingAfter = 1f;
+
+                    cell = new PdfPCell();
+                    cell.Border = 0;
+                    cell.Colspan = 1;
+                    image = null;
+                    if (solic.PASO_AQ_ARQUIVO_QRCODE != null)
+                    {
+                        image = Image.GetInstance(Server.MapPath(solic.PASO_AQ_ARQUIVO_QRCODE));
+                    }
+                    else
+                    {
+                        image = Image.GetInstance(Server.MapPath("~/Imagens/Base/qrcode.png"));
+                    }
+                    image.ScaleAbsolute(100, 100);
+                    cell.AddElement(image);
+                    footerTable.AddCell(cell);
+
+                    // Dados do medico
+                    table1 = new PdfPTable(new float[] { 120f, 120f, 120f, 120f });
+                    table1.WidthPercentage = 100;
+                    table1.HorizontalAlignment = 0;
+                    table1.SpacingBefore = 1f;
+                    table1.SpacingAfter = 1f;
+
+                    cell = new PdfPCell(new Paragraph(usuario.USUA_NM_NOME, meuFont3Bold));
+                    cell.Border = 0;
+                    cell.Colspan = 4;
+                    cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                    cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                    table1.AddCell(cell);
+                    if (usuario.ESPECIALIDADE != null)
+                    {
+                        cell = new PdfPCell(new Paragraph(usuario.ESPECIALIDADE.ESPE_NM_NOME, meuFont1));
+                        cell.Border = 0;
+                        cell.Colspan = 4;
+                        cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                        cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                        table1.AddCell(cell);
+                    }
+
+                    cell = new PdfPCell(new Paragraph(classe, meuFont));
+                    cell.Border = 0;
+                    cell.Colspan = 1;
+                    cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                    cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                    table1.AddCell(cell);
+                    cell = new PdfPCell(new Paragraph("CPF: " + usuario.USUA_NR_CPF, meuFont));
+                    cell.Border = 0;
+                    cell.Colspan = 3;
+                    cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                    cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                    table1.AddCell(cell);
+
+                    String endereco = String.Empty;
+                    String enderecoCont = String.Empty;
+                    if (empresa.EMPR_NM_ENDERECO != null)
+                    {
+                        endereco += empresa.EMPR_NM_ENDERECO;
+                        if (empresa.EMPR_NM_NUMERO != null)
+                        {
+                            endereco += " " + empresa.EMPR_NM_NUMERO;
+                        }
+                        if (empresa.EMPR_NM_COMPLEMENTO != null)
+                        {
+                            endereco += " " + empresa.EMPR_NM_COMPLEMENTO;
+                        }
+                        if (empresa.EMPR_NM_BAIRRO != null)
+                        {
+                            enderecoCont += empresa.EMPR_NM_BAIRRO;
+                        }
+                        if (empresa.EMPR_NM_CIDADE != null)
+                        {
+                            enderecoCont += " - " + empresa.EMPR_NM_CIDADE;
+                        }
+                        if (empresa.UF != null)
+                        {
+                            enderecoCont += " - " + empresa.UF.UF_SG_SIGLA;
+                        }
+                        if (empresa.EMPR_NR_CEP != null)
+                        {
+                            enderecoCont += " - " + empresa.EMPR_NR_CEP;
+                        }
+                    }
+
+                    cell = new PdfPCell(new Paragraph(endereco, meuFont));
+                    cell.Border = 0;
+                    cell.Colspan = 4;
+                    cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                    cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                    table1.AddCell(cell);
+                    cell = new PdfPCell(new Paragraph(enderecoCont, meuFont));
+                    cell.Border = 0;
+                    cell.Colspan = 4;
+                    cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                    cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                    table1.AddCell(cell);
+
+                    String fraseAssina = "Documento assinado digitalmente em " + solic.PASO_DT_EMISSAO_COMPLETA.Value.ToShortDateString() + " " + solic.PASO_DT_EMISSAO_COMPLETA.Value.ToShortTimeString() + " conforme MP 2.200-2/01";
+                    cell = new PdfPCell(new Paragraph(fraseAssina, meuFontBold));
+                    cell.Border = 0;
+                    cell.Colspan = 4;
+                    cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                    cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                    table1.AddCell(cell);
+
+                    cell = new PdfPCell(new Paragraph("Para validar este documento use o código QR ao lado ou acesse " + conf.CONF_LK_LINK_VALIDACAO + " e use o token de acesso " + token, meuFont));
+                    cell.Border = 0;
+                    cell.Colspan = 4;
+                    cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                    cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                    table1.AddCell(cell);
+
+                    cell = new PdfPCell(new Paragraph("  ", meuFont));
+                    cell.Border = 0;
+                    cell.Colspan = 4;
+                    cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                    cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                    table1.AddCell(cell);
+
+                    innerTableCell = new PdfPCell(table1);
+                    innerTableCell.Border = Rectangle.NO_BORDER;
+                    innerTableCell.Colspan = 1;
+                    footerTable.AddCell(innerTableCell);
+
+                    cell = new PdfPCell();
+                    cell.Border = 0;
+                    cell.Colspan = 1;
+                    image = null;
+                    image = Image.GetInstance(Server.MapPath("~/Imagens/Base/Selo_Digital.png"));
+                    image.ScaleAbsolute(100, 100);
+                    cell.AddElement(image);
+                    footerTable.AddCell(cell);
+
+                    // Cria documento
+                    Document pdfDoc = new Document(PageSize.A4, 10, 10, 70, 150);
+                    PdfWriter pdfWriter = PdfWriter.GetInstance(pdfDoc, stream);
+                    pdfWriter.PageEvent = new CustomPageEventHelper(headerTable, footerTable);
+                    pdfDoc.Open();
+
+                    Paragraph line1 = new Paragraph("  ");
+                    pdfDoc.Add(line1);
+
+                    // Dados da solicitação
+                    PdfPTable table = new PdfPTable(new float[] { 120f, 120f, 120f, 120f });
+                    table.WidthPercentage = 100;
+                    table.HorizontalAlignment = 0;
+                    table.SpacingBefore = 1f;
+                    table.SpacingAfter = 1f;
+
+                    if (solic.PASO_IN_DATA == 1)
+                    {
+                        cell = new PdfPCell(new Paragraph("Data/Hora da Solicitação: " + solic.PASO_DT_EMISSAO_COMPLETA.Value.ToLongDateString() + " " + solic.PASO_DT_EMISSAO_COMPLETA.Value.ToLongTimeString() + " (GMT-3)", meuFont1Bold));
+                        cell.Border = 0;
+                        cell.Colspan = 4;
+                        cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                        cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                        table.AddCell(cell);
+                    }
+                    cell = new PdfPCell(new Paragraph("Identificador: " + solic.PASO_GU_GUID, meuFont1Bold));
+                    cell.Border = 0;
+                    cell.Colspan = 4;
+                    cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                    cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                    table.AddCell(cell);
+                    pdfDoc.Add(table);
+
+                    line1 = new Paragraph("  ");
+                    pdfDoc.Add(line1);
+
+                    // Dados do paciente
+                    table = new PdfPTable(new float[] { 120f, 120f, 120f, 120f });
+                    table.WidthPercentage = 100;
+                    table.HorizontalAlignment = 0;
+                    table.SpacingBefore = 1f;
+                    table.SpacingAfter = 1f;
+
+                    cell = new PdfPCell(new Paragraph("Nome do Paciente: " + paciente.PACI_NM_NOME, meuFont3Bold));
+                    cell.Border = 0;
+                    cell.Colspan = 4;
+                    cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                    cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                    table.AddCell(cell);
+                    cell = new PdfPCell(new Paragraph("CPF: " + paciente.PACI_NR_CPF, meuFont1));
+                    cell.Border = 0;
+                    cell.Colspan = 4;
+                    cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                    cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                    table.AddCell(cell);
+                    cell = new PdfPCell(new Paragraph("Data Nasc.: " + paciente.PACI_DT_NASCIMENTO.Value.ToShortDateString(), meuFont1));
+                    cell.Border = 0;
+                    cell.Colspan = 4;
+                    cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                    cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                    table.AddCell(cell);
+                    pdfDoc.Add(table);
+
+                    // Linha Horizontal
+                    line1 = new Paragraph("  ");
+                    pdfDoc.Add(line1);
+
+                    // Grid
+                    table = new PdfPTable(new float[] { 100f, 500f });
+                    table.WidthPercentage = 100;
+                    table.HorizontalAlignment = 0;
+                    table.SpacingBefore = 1f;
+                    table.SpacingAfter = 1f;
+
+                    cell = new PdfPCell(new Paragraph("Exame Solicitado: ", meuFont1Bold))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    cell.Colspan = 1;
+                    cell.Border = PdfPCell.NO_BORDER;
+                    cell.BackgroundColor = BaseColor.WHITE;
+                    table.AddCell(cell);
+                    cell = new PdfPCell(new Paragraph(solic.PASO_NM_TITULO, meuFont1))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    cell.Colspan = 1;
+                    cell.Border = PdfPCell.NO_BORDER;
+                    cell.BackgroundColor = BaseColor.WHITE;
+                    table.AddCell(cell);
+                    cell = new PdfPCell(new Paragraph("Indicação Clínica: ", meuFont1Bold))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    cell.Colspan = 1;
+                    cell.BackgroundColor = BaseColor.WHITE;
+                    cell.Border = PdfPCell.NO_BORDER;
+                    table.AddCell(cell);
+                    cell = new PdfPCell(new Paragraph(solic.PASO_DS_INDICACAO_CLINICA, meuFont1))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    cell.Colspan = 1;
+                    cell.Border = PdfPCell.NO_BORDER;
+                    cell.BackgroundColor = BaseColor.WHITE;
+                    table.AddCell(cell);
+                    pdfDoc.Add(table);
+
+                    // Texto da solicitacao
+                    line1 = new Paragraph("  ");
+                    pdfDoc.Add(line1);
+
+                    Chunk chunk3 = new Chunk("Especificação do Exame ou Recomendações/Observações:", FontFactory.GetFont("Arial", 10, Font.NORMAL, BaseColor.BLACK));
+                    Paragraph paragraph = new Paragraph(chunk3);
+                    paragraph.Alignment = Element.ALIGN_LEFT;
+                    pdfDoc.Add(paragraph);
+                    line1 = new Paragraph("  ");
+                    pdfDoc.Add(line1);
+
+                    Chunk chunk1 = new Chunk(solic.PASO_TX_TEXTO, FontFactory.GetFont("Arial", 9, Font.NORMAL, BaseColor.BLACK));
+                    pdfDoc.Add(chunk1);
+
+                    if (solic.PASO_IN_ASSINADO_DIGITAL == 0)
+                    {
+                        // Ajusta espaço
+                        line1 = new Paragraph("  ");
+                        pdfDoc.Add(line1);
+                        line1 = new Paragraph("  ");
+                        pdfDoc.Add(line1);
+                        line1 = new Paragraph("  ");
+                        pdfDoc.Add(line1);
+                        line1 = new Paragraph("  ");
+                        pdfDoc.Add(line1);
+
+                        String assinatura = usuario.USUA_NM_PREFIXO + " " + usuario.USUA_NM_NOME + (usuario.USUA_NM_SUFIXO != null ? " " + usuario.USUA_NM_SUFIXO : "");
+                        Chunk chunk4 = new Chunk(assinatura, FontFactory.GetFont("Arial", 12, Font.NORMAL, BaseColor.BLACK));
+                        Paragraph paragraph1 = new Paragraph(chunk4);
+                        paragraph1.Alignment = Element.ALIGN_CENTER;
+                        pdfDoc.Add(paragraph1);
+                    }
+
+                    // Finaliza
+                    pdfWriter.CloseStream = false;
+                    pdfDoc.Close();
+                    return 0;
+                }
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Paciente";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Paciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return 1;
+            }
+        }
+
+        public Int32 GerarSolicitacaoPDFNova()
+        {
+            try
+            {
+                Int32 idAss = (Int32)Session["IdAssinante"];
+                USUARIO usuario = (USUARIO)Session["UserCredentials"];
+
+                // Prepara geração
+                CONFIGURACAO conf = CarregaConfiguracaoGeral();
+                String data = DateTime.Today.Date.ToShortDateString();
+                data = data.Substring(0, 2) + data.Substring(3, 2) + data.Substring(6, 4);
+
+                // Recupera informações
+                PACIENTE_SOLICITACAO solic = baseApp.GetSolicitacaoById((Int32)Session["IdSolicitacao"]);
+                PACIENTE paciente = baseApp.GetItemById(solic.PACI_CD_ID.Value);
+                String nomeRel = "Solicitacao_" + paciente.PACI_NM_NOME + "_" + solic.PASO_GU_GUID + "_" + CrossCutting.StringLibrary.RemoveSlashDateString(DateTime.Today.Date.ToShortDateString()) + ".pdf";
+                String classe = String.Empty;
+                if (usuario.TIPO_CARTEIRA_CLASSE != null)
+                {
+                    classe = usuario.TIPO_CARTEIRA_CLASSE.TICL_NM_NOME + ": " + usuario.USUA_NR_CLASSE;
+                }
+                String nomeMedico = usuario.USUA_NM_NOME;
+                if (usuario.USUA_NM_PREFIXO != null)
+                {
+                    nomeMedico = usuario.USUA_NM_PREFIXO + " " + nomeMedico;
+                }
+                if (usuario.USUA_NM_SUFIXO != null)
+                {
+                    nomeMedico = nomeMedico + " " + usuario.USUA_NM_SUFIXO;
+                }
+                EMPRESA empresa = empApp.GetItemById(usuario.EMPR_CD_ID.Value);
+                String token = solic.PASO_TK_TOKEN;
+
+                // Atualiza soliictacao
+                PACIENTE_SOLICITACAO atestado1 = baseApp.GetSolicitacaoById(solic.PASO_CD_ID);
+                atestado1.PASO_IN_PDF = 1;
+                atestado1.PASO_DT_GERACAO_PDF = DateTime.Today.Date;
+                atestado1.PASO_IN_ENVIADO = 0;
+                Int32 voltaA = baseApp.ValidateEditSolicitacao(atestado1);
+
+                // Prepara fontes
+                Font meuFont = FontFactory.GetFont("Arial", 8, iTextSharp.text.Font.NORMAL, BaseColor.BLACK);
+                Font meuFont1 = FontFactory.GetFont("Arial", 9, iTextSharp.text.Font.NORMAL, BaseColor.BLACK);
+                Font meuFont2 = FontFactory.GetFont("Arial", 14, iTextSharp.text.Font.NORMAL, BaseColor.BLACK);
+                Font meuFont1Bold = FontFactory.GetFont("Arial", 9, iTextSharp.text.Font.BOLD, BaseColor.BLACK);
+                Font meuFont3Bold = FontFactory.GetFont("Arial", 10, iTextSharp.text.Font.BOLD, BaseColor.BLACK);
+                Font meuFont4Bold = FontFactory.GetFont("Arial", 12, iTextSharp.text.Font.BOLD, BaseColor.BLACK);
+                Font meuFont5Bold = FontFactory.GetFont("Arial", 16, iTextSharp.text.Font.BOLD, BaseColor.BLACK);
+                Font meuFontBold = FontFactory.GetFont("Arial", 8, iTextSharp.text.Font.BOLD, BaseColor.BLACK);
+
+                // Cabeçalho
+                PdfPTable headerTable = null;
+                PdfPCell cell = new PdfPCell();
+                Image image = null;
+                if (conf.CONF_IN_EXIBE_LOGO == 1)
+                {
+                    headerTable = new PdfPTable(new float[] { 20f, 700f });
+                    headerTable.WidthPercentage = 100;
+                    headerTable.HorizontalAlignment = 1;
+                    headerTable.SpacingBefore = 1f;
+                    headerTable.SpacingAfter = 1f;
+
+                    cell = new PdfPCell();
+                    cell.Border = 0;
+                    cell.Colspan = 1;
+                    image = null;
+                    if (conf.CONF_IN_LOGO_EMPRESA == 1)
+                    {
+                        image = Image.GetInstance(Server.MapPath(empresa.EMPR_AQ_LOGO));
+                    }
+                    else
+                    {
+                        image = Image.GetInstance(Server.MapPath("~/Images/Prontuario_Icone_1.png"));
+                    }
+                    image.ScaleAbsolute(80, 80);
+                    cell.AddElement(image);
+                    headerTable.AddCell(cell);
+                }
+                else
+                {
+                    headerTable = new PdfPTable(new float[] { 750f });
+                    headerTable.WidthPercentage = 100;
+                    headerTable.HorizontalAlignment = 1;
+                    headerTable.SpacingBefore = 1f;
+                    headerTable.SpacingAfter = 1f;
+                }
+
+                // Dados do medico
+                PdfPTable table1 = new PdfPTable(new float[] { 120f, 120f, 120f, 120f });
+                table1.WidthPercentage = 100;
+                table1.HorizontalAlignment = 0;
+                table1.SpacingBefore = 1f;
+                table1.SpacingAfter = 1f;
+
+                cell = new PdfPCell(new Paragraph(nomeMedico, meuFont4Bold));
+                cell.Border = 0;
+                cell.Colspan = 4;
+                cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                cell.HorizontalAlignment = Element.ALIGN_CENTER;
+                table1.AddCell(cell);
+
+                if (usuario.ESPECIALIDADE != null)
+                {
+                    cell = new PdfPCell(new Paragraph(usuario.ESPECIALIDADE.ESPE_NM_NOME, meuFont1));
+                    cell.Border = 0;
+                    cell.Colspan = 4;
+                    cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                    cell.HorizontalAlignment = Element.ALIGN_CENTER;
+                    table1.AddCell(cell);
+                }
+
+                String frase = classe + " CPF: " + usuario.USUA_NR_CPF;
+                cell = new PdfPCell(new Paragraph(frase, meuFont1));
+                cell.Border = 0;
+                cell.Colspan = 4;
+                cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                cell.HorizontalAlignment = Element.ALIGN_CENTER;
+                table1.AddCell(cell);
+                cell = new PdfPCell(new Paragraph(" ", meuFont1));
+                cell.Border = 0;
+                cell.Colspan = 4;
+                cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                cell.HorizontalAlignment = Element.ALIGN_CENTER;
+                table1.AddCell(cell);
+
+                PdfPCell innerTableCell = new PdfPCell(table1);
+                innerTableCell.Border = Rectangle.NO_BORDER;
+                innerTableCell.Colspan = 1;
+                headerTable.AddCell(innerTableCell);
+
+                // Rodape
+                PdfPTable footerTable = new PdfPTable(1);
+                footerTable = new PdfPTable(new float[] { 135f, 600f });
+                footerTable.WidthPercentage = 100;
+                footerTable.HorizontalAlignment = 1;
+                footerTable.SpacingBefore = 1f;
+                footerTable.SpacingAfter = 1f;
+
+                cell = new PdfPCell();
+                cell.Border = 0;
+                cell.Colspan = 1;
+                image = null;
+                if (solic.PASO_AQ_ARQUIVO_QRCODE != null)
+                {
+                    image = Image.GetInstance(Server.MapPath(solic.PASO_AQ_ARQUIVO_QRCODE));
+                }
+                else
+                {
+                    image = Image.GetInstance(Server.MapPath("~/Imagens/Base/qrcode.png"));
+                }
+                image.ScaleAbsolute(100, 100);
+                cell.AddElement(image);
+                footerTable.AddCell(cell);
+
+                // Dados do medico
+                table1 = new PdfPTable(new float[] { 120f, 120f, 120f, 120f });
+                table1.WidthPercentage = 100;
+                table1.HorizontalAlignment = 0;
+                table1.SpacingBefore = 1f;
+                table1.SpacingAfter = 1f;
+
+                cell = new PdfPCell(new Paragraph(usuario.USUA_NM_NOME, meuFontBold));
+                cell.Border = 0;
+                cell.Colspan = 4;
+                cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                table1.AddCell(cell);
+                if (usuario.ESPECIALIDADE != null)
+                {
+                    cell = new PdfPCell(new Paragraph(usuario.ESPECIALIDADE.ESPE_NM_NOME, meuFont1));
+                    cell.Border = 0;
+                    cell.Colspan = 4;
+                    cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                    cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                    table1.AddCell(cell);
+                }
+
+                cell = new PdfPCell(new Paragraph(classe, meuFont));
+                cell.Border = 0;
+                cell.Colspan = 1;
+                cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                table1.AddCell(cell);
+                cell = new PdfPCell(new Paragraph("CPF: " + usuario.USUA_NR_CPF, meuFont));
+                cell.Border = 0;
+                cell.Colspan = 3;
+                cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                table1.AddCell(cell);
+
+                String endereco = String.Empty;
+                String enderecoCont = String.Empty;
+                if (empresa.EMPR_NM_ENDERECO != null)
+                {
+                    endereco += empresa.EMPR_NM_ENDERECO;
+                    if (empresa.EMPR_NM_NUMERO != null)
+                    {
+                        endereco += " " + empresa.EMPR_NM_NUMERO;
+                    }
+                    if (empresa.EMPR_NM_COMPLEMENTO != null)
+                    {
+                        endereco += " " + empresa.EMPR_NM_COMPLEMENTO;
+                    }
+                    if (empresa.EMPR_NM_BAIRRO != null)
+                    {
+                        enderecoCont += empresa.EMPR_NM_BAIRRO;
+                    }
+                    if (empresa.EMPR_NM_CIDADE != null)
+                    {
+                        enderecoCont += " - " + empresa.EMPR_NM_CIDADE;
+                    }
+                    if (empresa.UF != null)
+                    {
+                        enderecoCont += " - " + empresa.UF.UF_SG_SIGLA;
+                    }
+                    if (empresa.EMPR_NR_CEP != null)
+                    {
+                        enderecoCont += " - " + empresa.EMPR_NR_CEP;
+                    }
+                }
+
+                cell = new PdfPCell(new Paragraph(endereco, meuFont));
+                cell.Border = 0;
+                cell.Colspan = 4;
+                cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                table1.AddCell(cell);
+                cell = new PdfPCell(new Paragraph(enderecoCont, meuFont));
+                cell.Border = 0;
+                cell.Colspan = 4;
+                cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                table1.AddCell(cell);
+                cell = new PdfPCell(new Paragraph("Token para validação: " + token, meuFont));
+                cell.Border = 0;
+                cell.Colspan = 4;
+                cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                table1.AddCell(cell);
+                cell = new PdfPCell(new Paragraph("Documento não assinado digitalmente", meuFont));
+                cell.Border = 0;
+                cell.Colspan = 4;
+                cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                table1.AddCell(cell);
+
+                cell = new PdfPCell(new Paragraph("  ", meuFont));
+                cell.Border = 0;
+                cell.Colspan = 4;
+                cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                table1.AddCell(cell);
+
+                innerTableCell = new PdfPCell(table1);
+                innerTableCell.Border = Rectangle.NO_BORDER;
+                innerTableCell.Colspan = 1;
+                footerTable.AddCell(innerTableCell);
+                String msg = "(*) Para validar este documento use o código QR acima ou acesse " + conf.CONF_LK_LINK_VALIDACAO + " usando o token de acesso " + token;
+                cell.AddElement(new Chunk(msg, FontFactory.GetFont("Arial", 8, Font.NORMAL, BaseColor.BLACK)));
+                footerTable.AddCell(cell);
+
+                // Cria documento
+                Document pdfDoc = new Document(PageSize.A4, 10, 10, 70, 140);
+                PdfWriter pdfWriter = PdfWriter.GetInstance(pdfDoc, Response.OutputStream);
+                pdfWriter.PageEvent = new CustomPageEventHelper(headerTable, footerTable);
+                pdfDoc.Open();
+
+                Paragraph line1 = new Paragraph("  ");
+                pdfDoc.Add(line1);
+
+                // Dados da solicitação
+                PdfPTable table = new PdfPTable(new float[] { 120f, 120f, 120f, 120f });
+                table.WidthPercentage = 100;
+                table.HorizontalAlignment = 0;
+                table.SpacingBefore = 1f;
+                table.SpacingAfter = 1f;
+
+                if (solic.PASO_IN_DATA == 1)
+                {
+                    cell = new PdfPCell(new Paragraph("Data/Hora da Solicitação: " + solic.PASO_DT_EMISSAO_COMPLETA.Value.ToLongDateString() + " " + solic.PASO_DT_EMISSAO_COMPLETA.Value.ToLongTimeString() + " (GMT-3)", meuFont1Bold));
+                    cell.Border = 0;
+                    cell.Colspan = 4;
+                    cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                    cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                    table.AddCell(cell);
+                }
+                cell = new PdfPCell(new Paragraph("Identificador: " + solic.PASO_GU_GUID, meuFont1Bold));
+                cell.Border = 0;
+                cell.Colspan = 4;
+                cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                table.AddCell(cell);
+                pdfDoc.Add(table);
+
+                line1 = new Paragraph("  ");
+                pdfDoc.Add(line1);
+
+                // Dados do paciente
+                table = new PdfPTable(new float[] { 120f, 120f, 120f, 120f });
+                table.WidthPercentage = 100;
+                table.HorizontalAlignment = 0;
+                table.SpacingBefore = 1f;
+                table.SpacingAfter = 1f;
+
+                cell = new PdfPCell(new Paragraph("Nome do Paciente: " + paciente.PACI_NM_NOME, meuFont3Bold));
+                cell.Border = 0;
+                cell.Colspan = 4;
+                cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph("CPF: " + paciente.PACI_NR_CPF, meuFont1));
+                cell.Border = 0;
+                cell.Colspan = 4;
+                cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph("Data Nasc.: " + paciente.PACI_DT_NASCIMENTO.Value.ToShortDateString(), meuFont1));
+                cell.Border = 0;
+                cell.Colspan = 4;
+                cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                table.AddCell(cell);
+                pdfDoc.Add(table);
+
+                // Linha Horizontal
+                line1 = new Paragraph("  ");
+                pdfDoc.Add(line1);
+
+                // Grid
+                table = new PdfPTable(new float[] { 100f, 500f });
+                table.WidthPercentage = 100;
+                table.HorizontalAlignment = 0;
+                table.SpacingBefore = 1f;
+                table.SpacingAfter = 1f;
+
+                cell = new PdfPCell(new Paragraph("Exame Solicitado: ", meuFont1Bold))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.Border = PdfPCell.NO_BORDER;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph(solic.PASO_NM_TITULO, meuFont1))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.Border = PdfPCell.NO_BORDER;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph("Indicação Clínica: ", meuFont1Bold))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.WHITE;
+                cell.Border = PdfPCell.NO_BORDER;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph(solic.PASO_DS_INDICACAO_CLINICA, meuFont1))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.Border = PdfPCell.NO_BORDER;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+                pdfDoc.Add(table);
+
+                // Texto da solicitacao
+                line1 = new Paragraph("  ");
+                pdfDoc.Add(line1);
+
+                Chunk chunk3 = new Chunk("Especificação do Exame ou Recomendações/Observações:", FontFactory.GetFont("Arial", 10, Font.NORMAL, BaseColor.BLACK));
+                Paragraph paragraph = new Paragraph(chunk3);
+                paragraph.Alignment = Element.ALIGN_LEFT;
+                pdfDoc.Add(paragraph);
+                line1 = new Paragraph("  ");
+                pdfDoc.Add(line1);
+
+                Chunk chunk1 = new Chunk(solic.PASO_TX_TEXTO, FontFactory.GetFont("Arial", 9, Font.NORMAL, BaseColor.BLACK));
+                pdfDoc.Add(chunk1);
+
+                // Ajusta espaço
+                line1 = new Paragraph("  ");
+                pdfDoc.Add(line1);
+                line1 = new Paragraph("  ");
+                pdfDoc.Add(line1);
+                line1 = new Paragraph("  ");
+                pdfDoc.Add(line1);
+                line1 = new Paragraph("  ");
+                pdfDoc.Add(line1);
+
+                String assinatura = usuario.USUA_NM_PREFIXO + " " + usuario.USUA_NM_NOME + (usuario.USUA_NM_SUFIXO != null ? " " + usuario.USUA_NM_SUFIXO : "");
+                Chunk chunk4 = new Chunk(assinatura, FontFactory.GetFont("Arial", 12, Font.NORMAL, BaseColor.BLACK));
+                Paragraph paragraph1 = new Paragraph(chunk4);
+                paragraph1.Alignment = Element.ALIGN_CENTER;
+                pdfDoc.Add(paragraph1);
+
+                // Finaliza
+                pdfWriter.CloseStream = false;
+                pdfDoc.Close();
+                Response.Buffer = true;
+                Response.ContentType = "application/pdf";
+                Response.AddHeader("content-disposition", "attachment;filename=" + nomeRel);
+                Response.Cache.SetCacheability(HttpCacheability.NoCache);
+                Response.Write(pdfDoc);
+                Response.End();
+                return 0;
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Paciente";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Paciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return 1;
+            }
+        }
+
+        public ActionResult ImprimirSolicitacao(Int32 id)
+        {
+            try
+            {
+                PACIENTE_SOLICITACAO solicitacao = baseApp.GetSolicitacaoById(id);
+                Session["IdSolicitacao"] = solicitacao.PASO_CD_ID;
+                if (solicitacao.PASO_IN_ASSINADO_DIGITAL == 0)
+                {
+                    Int32 voltaPDF = GerarSolicitacaoPDFNova();
+                }
+                else
+                {
+                    Int32 voltaPDF = GerarSolicitacaoPDFNovaAssina();
+                }
+                Session["ListaSolicitacoes"] = null;
+                Session["SolicitacaoAlterada"] = 1;
+                return RedirectToAction("MontarTelaSolicitacoes");
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Paciente";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Paciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return RedirectToAction("TrataExcecao", "BaseAdmin");
+            }
+        }
+
+        public Int32 GerarSolicitacaoPDFTeste()
+        {
+            try
+            {
+                Int32 idAss = (Int32)Session["IdAssinante"];
+                USUARIO usuario = (USUARIO)Session["UserCredentials"];
+
+                // Prepara geração
+                CONFIGURACAO conf = CarregaConfiguracaoGeral();
+                String data = DateTime.Today.Date.ToShortDateString();
+                data = data.Substring(0, 2) + data.Substring(3, 2) + data.Substring(6, 4);
+
+                // Recupera informações
+                PACIENTE_SOLICITACAO solic = baseApp.GetSolicitacaoById((Int32)Session["IdSolicitacao"]);
+                PACIENTE paciente = baseApp.GetItemById(solic.PACI_CD_ID.Value);
+                String nomeRel = "Solicitacao_" + paciente.PACI_NM_NOME + "_" + solic.PASO_GU_GUID + ".pdf";
+                String classe = String.Empty;
+                if (usuario.TIPO_CARTEIRA_CLASSE != null)
+                {
+                    classe = usuario.TIPO_CARTEIRA_CLASSE.TICL_NM_NOME + ": " + usuario.USUA_NR_CLASSE;
+                }
+                String nomeMedico = usuario.USUA_NM_NOME;
+                if (usuario.USUA_NM_PREFIXO != null)
+                {
+                    nomeMedico = usuario.USUA_NM_PREFIXO + " " + nomeMedico;
+                }
+                if (usuario.USUA_NM_SUFIXO != null)
+                {
+                    nomeMedico = nomeMedico + " " + usuario.USUA_NM_SUFIXO;
+                }
+                EMPRESA empresa = empApp.GetItemById(usuario.EMPR_CD_ID.Value);
+                String token = solic.PASO_TK_TOKEN;
+
+                // Atualiza solicitação
+                PACIENTE_SOLICITACAO atestado1 = baseApp.GetSolicitacaoById(solic.PASO_CD_ID);
+                atestado1.PASO_IN_PDF = 1;
+                atestado1.PASO_DT_GERACAO_PDF = DateTime.Today.Date;
+                atestado1.PASO_IN_ENVIADO = 0;
+                Int32 voltaA = baseApp.ValidateEditSolicitacao(atestado1);
+
+                // Prepara fontes
+                Font meuFont = FontFactory.GetFont("Arial", 8, iTextSharp.text.Font.NORMAL, BaseColor.BLACK);
+                Font meuFont1 = FontFactory.GetFont("Arial", 9, iTextSharp.text.Font.NORMAL, BaseColor.BLACK);
+                Font meuFont2 = FontFactory.GetFont("Arial", 14, iTextSharp.text.Font.NORMAL, BaseColor.BLACK);
+                Font meuFont1Bold = FontFactory.GetFont("Arial", 9, iTextSharp.text.Font.BOLD, BaseColor.BLACK);
+                Font meuFont3Bold = FontFactory.GetFont("Arial", 10, iTextSharp.text.Font.BOLD, BaseColor.BLACK);
+                Font meuFont4Bold = FontFactory.GetFont("Arial", 12, iTextSharp.text.Font.BOLD, BaseColor.BLACK);
+                Font meuFont5Bold = FontFactory.GetFont("Arial", 16, iTextSharp.text.Font.BOLD, BaseColor.BLACK);
+                Font meuFontBold = FontFactory.GetFont("Arial", 8, iTextSharp.text.Font.BOLD, BaseColor.BLACK);
+
+                // Caminho de saida
+                String caminho = "/Imagens/" + idAss.ToString() + "/Pacientes/" + paciente.PACI__CD_ID.ToString() + "/Solicitacao/";
+                String filePath = Path.Combine(Server.MapPath(caminho), nomeRel);
+                Directory.CreateDirectory(caminho);
+                Boolean existe = System.IO.File.Exists(filePath);
+                if (existe)
+                {
+                    try
+                    {
+                        System.IO.File.Delete(filePath);
+                    }
+                    catch (Exception)
+                    {
+                        existe = false;
+                    }
+                }
+
+                // Processamento
+                using (FileStream stream = new FileStream(filePath, FileMode.Create))
+                {
+                    // Cabeçalho
+                    PdfPTable headerTable = null;
+                    PdfPCell cell = new PdfPCell();
+                    Image image = null;
+                    if (conf.CONF_IN_EXIBE_LOGO == 1)
+                    {
+                        headerTable = new PdfPTable(new float[] { 20f, 700f });
+                        headerTable.WidthPercentage = 100;
+                        headerTable.HorizontalAlignment = 1;
+                        headerTable.SpacingBefore = 1f;
+                        headerTable.SpacingAfter = 1f;
+
+                        cell = new PdfPCell();
+                        cell.Border = 0;
+                        cell.Colspan = 1;
+                        image = null;
+                        if (conf.CONF_IN_LOGO_EMPRESA == 1)
+                        {
+                            image = Image.GetInstance(Server.MapPath(empresa.EMPR_AQ_LOGO));
+                        }
+                        else
+                        {
+                            image = Image.GetInstance(Server.MapPath("~/Images/Prontuario_Icone_1.png"));
+                        }
+                        image.ScaleAbsolute(80, 80);
+                        cell.AddElement(image);
+                        headerTable.AddCell(cell);
+                    }
+                    else
+                    {
+                        headerTable = new PdfPTable(new float[] { 750f });
+                        headerTable.WidthPercentage = 100;
+                        headerTable.HorizontalAlignment = 1;
+                        headerTable.SpacingBefore = 1f;
+                        headerTable.SpacingAfter = 1f;
+                    }
+
+                    // Dados do medico
+                    PdfPTable table1 = new PdfPTable(new float[] { 120f, 120f, 120f, 120f });
+                    table1.WidthPercentage = 100;
+                    table1.HorizontalAlignment = 0;
+                    table1.SpacingBefore = 1f;
+                    table1.SpacingAfter = 1f;
+
+                    cell = new PdfPCell(new Paragraph(nomeMedico, meuFont4Bold));
+                    cell.Border = 0;
+                    cell.Colspan = 4;
+                    cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                    cell.HorizontalAlignment = Element.ALIGN_CENTER;
+                    table1.AddCell(cell);
+
+                    if (usuario.ESPECIALIDADE != null)
+                    {
+                        cell = new PdfPCell(new Paragraph(usuario.ESPECIALIDADE.ESPE_NM_NOME, meuFont1));
+                        cell.Border = 0;
+                        cell.Colspan = 4;
+                        cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                        cell.HorizontalAlignment = Element.ALIGN_CENTER;
+                        table1.AddCell(cell);
+                    }
+
+                    String frase = classe + " CPF: " + usuario.USUA_NR_CPF;
+                    cell = new PdfPCell(new Paragraph(frase, meuFont1));
+                    cell.Border = 0;
+                    cell.Colspan = 4;
+                    cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                    cell.HorizontalAlignment = Element.ALIGN_CENTER;
+                    table1.AddCell(cell);
+                    cell = new PdfPCell(new Paragraph(" ", meuFont1));
+                    cell.Border = 0;
+                    cell.Colspan = 4;
+                    cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                    cell.HorizontalAlignment = Element.ALIGN_CENTER;
+                    table1.AddCell(cell);
+
+                    PdfPCell innerTableCell = new PdfPCell(table1);
+                    innerTableCell.Border = Rectangle.NO_BORDER;
+                    innerTableCell.Colspan = 1;
+                    headerTable.AddCell(innerTableCell);
+
+                    // Rodape
+                    PdfPTable footerTable = new PdfPTable(1);
+                    footerTable = new PdfPTable(new float[] { 135f, 600f });
+                    footerTable.WidthPercentage = 100;
+                    footerTable.HorizontalAlignment = 1;
+                    footerTable.SpacingBefore = 1f;
+                    footerTable.SpacingAfter = 1f;
+
+                    cell = new PdfPCell();
+                    cell.Border = 0;
+                    cell.Colspan = 1;
+                    image = null;
+                    if (solic.PASO_AQ_ARQUIVO_QRCODE != null)
+                    {
+                        image = Image.GetInstance(Server.MapPath(solic.PASO_AQ_ARQUIVO_QRCODE));
+                    }
+                    else
+                    {
+                        image = Image.GetInstance(Server.MapPath("~/Imagens/Base/qrcode.png"));
+                    }
+                    image.ScaleAbsolute(100, 100);
+                    cell.AddElement(image);
+                    footerTable.AddCell(cell);
+
+                    // Dados do medico
+                    table1 = new PdfPTable(new float[] { 120f, 120f, 120f, 120f });
+                    table1.WidthPercentage = 100;
+                    table1.HorizontalAlignment = 0;
+                    table1.SpacingBefore = 1f;
+                    table1.SpacingAfter = 1f;
+
+                    cell = new PdfPCell(new Paragraph(usuario.USUA_NM_NOME, meuFontBold));
+                    cell.Border = 0;
+                    cell.Colspan = 4;
+                    cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                    cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                    table1.AddCell(cell);
+
+                    if (usuario.ESPECIALIDADE != null)
+                    {
+                        cell = new PdfPCell(new Paragraph(usuario.ESPECIALIDADE.ESPE_NM_NOME, meuFont1));
+                        cell.Border = 0;
+                        cell.Colspan = 4;
+                        cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                        cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                        table1.AddCell(cell);
+                    }
+
+                    cell = new PdfPCell(new Paragraph(classe, meuFont));
+                    cell.Border = 0;
+                    cell.Colspan = 1;
+                    cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                    cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                    table1.AddCell(cell);
+                    cell = new PdfPCell(new Paragraph("CPF: " + usuario.USUA_NR_CPF, meuFont));
+                    cell.Border = 0;
+                    cell.Colspan = 3;
+                    cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                    cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                    table1.AddCell(cell);
+
+                    String endereco = String.Empty;
+                    String enderecoCont = String.Empty;
+                    if (empresa.EMPR_NM_ENDERECO != null)
+                    {
+                        endereco += empresa.EMPR_NM_ENDERECO;
+                        if (empresa.EMPR_NM_NUMERO != null)
+                        {
+                            endereco += " " + empresa.EMPR_NM_NUMERO;
+                        }
+                        if (empresa.EMPR_NM_COMPLEMENTO != null)
+                        {
+                            endereco += " " + empresa.EMPR_NM_COMPLEMENTO;
+                        }
+                        if (empresa.EMPR_NM_BAIRRO != null)
+                        {
+                            enderecoCont += empresa.EMPR_NM_BAIRRO;
+                        }
+                        if (empresa.EMPR_NM_CIDADE != null)
+                        {
+                            enderecoCont += " - " + empresa.EMPR_NM_CIDADE;
+                        }
+                        if (empresa.UF != null)
+                        {
+                            enderecoCont += " - " + empresa.UF.UF_SG_SIGLA;
+                        }
+                        if (empresa.EMPR_NR_CEP != null)
+                        {
+                            enderecoCont += " - " + empresa.EMPR_NR_CEP;
+                        }
+                    }
+
+                    cell = new PdfPCell(new Paragraph(endereco, meuFont));
+                    cell.Border = 0;
+                    cell.Colspan = 4;
+                    cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                    cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                    table1.AddCell(cell);
+                    cell = new PdfPCell(new Paragraph(enderecoCont, meuFont));
+                    cell.Border = 0;
+                    cell.Colspan = 4;
+                    cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                    cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                    table1.AddCell(cell);
+                    cell = new PdfPCell(new Paragraph("Token para validação: " + token, meuFont));
+                    cell.Border = 0;
+                    cell.Colspan = 4;
+                    cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                    cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                    table1.AddCell(cell);
+                    cell = new PdfPCell(new Paragraph("Documento assinado digitalmente", meuFont));
+                    cell.Border = 0;
+                    cell.Colspan = 4;
+                    cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                    cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                    table1.AddCell(cell);
+
+                    cell = new PdfPCell(new Paragraph("  ", meuFont));
+                    cell.Border = 0;
+                    cell.Colspan = 4;
+                    cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                    cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                    table1.AddCell(cell);
+
+                    innerTableCell = new PdfPCell(table1);
+                    innerTableCell.Border = Rectangle.NO_BORDER;
+                    innerTableCell.Colspan = 1;
+                    footerTable.AddCell(innerTableCell);
+                    String msg = "(*) Para validar este documento use o QR Code acima ou acesse " + conf.CONF_LK_LINK_VALIDACAO + " usando o token de acesso " + token;
+                    cell.AddElement(new Chunk(msg, FontFactory.GetFont("Arial", 8, Font.NORMAL, BaseColor.BLACK)));
+                    footerTable.AddCell(cell);
+
+                    // Cria documento
+                    Document pdfDoc = new Document(PageSize.A4, 10, 10, 70, 140);
+                    PdfWriter pdfWriter = PdfWriter.GetInstance(pdfDoc, stream);
+                    pdfWriter.PageEvent = new CustomPageEventHelper(headerTable, footerTable);
+                    pdfDoc.Open();
+
+                    Paragraph line1 = new Paragraph("  ");
+                    pdfDoc.Add(line1);
+
+                    // Dados da solicitação
+                    PdfPTable table = new PdfPTable(new float[] { 120f, 120f, 120f, 120f });
+                    table.WidthPercentage = 100;
+                    table.HorizontalAlignment = 0;
+                    table.SpacingBefore = 1f;
+                    table.SpacingAfter = 1f;
+
+                    if (solic.PASO_IN_DATA == 1)
+                    {
+                        cell = new PdfPCell(new Paragraph("Data/Hora da Solicitação: " + solic.PASO_DT_EMISSAO_COMPLETA.Value.ToLongDateString() + " " + solic.PASO_DT_EMISSAO_COMPLETA.Value.ToLongTimeString() + " (GMT-3)", meuFont1Bold));
+                        cell.Border = 0;
+                        cell.Colspan = 4;
+                        cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                        cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                        table.AddCell(cell);
+                    }
+                    cell = new PdfPCell(new Paragraph("Identificador: " + solic.PASO_GU_GUID, meuFont1Bold));
+                    cell.Border = 0;
+                    cell.Colspan = 4;
+                    cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                    cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                    table.AddCell(cell);
+                    pdfDoc.Add(table);
+
+                    line1 = new Paragraph("  ");
+                    pdfDoc.Add(line1);
+
+                    // Dados do paciente
+                    table = new PdfPTable(new float[] { 120f, 120f, 120f, 120f });
+                    table.WidthPercentage = 100;
+                    table.HorizontalAlignment = 0;
+                    table.SpacingBefore = 1f;
+                    table.SpacingAfter = 1f;
+
+                    cell = new PdfPCell(new Paragraph("Nome do Paciente: " + paciente.PACI_NM_NOME, meuFont3Bold));
+                    cell.Border = 0;
+                    cell.Colspan = 4;
+                    cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                    cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                    table.AddCell(cell);
+                    cell = new PdfPCell(new Paragraph("CPF: " + paciente.PACI_NR_CPF, meuFont1));
+                    cell.Border = 0;
+                    cell.Colspan = 4;
+                    cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                    cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                    table.AddCell(cell);
+                    cell = new PdfPCell(new Paragraph("Data Nasc.: " + paciente.PACI_DT_NASCIMENTO.Value.ToShortDateString(), meuFont1));
+                    cell.Border = 0;
+                    cell.Colspan = 4;
+                    cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                    cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                    table.AddCell(cell);
+                    pdfDoc.Add(table);
+
+                    // Linha Horizontal
+                    line1 = new Paragraph("  ");
+                    pdfDoc.Add(line1);
+
+                    // Grid
+                    table = new PdfPTable(new float[] { 100f, 500f });
+                    table.WidthPercentage = 100;
+                    table.HorizontalAlignment = 0;
+                    table.SpacingBefore = 1f;
+                    table.SpacingAfter = 1f;
+
+                    cell = new PdfPCell(new Paragraph("Exame Solicitado: ", meuFont1Bold))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    cell.Colspan = 1;
+                    cell.Border = PdfPCell.NO_BORDER;
+                    cell.BackgroundColor = BaseColor.WHITE;
+                    table.AddCell(cell);
+                    cell = new PdfPCell(new Paragraph(solic.PASO_NM_TITULO, meuFont1))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    cell.Colspan = 1;
+                    cell.Border = PdfPCell.NO_BORDER;
+                    cell.BackgroundColor = BaseColor.WHITE;
+                    table.AddCell(cell);
+                    cell = new PdfPCell(new Paragraph("Indicação Clínica: ", meuFont1Bold))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    cell.Colspan = 1;
+                    cell.BackgroundColor = BaseColor.WHITE;
+                    cell.Border = PdfPCell.NO_BORDER;
+                    table.AddCell(cell);
+                    cell = new PdfPCell(new Paragraph(solic.PASO_DS_INDICACAO_CLINICA, meuFont1))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    cell.Colspan = 1;
+                    cell.Border = PdfPCell.NO_BORDER;
+                    cell.BackgroundColor = BaseColor.WHITE;
+                    table.AddCell(cell);
+                    pdfDoc.Add(table);
+
+                    // Texto da solicitacao
+                    line1 = new Paragraph("  ");
+                    pdfDoc.Add(line1);
+
+                    Chunk chunk3 = new Chunk("Especificação do Exame ou Recomendações/Observações:", FontFactory.GetFont("Arial", 10, Font.NORMAL, BaseColor.BLACK));
+                    Paragraph paragraph = new Paragraph(chunk3);
+                    paragraph.Alignment = Element.ALIGN_LEFT;
+                    pdfDoc.Add(paragraph);
+                    line1 = new Paragraph("  ");
+                    pdfDoc.Add(line1);
+
+                    Chunk chunk1 = new Chunk(solic.PASO_TX_TEXTO, FontFactory.GetFont("Arial", 9, Font.NORMAL, BaseColor.BLACK));
+                    pdfDoc.Add(chunk1);
+
+                    // Ajusta espaço
+                    line1 = new Paragraph("  ");
+                    pdfDoc.Add(line1);
+                    line1 = new Paragraph("  ");
+                    pdfDoc.Add(line1);
+                    line1 = new Paragraph("  ");
+                    pdfDoc.Add(line1);
+                    line1 = new Paragraph("  ");
+                    pdfDoc.Add(line1);
+
+                    String assinatura = usuario.USUA_NM_PREFIXO + " " + usuario.USUA_NM_NOME + (usuario.USUA_NM_SUFIXO != null ? " " + usuario.USUA_NM_SUFIXO : "");
+                    Chunk chunk4 = new Chunk(assinatura, FontFactory.GetFont("Arial", 12, Font.NORMAL, BaseColor.BLACK));
+                    Paragraph paragraph1 = new Paragraph(chunk4);
+                    paragraph1.Alignment = Element.ALIGN_CENTER;
+                    pdfDoc.Add(paragraph1);
+
+                    // Finaliza
+                    pdfWriter.CloseStream = false;
+                    pdfDoc.Close();
+                    return 0;
+                }
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Paciente";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Paciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return 1;
+            }
+        }
+
+        public ActionResult EnviarSolicitacaoEMailForm()
+        {
+            return RedirectToAction("EnviarSolicitacaoEMail", new { id = (Int32)Session["IdSolicitacao"] });
+        }
+
+        [HttpGet]
+        public ActionResult EnviarSolicitacaoEMail(Int32 id)
+        {
+            try
+            {
+                // Verifica se tem usuario logado
+                USUARIO usuario = new USUARIO();
+                if ((String)Session["Ativa"] == null)
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+                if ((USUARIO)Session["UserCredentials"] != null)
+                {
+                    usuario = (USUARIO)Session["UserCredentials"];
+
+                    // Verfifica permissão
+                    if (usuario.PERFIL.PERF_IN_SOLICITACAO_ENVIAR == 0)
+                    {
+                        Session["MensPermissao"] = 2;
+                        Session["ModuloPermissao"] = "Paciente - Solicitação - Envio";
+                        return RedirectToAction("VoltarAnexoPaciente");
+                    }
+                }
+                else
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+                Int32 idAss = (Int32)Session["IdAssinante"];
+
+                // Recupera paciente e soliictacao
+                PACIENTE_SOLICITACAO solicitacao = baseApp.GetSolicitacaoById(id);
+                PACIENTE paciente = baseApp.GetItemById(solicitacao.PACI_CD_ID.Value);
+                Session["Paciente"] = paciente;
+                ViewBag.Paciente = paciente;
+                Session["Solicitacao"] = solicitacao;
+                ViewBag.Solicitacao = solicitacao;
+                Session["NivelPaciente"] = 12;
+                Session["IdSolicitacao"] = id;
+                Session["AjudaNivel"] = "../BaseAdmin/Ajuda/7/Ajuda7_5.pdf";
+                ViewBag.NomePaciente = paciente.PACI_NM_NOME;
+
+                MensagemViewModel mens = new MensagemViewModel();
+                mens.NOME = paciente.PACI_NM_NOME;
+                mens.ID = id;
+                mens.MODELO = paciente.PACI_NM_EMAIL;
+                mens.MENS_DT_CRIACAO = DateTime.Today.Date;
+                mens.MENS_IN_TIPO = 1;
+                mens.MENS_NM_CAMPANHA = paciente.PACI_NM_EMAIL;
+                mens.MENS_NM_NOME = "Envio de Solicitação de Exame para Paciente: " + paciente.PACI_NM_NOME;
+                mens.MENS_GU_GUID = solicitacao.PASO_GU_GUID;
+                mens.MENS_DT_AGENDAMENTO = solicitacao.PASO_DT_EMISSAO_COMPLETA;
+                mens.MENS_DT_ENVIO = solicitacao.PASO_DT_ENVIO;
+                mens.MENS_NM_CABECALHO = paciente.PACI_NR_CPF;
+                mens.MENS_NR_REPETICOES = solicitacao.PASO_NR_ENVIOS;
+                mens.MENS_NM_ASSINATURA = usuario.USUA_NM_NOME;
+                mens.MENS_NM_RODAPE = solicitacao.PASO_NM_TITULO;
+                mens.CELULAR = paciente.PACI_NR_CELULAR;
+                mens.TELEFONE = paciente.PACI_NR_TELEFONE;
+                mens.MENS_IN_TIPO_EMAIL = 1;
+                mens.TIPO_ENVIO = 1;
+
+                // Grava Acesso
+                ControleAcessoMetodo grava = new ControleAcessoMetodo(aceApp);
+                Int32 voltaX = grava.GravaAcesso(usuario.USUA_CD_ID, usuario.ASSI_CD_ID, "PACIENTE_SOLICITACAO_EMAIL", "Paciente", "EnviarSolicitacaoEMail");
+                return View(mens);
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Paciente";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Paciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return RedirectToAction("TrataExcecao", "BaseAdmin");
+
+            }
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> EnviarSolicitacaoEMail(MensagemViewModel vm)
+        {
+            if ((String)Session["Ativa"] == null)
+            {
+                return RedirectToAction("Logout", "ControleAcesso");
+            }
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    // Sanitização
+                    vm.MENS_TX_TEXTO = CrossCutting.UtilitariosGeral.CleanStringTexto(vm.MENS_TX_TEXTO);
+
+                    // Executa a operação
+                    PACIENTE_SOLICITACAO solic = (PACIENTE_SOLICITACAO)Session["Solicitacao"];
+                    USUARIO usuarioLogado = (USUARIO)Session["UserCredentials"];
+                    if (solic.PASO_IN_ASSINADO_DIGITAL == 0)
+                    {
+                        Int32 rel = GerarSolicitacaoPDFTeste();
+                    }
+                    else
+                    {
+                        Int32 rel = GerarSolicitacaoPDFTesteAssina();
+
+                    }
+                    Int32 volta = await ProcessaEnvioEMailSolicitacao(vm, usuarioLogado);
+                    USUARIO cont = (USUARIO)Session["Usuario"];
+
+                    // Atualiza solicitação
+                    String idEnvio = Xid.NewXid().ToString();
+                    PACIENTE_SOLICITACAO solicitacao = baseApp.GetSolicitacaoById((Int32)Session["IdSolicitacao"]);
+                    solicitacao.PASO_DT_ENVIO = DateTime.Today.Date;
+                    solicitacao.PASO_NR_ENVIOS = solicitacao.PASO_NR_ENVIOS + 1;
+                    solicitacao.PASO_IN_ENVIADO = 1;
+                    solicitacao.PASO_GU_GUID_ENVIO = idEnvio;
+                    Int32 volta1 = baseApp.ValidateEditSolicitacao(solicitacao);
+                    Session["ListaSolicitacoes"] = null;
+                    Session["SolicitacoesAlterada"] = 1;
+
+                    // Monta Log
+                    LOG log = new LOG
+                    {
+                        LOG_DT_DATA = DateTime.Now,
+                        ASSI_CD_ID = usuarioLogado.ASSI_CD_ID,
+                        USUA_CD_ID = usuarioLogado.USUA_CD_ID,
+                        LOG_NM_OPERACAO = "epsPACI",
+                        LOG_IN_ATIVO = 1,
+                        LOG_TX_REGISTRO = "Solicitação : " + solicitacao.PASO_GU_GUID,
+                        LOG_IN_SISTEMA = 6
+                    };
+                    Int32 volta2 = logApp.ValidateCreate(log);
+
+                    // Grava historico
+                    PACIENTE_HISTORICO hist = new PACIENTE_HISTORICO();
+                    PACIENTE pac = baseApp.GetItemById(solicitacao.PACI_CD_ID.Value);
+                    hist.ASSI_CD_ID = usuarioLogado.ASSI_CD_ID;
+                    hist.USUA_CD_ID = usuarioLogado.USUA_CD_ID;
+                    hist.PACI_CD_ID = solicitacao.PACI_CD_ID;
+                    hist.PAHI_DT_DATA = DateTime.Now;
+                    hist.PAHI_IN_TIPO = 6;
+                    hist.PAHI_IN_CHAVE = solicitacao.PASO_CD_ID;
+                    hist.PAHI_NM_OPERACAO = "Paciente - Solicitação - Envio por E-Mail";
+                    hist.PAHI_DS_DESCRICAO = "Paciente: " + pac.PACI_NM_NOME + " - Solicitação enviada: " + solicitacao.PASO_GU_GUID;
+                    Int32 voltaHist = baseApp.ValidateCreateHistorico(hist);
+
+                    // Envia aviso SMS
+                    MensagemViewModel mens = new MensagemViewModel();
+                    mens.NOME = pac.PACI_NM_NOME;
+                    mens.ID = pac.PACI__CD_ID;
+                    mens.MODELO = pac.PACI_NR_CELULAR;
+                    mens.MENS_DT_CRIACAO = DateTime.Today.Date;
+                    mens.MENS_IN_TIPO = 2;
+                    mens.MENS_NM_NOME = "Aviso de Envio de Solicitação: " + pac.PACI_NM_NOME;
+                    mens.PACI_CD_ID = pac.PACI__CD_ID;
+                    Int32 voltaSMS = ProcessaEnvioSMSDocumento(mens, usuarioLogado, 2, solicitacao.PASO_GU_GUID, solicitacao.PASO_DT_EMISSAO_COMPLETA.Value);
+
+                    // Sucesso
+                    Session["NivelPaciente"] = 12;
+
+                    // Mensagem do CRUD
+                    Session["MsgCRUD"] = "A solicitação de exame" + solicitacao.PASO_GU_GUID + " do(a) paciente " + pac.PACI_NM_NOME.ToUpper() + " foi enviado por e-mail com sucesso.";
+                    Session["MensPaciente"] = 61;
+
+                    // Retorno
+                    if ((Int32)Session["VoltaMail"] == 1)
+                    {
+                        return RedirectToAction("VoltarAnexoPaciente", "Paciente");
+                    }
+                    else if ((Int32)Session["VoltaMail"] == 2)
+                    {
+                        return RedirectToAction("MontarTelaSolicitacoes", "Paciente");
+                    }
+                    else if ((Int32)Session["VoltaMail"] == 3)
+                    {
+                        return RedirectToAction("VoltarProcederConsulta", "Paciente");
+                    }
+                    else if ((Int32)Session["VoltaMail"] == 4)
+                    {
+                        return RedirectToAction("VerListaSolicitacaoConsulta", "Paciente");
+                    }
+                    else if ((Int32)Session["VoltaMail"] == 5)
+                    {
+                        return RedirectToAction("MontarTelaCentralPaciente");
+                    }
+                    return RedirectToAction("MontarTelaSolicitacoes", "Paciente");
+                }
+                catch (Exception ex)
+                {
+                    ViewBag.Message = ex.Message;
+                    Session["TipoVolta"] = 2;
+                    Session["VoltaExcecao"] = "Paciente";
+                    Session["Excecao"] = ex;
+                    Session["ExcecaoTipo"] = ex.GetType().ToString();
+                    GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                    Int32 voltaX = grava.GravarLogExcecao(ex, "Paciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                    return RedirectToAction("TrataExcecao", "BaseAdmin");
+                }
+            }
+            else
+            {
+                return View(vm);
+            }
+        }
+
+        [ValidateInput(false)]
+        public async Task<Int32> ProcessaEnvioEMailSolicitacao(MensagemViewModel vm, USUARIO usuario)
+        {
+            // Recupera dados
+            Int32 idAss = (Int32)Session["IdAssinante"];
+            USUARIO cont = (USUARIO)Session["Usuario"];
+            String erro = null;
+            String status = "Succeeded";
+            String iD = Xid.NewXid().ToString();
+
+            PACIENTE_SOLICITACAO solicitacao = (PACIENTE_SOLICITACAO)Session["Solicitacao"];
+            PACIENTE paciente = baseApp.GetItemById(solicitacao.PACI_CD_ID.Value);
+
+            // Configuração
+            CONFIGURACAO conf = CarregaConfiguracaoGeral();
+
+            // Prepara cabeçalho
+            String cab = "Prezado Sr(a). <b>" + paciente.PACI_NM_NOME + "</b>";
+
+            // Prepara rodape
+            String classe = String.Empty;
+            if (usuario.TIPO_CARTEIRA_CLASSE != null)
+            {
+                classe = cont.TIPO_CARTEIRA_CLASSE.TICL_NM_NOME + ": " + cont.USUA_NR_CLASSE;
+            }
+            String rod = "<b>" + cont.USUA_NM_NOME + "</b><br />";
+            if (usuario.ESPECIALIDADE != null)
+            {
+                rod += usuario.ESPECIALIDADE.ESPE_NM_NOME + "<br />";
+            }
+            else
+            {
+                rod += usuario.USUA_NM_ESPECIALIDADE + "<br />";
+            }
+            rod += classe + "  CPF: " + cont.USUA_NR_CPF;
+
+            // Prepara corpo do e-mail e trata link
+            String corpo = vm.MENS_TX_TEXTO;
+            StringBuilder str = new StringBuilder();
+            str.AppendLine(corpo);
+            String body = str.ToString();
+            body = body.Replace("\r\n", "<br />");
+            String emailBody = cab + "<br /><br />" + body + "<br /><br />" + rod;
+
+            // Incluir PDF como anexo
+            List<AttachmentModel> models = new List<AttachmentModel>();
+            String caminho = "/Imagens/" + idAss.ToString() + "/Pacientes/" + paciente.PACI__CD_ID.ToString() + "/Solicitacao/";
+            String fileNamePDF = "Solicitacao_" + paciente.PACI_NM_NOME + "_" + solicitacao.PASO_GU_GUID + ".pdf";
+            String path = Path.Combine(Server.MapPath(caminho), fileNamePDF);
+
+            AttachmentModel model = new AttachmentModel();
+            model.PATH = path;
+            model.ATTACHMENT_NAME = fileNamePDF;
+            model.CONTENT_TYPE = MediaTypeNames.Application.Pdf;
+            models.Add(model);
+
+            // Decriptografa chaves
+            String emissor = CrossCutting.Cryptography.Decrypt(conf.CONF_NM_EMISSOR_AZURE_CRIP);
+            String conn = CrossCutting.Cryptography.Decrypt(conf.CONF_CS_CONNECTION_STRING_AZURE_CRIP);
+
+            // Monta e-mail
+            NetworkCredential net = new NetworkCredential(conf.CONF_NM_SENDGRID_LOGIN, conf.CONF_NM_SENDGRID_PWD);
+            EmailAzure mensagem = new EmailAzure();
+            mensagem.ASSUNTO = "Paciente - " + paciente.PACI_NM_NOME + " - Solicitação de Exame";
+            mensagem.CORPO = emailBody;
+            mensagem.DEFAULT_CREDENTIALS = false;
+            mensagem.EMAIL_TO_DESTINO = paciente.PACI_NM_EMAIL;
+            mensagem.NOME_EMISSOR_AZURE = emissor;
+            mensagem.ENABLE_SSL = true;
+            mensagem.NOME_EMISSOR = usuario.USUA_NM_NOME;
+            mensagem.PORTA = conf.CONF_NM_PORTA_SMTP;
+            mensagem.PRIORIDADE = System.Net.Mail.MailPriority.High;
+            mensagem.SENHA_EMISSOR = conf.CONF_NM_SENDGRID_PWD;
+            mensagem.SMTP = conf.CONF_NM_HOST_SMTP;
+            mensagem.IS_HTML = true;
+            mensagem.NETWORK_CREDENTIAL = net;
+            mensagem.ConnectionString = conn;
+
+            // Envia mensagem
+            try
+            {
+                await CrossCutting.CommunicationAzurePackage.SendMailAsync(mensagem, models);
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Paciente";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Paciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return 0;
+            }
+
+            // Grava envio
+            if (status == "Succeeded")
+            {
+                vm.MENS_NM_NOME = "Paciente - " + paciente.PACI_NM_NOME + " - Solicitação de Exame";
+                vm.MENS_NM_CAMPANHA = paciente.PACI_NM_EMAIL;
+                vm.FORN_CD_ID = null;
+                vm.CLIE_CD_ID = null;
+                vm.PACI_CD_ID = paciente.PACI__CD_ID;
+                vm.MENS_IN_USUARIO = cont.USUA_CD_ID;
+                EnvioEMailGeralBase envio = new EnvioEMailGeralBase(usuApp, confApp, meApp);
+                Int32 voltaX = envio.GravarMensagemEnviada(vm, usuario, emailBody, status, iD, erro, "Paciente - Envio Solicitação");
+                Session["MensPaciente"] = 992;
+                Session["IdMail"] = iD;
+            }
+            else
+            {
+                Session["MensPaciente"] = 993;
+                Session["IdMail"] = iD;
+                Session["StatusMail"] = status;
+            }
+            return 0;
+        }
+
+        [ValidateInput(false)]
+        public Int32 ProcessaEnvioSMSDocumento(MensagemViewModel vm, USUARIO usuario, Int32 tipo, String guid, DateTime emissao)
+        {
+            try
+            {
+                // Recupera contatos
+#pragma warning disable CS0219 // A variável é atribuída, mas seu valor nunca é usado
+                String erro = null;
+#pragma warning restore CS0219 // A variável é atribuída, mas seu valor nunca é usado
+                Int32 idAss = (Int32)Session["IdAssinante"];
+                PACIENTE cont = baseApp.GetItemById(vm.PACI_CD_ID.Value);
+
+                // Prepara cabeçalho
+                String cab = "Prezado Sr(a). " + vm.NOME;
+
+                // Prepara rodape
+                String rod = usuario.USUA_NM_PREFIXO + " " + usuario.USUA_NM_NOME + " " + usuario.USUA_NM_SUFIXO;
+
+                // Carrega configuração
+                CONFIGURACAO conf = CarregaConfiguracaoGeral();
+
+                // Decriptografa chaves
+                String login = CrossCutting.Cryptography.Decrypt(conf.CONF_SG_LOGIN_SMS_CRIP);
+                String senha = CrossCutting.Cryptography.Decrypt(conf.CONF_SG_SENHA_SMS_CRIP);
+
+                // Monta token
+                String text = login + ":" + senha;
+                byte[] textBytes = Encoding.UTF8.GetBytes(text);
+                String token = Convert.ToBase64String(textBytes);
+                String auth = "Basic " + token;
+
+                // Prepara texto
+                String frase = String.Empty;
+                if (tipo == 1)
+                {
+                    frase = "O atestado, de código " + guid + ", emitido em " + emissao.ToShortDateString() + " foi enviado para o seu e-mail.";
+                }
+                if (tipo == 2)
+                {
+                    frase = "A solicitação de exame, de código " + guid + ", emitida em " + emissao.ToShortDateString() + " foi enviada para o seu e-mail.";
+                }
+                if (tipo == 3)
+                {
+                    frase = "A prescrição de medicamentos, de código " + guid + ", emitida em " + emissao.ToShortDateString() + " foi enviada para o seu e-mail.";
+                }
+                String texto = cab + ". " + frase + " " + rod;
+
+                // Prepara corpo do SMS e trata link
+                StringBuilder str = new StringBuilder();
+                str.AppendLine(texto);
+                String body = str.ToString();
+                String smsBody = body;
+
+                // inicia processo
+                String resposta = String.Empty;
+
+                // processa envio
+                String listaDest = "55" + Regex.Replace(vm.MODELO, "[^a-zA-Z0-9_.]+", "", RegexOptions.Compiled).ToString();
+                //var httpWebRequest = (HttpWebRequest)WebRequest.Create("https://api-v2.smsfire.com.br/sms/send/bulk");
+                //httpWebRequest.Headers["Authorization"] = auth;
+                //httpWebRequest.ContentType = "application/json";
+                //httpWebRequest.Method = "POST";
+                String customId = Cryptography.GenerateRandomPassword(8);
+                String data = String.Empty;
+                String json = String.Empty;
+
+                // Monta o JSON corretamente
+                var payload = new
+                {
+                    destinations = new[]
+                    {
+                        new {
+                            to = listaDest,
+                            text = smsBody,
+                            customId = customId,
+                            from = "WebDoctor"
+                        }
+    }
+                };
+                json = Newtonsoft.Json.JsonConvert.SerializeObject(payload);
+
+                // Prepara requisição
+                var httpWebRequest = (HttpWebRequest)WebRequest.Create("https://api-v2.smsfire.com.br/sms/send/bulk");
+                httpWebRequest.Method = "POST";
+                httpWebRequest.ContentType = "application/json";
+                httpWebRequest.Headers["Authorization"] = auth;
+
+                // Converte JSON em bytes e seta ContentLength
+                var dataBytes = Encoding.UTF8.GetBytes(json);
+                httpWebRequest.ContentLength = dataBytes.Length;
+
+                using (var requestStream = httpWebRequest.GetRequestStream())
+                {
+                    requestStream.Write(dataBytes, 0, dataBytes.Length);
+                }
+
+                // Lê resposta
+                using (var httpResponse = (HttpWebResponse)httpWebRequest.GetResponse())
+                using (var streamReader = new StreamReader(httpResponse.GetResponseStream()))
+                {
+                    resposta = streamReader.ReadToEnd();
+                }
+
+                // Grava envio
+                MENSAGENS_ENVIADAS_SISTEMA env = new MENSAGENS_ENVIADAS_SISTEMA();
+                env.ASSI_CD_ID = idAss;
+                env.USUA_CD_ID = usuario.USUA_CD_ID;
+                env.PACI_CD_ID = vm.PACI_CD_ID;
+                env.MEEN_IN_TIPO = 2;
+                env.EMPR_CD_ID = usuario.EMPR_CD_ID;
+                env.MEEN_DT_DATA_ENVIO = DateTime.Now;
+                env.MEEN_NR_CELULAR_DESTINO = cont.PACI_NR_CELULAR;
+                env.MEEN_NM_TITULO = "Mensagem SMS para Paciente - Aviso de Envio";
+                env.MEEN_TX_CORPO = frase;
+                env.MEEN_TX_CORPO_COMPLETO = texto;
+                env.MEEN_IN_ANEXOS = 0;
+                env.MEEN_IN_ATIVO = 1;
+                env.MEEN_IN_ESCOPO = 2;
+                env.MEEN_SG_STATUS = "Succeeded";
+                env.MEEN_NM_ORIGEM = "Contato de paciente : " + cont.PACI_NM_NOME;
+                env.MEEN_GU_ID_MENSAGEM = Guid.NewGuid().ToString();
+                env.MEEN_ID_IDENTIFICADOR = Xid.NewXid().ToString();
+                env.MEEN_IN_SISTEMA = 6;
+                env.MEEN_IN_ENTREGUE = 1;
+                Int32 volta5 = meApp.ValidateCreate(env);
+                return 0;
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Paciente";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Paciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                throw;
+            }
+        }
+
+        [HttpPost]
+        public ActionResult CancelarConsulta(Int32 id, String justificativa)
+        {
+            try
+            {
+                // Verifica se tem usuario logado
+                USUARIO usuario = new USUARIO();
+                if ((String)Session["Ativa"] == null)
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+                if ((USUARIO)Session["UserCredentials"] != null)
+                {
+                    usuario = (USUARIO)Session["UserCredentials"];
+
+                    // Verfifica permissão
+                    if (usuario.PERFIL.PERF_IN_PACIENTE_CONSULTA_ALTERAR == 0)
+                    {
+                        Session["MensPermissao"] = 2;
+                        Session["ModuloPermissao"] = "Paciente - Consulta - Cancelamento";
+                        return RedirectToAction("MontarTelaPaciente");
+                    }
+                }
+                else
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+                Int32 idAss = (Int32)Session["IdAssinante"];
+
+                // Processa cancelamento
+                CONFIGURACAO conf = CarregaConfiguracaoGeral();
+                USUARIO usuarioLogado = (USUARIO)Session["UserCredentials"];
+                PACIENTE_CONSULTA item = baseApp.GetConsultaById(id);
+                objetoAntes = (PACIENTE)Session["Paciente"];
+                item.PACO_IN_CONFIRMADA = 2;
+                item.PACO_TX_JUSTIFICATIVA_CANCELA = justificativa;
+                Int32 volta = baseApp.ValidateEditConsultaConfirma(item);
+
+                // Acerta estado
+                Session["PacienteAlterada"] = 1;
+                Session["NivelPaciente"] = 3;
+                Session["ListaConsultasGeral"] = null;
+                Session["ConsultasAlterada"] = 1;
+                Session["ListaConfirma"] = null;
+                Session["ListaConsultaAberta"] = null;
+
+                // Recupera paciente
+                PACIENTE pac = baseApp.GetItemById(item.PACI_CD_ID);
+
+                // Monta Log
+                LOG log = new LOG
+                {
+                    LOG_DT_DATA = DateTime.Now,
+                    ASSI_CD_ID = usuarioLogado.ASSI_CD_ID,
+                    USUA_CD_ID = usuarioLogado.USUA_CD_ID,
+                    LOG_NM_OPERACAO = "cacPACI",
+                    LOG_IN_ATIVO = 1,
+                    LOG_TX_REGISTRO = "Paciente: " + pac.PACI_NM_NOME + " | Data: " + item.PACO_DT_CONSULTA,
+                    LOG_IN_SISTEMA = 6
+                };
+                Int32 volta1 = logApp.ValidateCreate(log);
+
+                // Grava historico
+                PACIENTE_HISTORICO hist = new PACIENTE_HISTORICO();
+                hist.ASSI_CD_ID = usuario.ASSI_CD_ID;
+                hist.USUA_CD_ID = usuario.USUA_CD_ID;
+                hist.PACI_CD_ID = item.PACI_CD_ID;
+                hist.PAHI_DT_DATA = DateTime.Now;
+                hist.PAHI_IN_TIPO = 10;
+                hist.PAHI_IN_CHAVE = item.PACO_CD_ID;
+                hist.PAHI_NM_OPERACAO = "Paciente - Cancelamento de Consulta";
+                hist.PAHI_DS_DESCRICAO = "Paciente " + pac.PACI_NM_NOME + " - Consulta cancelada " + item.PACO_DT_CONSULTA.ToShortDateString() + " - Justificativa: " + justificativa;
+                Int32 voltaHist = baseApp.ValidateCreateHistorico(hist);
+
+                // Mensagem do CRUD
+                Session["MsgCRUD"] = "A consulta do(a) paciente " + pac.PACI_NM_NOME.ToUpper() + " marcada para " + item.PACO_DT_CONSULTA.ToLongDateString() + " foi cancelada com sucesso";
+                Session["MensPaciente"] = 888;
+
+                // Envia mensagem
+                if (pac.PACI_NM_EMAIL != null)
+                {
+                    Int32 voltaCons = EnviarEMailConsultaEspecial(item, 4);
+                }
+                if (pac.PACI_NR_CELULAR != null)
+                {
+                    Int32 voltaCons = EnviarEMailConsultaEspecial(item, 4);
+                }
+                if (usuario.USUA_NM_EMAIL != null)
+                {
+                    Int32 voltaCons = EnviarEMailConsultaEspecial(item, 7);
+                }
+
+                // Retorno
+                Session["ListaConsultasGeral"] = null;
+                Session["ConsultasAlterada"] = 1;
+                Session["Consultas"] = null;
+                if ((Int32)Session["TipoSolicitacao"] == 1)
+                {
+                    if ((Int32)Session["VoltaAtestado"] == 1)
+                    {
+                        return RedirectToAction("MontarTelaPaciente", "Paciente");
+                    }
+                    return RedirectToAction("VoltarAnexoPaciente");
+                }
+                if ((Int32)Session["VoltaTelaEncerra"] == 1)
+                {
+                    return RedirectToAction("MontarTelaEncerrarConsulta", "Financeiro");
+                }
+                if ((Int32)Session["VoltaConfirmar"] == 1)
+                {
+                    return RedirectToAction("ConfirmarCancelarConsulta", "Paciente");
+                }
+                if ((Int32)Session["VoltaCalendario"] == 1)
+                {
+                    return RedirectToAction("VerCalendarioConsulta");
+                }
+                return RedirectToAction("MontarTelaConsultas", "Paciente");
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Paciente";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Paciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return RedirectToAction("TrataExcecao", "BaseAdmin");
+            }
+        }
+
+        public Int32 EnviarEMailConsultaEspecial(PACIENTE_CONSULTA consulta, Int32 tipo)
+        {
+            // Recupera informações
+            Int32 idAss = (Int32)Session["IdAssinante"];
+            USUARIO usuario = (USUARIO)Session["UserCredentials"];
+            PACIENTE paciente = baseApp.GetItemById(consulta.PACI_CD_ID);
+
+            // Processo
+            try
+            {
+                // Recupera Template
+                TEMPLATE_EMAIL template = null;
+                if (tipo == 1)
+                {
+                    template = temApp.GetByCode("CRIACONS", idAss);
+                }
+                else if (tipo == 2)
+                {
+                    template = temApp.GetByCode("ALTCONS", idAss);
+                }
+                else if (tipo == 3)
+                {
+                    template = temApp.GetByCode("CONFCONS", idAss);
+                }
+                else if (tipo == 4)
+                {
+                    template = temApp.GetByCode("CANCCONS", idAss);
+                }
+                else if (tipo == 5)
+                {
+                    template = temApp.GetByCode("CRMEDCONS", idAss);
+                }
+                else if (tipo == 6)
+                {
+                    template = temApp.GetByCode("CFMEDCONS", idAss);
+                }
+                else if (tipo == 7)
+                {
+                    template = temApp.GetByCode("CCMEDCONS", idAss);
+                }
+
+                // Prepara cabeçalho
+                String cab = template.TEEM_TX_CABECALHO;
+                String cor = template.TEEM_TX_CORPO;
+                if (tipo < 5)
+                {
+                    if (cab.Contains("{nome}"))
+                    {
+                        cab = cab.Replace("{nome}", paciente.PACI_NM_NOME);
+                    }
+                }
+                else
+                {
+                    if (cab.Contains("{medico}"))
+                    {
+                        cab = cab.Replace("{medico}", usuario.USUA_NM_NOME);
+                    }
+                }
+
+                // Prepara assinatura
+                String assinatura = String.Empty;
+                if (tipo < 5)
+                {
+                    String classe = String.Empty;
+                    if (usuario.TIPO_CARTEIRA_CLASSE != null)
+                    {
+                        classe = usuario.TIPO_CARTEIRA_CLASSE.TICL_NM_NOME + ": " + usuario.USUA_NR_CLASSE;
+                    }
+                    assinatura = "<b>" + usuario.USUA_NM_NOME + "</b><br />";
+                    if (usuario.ESPECIALIDADE != null)
+                    {
+                        assinatura += usuario.ESPECIALIDADE.ESPE_NM_NOME + "<br />";
+                    }
+                    else
+                    {
+                        assinatura += usuario.USUA_NM_ESPECIALIDADE + "<br />";
+                    }
+                    assinatura += classe + "  CPF: " + usuario.USUA_NR_CPF + "<br />";
+                }
+                else
+                {
+                    assinatura = "Enviado por <b>WebDoctor</b><br />";
+                }
+
+                // Prepara corpo da mensagem
+                String texto = template.TEEM_TX_CORPO;
+                if (texto.Contains("{medico}"))
+                {
+                    texto = texto.Replace("{medico}", usuario.USUA_NM_NOME);
+                }
+                if (texto.Contains("{nome}"))
+                {
+                    texto = texto.Replace("{nome}", paciente.PACI_NM_NOME);
+                }
+                if (texto.Contains("{data}"))
+                {
+                    texto = texto.Replace("{data}", consulta.PACO_DT_CONSULTA.ToLongDateString());
+                }
+                if (texto.Contains("{inicio}"))
+                {
+                    texto = texto.Replace("{inicio}", consulta.PACO_HR_INICIO.ToString());
+                }
+                if (texto.Contains("{final}"))
+                {
+                    texto = texto.Replace("{final}", consulta.PACO_HR_FINAL.ToString());
+                }
+                if (texto.Contains("{paciente}"))
+                {
+                    texto = texto.Replace("{paciente}", paciente.PACI_NM_NOME);
+                }
+                if (texto.Contains("{justificativa}"))
+                {
+                    texto = texto.Replace("{justificativa}", consulta.PACO_TX_JUSTIFICATIVA_CANCELA);
+                }
+                String emailBody = cab + "<br />" + texto + "<br /><br />" + assinatura;
+
+                // Monta recursividade
+                RECURSIVIDADE rec = new RECURSIVIDADE();
+                rec.ASSI_CD_ID = idAss;
+                rec.MENS_CD_ID = null;
+                rec.EMPR_CD_ID = usuario.EMPR_CD_ID;
+                rec.RECU_IN_TIPO_MENSAGEM = 1;
+                rec.RECU_DT_CRIACAO = DateTime.Today.Date;
+                rec.RECU_IN_TIPO_SMS = 0;
+                if (tipo < 5)
+                {
+                    rec.RECU_NM_NOME = "Envio de Mensagem para Paciente - " + paciente.PACI_NM_NOME + " - " + DateTime.Now.ToString();
+                }
+                else
+                {
+                    rec.RECU_NM_NOME = "Envio de Mensagem para Médico - " + usuario.USUA_NM_NOME + " - " + DateTime.Now.ToString();
+                }
+                rec.RECU_LK_LINK = null;
+                rec.RECU_IN_SISTEMA = 6;
+                rec.EMFI_CD_ID = usuario.EMFI_CD_ID;
+                rec.RECU_IN_TIPO_ENVIO = 5;
+                rec.RECU_TX_TEXTO = emailBody;
+                rec.RECU_IN_ATIVO = 1;
+
+                // Monta destinos
+                RECURSIVIDADE_DESTINO dest1 = new RECURSIVIDADE_DESTINO();
+                dest1.FORN_CD_ID = null;
+                dest1.CLIE_CD_ID = null;
+                if (tipo < 5)
+                {
+                    dest1.REDE_EM_EMAIL = paciente.PACI_NM_EMAIL;
+                    dest1.REDE_NM_NOME = paciente.PACI_NM_NOME;
+                }
+                else
+                {
+                    dest1.REDE_EM_EMAIL = usuario.USUA_NM_EMAIL;
+                    dest1.REDE_NM_NOME = usuario.USUA_NM_NOME;
+                }
+                dest1.REDE_TX_CORPO = emailBody;
+                dest1.REDE_IN_ATIVO = 1;
+                dest1.PACI_CD_ID = paciente.PACI__CD_ID;
+                dest1.ASSI_CD_ID = idAss;
+                dest1.USUA_CD_ID = usuario.USUA_CD_ID;
+                rec.RECURSIVIDADE_DESTINO.Add(dest1);
+
+                // Monta Datas
+                RECURSIVIDADE_DATA data1 = new RECURSIVIDADE_DATA();
+                data1.REDA_DT_PROGRAMADA = DateTime.Now.AddMinutes(10);
+                data1.REDA_IN_PROCESSADA = 0;
+                data1.REDA_IN_ATIVO = 1;
+                data1.ASSI_CD_ID = idAss;
+                data1.REDA_IN_SISTEMA = 6;
+                rec.RECURSIVIDADE_DATA.Add(data1);
+
+                // Grava recursividade
+                Int32 voltaRec = recuApp.ValidateCreate(rec, usuario);
+
+                // Grava mensagem enviada
+                MensagemViewModel mens = new MensagemViewModel();
+                mens.NOME = paciente.PACI_NM_NOME;
+                mens.ID = paciente.PACI__CD_ID;
+                if (tipo < 5)
+                {
+                    mens.MODELO = paciente.PACI_NM_EMAIL;
+                    mens.MENS_DT_CRIACAO = DateTime.Today.Date;
+                    mens.MENS_IN_TIPO = 1;
+                    mens.MENS_NM_CAMPANHA = paciente.PACI_NM_EMAIL;
+                    mens.MENS_NM_NOME = "Mensagem para Paciente - Consulta: " + paciente.PACI_NM_NOME;
+                    mens.PACI_CD_ID = paciente.PACI__CD_ID;
+                }
+                else
+                {
+                    mens.MODELO = usuario.USUA_NM_EMAIL;
+                    mens.MENS_DT_CRIACAO = DateTime.Today.Date;
+                    mens.MENS_IN_TIPO = 1;
+                    mens.MENS_NM_CAMPANHA = usuario.USUA_NM_EMAIL;
+                    mens.MENS_NM_NOME = "Mensagem para Médico - Consulta: " + usuario.USUA_NM_NOME;
+                    mens.PACI_CD_ID = null;
+                }
+                mens.MENS_TX_TEXTO = emailBody;
+
+                EnvioEMailGeralBase envio = new EnvioEMailGeralBase(usuApp, confApp, meApp);
+                String guid = Xid.NewXid().ToString();
+                Int32 volta1 = envio.GravarMensagemEnviada(mens, usuario, mens.MENS_TX_TEXTO, "Succeeded", guid, null, "Confirmação de Consulta de Paciente - " + paciente.PACI_NM_NOME);
+
+                // Monta Log
+                LOG log = new LOG
+                {
+                    LOG_DT_DATA = DateTime.Now,
+                    ASSI_CD_ID = usuario.ASSI_CD_ID,
+                    USUA_CD_ID = usuario.USUA_CD_ID,
+                    LOG_NM_OPERACAO = "emaCONS",
+                    LOG_IN_ATIVO = 1,
+                    LOG_TX_REGISTRO = paciente.PACI_NM_NOME + " | Data:" + DateTime.Today.Date.ToShortDateString(),
+                    LOG_IN_SISTEMA = 6
+                };
+                Int32 volta3 = logApp.ValidateCreate(log);
+
+                // Sucesso
+                return 1;
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Paciente";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Paciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return 1;
+            }
+        }
+
+        public Int32 EnviarSMSConsultaEspecial(PACIENTE_CONSULTA consulta, Int32 tipo)
+        {
+            // Recupera informações
+            Int32 idAss = (Int32)Session["IdAssinante"];
+            USUARIO usuario = (USUARIO)Session["UserCredentials"];
+            //PACIENTE paciente = (PACIENTE)Session["PacienteConsulta"];
+            PACIENTE paciente = baseApp.GetItemById(consulta.PACI_CD_ID);
+
+            // Processo
+            try
+            {
+                // Recupera Template
+                TEMPLATE_SMS template = null;
+                if (tipo == 1)
+                {
+                    template = smsApp.GetByCode("CRIACONS", idAss);
+                }
+                else if (tipo == 2)
+                {
+                    template = smsApp.GetByCode("ALTCONS", idAss);
+                }
+                else if (tipo == 3)
+                {
+                    template = smsApp.GetByCode("CONFCONS", idAss);
+                }
+                else if (tipo == 4)
+                {
+                    template = smsApp.GetByCode("CANCCONS", idAss);
+                }
+
+                // Prepara assinatura
+                String classe = String.Empty;
+                if (usuario.TIPO_CARTEIRA_CLASSE != null)
+                {
+                    classe = usuario.TIPO_CARTEIRA_CLASSE.TICL_NM_NOME + ": " + usuario.USUA_NR_CLASSE;
+                }
+                String assinatura = usuario.USUA_NM_NOME + " - ";
+                assinatura += usuario.USUA_NM_ESPECIALIDADE + " - ";
+                assinatura += classe + " - CPF: " + usuario.USUA_NR_CPF;
+
+                // Prepara corpo da mensagem
+                String texto = template.TSMS_TX_CORPO;
+                if (texto.Contains("{nome}"))
+                {
+                    texto = texto.Replace("{nome}", paciente.PACI_NM_NOME);
+                }
+                if (texto.Contains("{medico}"))
+                {
+                    texto = texto.Replace("{medico}", usuario.USUA_NM_NOME);
+                }
+                if (texto.Contains("{data}"))
+                {
+                    texto = texto.Replace("{data}", consulta.PACO_DT_CONSULTA.ToLongDateString());
+                }
+                if (texto.Contains("{inicio}"))
+                {
+                    texto = texto.Replace("{inicio}", consulta.PACO_HR_INICIO.ToString());
+                }
+                if (texto.Contains("{classe}"))
+                {
+                    texto = texto.Replace("{classe}", assinatura);
+                }
+                String smsBody = texto + ".";
+
+                // Carraga configuracao
+                CONFIGURACAO conf = CarregaConfiguracaoGeral();
+
+                // Decriptografa chaves
+                String login = CrossCutting.Cryptography.Decrypt(conf.CONF_SG_LOGIN_SMS_CRIP);
+                String senha = CrossCutting.Cryptography.Decrypt(conf.CONF_SG_SENHA_SMS_CRIP);
+
+                // Monta token
+                String text = login + ":" + senha;
+                byte[] textBytes = Encoding.UTF8.GetBytes(text);
+                String token = Convert.ToBase64String(textBytes);
+                String auth = "Basic " + token;
+
+                // inicia processo
+                String resposta = String.Empty;
+
+                // processa envio
+                String listaDest = "55" + Regex.Replace(paciente.PACI_NR_CELULAR, "[^a-zA-Z0-9_.]+", "", RegexOptions.Compiled).ToString();
+                //var httpWebRequest = (HttpWebRequest)WebRequest.Create("https://api-v2.smsfire.com.br/sms/send/bulk");
+                //httpWebRequest.Headers["Authorization"] = auth;
+                //httpWebRequest.ContentType = "application/json";
+                //httpWebRequest.Method = "POST";
+                String customId = Cryptography.GenerateRandomPassword(8);
+                String data = String.Empty;
+                String json = String.Empty;
+
+                // Monta o JSON corretamente
+                var payload = new
+                {
+                    destinations = new[]
+                    {
+                        new {
+                            to = listaDest,
+                            text = smsBody,
+                            customId = customId,
+                            from = "WebDoctor"
+                        }
+    }
+                };
+                json = Newtonsoft.Json.JsonConvert.SerializeObject(payload);
+
+                // Prepara requisição
+                var httpWebRequest = (HttpWebRequest)WebRequest.Create("https://api-v2.smsfire.com.br/sms/send/bulk");
+                httpWebRequest.Method = "POST";
+                httpWebRequest.ContentType = "application/json";
+                httpWebRequest.Headers["Authorization"] = auth;
+
+                // Converte JSON em bytes e seta ContentLength
+                var dataBytes = Encoding.UTF8.GetBytes(json);
+                httpWebRequest.ContentLength = dataBytes.Length;
+
+                using (var requestStream = httpWebRequest.GetRequestStream())
+                {
+                    requestStream.Write(dataBytes, 0, dataBytes.Length);
+                }
+
+                // Lê resposta
+                using (var httpResponse = (HttpWebResponse)httpWebRequest.GetResponse())
+                using (var streamReader = new StreamReader(httpResponse.GetResponseStream()))
+                {
+                    resposta = streamReader.ReadToEnd();
+                }
+
+                //using (var streamWriter = new StreamWriter(httpWebRequest.GetRequestStream()))
+                //{
+                //    json = String.Concat("{\"destinations\": [{\"to\": \"", listaDest, "\", \"text\": \"", texto, "\", \"customId\": \"" + customId + "\", \"from\": \"WebDoctor\"}]}");
+                //    streamWriter.Write(json);
+                //}
+                //var httpResponse = (HttpWebResponse)httpWebRequest.GetResponse();
+                //using (var streamReader = new StreamReader(httpResponse.GetResponseStream()))
+                //{
+                //    var result = streamReader.ReadToEnd();
+                //    resposta = result;
+                //}
+
+                // Grava mensagem enviada
+                MensagemViewModel mens = new MensagemViewModel();
+                mens.NOME = paciente.PACI_NM_NOME;
+                mens.ID = paciente.PACI__CD_ID;
+                mens.MODELO = paciente.PACI_NM_EMAIL;
+                mens.MENS_DT_CRIACAO = DateTime.Today.Date;
+                mens.MENS_IN_TIPO = 2;
+                mens.MENS_NM_CAMPANHA = paciente.PACI_NM_EMAIL;
+                mens.MENS_NM_NOME = "Mensagem SMS para Paciente - Consulta: " + paciente.PACI_NM_NOME;
+                mens.PACI_CD_ID = paciente.PACI__CD_ID;
+                mens.MENS_TX_TEXTO = smsBody;
+
+                EnvioEMailGeralBase envio = new EnvioEMailGeralBase(usuApp, confApp, meApp);
+                String guid = Xid.NewXid().ToString();
+                Int32 volta1 = envio.GravarMensagemEnviada(mens, usuario, mens.MENS_TX_TEXTO, "Succeeded", guid, null, "Confirmação de Consulta de Paciente - SMS - " + paciente.PACI_NM_NOME);
+
+                // Monta Log
+                LOG log = new LOG
+                {
+                    LOG_DT_DATA = DateTime.Now,
+                    ASSI_CD_ID = usuario.ASSI_CD_ID,
+                    USUA_CD_ID = usuario.USUA_CD_ID,
+                    LOG_NM_OPERACAO = "smsCONS",
+                    LOG_IN_ATIVO = 1,
+                    LOG_TX_REGISTRO = paciente.PACI_NM_NOME + " | Data:" + DateTime.Today.Date.ToShortDateString(),
+                    LOG_IN_SISTEMA = 6
+                };
+                Int32 volta3 = logApp.ValidateCreate(log);
+
+                // Sucesso
+                Session["NivelPaciente"] = 1;
+                return 1;
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Paciente";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Paciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return 1;
+            }
+        }
+
+        public ActionResult VoltarEditarUltimaAnamneseSono()
+        {
+            if ((String)Session["Ativa"] == null)
+            {
+                return RedirectToAction("Logout", "ControleAcesso");
+            }
+            return RedirectToAction("EditarAnamneseNovaSono", new { id = (Int32)Session["IdUltimaAnamnese"] });
+        }
+
+        public ActionResult VerAnamneseCompletaChamadaSono()
+        {
+            if ((String)Session["Ativa"] == null)
+            {
+                return RedirectToAction("Logout", "ControleAcesso");
+            }
+            return RedirectToAction("VerAnamneseCompletaSono", new { id = (Int32)Session["IdAnamneseConsulta"] });
+        }
+
+        public ActionResult VerAnamneseCompletaChamadaEditSono()
+        {
+            if ((String)Session["Ativa"] == null)
+            {
+                return RedirectToAction("Logout", "ControleAcesso");
+            }
+
+            PACIENTE pac = baseApp.GetItemById((Int32)Session["IdPaciente"]);
+            PACIENTE_ANAMNESE ana = pac.PACIENTE_ANAMNESE.OrderByDescending(p => p.PAAM_DT_DATA).ToList().FirstOrDefault();
+            return RedirectToAction("VerAnamneseCompletaSono", new { id = ana.PAAM_CD_ID });
+        }
+
+        public ActionResult VoltarVerUltimaAnamneseSono()
+        {
+            if ((String)Session["Ativa"] == null)
+            {
+                return RedirectToAction("Logout", "ControleAcesso");
+            }
+            return RedirectToAction("VerAnamneseSono", new { id = (Int32)Session["IdUltimaAnamnese"] });
+        }
+
+        [HttpGet]
+        public ActionResult EditarAnamneseNovaSono(Int32 id)
+        {
+            try
+            {
+                // Verifica se tem usuario logado
+                USUARIO usuario = new USUARIO();
+                if ((String)Session["Ativa"] == null)
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+                if ((USUARIO)Session["UserCredentials"] != null)
+                {
+                    usuario = (USUARIO)Session["UserCredentials"];
+
+                    // Verfifica permissão
+                    if (usuario.PERFIL.PERF_IN_ATESTADO_ALTERAR == 0)
+                    {
+                        Session["MensPermissao"] = 2;
+                        Session["ModuloPermissao"] = "Paciente - Anamnese - Edição";
+                        return RedirectToAction("VoltarAnexoPaciente");
+                    }
+                }
+                else
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+                Int32 idAss = (Int32)Session["IdAssinante"];
+
+                // Prepara estado
+                Session["NivelPaciente"] = 4;
+                Session["AjudaNivel"] = "../BaseAdmin/Ajuda/3/Ajuda3_7.pdf";
+
+                // Recupera anamnese
+                PACIENTE_ANAMNESE item = baseApp.GetAnamneseById(id);
+                objetoAntes = (PACIENTE)Session["Paciente"];
+                Session["Anamnese"] = item;
+                Session["IdAnamnese"] = item.PAAM_CD_ID;
+                Session["VoltaAnotacaoAnamnese"] = 2;
+
+                // Prepara a view
+                List<SelectListItem> sim = new List<SelectListItem>();
+                sim.Add(new SelectListItem() { Text = "Sim", Value = "1" });
+                sim.Add(new SelectListItem() { Text = "Não", Value = "0" });
+                ViewBag.SimNao = new SelectList(sim, "Value", "Text");
+                List<SelectListItem> tipo = new List<SelectListItem>();
+                tipo.Add(new SelectListItem() { Text = "Nasal", Value = "1" });
+                tipo.Add(new SelectListItem() { Text = "Oronasal", Value = "2" });
+                tipo.Add(new SelectListItem() { Text = "Mista", Value = "3" });
+                ViewBag.TipoRespiracao = new SelectList(tipo, "Value", "Text");
+                List<SelectListItem> sono = new List<SelectListItem>();
+                sono.Add(new SelectListItem() { Text = "Sim", Value = "1" });
+                sono.Add(new SelectListItem() { Text = "Não", Value = "0" });
+                sono.Add(new SelectListItem() { Text = "Esporadicamente", Value = "2" });
+                ViewBag.Sonolencia = new SelectList(sono, "Value", "Text");
+
+                PacienteAnamneseViewModel vm = Mapper.Map<PACIENTE_ANAMNESE, PacienteAnamneseViewModel>(item);
+                vm.PAAM_DT_DATA = item.PAAM_DT_DATA;
+                vm.PACO_CD_ID = item.PACO_CD_ID;
+                vm.PAAM_DS_CAMPO_1_OLD = item.PAAM_DS_CAMPO_1;
+                vm.PAAM_DS_CAMPO_2_OLD = item.PAAM_DS_CAMPO_2;
+                vm.PAAM_DS_CAMPO_3_OLD = item.PAAM_DS_CAMPO_3;
+                vm.PAAM_DS_CAMPO_4_OLD = item.PAAM_DS_CAMPO_4;
+                vm.PAAM_DS_CAMPO_5_OLD = item.PAAM_DS_CAMPO_5;
+                vm.PAAM_DS_CAMPO_6_OLD = item.PAAM_DS_CAMPO_6;
+                vm.PAAM_DS_CAMPO_7_OLD = item.PAAM_DS_CAMPO_7;
+                vm.PAAM_DS_CAMPO_8_OLD = item.PAAM_DS_CAMPO_8;
+                vm.PAAM_DS_CAMPO_9_OLD = item.PAAM_DS_CAMPO_9;
+                vm.PAAM_DS_CAMPO_10_OLD = item.PAAM_DS_CAMPO_10;
+
+                vm.PAAM_DS_SONO_PRINCIPAL_QUEIXA_OLD = item.PAAM_DS_SONO_PRINCIPAL_QUEIXA;
+                vm.PAAM_DS_SONO_SINTOMAS_OLD = item.PAAM_DS_SONO_SINTOMAS;
+                vm.PAAM_DS_SONO_DURACAO_OLD = item.PAAM_DS_SONO_DURACAO;
+                vm.PAAM_DS_SONO_ULTIMO_ALCOOL_OLD = item.PAAM_DS_SONO_ULTIMO_ALCOOL;
+                vm.PAAM_DS_SONO_EXERCICIO_FREQ_OLD = item.PAAM_DS_SONO_EXERCICIO_FREQ;
+                vm.PAAM_DS_SONO_QUANTAS_DESPERTA_OLD = item.PAAM_DS_SONO_QUANTAS_DESPERTA;
+                vm.PAAM_DS_SONO_MOTIVOS_DESPERTA_OLD = item.PAAM_DS_SONO_MOTIVOS_DESPERTA;
+                vm.PAAM_DS_SONO_TEMPO_PEGAR_SONO_OLD = item.PAAM_DS_SONO_TEMPO_PEGAR_SONO;
+                vm.PAAM_DS_SONO_URINA_NOITE_OLD = item.PAAM_DS_SONO_URINA_NOITE;
+                vm.PAAM_DS_SONO_POSICAO_DORMIR_OLD = item.PAAM_DS_SONO_POSICAO_DORMIR;
+                vm.PAAM_DS_SONO_ATIVIDADES_OLD = item.PAAM_DS_SONO_ATIVIDADES;
+                vm.PAAM_DS_SONO_MEDICAMENTOS_OLD = item.PAAM_DS_SONO_MEDICAMENTOS;
+                vm.PAAM_DS_SONO_COMORBIDADES_OLD = item.PAAM_DS_SONO_COMORBIDADES;
+                vm.PAAM_DS_SONO_CIRURGIAS_OLD = item.PAAM_DS_SONO_CIRURGIAS;
+                vm.PAAM_DS_SONO_MALLAMPATI_OLD = item.PAAM_DS_SONO_MALLAMPATI;
+                vm.PAAM_DS_SONO_OVERLAP_OLD = item.PAAM_DS_SONO_OVERLAP;
+                vm.PAAM_DS_SONO_PATOLOGIAS_OLD = item.PAAM_DS_SONO_PATOLOGIAS;
+                vm.PAAM_TX_TEXTO_LIVRE_OLD = item.PAAM_TX_TEXTO_LIVRE;
+                vm.PAAM_DS_SONO_HORARIO_REGULAR_NOVO_OLD = item.PAAM_DS_SONO_HORARIO_REGULAR_NOVO;
+                vm.PAAM_DS_SONO_LATENCIA_NOVO_OLD = item.PAAM_DS_SONO_LATENCIA_NOVO;
+                vm.PAAM_DS_SONO_POLISONO_OLD = item.PAAM_DS_SONO_POLISONO;
+
+                vm.PAAM_DS_CAMPO_1 = String.Empty;
+                vm.PAAM_DS_CAMPO_2 = String.Empty;
+                vm.PAAM_DS_CAMPO_3 = String.Empty;
+                vm.PAAM_DS_CAMPO_4 = String.Empty;
+                vm.PAAM_DS_CAMPO_5 = String.Empty;
+                vm.PAAM_DS_CAMPO_6 = String.Empty;
+                vm.PAAM_DS_CAMPO_7 = String.Empty;
+                vm.PAAM_DS_CAMPO_8 = String.Empty;
+                vm.PAAM_DS_CAMPO_9 = String.Empty;
+                vm.PAAM_DS_CAMPO_10 = String.Empty;
+
+                vm.PAAM_DS_SONO_PRINCIPAL_QUEIXA = String.Empty;
+                vm.PAAM_DS_SONO_SINTOMAS = String.Empty;
+                vm.PAAM_DS_SONO_DURACAO = String.Empty;
+                vm.PAAM_DS_SONO_ULTIMO_ALCOOL = String.Empty;
+                vm.PAAM_DS_SONO_EXERCICIO_FREQ = String.Empty;
+                vm.PAAM_DS_SONO_QUANTAS_DESPERTA = String.Empty;
+                vm.PAAM_DS_SONO_MOTIVOS_DESPERTA = String.Empty;
+                vm.PAAM_DS_SONO_TEMPO_PEGAR_SONO = String.Empty;
+                vm.PAAM_DS_SONO_URINA_NOITE = String.Empty;
+                vm.PAAM_DS_SONO_POSICAO_DORMIR = String.Empty;
+                vm.PAAM_DS_SONO_ATIVIDADES = String.Empty;
+                vm.PAAM_DS_SONO_MEDICAMENTOS = String.Empty;
+                vm.PAAM_DS_SONO_COMORBIDADES = String.Empty;
+                vm.PAAM_DS_SONO_CIRURGIAS = String.Empty;
+                vm.PAAM_DS_SONO_MALLAMPATI = String.Empty;
+                vm.PAAM_DS_SONO_OVERLAP = String.Empty;
+                vm.PAAM_TX_TEXTO_LIVRE = String.Empty;
+                vm.PAAM_DS_SONO_POLISONO = String.Empty;
+                vm.PAAM_DS_SONO_PATOLOGIAS = String.Empty;
+
+                ViewBag.Campo1 = item.PAAM_NM_CAMPO_1;
+                ViewBag.Campo2 = item.PAAM_NM_CAMPO_2;
+                ViewBag.Campo3 = item.PAAM_NM_CAMPO_3;
+                ViewBag.Campo4 = item.PAAM_NM_CAMPO_4;
+                ViewBag.Campo5 = item.PAAM_NM_CAMPO_5;
+                ViewBag.Campo6 = item.PAAM_NM_CAMPO_6;
+                ViewBag.Campo7 = item.PAAM_NM_CAMPO_7;
+                ViewBag.Campo8 = item.PAAM_NM_CAMPO_8;
+                ViewBag.Campo9 = item.PAAM_NM_CAMPO_9;
+                ViewBag.Campo10 = item.PAAM_NM_CAMPO_10;
+
+                // Grava Acesso
+                ControleAcessoMetodo grava = new ControleAcessoMetodo(aceApp);
+                Int32 voltaX = grava.GravaAcesso(usuario.USUA_CD_ID, usuario.ASSI_CD_ID, "PACIENTE_ANAMNESE_EDITAR", "Paciente", "EditarAnamneseNovaSono");
+                return View(vm);
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Paciente";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Paciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return RedirectToAction("TrataExcecao", "BaseAdmin");
+            }
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [ValidateInput(false)]
+        public ActionResult EditarAnamneseNovaSono(PacienteAnamneseViewModel vm)
+        {
+            if ((String)Session["Ativa"] == null)
+            {
+                return RedirectToAction("Logout", "ControleAcesso");
+            }
+            USUARIO usuarioLogado = (USUARIO)Session["UserCredentials"];
+            List<SelectListItem> sim = new List<SelectListItem>();
+            sim.Add(new SelectListItem() { Text = "Sim", Value = "1" });
+            sim.Add(new SelectListItem() { Text = "Não", Value = "0" });
+            ViewBag.SimNao = new SelectList(sim, "Value", "Text");
+            List<SelectListItem> tipo = new List<SelectListItem>();
+            tipo.Add(new SelectListItem() { Text = "Nasal", Value = "1" });
+            tipo.Add(new SelectListItem() { Text = "Oronasal", Value = "2" });
+            tipo.Add(new SelectListItem() { Text = "Mista", Value = "3" });
+            ViewBag.TipoRespiracao = new SelectList(tipo, "Value", "Text");
+            List<SelectListItem> sono = new List<SelectListItem>();
+            sono.Add(new SelectListItem() { Text = "Sim", Value = "1" });
+            sono.Add(new SelectListItem() { Text = "Não", Value = "0" });
+            sono.Add(new SelectListItem() { Text = "Esporadicamente", Value = "2" });
+            ViewBag.Sonolencia = new SelectList(sono, "Value", "Text");
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    // Sanitização
+                    vm.PAAM_DS_SONO_PRINCIPAL_QUEIXA = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(vm.PAAM_DS_SONO_PRINCIPAL_QUEIXA);
+                    vm.PAAM_DS_SONO_SINTOMAS = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(vm.PAAM_DS_SONO_SINTOMAS);
+                    vm.PAAM_DS_SONO_DURACAO = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(vm.PAAM_DS_SONO_DURACAO);
+                    vm.PAAM_DS_SONO_ULTIMO_ALCOOL = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(vm.PAAM_DS_SONO_ULTIMO_ALCOOL);
+                    vm.PAAM_DS_SONO_EXERCICIO_FREQ = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(vm.PAAM_DS_SONO_EXERCICIO_FREQ);
+                    vm.PAAM_DS_SONO_QUANTAS_DESPERTA = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(vm.PAAM_DS_SONO_QUANTAS_DESPERTA);
+                    vm.PAAM_DS_SONO_MOTIVOS_DESPERTA = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(vm.PAAM_DS_SONO_MOTIVOS_DESPERTA);
+                    vm.PAAM_DS_SONO_TEMPO_PEGAR_SONO = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(vm.PAAM_DS_SONO_TEMPO_PEGAR_SONO);
+                    vm.PAAM_DS_SONO_URINA_NOITE = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(vm.PAAM_DS_SONO_URINA_NOITE);
+                    vm.PAAM_DS_SONO_POSICAO_DORMIR = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(vm.PAAM_DS_SONO_POSICAO_DORMIR);
+                    vm.PAAM_DS_SONO_ATIVIDADES = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(vm.PAAM_DS_SONO_ATIVIDADES);
+                    vm.PAAM_DS_SONO_MEDICAMENTOS = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(vm.PAAM_DS_SONO_MEDICAMENTOS);
+                    vm.PAAM_DS_SONO_COMORBIDADES = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(vm.PAAM_DS_SONO_COMORBIDADES);
+                    vm.PAAM_DS_SONO_CIRURGIAS = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(vm.PAAM_DS_SONO_CIRURGIAS);
+                    vm.PAAM_DS_SONO_MALLAMPATI = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(vm.PAAM_DS_SONO_MALLAMPATI);
+                    vm.PAAM_DS_SONO_OVERLAP = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(vm.PAAM_DS_SONO_OVERLAP);
+                    vm.PAAM_TX_TEXTO_LIVRE = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(vm.PAAM_TX_TEXTO_LIVRE);
+
+                    vm.PAAM_DS_CAMPO_1 = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(vm.PAAM_DS_CAMPO_1);
+                    vm.PAAM_DS_CAMPO_2 = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(vm.PAAM_DS_CAMPO_2);
+                    vm.PAAM_DS_CAMPO_3 = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(vm.PAAM_DS_CAMPO_3);
+                    vm.PAAM_DS_CAMPO_4 = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(vm.PAAM_DS_CAMPO_4);
+                    vm.PAAM_DS_CAMPO_5 = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(vm.PAAM_DS_CAMPO_5);
+                    vm.PAAM_DS_CAMPO_6 = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(vm.PAAM_DS_CAMPO_6);
+                    vm.PAAM_DS_CAMPO_7 = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(vm.PAAM_DS_CAMPO_7);
+                    vm.PAAM_DS_CAMPO_8 = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(vm.PAAM_DS_CAMPO_8);
+                    vm.PAAM_DS_CAMPO_9 = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(vm.PAAM_DS_CAMPO_9);
+                    vm.PAAM_DS_CAMPO_10 = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(vm.PAAM_DS_CAMPO_10);
+                    vm.PAAM_IN_FLAG__HISTORIA_FAMILIAR = 1;
+
+                    // Prepara data
+                    String dataHoje = DateTime.Today.Date.ToLongDateString();
+                    if ((Int32)Session["FlagRevisao"] == 0)
+                    {
+                        dataHoje = "*** Consulta em [" + dataHoje + "] ***";
+                    }
+                    else
+                    {
+                        dataHoje = "*** Revisão de Consulta em [" + dataHoje + "] ***";
+                    }
+
+                    // Recupera anamnese anterior
+                    String novo = String.Empty;
+                    String velho = String.Empty;
+                    String tripa = String.Empty;
+
+                    // Processa itens
+                    if (vm.PAAM_DS_SONO_PRINCIPAL_QUEIXA != null)
+                    {
+                        velho = vm.PAAM_DS_SONO_PRINCIPAL_QUEIXA_OLD;
+                        novo = vm.PAAM_DS_SONO_PRINCIPAL_QUEIXA;
+                        if (velho == null & novo != String.Empty)
+                        {
+                            vm.PAAM_DS_SONO_PRINCIPAL_QUEIXA = dataHoje + "\r\n" + novo;
+                        }
+                        if (velho != null & novo != String.Empty)
+                        {
+                            tripa = velho.Substring(velho.Length - 4, 4);
+                            if (tripa == "\r\n")
+                            {
+                                velho = velho.Substring(0, velho.Length - 4);
+                            }
+                            vm.PAAM_DS_SONO_PRINCIPAL_QUEIXA = velho + "\r\n\r\n" + dataHoje + "\r\n" + novo;
+                        }
+                    }
+                    else
+                    {
+                        velho = vm.PAAM_DS_SONO_PRINCIPAL_QUEIXA_OLD;
+                        vm.PAAM_DS_SONO_PRINCIPAL_QUEIXA = velho;
+                    }
+
+                    if (vm.PAAM_DS_SONO_SINTOMAS != null)
+                    {
+                        velho = vm.PAAM_DS_SONO_SINTOMAS_OLD;
+                        novo = vm.PAAM_DS_SONO_SINTOMAS;
+                        if (velho == null & novo != String.Empty)
+                        {
+                            vm.PAAM_DS_SONO_SINTOMAS = dataHoje + "\r\n" + novo;
+                        }
+                        if (velho != null & novo != String.Empty)
+                        {
+                            tripa = velho.Substring(velho.Length - 4, 4);
+                            if (tripa == "\r\n")
+                            {
+                                velho = velho.Substring(0, velho.Length - 4);
+                            }
+                            vm.PAAM_DS_SONO_SINTOMAS = velho + "\r\n\r\n" + dataHoje + "\r\n" + novo;
+                        }
+                    }
+                    else
+                    {
+                        velho = vm.PAAM_DS_SONO_SINTOMAS_OLD;
+                        vm.PAAM_DS_SONO_SINTOMAS = velho;
+                    }
+
+                    if (vm.PAAM_DS_SONO_DURACAO != null)
+                    {
+                        velho = vm.PAAM_DS_SONO_DURACAO_OLD;
+                        novo = vm.PAAM_DS_SONO_DURACAO;
+                        if (velho == null & novo != String.Empty)
+                        {
+                            vm.PAAM_DS_SONO_DURACAO = dataHoje + "\r\n" + novo;
+                        }
+                        if (velho != null & novo != String.Empty)
+                        {
+                            tripa = velho.Substring(velho.Length - 4, 4);
+                            if (tripa == "\r\n")
+                            {
+                                velho = velho.Substring(0, velho.Length - 4);
+                            }
+                            vm.PAAM_DS_SONO_DURACAO = velho + "\r\n\r\n" + dataHoje + "\r\n" + novo;
+                        }
+                    }
+                    else
+                    {
+                        velho = vm.PAAM_DS_SONO_DURACAO_OLD;
+                        vm.PAAM_DS_SONO_DURACAO = velho;
+                    }
+
+                    if (vm.PAAM_DS_SONO_ULTIMO_ALCOOL != null)
+                    {
+                        velho = vm.PAAM_DS_SONO_ULTIMO_ALCOOL_OLD;
+                        novo = vm.PAAM_DS_SONO_ULTIMO_ALCOOL;
+                        if (velho == null & novo != String.Empty)
+                        {
+                            vm.PAAM_DS_SONO_ULTIMO_ALCOOL = dataHoje + "\r\n" + novo;
+                        }
+                        if (velho != null & novo != String.Empty)
+                        {
+                            tripa = velho.Substring(velho.Length - 4, 4);
+                            if (tripa == "\r\n")
+                            {
+                                velho = velho.Substring(0, velho.Length - 4);
+                            }
+                            vm.PAAM_DS_SONO_ULTIMO_ALCOOL = velho + "\r\n\r\n" + dataHoje + "\r\n" + novo;
+                        }
+                    }
+                    else
+                    {
+                        velho = vm.PAAM_DS_SONO_ULTIMO_ALCOOL_OLD;
+                        vm.PAAM_DS_SONO_ULTIMO_ALCOOL = velho;
+                    }
+
+                    if (vm.PAAM_DS_SONO_EXERCICIO_FREQ != null)
+                    {
+                        velho = vm.PAAM_DS_SONO_EXERCICIO_FREQ_OLD;
+                        novo = vm.PAAM_DS_SONO_EXERCICIO_FREQ;
+                        if (velho == null & novo != String.Empty)
+                        {
+                            vm.PAAM_DS_SONO_EXERCICIO_FREQ = dataHoje + "\r\n" + novo;
+                        }
+                        if (velho != null & novo != String.Empty)
+                        {
+                            tripa = velho.Substring(velho.Length - 4, 4);
+                            if (tripa == "\r\n")
+                            {
+                                velho = velho.Substring(0, velho.Length - 4);
+                            }
+                            vm.PAAM_DS_SONO_EXERCICIO_FREQ = velho + "\r\n\r\n" + dataHoje + "\r\n" + novo;
+                        }
+                    }
+                    else
+                    {
+                        velho = vm.PAAM_DS_SONO_EXERCICIO_FREQ_OLD;
+                        vm.PAAM_DS_SONO_EXERCICIO_FREQ = velho;
+                    }
+
+                    if (vm.PAAM_DS_SONO_QUANTAS_DESPERTA != null)
+                    {
+                        velho = vm.PAAM_DS_SONO_QUANTAS_DESPERTA_OLD;
+                        novo = vm.PAAM_DS_SONO_QUANTAS_DESPERTA;
+                        if (velho == null & novo != String.Empty)
+                        {
+                            vm.PAAM_DS_SONO_QUANTAS_DESPERTA = dataHoje + "\r\n" + novo;
+                        }
+                        if (velho != null & novo != String.Empty)
+                        {
+                            tripa = velho.Substring(velho.Length - 4, 4);
+                            if (tripa == "\r\n")
+                            {
+                                velho = velho.Substring(0, velho.Length - 4);
+                            }
+                            vm.PAAM_DS_SONO_QUANTAS_DESPERTA = velho + "\r\n\r\n" + dataHoje + "\r\n" + novo;
+                        }
+                    }
+                    else
+                    {
+                        velho = vm.PAAM_DS_SONO_QUANTAS_DESPERTA_OLD;
+                        vm.PAAM_DS_SONO_QUANTAS_DESPERTA = velho;
+                    }
+
+                    if (vm.PAAM_DS_SONO_MOTIVOS_DESPERTA != null)
+                    {
+                        velho = vm.PAAM_DS_SONO_MOTIVOS_DESPERTA_OLD;
+                        novo = vm.PAAM_DS_SONO_MOTIVOS_DESPERTA;
+                        if (velho == null & novo != String.Empty)
+                        {
+                            vm.PAAM_DS_SONO_MOTIVOS_DESPERTA = dataHoje + "\r\n" + novo;
+                        }
+                        if (velho != null & novo != String.Empty)
+                        {
+                            tripa = velho.Substring(velho.Length - 4, 4);
+                            if (tripa == "\r\n")
+                            {
+                                velho = velho.Substring(0, velho.Length - 4);
+                            }
+                            vm.PAAM_DS_SONO_MOTIVOS_DESPERTA = velho + "\r\n\r\n" + dataHoje + "\r\n" + novo;
+                        }
+                    }
+                    else
+                    {
+                        velho = vm.PAAM_DS_SONO_MOTIVOS_DESPERTA_OLD;
+                        vm.PAAM_DS_SONO_MOTIVOS_DESPERTA = velho;
+                    }
+
+                    if (vm.PAAM_DS_SONO_TEMPO_PEGAR_SONO != null)
+                    {
+                        velho = vm.PAAM_DS_SONO_TEMPO_PEGAR_SONO_OLD;
+                        novo = vm.PAAM_DS_SONO_TEMPO_PEGAR_SONO;
+                        if (velho == null & novo != String.Empty)
+                        {
+                            vm.PAAM_DS_SONO_TEMPO_PEGAR_SONO = dataHoje + "\r\n" + novo;
+                        }
+                        if (velho != null & novo != String.Empty)
+                        {
+                            tripa = velho.Substring(velho.Length - 4, 4);
+                            if (tripa == "\r\n")
+                            {
+                                velho = velho.Substring(0, velho.Length - 4);
+                            }
+                            vm.PAAM_DS_SONO_TEMPO_PEGAR_SONO = velho + "\r\n\r\n" + dataHoje + "\r\n" + novo;
+                        }
+                    }
+                    else
+                    {
+                        velho = vm.PAAM_DS_SONO_TEMPO_PEGAR_SONO_OLD;
+                        vm.PAAM_DS_SONO_TEMPO_PEGAR_SONO = velho;
+                    }
+
+                    if (vm.PAAM_DS_SONO_URINA_NOITE != null)
+                    {
+                        velho = vm.PAAM_DS_SONO_URINA_NOITE_OLD;
+                        novo = vm.PAAM_DS_SONO_URINA_NOITE;
+                        if (velho == null & novo != String.Empty)
+                        {
+                            vm.PAAM_DS_SONO_URINA_NOITE = dataHoje + "\r\n" + novo;
+                        }
+                        if (velho != null & novo != String.Empty)
+                        {
+                            tripa = velho.Substring(velho.Length - 4, 4);
+                            if (tripa == "\r\n")
+                            {
+                                velho = velho.Substring(0, velho.Length - 4);
+                            }
+                            vm.PAAM_DS_SONO_URINA_NOITE = velho + "\r\n\r\n" + dataHoje + "\r\n" + novo;
+                        }
+                    }
+                    else
+                    {
+                        velho = vm.PAAM_DS_SONO_URINA_NOITE_OLD;
+                        vm.PAAM_DS_SONO_URINA_NOITE = velho;
+                    }
+
+                    if (vm.PAAM_DS_SONO_POSICAO_DORMIR != null)
+                    {
+                        velho = vm.PAAM_DS_SONO_POSICAO_DORMIR_OLD;
+                        novo = vm.PAAM_DS_SONO_POSICAO_DORMIR;
+                        if (velho == null & novo != String.Empty)
+                        {
+                            vm.PAAM_DS_SONO_POSICAO_DORMIR = dataHoje + "\r\n" + novo;
+                        }
+                        if (velho != null & novo != String.Empty)
+                        {
+                            tripa = velho.Substring(velho.Length - 4, 4);
+                            if (tripa == "\r\n")
+                            {
+                                velho = velho.Substring(0, velho.Length - 4);
+                            }
+                            vm.PAAM_DS_SONO_POSICAO_DORMIR = velho + "\r\n\r\n" + dataHoje + "\r\n" + novo;
+                        }
+                    }
+                    else
+                    {
+                        velho = vm.PAAM_DS_SONO_POSICAO_DORMIR_OLD;
+                        vm.PAAM_DS_SONO_POSICAO_DORMIR = velho;
+                    }
+
+                    if (vm.PAAM_DS_SONO_ATIVIDADES != null)
+                    {
+                        velho = vm.PAAM_DS_SONO_ATIVIDADES_OLD;
+                        novo = vm.PAAM_DS_SONO_ATIVIDADES;
+                        if (velho == null & novo != String.Empty)
+                        {
+                            vm.PAAM_DS_SONO_ATIVIDADES = dataHoje + "\r\n" + novo;
+                        }
+                        if (velho != null & novo != String.Empty)
+                        {
+                            tripa = velho.Substring(velho.Length - 4, 4);
+                            if (tripa == "\r\n")
+                            {
+                                velho = velho.Substring(0, velho.Length - 4);
+                            }
+                            vm.PAAM_DS_SONO_ATIVIDADES = velho + "\r\n\r\n" + dataHoje + "\r\n" + novo;
+                        }
+                    }
+                    else
+                    {
+                        velho = vm.PAAM_DS_SONO_ATIVIDADES_OLD;
+                        vm.PAAM_DS_SONO_ATIVIDADES = velho;
+                    }
+
+                    if (vm.PAAM_DS_SONO_MEDICAMENTOS != null)
+                    {
+                        velho = vm.PAAM_DS_SONO_MEDICAMENTOS_OLD;
+                        novo = vm.PAAM_DS_SONO_MEDICAMENTOS;
+                        if (velho == null & novo != String.Empty)
+                        {
+                            vm.PAAM_DS_SONO_MEDICAMENTOS = dataHoje + "\r\n" + novo;
+                        }
+                        if (velho != null & novo != String.Empty)
+                        {
+                            tripa = velho.Substring(velho.Length - 4, 4);
+                            if (tripa == "\r\n")
+                            {
+                                velho = velho.Substring(0, velho.Length - 4);
+                            }
+                            vm.PAAM_DS_SONO_MEDICAMENTOS = velho + "\r\n\r\n" + dataHoje + "\r\n" + novo;
+                        }
+                    }
+                    else
+                    {
+                        velho = vm.PAAM_DS_SONO_MEDICAMENTOS_OLD;
+                        vm.PAAM_DS_SONO_MEDICAMENTOS = velho;
+                    }
+
+                    if (vm.PAAM_DS_SONO_COMORBIDADES != null)
+                    {
+                        velho = vm.PAAM_DS_SONO_COMORBIDADES_OLD;
+                        novo = vm.PAAM_DS_SONO_COMORBIDADES;
+                        if (velho == null & novo != String.Empty)
+                        {
+                            vm.PAAM_DS_SONO_COMORBIDADES = dataHoje + "\r\n" + novo;
+                        }
+                        if (velho != null & novo != String.Empty)
+                        {
+                            tripa = velho.Substring(velho.Length - 4, 4);
+                            if (tripa == "\r\n")
+                            {
+                                velho = velho.Substring(0, velho.Length - 4);
+                            }
+                            vm.PAAM_DS_SONO_COMORBIDADES = velho + "\r\n\r\n" + dataHoje + "\r\n" + novo;
+                        }
+                    }
+                    else
+                    {
+                        velho = vm.PAAM_DS_SONO_COMORBIDADES_OLD;
+                        vm.PAAM_DS_SONO_COMORBIDADES = velho;
+                    }
+
+                    if (vm.PAAM_DS_SONO_CIRURGIAS != null)
+                    {
+                        velho = vm.PAAM_DS_SONO_CIRURGIAS_OLD;
+                        novo = vm.PAAM_DS_SONO_CIRURGIAS;
+                        if (velho == null & novo != String.Empty)
+                        {
+                            vm.PAAM_DS_SONO_CIRURGIAS = dataHoje + "\r\n" + novo;
+                        }
+                        if (velho != null & novo != String.Empty)
+                        {
+                            tripa = velho.Substring(velho.Length - 4, 4);
+                            if (tripa == "\r\n")
+                            {
+                                velho = velho.Substring(0, velho.Length - 4);
+                            }
+                            vm.PAAM_DS_SONO_CIRURGIAS = velho + "\r\n\r\n" + dataHoje + "\r\n" + novo;
+                        }
+                    }
+                    else
+                    {
+                        velho = vm.PAAM_DS_SONO_CIRURGIAS_OLD;
+                        vm.PAAM_DS_SONO_CIRURGIAS = velho;
+                    }
+
+                    if (vm.PAAM_DS_SONO_POLISONO != null)
+                    {
+                        velho = vm.PAAM_DS_SONO_POLISONO_OLD;
+                        novo = vm.PAAM_DS_SONO_POLISONO;
+                        if (velho == null & novo != String.Empty)
+                        {
+                            vm.PAAM_DS_SONO_POLISONO = dataHoje + "\r\n" + novo;
+                        }
+                        if (velho != null & novo != String.Empty)
+                        {
+                            tripa = velho.Substring(velho.Length - 4, 4);
+                            if (tripa == "\r\n")
+                            {
+                                velho = velho.Substring(0, velho.Length - 4);
+                            }
+                            vm.PAAM_DS_SONO_POLISONO = velho + "\r\n\r\n" + dataHoje + "\r\n" + novo;
+                        }
+                    }
+                    else
+                    {
+                        velho = vm.PAAM_DS_SONO_POLISONO_OLD;
+                        vm.PAAM_DS_SONO_POLISONO = velho;
+                    }
+
+                    if (vm.PAAM_DS_SONO_MALLAMPATI != null)
+                    {
+                        velho = vm.PAAM_DS_SONO_MALLAMPATI_OLD;
+                        novo = vm.PAAM_DS_SONO_MALLAMPATI;
+                        if (velho == null & novo != String.Empty)
+                        {
+                            vm.PAAM_DS_SONO_MALLAMPATI = dataHoje + "\r\n" + novo;
+                        }
+                        if (velho != null & novo != String.Empty)
+                        {
+                            tripa = velho.Substring(velho.Length - 4, 4);
+                            if (tripa == "\r\n")
+                            {
+                                velho = velho.Substring(0, velho.Length - 4);
+                            }
+                            vm.PAAM_DS_SONO_MALLAMPATI = velho + "\r\n\r\n" + dataHoje + "\r\n" + novo;
+                        }
+                    }
+                    else
+                    {
+                        velho = vm.PAAM_DS_SONO_MALLAMPATI_OLD;
+                        vm.PAAM_DS_SONO_MALLAMPATI = velho;
+                    }
+
+                    if (vm.PAAM_DS_SONO_OVERLAP != null)
+                    {
+                        velho = vm.PAAM_DS_SONO_OVERLAP_OLD;
+                        novo = vm.PAAM_DS_SONO_OVERLAP;
+                        if (velho == null & novo != String.Empty)
+                        {
+                            vm.PAAM_DS_SONO_OVERLAP = dataHoje + "\r\n" + novo;
+                        }
+                        if (velho != null & novo != String.Empty)
+                        {
+                            tripa = velho.Substring(velho.Length - 4, 4);
+                            if (tripa == "\r\n")
+                            {
+                                velho = velho.Substring(0, velho.Length - 4);
+                            }
+                            vm.PAAM_DS_SONO_OVERLAP = velho + "\r\n\r\n" + dataHoje + "\r\n" + novo;
+                        }
+                    }
+                    else
+                    {
+                        velho = vm.PAAM_DS_SONO_OVERLAP_OLD;
+                        vm.PAAM_DS_SONO_OVERLAP = velho;
+                    }
+
+                    if (vm.PAAM_DS_SONO_PATOLOGIAS != null)
+                    {
+                        velho = vm.PAAM_DS_SONO_PATOLOGIAS_OLD;
+                        novo = vm.PAAM_DS_SONO_PATOLOGIAS;
+                        if (velho == null & novo != String.Empty)
+                        {
+                            vm.PAAM_DS_SONO_PATOLOGIAS = dataHoje + "\r\n" + novo;
+                        }
+                        if (velho != null & novo != String.Empty)
+                        {
+                            tripa = velho.Substring(velho.Length - 4, 4);
+                            if (tripa == "\r\n")
+                            {
+                                velho = velho.Substring(0, velho.Length - 4);
+                            }
+                            vm.PAAM_DS_SONO_PATOLOGIAS = velho + "\r\n\r\n" + dataHoje + "\r\n" + novo;
+                        }
+                    }
+                    else
+                    {
+                        velho = vm.PAAM_DS_SONO_PATOLOGIAS_OLD;
+                        vm.PAAM_DS_SONO_PATOLOGIAS = velho;
+                    }
+
+                    if (vm.PAAM_TX_TEXTO_LIVRE != null)
+                    {
+                        velho = vm.PAAM_TX_TEXTO_LIVRE_OLD;
+                        novo = vm.PAAM_TX_TEXTO_LIVRE;
+                        if (velho == null & novo != String.Empty)
+                        {
+                            vm.PAAM_TX_TEXTO_LIVRE = dataHoje + "\r\n" + novo;
+                        }
+                        if (velho != null & novo != String.Empty)
+                        {
+                            tripa = velho.Substring(velho.Length - 4, 4);
+                            if (tripa == "\r\n")
+                            {
+                                velho = velho.Substring(0, velho.Length - 4);
+                            }
+                            vm.PAAM_TX_TEXTO_LIVRE = velho + "\r\n\r\n" + dataHoje + "\r\n" + novo;
+                        }
+                    }
+                    else
+                    {
+                        velho = vm.PAAM_TX_TEXTO_LIVRE_OLD;
+                        vm.PAAM_TX_TEXTO_LIVRE = velho;
+                    }
+
+                    if (vm.PAAM_DS_CAMPO_1 != null)
+                    {
+                        velho = vm.PAAM_DS_CAMPO_1_OLD;
+                        novo = vm.PAAM_DS_CAMPO_1;
+                        if (velho == null & novo != String.Empty)
+                        {
+                            vm.PAAM_DS_CAMPO_1 = dataHoje + "\r\n" + novo;
+                        }
+                        if (velho != null & novo != String.Empty)
+                        {
+                            tripa = velho.Substring(velho.Length - 4, 4);
+                            if (tripa == "\r\n")
+                            {
+                                velho = velho.Substring(0, velho.Length - 4);
+                            }
+                            vm.PAAM_DS_CAMPO_1 = velho + "\r\n\r\n" + dataHoje + "\r\n" + novo;
+                        }
+                    }
+                    else
+                    {
+                        velho = vm.PAAM_DS_CAMPO_1_OLD;
+                        vm.PAAM_DS_CAMPO_1 = velho;
+                    }
+                    if (vm.PAAM_DS_CAMPO_2 != null)
+                    {
+                        velho = vm.PAAM_DS_CAMPO_2_OLD;
+                        novo = vm.PAAM_DS_CAMPO_2;
+                        if (velho == null & novo != String.Empty)
+                        {
+                            vm.PAAM_DS_CAMPO_2 = dataHoje + "\r\n" + novo;
+                        }
+                        if (velho != null & novo != String.Empty)
+                        {
+                            tripa = velho.Substring(velho.Length - 4, 4);
+                            if (tripa == "\r\n")
+                            {
+                                velho = velho.Substring(0, velho.Length - 4);
+                            }
+                            vm.PAAM_DS_CAMPO_2 = velho + "\r\n\r\n" + dataHoje + "\r\n" + novo;
+                        }
+                    }
+                    else
+                    {
+                        velho = vm.PAAM_DS_CAMPO_2_OLD;
+                        vm.PAAM_DS_CAMPO_2 = velho;
+                    }
+                    if (vm.PAAM_DS_CAMPO_3 != null)
+                    {
+                        velho = vm.PAAM_DS_CAMPO_3_OLD;
+                        novo = vm.PAAM_DS_CAMPO_3;
+                        if (velho == null & novo != String.Empty)
+                        {
+                            vm.PAAM_DS_CAMPO_3 = dataHoje + "\r\n" + novo;
+                        }
+                        if (velho != null & novo != String.Empty)
+                        {
+                            tripa = velho.Substring(velho.Length - 4, 4);
+                            if (tripa == "\r\n")
+                            {
+                                velho = velho.Substring(0, velho.Length - 4);
+                            }
+                            vm.PAAM_DS_CAMPO_3 = velho + "\r\n\r\n" + dataHoje + "\r\n" + novo;
+                        }
+                    }
+                    else
+                    {
+                        velho = vm.PAAM_DS_CAMPO_3_OLD;
+                        vm.PAAM_DS_CAMPO_3 = velho;
+                    }
+                    if (vm.PAAM_DS_CAMPO_4 != null)
+                    {
+                        velho = vm.PAAM_DS_CAMPO_4_OLD;
+                        novo = vm.PAAM_DS_CAMPO_4;
+                        if (velho == null & novo != String.Empty)
+                        {
+                            vm.PAAM_DS_CAMPO_4 = dataHoje + "\r\n" + novo;
+                        }
+                        if (velho != null & novo != String.Empty)
+                        {
+                            tripa = velho.Substring(velho.Length - 4, 4);
+                            if (tripa == "\r\n")
+                            {
+                                velho = velho.Substring(0, velho.Length - 4);
+                            }
+                            vm.PAAM_DS_CAMPO_4 = velho + "\r\n\r\n" + dataHoje + "\r\n" + novo;
+                        }
+                    }
+                    else
+                    {
+                        velho = vm.PAAM_DS_CAMPO_4_OLD;
+                        vm.PAAM_DS_CAMPO_4 = velho;
+                    }
+                    if (vm.PAAM_DS_CAMPO_5 != null)
+                    {
+                        velho = vm.PAAM_DS_CAMPO_5_OLD;
+                        novo = vm.PAAM_DS_CAMPO_5;
+                        if (velho == null & novo != String.Empty)
+                        {
+                            vm.PAAM_DS_CAMPO_5 = dataHoje + "\r\n" + novo;
+                        }
+                        if (velho != null & novo != String.Empty)
+                        {
+                            tripa = velho.Substring(velho.Length - 4, 4);
+                            if (tripa == "\r\n")
+                            {
+                                velho = velho.Substring(0, velho.Length - 4);
+                            }
+                            vm.PAAM_DS_CAMPO_5 = velho + "\r\n\r\n" + dataHoje + "\r\n" + novo;
+                        }
+                    }
+                    else
+                    {
+                        velho = vm.PAAM_DS_CAMPO_5_OLD;
+                        vm.PAAM_DS_CAMPO_5 = velho;
+                    }
+                    if (vm.PAAM_DS_CAMPO_6 != null)
+                    {
+                        velho = vm.PAAM_DS_CAMPO_6_OLD;
+                        novo = vm.PAAM_DS_CAMPO_6;
+                        if (velho == null & novo != String.Empty)
+                        {
+                            vm.PAAM_DS_CAMPO_6 = dataHoje + "\r\n" + novo;
+                        }
+                        if (velho != null & novo != String.Empty)
+                        {
+                            tripa = velho.Substring(velho.Length - 4, 4);
+                            if (tripa == "\r\n")
+                            {
+                                velho = velho.Substring(0, velho.Length - 4);
+                            }
+                            vm.PAAM_DS_CAMPO_6 = velho + "\r\n\r\n" + dataHoje + "\r\n" + novo;
+                        }
+                    }
+                    else
+                    {
+                        velho = vm.PAAM_DS_CAMPO_6_OLD;
+                        vm.PAAM_DS_CAMPO_6 = velho;
+                    }
+                    if (vm.PAAM_DS_CAMPO_7 != null)
+                    {
+                        velho = vm.PAAM_DS_CAMPO_7_OLD;
+                        novo = vm.PAAM_DS_CAMPO_7;
+                        if (velho == null & novo != String.Empty)
+                        {
+                            vm.PAAM_DS_CAMPO_7 = dataHoje + "\r\n" + novo;
+                        }
+                        if (velho != null & novo != String.Empty)
+                        {
+                            tripa = velho.Substring(velho.Length - 4, 4);
+                            if (tripa == "\r\n")
+                            {
+                                velho = velho.Substring(0, velho.Length - 4);
+                            }
+                            vm.PAAM_DS_CAMPO_7 = velho + "\r\n\r\n" + dataHoje + "\r\n" + novo;
+                        }
+                    }
+                    else
+                    {
+                        velho = vm.PAAM_DS_CAMPO_7_OLD;
+                        vm.PAAM_DS_CAMPO_7 = velho;
+                    }
+                    if (vm.PAAM_DS_CAMPO_8 != null)
+                    {
+                        velho = vm.PAAM_DS_CAMPO_8_OLD;
+                        novo = vm.PAAM_DS_CAMPO_8;
+                        if (velho == null & novo != String.Empty)
+                        {
+                            vm.PAAM_DS_CAMPO_8 = dataHoje + "\r\n" + novo;
+                        }
+                        if (velho != null & novo != String.Empty)
+                        {
+                            tripa = velho.Substring(velho.Length - 4, 4);
+                            if (tripa == "\r\n")
+                            {
+                                velho = velho.Substring(0, velho.Length - 4);
+                            }
+                            vm.PAAM_DS_CAMPO_8 = velho + "\r\n\r\n" + dataHoje + "\r\n" + novo;
+                        }
+                    }
+                    else
+                    {
+                        velho = vm.PAAM_DS_CAMPO_8_OLD;
+                        vm.PAAM_DS_CAMPO_8 = velho;
+                    }
+                    if (vm.PAAM_DS_CAMPO_9 != null)
+                    {
+                        velho = vm.PAAM_DS_CAMPO_9_OLD;
+                        novo = vm.PAAM_DS_CAMPO_9;
+                        if (velho == null & novo != String.Empty)
+                        {
+                            vm.PAAM_DS_CAMPO_9 = dataHoje + "\r\n" + novo;
+                        }
+                        if (velho != null & novo != String.Empty)
+                        {
+                            tripa = velho.Substring(velho.Length - 4, 4);
+                            if (tripa == "\r\n")
+                            {
+                                velho = velho.Substring(0, velho.Length - 4);
+                            }
+                            vm.PAAM_DS_CAMPO_9 = velho + "\r\n\r\n" + dataHoje + "\r\n" + novo;
+                        }
+                    }
+                    else
+                    {
+                        velho = vm.PAAM_DS_CAMPO_9_OLD;
+                        vm.PAAM_DS_CAMPO_9 = velho;
+                    }
+                    if (vm.PAAM_DS_CAMPO_10 != null)
+                    {
+                        velho = vm.PAAM_DS_CAMPO_10_OLD;
+                        novo = vm.PAAM_DS_CAMPO_10;
+                        if (velho == null & novo != String.Empty)
+                        {
+                            vm.PAAM_DS_CAMPO_10 = dataHoje + "\r\n" + novo;
+                        }
+                        if (velho != null & novo != String.Empty)
+                        {
+                            tripa = velho.Substring(velho.Length - 4, 4);
+                            if (tripa == "\r\n")
+                            {
+                                velho = velho.Substring(0, velho.Length - 4);
+                            }
+                            vm.PAAM_DS_CAMPO_10 = velho + "\r\n\r\n" + dataHoje + "\r\n" + novo;
+                        }
+                    }
+                    else
+                    {
+                        velho = vm.PAAM_DS_CAMPO_10_OLD;
+                        vm.PAAM_DS_CAMPO_10 = velho;
+                    }
+
+                    // Serializa anamnese
+                    String json = JsonConvert.SerializeObject(vm);
+
+                    // Executa a operação
+                    PACIENTE_ANAMNESE item = Mapper.Map<PacienteAnamneseViewModel, PACIENTE_ANAMNESE>(vm);
+                    item.PAAM_IN_ALTERADA = 1;
+                    item.PACO_CD_ID = vm.PACO_CD_ID;
+                    Int32 volta = baseApp.ValidateEditAnamnese(item);
+
+                    // Remonta anamnese completa
+                    String anaFrase = MontarAnamneseSono(item.PAAM_CD_ID);
+
+                    // Verifica retorno
+                    Session["IdAnamnese"] = item.PAAM_CD_ID;
+                    Session["PacienteAlterada"] = 1;
+                    Session["NivelPaciente"] = 4;
+                    Session["VoltaAnotacaoAnamnese"] = 2;
+
+                    // Monta Log
+                    LOG log = new LOG
+                    {
+                        LOG_DT_DATA = DateTime.Now,
+                        ASSI_CD_ID = usuarioLogado.ASSI_CD_ID,
+                        USUA_CD_ID = usuarioLogado.USUA_CD_ID,
+                        LOG_NM_OPERACAO = "eanPACI",
+                        LOG_IN_ATIVO = 1,
+                        LOG_TX_REGISTRO = json,
+                        LOG_IN_SISTEMA = 6
+                    };
+                    Int32 volta1 = logApp.ValidateCreate(log);
+
+                    // Grava historico
+                    PACIENTE_HISTORICO hist = new PACIENTE_HISTORICO();
+                    PACIENTE pac = baseApp.GetItemById(item.PACI_CD_ID);
+                    hist.ASSI_CD_ID = usuarioLogado.ASSI_CD_ID;
+                    hist.USUA_CD_ID = usuarioLogado.USUA_CD_ID;
+                    hist.PACI_CD_ID = item.PACI_CD_ID;
+                    hist.PAHI_DT_DATA = DateTime.Now;
+                    hist.PAHI_IN_TIPO = 8;
+                    hist.PAHI_IN_CHAVE = item.PAAM_CD_ID;
+                    hist.PAHI_NM_OPERACAO = "Paciente - Edição de Anamnese";
+                    hist.PAHI_DS_DESCRICAO = "Paciente " + pac.PACI_NM_NOME + " - Anamnese editada " + item.PAAM_DT_DATA.ToShortDateString();
+                    Int32 voltaHist = baseApp.ValidateCreateHistorico(hist);
+
+                    if ((Int32)Session["VoltarPesquisa"] == 1)
+                    {
+                        return RedirectToAction("PesquisarTudo", "BaseAdmin");
+                    }
+                    if ((Int32)Session["VoltaAnamnese"] == 1)
+                    {
+                        return RedirectToAction("VoltarAnexoPaciente", "Paciente");
+                    }
+                    else if ((Int32)Session["VoltaAnamnese"] == 2)
+                    {
+                        return RedirectToAction("VoltarProcederConsulta", "Paciente");
+                    }
+                    return RedirectToAction("VoltarAnexoPaciente", "Paciente");
+                }
+                catch (Exception ex)
+                {
+                    ViewBag.Message = ex.Message;
+                    Session["TipoVolta"] = 2;
+                    Session["VoltaExcecao"] = "Paciente";
+                    Session["Excecao"] = ex;
+                    Session["ExcecaoTipo"] = ex.GetType().ToString();
+                    GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                    Int32 voltaX = grava.GravarLogExcecao(ex, "Paciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                    return RedirectToAction("TrataExcecao", "BaseAdmin");
+                }
+            }
+            else
+            {
+                return View(vm);
+            }
+        }
+
+        public String MontarAnamneseSono(Int32 id)
+        {
+            try
+            {
+                Int32 idAss = (Int32)Session["IdAssinante"];
+                USUARIO usuario = (USUARIO)Session["UserCredentials"];
+                PACIENTE_ANAMNESE item = baseApp.GetAnamneseById(id);
+                String frase = String.Empty;
+                frase += "********** ROTINA DO SONO **********" + "\r\n" + "\r\n";
+                frase += "=== PRINCIPAL QUEIXA DO SONO ===" + "\r\n" + item.PAAM_DS_SONO_PRINCIPAL_QUEIXA + "\r\n";
+                frase += "\r\n" + "=== SINTOMAS ===" + "\r\n" + item.PAAM_DS_SONO_SINTOMAS + "\r\n";
+                frase += "\r\n" + "=== HORÁRIOS REGULARES PARA DORMIR E ACORDAR ===" + "\r\n" + (item.PAAM_DS_SONO_HORARIO_REGULAR == 1 ? "Sim" : "Não") + "\r\n";
+                frase += "\r\n" + "=== LATÊNCIA PARA INÍCIO DO SONO ===" + "\r\n" + (item.PAAM_DS_SONO_LATENCIA == 1 ? "Sim" : "Não") + "\r\n";
+                frase += "\r\n" + "=== DURAÇÃO DO SONO ===" + "\r\n" + item.PAAM_DS_SONO_DURACAO + "\r\n";
+                frase += "\r\n" + "=== MANUTENÇÂO DA ROTINA NOS FINAIS DE SEMANA ===" + "\r\n" + (item.PAAM_DS_SONO_ROTINA_FDS == 1 ? "Sim" : "Não") + "\r\n";
+                frase += "\r\n" + "=== COCHILOS DIURNOS ===" + "\r\n" + (item.PAAM_DS_SONO_COCHILOS == 1 ? "Sim" : "Não") + "\r\n";
+
+                frase += "********** HIGIENE DO SONO **********" + "\r\n" + "\r\n";
+                frase += "\r\n" + "=== ASSISTE TV NA CAMA ===" + "\r\n" + (item.PAAM_DS_SONO_TVCAMA == 1 ? "Sim" : "Não") + "\r\n";
+                frase += "\r\n" + "=== FICA DEITADO NA CAMA QUANDO ESTÁ SEM SONO ===" + "\r\n" + (item.PAAM_DS_SONO_DEITADO_SONO == 1 ? "Sim" : "Não") + "\r\n";
+                frase += "\r\n" + "=== LÊ NA CAMA ===" + "\r\n" + (item.PAAM_DS_SONO_LECAMA == 1 ? "Sim" : "Não") + "\r\n";
+                frase += "\r\n" + "=== USA CELULAR NA CAMA ===" + "\r\n" + (item.PAAM_DS_SONO_CELULAR_CAMA == 1 ? "Sim" : "Não") + "\r\n";
+                frase += "\r\n" + "=== FUMA À NOITE ===" + "\r\n" + (item.PAAM_DS_SONO_FUMA_NOITE == 1 ? "Sim" : "Não") + "\r\n";
+                frase += "\r\n" + "=== ÚLTIMO HORÁRIO DE CONSUMO DE ALCOOL ===" + "\r\n" + item.PAAM_DS_SONO_ULTIMO_ALCOOL + "\r\n";
+                frase += "\r\n" + "=== REFEIÇÕES PESADAS À NOITE ===" + "\r\n" + (item.PAAM_DS_SONO_REFEICAO_PESADA == 1 ? "Sim" : "Não") + "\r\n";
+                frase += "\r\n" + "=== CAFÉ DA MANHÃ ===" + "\r\n" + (item.PAAM_DS_SONO_CAFE == 1 ? "Sim" : "Não") + "\r\n";
+                frase += "\r\n" + "=== ALMOÇO ===" + "\r\n" + (item.PAAM_DS_SONO_ALMOCO == 1 ? "Sim" : "Não") + "\r\n";
+                frase += "\r\n" + "=== LANCHE ===" + "\r\n" + (item.PAAM_DS_SONO_LANCHE == 1 ? "Sim" : "Não") + "\r\n";
+                frase += "\r\n" + "=== JANTAR ===" + "\r\n" + (item.PAAM_DS_SONO_JANTAR == 1 ? "Sim" : "Não") + "\r\n";
+                frase += "\r\n" + "=== EXERCÍCIO FÍSICO À NOITE ===" + "\r\n" + (item.PAAM_DS_SONO_EXERCICIO == 1 ? "Sim" : "Não") + "\r\n";
+                frase += "\r\n" + "=== HORÁRIO DO EXERCÍCIO ===" + "\r\n" + item.PAAM_DS_SONO_EXERCICIO_HORARIO + "\r\n";
+                frase += "\r\n" + "=== FREQUENCIA DO EXERCÍCIO FÍSICO ===" + "\r\n" + item.PAAM_DS_SONO_EXERCICIO_FREQ + "\r\n";
+
+                frase += "********** FRAGMENTAÇÃO DO SONO **********" + "\r\n" + "\r\n";
+                frase += "\r\n" + "=== QUANTAS VEZES DESPERTA DURANTE O SONO ===" + "\r\n" + item.PAAM_DS_SONO_QUANTAS_DESPERTA + "\r\n";
+                frase += "\r\n" + "=== QUAIS MOTIVOS ===" + "\r\n" + item.PAAM_DS_SONO_MOTIVOS_DESPERTA + "\r\n";
+                frase += "\r\n" + "=== TEMPO PARA RETORNAR AO SONO ===" + "\r\n" + item.PAAM_DS_SONO_TEMPO_PEGAR_SONO + "\r\n";
+                frase += "\r\n" + "=== FICA DEITADO QUANDO PERDE O SONO ===" + "\r\n" + (item.PAAM_DS_SONO_DEITADO_PERDE_SONO == 1 ? "Sim" : "Não") + "\r\n";
+                frase += "\r\n" + "=== QUANTAS VEZES URINA À NOITE ===" + "\r\n" + item.PAAM_DS_SONO_URINA_NOITE + "\r\n";
+
+                frase += "********** AINDA DURANTE O SONO **********" + "\r\n" + "\r\n";
+                frase += "\r\n" + "=== ENGASGOS OU SUFOCAMENO ===" + "\r\n" + (item.PAAM_DS_SONO_ENGASGOS == 1 ? "Sim" : "Não") + "\r\n";
+                frase += "\r\n" + "=== TOSSE ===" + "\r\n" + (item.PAAM_DS_SONO_TOSSE == 1 ? "Sim" : "Não") + "\r\n";
+                frase += "\r\n" + "=== REFLUXO ===" + "\r\n" + (item.PAAM_DS_SONO_REFLUXO == 1 ? "Sim" : "Não") + "\r\n";
+                frase += "\r\n" + "=== SUDORESE ===" + "\r\n" + (item.PAAM_DS_SONO_SUDORESE == 1 ? "Sim" : "Não") + "\r\n";
+                frase += "\r\n" + "=== POSIÇÂO PREFERENCIAL PARA DORMIR ===" + "\r\n" + item.PAAM_DS_SONO_POSICAO_DORMIR + "\r\n";
+                frase += "\r\n" + "=== RANGE DENTES DURANTE O SONO ===" + "\r\n" + (item.PAAM_DS_SONO_RANGE == 1 ? "Sim" : "Não") + "\r\n";
+                frase += "\r\n" + "=== TENSÃO OU RIGIDEZ NOS MÚSCULOS DA FACE ===" + "\r\n" + (item.PAAM_DS_SONO_RIGIDEZ_FACE == 1 ? "Sim" : "Não") + "\r\n";
+                frase += "\r\n" + "=== APNÉIA TESTEMUNHADA ===" + "\r\n" + (item.PAAM_DS_SONO_APNEIA == 1 ? "Sim" : "Não") + "\r\n";
+                frase += "\r\n" + "=== RONCO ALTO ===" + "\r\n" + (item.PAAM_DS_SONO_RONCO == 1 ? "Sim" : "Não") + "\r\n";
+                frase += "\r\n" + "=== MOVIMENTOS AGRESSIVOS ===" + "\r\n" + (item.PAAM_DS_SONO_AGRESSIVO == 1 ? "Sim" : "Não") + "\r\n";
+                frase += "\r\n" + "=== FALA DURANTE O SONO ===" + "\r\n" + (item.PAAM_DS_SONO_FALA == 1 ? "Sim" : "Não") + "\r\n";
+                frase += "\r\n" + "=== PESADELOS ===" + "\r\n" + (item.PAAM_DS_SONO_PESADELO == 1 ? "Sim" : "Não") + "\r\n";
+                frase += "\r\n" + "=== SONAMBULISMO ===" + "\r\n" + (item.PAAM_DS_SONO_SONANBULISMO == 1 ? "Sim" : "Não") + "\r\n";
+                frase += "\r\n" + "=== ENCENAÇÂO DURANTE OS SONHOS ===" + "\r\n" + (item.PAAM_DS_SONO_ENCENACAO == 1 ? "Sim" : "Não") + "\r\n";
+                frase += "\r\n" + "=== MOVIMENTOS PERIÓDICOS DE MEMBROS ===" + "\r\n" + (item.PAAM_DS_SONO_MOVE_MEMBRO == 1 ? "Sim" : "Não") + "\r\n";
+                frase += "\r\n" + "=== CÃIBRAS ===" + "\r\n" + (item.PAAM_DS_SONO_CAIBRAS == 1 ? "Sim" : "Não") + "\r\n";
+
+                frase += "********** SOBRE O AMBIENTE **********" + "\r\n" + "\r\n";
+                frase += "\r\n" + "=== QUARTO ACONCHEGANTE ===" + "\r\n" + (item.PAAM_DS_SONO_ACONCHEGANTE == 1 ? "Sim" : "Não") + "\r\n";
+                frase += "\r\n" + "=== TEM BARULHO ===" + "\r\n" + (item.PAAM_DS_SONO_BARULHO == 1 ? "Sim" : "Não") + "\r\n";
+                frase += "\r\n" + "=== TEMPERATURA CONFORTÁVEL ===" + "\r\n" + (item.PAAM_DS_SONO_TEMPERATURA == 1 ? "Sim" : "Não") + "\r\n";
+                frase += "\r\n" + "=== PRESENÇA DE OUTRAS PESSOAS ===" + "\r\n" + (item.PAAM_DS_SONO_PESSOAS == 1 ? "Sim" : "Não") + "\r\n";
+                frase += "\r\n" + "=== PRESENÇA DE ANIMAIS ===" + "\r\n" + (item.PAAM_DS_SONO_ANIMAIS == 1 ? "Sim" : "Não") + "\r\n";
+                frase += "\r\n" + "=== ATIVIDADES QUE REALIZA NO QUARTO ===" + "\r\n" + item.PAAM_DS_SONO_ATIVIDADES + "\r\n";
+
+                frase += "********** SOBRE CONDIÇÕES SóCIO-ECONOMICAS**********" + "\r\n" + "\r\n";
+                frase += "\r\n" + "=== PROBLEMAS SOCIAIS E FINANCEIROS ===" + "\r\n" + (item.PAAM_DS_SONO_FINANCAS == 1 ? "Sim" : "Não") + "\r\n";
+                frase += "\r\n" + "=== ACESSO A SERVIÇOS DE SAÚDE ===" + "\r\n" + (item.PAAM_DS_SONO_ACESSO_SAUDE == 1 ? "Sim" : "Não") + "\r\n";
+
+                frase += "********** SINTOMAS MATINAIS **********" + "\r\n" + "\r\n";
+                frase += "\r\n" + "=== SONO REPARADOR ===" + "\r\n" + (item.PAAM_DS_SONO_REPARADOR == 1 ? "Sim" : "Não") + "\r\n";
+                frase += "\r\n" + "=== SONOLENCIA EXCESSIVA ===" + "\r\n" + (item.PAAM_DS_SONO_SONOLENCIA == 1 ? "Sim" : "Não") + "\r\n";
+                frase += "\r\n" + "=== BOCA SECA AO DESPERTAR ===" + "\r\n" + (item.PAAM_DS_SONO_BOCA_SECA == 1 ? "Sim" : "Não") + "\r\n";
+                frase += "\r\n" + "=== DOR DE CABEÇA ===" + "\r\n" + (item.PAAM_DS_SONO_DOR_CABECA == 1 ? "Sim" : "Não") + "\r\n";
+                frase += "\r\n" + "=== CONGESTÃO NASAL ===" + "\r\n" + (item.PAAM_DS_SONO_CONGESTAO == 1 ? "Sim" : "Não") + "\r\n";
+                frase += "\r\n" + "=== REFLUXO OU AZIA ===" + "\r\n" + (item.PAAM_DS_SONO_REFLUXO == 1 ? "Sim" : "Não") + "\r\n";
+
+                frase += "********** FUNÇÕES DIURNAS    **********" + "\r\n" + "\r\n";
+                frase += "\r\n" + "=== SONOLENCIA E/OU ACIDENTES CAUSADOS PELA SONOLENCIA ===" + "\r\n" + (item.PAAM_DS_SONO_SONOLENCIA_DIURNA == 1 ? "Sim" : "Não") + "\r\n";
+                frase += "\r\n" + "=== CANSAÇO ===" + "\r\n" + (item.PAAM_DS_SONO_CANSACO == 1 ? "Sim" : "Não") + "\r\n";
+                frase += "\r\n" + "=== DÉFICIT DE CONCENTRAÇÃO ===" + "\r\n" + (item.PAAM_DS_SONO_DEFICIT == 1 ? "Sim" : "Não") + "\r\n";
+                frase += "\r\n" + "=== DÉFICIT DE MEMÓRIA ===" + "\r\n" + (item.PAAM_DS_SONO_DEFICIT_MEMORIA == 1 ? "Sim" : "Não") + "\r\n";
+                frase += "\r\n" + "=== FADIGA ===" + "\r\n" + (item.PAAM_DS_SONO_FADIGA == 1 ? "Sim" : "Não") + "\r\n";
+                frase += "\r\n" + "=== IRRITABILIDADE ===" + "\r\n" + (item.PAAM_DS_SONO_IRRITA == 1 ? "Sim" : "Não") + "\r\n";
+                frase += "\r\n" + "=== DOR ===" + "\r\n" + (item.PAAM_DS_SONO_DOR == 1 ? "Sim" : "Não") + "\r\n";
+
+                frase += "********** OUTROS**********" + "\r\n" + "\r\n";
+                frase += "\r\n" + "=== TIPO DE RESPIRAÇÃO ===" + "\r\n" + (item.PAAM_DS_SONO_TIPO_RESPIRACAO == 1 ? "Nasal" : (item.PAAM_DS_SONO_TIPO_RESPIRACAO == 2 ? "Oronasal" : "Mista") + "\r\n");
+                frase += "\r\n" + "=== DISFUNÇÃO SEXUAL ===" + "\r\n" + (item.PAAM_DS_SONO_DISFUNCAO == 1 ? "Sim" : "Não") + "\r\n";
+                frase += "\r\n" + "=== ALTERAÇÕES PONDERAIS ===" + "\r\n" + (item.PAAM_DS_SONO_PONDERAL == 1 ? "Sim" : "Não") + "\r\n";
+                frase += "\r\n" + "=== MEDICAMENTOS E OUTRAS SUBSTÂNCIAS EM USO ===" + "\r\n" + item.PAAM_DS_SONO_MEDICAMENTOS + "\r\n";
+                frase += "\r\n" + "=== COMORBIDADES ===" + "\r\n" + item.PAAM_DS_SONO_COMORBIDADES + "\r\n";
+                frase += "\r\n" + "=== CIRURGIAS PRÉVIAS ===" + "\r\n" + item.PAAM_DS_SONO_CIRURGIAS + "\r\n";
+                frase += "\r\n" + "=== SENSAÇÕES DESAGRADÁVEIS NAS PERNAS ===" + "\r\n" + item.PAAM_DS_SONO_SENSACAO_PERNA + "\r\n";
+                frase += "\r\n" + "=== TRABALHA OU TRABALHOU EM TURNO ===" + "\r\n" + (item.PAAM_DS_SONO_TURNO == 1 ? "Sim" : "Não") + "\r\n";
+                frase += "\r\n" + "=== DADOS DA POLISSONOGRAFIA - MALLAMPATI ===" + "\r\n" + item.PAAM_DS_SONO_MALLAMPATI + "\r\n";
+                frase += "\r\n" + "=== DADOS DA POLISSONOGRAFIA - OVERLAP ===" + "\r\n" + item.PAAM_DS_SONO_OVERLAP + "\r\n";
+                frase += "\r\n" + "=== PATOLOGIAS ASSOCIADAS ===" + "\r\n" + item.PAAM_DS_SONO_PATOLOGIAS + "\r\n";
+
+                if (item.PAAM_IN_CAMPO_1 == 1)
+                {
+                    frase += "\r\n" + "=== " + item.PAAM_NM_CAMPO_1 + " ===" + "\r\n" + item.PAAM_DS_CAMPO_1 + "\r\n";
+                }
+                if (item.PAAM_IN_CAMPO_2 == 1)
+                {
+                    frase += "\r\n" + "=== " + item.PAAM_NM_CAMPO_2 + " ===" + "\r\n" + item.PAAM_DS_CAMPO_2 + "\r\n";
+                }
+                if (item.PAAM_IN_CAMPO_3 == 1)
+                {
+                    frase += "\r\n" + "=== " + item.PAAM_NM_CAMPO_3 + " ===" + "\r\n" + item.PAAM_DS_CAMPO_3 + "\r\n";
+                }
+                if (item.PAAM_IN_CAMPO_4 == 1)
+                {
+                    frase += "\r\n" + "=== " + item.PAAM_NM_CAMPO_4 + " ===" + "\r\n" + item.PAAM_DS_CAMPO_4 + "\r\n";
+                }
+                if (item.PAAM_IN_CAMPO_5 == 1)
+                {
+                    frase += "\r\n" + "=== " + item.PAAM_NM_CAMPO_5 + " ===" + "\r\n" + item.PAAM_DS_CAMPO_5 + "\r\n";
+                }
+                if (item.PAAM_IN_CAMPO_6 == 1)
+                {
+                    frase += "\r\n" + "=== " + item.PAAM_NM_CAMPO_6 + " ===" + "\r\n" + item.PAAM_DS_CAMPO_6 + "\r\n";
+                }
+                if (item.PAAM_IN_CAMPO_7 == 1)
+                {
+                    frase += "\r\n" + "=== " + item.PAAM_NM_CAMPO_7 + " ===" + "\r\n" + item.PAAM_DS_CAMPO_7 + "\r\n";
+                }
+                if (item.PAAM_IN_CAMPO_8 == 1)
+                {
+                    frase += "\r\n" + "=== " + item.PAAM_NM_CAMPO_8 + " ===" + "\r\n" + item.PAAM_DS_CAMPO_8 + "\r\n";
+                }
+                if (item.PAAM_IN_CAMPO_9 == 1)
+                {
+                    frase += "\r\n" + "=== " + item.PAAM_NM_CAMPO_9 + " ===" + "\r\n" + item.PAAM_DS_CAMPO_9 + "\r\n";
+                }
+                if (item.PAAM_IN_CAMPO_10 == 1)
+                {
+                    frase += "\r\n" + "=== " + item.PAAM_NM_CAMPO_10 + " ===" + "\r\n" + item.PAAM_DS_CAMPO_10 + "\r\n";
+                }
+                frase += "\r\n" + "=== DIAGNÓSTICO ===" + "\r\n" + item.PAAM_DS_DIAGNOSTICO_1_LONG + "\r\n";
+                frase += "\r\n" + "=== CONDUTA ADOTADA ===" + "\r\n" + item.PAAM_DS_CONDUTA + "\r\n";
+
+                item.PAAM_TX_COMPLETA = frase;
+                Int32 voltaAna = baseApp.ValidateEditAnamneseConfirma(item);
+                return frase;
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Paciente";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Paciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return null;
+            }
+        }
+
+        public ActionResult VerAnamneseCompletaSono(Int32 id)
+        {
+            try
+            {
+                if ((String)Session["Ativa"] == null)
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+                USUARIO usuario = (USUARIO)Session["UserCredentials"];
+
+                String anaFrase = MontarAnamneseSono(id);
+                PACIENTE_ANAMNESE ana = baseApp.GetAnamneseById(id);
+                PacienteAnamneseViewModel vm = Mapper.Map<PACIENTE_ANAMNESE, PacienteAnamneseViewModel>(ana);
+                Session["Anamnese"] = ana;
+                Session["IdAnamnese"] = id;
+                Session["NivelPaciente"] = 4;
+                vm.PACO_DT_CONSULTA = vm.PACIENTE_CONSULTA.PACO_DT_CONSULTA;
+                vm.PACO_IN_ENCERRADA = vm.PACIENTE_CONSULTA.PACO_IN_ENCERRADA.Value;
+
+                // Grava Acesso
+                ControleAcessoMetodo grava = new ControleAcessoMetodo(aceApp);
+                Int32 voltaX = grava.GravaAcesso(usuario.USUA_CD_ID, usuario.ASSI_CD_ID, "PACIENTE_ANAMNESE_COMPLETA", "Paciente2", "VerAnamneseCompleta");
+                return View(vm);
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Paciente";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Paciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return RedirectToAction("TrataExcecao", "BaseAdmin");
+            }
+        }
+
+        [HttpGet]
+        public ActionResult VerAnamneseSono(Int32 id)
+        {
+            try
+            {
+                // Verifica se tem usuario logado
+                USUARIO usuario = new USUARIO();
+                if ((String)Session["Ativa"] == null)
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+                if ((USUARIO)Session["UserCredentials"] != null)
+                {
+                    usuario = (USUARIO)Session["UserCredentials"];
+
+                    // Verfifica permissão
+                    if (usuario.PERFIL.PERF_IN_PRESCRICAO_ACESSO == 0)
+                    {
+                        Session["MensPermissao"] = 2;
+                        Session["ModuloPermissao"] = "Paciente - Anamnese - Consulta";
+                        return RedirectToAction("VoltarAnexoPaciente");
+                    }
+                }
+                else
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+                Int32 idAss = (Int32)Session["IdAssinante"];
+
+                // Prepara view
+                Session["NivelPaciente"] = 4;
+
+                PACIENTE_ANAMNESE item = baseApp.GetAnamneseById(id);
+                objetoAntes = (PACIENTE)Session["Paciente"];
+                PacienteAnamneseViewModel vm = Mapper.Map<PACIENTE_ANAMNESE, PacienteAnamneseViewModel>(item);
+                Session["Anamnese"] = item;
+                Session["IdAnamnese"] = id;
+                vm.PACO_DT_CONSULTA = vm.PACIENTE_CONSULTA.PACO_DT_CONSULTA;
+                vm.PACO_IN_ENCERRADA = vm.PACIENTE_CONSULTA.PACO_IN_ENCERRADA.Value;
+                vm.PACO_IN_TIPO = vm.PACIENTE_CONSULTA.PACO_IN_TIPO.Value;
+                ViewBag.Campo1 = item.PAAM_NM_CAMPO_1;
+                ViewBag.Campo2 = item.PAAM_NM_CAMPO_2;
+                ViewBag.Campo3 = item.PAAM_NM_CAMPO_3;
+                ViewBag.Campo4 = item.PAAM_NM_CAMPO_4;
+                ViewBag.Campo5 = item.PAAM_NM_CAMPO_5;
+                ViewBag.Campo6 = item.PAAM_DS_CAMPO_6;
+                ViewBag.Campo7 = item.PAAM_DS_CAMPO_7;
+                ViewBag.Campo8 = item.PAAM_DS_CAMPO_8;
+                ViewBag.Campo9 = item.PAAM_DS_CAMPO_9;
+                ViewBag.Campo10 = item.PAAM_DS_CAMPO_10;
+
+                // Grava Acesso
+                ControleAcessoMetodo grava = new ControleAcessoMetodo(aceApp);
+                Int32 voltaX = grava.GravaAcesso(usuario.USUA_CD_ID, usuario.ASSI_CD_ID, "PACIENTE_ANAMNESE_VER", "Paciente", "VerAnamneseSono");
+                return View(vm);
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Paciente";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Paciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return RedirectToAction("TrataExcecao", "BaseAdmin");
+            }
+        }
+
+        public ActionResult EditarAnamneseCompletaFormProcessoSono()
+        {
+            if ((String)Session["Ativa"] == null)
+            {
+                return RedirectToAction("Logout", "ControleAcesso");
+            }
+            return RedirectToAction("EditarAnamneseNovaSono", new { id = (Int32)Session["IdAnamneseConsulta"] });
+        }
+
+        public ActionResult GerarAnamnesePDFNovaSono()
+        {
+            try
+            {
+                Int32 idAss = (Int32)Session["IdAssinante"];
+                USUARIO usuario = (USUARIO)Session["UserCredentials"];
+
+                // Prepara geração
+                CONFIGURACAO conf = CarregaConfiguracaoGeral();
+                String data = DateTime.Today.Date.ToShortDateString();
+                data = data.Substring(0, 2) + data.Substring(3, 2) + data.Substring(6, 4);
+
+                // Recupera informações
+                Int32 x = (Int32)Session["IdAnamnese"];
+                PACIENTE_ANAMNESE anamnese = baseApp.GetAnamneseById((Int32)Session["IdAnamnese"]);
+                PACIENTE paciente = baseApp.GetItemById(anamnese.PACI_CD_ID);
+                String nomeRel = "Anamnese_" + paciente.PACI_NM_NOME + "_Consulta_" + anamnese.PACIENTE_CONSULTA.PACO_DT_CONSULTA.ToShortDateString() + ".pdf";
+                String classe = String.Empty;
+                if (usuario.TIPO_CARTEIRA_CLASSE != null)
+                {
+                    classe = usuario.TIPO_CARTEIRA_CLASSE.TICL_NM_NOME + ": " + usuario.USUA_NR_CLASSE;
+                }
+                String nomeMedico = usuario.USUA_NM_NOME;
+                if (usuario.USUA_NM_PREFIXO != null)
+                {
+                    nomeMedico = usuario.USUA_NM_PREFIXO + " " + nomeMedico;
+                }
+                if (usuario.USUA_NM_SUFIXO != null)
+                {
+                    nomeMedico = nomeMedico + " " + usuario.USUA_NM_SUFIXO;
+                }
+                EMPRESA empresa = empApp.GetItemById(usuario.EMPR_CD_ID.Value);
+
+                // Prepara fontes
+                Font meuFont = FontFactory.GetFont("Arial", 8, iTextSharp.text.Font.NORMAL, BaseColor.BLACK);
+                Font meuFont1 = FontFactory.GetFont("Arial", 9, iTextSharp.text.Font.NORMAL, BaseColor.BLACK);
+                Font meuFont2 = FontFactory.GetFont("Arial", 14, iTextSharp.text.Font.NORMAL, BaseColor.BLACK);
+                Font meuFont1Bold = FontFactory.GetFont("Arial", 9, iTextSharp.text.Font.BOLD, BaseColor.BLACK);
+                Font meuFont3Bold = FontFactory.GetFont("Arial", 10, iTextSharp.text.Font.BOLD, BaseColor.BLACK);
+                Font meuFont4Bold = FontFactory.GetFont("Arial", 12, iTextSharp.text.Font.BOLD, BaseColor.BLACK);
+                Font meuFont5Bold = FontFactory.GetFont("Arial", 16, iTextSharp.text.Font.BOLD, BaseColor.BLACK);
+                Font meuFontBold = FontFactory.GetFont("Arial", 8, iTextSharp.text.Font.BOLD, BaseColor.BLACK);
+
+                // Cabeçalho
+                PdfPTable headerTable = null;
+                PdfPCell cell = new PdfPCell();
+                Image image = null;
+                if (conf.CONF_IN_EXIBE_LOGO == 1)
+                {
+                    headerTable = new PdfPTable(new float[] { 20f, 700f });
+                    headerTable.WidthPercentage = 100;
+                    headerTable.HorizontalAlignment = 1;
+                    headerTable.SpacingBefore = 1f;
+                    headerTable.SpacingAfter = 1f;
+
+                    cell = new PdfPCell();
+                    cell.Border = 0;
+                    cell.Colspan = 1;
+                    image = null;
+                    if (conf.CONF_IN_LOGO_EMPRESA == 1)
+                    {
+                        image = Image.GetInstance(Server.MapPath(empresa.EMPR_AQ_LOGO));
+                    }
+                    else
+                    {
+                        image = Image.GetInstance(Server.MapPath("~/Images/Prontuario_Icone_1.png"));
+                    }
+                    image.ScaleAbsolute(80, 80);
+                    cell.AddElement(image);
+                    headerTable.AddCell(cell);
+                }
+                else
+                {
+                    headerTable = new PdfPTable(new float[] { 750f });
+                    headerTable.WidthPercentage = 100;
+                    headerTable.HorizontalAlignment = 1;
+                    headerTable.SpacingBefore = 1f;
+                    headerTable.SpacingAfter = 1f;
+                }
+
+                // Dados do medico
+                PdfPTable table1 = new PdfPTable(new float[] { 120f, 120f, 120f, 120f });
+                table1.WidthPercentage = 100;
+                table1.HorizontalAlignment = 0;
+                table1.SpacingBefore = 1f;
+                table1.SpacingAfter = 1f;
+
+                cell = new PdfPCell(new Paragraph(nomeMedico, meuFont4Bold));
+                cell.Border = 0;
+                cell.Colspan = 4;
+                cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                cell.HorizontalAlignment = Element.ALIGN_CENTER;
+                table1.AddCell(cell);
+
+                if (usuario.ESPECIALIDADE != null)
+                {
+                    cell = new PdfPCell(new Paragraph(usuario.ESPECIALIDADE.ESPE_NM_NOME, meuFont1));
+                    cell.Border = 0;
+                    cell.Colspan = 4;
+                    cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                    cell.HorizontalAlignment = Element.ALIGN_CENTER;
+                    table1.AddCell(cell);
+                }
+
+                String frase = classe + " CPF: " + usuario.USUA_NR_CPF;
+                cell = new PdfPCell(new Paragraph(frase, meuFont1));
+                cell.Border = 0;
+                cell.Colspan = 4;
+                cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                cell.HorizontalAlignment = Element.ALIGN_CENTER;
+                table1.AddCell(cell);
+                cell = new PdfPCell(new Paragraph(" ", meuFont1));
+                cell.Border = 0;
+                cell.Colspan = 4;
+                cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                cell.HorizontalAlignment = Element.ALIGN_CENTER;
+                table1.AddCell(cell);
+
+                PdfPCell innerTableCell = new PdfPCell(table1);
+                innerTableCell.Border = Rectangle.NO_BORDER;
+                innerTableCell.Colspan = 1;
+                headerTable.AddCell(innerTableCell);
+
+                // Rodape
+                PdfPTable footerTable = new PdfPTable(1);
+                footerTable = new PdfPTable(new float[] { 600f });
+                footerTable.WidthPercentage = 100;
+                footerTable.HorizontalAlignment = 1;
+                footerTable.SpacingBefore = 1f;
+                footerTable.SpacingAfter = 1f;
+
+                // Dados do medico
+                table1 = new PdfPTable(new float[] { 120f, 120f, 120f, 120f });
+                table1.WidthPercentage = 100;
+                table1.HorizontalAlignment = 0;
+                table1.SpacingBefore = 1f;
+                table1.SpacingAfter = 1f;
+
+                cell = new PdfPCell(new Paragraph(usuario.USUA_NM_NOME, meuFontBold));
+                cell.Border = 0;
+                cell.Colspan = 4;
+                cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                table1.AddCell(cell);
+
+                if (usuario.ESPECIALIDADE != null)
+                {
+                    cell = new PdfPCell(new Paragraph(usuario.ESPECIALIDADE.ESPE_NM_NOME, meuFont1));
+                    cell.Border = 0;
+                    cell.Colspan = 4;
+                    cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                    cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                    table1.AddCell(cell);
+                }
+
+                cell = new PdfPCell(new Paragraph(classe, meuFont));
+                cell.Border = 0;
+                cell.Colspan = 1;
+                cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                table1.AddCell(cell);
+                cell = new PdfPCell(new Paragraph("CPF: " + usuario.USUA_NR_CPF, meuFont));
+                cell.Border = 0;
+                cell.Colspan = 3;
+                cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                table1.AddCell(cell);
+
+                String endereco = String.Empty;
+                String enderecoCont = String.Empty;
+                if (empresa.EMPR_NM_ENDERECO != null)
+                {
+                    endereco += empresa.EMPR_NM_ENDERECO;
+                    if (empresa.EMPR_NM_NUMERO != null)
+                    {
+                        endereco += " " + empresa.EMPR_NM_NUMERO;
+                    }
+                    if (empresa.EMPR_NM_COMPLEMENTO != null)
+                    {
+                        endereco += " " + empresa.EMPR_NM_COMPLEMENTO;
+                    }
+                    if (empresa.EMPR_NM_BAIRRO != null)
+                    {
+                        enderecoCont += empresa.EMPR_NM_BAIRRO;
+                    }
+                    if (empresa.EMPR_NM_CIDADE != null)
+                    {
+                        enderecoCont += " - " + empresa.EMPR_NM_CIDADE;
+                    }
+                    if (empresa.UF != null)
+                    {
+                        enderecoCont += " - " + empresa.UF.UF_SG_SIGLA;
+                    }
+                    if (empresa.EMPR_NR_CEP != null)
+                    {
+                        enderecoCont += " - " + empresa.EMPR_NR_CEP;
+                    }
+                }
+
+                cell = new PdfPCell(new Paragraph(endereco, meuFont));
+                cell.Border = 0;
+                cell.Colspan = 4;
+                cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                table1.AddCell(cell);
+                cell = new PdfPCell(new Paragraph(enderecoCont, meuFont));
+                cell.Border = 0;
+                cell.Colspan = 4;
+                cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                table1.AddCell(cell);
+
+                cell = new PdfPCell(new Paragraph("  ", meuFont));
+                cell.Border = 0;
+                cell.Colspan = 4;
+                cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                table1.AddCell(cell);
+
+                innerTableCell = new PdfPCell(table1);
+                innerTableCell.Border = Rectangle.NO_BORDER;
+                innerTableCell.Colspan = 1;
+                footerTable.AddCell(innerTableCell);
+
+                // Cria documento
+                Document pdfDoc = new Document(PageSize.A4, 10, 10, 70, 120);
+                PdfWriter pdfWriter = PdfWriter.GetInstance(pdfDoc, Response.OutputStream);
+                pdfWriter.PageEvent = new CustomPageEventHelper(headerTable, footerTable);
+                pdfDoc.Open();
+
+                Paragraph line1 = new Paragraph("  ");
+                pdfDoc.Add(line1);
+
+                Chunk chunk3 = new Chunk("A N A M N E S E", FontFactory.GetFont("Arial", 16, Font.NORMAL, BaseColor.BLACK));
+                Paragraph paragraph = new Paragraph(chunk3);
+                paragraph.Alignment = Element.ALIGN_CENTER;
+                pdfDoc.Add(paragraph);
+
+                line1 = new Paragraph(new Chunk(new iTextSharp.text.pdf.draw.LineSeparator(0.0F, 100.0F, BaseColor.BLACK, Element.ALIGN_LEFT, 1)));
+                pdfDoc.Add(line1);
+
+                // Dados Gerais
+                PdfPTable table = new PdfPTable(new float[] { 120f, 120f, 120f, 120f });
+                table.WidthPercentage = 100;
+                table.HorizontalAlignment = 0;
+                table.SpacingBefore = 1f;
+                table.SpacingAfter = 1f;
+
+                cell = new PdfPCell(new Paragraph("Data da Consulta: " + anamnese.PACIENTE_CONSULTA.PACO_DT_CONSULTA.ToLongDateString(), meuFont1Bold));
+                cell.Border = 0;
+                cell.Colspan = 4;
+                cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                table.AddCell(cell);
+                pdfDoc.Add(table);
+
+                // Linha Horizontal
+                line1 = new Paragraph(new Chunk(new iTextSharp.text.pdf.draw.LineSeparator(0.0F, 100.0F, BaseColor.BLACK, Element.ALIGN_LEFT, 1)));
+                pdfDoc.Add(line1);
+
+                // Dados do paciente
+                table = new PdfPTable(new float[] { 120f, 120f, 120f, 120f });
+                table.WidthPercentage = 100;
+                table.HorizontalAlignment = 0;
+                table.SpacingBefore = 1f;
+                table.SpacingAfter = 1f;
+
+                cell = new PdfPCell(new Paragraph("Nome do Paciente: " + paciente.PACI_NM_NOME, meuFont1Bold));
+                cell.Border = 0;
+                cell.Colspan = 4;
+                cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph("CPF: " + paciente.PACI_NR_CPF, meuFont1));
+                cell.Border = 0;
+                cell.Colspan = 4;
+                cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph("Data Nasc.: " + paciente.PACI_DT_NASCIMENTO.Value.ToShortDateString(), meuFont1));
+                cell.Border = 0;
+                cell.Colspan = 4;
+                cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                table.AddCell(cell);
+                pdfDoc.Add(table);
+
+                // Linha Horizontal
+                line1 = new Paragraph("  ");
+                pdfDoc.Add(line1);
+
+                // Grid
+                table = new PdfPTable(new float[] { 200f, 500f });
+                table.WidthPercentage = 100;
+                table.HorizontalAlignment = 0;
+                table.SpacingBefore = 1f;
+                table.SpacingAfter = 1f;
+
+                // Rotina do Sono
+                cell = new PdfPCell(new Paragraph(" ", meuFont3Bold))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 2;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph("***** Rotina do Sono *****", meuFont3Bold))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 2;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph(" ", meuFont3Bold))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 2;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+
+                cell = new PdfPCell(new Paragraph("Principal queixa do sono: ", meuFont1Bold))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph(anamnese.PAAM_DS_SONO_PRINCIPAL_QUEIXA, meuFont1))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+
+                cell = new PdfPCell(new Paragraph("Sintomas :", meuFont1Bold))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph(anamnese.PAAM_DS_SONO_SINTOMAS, meuFont1))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+
+                cell = new PdfPCell(new Paragraph("Horário regulares para dormir e acordar: ", meuFont1Bold))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph(anamnese.PAAM_DS_SONO_HORARIO_REGULAR_NOVO, meuFont1))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+
+                cell = new PdfPCell(new Paragraph("Latência para o início do sono: ", meuFont1Bold))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph(anamnese.PAAM_DS_SONO_LATENCIA_NOVO, meuFont1))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+
+                cell = new PdfPCell(new Paragraph("Duração do sono: ", meuFont1Bold))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph(anamnese.PAAM_DS_SONO_DURACAO, meuFont1))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+
+
+                cell = new PdfPCell(new Paragraph("Manutenção da rotina nos fins de semana: ", meuFont1Bold))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph((anamnese.PAAM_DS_SONO_ROTINA_FDS == 1 ? "Sim" : "Não"), meuFont1))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+
+                if (anamnese.PAAM_IN_FLAG_HISTORIA_PROGRESSIVA == 1)
+                {
+                    cell = new PdfPCell(new Paragraph("Cochilos diurnos: ", meuFont1Bold))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    cell.Colspan = 1;
+                    cell.BackgroundColor = BaseColor.WHITE;
+                    table.AddCell(cell);
+                    cell = new PdfPCell(new Paragraph((anamnese.PAAM_DS_SONO_COCHILOS == 1 ? "Sim" : "Não"), meuFont1))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    cell.Colspan = 1;
+                    cell.BackgroundColor = BaseColor.WHITE;
+                    table.AddCell(cell);
+                }
+
+                // Higinene do Sono
+                cell = new PdfPCell(new Paragraph(" ", meuFont3Bold))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 2;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph("***** Higiene do Sono *****", meuFont3Bold))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 2;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph(" ", meuFont3Bold))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 2;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+
+                cell = new PdfPCell(new Paragraph("Assiste TV na cama: ", meuFont1Bold))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph((anamnese.PAAM_DS_SONO_TVCAMA == 1 ? "Sim" : "Não"), meuFont1))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+
+                cell = new PdfPCell(new Paragraph("Fica deitado na cama quando está sem sono: ", meuFont1Bold))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph((anamnese.PAAM_DS_SONO_DEITADO_PERDE_SONO == 1 ? "Sim" : "Não"), meuFont1))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+
+                cell = new PdfPCell(new Paragraph("Lê na cama: ", meuFont1Bold))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph((anamnese.PAAM_DS_SONO_LECAMA == 1 ? "Sim" : "Não"), meuFont1))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+
+                cell = new PdfPCell(new Paragraph("Usa celular na cama : ", meuFont1Bold))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph((anamnese.PAAM_DS_SONO_CELULAR_CAMA == 1 ? "Sim" : "Não"), meuFont1))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+
+                cell = new PdfPCell(new Paragraph("Fuma: ", meuFont1Bold))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph((anamnese.PAAM_DS_SONO_FUMA_NOITE == 1 ? "Sim" : "Não"), meuFont1))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+
+                cell = new PdfPCell(new Paragraph("Último horário de consumo de álcool ou bebidas com cafeína : ", meuFont1Bold))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph(anamnese.PAAM_DS_SONO_ULTIMO_ALCOOL, meuFont1))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+
+                cell = new PdfPCell(new Paragraph("Refeições pesadas à noite: ", meuFont1Bold))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph((anamnese.PAAM_DS_SONO_REFEICAO_PESADA == 1 ? "Sim" : "Não"), meuFont1))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+
+                cell = new PdfPCell(new Paragraph("Faz todas as refeições: ", meuFont1Bold))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph((anamnese.PAAM_DS_SONO_TODAS_REFEICOES == 1 ? "Sim" : "Não"), meuFont1))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+
+                cell = new PdfPCell(new Paragraph("Café da manhã: ", meuFont1Bold))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph((anamnese.PAAM_DS_SONO_CAFE == 1 ? "Sim" : "Não"), meuFont1))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+
+                cell = new PdfPCell(new Paragraph("Almoço: ", meuFont1Bold))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph((anamnese.PAAM_DS_SONO_ALMOCO == 1 ? "Sim" : "Não"), meuFont1))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+
+                cell = new PdfPCell(new Paragraph("Lanche: ", meuFont1Bold))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph((anamnese.PAAM_DS_SONO_LANCHE == 1 ? "Sim" : "Não"), meuFont1))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+
+                cell = new PdfPCell(new Paragraph("Jantar: ", meuFont1Bold))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph((anamnese.PAAM_DS_SONO_JANTAR == 1 ? "Sim" : "Não"), meuFont1))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+
+                cell = new PdfPCell(new Paragraph("Exercício físico à noite: ", meuFont1Bold))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph((anamnese.PAAM_DS_SONO_EXERCICIO == 1 ? "Sim" : "Não"), meuFont1))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+
+                cell = new PdfPCell(new Paragraph("Frequencia semanal do exercício físico: ", meuFont1Bold))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph(anamnese.PAAM_DS_SONO_EXERCICIO_FREQ, meuFont1))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+
+
+                // FRagmentacao do Sono
+                cell = new PdfPCell(new Paragraph(" ", meuFont3Bold))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 2;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph("***** Fragmentação do Sono *****", meuFont3Bold))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 2;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph(" ", meuFont3Bold))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 2;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+
+                cell = new PdfPCell(new Paragraph("Quantas vezes desperta durante o sono: ", meuFont1Bold))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph(anamnese.PAAM_DS_SONO_QUANTAS_DESPERTA, meuFont1))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+
+                cell = new PdfPCell(new Paragraph("Quais motivos: ", meuFont1Bold))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph(anamnese.PAAM_DS_SONO_MOTIVOS_DESPERTA, meuFont1))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+
+                cell = new PdfPCell(new Paragraph("Quanto tempo demora para retornar ao sono: ", meuFont1Bold))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph(anamnese.PAAM_DS_SONO_TEMPO_PEGAR_SONO, meuFont1))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+
+                cell = new PdfPCell(new Paragraph("Fica deitado na cama quando perde o sono: ", meuFont1Bold))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph((anamnese.PAAM_DS_SONO_DEITADO_PERDE_SONO == 1 ? "Sim" : "Não"), meuFont1))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+
+                cell = new PdfPCell(new Paragraph("Quantas vezes vai ao banheiro para urinar durante a noite de sono : ", meuFont1Bold))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph(anamnese.PAAM_DS_SONO_URINA_NOITE, meuFont1))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+
+                // Ainda durante do Sono
+                cell = new PdfPCell(new Paragraph(" ", meuFont3Bold))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 2;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph("***** Ainda Durante o Sono *****", meuFont3Bold))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 2;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph(" ", meuFont3Bold))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 2;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+
+                cell = new PdfPCell(new Paragraph("Presença de engasgos ou sensação de sufocamento: ", meuFont1Bold))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph((anamnese.PAAM_DS_SONO_ENGASGOS == 1 ? "Sim" : "Não"), meuFont1))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+
+                cell = new PdfPCell(new Paragraph("Tosse: ", meuFont1Bold))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph((anamnese.PAAM_DS_SONO_TOSSE == 1 ? "Sim" : "Não"), meuFont1))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+
+                cell = new PdfPCell(new Paragraph("Refluxo: ", meuFont1Bold))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph((anamnese.PAAM_DS_SONO_REFLUXO == 1 ? "Sim" : "Não"), meuFont1))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+
+                cell = new PdfPCell(new Paragraph("Sudorese: ", meuFont1Bold))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph((anamnese.PAAM_DS_SONO_SUDORESE == 1 ? "Sim" : "Não"), meuFont1))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+
+                cell = new PdfPCell(new Paragraph("Posição preferencial para dormir: ", meuFont1Bold))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph(anamnese.PAAM_DS_SONO_POSICAO_DORMIR, meuFont1))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+
+                cell = new PdfPCell(new Paragraph("Range os dentes durante o sono: ", meuFont1Bold))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph((anamnese.PAAM_DS_SONO_RANGE == 1 ? "Sim" : "Não"), meuFont1))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+
+                cell = new PdfPCell(new Paragraph("Sensação de tensão ou rigidez nos músculos da face: ", meuFont1Bold))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph((anamnese.PAAM_DS_SONO_RIGIDEZ_FACE == 1 ? "Sim" : "Não"), meuFont1))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+
+                cell = new PdfPCell(new Paragraph("Apneia testemunhada: ", meuFont1Bold))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph((anamnese.PAAM_DS_SONO_APNEIA == 1 ? "Sim" : "Não"), meuFont1))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+
+                cell = new PdfPCell(new Paragraph("Ronco alto que se ouve do quarto ao lado: ", meuFont1Bold))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph((anamnese.PAAM_DS_SONO_RONCO == 1 ? "Sim" : "Não"), meuFont1))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+
+                cell = new PdfPCell(new Paragraph("Movimentos agressivos durante o sono: ", meuFont1Bold))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph((anamnese.PAAM_DS_SONO_AGRESSIVO == 1 ? "Sim" : "Não"), meuFont1))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+
+                cell = new PdfPCell(new Paragraph("Fala durante o sono: ", meuFont1Bold))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph((anamnese.PAAM_DS_SONO_FALA == 1 ? "Sim" : "Não"), meuFont1))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+
+                cell = new PdfPCell(new Paragraph("Pesadelos: ", meuFont1Bold))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph((anamnese.PAAM_DS_SONO_PESADELO == 1 ? "Sim" : "Não"), meuFont1))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+
+                cell = new PdfPCell(new Paragraph("Sonambulismo: ", meuFont1Bold))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph((anamnese.PAAM_DS_SONO_SONANBULISMO == 1 ? "Sim" : "Não"), meuFont1))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+
+                cell = new PdfPCell(new Paragraph("Encenação durante os sonhos: ", meuFont1Bold))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph((anamnese.PAAM_DS_SONO_ENCENACAO == 1 ? "Sim" : "Não"), meuFont1))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+
+                cell = new PdfPCell(new Paragraph("Movimentos periódicos de membros: ", meuFont1Bold))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph((anamnese.PAAM_DS_SONO_MOVE_MEMBRO == 1 ? "Sim" : "Não"), meuFont1))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+
+                cell = new PdfPCell(new Paragraph("Cãibras: ", meuFont1Bold))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph((anamnese.PAAM_DS_SONO_CAIBRAS == 1 ? "Sim" : "Não"), meuFont1))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+
+                // Ambiente
+                cell = new PdfPCell(new Paragraph(" ", meuFont3Bold))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 2;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph("***** Sobre o Ambiente Durante o Sono *****", meuFont3Bold))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 2;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph(" ", meuFont3Bold))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 2;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+
+                cell = new PdfPCell(new Paragraph("Seu quarto é aconchegante, confortável: ", meuFont1Bold))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph((anamnese.PAAM_DS_SONO_ACONCHEGANTE == 1 ? "Sim" : "Não"), meuFont1))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+
+                cell = new PdfPCell(new Paragraph("Tem barulho: ", meuFont1Bold))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph((anamnese.PAAM_DS_SONO_BARULHO == 1 ? "Sim" : "Não"), meuFont1))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+
+                cell = new PdfPCell(new Paragraph("A temperatura do ambiente é confortável: ", meuFont1Bold))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph((anamnese.PAAM_DS_SONO_TEMPERATURA == 1 ? "Sim" : "Não"), meuFont1))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+
+                cell = new PdfPCell(new Paragraph("Presença de outras pessoas: ", meuFont1Bold))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph((anamnese.PAAM_DS_SONO_PESSOAS == 1 ? "Sim" : "Não"), meuFont1))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+
+                cell = new PdfPCell(new Paragraph("Presença de animais: ", meuFont1Bold))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph((anamnese.PAAM_DS_SONO_ANIMAIS == 1 ? "Sim" : "Não"), meuFont1))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+
+                cell = new PdfPCell(new Paragraph("Quais atividades realiza no quarto além de dormir: ", meuFont1Bold))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph(anamnese.PAAM_DS_SONO_ATIVIDADES, meuFont1))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+
+                // Socio
+                cell = new PdfPCell(new Paragraph(" ", meuFont3Bold))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 2;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph("***** Sobre Condições Sócio-Econômicas *****", meuFont3Bold))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 2;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph(" ", meuFont3Bold))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 2;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+
+                cell = new PdfPCell(new Paragraph("Problemas sociais e financeiros: ", meuFont1Bold))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph((anamnese.PAAM_DS_SONO_FINANCAS == 1 ? "Sim" : "Não"), meuFont1))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+
+                cell = new PdfPCell(new Paragraph("Acesso a serviços de saúde: ", meuFont1Bold))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph((anamnese.PAAM_DS_SONO_ACESSO_SAUDE == 1 ? "Sim" : "Não"), meuFont1))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+
+                // Matinal
+                cell = new PdfPCell(new Paragraph(" ", meuFont3Bold))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 2;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph("***** Sintomas Matinais *****", meuFont3Bold))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 2;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph(" ", meuFont3Bold))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 2;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+
+                cell = new PdfPCell(new Paragraph("Sono reparador: ", meuFont1Bold))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph((anamnese.PAAM_DS_SONO_REPARADOR == 1 ? "Sim" : "Não"), meuFont1))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+
+                cell = new PdfPCell(new Paragraph("Sonolência excessiva: ", meuFont1Bold))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph((anamnese.PAAM_DS_SONO_SONOLENCIA == 1 ? "Sim" : (anamnese.PAAM_DS_SONO_TIPO_RESPIRACAO == 0 ? "Não" : "Esporadicamente")), meuFont1))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+
+                cell = new PdfPCell(new Paragraph("Boca seca ao despertar: ", meuFont1Bold))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph((anamnese.PAAM_DS_SONO_BOCA_SECA == 1 ? "Sim" : "Não"), meuFont1))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+
+                cell = new PdfPCell(new Paragraph("Dor de cabeça: ", meuFont1Bold))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph((anamnese.PAAM_DS_SONO_DOR_CABECA == 1 ? "Sim" : "Não"), meuFont1))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+
+                cell = new PdfPCell(new Paragraph("Congestão nasal: ", meuFont1Bold))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph((anamnese.PAAM_DS_SONO_CONGESTAO == 1 ? "Sim" : "Não"), meuFont1))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+
+                cell = new PdfPCell(new Paragraph("Refluxo ou Azia: ", meuFont1Bold))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph((anamnese.PAAM_DS_SONO_AZIA == 1 ? "Sim" : "Não"), meuFont1))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+
+                // Diurnas
+                cell = new PdfPCell(new Paragraph(" ", meuFont3Bold))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 2;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph("***** Funções Diurnas *****", meuFont3Bold))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 2;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph(" ", meuFont3Bold))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 2;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+
+                cell = new PdfPCell(new Paragraph("Sonolência e/ou acidentes causados por sonolência: ", meuFont1Bold))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph((anamnese.PAAM_DS_SONO_SONOLENCIA_DIURNA == 1 ? "Sim" : "Não"), meuFont1))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+
+                cell = new PdfPCell(new Paragraph("Cansaço: ", meuFont1Bold))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph((anamnese.PAAM_DS_SONO_CANSACO == 1 ? "Sim" : "Não"), meuFont1))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+
+                cell = new PdfPCell(new Paragraph("Fadiga: ", meuFont1Bold))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph((anamnese.PAAM_DS_SONO_FADIGA == 1 ? "Sim" : "Não"), meuFont1))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+
+                cell = new PdfPCell(new Paragraph("Irritabilidade: ", meuFont1Bold))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph((anamnese.PAAM_DS_SONO_IRRITA == 1 ? "Sim" : "Não"), meuFont1))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+
+                cell = new PdfPCell(new Paragraph("Deficit de Concentração: ", meuFont1Bold))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph((anamnese.PAAM_DS_SONO_DEFICIT_CONCENTRA == 1 ? "Sim" : "Não"), meuFont1))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+
+                cell = new PdfPCell(new Paragraph("Deficit de Memória: ", meuFont1Bold))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph((anamnese.PAAM_DS_SONO_DEFICIT_MEMO == 1 ? "Sim" : "Não"), meuFont1))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+
+                cell = new PdfPCell(new Paragraph("Dor: ", meuFont1Bold))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph((anamnese.PAAM_DS_SONO_DOR == 1 ? "Sim" : "Não"), meuFont1))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+
+                // Outros
+                cell = new PdfPCell(new Paragraph(" ", meuFont3Bold))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 2;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph("***** Outros *****", meuFont3Bold))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 2;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph(" ", meuFont3Bold))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 2;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+
+                cell = new PdfPCell(new Paragraph("Tipo de respiração: ", meuFont1Bold))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph((anamnese.PAAM_DS_SONO_TIPO_RESPIRACAO == 1 ? "Nasal" : (anamnese.PAAM_DS_SONO_TIPO_RESPIRACAO == 2 ? "Oronasal" : "Mista")), meuFont1))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+
+                cell = new PdfPCell(new Paragraph("Sensação de tensão ou rigidez nos músculos da face: ", meuFont1Bold))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph((anamnese.PAAM_DS_SONO_RIGIDEZ_FACE_OUTROS == 1 ? "Sim" : "Não"), meuFont1))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+
+                cell = new PdfPCell(new Paragraph("Disfunção sexual: ", meuFont1Bold))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph((anamnese.PAAM_DS_SONO_DISFUNCAO == 1 ? "Sim" : "Não"), meuFont1))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+
+                cell = new PdfPCell(new Paragraph("Alterações ponderais: ", meuFont1Bold))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph((anamnese.PAAM_DS_SONO_PONDERAL == 1 ? "Sim" : "Não"), meuFont1))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+
+                cell = new PdfPCell(new Paragraph("Medicamentos e outras substâncias em uso: ", meuFont1Bold))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph(anamnese.PAAM_DS_SONO_MEDICAMENTOS, meuFont1))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+
+                cell = new PdfPCell(new Paragraph("Comorbidades: ", meuFont1Bold))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph(anamnese.PAAM_DS_SONO_COMORBIDADES, meuFont1))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+
+                cell = new PdfPCell(new Paragraph("Cirurgias prévias: ", meuFont1Bold))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph(anamnese.PAAM_DS_SONO_CIRURGIAS, meuFont1))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+
+                cell = new PdfPCell(new Paragraph("Sensações desagradáveis nas pernas, principalmente à noite, final do dia, ou quando sentado em repouso: ", meuFont1Bold))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph((anamnese.PAAM_DS_SONO_SENSACAO_PERNA == 1 ? "Sim" : "Não"), meuFont1))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+
+                cell = new PdfPCell(new Paragraph("Trabalha ou trabalhou em turno : ", meuFont1Bold))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph((anamnese.PAAM_DS_SONO_TURNO == 1 ? "Sim" : "Não"), meuFont1))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+
+                cell = new PdfPCell(new Paragraph("Dados da polissonografia: ", meuFont1Bold))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph(anamnese.PAAM_DS_SONO_POLISONO, meuFont1))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+
+                cell = new PdfPCell(new Paragraph("Mallampati: ", meuFont1Bold))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph(anamnese.PAAM_DS_SONO_MALLAMPATI, meuFont1))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+
+                cell = new PdfPCell(new Paragraph("Overlap: ", meuFont1Bold))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph(anamnese.PAAM_DS_SONO_OVERLAP, meuFont1))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+
+                cell = new PdfPCell(new Paragraph("Patologias associadas: ", meuFont1Bold))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph(anamnese.PAAM_DS_SONO_PATOLOGIAS, meuFont1))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+
+                // Custom
+                cell = new PdfPCell(new Paragraph(" ", meuFont3Bold))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 2;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph("***** Informações Customizadas *****", meuFont3Bold))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 2;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph(" ", meuFont3Bold))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 2;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+
+                if (anamnese.PAAM_IN_CAMPO_1 == 1)
+                {
+                    cell = new PdfPCell(new Paragraph(anamnese.PAAM_NM_CAMPO_1 + ": ", meuFont1Bold))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    cell.Colspan = 1;
+                    cell.BackgroundColor = BaseColor.WHITE;
+                    table.AddCell(cell);
+                    cell = new PdfPCell(new Paragraph(anamnese.PAAM_DS_CAMPO_1, meuFont1))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    cell.Colspan = 1;
+                    cell.BackgroundColor = BaseColor.WHITE;
+                    table.AddCell(cell);
+                }
+
+                if (anamnese.PAAM_IN_CAMPO_2 == 1)
+                {
+                    cell = new PdfPCell(new Paragraph(anamnese.PAAM_NM_CAMPO_2 + ": ", meuFont1Bold))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    cell.Colspan = 1;
+                    cell.BackgroundColor = BaseColor.WHITE;
+                    table.AddCell(cell);
+                    cell = new PdfPCell(new Paragraph(anamnese.PAAM_DS_CAMPO_2, meuFont1))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    cell.Colspan = 1;
+                    cell.BackgroundColor = BaseColor.WHITE;
+                    table.AddCell(cell);
+                }
+
+                if (anamnese.PAAM_IN_CAMPO_3 == 1)
+                {
+                    cell = new PdfPCell(new Paragraph(anamnese.PAAM_NM_CAMPO_3 + ": ", meuFont1Bold))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    cell.Colspan = 1;
+                    cell.BackgroundColor = BaseColor.WHITE;
+                    table.AddCell(cell);
+                    cell = new PdfPCell(new Paragraph(anamnese.PAAM_DS_CAMPO_3, meuFont1))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    cell.Colspan = 1;
+                    cell.BackgroundColor = BaseColor.WHITE;
+                    table.AddCell(cell);
+                }
+
+                if (anamnese.PAAM_IN_CAMPO_4 == 1)
+                {
+                    cell = new PdfPCell(new Paragraph(anamnese.PAAM_NM_CAMPO_4 + ": ", meuFont1Bold))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    cell.Colspan = 1;
+                    cell.BackgroundColor = BaseColor.WHITE;
+                    table.AddCell(cell);
+                    cell = new PdfPCell(new Paragraph(anamnese.PAAM_DS_CAMPO_4, meuFont1))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    cell.Colspan = 1;
+                    cell.BackgroundColor = BaseColor.WHITE;
+                    table.AddCell(cell);
+                }
+
+                if (anamnese.PAAM_IN_CAMPO_5 == 1)
+                {
+                    cell = new PdfPCell(new Paragraph(anamnese.PAAM_NM_CAMPO_5 + ": ", meuFont1Bold))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    cell.Colspan = 1;
+                    cell.BackgroundColor = BaseColor.WHITE;
+                    table.AddCell(cell);
+                    cell = new PdfPCell(new Paragraph(anamnese.PAAM_DS_CAMPO_5, meuFont1))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    cell.Colspan = 1;
+                    cell.BackgroundColor = BaseColor.WHITE;
+                    table.AddCell(cell);
+                }
+
+                if (anamnese.PAAM_IN_CAMPO_6 == 1)
+                {
+                    cell = new PdfPCell(new Paragraph(anamnese.PAAM_NM_CAMPO_6 + ": ", meuFont1Bold))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    cell.Colspan = 1;
+                    cell.BackgroundColor = BaseColor.WHITE;
+                    table.AddCell(cell);
+                    cell = new PdfPCell(new Paragraph(anamnese.PAAM_DS_CAMPO_6, meuFont1))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    cell.Colspan = 1;
+                    cell.BackgroundColor = BaseColor.WHITE;
+                    table.AddCell(cell);
+                }
+
+                if (anamnese.PAAM_IN_CAMPO_7 == 1)
+                {
+                    cell = new PdfPCell(new Paragraph(anamnese.PAAM_NM_CAMPO_7 + ": ", meuFont1Bold))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    cell.Colspan = 1;
+                    cell.BackgroundColor = BaseColor.WHITE;
+                    table.AddCell(cell);
+                    cell = new PdfPCell(new Paragraph(anamnese.PAAM_DS_CAMPO_7, meuFont1))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    cell.Colspan = 1;
+                    cell.BackgroundColor = BaseColor.WHITE;
+                    table.AddCell(cell);
+                }
+
+                if (anamnese.PAAM_IN_CAMPO_8 == 1)
+                {
+                    cell = new PdfPCell(new Paragraph(anamnese.PAAM_NM_CAMPO_8 + ": ", meuFont1Bold))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    cell.Colspan = 1;
+                    cell.BackgroundColor = BaseColor.WHITE;
+                    table.AddCell(cell);
+                    cell = new PdfPCell(new Paragraph(anamnese.PAAM_DS_CAMPO_8, meuFont1))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    cell.Colspan = 1;
+                    cell.BackgroundColor = BaseColor.WHITE;
+                    table.AddCell(cell);
+                }
+
+                if (anamnese.PAAM_IN_CAMPO_9 == 1)
+                {
+                    cell = new PdfPCell(new Paragraph(anamnese.PAAM_NM_CAMPO_9 + ": ", meuFont1Bold))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    cell.Colspan = 1;
+                    cell.BackgroundColor = BaseColor.WHITE;
+                    table.AddCell(cell);
+                    cell = new PdfPCell(new Paragraph(anamnese.PAAM_DS_CAMPO_9, meuFont1))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    cell.Colspan = 1;
+                    cell.BackgroundColor = BaseColor.WHITE;
+                    table.AddCell(cell);
+                }
+
+                if (anamnese.PAAM_IN_CAMPO_10 == 1)
+                {
+                    cell = new PdfPCell(new Paragraph(anamnese.PAAM_NM_CAMPO_10 + ": ", meuFont1Bold))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    cell.Colspan = 1;
+                    cell.BackgroundColor = BaseColor.WHITE;
+                    table.AddCell(cell);
+                    cell = new PdfPCell(new Paragraph(anamnese.PAAM_DS_CAMPO_10, meuFont1))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    cell.Colspan = 1;
+                    cell.BackgroundColor = BaseColor.WHITE;
+                    table.AddCell(cell);
+                }
+                pdfDoc.Add(table);
+
+                // Finaliza
+                pdfWriter.CloseStream = false;
+                pdfDoc.Close();
+                Response.Buffer = true;
+                Response.ContentType = "application/pdf";
+                Response.AddHeader("content-disposition", "attachment;filename=" + nomeRel);
+                Response.Cache.SetCacheability(HttpCacheability.NoCache);
+                Response.Write(pdfDoc);
+                Response.End();
+                return RedirectToAction("VoltarProcederConsulta", "Paciente");
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Usuários";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Usuários", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return RedirectToAction("TrataExcecao", "BaseAdmin");
+            }
+        }
+
+        public Int32 AcertoCampo()
+        {
+            List<PACIENTE_ANAMNESE> anas = baseApp.GetAllAnamnese(35).ToList();
+            foreach (PACIENTE_ANAMNESE item in anas)
+            {
+                String texto = String.Empty;
+                if (item.PAAM_DS_MOTIVO_CONSULTA != null)
+                {
+                    texto = "===== MOTIVO DA CONSULTA =====" + "\r\n" + item.PAAM_DS_MOTIVO_CONSULTA + "\r\n" + "\r\n";
+                }
+                if (item.PAAM_DS_HISTORIA_FAMILIAR != null)
+                {
+                    texto += "===== HISTÓRIA FAMILIAR =====" + "\r\n" + item.PAAM_DS_HISTORIA_FAMILIAR + "\r\n" + "\r\n";
+                }
+                if (item.PAAN_NM_AVALIACAO_CARDIOLOGICA != null)
+                {
+                    texto += "===== AVALIAÇÂO CARDIOLÓGICA =====" + "\r\n" + item.PAAN_NM_AVALIACAO_CARDIOLOGICA + "\r\n" + "\r\n";
+                }
+                if (item.PAAN_NM_RESPIRATORIO != null)
+                {
+                    texto += "===== AVALIAÇÂO RESPIRATÓRIA  =====" + "\r\n" + item.PAAN_NM_RESPIRATORIO + "\r\n" + "\r\n";
+                }
+                if (item.PAAM_DS_HISTORIA_DOENCA_ATUAL != null)
+                {
+                    texto += "===== HISTÓRIA DA DOENÇA ATUAL =====" + "\r\n" + item.PAAM_DS_HISTORIA_DOENCA_ATUAL + "\r\n" + "\r\n";
+                }
+                if (item.PAAM_NM_MEDICAMENTO != null)
+                {
+                    texto += "===== MEDICAMENTOS =====" + "\r\n" + item.PAAM_NM_MEDICAMENTO + "\r\n" + "\r\n";
+                }
+                if (item.PAAM_DS_CONDUTA != null)
+                {
+                    texto += "===== CONDUTA ADOTADA =====" + "\r\n" + item.PAAM_DS_CONDUTA + "\r\n" + "\r\n";
+                }
+
+                if (texto != null || texto != String.Empty)
+                {
+                    item.PAAM_DS_SONO_PRINCIPAL_QUEIXA = item.PAAM_DS_QUEIXA_PRINCIPAL;
+                    if (item.PAAM_TX_TEXTO_LIVRE != null)
+                    {
+                        texto = item.PAAM_TX_TEXTO_LIVRE + "\r\n" + "\r\n" + "========================================" + "\r\n" + "\r\n" + texto;
+                    }
+                    item.PAAM_TX_TEXTO_LIVRE = texto;
+                    Int32 volta = baseApp.ValidateEditAnamnese(item);
+                }
+            }
+            return 0;
+        }
+
+        [HttpGet]
+        public ActionResult EditarQuestionarioBerlim()
+        {
+            try
+            {
+                // Verifica se tem usuario logado
+                USUARIO usuario = new USUARIO();
+                if ((String)Session["Ativa"] == null)
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+                if ((USUARIO)Session["UserCredentials"] != null)
+                {
+                    usuario = (USUARIO)Session["UserCredentials"];
+
+                    // Verfifica permissão
+                    if (usuario.PERFIL.PERF_IN_ALTERAR_PACIENTE == 0)
+                    {
+                        Session["MensPermissao"] = 2;
+                        Session["ModuloPermissao"] = "Paciente - Questionario - Edição";
+                        return RedirectToAction("VoltarAnexoPaciente");
+                    }
+                }
+                else
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+                Int32 idAss = (Int32)Session["IdAssinante"];
+                Session["ModuloAtual"] = "Qustionario Berlim - Edição";
+
+                // Prepara listas
+                var ronco = new List<SelectListItem>();
+                ronco.Add(new SelectListItem() { Text = "Sim", Value = "1" });
+                ronco.Add(new SelectListItem() { Text = "Não", Value = "2" });
+                ronco.Add(new SelectListItem() { Text = "Não Sei", Value = "3" });
+                ViewBag.Ronco = new SelectList(ronco, "Value", "Text");
+                var roncoTipo = new List<SelectListItem>();
+                roncoTipo.Add(new SelectListItem() { Text = "Pouco mais alto que respirando", Value = "1" });
+                roncoTipo.Add(new SelectListItem() { Text = "Tão alto quanto falando", Value = "2" });
+                roncoTipo.Add(new SelectListItem() { Text = "Mais alto quanto falando", Value = "3" });
+                roncoTipo.Add(new SelectListItem() { Text = "Muito alto que pode ser ouvido nos quartos próximos", Value = "4" });
+                ViewBag.TipoRonco = new SelectList(roncoTipo, "Value", "Text");
+                var roncoFreq = new List<SelectListItem>();
+                roncoFreq.Add(new SelectListItem() { Text = "Praticamente todos os dias", Value = "1" });
+                roncoFreq.Add(new SelectListItem() { Text = "3-4 vezes por semana", Value = "2" });
+                roncoFreq.Add(new SelectListItem() { Text = "1-2 vezes por semana", Value = "3" });
+                roncoFreq.Add(new SelectListItem() { Text = "Nunca ou praticamente nunca", Value = "4" });
+                ViewBag.FreqRonco = new SelectList(roncoFreq, "Value", "Text");
+                var inco = new List<SelectListItem>();
+                inco.Add(new SelectListItem() { Text = "Sim", Value = "1" });
+                inco.Add(new SelectListItem() { Text = "Não", Value = "2" });
+                ViewBag.Incomoda = new SelectList(inco, "Value", "Text");
+                var resp = new List<SelectListItem>();
+                resp.Add(new SelectListItem() { Text = "Praticamente todos os dias", Value = "1" });
+                resp.Add(new SelectListItem() { Text = "3-4 vezes por semana", Value = "2" });
+                resp.Add(new SelectListItem() { Text = "1-2 vezes por semana", Value = "3" });
+                resp.Add(new SelectListItem() { Text = "Nunca ou praticamente nunca", Value = "4" });
+                ViewBag.Respira = new SelectList(resp, "Value", "Text");
+                var cans = new List<SelectListItem>();
+                cans.Add(new SelectListItem() { Text = "Praticamente todos os dias", Value = "1" });
+                cans.Add(new SelectListItem() { Text = "3-4 vezes por semana", Value = "2" });
+                cans.Add(new SelectListItem() { Text = "1-2 vezes por semana", Value = "3" });
+                cans.Add(new SelectListItem() { Text = "Nunca ou praticamente nunca", Value = "4" });
+                ViewBag.Cansaco = new SelectList(cans, "Value", "Text");
+                var acor = new List<SelectListItem>();
+                acor.Add(new SelectListItem() { Text = "Praticamente todos os dias", Value = "1" });
+                acor.Add(new SelectListItem() { Text = "3-4 vezes por semana", Value = "2" });
+                acor.Add(new SelectListItem() { Text = "1-2 vezes por semana", Value = "3" });
+                acor.Add(new SelectListItem() { Text = "Nunca ou praticamente nunca", Value = "4" });
+                ViewBag.Acordado = new SelectList(acor, "Value", "Text");
+                var coch = new List<SelectListItem>();
+                coch.Add(new SelectListItem() { Text = "Sim", Value = "1" });
+                coch.Add(new SelectListItem() { Text = "Não", Value = "2" });
+                ViewBag.Cochilo = new SelectList(coch, "Value", "Text");
+                var pres = new List<SelectListItem>();
+                pres.Add(new SelectListItem() { Text = "Sim", Value = "1" });
+                pres.Add(new SelectListItem() { Text = "Não", Value = "2" });
+                pres.Add(new SelectListItem() { Text = "Não Sei", Value = "3" });
+                ViewBag.Pressao = new SelectList(pres, "Value", "Text");
+
+                Session["NivelPaciente"] = 14;
+                Session["AjudaNivel"] = "../BaseAdmin/Ajuda/7/Ajuda7_2.pdf";
+                ViewBag.Perfil = usuario.PERFIL.PERF_SG_SIGLA;
+
+                // Recupera informações
+                PACIENTE item = baseApp.GetItemById((Int32)Session["IdPaciente"]);
+                QUESTIONARIO_BERLIM quest = item.QUESTIONARIO_BERLIM.FirstOrDefault();
+                Session["IdPaciente"] = item.PACI__CD_ID;
+                Session["IdQuest"] = quest.QUBE_CD_ID;
+
+                // Prepara view
+                QuestionarioBerlimViewModel vm = Mapper.Map<QUESTIONARIO_BERLIM, QuestionarioBerlimViewModel>(quest);
+                Session["Questionario"] = item;
+
+                // Grava Acesso
+                ControleAcessoMetodo grava = new ControleAcessoMetodo(aceApp);
+                Int32 voltaX = grava.GravaAcesso(usuario.USUA_CD_ID, usuario.ASSI_CD_ID, "PACIENTE_QUESTIONARIO_BERLIM", "Paciente", "EditarQuestionarioBerlim");
+                return View(vm);
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Paciente";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Paciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return RedirectToAction("TrataExcecao", "BaseAdmin");
+            }
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [ValidateInput(false)]
+        public ActionResult EditarQuestionarioBerlim(QuestionarioBerlimViewModel vm)
+        {
+            if ((String)Session["Ativa"] == null)
+            {
+                return RedirectToAction("Logout", "ControleAcesso");
+            }
+            USUARIO usuarioLogado = (USUARIO)Session["UserCredentials"];
+            var ronco = new List<SelectListItem>();
+            ronco.Add(new SelectListItem() { Text = "Sim", Value = "1" });
+            ronco.Add(new SelectListItem() { Text = "Não", Value = "2" });
+            ronco.Add(new SelectListItem() { Text = "Não Sei", Value = "3" });
+            ViewBag.Ronco = new SelectList(ronco, "Value", "Text");
+            var roncoTipo = new List<SelectListItem>();
+            roncoTipo.Add(new SelectListItem() { Text = "Pouco mais alto que respirando", Value = "1" });
+            roncoTipo.Add(new SelectListItem() { Text = "Tão alto quanto falando", Value = "2" });
+            roncoTipo.Add(new SelectListItem() { Text = "Mais alto quanto falando", Value = "3" });
+            roncoTipo.Add(new SelectListItem() { Text = "Muito alto que pode ser ouvido nos quartos próximos", Value = "4" });
+            ViewBag.TipoRonco = new SelectList(roncoTipo, "Value", "Text");
+            var roncoFreq = new List<SelectListItem>();
+            roncoFreq.Add(new SelectListItem() { Text = "Praticamente todos os dias", Value = "1" });
+            roncoFreq.Add(new SelectListItem() { Text = "3-4 vezes por semana", Value = "2" });
+            roncoFreq.Add(new SelectListItem() { Text = "1-2 vezes por semana", Value = "3" });
+            roncoFreq.Add(new SelectListItem() { Text = "Nunca ou praticamente nunca", Value = "4" });
+            ViewBag.FreqRonco = new SelectList(roncoFreq, "Value", "Text");
+            var inco = new List<SelectListItem>();
+            inco.Add(new SelectListItem() { Text = "Sim", Value = "1" });
+            inco.Add(new SelectListItem() { Text = "Não", Value = "2" });
+            ViewBag.Incomoda = new SelectList(inco, "Value", "Text");
+            var resp = new List<SelectListItem>();
+            resp.Add(new SelectListItem() { Text = "Praticamente todos os dias", Value = "1" });
+            resp.Add(new SelectListItem() { Text = "3-4 vezes por semana", Value = "2" });
+            resp.Add(new SelectListItem() { Text = "1-2 vezes por semana", Value = "3" });
+            resp.Add(new SelectListItem() { Text = "Nunca ou praticamente nunca", Value = "4" });
+            ViewBag.Respira = new SelectList(resp, "Value", "Text");
+            var cans = new List<SelectListItem>();
+            cans.Add(new SelectListItem() { Text = "Praticamente todos os dias", Value = "1" });
+            cans.Add(new SelectListItem() { Text = "3-4 vezes por semana", Value = "2" });
+            cans.Add(new SelectListItem() { Text = "1-2 vezes por semana", Value = "3" });
+            cans.Add(new SelectListItem() { Text = "Nunca ou praticamente nunca", Value = "4" });
+            ViewBag.Cansaco = new SelectList(cans, "Value", "Text");
+            var acor = new List<SelectListItem>();
+            acor.Add(new SelectListItem() { Text = "Praticamente todos os dias", Value = "1" });
+            acor.Add(new SelectListItem() { Text = "3-4 vezes por semana", Value = "2" });
+            acor.Add(new SelectListItem() { Text = "1-2 vezes por semana", Value = "3" });
+            acor.Add(new SelectListItem() { Text = "Nunca ou praticamente nunca", Value = "4" });
+            ViewBag.Acordado = new SelectList(acor, "Value", "Text");
+            var coch = new List<SelectListItem>();
+            coch.Add(new SelectListItem() { Text = "Sim", Value = "1" });
+            coch.Add(new SelectListItem() { Text = "Não", Value = "2" });
+            ViewBag.Cochilo = new SelectList(coch, "Value", "Text");
+            var pres = new List<SelectListItem>();
+            pres.Add(new SelectListItem() { Text = "Sim", Value = "1" });
+            pres.Add(new SelectListItem() { Text = "Não", Value = "2" });
+            pres.Add(new SelectListItem() { Text = "Não Sei", Value = "3" });
+            ViewBag.Pressao = new SelectList(pres, "Value", "Text");
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    // Sanitização
+
+                    // Calculos Categoria 1
+                    Int32 positiva = 0;
+                    Int32 result = 0;
+                    if (vm.QUBE_IN_RONCO == 2)
+                    {
+                        positiva++;
+                    }
+                    if (vm.QUBE_IN_TIPO_RONCO > 1)
+                    {
+                        positiva++;
+                    }
+                    if (vm.QUBE_IN_FREQUENCIA_RONCO < 4)
+                    {
+                        positiva++;
+                    }
+                    if (vm.QUBE_IN_INCOMODA_RONCO == 1)
+                    {
+                        positiva++;
+                    }
+                    if (vm.QUBE_IN_PARA_RESPIRA < 4)
+                    {
+                        positiva++;
+                    }
+                    if (positiva >= 2)
+                    {
+                        vm.QUBE_IN_CATEGORIA_1 = 1;
+                        result++;
+                    }
+                    else
+                    {
+                        vm.QUBE_IN_CATEGORIA_1 = 2;
+                    }
+
+                    // Calculos Categoria 2
+                    positiva = 0;
+                    if (vm.QUBE_IN_CANSACO < 4)
+                    {
+                        positiva++;
+                    }
+                    if (vm.QUBE_IN_CANSACO_ACORDADO < 4)
+                    {
+                        positiva++;
+                    }
+                    if (vm.QUBE_IN_COCHILO == 1)
+                    {
+                        positiva++;
+                    }
+                    if (positiva >= 2)
+                    {
+                        vm.QUBE_IN_CATEGORIA_2 = 1;
+                        result++;
+                    }
+                    else
+                    {
+                        vm.QUBE_IN_CATEGORIA_2 = 2;
+                    }
+
+                    // Calculos Categoria 3
+                    positiva = 0;
+                    if (vm.QUBE_IN_PRESSAO == 1)
+                    {
+                        positiva++;
+                    }
+                    if (vm.QUBE_NR_IMC > 30)
+                    {
+                        positiva++;
+                    }
+                    if (positiva > 0)
+                    {
+                        vm.QUBE_IN_CATEGORIA_3 = 1;
+                        result++;
+                    }
+                    else
+                    {
+                        vm.QUBE_IN_CATEGORIA_3 = 2;
+                    }
+
+                    // Calculos Pontuacao
+                    if (result >= 2)
+                    {
+                        vm.QUBE_IN_PONTUACAO = 1;
+                        result++;
+                    }
+
+                    // Executa a operação
+                    QUESTIONARIO_BERLIM item = Mapper.Map<QuestionarioBerlimViewModel, QUESTIONARIO_BERLIM>(vm);
+                    Int32 volta = baseApp.ValidateEditBerlim(item);
+
+                    // Verifica retorno
+                    Session["PacienteAlterada"] = 1;
+                    Session["NivelPaciente"] = 14;
+                    Session["IdPaciente"] = item.PACI_CD_ID;
+
+                    // Grava historico
+                    PACIENTE_HISTORICO hist = new PACIENTE_HISTORICO();
+                    PACIENTE pac = baseApp.GetItemById(item.PACI_CD_ID);
+                    hist.ASSI_CD_ID = usuarioLogado.ASSI_CD_ID;
+                    hist.USUA_CD_ID = usuarioLogado.USUA_CD_ID;
+                    hist.PACI_CD_ID = item.PACI_CD_ID;
+                    hist.PAHI_DT_DATA = DateTime.Now;
+                    hist.PAHI_IN_TIPO = 5;
+                    hist.PAHI_IN_CHAVE = item.QUBE_CD_ID;
+                    hist.PAHI_NM_OPERACAO = "Paciente - Questionario Berlim - Alteração";
+                    hist.PAHI_DS_DESCRICAO = "Paciente " + pac.PACI_NM_NOME;
+                    Int32 voltaHist = baseApp.ValidateCreateHistorico(hist);
+
+                    // Mensagem do CRUD
+                    Session["MsgCRUD"] = "O questionário de Berlim" + " do(a) paciente " + pac.PACI_NM_NOME.ToUpper() + " foi alterado com sucesso.";
+                    Session["MensPaciente"] = 61;
+
+                    // Retorno
+                    Int32 s = (Int32)Session["VoltarPesquisa"];
+                    return RedirectToAction("VoltarAnexoPaciente");
+                }
+                catch (Exception ex)
+                {
+                    ViewBag.Message = ex.Message;
+                    Session["TipoVolta"] = 2;
+                    Session["VoltaExcecao"] = "Paciente";
+                    Session["Excecao"] = ex;
+                    Session["ExcecaoTipo"] = ex.GetType().ToString();
+                    GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                    Int32 voltaX = grava.GravarLogExcecao(ex, "Paciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                    return RedirectToAction("TrataExcecao", "BaseAdmin");
+                }
+            }
+            else
+            {
+                return View(vm);
+            }
+        }
+
+        [HttpGet]
+        public ActionResult EditarQuestionarioEpworth()
+        {
+            try
+            {
+                // Verifica se tem usuario logado
+                USUARIO usuario = new USUARIO();
+                if ((String)Session["Ativa"] == null)
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+                if ((USUARIO)Session["UserCredentials"] != null)
+                {
+                    usuario = (USUARIO)Session["UserCredentials"];
+
+                    // Verfifica permissão
+                    if (usuario.PERFIL.PERF_IN_ALTERAR_PACIENTE == 0)
+                    {
+                        Session["MensPermissao"] = 2;
+                        Session["ModuloPermissao"] = "Paciente - Questionario - Edição";
+                        return RedirectToAction("VoltarAnexoPaciente");
+                    }
+                }
+                else
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+                Int32 idAss = (Int32)Session["IdAssinante"];
+                Session["ModuloAtual"] = "Qustionario Berlim - Edição";
+
+                // Prepara listas
+
+                Session["NivelPaciente"] = 15;
+                Session["AjudaNivel"] = "../BaseAdmin/Ajuda/7/Ajuda7_2.pdf";
+                ViewBag.Perfil = usuario.PERFIL.PERF_SG_SIGLA;
+
+                // Recupera informações
+                PACIENTE item = baseApp.GetItemById((Int32)Session["IdPaciente"]);
+                QUESTIONARIO_EPWORTH quest = item.QUESTIONARIO_EPWORTH.FirstOrDefault();
+                Session["IdPaciente"] = item.PACI__CD_ID;
+                Session["IdQuest"] = quest.QUEP_CD_ID;
+
+                String fraseEpworth = "Qual a probabilidade de você cochilar ou adormecer nas situações abaixo e não apenas se sentir cansado";
+                ViewBag.CabEpworth = fraseEpworth;
+                String textoEpworth = "Este questonário refere-se ao seu modo de vida habitual nos últimos tempos. Mesmo que não tenha passado por nenhuma dessas situações ultimamente, tente imaginar como elas te afetariam";
+                ViewBag.TexEpworth = textoEpworth;
+
+                // Prepara view
+                QuestionarioEpworthViewModel vm = Mapper.Map<QUESTIONARIO_EPWORTH, QuestionarioEpworthViewModel>(quest);
+                Session["Questionario"] = item;
+
+                // Grava Acesso
+                ControleAcessoMetodo grava = new ControleAcessoMetodo(aceApp);
+                Int32 voltaX = grava.GravaAcesso(usuario.USUA_CD_ID, usuario.ASSI_CD_ID, "PACIENTE_QUESTIONARIO_EPWORTH", "Paciente2", "EditarQuestionarioEpworth");
+                return View(vm);
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Paciente";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Paciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return RedirectToAction("TrataExcecao", "BaseAdmin");
+            }
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [ValidateInput(false)]
+        public ActionResult EditarQuestionarioEpworth(QuestionarioEpworthViewModel vm)
+        {
+            if ((String)Session["Ativa"] == null)
+            {
+                return RedirectToAction("Logout", "ControleAcesso");
+            }
+            USUARIO usuarioLogado = (USUARIO)Session["UserCredentials"];
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    // Sanitização
+
+                    // Criticas e calculo
+                    Int32? res = 0;
+                    if (vm.QUEP_IN_ALMOCO == null)
+                    {
+                        vm.QUEP_IN_ALMOCO = 0;
+                    }
+                    else if (vm.QUEP_IN_ALMOCO > 4)
+                    {
+                        vm.QUEP_IN_ALMOCO = 4;
+                    }
+                    else
+                    {
+                        res += vm.QUEP_IN_ALMOCO;
+                    }
+                    if (vm.QUEP_IN_CARRO == null)
+                    {
+                        vm.QUEP_IN_CARRO = 0;
+                    }
+                    else if (vm.QUEP_IN_CARRO > 4)
+                    {
+                        vm.QUEP_IN_CARRO = 4;
+                    }
+                    else
+                    {
+                        res += vm.QUEP_IN_CARRO;
+                    }
+                    if (vm.QUEP_IN_CONVERSA == null)
+                    {
+                        vm.QUEP_IN_CONVERSA = 0;
+                    }
+                    else if (vm.QUEP_IN_CONVERSA > 4)
+                    {
+                        vm.QUEP_IN_CONVERSA = 4;
+                    }
+                    else
+                    {
+                        res += vm.QUEP_IN_CONVERSA;
+                    }
+                    if (vm.QUEP_IN_DEITADO == null)
+                    {
+                        vm.QUEP_IN_DEITADO = 0;
+                    }
+                    else if (vm.QUEP_IN_DEITADO > 4)
+                    {
+                        vm.QUEP_IN_DEITADO = 4;
+                    }
+                    else
+                    {
+                        res += vm.QUEP_IN_DEITADO;
+                    }
+                    if (vm.QUEP_IN_INATIVO == null)
+                    {
+                        vm.QUEP_IN_INATIVO = 0;
+                    }
+                    else if (vm.QUEP_IN_INATIVO > 4)
+                    {
+                        vm.QUEP_IN_INATIVO = 4;
+                    }
+                    else
+                    {
+                        res += vm.QUEP_IN_INATIVO;
+                    }
+                    if (vm.QUEP_IN_LIVRO == null)
+                    {
+                        vm.QUEP_IN_LIVRO = 0;
+                    }
+                    else if (vm.QUEP_IN_LIVRO > 4)
+                    {
+                        vm.QUEP_IN_LIVRO = 4;
+                    }
+                    else
+                    {
+                        res += vm.QUEP_IN_LIVRO;
+                    }
+                    if (vm.QUEP_IN_TV == null)
+                    {
+                        vm.QUEP_IN_TV = 0;
+                    }
+                    else if (vm.QUEP_IN_TV > 4)
+                    {
+                        vm.QUEP_IN_TV = 4;
+                    }
+                    else
+                    {
+                        res += vm.QUEP_IN_TV;
+                    }
+                    if (vm.QUEP_IN_VOLANTE == null)
+                    {
+                        vm.QUEP_IN_VOLANTE = 0;
+                    }
+                    else if (vm.QUEP_IN_VOLANTE > 4)
+                    {
+                        vm.QUEP_IN_VOLANTE = 4;
+                    }
+                    else
+                    {
+                        res += vm.QUEP_IN_VOLANTE;
+                    }
+                    vm.QUEP_IN_RESULTADO = res;
+
+                    // Executa a operação
+                    QUESTIONARIO_EPWORTH item = Mapper.Map<QuestionarioEpworthViewModel, QUESTIONARIO_EPWORTH>(vm);
+                    Int32 volta = baseApp.ValidateEditEpworth(item);
+
+                    // Verifica retorno
+                    Session["PacienteAlterada"] = 1;
+                    Session["NivelPaciente"] = 15;
+                    Session["IdPaciente"] = item.PACI_CD_ID;
+
+                    // Grava historico
+                    PACIENTE_HISTORICO hist = new PACIENTE_HISTORICO();
+                    PACIENTE pac = baseApp.GetItemById(item.PACI_CD_ID);
+                    hist.ASSI_CD_ID = usuarioLogado.ASSI_CD_ID;
+                    hist.USUA_CD_ID = usuarioLogado.USUA_CD_ID;
+                    hist.PACI_CD_ID = item.PACI_CD_ID;
+                    hist.PAHI_DT_DATA = DateTime.Now;
+                    hist.PAHI_IN_TIPO = 5;
+                    hist.PAHI_IN_CHAVE = item.QUEP_CD_ID;
+                    hist.PAHI_NM_OPERACAO = "Paciente - Questionario Epworth - Alteração";
+                    hist.PAHI_DS_DESCRICAO = "Paciente " + pac.PACI_NM_NOME;
+                    Int32 voltaHist = baseApp.ValidateCreateHistorico(hist);
+
+                    // Mensagem do CRUD
+                    Session["MsgCRUD"] = "O questionário Epworth" + " do(a) paciente " + pac.PACI_NM_NOME.ToUpper() + " foi alterado com sucesso.";
+                    Session["MensPaciente"] = 61;
+
+                    // Retorno
+                    Int32 s = (Int32)Session["VoltarPesquisa"];
+                    return RedirectToAction("VoltarAnexoPaciente");
+                }
+                catch (Exception ex)
+                {
+                    ViewBag.Message = ex.Message;
+                    Session["TipoVolta"] = 2;
+                    Session["VoltaExcecao"] = "Paciente";
+                    Session["Excecao"] = ex;
+                    Session["ExcecaoTipo"] = ex.GetType().ToString();
+                    GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                    Int32 voltaX = grava.GravarLogExcecao(ex, "Paciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                    return RedirectToAction("TrataExcecao", "BaseAdmin");
+                }
+            }
+            else
+            {
+                return View(vm);
+            }
+        }
+
+        [HttpGet]
+        public ActionResult EditarQuestionarioBang()
+        {
+            try
+            {
+                // Verifica se tem usuario logado
+                USUARIO usuario = new USUARIO();
+                if ((String)Session["Ativa"] == null)
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+                if ((USUARIO)Session["UserCredentials"] != null)
+                {
+                    usuario = (USUARIO)Session["UserCredentials"];
+
+                    // Verfifica permissão
+                    if (usuario.PERFIL.PERF_IN_ALTERAR_PACIENTE == 0)
+                    {
+                        Session["MensPermissao"] = 2;
+                        Session["ModuloPermissao"] = "Paciente - Questionario - Edição";
+                        return RedirectToAction("VoltarAnexoPaciente");
+                    }
+                }
+                else
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+                Int32 idAss = (Int32)Session["IdAssinante"];
+                Session["ModuloAtual"] = "Questionario Stop_Bang - Edição";
+
+                // Prepara listas
+                var simNao = new List<SelectListItem>();
+                simNao.Add(new SelectListItem() { Text = "Sim", Value = "1" });
+                simNao.Add(new SelectListItem() { Text = "Não", Value = "0" });
+                ViewBag.SimNao = new SelectList(simNao, "Value", "Text");
+
+                Session["NivelPaciente"] = 16;
+                Session["AjudaNivel"] = "../BaseAdmin/Ajuda/7/Ajuda7_2.pdf";
+                ViewBag.Perfil = usuario.PERFIL.PERF_SG_SIGLA;
+
+                // Recupera informações
+                PACIENTE item = baseApp.GetItemById((Int32)Session["IdPaciente"]);
+                QUESTIONARIO_STOPBANG quest = item.QUESTIONARIO_STOPBANG.FirstOrDefault();
+                Session["IdPaciente"] = item.PACI__CD_ID;
+                Session["IdQuest"] = quest.QUSB_CD_ID;
+
+                // Prepara view
+                QuestionarioBangViewModel vm = Mapper.Map<QUESTIONARIO_STOPBANG, QuestionarioBangViewModel>(quest);
+                Session["Questionario"] = item;
+
+                // Grava Acesso
+                ControleAcessoMetodo grava = new ControleAcessoMetodo(aceApp);
+                Int32 voltaX = grava.GravaAcesso(usuario.USUA_CD_ID, usuario.ASSI_CD_ID, "PACIENTE_QUESTIONARIO_BANG", "Paciente", "EditarQuestionarioBang");
+                return View(vm);
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Paciente";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Paciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return RedirectToAction("TrataExcecao", "BaseAdmin");
+            }
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [ValidateInput(false)]
+        public ActionResult EditarQuestionarioBang(QuestionarioBangViewModel vm)
+        {
+            if ((String)Session["Ativa"] == null)
+            {
+                return RedirectToAction("Logout", "ControleAcesso");
+            }
+            USUARIO usuarioLogado = (USUARIO)Session["UserCredentials"];
+            var simNao = new List<SelectListItem>();
+            simNao.Add(new SelectListItem() { Text = "Sim", Value = "1" });
+            simNao.Add(new SelectListItem() { Text = "Não", Value = "0" });
+            ViewBag.SimNao = new SelectList(simNao, "Value", "Text");
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    // Executa calculo
+                    Int32? risco = 0;
+                    String diag = String.Empty;
+                    Int32? conta_Bloco1 = 0;
+                    if (vm.QUSB_IN_RONCO == 1)
+                    {
+                        risco++;
+                        conta_Bloco1++;
+                    }
+                    if (vm.QUSB_IN_CANSADO == 1)
+                    {
+                        risco++;
+                        conta_Bloco1++;
+                    }
+                    if (vm.QUSB_IN_OBSERVA == 1)
+                    {
+                        risco++;
+                        conta_Bloco1++;
+                    }
+                    if (vm.QUSB_IN_PRESSAO == 1)
+                    {
+                        risco++;
+                        conta_Bloco1++;
+                    }
+                    if (vm.QUSB_IN_PESCOCO == 1)
+                    {
+                        risco++;
+                    }
+                    if (vm.QUSB_IN_IMC == 1)
+                    {
+                        risco++;
+                    }
+                    if (vm.QUSB_IN_IDADE == 1)
+                    {
+                        risco++;
+                    }
+                    if (vm.QUSB_IN_MASCULINO == 1)
+                    {
+                        risco++;
+                    }
+                    if (risco <= 2)
+                    {
+                        diag = "Risco baixo de AOS (apnéia obstrutiva do sono";
+                    }
+                    if (risco >= 2 & risco <= 4)
+                    {
+                        diag = "Risco intermediário de AOS";
+                    }
+                    if (risco > 4)
+                    {
+                        diag = "Risco alto de AOS";
+                    }
+
+                    if (conta_Bloco1 > 2 & vm.QUSB_IN_MASCULINO == 1)
+                    {
+                        diag = "Risco alto de AOS";
+                    }
+                    if (conta_Bloco1 > 2 & vm.QUSB_IN_IMC > 35)
+                    {
+                        diag = "Risco alto de AOS";
+                    }
+                    if (conta_Bloco1 > 2)
+                    {
+                        if (vm.QUSB_IN_MASCULINO == 1 & vm.QUSB_IN_PESCOCO > 43)
+                        {
+                            diag = "Risco alto de AOS";
+                        }
+                        else if (vm.QUSB_IN_MASCULINO == 0 & vm.QUSB_IN_PESCOCO > 41)
+                        {
+                            diag = "Risco alto de AOS";
+                        }
+                    }
+                    if (diag == null)
+                    {
+                        diag = "Risco baixo de AOS (apnéia obstrutiva do sono";
+                    }
+
+                    // Executa a operação
+                    vm.QUSB_DS_PONTUACAO = diag;
+                    vm.QUSB_IN_PONTUACAO = risco;
+
+                    QUESTIONARIO_STOPBANG item = Mapper.Map<QuestionarioBangViewModel, QUESTIONARIO_STOPBANG>(vm);
+                    Int32 volta = baseApp.ValidateEditBang(item);
+
+                    // Verifica retorno
+                    Session["PacienteAlterada"] = 1;
+                    Session["NivelPaciente"] = 16;
+                    Session["IdPaciente"] = item.PACI_CD_ID;
+
+                    // Grava historico
+                    PACIENTE_HISTORICO hist = new PACIENTE_HISTORICO();
+                    PACIENTE pac = baseApp.GetItemById(item.PACI_CD_ID);
+                    hist.ASSI_CD_ID = usuarioLogado.ASSI_CD_ID;
+                    hist.USUA_CD_ID = usuarioLogado.USUA_CD_ID;
+                    hist.PACI_CD_ID = item.PACI_CD_ID;
+                    hist.PAHI_DT_DATA = DateTime.Now;
+                    hist.PAHI_IN_TIPO = 5;
+                    hist.PAHI_IN_CHAVE = item.QUSB_CD_ID;
+                    hist.PAHI_NM_OPERACAO = "Paciente - Questionario Stop-Bang - Alteração";
+                    hist.PAHI_DS_DESCRICAO = "Paciente " + pac.PACI_NM_NOME;
+                    Int32 voltaHist = baseApp.ValidateCreateHistorico(hist);
+
+                    // Mensagem do CRUD
+                    Session["MsgCRUD"] = "O questionário Stop-Bang" + " do(a) paciente " + pac.PACI_NM_NOME.ToUpper() + " foi alterado com sucesso.";
+                    Session["MensPaciente"] = 61;
+
+                    // Retorno
+                    Int32 s = (Int32)Session["VoltarPesquisa"];
+                    return RedirectToAction("VoltarAnexoPaciente");
+                }
+                catch (Exception ex)
+                {
+                    ViewBag.Message = ex.Message;
+                    Session["TipoVolta"] = 2;
+                    Session["VoltaExcecao"] = "Paciente";
+                    Session["Excecao"] = ex;
+                    Session["ExcecaoTipo"] = ex.GetType().ToString();
+                    GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                    Int32 voltaX = grava.GravarLogExcecao(ex, "Paciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                    return RedirectToAction("TrataExcecao", "BaseAdmin");
+                }
+            }
+            else
+            {
+                return View(vm);
+            }
+        }
+
+        [HttpPost]
+        public async Task<JsonResult> PesquisaCEP_JavascriptNova(String cep, int tipoEnd)
+        {
+            // 1. Garante TLS 1.2
+            System.Net.ServicePointManager.SecurityProtocol = System.Net.SecurityProtocolType.Tls12 | System.Net.SecurityProtocolType.Tls11 | System.Net.SecurityProtocolType.Tls;
+
+            cep = CrossCutting.ValidarNumerosDocumentos.RemoveNaoNumericos(cep);
+            var url = $"https://viacep.com.br/ws/{cep}/json/";
+            var hash = new Hashtable();
+
+            try
+            {
+                using (var client = new HttpClient())
+                {
+                    // 2. Faz a requisição e obtém o JSON
+                    var response = await client.GetStringAsync(url);
+
+                    // 3. Deserializa o JSON para o objeto
+                    var end = JsonConvert.DeserializeObject<CepData>(response);
+
+                    if (end.erro || string.IsNullOrEmpty(end.logradouro))
+                    {
+                        hash.Add("Sucesso", 0); // CEP não encontrado
+                    }
+                    else
+                    {
+                        // 4. Mapeia o resultado (sua lógica original)
+                        if (tipoEnd == 1)
+                        {
+                            hash.Add("Sucesso", 1);
+                            hash.Add("PACI_NM_ENDERECO", end.logradouro);
+                            hash.Add("PACI_NR_NUMERO", end.complemento);
+                            hash.Add("PACI_NM_BAIRRO", end.bairro);
+                            hash.Add("PACI_NM_CIDADE", end.localidade);
+                            hash.Add("UF_CD_ID", baseApp.GetUFbySigla(end.uf).UF_CD_ID);
+
+                            // Retorna o CEP formatado
+                            // cep já está limpo, o ViaCEP retorna no formato XXXXX-XXX
+                            hash.Add("PACI_NR_CEP", end.cep.Replace("-", ""));
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                // Logar o erro (ex: falha de rede ou JSON inválido)
+                hash.Clear();
+                hash.Add("Sucesso", 0);
+                // Opcionalmente: logar ex.Message
+            }
+
+            Session["VoltaCEP"] = 2;
+            return Json(hash);
+        }
+
+
+    }
+}
+
+public class AssinaturaExternaPfx : IExternalSignature
+{
+    private readonly X509Certificate2 _certificadoDotNet;
+    private readonly string _algoritmo;
+
+    public AssinaturaExternaPfx(X509Certificate2 certificado, string algoritmo)
+    {
+        _certificadoDotNet = certificado;
+        _algoritmo = algoritmo;
+    }
+
+    public string GetHashAlgorithm() => _algoritmo;
+
+    public string GetEncryptionAlgorithm()
+    {
+        // Retorna o algoritmo de encriptação da chave privada
+        return _certificadoDotNet.PrivateKey.SignatureAlgorithm;
+    }
+
+    public byte[] Sign(byte[] message)
+    {
+        // Obtém o provedor de serviços de criptografia para a chave privada
+        if (_certificadoDotNet.PrivateKey is RSACryptoServiceProvider rsa)
+        {
+            // Assina a mensagem com SHA256 e RSA
+            return rsa.SignData(message, _algoritmo);
+        }
+        throw new NotSupportedException("Tipo de chave privada não suportado para assinatura.");
+    }
+}

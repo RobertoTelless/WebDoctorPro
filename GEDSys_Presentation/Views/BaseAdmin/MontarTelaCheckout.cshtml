@@ -1,0 +1,235 @@
+﻿@using Presentation.Extensions
+@using CrossCutting;
+@model ERP_Condominios_Solution.ViewModels.FaleConoscoViewModel
+@{
+    Layout = "~/Views/Shared/_Layout_Limpo.cshtml";
+    ViewBag.Title = "WebDoctor - Contratação";
+}
+
+<div class="wrapper wrapper-content animated fadeInRight">
+
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h3>Contratação - Planos de Assinatura</h3>
+                </div>
+                <br />
+                <div class="form-group">
+                    @Html.ButtonLinkIndex(text: "Voltar", controller: "BaseAdmin", action: "CarregarLandingPage")
+                    <br />
+                </div>
+                <div class="ibox-content ibox-heading">
+                    <h3><i class="fa fa-credit-card"></i> Checkout</h3>
+                </div>
+
+                <div class="ibox-content" style="height: 2100px">
+                    @if (!ViewData.ModelState.IsValid)
+                    {
+                        <div class="alert alert-danger">
+                            <button type="button" class="close" data-dismiss="alert">Fechar</button>
+                            @Html.ValidationSummary(false, "", new { @class = "text-primary" })
+                        </div>
+                    }
+                    <div class="col-lg-12 col-md-12 col-xs-12">
+                        <div class="col-lg-12 col-md-12 col-xs-12">
+                            <div class="col-lg-12 col-md-12 col-xs-12 ibox float-e-margins" style="border-bottom: solid; border-bottom-color: darkblue; border-bottom-width: 2px; border-left: solid; border-left-color: darkblue; border-left-width: 1px; border-right: solid; border-right-color: darkblue; border-right-width: 1px; border-top: solid; border-top-color: darkblue; border-top-width: 1px">
+                                <div class="ibox-title">
+                                    <h4>Contratação de Assinatura - Checkout</h4>
+                                </div>
+                                <div class="ibox-content">
+                                    @using (Html.BeginForm("MontarTelaCheckout", "BaseAdmin", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal", @id="pwd-container1" }))
+                                    {
+                                        <div class="row">
+                                            <h5 style="color: green; font-weight: bold">Clique no botão de pagamento, preencha as informações e logo você receberá um e-mail com a confirmação de sua assinatura e suas credenciais de acesso</h5>
+                                        </div> 
+                                        <div class="row" id="Planos">
+                                            <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Seleção do Plano de Assinatura</h4>
+                                            <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">                
+                                                <div class="col-lg-4 col-md-4 col-xs-12">
+                                                    Plano de Assinatura
+                                                    @Html.TextBoxFor(m => m.NomePlano, new { @class = "form-control", autofocus = true, @readonly = "readonly" })
+                                                </div>
+                                                <div class="col-lg-3 col-md-3 col-xs-12">
+                                                    Início
+                                                    @Html.TextBoxFor(m => m.Comeco, new { @class = "form-control", autofocus = true, @readonly = "readonly" })
+                                                </div>
+                                                <div class="col-lg-3 col-md-3 col-xs-12">
+                                                    Término
+                                                    @Html.TextBoxFor(m => m.Fim, new { @class = "form-control", autofocus = true, @readonly = "readonly" })
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row" id="Ident">
+                                            <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Identificação</h4>
+                                            <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">                
+                                                <div class="col-lg-3 col-md-3 col-xs-12">
+                                                    Tipo de Assinante
+                                                    @Html.TextBoxFor(m => m.TipoPessoa, new { @class = "form-control", autofocus = true, @readonly = "readonly" })
+                                                </div>
+                                                @if (Model.Tipo == 1)
+                                                {
+                                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                                        CPF
+                                                        @Html.TextBoxFor(m => m.CPF, new { @class = "form-control", autofocus = true, @readonly = "readonly"  })
+                                                    </div>
+                                                }
+                                                else
+                                                {
+                                                    <div class="col-lg-2 col-md-2 col-xs-12" >
+                                                        CNPJ
+                                                        @Html.TextBoxFor(m => m.CNPJ, new { @class = "form-control", autofocus = true, @readonly = "readonly"  })
+                                                    </div>
+                                                }
+                                            </div>
+                                            <div class="form-group" style=" margin-left: -15px; margin-right: -15px;" id="Nomes">                
+                                                <div class="col-lg-6 col-md-6 col-xs-12">
+                                                    Nome do Assinante
+                                                    @Html.TextBoxFor(m => m.Nome, new { @class = "form-control", autofocus = true, @readonly = "readonly" })
+                                                </div>
+                                                @if (Model.Tipo == 2)
+                                                {
+                                                    <div class="col-lg-6 col-md-6 col-xs-12" style="display: none" id="Razao">
+                                                        Razão Social
+                                                        @Html.TextBoxFor(m => m.Razao, new { @class = "form-control", autofocus = true, @readonly = "readonly"  })
+                                                    </div>
+                                                }
+                                            </div>
+                                        </div>
+                                        <div class="row" id="Contatos">
+                                            <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Informações de Contato</h4>
+                                            <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">                
+                                                <div class="col-lg-4 col-md-4 col-xs-12">
+                                                    E-Mail
+                                                    @Html.TextBoxFor(m => m.Resposta, new { @class = "form-control", autofocus = true, @readonly = "readonly" })
+                                                </div>
+                                                <div class="col-lg-2 col-md-2 col-xs-12">
+                                                    Telefone
+                                                    @Html.TextBoxFor(m => m.TelefoneFixo, new { @class = "form-control", autofocus = true, @readonly = "readonly"  })
+                                                </div>
+                                                <div class="col-lg-2 col-md-2 col-xs-12">
+                                                    Celular
+                                                    @Html.TextBoxFor(m => m.Celular, new { @class = "form-control", autofocus = true, @readonly = "readonly"  })
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="row" id="Login">
+                                            <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Login</h4>
+                                            <div class="col-lg-12 col-md-12 col-xs-12">
+                                                <div class="form-group" style=" margin-left: -30px; margin-right: -30px;">                
+                                                    <div class="col-lg-3 col-md-3 col-xs-12">
+                                                        Login
+                                                        @Html.TextBoxFor(m => m.LoginBase, new { @class = "form-control", autofocus = true, data_toggle = "popover", data_content = "Informe o login para o usuário master do novo assinante. Pode ter até 10 caracteres sem espaços", data_trigger="hover", data_placement="top", @readonly = "readonly" })
+                                                    </div>
+                                                </div>                                            
+                                            </div>
+                                        </div>
+
+                                        <div class="row" id="Enderecos">
+                                            <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Endereço</h4>
+                                            <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                                <div class="col-lg-4 col-md-4 col-xs-12">
+                                                    Endereço
+                                                    @Html.TextBoxFor(m => m.Endereco, new { @class = "form-control", autofocus = true, @readonly = "readonly" })
+                                                </div>
+                                                <div class="col-lg-2 col-md-2 col-xs-12">
+                                                    Número
+                                                    @Html.TextBoxFor(m => m.Numero, new { @class = "form-control", autofocus = true, @readonly = "readonly" })
+                                                </div>
+                                                <div class="col-lg-2 col-md-2 col-xs-12">
+                                                    Complemento
+                                                    @Html.TextBoxFor(m => m.Complemento, new { @class = "form-control", autofocus = true, @readonly = "readonly" })
+                                                </div>
+                                            </div>
+                                            <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                                <div class="col-lg-3 col-md-3 col-xs-12">
+                                                    Bairro
+                                                    @Html.TextBoxFor(m => m.Bairro, new { @class = "form-control", @readonly = "readonly", autofocus = true })
+                                                </div>
+                                                <div class="col-lg-3 col-md-3 col-xs-12">
+                                                    Cidade
+                                                    @Html.TextBoxFor(m => m.Cidade, new { @class = "form-control", @readonly = "readonly", autofocus = true })
+                                                </div>
+                                                <div class="col-lg-2 col-md-2 col-xs-12">
+                                                    UF
+                                                    @Html.TextBoxFor(m => m.UFSigla, new { @class = "form-control", @readonly = "readonly", autofocus = true })
+                                                </div>
+                                                <div class="col-lg-2 col-md-2 col-xs-12">
+                                                    CEP
+                                                    @Html.TextBoxFor(m => m.CEP, new { @class = "form-control", @readonly = "readonly", autofocus = true })
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                            <div class="col-lg-2 col-md-2 col-xs-12">
+                                                @if (ViewBag.PaymentUrl != null)
+                                                {
+                                                    <a href="@ViewBag.PaymentUrl" target="_blank">Pagar com PagBank</a>
+                                                }                                         
+                                            </div>
+                                            <div class="col-lg-2 col-md-2 col-xs-12">
+                                                @Html.ButtonActionSubmit(text: "Encerrar a Contratação", htmlAttributes: new { id = "basictoast" })
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        </div>                          
+                            
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700' rel='stylesheet' type='text/css'>
+    <link href="~/Content/themes/base/jquery-ui.min.css" rel="stylesheet" />
+    <link href="~/Content/themes/base/all.css" rel="stylesheet" />
+    @Styles.Render("~/Content/plugins/dataTables/dataTablesStyles")
+    @Styles.Render("~/plugins/jasnyBootstrapStyles")
+    @Styles.Render("~/plugins/toastrStyles")
+    @Styles.Render("~/Content/css")
+    @Styles.Render("~/font-awesome/css")
+    <link href="@Url.Content("~/Scripts/plugins/jquery-ui/jquery-ui.min.css")" rel="stylesheet" type="text/css" />
+}
+@section Scripts {
+    @Scripts.Render("~/plugins/toastr")
+    <script src="~/Scripts/jquery-ui-1.12.1.min.js"></script>
+    @Scripts.Render("~/plugins/dataTables")
+    @Scripts.Render("~/bundles/inputmask")
+    @Scripts.Render("~/plugins/jasnyBootstrap")
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.maskedinput/1.4.1/jquery.maskedinput.js"></script>
+    <script src="~/Scripts/uploadAnexo.js"></script>
+    <script type="text/javascript" src="~/Scripts/moment.min.js"></script>
+    <script type="text/javascript" src="~/Scripts/bootstrap.min.js"></script>
+    
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('[data-toggle="popover"]').popover();
+        });
+    </script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-toggle="popover"]'));
+            var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
+                return new bootstrap.Popover(popoverTriggerEl);
+            });
+        });
+    </script>   
+
+
+}
+@if (ViewBag.Message != null)
+{
+    <script type="text/javascript">
+            window.onload = function () {
+                alert("@ViewBag.Message");
+            };
+    </script>
+}
+

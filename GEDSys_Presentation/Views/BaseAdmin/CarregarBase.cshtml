@@ -1,0 +1,623 @@
+﻿@using Presentation.Extensions
+@using CrossCutting
+@model EntitiesServices.Model.USUARIO
+@{
+    Layout = "~/Views/Shared/_Layout_Admin.cshtml";
+    ViewBag.Title = "Dashboard Inicial";
+}
+<div id="content" class="wraper container-fluid">
+    <div class="col-lg-12 col-md-12 col-sm-12">
+        <div class="col-lg-12 col-md-12 col-sm-12">
+            <div class="row">
+                <div class="col-lg-4 col-md-4 col-sm-12">
+                    <div class="ibox float-e-margins">
+                        <div class="ibox-title">
+                            <span class="label label-primary pull-right">Hoje</span>
+                            <h5>Atividade do Usuário</h5>
+                        </div>
+                        <div class="ibox-content">
+                            <div class="row">
+                                <div class="col-xs-4">
+                                    <small class="stats-label">Acessos</small>
+                                    <h4>@Model.USUA_NR_ACESSOS</h4>
+                                </div>
+
+                                <div class="col-xs-4">
+                                    <small class="stats-label">Falhas de Login</small>
+                                    <h4>@Model.USUA_NR_FALHAS</h4>
+                                </div>
+                                <div class="col-xs-4">
+                                    <small class="stats-label">Transações/Hoje</small>
+                                    <h4>@((Int32)Session["Logs"])</h4>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-xs-4">
+                                    <small class="stats-label">Último Acesso</small>
+                                    <h4>@Model.USUA_DT_ACESSO.Value.ToShortDateString()</h4>
+                                </div>
+
+                                <div class="col-xs-4">
+                                    <small class="stats-label">Última Alteração</small>
+                                    @if (Model.USUA_DT_ALTERACAO == null)
+                                    {
+                                        <h4>Não há</h4>
+                                    }
+                                    else
+                                    {
+                                        <h4>@Model.USUA_DT_ALTERACAO.Value.ToShortDateString()</h4>
+                                    }
+                                </div>
+                                <div class="col-xs-4">
+                                    <small class="stats-label">Última Falha</small>
+                                    @if (Model.USUA_DT_ULTIMA_FALHA == null)
+                                    {
+                                        <h4>Não há</h4>
+                                    }
+                                    else
+                                    {
+                                        <h4>@Model.USUA_DT_ULTIMA_FALHA.Value.ToShortDateString()</h4>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    @Html.ButtonLinkIndex(text: "Assinante", action: "MontarTelaEmpresa", controller: "Empresa", buttonClass: "primary", htmlAttributes: new { @id = "emp", OnClick = "Fade()" })    
+                    @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_ACESSO_CADASTRO == 1)
+                    {
+                        @Html.ButtonLinkIndex(text: "Cadastros", action: "MontarTelaDashboardCadastros", controller: "BaseAdmin", buttonClass: "primary", htmlAttributes: new { @id = "cad", OnClick = "Fade()" })    
+                    }
+                    @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_ACESSO_PACIENTE == 1)
+                    {
+                        @Html.ButtonLinkIndex(text: "Pacientes", action: "MontarTelaPacientes", controller: "Paciente", buttonClass: "primary", htmlAttributes: new { @id = "cad", OnClick = "Fade()" })    
+                    }
+                    @if ((Int32)Session["PermMensageria"] == 1)
+                    {
+                        if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_ACESSO_MENSAGEM == 1)
+                        {
+                            @Html.ButtonLinkIndex(text: "Mensageria", action: "MontarTelaMensagemEMail", controller: "Mensagem", buttonClass: "primary", htmlAttributes: new { @id = "cli", OnClick = "Fade()" })
+                        }
+                    }
+                </div>
+
+                <div class="col-lg-4 col-md-4 col-sm-12">
+                    <div class="ibox float-e-margins">
+                        <div class="ibox-title">
+                            <span class="label label-primary pull-right">Hoje</span>
+                            <h5>Painel de Tarefas e Eventos </h5>
+                        </div>
+                        <div class="ibox-content">
+                            <div class="row">
+                                <div class="col-xs-4">
+                                    <small class="stats-label">Total de Tarefas</small>
+                                    <h4>@((Int32)Session["Tarefas"])</h4>
+                                </div>
+
+                                <div class="col-xs-4">
+                                    <small class="stats-label">Tarefas Abertas</small>
+                                    <h4>@((Int32)Session["TarefasPendentes"])</h4>
+                                </div>
+                                <div class="col-xs-4">
+                                    @Html.ButtonLinkIndex(text: "Tarefas", action: "MontarTelaTarefa", controller: "Tarefa")
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-xs-4">
+                                    <small class="stats-label">Eventos Hoje</small>
+                                    <h4>@((Int32)Session["NumAgendasHoje"])</h4>
+                                </div>
+                                <div class="col-xs-4">
+                                    <small class="stats-label">Eventos</small>
+                                    <h4>@((Int32)Session["NumAgendas"])</h4>
+                                </div>
+                                <div class="col-xs-4">
+                                    @Html.ButtonLinkIndex(text: "Agenda", action: "MontarTelaAgendaCalendario", controller: "Agenda")
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    @Html.ButtonLinkIndex(text: "Dashboard Gerencial", action: "MontarTelaDashboardGerencial", controller: "BaseAdmin", buttonClass: "primary", htmlAttributes: new { @id = "men", OnClick = "Fade()" })
+                    @if ((String)Session["PerfilSigla"] == "ADM" || (String)Session["PerfilSigla"] == "GER")
+                    {
+                        @Html.ButtonLinkIndex(text: "Administração", action: "MontarTelaDashboardAdministracao", controller: "BaseAdmin", buttonClass: "success", htmlAttributes: new { @id = "adm", OnClick = "Fade()" })                
+                    }
+                </div>
+                
+                @if ((String)Session["PerfilSigla"] == "ADM" || (String)Session["PerfilSigla"] == "GER")
+                {
+                    <div class="col-lg-2 col-md-2 col-sm-12">
+                        <div class="ibox float-e-margins">
+                            <div class="ibox-title" style="background-color: darkseagreen; color: darkgreen">
+                                <h5>Plano de Assinatura</h5>
+                            </div>
+                            <div class="ibox-content">
+                                <div class="row">
+                                    <div class="col-xs-5">
+                                        <small class="stats-label">Plano</small>
+                                        <h5>@((String)Session["NomePlano"])</h5>
+                                    </div>
+                                    <div class="col-xs-7">
+                                        <small class="stats-label">Vence em 30 dias</small>
+                                        <h4>@((String)Session["Vence30"])</h4>
+                                    </div>                                 
+                                </div>
+                                <div class="row">
+                                    <div class="col-xs-6">
+                                        @Html.ButtonLinkIndex(text: "Central do Assinante", action: "ChamaCentralAssinante", controller: "BaseAdmin", htmlAttributes: new { @id = "ass", OnClick = "Fade()" })
+                                    </div>
+                                </div>
+                                <br />
+                            </div>
+                        </div>
+                        <a href="@Url.Action((String)Session["AjudaNivel"])"  class="btn btn-sm btn-danger" target="_blank">Ajuda</a>                
+                    </div>                 
+                }
+                <div class="col-lg-2 col-md-2 col-sm-12">
+                    <div style="display: none; z-index:1000" class="dotContainer">
+                        <div class="spiner-example">
+                            <div class="sk-spinner sk-spinner-three-bounce">
+                                <div class="sk-bounce1"></div>
+                                <div class="sk-bounce2"></div>
+                                <div class="sk-bounce3"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+       
+            @*Indicadores e Avisos*@
+            <div class="row">
+                @*<br />*@
+                <div class="col-lg-12 col-md-12 col-xs-12">
+                    <br />
+                    <div class="ibox float-e-margins">
+                        <div class="ibox-title">
+                            <h5>Indicadores e Avisos</h5>
+                        </div>
+                        <div class="ibox-content ibox-heading">
+                            <h3><i class="fa fa-line-chart"></i> Indicadores</h3>
+                            <small><i class="fa fa-tim"></i> Para ver os indicadores em detalhes acesse o Dashboard Gerencial</small>
+                        </div>
+
+                        <div class="ibox-content" style="height: 2000px; background-color:snow">
+                            <div class="col-lg-4 col-md-4 col-xs-12">
+                                <h4 style="margin-left: 0px; color:brown; background-color: beige; font-weight:bold">Resumo dos Processos e Propostas</h4>
+                                <div class="col-lg-12 col-md-12 col-xs-12">
+                                    <div class="col-lg-6 col-md-6 col-xs-12">
+                                        <div class="ibox float-e-margins">
+                                            <div class="ibox-title"  style="background-color: goldenrod; color: darkgreen">
+                                                <span class="label label-success pull-right">Hoje</span>
+                                                <h5>Pacientes</h5>
+                                            </div>
+                                            <div class="ibox-content">
+                                                <h1 class="no-margins">@ViewBag.Pacientes</h1>
+                                                <small>Pacientes</small>
+                                                <br />
+                                                <br />
+                                                @Html.ButtonLinkIndex(text: "Ver", controller: "Paciente", action: "MontarTelaPaciente", buttonClass: "white")
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <br />
+                                <div class="col-lg-12 col-md-12 col-xs-12">
+                                    <h4 style="margin-left: 0px; color:brown; background-color: beige; font-weight:bold">Resumo das Mensagens</h4>
+                                    <div class="col-lg-6 col-md-6 col-xs-12">
+                                        <div class="ibox float-e-margins">
+                                            <div class="ibox-title"  style="background-color: cornflowerblue; color: darkgreen">
+                                                <span class="label label-success pull-right">Hoje</span>
+                                                <h5>Mensagens</h5>
+                                            </div>
+                                            <div class="ibox-content">
+                                                <h1 class="no-margins">@ViewBag.EMailsTotalCriado</h1>
+                                                <small>Total de Mensagens</small>
+                                                <br />
+                                                <br />
+                                                @Html.ButtonLinkIndex(text: "Ver", controller: "Mensagem", action: "MontarTelaMensagemEMail", buttonClass: "white")
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-6 col-md-6 col-xs-12">
+                                        <div class="ibox float-e-margins">
+                                            <div class="ibox-title"  style="background-color: cornflowerblue; color: darkgreen">
+                                                <span class="label label-success pull-right">Hoje</span>
+                                                <h5>Mensagens</h5>
+                                            </div>
+                                            <div class="ibox-content">
+                                                <h1 class="no-margins">@ViewBag.Destinos</h1>
+                                                <small>Total de Destinos</small>
+                                                <br />
+                                                <br />
+                                                @Html.ButtonLinkIndex(text: "Ver", controller: "Mensagem", action: "MontarTelaMensagemEMail", buttonClass: "white")
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-12 col-md-12 col-xs-12">
+                                    <div class="col-lg-6 col-md-6 col-xs-12">
+                                        <div class="ibox float-e-margins">
+                                            <div class="ibox-title"  style="background-color: cornflowerblue; color: darkgreen">
+                                                <span class="label label-success pull-right">Hoje</span>
+                                                <h5>Mensagens</h5>
+                                            </div>
+                                            <div class="ibox-content">
+                                                <h1 class="no-margins">@ViewBag.EMailsTotalCriadoDia</h1>
+                                                <small>Criadas Hoje</small>
+                                                <br />
+                                                <br />
+                                                @Html.ButtonLinkIndex(text: "Ver", controller: "Mensagem", action: "MontarTelaMensagemEMail", buttonClass: "white")
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-6 col-md-6 col-xs-12">
+                                        <div class="ibox float-e-margins">
+                                            <div class="ibox-title"  style="background-color: cornflowerblue; color: darkgreen">
+                                                <span class="label label-success pull-right">Hoje</span>
+                                                <h5>Mensagens</h5>
+                                            </div>
+                                            <div class="ibox-content">
+                                                <h1 class="no-margins">@ViewBag.EMailsTotalCriadoMes</h1>
+                                                <small>Criadas no Mês</small>
+                                                <br />
+                                                <br />
+                                                @Html.ButtonLinkIndex(text: "Ver", controller: "Mensagem", action: "MontarTelaMensagemEMail", buttonClass: "white")
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-lg-4 col-md-4 col-xs-12">
+                                <h4 style="margin-left: 0px; color:brown; background-color: beige; font-weight:bold">Avisos e Lembretes</h4>
+                                <div class="col-lg-12 col-md-12 col-xs-12">
+                                    <div class="col-lg-12 col-md-12 col-xs-12 ibox float-e-margins" style="border-bottom: solid; border-bottom-color: darkblue; border-bottom-width: 2px; border-left: solid; border-left-color: darkblue; border-left-width: 1px; border-right: solid; border-right-color: darkblue; border-right-width: 1px; border-top: solid; border-top-color: darkblue; border-top-width: 1px">
+                                        <div class="ibox-title">
+                                            <h4>Eventos do Dia</h4>
+                                        </div>
+                                        <div class="ibox-content">
+                                            <div class="row">
+                                                @if (ViewBag.ListaAgenda != null && (ViewBag.ListaAgenda as List<ERP_Condominios_Solution.ViewModels.ModeloViewModel>).Count > 0)
+                                                {
+                                                    <table class="table table-striped table-bordered table-hover">
+                                                        <thead style="background-color:lightsteelblue">
+                                                            <tr>
+                                                                <th style="width: auto">Título</th>
+                                                                <th style="width: auto">Data</th>
+                                                                <th style="width: auto" class="td-one-action">Ações</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            @foreach (var cond in (ViewBag.ListaAgenda as List<ERP_Condominios_Solution.ViewModels.ModeloViewModel>).OrderBy(p => p.DataEmissao).ThenBy(p => p.Nome).Take(5))
+                                                            {
+                                                                <tr>
+                                                                    <td style="width: auto">@cond.Nome</td>
+                                                                    @if (cond.DataEmissao.Date == DateTime.Today.Date)
+                                                                    {
+                                                                        <td style="color: green; font-weight: bold; width: auto">@cond.DataEmissao.ToShortDateString()</td>
+                                                                    }
+                                                                    else if (cond.DataEmissao.Date < DateTime.Today.Date)
+                                                                    {
+                                                                        <td style="color: brown; font-weight: bold; width: auto">@cond.DataEmissao.ToShortDateString()</td>
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        <td>@cond.DataEmissao.ToShortDateString()</td>
+                                                                    }
+                                                                    <td style="width: auto" class="td-one-action">
+                                                                        @Html.TableLinkDetails(cond.Valor, "VerAgenda", "fa-search", "Ver")
+                                                                    </td>
+                                                                </tr>
+                                                            }
+                                                        </tbody>
+                                                    </table>
+                                                }
+                                                else
+                                                {
+                                                    <div class="row">
+                                                        <div class="col-lg-1 col-md-1 col-xs-12">
+                                                        </div>
+                                                        <div style="border: 5px solid #F6A54A; padding: 10px; border-radius: 8px 8px; " class="col-lg-10 col-md-10 col-xs-8">
+                                                            <h4 style="font-weight: bold">Nenhum evento no dia</h4>
+                                                        </div>
+                                                        <div class="col-lg-1 col-md-1 col-xs-12">
+                                                        </div>
+                                                    </div>
+                                                }
+                                            </div>
+                                            <div class="row">
+                                                <br />
+                                                @if ((ViewBag.ListaAgenda as List<ERP_Condominios_Solution.ViewModels.ModeloViewModel>).Count > 0)
+                                                {
+                                                    @Html.ButtonLinkIndex(text: "Ver Todos", controller: "BaseAdmin", action: "VerAgendaTodos", buttonClass: "white")
+                                                }
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            
+                                <div class="col-lg-12 col-md-12 col-xs-12">
+                                    <div class="col-lg-12 col-md-12 col-xs-12 ibox float-e-margins" style="border-bottom: solid; border-bottom-color: darkblue; border-bottom-width: 2px; border-left: solid; border-left-color: darkblue; border-left-width: 1px; border-right: solid; border-right-color: darkblue; border-right-width: 1px; border-top: solid; border-top-color: darkblue; border-top-width: 1px">
+                                        <div class="ibox-title">
+                                            <h4>Tarefas Pendentes</h4>
+                                        </div>
+                                        <div class="ibox-content">
+                                            <div class="row">
+                                                @if (ViewBag.ListaTarefa != null && (ViewBag.ListaAgenda as List<ERP_Condominios_Solution.ViewModels.ModeloViewModel>).Count > 0)
+                                                {
+                                                    <table class="table table-striped table-bordered table-hover">
+                                                        <thead style="background-color:lightsteelblue">
+                                                            <tr>
+                                                                <th style="width: auto">Título</th>
+                                                                <th style="width: auto">Data Prevista</th>
+                                                                <th style="width: auto" class="td-one-action">Ações</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            @foreach (var cond in (ViewBag.ListaTarefa as List<ERP_Condominios_Solution.ViewModels.ModeloViewModel>).OrderBy(p => p.DataEmissao).ThenBy(p => p.Nome).Take(5))
+                                                            {
+                                                                <tr>
+                                                                    <td style="width: auto">@cond.Nome</td>
+                                                                    @if (cond.DataEmissao.Date == DateTime.Today.Date)
+                                                                    {
+                                                                        <td style="color: green; font-weight: bold; width: auto">@cond.DataEmissao.ToShortDateString()</td>
+                                                                    }
+                                                                    else if (cond.DataEmissao.Date < DateTime.Today.Date)
+                                                                    {
+                                                                        <td style="color: brown; font-weight: bold; width: auto">@cond.DataEmissao.ToShortDateString()</td>
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        <td>@cond.DataEmissao.ToShortDateString()</td>
+                                                                    }
+                                                                    <td style="width: auto" class="td-one-action">
+                                                                        @Html.TableLinkDetails(cond.Valor, "VerTarefa", "fa-search", "Ver")
+                                                                    </td>
+                                                                </tr>
+                                                            }
+                                                        </tbody>
+                                                    </table>
+                                                }
+                                                else
+                                                {
+                                                    <div class="row">
+                                                        <div class="col-lg-1 col-md-1 col-xs-12">
+                                                        </div>
+                                                        <div style="border: 5px solid #F6A54A; padding: 10px; border-radius: 8px 8px; " class="col-lg-10 col-md-10 col-xs-8">
+                                                            <h4 style="font-weight: bold">Nenhuma tarefa pendente</h4>
+                                                        </div>
+                                                        <div class="col-lg-1 col-md-1 col-xs-12">
+                                                        </div>
+                                                    </div>
+                                                }
+                                            </div>
+                                            <div class="row">
+                                                <br />
+                                                @if ((ViewBag.ListaTarefa as List<ERP_Condominios_Solution.ViewModels.ModeloViewModel>).Count > 0)
+                                                {
+                                                    @Html.ButtonLinkIndex(text: "Ver Todas", controller: "BaseAdmin", action: "VerTarefaTodos", buttonClass: "white")
+                                                }
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-lg-4 col-md-4 col-xs-12">
+
+                                @*Avisos da RTi*@
+                                @if (ViewBag.ListasFabricante != null && (ViewBag.ListasFabricante as List<EntitiesServices.Model.MENSAGEM_FABRICANTE>).Count > 0)
+                                {
+                                    foreach (var cond in (ViewBag.ListasFabricante as List<EntitiesServices.Model.MENSAGEM_FABRICANTE>))
+                                    {
+                                        <div class="col-lg-12 col-md-12 col-xs-12">
+                                            <h4 style="margin-left: 0px; color:brown; background-color: beige; font-weight:bold">Novidades e Informações</h4>
+                                            <div class="ibox float-e-margins">
+                                                @if (cond.MEFA_IN_TIPO == 1)
+                                                {
+                                                    <div class="ibox-title"  style="background-color:olive; color:ghostwhite">
+                                                        <h4>@cond.MEFA_NM_TITULO</h4>
+                                                    </div>
+                                                    <div class="ibox-content">
+                                                        <div class="row" style="height:50px">
+                                                            <div class="col-lg-4 col-md-4 col-xs-2" style="text-align:left">
+                                                                <img src="@Url.Content(cond.MEFA_AQ_ARQUIVO)" style="width: auto; height: auto; max-height: 70px; max-width: 110px;">
+                                                            </div>
+                                                            <div class="col-lg-4 col-md-4 col-xs-2">
+                                                            </div>
+                                                            <div class="col-lg-4 col-md-4 col-xs-2" style="text-align:right">
+                                                                <img src="@Url.Content(cond.MEFA_AQ_TAG)" style="width: auto; height: auto; max-height: 70px; max-width: 110px;">
+                                                            </div>
+                                                        </div>
+                                                        <div class="row" style="height:150px">
+                                                            <div class="col-lg-12 col-md-12 col-xs-2" style="text-align:left">
+                                                                <img src="@Url.Content(cond.MEFA_TX_TEXTO)" style="width: auto; height: auto; max-height: 400px; max-width: 100%;">
+
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                }
+                                                @if (cond.MEFA_IN_TIPO == 2)
+                                                {
+                                                    <div class="ibox-title"  style="background-color: olivedrab; color:ghostwhite">
+                                                        <h4>@cond.MEFA_NM_TITULO</h4>
+                                                    </div>
+                                                    <div class="ibox-content">
+                                                        <div class="row" style="height:50px">
+                                                            <div class="col-lg-4 col-md-4 col-xs-2" style="text-align:left">
+                                                                <img src="@Url.Content(cond.MEFA_AQ_ARQUIVO)" style="width: auto; height: auto; max-height: 70px; max-width: 110px;">
+                                                            </div>
+                                                            <div class="col-lg-4 col-md-4 col-xs-2">
+                                                            </div>
+                                                            <div class="col-lg-4 col-md-4 col-xs-2" style="text-align:right">
+                                                                <img src="@Url.Content(cond.MEFA_AQ_TAG)" style="width: auto; height: auto; max-height: 70px; max-width: 110px;">
+                                                            </div>
+                                                        </div>
+                                                        <div class="row" style="height:150px">
+                                                            <div class="col-lg-12 col-md-12 col-xs-2" style="text-align:left">
+                                                                <img src="@Url.Content(cond.MEFA_TX_TEXTO)" style="width: auto; height: auto; max-height: 400px; max-width: 100%;">
+
+                                                            </div>
+                                                        </div>
+                                                        <div class="row" style="height:20px">
+                                                            <div class="form-group">
+                                                                <span style="float: left"><a href=@cond.MEFA_LK_LINK />Veja em @cond.MEFA_NM_LINK ...</span>
+
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                }
+                                                @if (cond.MEFA_IN_TIPO == 3)
+                                                {
+                                                    <div class="ibox-title"  style="background-color:olive; color:ghostwhite">
+                                                        <h4>@cond.MEFA_NM_TITULO</h4>
+                                                    </div>
+                                                    <div class="ibox-content">
+                                                        <div class="row" style="height:400px">
+                                                            <div class="col-lg-12 col-md-12 col-xs-2" style="text-align:left">
+                                                                <img src="@Url.Content(cond.MEFA_TX_TEXTO)" style="width: auto; height: auto; max-height: 400px; max-width: 100%;">
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                }
+                                            </div>
+                                        </div>
+                                    }
+                                }
+                                else
+                                {
+                                    <div class="row">
+                                        <div class="col-lg-4 col-md-4 col-xs-2">
+                                        </div>
+                                        <div style="border: 5px solid #F6A54A; padding: 10px; border-radius: 8px 8px; " class="col-lg-4 col-md-4 col-xs-8">
+                                            <h2 style="font-weight: bold">Nenhuma mensagem disponível</h2>
+                                        </div>
+                                        <div class="col-lg-4 col-md-4 col-xs-2">
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>     
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <link href="~/Content/themes/base/jquery-ui.min.css" rel="stylesheet" />
+    <link href="~/Content/themes/base/all.css" rel="stylesheet" />
+    @Styles.Render("~/Content/plugins/dataTables/dataTablesStyles")
+    @Styles.Render("~/plugins/jasnyBootstrapStyles")
+    @Styles.Render("~/plugins/toastrStyles")
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/bootstrap")
+    @Scripts.Render("~/plugins/slimScroll")
+    @Scripts.Render("~/plugins/wow")
+    @Scripts.Render("~/bundles/inspinia")
+    @Styles.Render("~/Content/css")
+    @Styles.Render("~/font-awesome/css")
+}
+
+@section Scripts {
+
+    @Scripts.Render("~/plugins/toastr")
+    <script src="~/Scripts/jquery-ui-1.12.1.min.js"></script>
+    @Scripts.Render("~/plugins/dataTables")
+    @Scripts.Render("~/bundles/inputmask")
+    @Scripts.Render("~/plugins/jasnyBootstrap")
+    @Scripts.Render("~/plugins/touchSpin")
+    @Scripts.Render("~/plugins/switchery")
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.maskedinput/1.4.1/jquery.maskedinput.js"></script>
+
+    <script>
+
+        $(document).ready(function () {
+
+            $('body').scrollspy({
+                target: '.navbar-fixed-top',
+                offset: 80
+            });
+
+            // Page scrolling feature
+            $('a.page-scroll').bind('click', function (event) {
+                var link = $(this);
+                $('html, body').stop().animate({
+                    scrollTop: $(link.attr('href')).offset().top - 50
+                }, 500);
+                event.preventDefault();
+                $('#navbar').collapse('hide');
+            });
+        });
+
+        var cbpAnimatedHeader = (function () {
+            var docElem = document.documentElement,
+                    header = document.querySelector('.navbar-default'),
+                    didScroll = false,
+                    changeHeaderOn = 200;
+            function init() {
+                window.addEventListener('scroll', function (event) {
+                    if (!didScroll) {
+                        didScroll = true;
+                        setTimeout(scrollPage, 250);
+                    }
+                }, false);
+            }
+            function scrollPage() {
+                var sy = scrollY();
+                if (sy >= changeHeaderOn) {
+                    $(header).addClass('navbar-scroll')
+                }
+                else {
+                    $(header).removeClass('navbar-scroll')
+                }
+                didScroll = false;
+            }
+            function scrollY() {
+                return window.pageYOffset || docElem.scrollTop;
+            }
+            init();
+
+        })();
+
+    </script>
+
+    <script>
+        function ExibeAjuda() {
+            $.ajax({
+                url: '../BaseAdmin/ExibeAjuda/1'
+                , type: 'POST'
+            });
+        }
+    </script>
+
+    <script>
+        function Fade() {
+            $('.dotContainer').fadeIn("fast");
+            $('#login').css("filter", "blur(4px)");
+        }
+    </script>
+    <script>
+        $(window).on("load", function () {
+            $('.dotContainer').fadeOut("slow");
+            $('#title').css("filter", "blur(0)");
+            $('#content').css("filter", "blur(0)");
+        });
+    </script>
+
+    <script>
+        function ExibeManual()
+        {
+            window.open('../Documentacao/CRMSys_Manual_Versao_1.pdf'); return false;
+        }
+    </script>
+    
+    @if (ViewBag.Message != null)
+    {
+        <script type="text/javascript">
+            window.onload = function () {
+                  alert("@ViewBag.Message");
+            };
+        </script>
+    }
+}

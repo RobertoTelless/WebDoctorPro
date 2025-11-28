@@ -1,0 +1,183 @@
+﻿@using Presentation.Extensions
+@model ERP_Condominios_Solution.ViewModels.EmpresaFilialViewModel
+@{
+    Layout = "~/Views/Shared/_Layout_Admin.cshtml";
+}
+
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="page-title"> 
+        <h3 class="title">Empresa</h3> 
+        <br />
+        <ol class="breadcrumb">
+            <li>
+                <a href="@Url.Action("MontarTelaPaciente", "BaseAdmin")">Dashboard</a>
+            </li>
+            <li>
+                <a href="@Url.Action("MontarTelaEmpresa", "Empresa")">Empresa</a>
+            </li>
+            <li class="active">
+                <strong>Filial - Consulta</strong>
+            </li>
+        </ol>
+        <br />
+    </div>
+
+    <div class="row">
+        <div class="col-lg-12 col-md-12 col-xs-12">
+            <div class="col-lg-12 col-md-12 col-xs-12 ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>Filial - Consulta</h5>
+                </div>
+                @using (Html.BeginForm("VerFilial", "Empresa", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal", @id="pwd-container1" }))
+                {
+                    <div class="ibox-content">
+                        @Html.AntiForgeryToken()
+                        @if (!ViewData.ModelState.IsValid)
+                        {
+                            <div class="alert alert-danger">
+                                <button type="button" class="close" data-dismiss="alert">Fechar</button>
+                                @Html.ValidationSummary(false, "Erros Encontrados:", new { @class = "text-danger" })
+                            </div>
+                        }
+                        <div class="row">
+                            <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                <div class="col-lg-2 col-md-2 col-xs-12">
+                                    Tipo de Pessoa
+                                    @Html.TextBoxFor(m => m.TIPO_PESSOA.TIPE_NM_NOME, new { @class = "form-control", autofocus = true, @style = "color: brown; font-wheight: bold", @readonly="readonly" })
+                                </div>
+                                <div class="col-lg-4 col-md-4 col-xs-12">
+                                    @Html.HiddenFor(m => m.ASSI_CD_ID)
+                                    @Html.HiddenFor(m => m.EMPR_CD_ID)
+                                    @Html.HiddenFor(m => m.EMFI_IN_MATRIZ)
+                                    @Html.HiddenFor(m => m.EMFI_DT_CADASTRO)
+                                    @Html.HiddenFor(m => m.EMFI_AQ_LOGO)
+                                    @Html.HiddenFor(m => m.EMFI_IN_ATIVO)
+                                    @Html.HiddenFor(m => m.EMFI_CD_ID)
+                                    Nome
+                                    @Html.TextBoxFor(m => m.EMFI_NM_NOME, new { @class = "form-control", autofocus = true, @style = "color: green; font-wheight: bold", @readonly="readonly" })
+                                </div>
+                                @if (Model.TIPE_CD_ID == 2)
+                                {
+                                    <div class="col-lg-4 col-md-4 col-xs-12">
+                                        Razão Social
+                                        @Html.TextBoxFor(m => m.EMFI_NM_RAZAO, new { @class = "form-control", autofocus = true , @readonly="readonly"})
+                                        @Html.ValidationMessageFor(m => m.EMFI_NM_RAZAO, "", new { @style = "color:red" })
+                                    </div>
+                                }
+                                <div class="col-lg-2 col-md-2 col-xs-12">
+                                    Apelido
+                                    @Html.TextBoxFor(m => m.EMFI_NM_APELIDO, new { @class = "form-control", autofocus = true })
+                                    @Html.ValidationMessageFor(m => m.EMFI_NM_APELIDO, "", new { @style = "color:red" })
+                                </div>
+                            </div>
+                            @if (Model.TIPE_CD_ID == 2)
+                            {
+                                <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                        CNPJ*
+                                        @Html.TextBoxFor(m => m.EMFI_NR_CNPJ, new { @class = "form-control", @id = "cnpj", autofocus = true, @readonly="readonly" })
+                                    </div>
+                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                        Insc.Estadual
+                                        @Html.TextBoxFor(m => m.EMFI_NR_INSCRICAO_ESTADUAL, new { @class = "form-control", autofocus = true, @readonly="readonly" })
+                                    </div>
+                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                        Insc.Municipal
+                                        @Html.TextBoxFor(m => m.EMFI_NR_INSCRICAO_MUNICIPAL, new { @class = "form-control", autofocus = true, @readonly="readonly" })
+                                    </div>
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                        CPF*
+                                        @Html.TextBoxFor(m => m.EMFI_NR_CPF, new { @class = "form-control", @id = "cpf", autofocus = true, @readonly="readonly" })
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                        <div class="row">
+                            <div class="form-group" style="margin: 0 -15px 0 -15px;" id="containerCep">
+                                <div class="col-lg-2 col-md-2 col-xs-12">
+                                    CEP
+                                    @Html.TextBoxFor(m => m.EMFI_NR_CEP, new { @class = "form-control", @id = "cep", autofocus = true, @readonly="readonly" })
+                                </div>
+                            </div>
+
+                            <div class="form-group" style="margin: 30px -15px 0 -15px;">
+                                <div class="col-lg-3 col-md-3 col-xs-12">
+                                    Endereço
+                                    @Html.TextBoxFor(m => m.EMFI_NM_ENDERECO, new { @class = "form-control", autofocus = true, @id = "endereco" , @readonly="readonly"})
+                                </div>
+                                <div class="col-lg-2 col-md-2 col-xs-12">
+                                    Número/Complemento
+                                    @Html.TextBoxFor(m => m.EMFI_NR_NUMERO, new { @class = "form-control", autofocus = true, @id = "numero", @readonly="readonly" })
+                                </div>
+                                <div class="col-lg-2 col-md-2 col-xs-12">
+                                    Bairro
+                                    @Html.TextBoxFor(m => m.EMFI_NM_BAIRRO, new { @class = "form-control", autofocus = true, @id = "bairro" , @readonly="readonly"})
+                                </div>
+                                <div class="col-lg-3 col-md-3 col-xs-12">
+                                    Cidade
+                                    @Html.TextBoxFor(m => m.EMFI_NM_CIDADE, new { @class = "form-control", autofocus = true, @id = "cidade", @readonly="readonly" })
+                                </div>
+                                <div class="col-lg-2 col-md-2 col-xs-12">
+                                    UF
+                                    @Html.TextBoxFor(m => m.UF.UF_NM_NOME, new { @class = "form-control", autofocus = true, @id = "uf", @readonly="readonly" })
+                                </div>
+                            </div>
+
+                            <div class="form-group" style="margin: 30px -15px 0 -15px;">
+                                <div class="col-lg-3 col-md-3 col-xs-12">
+                                    Gerente
+                                    @Html.TextBoxFor(m => m.EMFI_NM_GERENTE, new { @class = "form-control", autofocus = true, @readonly="readonly" })
+                                </div>
+                                <div class="col-lg-2 col-md-2 col-xs-12">
+                                    Telefone
+                                    @Html.TextBoxFor(m => m.EMFI_NR_TELEFONE, new { @class = "form-control", autofocus = true, @readonly="readonly" })
+                                </div>
+                                <div class="col-lg-2 col-md-2 col-xs-12">
+                                    Celular
+                                    @Html.TextBoxFor(m => m.EMFI_NR_CELULAR, new { @class = "form-control", autofocus = true, @readonly="readonly" })
+                                </div>
+                                <div class="col-lg-3 col-md-3 col-xs-12">
+                                    E-Mail
+                                    @Html.TextBoxFor(m => m.EMFI_NM_EMAIL, new { @class = "form-control", autofocus = true, @readonly="readonly" })
+                                </div>
+                            </div>
+                        </div>
+                        <br />
+                        <div class="form-group">
+                            @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarAnexoEmpresa", controller: "Empresa")
+                        </div>
+                    </div>
+                }
+            </div>
+         </div>
+    </div>
+</div>
+
+@section Styles {
+    <link href="~/Content/themes/base/all.css" rel="stylesheet" />  
+    @Styles.Render("~/Content/plugins/dataTables/dataTablesStyles")
+    @Styles.Render("~/plugins/jasnyBootstrapStyles")
+    @Styles.Render("~/Content/plugins/iCheck/iCheckStyles")
+    @Styles.Render("~/plugins/toastrStyles")
+}
+@section Scripts {
+    @Scripts.Render("~/plugins/toastr")
+    @Scripts.Render("~/plugins/dataTables")
+    @Scripts.Render("~/bundles/inputmask")
+    @Scripts.Render("~/plugins/jasnyBootstrap")
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.maskedinput/1.4.1/jquery.maskedinput.js"></script>
+
+    @if (ViewBag.Message != null)
+    {
+        <script type="text/javascript">
+            window.onload = function () {
+                  alert("@ViewBag.Message");
+            };
+        </script>
+    }
+}

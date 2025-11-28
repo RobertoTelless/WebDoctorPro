@@ -1,0 +1,306 @@
+﻿@using Presentation.Extensions
+@using CrossCutting;
+@using System.IO;
+@using EntitiesServices.Work_Classes;
+@model EntitiesServices.Model.MEDICOS
+@{
+    Layout = "~/Views/Shared/_Layout_Admin.cshtml";
+    ViewBag.Title = "WebDoctor - Medicos";
+    ViewBag.MetaDescription = "WebDoctor - Medico - Lista de Medicos";
+    ViewBag.MetaKeywords = "WebDoctor, Medico";
+}
+
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="modalContainer">
+        <div id="modal" class="modal" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        @*titulo gerado dinamicamente*@
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        @*Gerado dinamicamente*@
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="page-title">
+        <h3 class="title">Medicos</h3>
+        <br />
+        <ol class="breadcrumb">
+            <li>
+                <a href="@Url.Action("MontarTelaPaciente", "Paciente")">Dashboard</a>
+            </li>
+            <li class="active">
+                <strong>Medicos</strong>
+            </li>
+        </ol>
+        <br />
+    </div>
+
+    <div class="row">
+        <div class="col-lg-12 col-md-12 col-xs-12">
+            <div class="col-lg-12 col-md-12 col-xs-12 ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>Filtros</h5>
+                </div>
+
+                @using (Html.BeginForm("FiltrarMedico", "Medico", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal" }))
+                {
+                    <div class="ibox-content">
+                        <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                            <div class="col-lg-2 col-md-2 col-xs-12">
+                                Especialidade
+                                @Html.DropDownListFor(m => m.ESPE_CD_ID, (SelectList)ViewBag.Espec, "Selecionar", new { @class = "form-control" })
+                            </div>
+                            <div class="col-lg-4 col-md-4 col-xs-12">
+                                Nome do Médico
+                                @Html.TextBoxFor(m => m.MEDC_NM_MEDICO, new { @class = "form-control", autofocus = true })
+                            </div>
+                            <div class="col-lg-2 col-md-2 col-xs-12">
+                                CRM
+                                @Html.TextBoxFor(m => m.MEDC_NR_CRM, new { @class = "form-control", autofocus = true })
+                            </div>
+                            <div class="col-lg-4 col-md-4 col-xs-12">
+                                E-Mail
+                                @Html.TextBoxFor(m => m.MEDC_EM_EMAIL, new { @class = "form-control", autofocus = true })
+                            </div>
+                        </div>
+                        <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                            <div class="col-lg-12 col-md-12 col-xs-12">
+                                @Html.ButtonActionSubmit(text: "Filtrar")
+                                <a href="@Url.Action("RetirarFiltroMedico", "Medico")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Retorna a exibição padrão dos médicos" class="btn btn-sm btn-warning" id="emp" OnClick = "Fade()">Retirar Filtro</a>                
+                                <a href="@Url.Action("IncluirMedico", "Medico")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessa a página de inclusão de médicos" class="btn btn-sm btn-primary" id="emp" OnClick = "Fade()">Novo Médico</a>                
+                                <a href="@Url.Action("MontarTelaTextoEnvio", "Medico")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acesso a página de textos de mensagens para médicos" class="btn btn-sm btn-warning" id="emp" OnClick = "Fade()">Texto das Mensagens</a>                
+                                @if ((Int32)Session["VoltaMedico"] == 2)
+                                {
+                                    @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarProcederConsulta", controller: "Paciente")
+                                }
+                                else
+                                {
+                                    @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaPaciente", controller: "Paciente")
+                                }
+                                <a href="@Url.Action((String)Session["AjudaNivel"])"  class="btn btn-sm btn-danger" target="_blank">Ajuda</a>                
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-12 col-md-12 col-xs-12">
+            <div class="col-lg-12 col-md-12 col-xs-12 ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>Médicos</h5>
+                </div>
+                <div class="ibox-content">
+                    @if (!ViewData.ModelState.IsValid)
+                    {
+                        <div class="alert alert-danger">
+                            <button type="button" class="close" data-dismiss="alert">Fechar</button>
+                            @Html.ValidationSummary(false, "", new { @class = "text-danger" })
+                        </div>
+                    }
+                    @if (TempData["TemMensagem"] != null)
+                    {
+                        <div class="alert alert-success">
+                            <button type="button" class="close" data-dismiss="alert">Fechar</button>
+                            <span>@TempData["MensagemAcerto"]</span>
+                        </div>
+                    }
+                    
+                    <div class="row">
+                        @if (ViewBag.Listas != null && (ViewBag.Listas as List<EntitiesServices.Model.MEDICOS>).Count > 0)
+                        {
+                            <table class="table table-striped table-bordered table-hover dataTables-example">
+                                <thead style="background-color:lightsteelblue">
+                                    <tr>
+                                        <th style="width: auto">Nome do Médico</th>
+                                        <th style="width: auto">CRM</th>
+                                        <th style="width: auto">Especialidade</th>
+                                        <th style="width: auto">E-Mail</th>
+                                        <th style="width: auto">Telefone</th>
+                                        <th style="width: auto">Celular</th>
+                                        <th style="width: auto">Cidade</th>
+                                        <th style="width: auto">UF</th>
+                                        <th style="width: auto">Num.Envios</th>
+                                        <th class="td-one-action">Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var cond in (ViewBag.Listas as List<EntitiesServices.Model.MEDICOS>))
+                                    {
+                                        <tr>
+                                            <td style="width: auto; cursor: pointer; text-decoration: underline;"><a href="@Url.Action("EditarMedico", "Medico", new { id = cond.MEDC_CD_ID })" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página de informações do médico para edição ou para envio de informações"/>@cond.MEDC_NM_MEDICO</td>
+                                            <td style="width: auto">@cond.MEDC_NR_CRM</td>
+                                            @if (cond.ESPECIALIDADE !=  null)
+                                            {
+                                                <td style="width: auto">@cond.ESPECIALIDADE.ESPE_NM_NOME</td>
+                                            }
+                                            else
+                                            {
+                                                <td style="width: auto">-</td>
+                                            }
+                                            <td style="width: auto">@cond.MEDC_EM_EMAIL</td>
+                                            <td style="width: auto">@cond.MEDC_NR_TELEFONE</td>
+                                            <td style="width: auto">@cond.MEDC_NR_CELULAR</td>
+                                            <td style="width: auto">@cond.MEDC_NM_CIDADE</td>
+                                            @if (cond.UF !=  null)
+                                            {
+                                                <td style="width: auto">@cond.UF.UF_SG_SIGLA</td>
+                                            }
+                                            else
+                                            {
+                                                <td style="width: auto">-</td>
+                                            }
+                                            @if (cond.MEDICOS_ENVIO.Count() > 0)
+                                            {
+                                                <td style="width: auto">@cond.MEDICOS_ENVIO.Count().ToString()</td>
+                                            }
+                                            else
+                                            {
+                                                <td style="width: auto">Nenhum</td>
+                                            }
+                                            <td class="td-one-action">
+                                                @Html.TableLinkDetails(cond.MEDC_CD_ID, "EditarMedico", "fa-edit", "Acessar Informações")
+                                                @if (cond.MEDC_IN_ATIVO == 1)
+                                                {
+                                                    <span style="color: #337ab7; cursor:pointer;" alt="Desativar" class="tbl-link fa-lg fa fa-trash-o" onclick="ShowModalExcluir('/Medico/ExcluirMedico/@cond.MEDC_CD_ID')" title="Excluir Medico"></span>
+                                                }
+                                                else
+                                                {
+                                                    <span style="color: #337ab7; cursor:pointer;" alt="Reativar" class="tbl-link fa-lg fa fa-refresh" onclick="ShowModalReativar('/Medico/ReativarMedico/@cond.MEDC_CD_ID')" title="Reativar Medico"></span>
+                                                }
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        }
+                        else
+                        {
+                            <div class="row">
+                                <div class="col-lg-1 col-md-1 col-xs-2">
+
+                                </div>
+                                <div style="border: 5px solid #F6A54A; padding: 10px; border-radius: 8px 8px; " class="col-lg-10 col-md-10 col-xs-8">
+                                    <h2 style="font-weight: bold">Sua pesquisa não retornou nenhum resultado ou nenhum médico está cadastrado</h2>
+                                    @Html.ButtonLinkIndex(text: "Retirar Filtro", controller: "Medico", action: "RetirarFiltroMedico")
+                                </div>
+                                <div class="col-lg-1 col-md-1 col-xs-2">
+
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <link href="~/Content/themes/base/all.css" rel="stylesheet" />  
+    @Styles.Render("~/Content/plugins/dataTables/dataTablesStyles")
+    @Styles.Render("~/plugins/jasnyBootstrapStyles")
+}
+
+@section Scripts {
+
+    @Scripts.Render("~/plugins/dataTables")
+    @Scripts.Render("~/bundles/inputmask")
+    @Scripts.Render("~/plugins/jasnyBootstrap")
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.maskedinput/1.4.1/jquery.maskedinput.js"></script>
+   
+    <script type="text/javascript" src="~/Scripts/moment.min.js"></script>
+    <script type="text/javascript" src="~/Scripts/bootstrap.min.js"></script>
+   
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('[data-toggle="popover"]').popover();
+        });
+    </script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-toggle="popover"]'));
+            var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
+                return new bootstrap.Popover(popoverTriggerEl);
+            });
+        });
+    </script>
+
+    <!-- Handler de fechamento do browser -->
+    <script type="text/javascript">
+        window.onbeforeunload = function ()
+        {
+            navigator.sendBeacon('../ControleAcesso/LogSessionTime');
+        }; 
+    </script>
+    
+    <script>
+        $(function () {
+            limpaModal();
+        });
+
+        function limpaModal() {
+            $('#btnModal').remove();
+            $('#modalTitle').remove();
+        }
+
+        function ShowModalExcluir(url) {
+            $('#modal').find('.modal-footer').prepend('<a id="btnModal" alt="Desativar" class="btn btn-primary" href="' + url + '" target="_self" title="Desativar">Confirmar</a>');
+            $('#modal').find('.modal-body').html('Confirma exclusão do Médico?');
+            $('#modal').find('.modal-header').prepend('<h5 id="modalTitle" class="modal-title">Confimar Exclusão</h5>');
+            $('#modal').modal('show');
+        }
+        function ShowModalReativar(url) {
+            $('#modal').find('.modal-footer').prepend('<a id="btnModal" alt="Desativar" class="btn btn-primary" href="' + url + '" target="_self" title="Desativar">Confirmar</a>');
+            $('#modal').find('.modal-body').html('Confirma reativação do Médico?');
+            $('#modal').find('.modal-header').prepend('<h5 id="modalTitle" class="modal-title">Confimar Reativação</h5>');
+            $('#modal').modal('show');
+        }
+    </script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            $('.dataTables-example').DataTable({
+                pageLength: 25,
+                dom: '<"html5buttons"B>lTfgitp',
+                buttons: [
+                    { extend: 'excel', title: 'Medico_Planilha' },
+                    {
+                        extend: 'print',
+                        customize: function (win) {
+                            $(win.document.body).addClass('white-bg');
+                            $(win.document.body).css('font-size', '10px');
+
+                            $(win.document.body).find('table')
+                                    .addClass('compact')
+                                    .css('font-size', 'inherit');
+                        }
+                    }
+                ]
+            });           
+        });
+    </script>
+}
+
+@if (ViewBag.Message != null)
+{
+    <script type="text/javascript">
+            window.onload = function () {
+                alert("@ViewBag.Message");
+            };
+    </script>
+}
+

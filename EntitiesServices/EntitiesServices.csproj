@@ -1,0 +1,1652 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\packages\EntityFramework.6.4.4\build\EntityFramework.props" Condition="Exists('..\packages\EntityFramework.6.4.4\build\EntityFramework.props')" />
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{0508D52C-E32D-4C63-81E6-152510036A7F}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>EntitiesServices</RootNamespace>
+    <AssemblyName>EntitiesServices</AssemblyName>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <Deterministic>true</Deterministic>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Elmah, Version=1.2.14706.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\elmah.corelibrary.1.2.2\lib\Elmah.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.4.4\lib\net45\EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.4.4\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Bcl.AsyncInterfaces, Version=8.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Bcl.AsyncInterfaces.8.0.0\lib\net462\Microsoft.Bcl.AsyncInterfaces.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.DependencyInjection.Abstractions, Version=8.0.0.2, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Extensions.DependencyInjection.Abstractions.8.0.2\lib\net462\Microsoft.Extensions.DependencyInjection.Abstractions.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.Logging.Abstractions, Version=8.0.0.3, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Extensions.Logging.Abstractions.8.0.3\lib\net462\Microsoft.Extensions.Logging.Abstractions.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.IdentityModel.Logging, Version=1.1.2.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.IdentityModel.Logging.1.1.2\lib\net451\Microsoft.IdentityModel.Logging.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.IdentityModel.Tokens, Version=5.1.2.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.IdentityModel.Tokens.5.1.2\lib\net451\Microsoft.IdentityModel.Tokens.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Web.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.13.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="Ninject, Version=3.3.6.0, Culture=neutral, PublicKeyToken=c7192dc5380945e7, processorArchitecture=MSIL">
+      <HintPath>..\packages\Ninject.3.3.6\lib\net45\Ninject.dll</HintPath>
+    </Reference>
+    <Reference Include="Ninject.Web.Common, Version=3.3.0.0, Culture=neutral, PublicKeyToken=c7192dc5380945e7, processorArchitecture=MSIL">
+      <HintPath>..\packages\Ninject.Web.Common.3.3.0\lib\net45\Ninject.Web.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="Ninject.Web.Common.WebHost, Version=3.3.0.0, Culture=neutral, PublicKeyToken=c7192dc5380945e7, processorArchitecture=MSIL">
+      <HintPath>..\packages\Ninject.Web.Common.WebHost.3.3.0\lib\net45\Ninject.Web.Common.WebHost.dll</HintPath>
+    </Reference>
+    <Reference Include="Ninject.Web.Mvc, Version=3.3.0.0, Culture=neutral, PublicKeyToken=c7192dc5380945e7, processorArchitecture=MSIL">
+      <HintPath>..\packages\Ninject.MVC5.3.3.0\lib\net45\Ninject.Web.Mvc.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Buffers, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Buffers.4.5.1\lib\net461\System.Buffers.dll</HintPath>
+    </Reference>
+    <Reference Include="System.ClientModel, Version=1.7.0.0, Culture=neutral, PublicKeyToken=92742159e12e44c8, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.ClientModel.1.7.0\lib\netstandard2.0\System.ClientModel.dll</HintPath>
+    </Reference>
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Diagnostics.DiagnosticSource, Version=8.0.0.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Diagnostics.DiagnosticSource.8.0.1\lib\net462\System.Diagnostics.DiagnosticSource.dll</HintPath>
+    </Reference>
+    <Reference Include="System.IdentityModel.Tokens.Jwt, Version=5.1.2.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.IdentityModel.Tokens.Jwt.5.1.2\lib\net451\System.IdentityModel.Tokens.Jwt.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Memory, Version=4.0.1.2, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Memory.4.5.5\lib\net461\System.Memory.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Memory.Data, Version=8.0.0.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Memory.Data.8.0.1\lib\net462\System.Memory.Data.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net" />
+    <Reference Include="System.Numerics" />
+    <Reference Include="System.Numerics.Vectors, Version=4.1.4.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Numerics.Vectors.4.5.0\lib\net46\System.Numerics.Vectors.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Runtime.CompilerServices.Unsafe.6.0.0\lib\net461\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Security" />
+    <Reference Include="System.Text.Encodings.Web, Version=8.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Text.Encodings.Web.8.0.0\lib\net462\System.Text.Encodings.Web.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Text.Json, Version=8.0.0.6, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Text.Json.8.0.6\lib\net462\System.Text.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Threading.Tasks.Extensions, Version=4.2.0.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Threading.Tasks.Extensions.4.5.4\lib\net461\System.Threading.Tasks.Extensions.dll</HintPath>
+    </Reference>
+    <Reference Include="System.ValueTuple, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.ValueTuple.4.5.0\lib\net47\System.ValueTuple.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Helpers, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.3\lib\net45\System.Web.Helpers.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Mvc, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Mvc.5.2.3\lib\net45\System.Web.Mvc.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Razor.3.2.3\lib\net45\System.Web.Razor.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.3\lib\net45\System.Web.WebPages.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Deployment, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.3\lib\net45\System.Web.WebPages.Deployment.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.3\lib\net45\System.Web.WebPages.Razor.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+    <Reference Include="Twilio, Version=6.0.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Twilio.6.0.1\lib\net451\Twilio.dll</HintPath>
+    </Reference>
+    <Reference Include="WebActivatorEx, Version=2.0.0.0, Culture=neutral, PublicKeyToken=7b26dc2a43f6a0d4, processorArchitecture=MSIL">
+      <HintPath>..\packages\WebActivatorEx.2.2.0\lib\net40\WebActivatorEx.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Attributes\ChechTimeAttribute.cs" />
+    <Compile Include="Attributes\CheckTimeAttributeMain.cs" />
+    <Compile Include="Attributes\CustomValidationCNPJAttribute .cs" />
+    <Compile Include="Attributes\CustomValidationCPFAttribute.cs" />
+    <Compile Include="Attributes\DataAnteriorAttribute.cs" />
+    <Compile Include="EntitiesServices\AssinanteCnpjService.cs" />
+    <Compile Include="EntitiesServices\AssinanteService.cs" />
+    <Compile Include="EntitiesServices\CategoriaProdutoService.cs" />
+    <Compile Include="EntitiesServices\CategoriaUsuarioService.cs" />
+    <Compile Include="EntitiesServices\ConfiguracaoAnamneseService.cs" />
+    <Compile Include="EntitiesServices\ConfiguracaoCalendarioService.cs" />
+    <Compile Include="EntitiesServices\ConfiguracaoService.cs" />
+    <Compile Include="EntitiesServices\ControleMensagemService.cs" />
+    <Compile Include="EntitiesServices\EMailAgendaService.cs" />
+    <Compile Include="EntitiesServices\EmpresaService.cs" />
+    <Compile Include="EntitiesServices\LocacaoService.cs" />
+    <Compile Include="EntitiesServices\TipoHistoricoService.cs" />
+    <Compile Include="EntitiesServices\VideoService.cs" />
+    <Compile Include="EntitiesServices\MedicoService.cs" />
+    <Compile Include="EntitiesServices\ProdutoService.cs" />
+    <Compile Include="EntitiesServices\RecebimentoService.cs" />
+    <Compile Include="EntitiesServices\PagamentoService.cs" />
+    <Compile Include="EntitiesServices\SubCategoriaProdutoService.cs" />
+    <Compile Include="EntitiesServices\UnidadeService.cs" />
+    <Compile Include="EntitiesServices\ValorConvenioService.cs" />
+    <Compile Include="EntitiesServices\ValorServicoService.cs" />
+    <Compile Include="EntitiesServices\ValorConsultaService.cs" />
+    <Compile Include="EntitiesServices\TipoValorServicoService.cs" />
+    <Compile Include="EntitiesServices\TipoValorConsultaService.cs" />
+    <Compile Include="EntitiesServices\TipoPagamentoService.cs" />
+    <Compile Include="EntitiesServices\GrupoService.cs" />
+    <Compile Include="EntitiesServices\EspecialidadeService.cs" />
+    <Compile Include="EntitiesServices\LogService.cs" />
+    <Compile Include="EntitiesServices\AcessoMetodoService.cs" />
+    <Compile Include="EntitiesServices\SolicitacaoService.cs" />
+    <Compile Include="EntitiesServices\MensagemAutomacaoService.cs" />
+    <Compile Include="EntitiesServices\MensagemEnviadaSistemaService.cs" />
+    <Compile Include="EntitiesServices\MensagemService.cs" />
+    <Compile Include="EntitiesServices\PerfilService.cs" />
+    <Compile Include="EntitiesServices\PeriodicidadeService.cs" />
+    <Compile Include="EntitiesServices\PlanoService.cs" />
+    <Compile Include="EntitiesServices\RecursividadeService.cs" />
+    <Compile Include="EntitiesServices\ServiceBase.cs" />
+    <Compile Include="EntitiesServices\PacienteService.cs" />
+    <Compile Include="EntitiesServices\TemplateEMailHTMLService.cs" />
+    <Compile Include="EntitiesServices\MedicamentoService.cs" />
+    <Compile Include="EntitiesServices\AvisoLembreteService.cs" />
+    <Compile Include="EntitiesServices\TemplateSMSService.cs" />
+    <Compile Include="EntitiesServices\TemplateEMailService.cs" />
+    <Compile Include="EntitiesServices\TemplateService.cs" />
+    <Compile Include="EntitiesServices\ConvenioService.cs" />
+    <Compile Include="EntitiesServices\LaboratorioService.cs" />
+    <Compile Include="EntitiesServices\TipoAtestadoService.cs" />
+    <Compile Include="EntitiesServices\FormaRecebimentoService.cs" />
+    <Compile Include="EntitiesServices\TipoExameService.cs" />
+    <Compile Include="EntitiesServices\TipoPessoaService.cs" />
+    <Compile Include="EntitiesServices\TipoPacienteService.cs" />
+    <Compile Include="EntitiesServices\UsuarioService.cs" />
+    <Compile Include="Interfaces\Repositories\IAssinanteAnexoRepository.cs" />
+    <Compile Include="Interfaces\Repositories\IAssinanteAnotacaoRepository.cs" />
+    <Compile Include="Interfaces\Repositories\IAssinanteCnpjRepository.cs" />
+    <Compile Include="Interfaces\Repositories\IAssinantePagamentoRepository.cs" />
+    <Compile Include="Interfaces\Repositories\IAssinantePlanoAssinaturaRepository.cs" />
+    <Compile Include="Interfaces\Repositories\IAssinantePlanoRepository.cs" />
+    <Compile Include="Interfaces\Repositories\IAssinanteRepository.cs" />
+    <Compile Include="Interfaces\Repositories\ICategoriaProdutoRepository.cs" />
+    <Compile Include="Interfaces\Repositories\ICategoriaUsuarioRepository.cs" />
+    <Compile Include="Interfaces\Repositories\IConfiguracaoCalendarioBloqueioRepository.cs" />
+    <Compile Include="Interfaces\Repositories\IConfiguracaoAnamneseRepository.cs" />
+    <Compile Include="Interfaces\Repositories\IConfiguracaoChavesRepository.cs" />
+    <Compile Include="Interfaces\Repositories\IConfiguracaoCalendarioRepository.cs" />
+    <Compile Include="Interfaces\Repositories\IConfiguracaoRepository.cs" />
+    <Compile Include="Interfaces\Repositories\IMedicoMensagemRepository.cs" />
+    <Compile Include="Interfaces\Repositories\IControleMensagemRepository.cs" />
+    <Compile Include="Interfaces\Repositories\IControleVersaoRepository.cs" />
+    <Compile Include="Interfaces\Repositories\IConvenioRepository.cs" />
+    <Compile Include="Interfaces\Repositories\ILocacaoAnexoRepository.cs" />
+    <Compile Include="Interfaces\Repositories\ILocacaoAnotacaoRepository.cs" />
+    <Compile Include="Interfaces\Repositories\ILocacaoOcorrenciaRepository.cs" />
+    <Compile Include="Interfaces\Repositories\ILocacaoParcelaRepository.cs" />
+    <Compile Include="Interfaces\Repositories\IMedicoEnvioRepository.cs" />
+    <Compile Include="Interfaces\Repositories\IMedicoAnexoRepository.cs" />
+    <Compile Include="Interfaces\Repositories\ILocacaoHistoricoRepository.cs" />
+    <Compile Include="Interfaces\Repositories\ILocacaoRepository.cs" />
+    <Compile Include="Interfaces\Repositories\IQuestionarioBangRepository.cs" />
+    <Compile Include="Interfaces\Repositories\IQuestionarioEpworthRepository.cs" />
+    <Compile Include="Interfaces\Repositories\IQuestionarioBerlimRepository.cs" />
+    <Compile Include="Interfaces\Repositories\IContratoLocacaoRepository.cs" />
+    <Compile Include="Interfaces\Repositories\ITipoContratoRepository.cs" />
+    <Compile Include="Interfaces\Repositories\ITipoOcorrenciaRepository.cs" />
+    <Compile Include="Interfaces\Repositories\ITipoHistoricoRepository.cs" />
+    <Compile Include="Interfaces\Repositories\IVideoRepository.cs" />
+    <Compile Include="Interfaces\Repositories\IMedicoRepository.cs" />
+    <Compile Include="Interfaces\Repositories\IMovimentacaoEstoqueRepository.cs" />
+    <Compile Include="Interfaces\Repositories\IMovimentoAnotacaoRepository.cs" />
+    <Compile Include="Interfaces\Repositories\IPacienteAnamneseAnotacaoRepository.cs" />
+    <Compile Include="Interfaces\Repositories\IIndicacaoRepository.cs" />
+    <Compile Include="Interfaces\Repositories\IIndicacaoAcaoRepository.cs" />
+    <Compile Include="Interfaces\Repositories\IIndicacaoAnexoRepository.cs" />
+    <Compile Include="Interfaces\Repositories\IMedicoAnotacaoRepository.cs" />
+    <Compile Include="Interfaces\Repositories\IPacienteDadosExameFisicoRepository.cs" />
+    <Compile Include="Interfaces\Repositories\IPacienteFichaRepository.cs" />
+    <Compile Include="Interfaces\Repositories\IPlanoAssinaturaRepository.cs" />
+    <Compile Include="Interfaces\Repositories\IProdutoAnexoRepository.cs" />
+    <Compile Include="Interfaces\Repositories\IProdutoAnotacaoRepository.cs" />
+    <Compile Include="Interfaces\Repositories\IProdutoConcorrenteRepository.cs" />
+    <Compile Include="Interfaces\Repositories\IProdutoCustoRepository.cs" />
+    <Compile Include="Interfaces\Repositories\IProdutoEstoqueFilialRepository.cs" />
+    <Compile Include="Interfaces\Repositories\IProdutoEstoqueHistoricoRepository.cs" />
+    <Compile Include="Interfaces\Repositories\IProdutoLogRepository.cs" />
+    <Compile Include="Interfaces\Repositories\IProdutoPrecoVendaRepository.cs" />
+    <Compile Include="Interfaces\Repositories\IProdutoRepository.cs" />
+    <Compile Include="Interfaces\Repositories\IRecebimentoReciboRepository.cs" />
+    <Compile Include="Interfaces\Repositories\IPagamentoNotaRepository.cs" />
+    <Compile Include="Interfaces\Repositories\IRecebimentoRepository.cs" />
+    <Compile Include="Interfaces\Repositories\IRecebimentoAnotacaoRepository.cs" />
+    <Compile Include="Interfaces\Repositories\IRecebimentoAnexoRepository.cs" />
+    <Compile Include="Interfaces\Repositories\IPagamentoAnotacaoRepository.cs" />
+    <Compile Include="Interfaces\Repositories\IPagamentoAnexoRepository.cs" />
+    <Compile Include="Interfaces\Repositories\IPagamentoRepository.cs" />
+    <Compile Include="Interfaces\Repositories\IPacienteLoginRepository.cs" />
+    <Compile Include="Interfaces\Repositories\ISubcategoriaProdutoRepository.cs" />
+    <Compile Include="Interfaces\Repositories\ITipoVideoRepository.cs" />
+    <Compile Include="Interfaces\Repositories\ITipoEnvioRepository.cs" />
+    <Compile Include="Interfaces\Repositories\IUnidadeRepository.cs" />
+    <Compile Include="Interfaces\Repositories\IValorConvenioRepository.cs" />
+    <Compile Include="Interfaces\Repositories\IValorServicoRepository.cs" />
+    <Compile Include="Interfaces\Repositories\IValorConsultaRepository.cs" />
+    <Compile Include="Interfaces\Repositories\ITipoValorServicoRepository.cs" />
+    <Compile Include="Interfaces\Repositories\ITipoValorConsultaRepository.cs" />
+    <Compile Include="Interfaces\Repositories\ITipoPagamentoRepository.cs" />
+    <Compile Include="Interfaces\Repositories\IGrauParentescoRepository.cs" />
+    <Compile Include="Interfaces\Repositories\IGrupoContatoRepository.cs" />
+    <Compile Include="Interfaces\Repositories\IGrupoRepository.cs" />
+    <Compile Include="Interfaces\Repositories\IEspecialidadeRepository.cs" />
+    <Compile Include="Interfaces\Repositories\IAvisoLembreteRepository.cs" />
+    <Compile Include="Interfaces\Repositories\IAcessoMetodoRepository.cs" />
+    <Compile Include="Interfaces\Repositories\ISolicitacaoRepository.cs" />
+    <Compile Include="Interfaces\Repositories\IPacienteHistoricoRepository.cs" />
+    <Compile Include="Interfaces\Repositories\IPacienteExameAnotacaoRepository.cs" />
+    <Compile Include="Interfaces\Repositories\IPacienteExameAnexoRepository.cs" />
+    <Compile Include="Interfaces\Repositories\IPacienteAtestadoRepository.cs" />
+    <Compile Include="Interfaces\Repositories\IPacienteContatoRepository.cs" />
+    <Compile Include="Interfaces\Repositories\IPacientePrescricaoItemRepository.cs" />
+    <Compile Include="Interfaces\Repositories\IPacienteSolicitacaoRepository.cs" />
+    <Compile Include="Interfaces\Repositories\ILaboratorioRepository.cs" />
+    <Compile Include="Interfaces\Repositories\IMedicamentoRepository.cs" />
+    <Compile Include="Interfaces\Repositories\ITemplateSMSRepository.cs" />
+    <Compile Include="Interfaces\Repositories\IFormaRecebimentoRepository.cs" />
+    <Compile Include="Interfaces\Repositories\ITipoFormaRepository.cs" />
+    <Compile Include="Interfaces\Repositories\ITipoClasseRepository.cs" />
+    <Compile Include="Interfaces\Repositories\ITipoControleRepository.cs" />
+    <Compile Include="Interfaces\Repositories\ILinguaRepository.cs" />
+    <Compile Include="Interfaces\Repositories\IPacienteExameFisicoRepository.cs" />
+    <Compile Include="Interfaces\Repositories\IPacienteExamesRepository.cs" />
+    <Compile Include="Interfaces\Repositories\IPacienteAnexoRepository.cs" />
+    <Compile Include="Interfaces\Repositories\IGrauRepository.cs" />
+    <Compile Include="Interfaces\Repositories\IEstadoCivilRepository.cs" />
+    <Compile Include="Interfaces\Repositories\IEMailAgendaRepository.cs" />
+    <Compile Include="Interfaces\Repositories\IEmpresaAnexoRepository.cs" />
+    <Compile Include="Interfaces\Repositories\IEmpresaFilialRepository.cs" />
+    <Compile Include="Interfaces\Repositories\IEmpresaRepository.cs" />
+    <Compile Include="Interfaces\Repositories\ILogExcecaoRepository.cs" />
+    <Compile Include="Interfaces\Repositories\ILogRepository.cs" />
+    <Compile Include="Interfaces\Repositories\IMensagemAnexoRepository.cs" />
+    <Compile Include="Interfaces\Repositories\IMensagemAutomacaoDatasRepository.cs" />
+    <Compile Include="Interfaces\Repositories\IMensagemAutomacaoRepository.cs" />
+    <Compile Include="Interfaces\Repositories\IMensagemDestinoRepository.cs" />
+    <Compile Include="Interfaces\Repositories\IMensagemEnviadaSistemaRepository.cs" />
+    <Compile Include="Interfaces\Repositories\IMensagemFabricanteRepository.cs" />
+    <Compile Include="Interfaces\Repositories\IMensagemRepository.cs" />
+    <Compile Include="Interfaces\Repositories\IMunicipioRepository.cs" />
+    <Compile Include="Interfaces\Repositories\INacionalidadeRepository.cs" />
+    <Compile Include="Interfaces\Repositories\IPacienteAnamneseRepository.cs" />
+    <Compile Include="Interfaces\Repositories\IPacienteRepository.cs" />
+    <Compile Include="Interfaces\Repositories\IPacientePrescricaoRepository.cs" />
+    <Compile Include="Interfaces\Repositories\IPerfilRepository.cs" />
+    <Compile Include="Interfaces\Repositories\IPeriodicidadePlanoRepository.cs" />
+    <Compile Include="Interfaces\Repositories\IPeriodicidadeRepository.cs" />
+    <Compile Include="Interfaces\Repositories\IPlanoRepository.cs" />
+    <Compile Include="Interfaces\Repositories\IProjetoFalhaRepository.cs" />
+    <Compile Include="Interfaces\Repositories\IRecursividadeDataRepository.cs" />
+    <Compile Include="Interfaces\Repositories\IRecursividadeDestinoRepository.cs" />
+    <Compile Include="Interfaces\Repositories\IRecursividadeRepository.cs" />
+    <Compile Include="Interfaces\Repositories\IRepositoryBase.cs" />
+    <Compile Include="Interfaces\Repositories\IResultadoRobotRepository.cs" />
+    <Compile Include="Interfaces\Repositories\ICorRepository.cs" />
+    <Compile Include="Interfaces\Repositories\ISexoRepository.cs" />
+    <Compile Include="Interfaces\Repositories\ITemplateEMailHTMLRepository.cs" />
+    <Compile Include="Interfaces\Repositories\ITemplateEMailRepository.cs" />
+    <Compile Include="Interfaces\Repositories\ITemplateRepository.cs" />
+    <Compile Include="Interfaces\Repositories\ITipoAtestadoRepository.cs" />
+    <Compile Include="Interfaces\Repositories\ITipoExameRepository.cs" />
+    <Compile Include="Interfaces\Repositories\IPacienteConsultaRepository.cs" />
+    <Compile Include="Interfaces\Repositories\ITipoPessoaRepository.cs" />
+    <Compile Include="Interfaces\Repositories\ITipoPacienteRepository.cs" />
+    <Compile Include="Interfaces\Repositories\IUFRepository.cs" />
+    <Compile Include="Interfaces\Repositories\IUsuarioAnexoRepository.cs" />
+    <Compile Include="Interfaces\Repositories\IPacienteAnotacaoRepository.cs" />
+    <Compile Include="Interfaces\Repositories\IUsuarioAnotacaoRepository.cs" />
+    <Compile Include="Interfaces\Repositories\IUsuarioLoginRepository.cs" />
+    <Compile Include="Interfaces\Repositories\IUsuarioRepository.cs" />
+    <Compile Include="Interfaces\Services\IAssinanteCnpjService.cs" />
+    <Compile Include="Interfaces\Services\IAssinanteService.cs" />
+    <Compile Include="Interfaces\Services\ICategoriaProdutoService.cs" />
+    <Compile Include="Interfaces\Services\ICategoriaUsuarioService.cs" />
+    <Compile Include="Interfaces\Services\IConfiguracaoAnamneseService.cs" />
+    <Compile Include="Interfaces\Services\IConfiguracaoCalendarioService.cs" />
+    <Compile Include="Interfaces\Services\IConfiguracaoService.cs" />
+    <Compile Include="Interfaces\Services\IControleMensagemService.cs" />
+    <Compile Include="Interfaces\Services\IEMailAgendaService.cs" />
+    <Compile Include="Interfaces\Services\IEmpresaService.cs" />
+    <Compile Include="Interfaces\Services\ILocacaoService.cs" />
+    <Compile Include="Interfaces\Services\ITipoHistoricoService.cs" />
+    <Compile Include="Interfaces\Services\IVideoService.cs" />
+    <Compile Include="Interfaces\Services\IMedicoService.cs" />
+    <Compile Include="Interfaces\Services\IProdutoService.cs" />
+    <Compile Include="Interfaces\Services\IRecebimentoService.cs" />
+    <Compile Include="Interfaces\Services\IPagamentoService.cs" />
+    <Compile Include="Interfaces\Services\ISubCategoriaProdutoService.cs" />
+    <Compile Include="Interfaces\Services\ITipoVideoService.cs" />
+    <Compile Include="Interfaces\Services\IUnidadeService.cs" />
+    <Compile Include="Interfaces\Services\IValorConvenioService.cs" />
+    <Compile Include="Interfaces\Services\IValorServicoService.cs" />
+    <Compile Include="Interfaces\Services\IValorConsultaService.cs" />
+    <Compile Include="Interfaces\Services\ITipoValorServicoService.cs" />
+    <Compile Include="Interfaces\Services\ITipoValorConsultaService.cs" />
+    <Compile Include="Interfaces\Services\ITipoPagamentoService.cs" />
+    <Compile Include="Interfaces\Services\IGrupoService.cs" />
+    <Compile Include="Interfaces\Services\IEspecialidadeService.cs" />
+    <Compile Include="Interfaces\Services\ILogService.cs" />
+    <Compile Include="Interfaces\Services\IAcessoMetodoService.cs" />
+    <Compile Include="Interfaces\Services\ISolicitacaoService.cs" />
+    <Compile Include="Interfaces\Services\IMensagemAutomacaoService.cs" />
+    <Compile Include="Interfaces\Services\IMensagemEnviadaSistemaService.cs" />
+    <Compile Include="Interfaces\Services\IMensagemService.cs" />
+    <Compile Include="Interfaces\Services\IPerfilService.cs" />
+    <Compile Include="Interfaces\Services\IPeriodicidadeService.cs" />
+    <Compile Include="Interfaces\Services\IPlanoService.cs" />
+    <Compile Include="Interfaces\Services\IRecursividadeService.cs" />
+    <Compile Include="Interfaces\Services\IServiceBase.cs" />
+    <Compile Include="Interfaces\Services\IPacienteService.cs" />
+    <Compile Include="Interfaces\Services\ITemplateEMailHTMLService.cs" />
+    <Compile Include="Interfaces\Services\IMedicamentoService.cs" />
+    <Compile Include="Interfaces\Services\IAvisoLembreteService.cs" />
+    <Compile Include="Interfaces\Services\ITemplateSMSService.cs" />
+    <Compile Include="Interfaces\Services\ITemplateEMailService.cs" />
+    <Compile Include="Interfaces\Services\ITemplateService.cs" />
+    <Compile Include="Interfaces\Services\IConvenioService.cs" />
+    <Compile Include="Interfaces\Services\ILaboratorioService.cs" />
+    <Compile Include="Interfaces\Services\ITipoAtestadoService.cs" />
+    <Compile Include="Interfaces\Services\IFormaRecebimentoService.cs" />
+    <Compile Include="Interfaces\Services\ITipoExameService.cs" />
+    <Compile Include="Interfaces\Services\ITipoPessoaService.cs" />
+    <Compile Include="Interfaces\Services\ITipoPacienteService.cs" />
+    <Compile Include="Interfaces\Services\IUsuarioService.cs" />
+    <Compile Include="Model\ACESSO_METODO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\AGENDA.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\AGENDA_ANEXO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\AGENDA_CONTATO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\AGENDA_VINCULO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\ANTECIPACAO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\ASSINANTE.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\ASSINANTE_ANEXO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\ASSINANTE_ANOTACAO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\ASSINANTE_CONSUMO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\ASSINANTE_PAGAMENTO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\ASSINANTE_PAGAMENTO_ANEXO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\ASSINANTE_PLANO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\ASSINANTE_PLANO_ASSINATURA.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\ASSINANTE_QUADRO_SOCIETARIO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\ATENDIMENTO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\ATENDIMENTO_ACAO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\ATENDIMENTO_ACOMPANHAMENTO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\ATENDIMENTO_AGENDA.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\ATENDIMENTO_ANEXO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\ATENDIMENTO_CRM.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\ATENDIMENTO_PROPOSTA.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\ATENDIMENTO_PROPOSTA_ACOMPANHAMENTO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\ATENDIMENTO_PROPOSTA_ANEXO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\ATENDIMENTO_PROPOSTA_PECA.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\ATENDIMENTO_PROPOSTA_SERVICO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\AVISO_LEMBRETE.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\BANCO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\CARGO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\CARGO_TESTE.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\CATEGORIA_AGENDA.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\CATEGORIA_ATENDIMENTO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\CATEGORIA_CLIENTE.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\CATEGORIA_CUSTO_FIXO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\CATEGORIA_FORNECEDOR.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\CATEGORIA_NOTIFICACAO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\CATEGORIA_ORDEM_SERVICO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\CATEGORIA_PACIENTE.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\CATEGORIA_PRODUTO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\CATEGORIA_SERVICO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\CATEGORIA_TELEFONE.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\CATEGORIA_USUARIO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\CENTRO_CUSTO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\CLASSE.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\CLIENTE.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\CLIENTE_ANEXO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\CLIENTE_ANOTACAO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\CLIENTE_CONTATO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\CLIENTE_FALHA.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\CLIENTE_QUADRO_SOCIETARIO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\CLIENTE_REFERENCIA.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\CLIENTE_TAG.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\COMISSAO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\COMISSAO_CARGO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\COMPRA.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\COMPRA_ANEXO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\COMPRA_ANOTACAO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\COMPRA_CONTATO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\COMPRA_FORNECEDOR.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\COMPRA_FORNECEDOR_ITEM.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\COMPRA_ITEM.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\CONFIGURACAO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\CONFIGURACAO_ANAMNESE.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\CONFIGURACAO_CALENDARIO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\CONFIGURACAO_CALENDARIO_BLOQUEIO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\CONFIGURACAO_CHAVES.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\CONFIGURACAO_CRIPT.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\CONSULTA_PAGAMENTO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\CONSULTA_RECEBIMENTO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\CONTA_BANCO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\CONTA_BANCO_CONTATO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\CONTA_BANCO_LANCAMENTO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\CONTA_PAGAR.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\CONTA_PAGAR_ANEXO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\CONTA_PAGAR_ANOTACAO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\CONTA_PAGAR_FALHA.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\CONTA_PAGAR_PARCELA.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\CONTA_PAGAR_RATEIO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\CONTA_RECEBER.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\CONTA_RECEBER_ANEXO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\CONTA_RECEBER_ANOTACAO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\CONTA_RECEBER_FALHA.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\CONTA_RECEBER_PARCELA.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\CONTA_RECEBER_RATEIO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\CONTRATO_LOCACAO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\CONTROLE_MENSAGEM.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\CONTROLE_PROCESSO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\CONTROLE_ROBOT_PROCESSO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\CONTROLE_VERSAO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\CONVENIO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\COR.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\CRM.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\CRM_ACAO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\CRM_ANEXO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\CRM_COMENTARIO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\CRM_CONTATO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\CRM_FOLLOW.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\CRM_ORIGEM.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\CRM_PEDIDO_ENVIO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\CRM_PEDIDO_VENDA.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\CRM_PEDIDO_VENDA_ACOMPANHAMENTO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\CRM_PEDIDO_VENDA_ANEXO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\CRM_PEDIDO_VENDA_ITEM.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\CRM_PEDIDO_VENDA_ITEM_PECA.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\CRM_PEDIDO_VENDA_ITEM_SERVICO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\CUSTO_FIXO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\CUSTO_FIXO_CALENDARIO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\CUSTO_HISTORICO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\CUSTO_VARIAVEL.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\CUSTO_VARIAVEL_ANTECIPACAO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\CUSTO_VARIAVEL_CALCULO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\CUSTO_VARIAVEL_HISTORICO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\DEPARTAMENTO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\DIARIO_COMPRA.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\DIARIO_PROCESSO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\DOCUMENTO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\DOCUMENTO_ANOTACAO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\DOCUMENTO_HISTORICO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\DOCUMENTO_METADADO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\EMAIL_AGENDAMENTO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\EMPRESA.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\EMPRESA_ANEXO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\EMPRESA_CUSTO_VARIAVEL.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\EMPRESA_CUSTO_VARIAVEL_NORMAL.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\EMPRESA_FILIAL.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\EMPRESA_MAQUINA.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\EMPRESA_PLATAFORMA.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\EMPRESA_TICKET.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\ESCOLARIDADE.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\ESPECIALIDADE.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\ESTADO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\ESTADO_BASE.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\ESTADO_CIVIL.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\ESTADO_ENTIDADE.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\ESTADO_MODELO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\ESTOQUE_PROCESSO_IMPORTACAO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\FICHA_TECNICA.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\FICHA_TECNICA_DETALHE.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\FILIAL.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\FORMA_ENVIO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\FORMA_FRETE.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\FORMA_PAGAMENTO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\FORMA_RECEBIMENTO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\FORNECEDOR.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\FORNECEDOR_ANEXO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\FORNECEDOR_ANOTACOES.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\FORNECEDOR_CONTATO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\FORNECEDOR_PRODUTO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\FORNECEDOR_QUADRO_SOCIETARIO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\FUNIL.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\FUNIL_ETAPA.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\GED_Model.Context.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>GED_Model.Context.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\GED_Model.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\GED_Model.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>GED_Model.edmx</DependentUpon>
+    </Compile>
+    <Compile Include="Model\GRAU_INSTRUCAO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\GRAU_PARENTESCO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\GRUPO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\GRUPO_CC.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\GRUPO_CLIENTE.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\GRUPO_DOCUMENTO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\GRUPO_PAC.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\GRUPO_PACIENTE.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\INDICACAO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\INDICACAO_ACAO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\INDICACAO_ANEXO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\LABORATORIO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\LINGUA.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\LOCACAO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\LOCACAO_ANEXO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\LOCACAO_ANOTACAO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\LOCACAO_HISTORICO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\LOCACAO_OCORRENCIA.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\LOCACAO_PARCELA.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\LOG.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\LOG_EXCECAO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\LOG_EXCECAO_NOVO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\MAQUINA.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\MEDICAMENTO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\MEDICOS.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\MEDICOS_ENVIO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\MEDICOS_ENVIO_ANEXO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\MEDICOS_ENVIO_ANOTACAO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\MEDICOS_MENSAGEM.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\MEDICO_ENVIO_INFORMACAO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\MEDICO_ENVIO_INFORMACAO_ANEXO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\MEDICO_ENVIO_INFORMACAO_ANOTACAO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\MENSAGEM_ANEXO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\MENSAGEM_AUTOMACAO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\MENSAGEM_AUTOMACAO_DATAS.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\MENSAGEM_FABRICANTE.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\MENSAGENS.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\MENSAGENS_DESTINOS.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\MENSAGENS_ENVIADAS_SISTEMA.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\META.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\METADADO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\META_ANEXO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\META_ANOTACAO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\MOTIVO_CANCELAMENTO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\MOTIVO_ENCERRAMENTO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\MOVIMENTO_ANOTACAO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\MOVIMENTO_ESTOQUE_PRODUTO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\MUNICIPIO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\NACIONALIDADE.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\NIVEL_SEGURANCA.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\NOMENCLATURA_BRAS_SERVICOS.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\NOTICIA.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\NOTICIA_COMENTARIO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\NOTIFICACAO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\NOTIFICACAO_ANEXO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\ORDEM_SERVICO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\ORDEM_SERVICO_ACOMPANHAMENTO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\ORDEM_SERVICO_AGENDA.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\ORDEM_SERVICO_ANEXO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\ORDEM_SERVICO_COMENTARIOS.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\ORDEM_SERVICO_PRODUTO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\ORDEM_SERVICO_SERVICO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\OUTRO_CUSTO_VARIAVEL.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\PACIENTE.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\PACIENTE_ANAMNESE.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\PACIENTE_ANAMNESE_ANOTACAO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\PACIENTE_ANEXO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\PACIENTE_ANOTACAO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\PACIENTE_ATESTADO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\PACIENTE_CONSULTA.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\PACIENTE_CONTATO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\PACIENTE_DADOS_EXAME_FISICO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\PACIENTE_EXAMES.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\PACIENTE_EXAME_ANEXO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\PACIENTE_EXAME_ANOTACAO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\PACIENTE_EXAME_FISICOS.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\PACIENTE_FICHA.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\PACIENTE_HISTORICO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\PACIENTE_LOGIN.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\PACIENTE_PRESCRICAO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\PACIENTE_PRESCRICAO_ITEM.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\PACIENTE_SOLICITACAO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\PAGAMENTO_ANEXO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\PAGAMENTO_ANOTACAO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\PAGAMENTO_NOTA_FISCAL.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\PARENTESCO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\PECA.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\PECA_ANEXO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\PECA_ANOTACAO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\PEDIDO_VENDA.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\PEDIDO_VENDA_ACOMPANHAMENTO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\PEDIDO_VENDA_ANEXO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\PERFIL.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\PERIODICIDADE.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\PERIODICIDADE_TAREFA.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\PESQUISA.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\PESQUISA_ANEXO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\PESQUISA_ANOTACAO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\PESQUISA_ENVIO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\PESQUISA_ITEM.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\PESQUISA_ITEM_OPCAO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\PESQUISA_RESPOSTA.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\PESQUISA_RESPOSTA_ITEM.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\PLANO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\PLANO_ASSINATURA.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\PLANO_PERIODICIDADE.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\PLATAFORMA_ENTREGA.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\PRECIFICACAO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\PRECIFICACAO_PRODUTO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\PROCEDIMENTO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\PROCEDIMENTO_ANEXO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\PROCEDIMENTO_ANOTACAO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\PRODUTO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\PRODUTO_ANEXO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\PRODUTO_ANOTACAO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\PRODUTO_CONCORRENTE.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\PRODUTO_CUSTO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\PRODUTO_EMPRESA.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\PRODUTO_ESTOQUE_FILIAL.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\PRODUTO_ESTOQUE_HISTORICO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\PRODUTO_FALHA.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\PRODUTO_KIT.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\PRODUTO_LOG.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\PRODUTO_ORIGEM.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\PRODUTO_PRECO_VENDA.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\QUESTIONARIO_BERLIM.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\QUESTIONARIO_EPWORTH.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\QUESTIONARIO_STOPBANG.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\RECEBIMENTO_ANEXO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\RECEBIMENTO_ANOTACAO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\RECEBIMENTO_RECIBO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\RECURSIVIDADE.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\RECURSIVIDADE_DATA.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\RECURSIVIDADE_DESTINO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\RECURSIVIDADE_GERAL.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\RECURSIVIDADE_GERAL_DATA.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\RECURSIVIDADE_GERAL_DESTINO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\REGIAO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\REGIME_TRIBUTARIO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\RESPOSTA_CONSULTA.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\RESULTADO_ROBOT.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\RESULTADO_ROBOT_CUSTO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SERVICO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SERVICOS.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SERVICOS_ANEXO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SERVICOS_ANOTACAO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SERVICOS_CONCORRENTE.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SERVICOS_CUSTO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SERVICOS_EMPRESA.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SERVICOS_LOG.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SERVICOS_PECA.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SERVICOS_PRECO_VENDA.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SERVICO_ANEXO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SERVICO_EMPRESA.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SERVICO_TABELA_PRECO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SEXO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SOLICITACAO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SUBCATEGORIA_PRODUTO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SUBGRUPO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\sysdiagrams.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\TAREFA.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\TAREFA_ACOMPANHAMENTO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\TAREFA_ANEXO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\TAREFA_NOTIFICACAO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\TAREFA_VINCULO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\TELEFONE.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\TEMPLATE.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\TEMPLATE_EMAIL.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\TEMPLATE_EMAIL_HTML.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\TEMPLATE_PROPOSTA.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\TEMPLATE_SMS.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\TICKET_ALIMENTACAO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\TIPO_ACAO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\TIPO_ACESSO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\TIPO_ATESTADO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\TIPO_CARTEIRA_CLASSE.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\TIPO_CONTA.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\TIPO_CONTRATO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\TIPO_CONTRIBUINTE.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\TIPO_CONTROLE.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\TIPO_CRM.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\TIPO_DOCUMENTO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\TIPO_EMBALAGEM.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\TIPO_ENVIO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\TIPO_EXAME.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\TIPO_FOLLOW.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\TIPO_FORMA.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\TIPO_GRUPO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\TIPO_HISTORICO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\TIPO_ITEM_EXAME.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\TIPO_ITEM_PESQUISA.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\TIPO_METADADO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\TIPO_OCORRENCIA.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\TIPO_PACIENTE.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\TIPO_PAGAMENTO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\TIPO_PESQUISA.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\TIPO_PESSOA.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\TIPO_SERVICO_CONSULTA.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\TIPO_TAREFA.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\TIPO_TRANSPORTE.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\TIPO_VALOR_CONSULTA.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\TIPO_VEICULO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\TIPO_VIDEO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\TITULARIDADE.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\TRANSPORTADORA.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\TRANSPORTADORA_ANEXO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\TRANSPORTADORA_ANOTACAO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\TRANSPORTADORA_CONTATO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\TRANSPORTADORA_PROPOSTA.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\TRANSPORTADORA_QUADRO_SOCIETARIO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\TRANSPORTADORA_REGIAO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\UF.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\UNIDADE.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\USUARIO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\USUARIO_ANEXO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\USUARIO_ANOTACAO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\USUARIO_LOGIN.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\VALOR_CONSULTA.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\VALOR_CONVENIO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\VALOR_SERVICO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\VEICULO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\VEICULO_FUNCAO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\VENDA_MENSAL.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\VENDA_MENSAL_ANEXO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\VENDA_MENSAL_ANOTACAO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\VENDA_MENSAL_CALCULO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\VENDA_MENSAL_COMISSAO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\VENDA_MENSAL_PARTES.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\VIDEO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\VIDEO_BASE.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\VIDEO_COMENTARIO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\VISUALIZACAO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\VOLTA_PESQUISA.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="WorkClasses\AttachmentForn.cs" />
+    <Compile Include="WorkClasses\CNPJ.cs" />
+    <Compile Include="WorkClasses\CEP.cs" />
+    <Compile Include="WorkClasses\DTO_ModeloEMailHTML.cs" />
+    <Compile Include="WorkClasses\DTO_ModeloEMail.cs" />
+    <Compile Include="WorkClasses\DTO_ModeloSMS.cs" />
+    <Compile Include="WorkClasses\DTO_ContratoLocacao.cs" />
+    <Compile Include="WorkClasses\DTO_ValorConsulta.cs" />
+    <Compile Include="WorkClasses\DTO_Video .cs" />
+    <Compile Include="WorkClasses\DTO_Medico_Mensagem.cs" />
+    <Compile Include="WorkClasses\DTO_Contrato .cs" />
+    <Compile Include="WorkClasses\DTO_Aviso .cs" />
+    <Compile Include="WorkClasses\DTO_Medico_Envio.cs" />
+    <Compile Include="WorkClasses\DTO_Medico.cs" />
+    <Compile Include="WorkClasses\DTO_Solicitacao_Modelo.cs" />
+    <Compile Include="WorkClasses\DTO_Medicamento .cs" />
+    <Compile Include="WorkClasses\DTO_Perfil .cs" />
+    <Compile Include="WorkClasses\DTO_Usuario .cs" />
+    <Compile Include="WorkClasses\DTO_Ocorrencia.cs" />
+    <Compile Include="WorkClasses\DTO_Parcela.cs" />
+    <Compile Include="WorkClasses\DTO_Locacao.cs" />
+    <Compile Include="WorkClasses\ErrorModel.cs" />
+    <Compile Include="WorkClasses\Endereco.cs" />
+    <Compile Include="WorkClasses\Enumerador.cs" />
+    <Compile Include="WorkClasses\FileQueue.cs" />
+    <Compile Include="WorkClasses\Login.cs" />
+    <Compile Include="WorkClasses\MontagemGrupoPaciente.cs" />
+    <Compile Include="WorkClasses\MontagemGrupo.cs" />
+    <Compile Include="WorkClasses\TrocaSenha.cs" />
+  </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <None Include="App.config" />
+    <EntityDeploy Include="Model\GED_Model.edmx">
+      <Generator>EntityModelCodeGenerator</Generator>
+      <LastGenOutput>GED_Model.Designer.cs</LastGenOutput>
+    </EntityDeploy>
+    <None Include="Model\GED_Model.edmx.diagram">
+      <DependentUpon>GED_Model.edmx</DependentUpon>
+    </None>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\CrossCutting\CrossCutting.csproj">
+      <Project>{fc8e121b-432a-4571-b7e8-3a5b9ce42b17}</Project>
+      <Name>CrossCutting</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="App_Readme\Elmah.txt" />
+    <Content Include="Model\GED_Model.Context.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <DependentUpon>GED_Model.edmx</DependentUpon>
+      <LastGenOutput>GED_Model.Context.cs</LastGenOutput>
+    </Content>
+    <Content Include="Model\GED_Model.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <DependentUpon>GED_Model.edmx</DependentUpon>
+      <LastGenOutput>GED_Model.cs</LastGenOutput>
+    </Content>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>Este projeto faz referência a pacotes do NuGet que não estão presentes neste computador. Use a Restauração de Pacotes do NuGet para baixá-los.  Para obter mais informações, consulte http://go.microsoft.com/fwlink/?LinkID=322105. O arquivo ausente é {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\EntityFramework.6.4.4\build\EntityFramework.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\EntityFramework.6.4.4\build\EntityFramework.props'))" />
+    <Error Condition="!Exists('..\packages\EntityFramework.6.4.4\build\EntityFramework.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\EntityFramework.6.4.4\build\EntityFramework.targets'))" />
+  </Target>
+  <Import Project="..\packages\EntityFramework.6.4.4\build\EntityFramework.targets" Condition="Exists('..\packages\EntityFramework.6.4.4\build\EntityFramework.targets')" />
+</Project>

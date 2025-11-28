@@ -1,0 +1,118 @@
+﻿/* Estilos para o título do questionário */
+.titulo-questionario {
+    margin-left: 0px;
+    color: green;
+    background-color: beige;
+    font-weight: bold;
+}
+
+/* Estilos para os campos de resposta de Sim/Não */
+.campo-resposta {
+    color: darkblue;
+    font-weight: bold;
+}
+
+/* Estilos para os elementos que estavam usando "clear: both" */
+.limpar-flutuacao {
+    clear: both;
+}
+
+/* Estilos para as colunas de IMC e IDADE */
+.coluna-esquerda {
+    float: left;
+    width: 45%;
+}
+
+.coluna-direita {
+    float: right;
+    width: 45%;
+}
+
+/* Estilos para a área de pontuação total */
+.area-total {
+    float: right;
+    margin-top: 20px;
+}
+
+/* Estilos para o texto "Pontuação de Risco Total:" */
+.texto-pontuacao-total {
+    font-weight: bold;
+    font-size: 1.2em;
+}
+
+/* Estilos para a pontuação total, dependendo do valor */
+#risco-total {
+    font-size: 1.5em;
+    font-weight: bold;
+    margin-left: 10px;
+}
+
+.risco-total-baixo {
+    color: green;
+}
+
+.risco-total-intermedio {
+    color: seagreen;
+}
+
+.risco-total-alto {
+    color: red;
+}
+
+.risco-total-padrao {
+    color: darkblue;
+}
+
+/* Estilos para o alinhamento do form-group (se ele precisar de margin) */
+.form-group-questionario {
+    margin-left: 5px;
+    margin-right: 5px;
+}
+
+/* Estilos para o título da pergunta (RONCOS?) */
+.titulo-pergunta-destaque {
+    color: green;
+    font-weight: bold;
+}
+
+/* Estilos para as mensagens de validação */
+.validacao-erro {
+    color: red;
+}
+
+/* Estilos para limpar a flutuação (substitui style="clear: both;") */
+.clear-fix {
+    clear: both;
+}
+
+/* Estilos para as colunas de IMC e Idade */
+.coluna-metade {
+    width: 45%;
+}
+
+.coluna-esquerda {
+    float: left;
+}
+
+.coluna-direita {
+    float: right;
+}
+
+/* Estilos para a área de pontuação total */
+.area-pontuacao-total {
+    float: right;
+    margin-top: 20px;
+}
+
+/* Estilos para o texto "Pontuação de Risco Total:" */
+.texto-pontuacao {
+    font-weight: bold;
+    font-size: 1.2em;
+}
+
+/* Estilos para o valor da pontuação */
+.valor-pontuacao {
+    font-size: 1.5em;
+    font-weight: bold;
+    margin-left: 10px;
+}

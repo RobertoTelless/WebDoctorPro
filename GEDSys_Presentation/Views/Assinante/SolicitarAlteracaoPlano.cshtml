@@ -1,0 +1,376 @@
+﻿@using Presentation.Extensions
+@model ERP_Condominios_Solution.ViewModels.SolicitacaoAlteracaoPlanoViewModel
+@{
+    Layout = "~/Views/Shared/_Layout_Admin.cshtml";
+}
+
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="page-title">
+        <h3 class="title">Assinantes</h3>
+        <br />
+        <ol class="breadcrumb">
+            <li>
+                <a href="@Url.Action("MontarTelaPaciente", "BaseAdmin")">Dashboard</a>
+            </li>
+            <li>
+                <a href="@Url.Action("MontarTelaCentralAssinante", "Assinantes")">Central do Assinante</a>
+            </li>
+            <li class="active">
+                <strong>Assinante - Solicitação de Alteração de Plano</strong>
+            </li>
+        </ol>
+        <br />
+    </div>
+
+    <div class="row">
+        <div class="col-lg-12 col-md-12 col-xs-12">
+            <div class="col-lg-12 col-md-12 col-xs-12 ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>Assinante - Solicitação de Alteração de Plano</h5>
+                </div>
+                @using (Html.BeginForm("SolicitarAlteracaoPlano", "Assinante", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal", @id="pwd-container1" }))
+                {
+                    <div class="ibox-content">
+                        @Html.AntiForgeryToken()
+                        @if (!ViewData.ModelState.IsValid)
+                        {
+                            <div class="alert alert-danger">
+                                <button type="button" class="close" data-dismiss="alert">Fechar</button>
+                                @Html.ValidationSummary(false, "", new { @class = "text-danger" })
+                            </div>
+                        }
+                        <div class="form-group">
+                            @Html.ButtonActionSubmit(text: "Confirma Envio da Mensagem", htmlAttributes: new { id = "basictoast" })
+                            @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarAnexoAssinante", controller: "Assinante")
+                        </div>
+                        <div class="row">
+                            <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">                
+                                <h4 style="margin-left: 15px; color:green; background-color: beige; font-weight:bold">Assinante</h4>
+                                <div class="col-lg-3 col-md-3 col-xs-12">
+                                    @Html.HiddenFor(m => m.ASSI_CD_ID)
+                                    @Html.HiddenFor(m => m.ASSI_NM_NOME)
+                                    @Html.HiddenFor(m => m.SOPL_DT_CONTATO)
+                                    @Html.HiddenFor(m => m.PLAN_CD_ID_ATUAL)
+                                    @Html.HiddenFor(m => m.SOPL_NM_PLANO_ATUAL)
+                                    @Html.HiddenFor(m => m.SOPL_DT_VALIDADE)
+                                    Nome do Assinante
+                                    @Html.TextBoxFor(m => m.ASSI_NM_NOME, new { @class = "form-control", @readonly="readonly", @style = "color:green; font-weight:bold"})
+                                </div>
+                                <div class="col-lg-2 col-md-2 col-xs-12">
+                                    Data da Solicitação
+                                    @Html.TextBoxFor(m => m.SOPL_DT_CONTATO, "{0:dd/MM/yyyy}", new { @class = "form-control", @readonly="readonly" })
+                                </div>
+                                <div class="col-lg-3 col-md-3 col-xs-12">
+                                    Plano Ativo
+                                    @Html.TextBoxFor(m => m.SOPL_NM_PLANO_ATUAL, new { @class = "form-control", @readonly="readonly" })
+                                </div>
+                                <div class="col-lg-2 col-md-2 col-xs-12">
+                                    Encerramento
+                                    @Html.TextBoxFor(m => m.SOPL_DT_VALIDADE, "{0:dd/MM/yyyy}", new { @class = "form-control", @readonly="readonly" })
+                                </div>
+                            </div>
+
+                            <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">                
+                                <h4 style="margin-left: 15px; color:green; background-color: beige; font-weight:bold">Plano Solicitado</h4>
+                                <div class="col-lg-3 col-md-3 col-xs-12">
+                                    Novo Plano*
+                                    @Html.DropDownListFor(m => m.PLAN_CD_ID, (SelectList)ViewBag.Planos, "Selecionar", new { @class = "form-control", autofocus = true, id = "plano", onchange="GetPlano($(this).val())" })
+                                    @Html.ValidationMessageFor(m => m.PLAN_CD_ID, "", new { @style = "color:red" })
+                                </div>
+                                <div style="display: none;" id="nome" class="col-lg-3 col-md-3 col-xs-12">
+                                    Nome do Plano
+                                    <input class="form-control" type="text" readonly="readonly" />
+                                </div>
+                                <div style="display: none;" id="peri" class="col-lg-2 col-md-2 col-xs-12">
+                                    Periodicidade
+                                    <input class="form-control" type="text" readonly="readonly" />
+                                </div>
+                                <div style="display: none;" id="valor" class="col-lg-2 col-md-2 col-xs-12">
+                                    Valor
+                                    <input class="form-control" type="text" readonly="readonly" />
+                                </div>
+                            </div>
+
+                            <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">                
+                                <h4 style="margin-left: 15px; color:green; background-color: beige; font-weight:bold">Preferências de Resposta</h4>
+                                <div class="col-lg-2 col-md-2 col-xs-12">
+                                    Prioridade*
+                                    @Html.DropDownListFor(m => m.SOPL_IN_PRIORIDADE, (SelectList)ViewBag.Prioridade, "Selecionar", new { @class = "form-control", autofocus = true, id = "prior" })
+                                    @Html.ValidationMessageFor(m => m.SOPL_IN_PRIORIDADE, "", new { @style = "color:red" })
+                                </div>
+                                <div class="col-lg-2 col-md-2 col-xs-12">
+                                    Forma de Resposta*
+                                    @Html.DropDownListFor(m => m.SOPL_IN_RESPOSTA, (SelectList)ViewBag.Resposta, "Selecionar", new { @class = "form-control", autofocus = true, id = "resposta", onchange = "ValidaDiv($(this).val())" })
+                                    @Html.ValidationMessageFor(m => m.SOPL_IN_RESPOSTA, "", new { @style = "color:red" })
+                                </div>
+                                <div class="col-lg-2 col-md-2 col-xs-12">
+                                    Horário*
+                                    @Html.DropDownListFor(m => m.SOPL_IN_HORARIO, (SelectList)ViewBag.Horario, "Selecionar", new { @class = "form-control", autofocus = true })
+                                    @Html.ValidationMessageFor(m => m.SOPL_IN_HORARIO, "", new { @style = "color:red" })
+                                </div>
+                                <div class="col-lg-6 col-md-6 col-xs-12">
+                                    Motivo da Solicitação*
+                                    @Html.DropDownListFor(m => m.SOPL_NM_MOTIVO, (SelectList)ViewBag.Motivo, "Selecionar", new { @class = "form-control", autofocus = true })
+                                    @Html.ValidationMessageFor(m => m.SOPL_NM_MOTIVO, "", new { @style = "color:red" })
+                                </div>
+                            </div>
+
+                            <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">                
+                                <h4 style="margin-left: 15px; color:green; background-color: beige; font-weight:bold">Contatos</h4>
+                                <div class="col-lg-3 col-md-3 col-xs-12" >
+                                    E-Mail
+                                    @Html.TextBoxFor(m => m.SOPL_EM_MAIL, new { @class = "form-control", autofocus = true, @readonly="readonly" })
+                                    @Html.ValidationMessageFor(m => m.SOPL_EM_MAIL, "", new { @style = "color:red" })
+                                </div>
+                                <div class="col-lg-2 col-md-2 col-xs-12">
+                                    Telefone
+                                    @Html.TextBoxFor(m => m.SOPL_NR_TELEFONE, new { @class = "form-control", autofocus = true, @id= "tel", @readonly="readonly" })
+                                    @Html.ValidationMessageFor(m => m.SOPL_NR_TELEFONE, "", new { @style = "color:red" })
+                                </div>
+                                <div class="col-lg-2 col-md-2 col-xs-12">
+                                    Celular
+                                    @Html.TextBoxFor(m => m.SOPL_NR_CELULAR, new { @class = "form-control", autofocus = true, @id= "cel", @readonly="readonly" })
+                                    @Html.ValidationMessageFor(m => m.SOPL_NR_CELULAR, "", new { @style = "color:red" })
+                                </div>
+                            </div>
+
+                            <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">                
+                                <h4 style="margin-left: 15px; color:green; background-color: beige; font-weight:bold">Mensagem</h4>
+                                <div class="col-lg-12 col-md-12 col-xs-12">
+                                    Texto da Solicitação*
+                                    @Html.TextAreaFor(m => m.SOPL_TX_MENSAGEM, new { @class = "form-control", style = "width: 100%; height: 300px;", autofocus = true, @id = "texto" })
+                                    @Html.ValidationMessageFor(m => m.SOPL_TX_MENSAGEM, "", new { @style = "color:red" })
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <link href="~/Content/themes/base/jquery-ui.min.css" rel="stylesheet" />
+    <link href="~/Content/themes/base/all.css" rel="stylesheet" />
+    @*<link href="~/Content/jquery.datetimepicker.css" rel="stylesheet" />*@
+    @Styles.Render("~/Content/plugins/dataTables/dataTablesStyles")
+    @Styles.Render("~/plugins/jasnyBootstrapStyles")
+    @Styles.Render("~/plugins/toastrStyles")
+    @Styles.Render("~/Content/plugins/summernote/summernote.css")
+    <link href="~/Content/jquery-ui-timepicker-addon.min.css" rel="stylesheet" />
+    <link href="~/Content/plugins/select2/select2.min.css" rel="stylesheet" />
+
+    <link href="~/Content/themes/base/all.css" rel="stylesheet" />
+    <link href="~/Content/themes/base/jquery-ui.min.css" rel="stylesheet" />
+    @Styles.Render("~/Content/plugins/dataTables/dataTablesStyles")
+    @Styles.Render("~/plugins/jasnyBootstrapStyles")
+    @Styles.Render("~/Content/plugins/iCheck/iCheckStyles")
+    @Styles.Render("~/plugins/toastrStyles")
+    @Styles.Render("~/Content/plugins/summernote/summernote.css")
+    @Styles.Render("~/plugins/touchSpinStyles")
+    <link href="~/Content/plugins/select2/select2.min.css" rel="stylesheet" />
+    <link href="~/Content/jquery-ui-timepicker-addon.min.css" rel="stylesheet" />
+
+}
+@section Scripts {
+    @*<script src="~/Scripts/jquery.datetimepicker.full.min.js"></script>*@
+    <script type="text/javascript" src="~/Scripts/moment.min.js"></script>
+    <script type="text/javascript" src="~/Scripts/bootstrap.min.js"></script>
+    <script type="text/javascript" src="~/Scripts/jquery.datetimepicker"></script>
+    <script src="~/Scripts/jquery-ui-timepicker-addon.min.js"></script>
+    @Scripts.Render("~/plugins/toastr")
+    <script src="~/Scripts/jquery-ui-1.12.1.min.js"></script>
+    @Scripts.Render("~/plugins/dataTables")
+    @Scripts.Render("~/bundles/inputmask")
+    @Scripts.Render("~/plugins/jasnyBootstrap")
+    @Scripts.Render("~/plugins/sparkline")
+    @Scripts.Render("~/Scripts/plugins/summernote/summernote.min.js")
+    <script src="~/Scripts/plugins/select2/select2.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.maskedinput/1.4.1/jquery.maskedinput.js"></script>    
+    <script src="~/Scripts/uploadAnexo.js"></script>
+
+        <script src="~/Scripts/jquery-ui-1.12.1.min.js"></script>
+    @Scripts.Render("~/plugins/toastr")
+    @Scripts.Render("~/plugins/dataTables")
+    @Scripts.Render("~/bundles/inputmask")
+    @Scripts.Render("~/plugins/jasnyBootstrap")
+    @Scripts.Render("~/plugins/summernote")
+    @Scripts.Render("~/plugins/touchSpin")
+    <script src="~/Scripts/jquery-ui-timepicker-addon.min.js"></script>
+    <script src="~/Scripts/plugins/select2/select2.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.maskedinput/1.4.1/jquery.maskedinput.js"></script>
+    <script src="~/Scripts/uploadAnexo.js"></script>
+    
+    <script type="text/javascript">
+        $(function () {
+            $("#tel").mask("(99)9999-9999");
+            $("#cel").mask("(99)99999-9999");
+        });
+    </script>
+
+    <script>
+        function GetPlano(id) {
+            var data = {
+                id: id
+            }
+
+            $.ajax({
+                url: '../Plano/GetPlano'
+                , type: 'POST'
+                , data: data
+                , success: function (r) {
+                    $('#nome > input').val(r.nome);
+                    $('#peri > input').val(r.peri);
+                    $('#valor > input').val(r.valo);
+
+                    $('#nome').show();
+                    $('#peri').show();
+                    $('#valor').show();
+                }
+            });
+        }
+    </script>
+
+    <script type="text/javascript">
+        function ValidaDiv(valPessoa) {
+            if (valPessoa == '1') {
+                $("#mail").hide();
+                $("#telefone").show();
+                $("#celular").hide();
+            } else if (valPessoa == '2') { 
+                $("#mail").hide();
+                $("#telefone").hide();
+                $("#celular").show();
+            } else if (valPessoa == '3') {
+                $("#mail").show();
+                $("#telefone").hide();
+                $("#celular").hide();
+            } else { 
+                $("#mail").hide();
+                $("#telefone").show();
+                $("#celular").show();
+            }
+        }
+        $(document).ready(function () {
+            ValidaDiv($('#resposta').val());
+        });
+    </script>
+    a
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            var i = -1;
+            var toastCount = 0;
+            var $toastlast;
+            var getMessage = function () {
+                var msg = 'Hi, welcome to Inspinia. This is example of Toastr notification box.';
+                return msg;
+            };
+
+            $('#basictoast').click(function () {
+                // Display a success toast, with a title
+                toastr.success('Envio em andamento!')
+            });
+            $('#showtoast').click(function () {
+                var shortCutFunction = $("#toastTypeGroup input:radio:checked").val();
+                var msg = $('#message').val();
+                var title = $('#title').val() || '';
+                var $showDuration = $('#showDuration');
+                var $hideDuration = $('#hideDuration');
+                var $timeOut = $('#timeOut');
+                var $extendedTimeOut = $('#extendedTimeOut');
+                var $showEasing = $('#showEasing');
+                var $hideEasing = $('#hideEasing');
+                var $showMethod = $('#showMethod');
+                var $hideMethod = $('#hideMethod');
+                var toastIndex = toastCount++;
+                toastr.options = {
+                    closeButton: $('#closeButton').prop('checked'),
+                    debug: $('#debugInfo').prop('checked'),
+                    progressBar: $('#progressBar').prop('checked'),
+                    positionClass: $('#positionGroup input:radio:checked').val() || 'toast-top-right',
+                    onclick: null
+                };
+                if ($('#addBehaviorOnToastClick').prop('checked')) {
+                    toastr.options.onclick = function () {
+                        alert('You can perform some custom action after a toast goes away');
+                    };
+                }
+                if ($showDuration.val().length) {
+                    toastr.options.showDuration = $showDuration.val();
+                }
+                if ($hideDuration.val().length) {
+                    toastr.options.hideDuration = $hideDuration.val();
+                }
+                if ($timeOut.val().length) {
+                    toastr.options.timeOut = $timeOut.val();
+                }
+                if ($extendedTimeOut.val().length) {
+                    toastr.options.extendedTimeOut = $extendedTimeOut.val();
+                }
+                if ($showEasing.val().length) {
+                    toastr.options.showEasing = $showEasing.val();
+                }
+                if ($hideEasing.val().length) {
+                    toastr.options.hideEasing = $hideEasing.val();
+                }
+                if ($showMethod.val().length) {
+                    toastr.options.showMethod = $showMethod.val();
+                }
+                if ($hideMethod.val().length) {
+                    toastr.options.hideMethod = $hideMethod.val();
+                }
+                if (!msg) {
+                    msg = getMessage();
+                }
+                $("#toastrOptions").text("Command: toastr["
+                        + shortCutFunction
+                        + "](\""
+                        + msg
+                        + (title ? "\", \"" + title : '')
+                        + "\")\n\ntoastr.options = "
+                        + JSON.stringify(toastr.options, null, 2)
+                );
+                var $toast = toastr[shortCutFunction](msg, title); // Wire up an event handler to a button in the toast, if it exists
+                $toastlast = $toast;
+                if ($toast.find('#okBtn').length) {
+                    $toast.delegate('#okBtn', 'click', function () {
+                        alert('you clicked me. i was toast #' + toastIndex + '. goodbye!');
+                        $toast.remove();
+                    });
+                }
+                if ($toast.find('#surpriseBtn').length) {
+                    $toast.delegate('#surpriseBtn', 'click', function () {
+                        alert('Surprise! you clicked me. i was toast #' + toastIndex + '. You could perform an action here.');
+                    });
+                }
+            });
+            function getLastToast() {
+                return $toastlast;
+            }
+            $('#clearlasttoast').click(function () {
+                toastr.clear(getLastToast());
+            });
+            $('#cleartoasts').click(function () {
+                toastr.clear();
+            });
+
+        });
+    </script>
+    <script>
+        SendFilesV2('imgCliente', 'Assinante', 'UploadFileToSession');
+    </script>
+    @if (ViewBag.Message != null)
+    {
+        <script type="text/javascript">
+            window.onload = function () {
+                  alert("@ViewBag.Message");
+            };
+        </script>
+    }
+}
+
+
+
+

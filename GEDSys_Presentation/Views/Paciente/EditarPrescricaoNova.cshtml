@@ -1,0 +1,592 @@
+﻿@using Presentation.Extensions
+@model ERP_Condominios_Solution.ViewModels.PacientePrescricaoViewModel
+@{
+    Layout = "~/Views/Shared/_Layout_Admin.cshtml";
+    ViewBag.Title = "WebDoctor - Paciente - Prescrição - Edição";
+    ViewBag.MetaDescription = "WebDoctor - Paciente - Edição de prescrições de pacientes";
+    ViewBag.MetaKeywords = "WebDoctor, paciente, prescricao";
+}
+
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="modalContainer">
+        <div id="modal" class="modal" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        @*Titulo gerado dinamicamente*@
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        @*Gerado dinamicamente*@
+                    </div>
+                    <div class="modal-footer">
+                        <button onclick="limpaModal()" type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    @if ((String)Session["ModuloAtual"] == "Dashboard Inicial")
+    {
+        <div class="page-title">
+            <ol class="breadcrumb">
+                <li>
+                    <a href="@Url.Action("MontarTelaPaciente", "Paciente")">Dashboard</a>
+                </li>
+                <li>
+                    <a href="@Url.Action("MontarTelaPrescricoes", "Paciente")">Prescricoes</a>
+                </li>
+                <li class="active">
+                    <strong>Prescrições - Edição</strong>
+                </li>
+            </ol>
+            <br />
+        </div>
+    }
+    else if ((String)Session["ModuloAtual"] == "Central de Pacientes")
+    {
+        <div class="page-title">
+            <ol class="breadcrumb">
+                <li>
+                    <a href="@Url.Action("MontarTelaPaciente", "Paciente")">Dashboard</a>
+                </li>
+                <li>
+                    <a href="@Url.Action("MontarTelaCentralPaciente", "Paciente")">Central de Pacientes</a>
+                </li>
+                <li>
+                    <a href="@Url.Action("MontarTelaPrescricoes", "Paciente")">Prescricoes</a>
+                </li>
+                <li class="active">
+                    <strong>Prescrições - Edição</strong>
+                </li>
+            </ol>
+            <br />
+        </div>
+    }
+    else if ((String)Session["ModuloAtual"] == "Prescrições - Inclusão")
+    {
+        <div class="page-title">
+            <ol class="breadcrumb">
+                <li>
+                    <a href="@Url.Action("MontarTelaPaciente", "Paciente")">Dashboard</a>
+                </li>
+                <li>
+                    <a href="@Url.Action("MontarTelaCentralPaciente", "Paciente")">Central de Pacientes</a>
+                </li>
+                <li>
+                    <a href="@Url.Action("MontarTelaPrescricoes", "Paciente")">Prescricoes</a>
+                </li>
+                <li class="active">
+                    <strong>Prescrições - Edição</strong>
+                </li>
+            </ol>
+            <br />
+        </div>
+    }
+    <div class="row">
+        <div class="col-lg-12 col-md-12 col-xs-12">
+            <div class="col-lg-12 col-md-12 col-xs-12 ibox float-e-margins">
+                <div class="ibox-title">
+                    <div style="text-align: center;" class="col-lg-12 col-md-12 col-xs-12">
+                        <h5>Prescrição - Edição</h5>
+                        <span style="color:green; font-weight: 500; font-size: 20px;">@Model.PACIENTE.PACI_NM_NOME</span>
+                    </div>
+                </div>
+                @using (Html.BeginForm("EditarPrescricaoNova", "Paciente", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal", @id="pwd-container1" }))
+                {
+                    <div class="ibox-content">
+                        @Html.AntiForgeryToken()
+                        @if (!ViewData.ModelState.IsValid)
+                        {
+                            <div class="alert alert-danger">
+                                <button type="button" class="close" data-dismiss="alert">Fechar</button>
+                                @Html.ValidationSummary(false, "Erros Encontrados:", new { @class = "text-danger" })
+                            </div>
+                        }
+
+                        <div class="form-group">
+                            @if (Model.PAPR_IN_ENVIADO == 0)
+                            {
+                                @Html.ButtonActionSubmit(text: "Confirma Edição da Prescrição", htmlAttributes: new { id = "basictoast" })
+                            }
+                            @if (Model.TICO_CD_ID == 1)
+                            {
+                                if (Model.PACIENTE.PACI_NM_EMAIL != null)
+                                {
+                                    if (Model.PACIENTE_PRESCRICAO_ITEM.Count > 0)
+                                    {
+                                        @Html.ButtonLinkIndex(text: "Enviar por E-Mail", action: "EnviarPrescricaoEMailForm", controller: "Paciente")
+                                    }
+                                }
+                            }
+                            @if (Model.TICO_CD_ID < 3)
+                            {
+                                if (Model.PACIENTE_PRESCRICAO_ITEM.Count > 0)
+                                {
+                                    @Html.ButtonLinkIndex(text: "Imprimir Prescrição", action: "ImprimirPrescricaoFormEdt", controller: "Paciente")
+                                }
+                            }
+                            @if ((Int32)Session["TipoSolicitacao"] == 1)
+                            {
+                                if ((Int32)Session["ModoConsulta"] == 1)
+                                {
+                                    <a href="@Url.Action("VoltarProcederConsulta", "Paciente")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Voltando sem Confirmar, as alreações/inclusões da prescrição NÃO serão gravadas" class="btn btn-sm btn-warning" id="emp" OnClick = "Fade()">Voltar</a>                
+                                }
+                                else
+                                {
+                                    <a href="@Url.Action("VoltarAnexoPaciente", "Paciente")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Voltando sem Confirmar, as alreações/inclusões da prescrição NÃO serão gravadas" class="btn btn-sm btn-warning" id="emp" OnClick = "Fade()">Voltar</a>                
+                                }
+                            }
+                            else if ((Int32)Session["TipoSolicitacao"] == 8)
+                            {
+                                <a href="@Url.Action("VerMedicamentosPacienteForm", "Paciente")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Voltando sem Confirmar, as alreações/inclusões da prescrição NÃO serão gravadas" class="btn btn-sm btn-warning" id="emp" OnClick = "Fade()">Voltar</a>                
+                            }
+                            else
+                            {
+                                if ((Int32)Session["ModoConsulta"] == 1)
+                                {
+                                    <a href="@Url.Action("VerListaPrescricaoConsulta", "Paciente")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Voltando sem Confirmar, as alreações/inclusões da prescrição NÃO serão gravadas" class="btn btn-sm btn-warning" id="emp" OnClick = "Fade()">Voltar</a>                
+                                }
+                                else
+                                {
+                                    <a href="@Url.Action("MontarTelaPrescricoes", "Paciente")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Voltando sem Confirmar, as alreações/inclusões da prescrição NÃO serão gravadas" class="btn btn-sm btn-warning" id="emp" OnClick = "Fade()">Voltar</a>                
+                                }
+                            }
+                            <a href="@Url.Action((String)Session["AjudaNivel"])"  class="btn btn-sm btn-danger" target="_blank">Ajuda</a>                
+                        </div>
+
+                        @*Paciente*@
+                        <div class="row">
+                            <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Identificação do Paciente</h4>
+                            <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">                
+                                <div class="col-lg-4 col-md-4 col-xs-12">
+                                    Nome do Paciente
+                                    @Html.TextBoxFor(m => m.PACIENTE.PACI_NM_NOME, new { @class = "form-control", @readonly = "readonly", @style = "color: green; font-weight: bold" })
+                                </div>
+                                <div class="col-lg-2 col-md-2 col-xs-12">
+                                    Data Nascimento
+                                    @Html.TextBoxFor(m => m.PACIENTE.PACI_DT_NASCIMENTO, "{0:dd/MM/yyyy}", new { @class = "form-control", @readonly = "readonly" })
+                                </div>
+                                @if (Model.PACIENTE.PACI_NR_CPF != null)
+                                {
+                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                        CPF
+                                        @Html.TextBoxFor(m => m.PACIENTE.PACI_NR_CPF, new { @class = "form-control", @readonly = "readonly" })
+                                    </div>
+                                }
+                                @if (Model.PACIENTE.PACI_NR_CELULAR != null)
+                                {
+                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                        Celular
+                                        @Html.TextBoxFor(m => m.PACIENTE.PACI_NR_CELULAR, new { @class = "form-control", @readonly = "readonly" })
+                                    </div>
+                                }
+                                @if (Model.PACIENTE.PACI_NR_TELEFONE != null)
+                                {
+                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                        Telefone
+                                        @Html.TextBoxFor(m => m.PACIENTE.PACI_NR_TELEFONE, new { @class = "form-control", @readonly = "readonly" })
+                                    </div>
+                                }
+                            </div>
+                        </div> 
+
+                        @*Consulta*@
+                        @if ((Int32)Session["ModoConsulta"] == 1)
+                        {
+                            <div class="row">
+                                <h4 style="margin-left: 0px; color: green; background-color: beige; font-weight:bold">Dados da Consulta</h4>
+                                <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">                
+                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                        Data da Consulta
+                                        @Html.TextBoxFor(m => m.PACIENTE_CONSULTA.PACO_DT_CONSULTA, "{0:dd/MM/yyyy}", new { @class = "form-control", @id = "dn", @readonly = "readonly", @style = "color: darkblue; font-weight: bold" })
+                                    </div>
+                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                        Início
+                                        @Html.TextBoxFor(m => m.PACIENTE_CONSULTA.PACO_HR_INICIO, new { @class = "form-control", @id = "hora", @readonly = "readonly" })
+                                    </div>
+                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                        Final
+                                        @Html.TextBoxFor(m => m.PACIENTE_CONSULTA.PACO_HR_FINAL, new { @class = "form-control", @id = "hora1", @readonly = "readonly" })
+                                    </div>
+                                </div>
+                            </div>
+                        }
+
+                        @*Identificação*@
+                        <div class="row">
+                            <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Identificação da Prescrição Médica</h4>
+                            <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">                
+                                <div class="col-lg-2 col-md-2 col-xs-12">
+                                    Identificador
+                                    @Html.TextBoxFor(m => m.PAPR_GU_GUID, new { @class = "form-control", @readonly = "readonly", @style = "color: brown; font-weight: bold" })
+                                </div>
+                                <div class="col-lg-2 col-md-2 col-xs-12">
+                                    @Html.HiddenFor(m => m.PACI_CD_ID)
+                                    @Html.HiddenFor(m => m.PAPR_IN_ATIVO)
+                                    @Html.HiddenFor(m => m.PAPR_GU_GUID)
+                                    @Html.HiddenFor(m => m.PACO_CD_ID)
+                                    @Html.HiddenFor(m => m.PAPR_DT_DATA)
+                                    @Html.HiddenFor(m => m.USUA_CD_ID)
+                                    @Html.HiddenFor(m => m.ASSI_CD_ID)
+                                    @Html.HiddenFor(m => m.PAPR_IN_ENVIADO)
+                                    @Html.HiddenFor(m => m.PAPR_DT_ENVIO)
+                                    @Html.HiddenFor(m => m.PAPR_GU_GUID_ENVIO)
+                                    @Html.HiddenFor(m => m.PAPR_IN_PDF)
+                                    @Html.HiddenFor(m => m.PAPR_CD_ID)
+                                    @Html.HiddenFor(m => m.PAPR_NR_ENVIOS)
+                                    @Html.HiddenFor(m => m.PAPR_DT_GERACAO_PDF)
+                                    @Html.HiddenFor(m => m.TICO_CD_ID)
+                                    @Html.HiddenFor(m => m.PAPR_DT_EMISSAO)
+                                    @Html.HiddenFor(m => m.PAPR_DT_EMISSAO_COMPLETA)
+                                    @Html.HiddenFor(m => m.PAPR_TK_TOKEN)
+                                    @Html.HiddenFor(m => m.PAPR_AQ_ARQUIVO_QRCODE)
+                                    @Html.HiddenFor(m => m.PAPR_DT_VALIDACAO)
+                                    @Html.HiddenFor(m => m.PAPR_IP_VALIDACAO)
+                                    @Html.HiddenFor(m => m.PAPR_NR_VALIDACAO)
+                                    @Html.HiddenFor(m => m.PAPR_IN_VALIDACAO)
+                                    @Html.HiddenFor(m => m.PAPR_DT_DENUNCIA)
+                                    @Html.HiddenFor(m => m.PAPR_IP_DENUNCIA)
+                                    @Html.HiddenFor(m => m.PAPR_NR_DENUNCIA)
+                                    @Html.HiddenFor(m => m.PAPR_IN_DENUNCIA)
+                                    @Html.HiddenFor(m => m.PAPR_TX_DENUNCIA)
+                                    @Html.HiddenFor(m => m.PAPR_IN_ASSINADO_DIGITAL)
+                                    Data/Hora de Emissão
+                                    @Html.TextBoxFor(m => m.PAPR_DT_EMISSAO_COMPLETA, new { @class = "form-control", @readonly = "readonly" })
+                                </div>
+                                <div class="col-lg-2 col-md-2 col-xs-12">
+                                    Tipo de Controle
+                                    @Html.TextBoxFor(m => m.TIPO_CONTROLE.TICO_NM_NOME, new { @class = "form-control", @readonly = "readonly"  })
+                                </div>
+                                <div class="col-lg-2 col-md-2 col-xs-12">
+                                    Último Envio
+                                    @Html.TextBoxFor(m => m.PAPR_DT_ENVIO, "{0:dd/MM/yyyy}", new { @class = "form-control", @readonly = "readonly" })
+                                </div>
+                                <div class="col-lg-2 col-md-2 col-xs-12">
+                                    Token de Acesso
+                                    @Html.TextBoxFor(m => m.PAPR_TK_TOKEN, new { @class = "form-control", @readonly = "readonly", @style = "color: darkblue; font-weight: bold" })
+                                </div>
+                                <div class="col-lg-2 col-md-2 col-xs-12">
+                                    Assinatura Digital
+                                    @Html.TextBoxFor(m => m.Digital, new { @class = "form-control", @readonly = "readonly", @style = "color: darkblue; font-weight: bold" })
+                                </div>
+                            </div>
+                        </div>
+
+                        @*Itens incluidos*@
+                        <div class="row">
+                            <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Itens da Prescrição</h4>
+                            <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                <div class="col-lg-12 col-md-12 col-xs-12">
+                                    @if (ViewBag.Itens != null &&(ViewBag.Itens as List<EntitiesServices.Model.PACIENTE_PRESCRICAO_ITEM>).Count > 0)
+                                    {
+                                        <table class="table table-striped table-bordered table-hover dataTables-example1">
+                                            <thead style="background-color:lightsteelblue">
+                                                <tr>
+                                                    <th style="width: auto">Forma de Uso</th>
+                                                    <th style="width: auto">Medicamento</th>
+                                                    <th style="width: auto">Nome Genérico</th>
+                                                    <th style="width: auto">Posologia</th>
+                                                    <th style="width: auto" class="td-one-action">Ações</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach (var cond in (ViewBag.Itens as List<EntitiesServices.Model.PACIENTE_PRESCRICAO_ITEM>).OrderBy(p => p.PAPI_NM_REMEDIO))
+                                                {
+                                                    <tr>
+                                                        <td style="width: auto">@cond.TIPO_FORMA.TIFO_NM_NOME</td>
+                                                        @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_PRESCRICAO_ALTERAR == 1)
+                                                        {
+                                                            if (cond.PACIENTE_PRESCRICAO.PAPR_IN_ENVIADO == 0)
+                                                            {
+                                                                <td style="width: auto"><a href="@Url.Action("EditarItemPrescricao", "Paciente", new { id = cond.PAPI_CD_ID })" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página de edição de itens da prescrição" />@cond.PAPI_NM_REMEDIO</td>
+                                                            }
+                                                            else
+                                                            {
+                                                                <td style="width: auto">@cond.PAPI_NM_REMEDIO</td>
+                                                            }
+                                                        }
+                                                        else
+                                                        {
+                                                            <td style="width: auto">@cond.PAPI_NM_REMEDIO</td>
+                                                        }
+                                                        <td style="width: auto">@cond.PAPI_NM_GENERICO</td>
+                                                        <td style="width: auto">@cond.PAPI_DS_POSOLOGIA</td>
+                                                        <td class="td-one-action">
+                                                            @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_PRESCRICAO_ALTERAR == 1)
+                                                            {
+                                                                if (cond.PACIENTE_PRESCRICAO.PAPR_IN_ENVIADO == 0)
+                                                                {
+                                                                    @Html.TableLinkDetails(cond.PAPI_CD_ID, "EditarItemPrescricao", "fa-edit", "Editar/Consultar Item")
+                                                                }
+
+                                                            }
+                                                            @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_PRESCRICAO_ALTERAR == 1)
+                                                            {
+                                                                if (cond.PAPI_IN_ATIVO == 1)
+                                                                {
+                                                                    if (cond.PACIENTE_PRESCRICAO.PAPR_IN_ENVIADO == 0)
+                                                                    {
+                                                                        <span style="color: #337ab7; cursor:pointer;" alt="Desativar" class="tbl-link fa-lg fa fa-trash-o" onclick="ShowModalExcluirItemPrescricao('/Paciente/ExcluirItemPrescricao/@cond.PAPI_CD_ID')" title="Excluir Item"></span>
+                                                                    }
+	                                                            }
+                                                            }
+                                                        </td>
+                                                    </tr>
+                                                }
+                                            </tbody>
+                                        </table>
+                                    }
+                                    else
+                                    {
+                                        <div class="row">
+                                            <div class="col-lg-3 col-md-3 col-xs-2">
+
+                                            </div>
+                                            <div style="border: 5px solid #F6A54A; padding: 10px; border-radius: 8px 8px; " class="col-lg-6 col-md-6 col-xs-8">
+                                                <h2 style="font-weight: bold">Nenhum item incluído nessa prescrição</h2>
+                                            </div>
+                                            <div class="col-lg-3 col-md-3 col-xs-2">
+
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            @if (Model.TICO_CD_ID == 2 || Model.TICO_CD_ID == 3)
+                            {
+                                if (Model.PACIENTE_PRESCRICAO_ITEM.Count < 1)
+                                {
+                                    if (Model.PAPR_IN_ENVIADO == 0)
+                                    {
+                                        @Html.ButtonLinkIndex(text: "Incluir Novo Item na Prescrição", action: "IncluirPrescricaoItem", controller: "Paciente", buttonClass: "primary")
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                if (Model.PAPR_IN_ENVIADO == 0)
+                                {
+                                    @Html.ButtonLinkIndex(text: "Incluir Novo Item na Prescrição", action: "IncluirPrescricaoItem", controller: "Paciente", buttonClass: "primary")
+                                }
+                            }
+                        </div>
+                    </div>
+                }
+            </div>
+         </div>
+    </div>
+</div>
+
+@section Styles {
+    <link href="~/Content/themes/base/jquery-ui.min.css" rel="stylesheet" />
+    <link href="~/Content/themes/base/all.css" rel="stylesheet" />
+    <link href="~/Content/jquery.datetimepicker.css" rel="stylesheet" />
+    @Styles.Render("~/Content/plugins/dataTables/dataTablesStyles")
+    @Styles.Render("~/plugins/jasnyBootstrapStyles")
+    @Styles.Render("~/plugins/toastrStyles")
+    <link href="~/Content/plugins/select2/select2.min.css" rel="stylesheet" />
+}
+@section Scripts {
+    @Scripts.Render("~/plugins/toastr")
+    <script src="~/Scripts/jquery-ui-1.12.1.min.js"></script>
+    @Scripts.Render("~/plugins/dataTables")
+    @Scripts.Render("~/bundles/inputmask")
+    @Scripts.Render("~/plugins/jasnyBootstrap")
+    <script src="~/Scripts/plugins/select2/select2.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.maskedinput/1.4.1/jquery.maskedinput.js"></script>    
+    <script src="~/Scripts/uploadAnexo.js"></script>
+
+    <script type="text/javascript" src="~/Scripts/moment.min.js"></script>
+    <script type="text/javascript" src="~/Scripts/bootstrap.min.js"></script>
+   
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('[data-toggle="popover"]').popover();
+        });
+    </script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-toggle="popover"]'));
+            var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
+                return new bootstrap.Popover(popoverTriggerEl);
+            });
+        });
+    </script>
+
+    <!-- Handler de fechamento do browser -->
+    <script type="text/javascript">
+        window.onbeforeunload = function ()
+        {
+            navigator.sendBeacon('../ControleAcesso/LogSessionTime');
+        }; 
+    </script>
+    <script>
+        $(function () {
+            limpaModal();
+        });
+
+        function limpaModal() {
+            $('#btnModal').remove();
+            $('#modalTitle').remove();
+        }
+
+        function ShowModalExcluirItemPrescricao(url) {
+            $('#modal').find('.modal-footer').prepend('<a id="btnModal" alt="Desativar" class="btn btn-primary" href="' + url + '" target="_self" title="Desativar">Confirmar</a>');
+            $('#modal').find('.modal-body').html('Confirma exclusão de Item?');
+            $('#modal').find('.modal-header').prepend('<h5 id="modalTitle" class="modal-title">Confimar Exclusão</h5>');
+            $('#modal').modal('show');
+        }
+
+    </script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            //$('.summernote').summernote();
+            $('.summernote').summernote(
+            {
+              toolbar: [
+                  ['ur', ['undo', 'redo']],
+                  ['font', ['bold', 'underline', 'superscript', 'subscript']],
+                  ['fontname', ['fontname']],
+                  ['fontsize', ['fontsize', 'fontsizeunit']],
+                  ['color', ['color']],
+                  ['para', ['ul', 'ol', 'paragraph']],
+                  ['height', ['height']],
+                  ['table', ['table']],
+                  ['insert', ['link', 'picture', 'video', 'hr']],
+                  ['view', ['fullscreen', 'codeview']],
+                ],
+                lineHeights: ['0.2', '0.3', '0.4', '0.5', '0.6', '0.8', '1.0', '1.2', '1.4', '1.5', '2.0', '3.0'],
+                spellCheck: false
+            });
+
+        });
+
+        var edit = function () {
+            $('.click2edit').summernote({ focus: true });
+        };
+
+        var save = function () {
+            var aHTML = $('.click2edit').code(); //save HTML If you need(aHTML: array).
+            $('.click2edit').destroy();
+        };
+    </script>
+   
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            var i = -1;
+            var toastCount = 0;
+            var $toastlast;
+            var getMessage = function () {
+                var msg = 'Hi, welcome to Inspinia. This is example of Toastr notification box.';
+                return msg;
+            };
+
+            $('#basictoast').click(function () {
+                // Display a success toast, with a title
+                toastr.success('Edição em andamento!')
+            });
+            $('#showtoast').click(function () {
+                var shortCutFunction = $("#toastTypeGroup input:radio:checked").val();
+                var msg = $('#message').val();
+                var title = $('#title').val() || '';
+                var $showDuration = $('#showDuration');
+                var $hideDuration = $('#hideDuration');
+                var $timeOut = $('#timeOut');
+                var $extendedTimeOut = $('#extendedTimeOut');
+                var $showEasing = $('#showEasing');
+                var $hideEasing = $('#hideEasing');
+                var $showMethod = $('#showMethod');
+                var $hideMethod = $('#hideMethod');
+                var toastIndex = toastCount++;
+                toastr.options = {
+                    closeButton: $('#closeButton').prop('checked'),
+                    debug: $('#debugInfo').prop('checked'),
+                    progressBar: $('#progressBar').prop('checked'),
+                    positionClass: $('#positionGroup input:radio:checked').val() || 'toast-top-right',
+                    onclick: null
+                };
+                if ($('#addBehaviorOnToastClick').prop('checked')) {
+                    toastr.options.onclick = function () {
+                        alert('You can perform some custom action after a toast goes away');
+                    };
+                }
+                if ($showDuration.val().length) {
+                    toastr.options.showDuration = $showDuration.val();
+                }
+                if ($hideDuration.val().length) {
+                    toastr.options.hideDuration = $hideDuration.val();
+                }
+                if ($timeOut.val().length) {
+                    toastr.options.timeOut = $timeOut.val();
+                }
+                if ($extendedTimeOut.val().length) {
+                    toastr.options.extendedTimeOut = $extendedTimeOut.val();
+                }
+                if ($showEasing.val().length) {
+                    toastr.options.showEasing = $showEasing.val();
+                }
+                if ($hideEasing.val().length) {
+                    toastr.options.hideEasing = $hideEasing.val();
+                }
+                if ($showMethod.val().length) {
+                    toastr.options.showMethod = $showMethod.val();
+                }
+                if ($hideMethod.val().length) {
+                    toastr.options.hideMethod = $hideMethod.val();
+                }
+                if (!msg) {
+                    msg = getMessage();
+                }
+                $("#toastrOptions").text("Command: toastr["
+                        + shortCutFunction
+                        + "](\""
+                        + msg
+                        + (title ? "\", \"" + title : '')
+                        + "\")\n\ntoastr.options = "
+                        + JSON.stringify(toastr.options, null, 2)
+                );
+                var $toast = toastr[shortCutFunction](msg, title); // Wire up an event handler to a button in the toast, if it exists
+                $toastlast = $toast;
+                if ($toast.find('#okBtn').length) {
+                    $toast.delegate('#okBtn', 'click', function () {
+                        alert('you clicked me. i was toast #' + toastIndex + '. goodbye!');
+                        $toast.remove();
+                    });
+                }
+                if ($toast.find('#surpriseBtn').length) {
+                    $toast.delegate('#surpriseBtn', 'click', function () {
+                        alert('Surprise! you clicked me. i was toast #' + toastIndex + '. You could perform an action here.');
+                    });
+                }
+            });
+            function getLastToast() {
+                return $toastlast;  
+            }
+            $('#clearlasttoast').click(function () {
+                toastr.clear(getLastToast());
+            });
+            $('#cleartoasts').click(function () {
+                toastr.clear();
+            });
+
+        });
+    </script>
+
+
+    @if (ViewBag.Message != null)
+    {
+        <script type="text/javascript">
+            window.onload = function () {
+                  alert("@ViewBag.Message");
+            };
+        </script>
+    }
+}

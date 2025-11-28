@@ -1,0 +1,492 @@
+﻿@using Presentation.Extensions
+@model ERP_Condominios_Solution.ViewModels.PacienteConsultaViewModel
+@{
+    Layout = "~/Views/Shared/_Layout_Admin.cshtml";
+    ViewBag.Title = "WebDoctor - Paciente - Consulta - Marcação";
+    ViewBag.MetaDescription = "WebDoctor - Paciente - Consultas - Marcação de consultas";
+    ViewBag.MetaKeywords = "WebDoctor, paciente, consulta, marcacao";
+}
+
+<div class="wrapper wrapper-content animated fadeInRight">
+    @if ((String)Session["ModuloAtual"] == "Dashboard Inicial")
+    {
+        <div class="page-title">
+            <ol class="breadcrumb">
+                <li>
+                    <a href="@Url.Action("MontarTelaPaciente", "Paciente")">Dashboard</a>
+                </li>
+                <li class="active">
+                    <strong>Consultas - Marcação</strong>
+                </li>
+            </ol>
+            <br />
+        </div>
+    }
+    else
+    {
+        <div class="page-title">
+            <ol class="breadcrumb">
+                <li>
+                    <a href="@Url.Action("MontarTelaPaciente", "Paciente")">Dashboard</a>
+                </li>
+                <li>
+                    <a href="@Url.Action("MontarTelaConsultas", "Paciente")">Central de Consultas</a>
+                </li>
+                <li class="active">
+                    <strong>Pacientes - Consultas</strong>
+                </li>
+            </ol>
+            <br />
+        </div>
+    }
+
+    <div class="row">
+        <div class="col-lg-12 col-md-12 col-xs-12">
+            <div class="col-lg-12 col-md-12 col-xs-12 ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>Paciente - Consulta - Criação</h5>
+                </div>
+                @using (Html.BeginForm("IncluirConsulta", "Paciente", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal", @id = "pwd-container1" }))
+                {
+                    <div class="ibox-content">
+                        @Html.AntiForgeryToken()
+                        @if (!ViewData.ModelState.IsValid)
+                        {
+                            <div class="alert alert-danger">
+                                <button type="button" class="close" data-dismiss="alert">Fechar</button>
+                                @Html.ValidationSummary(false, "Erros Encontrados:", new { @class = "text-danger" })
+                            </div>
+                        }
+
+                        <div class="row">
+                            <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Paciente</h4>
+                            <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                <div class="col-lg-4 col-md-4 col-xs-12">
+                                    Profissional*
+                                    @Html.DropDownListFor(m => m.USUA_CD_ID, (SelectList)ViewBag.Usuario, "Selecionar", new { @class = "form-control", autofocus = true})
+                                    @Html.ValidationMessageFor(m => m.USUA_CD_ID, "", new { @style = "color:red" })
+                                </div>
+                            </div>
+                        </div>
+
+                        @if ((Int32)Session["TipoSolicitacao"] == 1)
+                        {
+                            <div class="row">
+                                <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Paciente</h4>
+                                <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                    <div class="col-lg-4 col-md-4 col-xs-12">
+                                        Nome do Paciente
+                                        @Html.TextBoxFor(m => m.PACIENTE.PACI_NM_NOME, new { @class = "form-control", @readonly = "readonly", @style = "color: green; font-weight: bold" })
+                                    </div>
+                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                        Data de Nascimento
+                                        @Html.TextBoxFor(m => m.PACIENTE.PACI_DT_NASCIMENTO, "{0:dd/MM/yyyy}", new { @class = "form-control", @readonly = "readonly" })
+                                    </div>
+                                    @if (Model.PACIENTE.PACI_NR_CPF != null)
+                                    {
+                                        <div class="col-lg-2 col-md-2 col-xs-12">
+                                            CPF
+                                            @Html.TextBoxFor(m => m.PACIENTE.PACI_NR_CPF, new { @class = "form-control", @readonly = "readonly" })
+                                        </div>
+                                    }
+                                    @if (Model.PACIENTE.PACI_NR_CELULAR != null)
+                                    {
+                                        <div class="col-lg-2 col-md-2 col-xs-12">
+                                            Celular
+                                            @Html.TextBoxFor(m => m.PACIENTE.PACI_NR_CELULAR, new { @class = "form-control", @readonly = "readonly" })
+                                        </div>
+                                    }
+                                    @if (Model.PACIENTE.PACI_NR_TELEFONE != null)
+                                    {
+                                        <div class="col-lg-2 col-md-2 col-xs-12">
+                                            Telefone
+                                            @Html.TextBoxFor(m => m.PACIENTE.PACI_NR_TELEFONE, new { @class = "form-control", @readonly = "readonly" })
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="row">
+                                <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Paciente</h4>
+                                <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                        Tipo de Paciente*
+                                        @Html.DropDownListFor(m => m.PACO_IN_NOVO_PACIENTE, (SelectList)ViewBag.Novo, "Selecionar", new { @class = "form-control", autofocus = true, @id = "novo", onchange = "ValidaNovo($(this).val())" })
+                                        @Html.ValidationMessageFor(m => m.PACO_IN_NOVO_PACIENTE, "", new { @style = "color:red" })
+                                    </div>
+                                </div>
+                                <div class="form-group" style=" margin-left: -15px; margin-right: -15px;" id="existePac">
+                                    <div class="col-lg-4 col-md-4 col-xs-12">
+                                        Nome do Paciente*
+                                        @Html.DropDownListFor(m => m.PACI_CD_ID, (SelectList)ViewBag.Paciente, "Selecionar", new { @class = "form-control", data_toggle = "popover", data_content = "Selecione um paciente ou digite as primeiras letras do nome para acelerar a busca", data_trigger="hover", data_placement="top", autofocus = true, onchange = "GetPaciente($(this).val())" })
+                                        @Html.ValidationMessageFor(m => m.PACI_CD_ID, "", new { @style = "color:red" })
+                                    </div>
+                                    <div style="display: none;" id="dataNasc" class="col-lg-2 col-md-2 col-xs-12">
+                                        Data de Nascimento
+                                        <input class="form-control" type="text" readonly="readonly" />
+                                    </div>
+                                    <div style="display: none;" id="cpf" class="col-lg-2 col-md-2 col-xs-12">
+                                        CPF
+                                        <input class="form-control" type="text" readonly="readonly" />
+                                    </div>
+                                    <div style="display: none;" id="cel" class="col-lg-2 col-md-2 col-xs-12">
+                                        Celular
+                                        <input class="form-control" type="text" readonly="readonly" />
+                                    </div>
+                                    <div style="display: none;" id="tel" class="col-lg-2 col-md-2 col-xs-12">
+                                        Telefone
+                                        <input class="form-control" type="text" readonly="readonly" />
+                                    </div>
+                                </div>
+                                <div class="form-group" style=" margin-left: -15px; margin-right: -15px;" id="novoPac">
+                                    <div class="col-lg-4 col-md-4 col-xs-12">
+                                        Nome do Paciente*
+                                        @Html.TextBoxFor(m => m.PACI_NM_NOME, new { @class = "form-control", autofocus = true })
+                                        @Html.ValidationMessageFor(m => m.PACI_NM_NOME, "", new { @style = "color:red" })
+                                    </div>
+                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                        Menor de Idade*
+                                        @Html.DropDownListFor(m => m.PACI_IN_MENOR, (SelectList)ViewBag.Menor, "Selecionar", new { @class = "form-control", autofocus = true, @id = "menor" })
+                                        @Html.ValidationMessageFor(m => m.PACI_IN_MENOR, "", new { @style = "color:red" })
+                                    </div>
+                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                        Data Nascimento*
+                                        @Html.TextBoxFor(m => m.PACI_DT_NASCIMENTO, "{0:dd/MM/yyyy}", new { @class = "form-control", autofocus = true, @id = "dn" })
+                                        @Html.ValidationMessageFor(m => m.PACI_DT_NASCIMENTO, "", new { @style = "color:red" })
+                                    </div>
+                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                        CPF*
+                                        @Html.TextBoxFor(m => m.PACI_NR_CPF, new { @class = "form-control", autofocus = true, @id = "cpf1" })
+                                        @Html.ValidationMessageFor(m => m.PACI_NR_CPF, "", new { @style = "color:red" })
+                                    </div>
+                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                        Celular*
+                                        @Html.TextBoxFor(m => m.PACI_NR_CELULAR, new { @class = "form-control", autofocus = true, @id = "cel1" })
+                                        @Html.ValidationMessageFor(m => m.PACI_NR_CELULAR, "", new { @style = "color:red" })
+                                    </div>
+                                </div>
+                                <div class="form-group" style=" margin-left: -15px; margin-right: -15px;" id="novoPac1">
+                                    <div class="col-lg-3 col-md-3 col-xs-12">
+                                        E-Mail
+                                        @Html.TextBoxFor(m => m.PACI_NM_EMAIL, new { @class = "form-control", autofocus = true, @id = "email" })
+                                        @Html.ValidationMessageFor(m => m.PACI_NM_EMAIL, "", new { @style = "color:red" })
+                                    </div>
+                                    <div class="col-lg-4 col-md-4 col-xs-12">
+                                        Indicado Por
+                                        @Html.TextBoxFor(m => m.PACI_NM_INDICADO, new { @class = "form-control", autofocus = true })
+                                        @Html.ValidationMessageFor(m => m.PACI_NM_INDICADO, "", new { @style = "color:red" })
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                        <div class="row">
+                            <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Dados da Consulta</h4>
+                            <div class="form-group" style=" margin-left: 5px; margin-right: 5px;">
+                                @Html.ButtonActionSubmit(text: "Confirma Criação de Consulta", htmlAttributes: new { id = "basictoast" })
+                                @if ((Int32)Session["ModoConsulta"] == 1)
+                                {
+                                    @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarProcederConsulta", controller: "Paciente")
+                                }
+                                else
+                                {
+                                    if ((Int32)Session["TipoSolicitacao"] == 1)
+                                    {
+                                        @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarAnexoPaciente", controller: "Paciente")
+                                    }
+                                    else
+                                    {
+                                        @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaConsultas", controller: "Paciente")
+                                    }
+                                }
+                                <a href="@Url.Action((String)Session["AjudaNivel"])" class="btn btn-sm btn-danger" target="_blank">Ajuda</a>
+                            </div>
+                            <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                <div class="col-lg-3 col-md-2 col-xs-12">
+                                    Tipo de Consulta*
+                                    @Html.DropDownListFor(m => m.VACO_CD_ID, (SelectList)ViewBag.TipoConsulta, "Selecionar", new { @class = "form-control", autofocus = true, @id="tipoCons" })
+                                    @Html.ValidationMessageFor(m => m.VACO_CD_ID, "", new { @style = "color:red" })
+                                </div>
+                                <div class="col-lg-2 col-md-2 col-xs-12">
+                                    @Html.HiddenFor(m => m.PACI_CD_ID)
+                                    @Html.HiddenFor(m => m.PACO_IN_ATIVO)
+                                    @Html.HiddenFor(m => m.PACO_IN_ENCERRADA)
+                                    @Html.HiddenFor(m => m.USUA_CD_ID)
+                                    @Html.HiddenFor(m => m.ASSI_CD_ID)
+                                    @Html.HiddenFor(m => m.PACO_IN_CONFIRMADA)
+                                    Data da Consulta*
+                                    @Html.TextBoxFor(m => m.PACO_DT_CONSULTA, "{0:dd/MM/yyyy}", new { @class = "form-control date-picker", autofocus = true, @id = "dn1" })
+                                    @Html.ValidationMessageFor(m => m.PACO_DT_CONSULTA, "", new { @style = "color:red" })
+                                </div>
+                                <div class="col-lg-3 col-md-2 col-xs-12">
+                                    Início*
+                                    <div class='input-group date' id='datetimepicker3'>
+                                        @Html.TextBoxFor(m => m.PACO_HR_INICIO, new { @class = "form-control time-picker", autofocus = true, @id = "hora" })
+                                        @Html.ValidationMessageFor(m => m.PACO_HR_INICIO, "", new { @style = "color:red" })
+                                        <span class="input-group-addon">
+                                            <span style="cursor: pointer;" class="glyphicon glyphicon-time"></span>
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3 col-md-2 col-xs-12">
+                                    Término*
+                                    <div class='input-group date' id='datetimepicker3'>
+                                        @Html.TextBoxFor(m => m.PACO_HR_FINAL, new { @class = "form-control time-picker1", autofocus = true, @id = "hora1" })
+                                        @Html.ValidationMessageFor(m => m.PACO_HR_FINAL, "", new { @style = "color:red" })
+                                        <span class="input-group-addon">
+                                            <span style="cursor: pointer;" class="glyphicon glyphicon-time"></span>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                <div class="col-lg-4 col-md-4 col-xs-12">
+                                    <br />
+                                    @Html.ButtonLinkIndex(text: "Ver Dias Úteis e Horários Úteis", action: "MontarTelaVerConfiguracaoCalendario", controller: "Configuracao", buttonClass: "primary")
+                                    @Html.ButtonLinkIndex(text: "Ver Bloqueios", action: "VerBloqueio", controller: "Configuracao", buttonClass: "primary")
+                                    @Html.ButtonLinkIndex(text: "Ver Consultas já Marcadas", action: "VerCalendarioConsulta", controller: "Paciente", buttonClass: "primary")
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <link href="~/Content/themes/base/jquery-ui.min.css" rel="stylesheet" />
+    <link href="~/Content/themes/base/all.css" rel="stylesheet" />
+    <link href="~/Content/jquery.datetimepicker.css" rel="stylesheet" />
+    @Styles.Render("~/Content/plugins/dataTables/dataTablesStyles")
+    @Styles.Render("~/plugins/jasnyBootstrapStyles")
+    @Styles.Render("~/plugins/toastrStyles")
+
+}
+@section Scripts {
+    <script src="~/Scripts/jquery.datetimepicker.full.min.js"></script>
+    <script type="text/javascript" src="~/Scripts/moment.min.js"></script>
+    <script type="text/javascript" src="~/Scripts/bootstrap.min.js"></script>
+    <script type="text/javascript" src="~/Scripts/jquery.datetimepicker"></script>
+
+    @Scripts.Render("~/plugins/toastr")
+    <script src="~/Scripts/jquery-ui-1.12.1.min.js"></script>
+    @Scripts.Render("~/plugins/dataTables")
+    @Scripts.Render("~/bundles/inputmask")
+    @Scripts.Render("~/plugins/jasnyBootstrap")
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.maskedinput/1.4.1/jquery.maskedinput.js"></script>
+    <script src="~/Scripts/uploadAnexo.js"></script>
+
+    <script>
+        function GetPaciente(id) {
+            var data = {
+                id: id
+            }
+
+            $.ajax({
+                url: '../Paciente/GetPaciente'
+                , type: 'POST'
+                , data: data
+                , success: function (r) {
+                    $('#dataNasc > input').val(r.dataNasc);
+                    $('#cpf > input').val(r.cpf);
+                    $('#cel > input').val(r.cel);
+                    $('#tel > input').val(r.tel);
+                    $('#tipoCons option[value="' + r.tipo + '"]').attr("selected", "selected");
+
+                    $('#dataNasc').show();
+                    $('#cpf').show();
+                    $('#cel').show();
+                    $('#tel').show();
+                }
+            });
+        }
+    </script>
+    <script type="text/javascript" language="javascript">
+        $(function () {
+            $('.date-picker').datepicker(
+                {
+                    dateFormat: 'dd/mm/yy',
+                    dayNames: ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'],
+                    dayNamesMin: ['D', 'S', 'T', 'Q', 'Q', 'S', 'S', 'D'],
+                    dayNamesShort: ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'],
+                    monthNames: ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'],
+                    monthNamesShort: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'],
+                    nextText: 'Proximo',
+                    prevText: 'Anterior',
+                    showOn: "focus"
+                }
+            )
+                .css("display", "normal")
+                .next("button").button({
+                    icons: { primary: "ui-icon-calendar" },
+                    label: "Selecione uma data",
+                    text: false
+                });
+        });
+    </script>
+    <script type="text/javascript">
+        $(function () {
+            $("#dn").mask("99/99/9999");
+            $("#dn1").mask("99/99/9999");
+            $("#tel").mask("(99)9999-9999");
+            $("#cel").mask("(99)99999-9999");
+            $("#cpf1").mask("999.999.999-99");
+            $("#cel1").mask("(99)99999-9999");
+        });
+    </script>
+    <script type="text/javascript">
+        $(function () {
+            $('.time-picker').datetimepicker({
+                datepicker: false,
+                format: 'H:i'
+            });
+            $('.time-picker1').datetimepicker({
+                datepicker: false,
+                format: 'H:i'
+            });
+        });
+    </script>
+    <script type="text/javascript">
+        $(function () {
+            $('#datetimepicker3').click(function () {
+                $('.time-picker').datetimepicker('show');
+            });
+        });
+    </script>
+    <script type="text/javascript">
+        function ValidaNovo(novo) {
+            if (novo == '1') {
+                $("#novoPac").show();
+                $("#novoPac1").show();
+                $("#existePac").hide();
+            } else {
+                $("#novoPac").hide();
+                $("#novoPac1").hide();
+                $("#existePac").show();
+            }
+        }
+        $(document).ready(function () {
+            ValidaNovo($('#novo').val());
+        });
+    </script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            var i = -1;
+            var toastCount = 0;
+            var $toastlast;
+            var getMessage = function () {
+                var msg = 'Hi, welcome to Inspinia. This is example of Toastr notification box.';
+                return msg;
+            };
+
+            $('#basictoast').click(function () {
+                // Display a success toast, with a title
+                toastr.success('Inclusão em andamento!')
+            });
+            $('#showtoast').click(function () {
+                var shortCutFunction = $("#toastTypeGroup input:radio:checked").val();
+                var msg = $('#message').val();
+                var title = $('#title').val() || '';
+                var $showDuration = $('#showDuration');
+                var $hideDuration = $('#hideDuration');
+                var $timeOut = $('#timeOut');
+                var $extendedTimeOut = $('#extendedTimeOut');
+                var $showEasing = $('#showEasing');
+                var $hideEasing = $('#hideEasing');
+                var $showMethod = $('#showMethod');
+                var $hideMethod = $('#hideMethod');
+                var toastIndex = toastCount++;
+                toastr.options = {
+                    closeButton: $('#closeButton').prop('checked'),
+                    debug: $('#debugInfo').prop('checked'),
+                    progressBar: $('#progressBar').prop('checked'),
+                    positionClass: $('#positionGroup input:radio:checked').val() || 'toast-top-right',
+                    onclick: null
+                };
+                if ($('#addBehaviorOnToastClick').prop('checked')) {
+                    toastr.options.onclick = function () {
+                        alert('You can perform some custom action after a toast goes away');
+                    };
+                }
+                if ($showDuration.val().length) {
+                    toastr.options.showDuration = $showDuration.val();
+                }
+                if ($hideDuration.val().length) {
+                    toastr.options.hideDuration = $hideDuration.val();
+                }
+                if ($timeOut.val().length) {
+                    toastr.options.timeOut = $timeOut.val();
+                }
+                if ($extendedTimeOut.val().length) {
+                    toastr.options.extendedTimeOut = $extendedTimeOut.val();
+                }
+                if ($showEasing.val().length) {
+                    toastr.options.showEasing = $showEasing.val();
+                }
+                if ($hideEasing.val().length) {
+                    toastr.options.hideEasing = $hideEasing.val();
+                }
+                if ($showMethod.val().length) {
+                    toastr.options.showMethod = $showMethod.val();
+                }
+                if ($hideMethod.val().length) {
+                    toastr.options.hideMethod = $hideMethod.val();
+                }
+                if (!msg) {
+                    msg = getMessage();
+                }
+                $("#toastrOptions").text("Command: toastr["
+                    + shortCutFunction
+                    + "](\""
+                    + msg
+                    + (title ? "\", \"" + title : '')
+                    + "\")\n\ntoastr.options = "
+                    + JSON.stringify(toastr.options, null, 2)
+                );
+                var $toast = toastr[shortCutFunction](msg, title); // Wire up an event handler to a button in the toast, if it exists
+                $toastlast = $toast;
+                if ($toast.find('#okBtn').length) {
+                    $toast.delegate('#okBtn', 'click', function () {
+                        alert('you clicked me. i was toast #' + toastIndex + '. goodbye!');
+                        $toast.remove();
+                    });
+                }
+                if ($toast.find('#surpriseBtn').length) {
+                    $toast.delegate('#surpriseBtn', 'click', function () {
+                        alert('Surprise! you clicked me. i was toast #' + toastIndex + '. You could perform an action here.');
+                    });
+                }
+            });
+            function getLastToast() {
+                return $toastlast;
+            }
+            $('#clearlasttoast').click(function () {
+                toastr.clear(getLastToast());
+            });
+            $('#cleartoasts').click(function () {
+                toastr.clear();
+            });
+
+        });
+    </script>
+    <!-- Handler de fechamento do browser -->
+    <script type="text/javascript">
+        window.onbeforeunload = function ()
+        {
+            navigator.sendBeacon('../ControleAcesso/LogSessionTime');
+        }; 
+    </script>
+
+    @if (ViewBag.Message != null)
+    {
+        <script type="text/javascript">
+            window.onload = function () {
+                  alert("@ViewBag.Message");
+            };
+        </script>
+    }
+}

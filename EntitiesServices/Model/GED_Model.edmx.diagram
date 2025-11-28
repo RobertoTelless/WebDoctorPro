@@ -1,0 +1,1149 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+ <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <!-- Diagram content (shape and connector positions) -->
+    <edmx:Diagrams>
+      <Diagram DiagramId="805f82983a754b2f91da00852786e453" Name="Diagram1">
+        <EntityTypeShape EntityType="CRMSysDBModel.ACESSO_METODO" Width="1.5" PointX="5.25" PointY="482.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.AGENDA" Width="1.5" PointX="55.75" PointY="538.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.AGENDA_ANEXO" Width="1.5" PointX="58" PointY="536" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.AGENDA_CONTATO" Width="1.5" PointX="58" PointY="518.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.AGENDA_VINCULO" Width="1.5" PointX="58" PointY="551.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.ANTECIPACAO" Width="1.5" PointX="18.75" PointY="552.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.ASSINANTE" Width="1.5" PointX="3" PointY="484.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.ASSINANTE_ANEXO" Width="1.5" PointX="5.25" PointY="445.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.ASSINANTE_ANOTACAO" Width="1.5" PointX="8.25" PointY="485" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.ASSINANTE_CONSUMO" Width="1.5" PointX="5.25" PointY="451.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.ASSINANTE_PAGAMENTO" Width="1.5" PointX="8.25" PointY="498.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.ASSINANTE_PAGAMENTO_ANEXO" Width="1.5" PointX="10.5" PointY="504" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.ASSINANTE_PLANO" Width="1.5" PointX="11.25" PointY="483.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.ASSINANTE_PLANO_ASSINATURA" Width="1.5" PointX="11.25" PointY="499.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.ASSINANTE_QUADRO_SOCIETARIO" Width="1.5" PointX="5.25" PointY="468.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.ATENDIMENTO" Width="1.5" PointX="27.25" PointY="538.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.ATENDIMENTO_ACAO" Width="1.5" PointX="41.5" PointY="510.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.ATENDIMENTO_ACOMPANHAMENTO" Width="1.5" PointX="41.5" PointY="506.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.ATENDIMENTO_AGENDA" Width="1.5" PointX="61" PointY="542.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.ATENDIMENTO_ANEXO" Width="1.5" PointX="29.5" PointY="561.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.ATENDIMENTO_CRM" Width="1.5" PointX="52.75" PointY="529.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.ATENDIMENTO_PROPOSTA" Width="1.5" PointX="44.5" PointY="521.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.ATENDIMENTO_PROPOSTA_ACOMPANHAMENTO" Width="1.5" PointX="49.75" PointY="513.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.ATENDIMENTO_PROPOSTA_ANEXO" Width="1.5" PointX="46.75" PointY="528" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.ATENDIMENTO_PROPOSTA_PECA" Width="1.5" PointX="46.75" PointY="503.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.ATENDIMENTO_PROPOSTA_SERVICO" Width="1.5" PointX="49.75" PointY="520.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.AVISO_LEMBRETE" Width="1.5" PointX="28" PointY="549.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.BANCO" Width="1.5" PointX="5.25" PointY="472.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.CARGO" Width="1.5" PointX="14.5" PointY="475.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.CARGO_TESTE" Width="1.5" PointX="0.75" PointY="5.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.CATEGORIA_AGENDA" Width="1.5" PointX="53.5" PointY="539.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.CATEGORIA_ATENDIMENTO" Width="1.5" PointX="25" PointY="575.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.CATEGORIA_CLIENTE" Width="1.5" PointX="22.75" PointY="474.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.CATEGORIA_CUSTO_FIXO" Width="1.5" PointX="5.25" PointY="475.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.CATEGORIA_FORNECEDOR" Width="1.5" PointX="3" PointY="546.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.CATEGORIA_NOTIFICACAO" Width="1.5" PointX="25.75" PointY="474.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.CATEGORIA_ORDEM_SERVICO" Width="1.5" PointX="5.25" PointY="478.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.CATEGORIA_PACIENTE" Width="1.5" PointX="2.75" PointY="6.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.CATEGORIA_PRODUTO" Width="1.5" PointX="8.25" PointY="571" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.CATEGORIA_SERVICO" Width="1.5" PointX="22.75" PointY="585.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.CATEGORIA_TELEFONE" Width="1.5" PointX="3.75" PointY="465.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.CATEGORIA_USUARIO" Width="1.5" PointX="14.5" PointY="473" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.CENTRO_CUSTO" Width="1.5" PointX="7.5" PointY="530.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.CLASSE" Width="1.5" PointX="10.5" PointY="539.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.CLIENTE" Width="1.5" PointX="25" PointY="541" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.CLIENTE_ANEXO" Width="1.5" PointX="27.25" PointY="562.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.CLIENTE_ANOTACAO" Width="1.5" PointX="42.25" PointY="527.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.CLIENTE_CONTATO" Width="1.5" PointX="27.25" PointY="566" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.CLIENTE_FALHA" Width="1.5" PointX="19" PointY="486.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.CLIENTE_QUADRO_SOCIETARIO" Width="1.5" PointX="27.25" PointY="569.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.CLIENTE_REFERENCIA" Width="1.5" PointX="27.25" PointY="573" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.CLIENTE_TAG" Width="1.5" PointX="27.25" PointY="584.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.COMISSAO" Width="1.5" PointX="15.75" PointY="532.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.COMISSAO_CARGO" Width="1.5" PointX="16.75" PointY="471.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.COMPRA" Width="1.5" PointX="7.5" PointY="553.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.COMPRA_ANEXO" Width="1.5" PointX="9.75" PointY="556.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.COMPRA_ANOTACAO" Width="1.5" PointX="19" PointY="528.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.COMPRA_CONTATO" Width="1.5" PointX="9.75" PointY="563.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.COMPRA_FORNECEDOR" Width="1.5" PointX="9.75" PointY="551.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.COMPRA_FORNECEDOR_ITEM" Width="1.5" PointX="12.75" PointY="570.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.COMPRA_ITEM" Width="1.5" PointX="28" PointY="556" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.CONFIGURACAO" Width="1.5" PointX="5.25" PointY="506.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.CONFIGURACAO_ANAMNESE" Width="1.5" PointX="4.75" PointY="6.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.CONFIGURACAO_CALENDARIO" Width="1.5" PointX="19" PointY="511.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.CONFIGURACAO_CALENDARIO_BLOQUEIO" Width="1.5" PointX="24.25" PointY="511.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.CONFIGURACAO_CHAVES" Width="1.5" PointX="6.75" PointY="6.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.CONFIGURACAO_CRIPT" Width="1.5" PointX="5.25" PointY="496.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.CONSULTA_PAGAMENTO" Width="1.5" PointX="21.25" PointY="552" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.CONSULTA_RECEBIMENTO" Width="1.5" PointX="33.25" PointY="540.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.CONTA_BANCO" Width="1.5" PointX="13.5" PointY="479.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.CONTA_BANCO_CONTATO" Width="1.5" PointX="15.75" PointY="481.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.CONTA_BANCO_LANCAMENTO" Width="1.5" PointX="19" PointY="503.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.CONTA_PAGAR" Width="1.5" PointX="22" PointY="510.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.CONTA_PAGAR_ANEXO" Width="1.5" PointX="24.25" PointY="489.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.CONTA_PAGAR_ANOTACAO" Width="1.5" PointX="36.25" PointY="511.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.CONTA_PAGAR_FALHA" Width="1.5" PointX="25" PointY="506.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.CONTA_PAGAR_PARCELA" Width="1.5" PointX="33.25" PointY="493.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.CONTA_PAGAR_RATEIO" Width="1.5" PointX="36.25" PointY="521.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.CONTA_RECEBER" Width="1.5" PointX="22" PointY="531.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.CONTA_RECEBER_ANEXO" Width="1.5" PointX="24.25" PointY="562.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.CONTA_RECEBER_ANOTACAO" Width="1.5" PointX="36.25" PointY="507.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.CONTA_RECEBER_FALHA" Width="1.5" PointX="19" PointY="533.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.CONTA_RECEBER_PARCELA" Width="1.5" PointX="36.25" PointY="500.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.CONTA_RECEBER_RATEIO" Width="1.5" PointX="36.25" PointY="550.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.CONTROLE_MENSAGEM" Width="1.5" PointX="7.75" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.CONTROLE_PROCESSO" Width="1.5" PointX="7.75" PointY="3.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.CONTROLE_ROBOT_PROCESSO" Width="1.5" PointX="8.75" PointY="6.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.CONTROLE_VERSAO" Width="1.5" PointX="9.75" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.CONVENIO" Width="1.5" PointX="5.25" PointY="567.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.COR" Width="1.5" PointX="5.25" PointY="564.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.CRM" Width="1.5" PointX="47.5" PointY="513.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.CRM_ACAO" Width="1.5" PointX="52.75" PointY="515.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.CRM_ANEXO" Width="1.5" PointX="49.75" PointY="531.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.CRM_COMENTARIO" Width="1.5" PointX="49.75" PointY="509.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.CRM_CONTATO" Width="1.5" PointX="49.75" PointY="555.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.CRM_FOLLOW" Width="1.5" PointX="52.75" PointY="510.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.CRM_ORIGEM" Width="1.5" PointX="45.25" PointY="498" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.CRM_PEDIDO_ENVIO" Width="1.5" PointX="55" PointY="523.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.CRM_PEDIDO_VENDA" Width="1.5" PointX="52.75" PointY="547.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.CRM_PEDIDO_VENDA_ACOMPANHAMENTO" Width="1.5" PointX="55" PointY="530.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.CRM_PEDIDO_VENDA_ANEXO" Width="1.5" PointX="55" PointY="564" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.CRM_PEDIDO_VENDA_ITEM" Width="1.5" PointX="55" PointY="555.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.CRM_PEDIDO_VENDA_ITEM_PECA" Width="1.5" PointX="58" PointY="555.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.CRM_PEDIDO_VENDA_ITEM_SERVICO" Width="1.5" PointX="61" PointY="532.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.CUSTO_FIXO" Width="1.5" PointX="27" PointY="524.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.CUSTO_FIXO_CALENDARIO" Width="1.5" PointX="36.25" PointY="518" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.CUSTO_HISTORICO" Width="1.5" PointX="15.75" PointY="536.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.CUSTO_VARIAVEL" Width="1.5" PointX="5.25" PointY="535.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.CUSTO_VARIAVEL_ANTECIPACAO" Width="1.5" PointX="7.5" PointY="537" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.CUSTO_VARIAVEL_CALCULO" Width="1.5" PointX="0.75" PointY="9.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.CUSTO_VARIAVEL_HISTORICO" Width="1.5" PointX="15.75" PointY="540.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.DEPARTAMENTO" Width="1.5" PointX="14.5" PointY="469.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.DIARIO_COMPRA" Width="1.5" PointX="58" PointY="527.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.DIARIO_PROCESSO" Width="1.5" PointX="61" PointY="523.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.DOCUMENTO" Width="1.5" PointX="27.25" PointY="576.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.DOCUMENTO_ANOTACAO" Width="1.5" PointX="41.5" PointY="544.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.DOCUMENTO_HISTORICO" Width="1.5" PointX="43.5" PointY="536.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.DOCUMENTO_METADADO" Width="1.5" PointX="29.5" PointY="578.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.EMAIL_AGENDAMENTO" Width="1.5" PointX="38.5" PointY="553" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.EMPRESA" Width="1.5" PointX="13.5" PointY="522.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.EMPRESA_ANEXO" Width="1.5" PointX="15.75" PointY="543.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.EMPRESA_CUSTO_VARIAVEL" Width="1.5" PointX="15.75" PointY="594.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.EMPRESA_CUSTO_VARIAVEL_NORMAL" Width="1.5" PointX="15.75" PointY="547" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.EMPRESA_FILIAL" Width="1.5" PointX="24.75" PointY="523.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.EMPRESA_MAQUINA" Width="1.5" PointX="15.75" PointY="550.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.EMPRESA_PLATAFORMA" Width="1.5" PointX="15.75" PointY="571.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.EMPRESA_TICKET" Width="1.5" PointX="18.75" PointY="598.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.ESCOLARIDADE" Width="1.5" PointX="8.75" PointY="9.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.ESPECIALIDADE" Width="1.5" PointX="14.5" PointY="505.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.ESTADO" Width="1.5" PointX="0.75" PointY="1.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.ESTADO_BASE" Width="1.5" PointX="3" PointY="2" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.ESTADO_CIVIL" Width="1.5" PointX="5.25" PointY="603.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.ESTADO_ENTIDADE" Width="1.5" PointX="27" PointY="488.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.ESTADO_MODELO" Width="1.5" PointX="5.25" PointY="1" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.ESTOQUE_PROCESSO_IMPORTACAO" Width="1.5" PointX="19" PointY="538" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.FICHA_TECNICA" Width="1.5" PointX="12.75" PointY="580" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.FICHA_TECNICA_DETALHE" Width="1.5" PointX="16" PointY="585.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.FILIAL" Width="1.5" PointX="3" PointY="597.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.FORMA_ENVIO" Width="1.5" PointX="5.25" PointY="571.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.FORMA_FRETE" Width="1.5" PointX="5.25" PointY="574.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.FORMA_PAGAMENTO" Width="1.5" PointX="21.75" PointY="486.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.FORMA_RECEBIMENTO" Width="1.5" PointX="19" PointY="542.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.FORNECEDOR" Width="1.5" PointX="5.25" PointY="542.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.FORNECEDOR_ANEXO" Width="1.5" PointX="7.5" PointY="542.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.FORNECEDOR_ANOTACOES" Width="1.5" PointX="19" PointY="521.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.FORNECEDOR_CONTATO" Width="1.5" PointX="7.5" PointY="546.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.FORNECEDOR_PRODUTO" Width="1.5" PointX="12.75" PointY="566.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.FORNECEDOR_QUADRO_SOCIETARIO" Width="1.5" PointX="7.5" PointY="549.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.FUNIL" Width="1.5" PointX="45.25" PointY="492.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.FUNIL_ETAPA" Width="1.5" PointX="47.5" PointY="493.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.GRAU_INSTRUCAO" Width="1.5" PointX="5.25" PointY="605.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.GRAU_PARENTESCO" Width="1.5" PointX="28.75" PointY="587.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.GRUPO" Width="1.5" PointX="25" PointY="516.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.GRUPO_CC" Width="1.5" PointX="5.25" PointY="577.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.GRUPO_CLIENTE" Width="1.5" PointX="39.25" PointY="549.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.GRUPO_DOCUMENTO" Width="1.5" PointX="5.25" PointY="581.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.GRUPO_PAC" Width="1.5" PointX="13.5" PointY="585.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.GRUPO_PACIENTE" Width="1.5" PointX="15.75" PointY="582.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.LABORATORIO" Width="1.5" PointX="3" PointY="605.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.LINGUA" Width="1.5" PointX="20.5" PointY="471.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.LOG" Width="1.5" PointX="19" PointY="556.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.LOG_EXCECAO" Width="1.5" PointX="10.75" PointY="5.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.LOG_EXCECAO_NOVO" Width="1.5" PointX="19" PointY="561.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.MAQUINA" Width="1.5" PointX="5.25" PointY="584.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.MEDICAMENTO" Width="1.5" PointX="27" PointY="511.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.MENSAGEM_ANEXO" Width="1.5" PointX="32.5" PointY="563.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.MENSAGEM_AUTOMACAO" Width="1.5" PointX="41.25" PointY="537.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.MENSAGEM_AUTOMACAO_DATAS" Width="1.5" PointX="43.5" PointY="561.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.MENSAGEM_FABRICANTE" Width="1.5" PointX="10.75" PointY="8.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.MENSAGENS" Width="1.5" PointX="30.25" PointY="535.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.MENSAGENS_DESTINOS" Width="1.5" PointX="36.5" PointY="556.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.MENSAGENS_ENVIADAS_SISTEMA" Width="1.5" PointX="58" PointY="539.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.META" Width="1.5" PointX="28" PointY="517.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.META_ANEXO" Width="1.5" PointX="30.25" PointY="491.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.META_ANOTACAO" Width="1.5" PointX="39.25" PointY="500.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.METADADO" Width="1.5" PointX="21" PointY="579.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.MOTIVO_CANCELAMENTO" Width="1.5" PointX="45.25" PointY="489" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.MOTIVO_ENCERRAMENTO" Width="1.5" PointX="45.25" PointY="484.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.MOVIMENTO_ANOTACAO" Width="1.5" PointX="47.25" PointY="509.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.MOVIMENTO_ESTOQUE_PRODUTO" Width="1.5" PointX="37" PointY="525.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.MUNICIPIO" Width="1.5" PointX="3" PointY="609" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.NACIONALIDADE" Width="1.5" PointX="22.75" PointY="470.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.NIVEL_SEGURANCA" Width="1.5" PointX="5.25" PointY="590" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.NOMENCLATURA_BRAS_SERVICOS" Width="1.5" PointX="22.75" PointY="588.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.NOTICIA" Width="1.5" PointX="19.75" PointY="461.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.NOTICIA_COMENTARIO" Width="1.5" PointX="22" PointY="501.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.NOTIFICACAO" Width="1.5" PointX="28" PointY="504.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.NOTIFICACAO_ANEXO" Width="1.5" PointX="30.25" PointY="494.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.ORDEM_SERVICO" Width="1.5" PointX="38.5" PointY="537.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.ORDEM_SERVICO_ACOMPANHAMENTO" Width="1.5" PointX="49.75" PointY="524.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.ORDEM_SERVICO_AGENDA" Width="1.5" PointX="43.75" PointY="532.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.ORDEM_SERVICO_ANEXO" Width="1.5" PointX="40.75" PointY="561.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.ORDEM_SERVICO_COMENTARIOS" Width="1.5" PointX="40.75" PointY="564.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.ORDEM_SERVICO_PRODUTO" Width="1.5" PointX="43.75" PointY="564.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.ORDEM_SERVICO_SERVICO" Width="1.5" PointX="49.75" PointY="541.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.OUTRO_CUSTO_VARIAVEL" Width="1.5" PointX="5.25" PointY="593.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.PACIENTE" Width="1.5" PointX="7.5" PointY="574.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.PACIENTE_ANAMNESE" Width="1.5" PointX="34" PointY="522.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.PACIENTE_ANAMNESE_ANOTACAO" Width="1.5" PointX="44.25" PointY="512.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.PACIENTE_ANEXO" Width="1.5" PointX="9.75" PointY="611.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.PACIENTE_ANOTACAO" Width="1.5" PointX="27" PointY="534.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.PACIENTE_ATESTADO" Width="1.5" PointX="34" PointY="553.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.PACIENTE_CONSULTA" Width="1.5" PointX="36.25" PointY="538.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.PACIENTE_CONTATO" Width="1.5" PointX="31" PointY="550.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.PACIENTE_EXAME_ANEXO" Width="1.5" PointX="43.75" PointY="571.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.PACIENTE_EXAME_ANOTACAO" Width="1.5" PointX="49.75" PointY="551.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.PACIENTE_EXAME_FISICOS" Width="1.5" PointX="44.5" PointY="540.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.PACIENTE_EXAMES" Width="1.5" PointX="41.5" PointY="551" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.PACIENTE_FICHA" Width="1.5" PointX="9.75" PointY="656.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.PACIENTE_HISTORICO" Width="1.5" PointX="30" PointY="530.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.PACIENTE_LOGIN" Width="1.5" PointX="9.75" PointY="664" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.PACIENTE_PRESCRICAO" Width="1.5" PointX="47.5" PointY="540.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.PACIENTE_PRESCRICAO_ITEM" Width="1.5" PointX="49.75" PointY="545.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.PACIENTE_SOLICITACAO" Width="1.5" PointX="47.5" PointY="549.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.PAGAMENTO_ANEXO" Width="1.5" PointX="23.5" PointY="566.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.PAGAMENTO_ANOTACAO" Width="1.5" PointX="41.5" PointY="532.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.PAGAMENTO_NOTA_FISCAL" Width="1.5" PointX="23.5" PointY="570.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.PARENTESCO" Width="1.5" PointX="11.75" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.PECA" Width="1.5" PointX="21.5" PointY="478.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.PECA_ANEXO" Width="1.5" PointX="23.75" PointY="481" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.PECA_ANOTACAO" Width="1.5" PointX="24.75" PointY="493.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.PEDIDO_VENDA" Width="1.5" PointX="39.25" PointY="523.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.PEDIDO_VENDA_ACOMPANHAMENTO" Width="1.5" PointX="44.5" PointY="508.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.PEDIDO_VENDA_ANEXO" Width="1.5" PointX="41.5" PointY="557.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.PERFIL" Width="1.5" PointX="14.5" PointY="416.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.PERIODICIDADE" Width="1.5" PointX="37" PointY="486.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.PERIODICIDADE_TAREFA" Width="1.5" PointX="28" PointY="484.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.PESQUISA" Width="1.5" PointX="14.25" PointY="489.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.PESQUISA_ANEXO" Width="1.5" PointX="16.5" PointY="490" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.PESQUISA_ANOTACAO" Width="1.5" PointX="22" PointY="506" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.PESQUISA_ENVIO" Width="1.5" PointX="19.5" PointY="496" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.PESQUISA_ITEM" Width="1.5" PointX="22.5" PointY="493.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.PESQUISA_ITEM_OPCAO" Width="1.5" PointX="24.75" PointY="486" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.PESQUISA_RESPOSTA" Width="1.5" PointX="39.25" PointY="508.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.PESQUISA_RESPOSTA_ITEM" Width="1.5" PointX="41.5" PointY="498.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.PLANO" Width="1.5" PointX="0.75" PointY="477.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.PLANO_ASSINATURA" Width="1.5" PointX="6" PointY="434.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.PLANO_PERIODICIDADE" Width="1.5" PointX="1.5" PointY="473.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.PLATAFORMA_ENTREGA" Width="1.5" PointX="5.25" PointY="625.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.PRECIFICACAO" Width="1.5" PointX="14.25" PointY="498.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.PRECIFICACAO_PRODUTO" Width="1.5" PointX="18.5" PointY="546.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.PROCEDIMENTO" Width="1.5" PointX="0.75" PointY="12.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.PROCEDIMENTO_ANEXO" Width="1.5" PointX="12.75" PointY="3.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.PROCEDIMENTO_ANOTACAO" Width="1.5" PointX="6.75" PointY="12.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.PRODUTO" Width="1.5" PointX="10.5" PointY="577" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.PRODUTO_ANEXO" Width="1.5" PointX="12.75" PointY="593.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.PRODUTO_ANOTACAO" Width="1.5" PointX="21" PointY="547.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.PRODUTO_CONCORRENTE" Width="1.5" PointX="12.75" PointY="600.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.PRODUTO_CUSTO" Width="1.5" PointX="12.75" PointY="603.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.PRODUTO_EMPRESA" Width="1.5" PointX="12.75" PointY="7.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.PRODUTO_ESTOQUE_FILIAL" Width="1.5" PointX="31" PointY="556.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.PRODUTO_ESTOQUE_HISTORICO" Width="1.5" PointX="12.75" PointY="611.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.PRODUTO_FALHA" Width="1.5" PointX="8.25" PointY="480.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.PRODUTO_KIT" Width="1.5" PointX="12.75" PointY="615.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.PRODUTO_LOG" Width="1.5" PointX="24.25" PointY="536.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.PRODUTO_ORIGEM" Width="1.5" PointX="12.75" PointY="10.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.PRODUTO_PRECO_VENDA" Width="1.5" PointX="12.75" PointY="626.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.RECEBIMENTO_ANEXO" Width="1.5" PointX="35.5" PointY="546.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.RECEBIMENTO_ANOTACAO" Width="1.5" PointX="44.5" PointY="516.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.RECEBIMENTO_RECIBO" Width="1.5" PointX="35.5" PointY="563.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.RECURSIVIDADE" Width="1.5" PointX="46.5" PointY="534.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.RECURSIVIDADE_DATA" Width="1.5" PointX="48.75" PointY="535.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.RECURSIVIDADE_DESTINO" Width="1.5" PointX="52.75" PointY="542.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.RECURSIVIDADE_GERAL" Width="1.5" PointX="42" PointY="523.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.RECURSIVIDADE_GERAL_DATA" Width="1.5" PointX="13.75" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.RECURSIVIDADE_GERAL_DESTINO" Width="1.5" PointX="8.75" PointY="13.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.REGIAO" Width="1.5" PointX="3" PointY="612" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.REGIME_TRIBUTARIO" Width="1.5" PointX="11.25" PointY="529.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.RESPOSTA_CONSULTA" Width="1.5" PointX="10.75" PointY="13.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.RESULTADO_ROBOT" Width="1.5" PointX="38.5" PointY="562.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.RESULTADO_ROBOT_CUSTO" Width="1.5" PointX="42.25" PointY="516.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.SERVICO" Width="1.5" PointX="25" PointY="585.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.SERVICO_ANEXO" Width="1.5" PointX="27.25" PointY="591.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.SERVICO_EMPRESA" Width="1.5" PointX="12.75" PointY="13.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.SERVICO_TABELA_PRECO" Width="1.5" PointX="5.25" PointY="599.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.SERVICOS" Width="1.5" PointX="31" PointY="507.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.SERVICOS_ANEXO" Width="1.5" PointX="33.25" PointY="505.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.SERVICOS_ANOTACAO" Width="1.5" PointX="39.25" PointY="517.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.SERVICOS_CONCORRENTE" Width="1.5" PointX="33.25" PointY="512.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.SERVICOS_CUSTO" Width="1.5" PointX="33.25" PointY="516" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.SERVICOS_EMPRESA" Width="1.5" PointX="14.75" PointY="3.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.SERVICOS_LOG" Width="1.5" PointX="21.25" PointY="526.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.SERVICOS_PECA" Width="1.5" PointX="33.25" PointY="548.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.SERVICOS_PRECO_VENDA" Width="1.5" PointX="33.25" PointY="501.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.SEXO" Width="1.5" PointX="22.75" PointY="559.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.SOLICITACAO" Width="1.5" PointX="25" PointY="501.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.SUBCATEGORIA_PRODUTO" Width="1.5" PointX="16.25" PointY="485.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.SUBGRUPO" Width="1.5" PointX="10.5" PointY="534.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.sysdiagrams" Width="1.5" PointX="14.75" PointY="6.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.TAREFA" Width="1.5" PointX="28" PointY="497" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.TAREFA_ACOMPANHAMENTO" Width="1.5" PointX="39.25" PointY="504.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.TAREFA_ANEXO" Width="1.5" PointX="30.25" PointY="498.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.TAREFA_NOTIFICACAO" Width="1.5" PointX="33.25" PointY="509.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.TAREFA_VINCULO" Width="1.5" PointX="39.25" PointY="514.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.TELEFONE" Width="1.5" PointX="6" PointY="491.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.TEMPLATE" Width="1.5" PointX="28" PointY="479" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.TEMPLATE_EMAIL" Width="1.5" PointX="15.75" PointY="554" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.TEMPLATE_EMAIL_HTML" Width="1.5" PointX="19" PointY="610.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.TEMPLATE_PROPOSTA" Width="1.5" PointX="15.75" PointY="560.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.TEMPLATE_SMS" Width="1.5" PointX="15.75" PointY="565.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.TICKET_ALIMENTACAO" Width="1.5" PointX="5.25" PointY="668.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.TIPO_ACAO" Width="1.5" PointX="50.5" PointY="517.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.TIPO_ACESSO" Width="1.5" PointX="41.25" PointY="567.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.TIPO_ATESTADO" Width="1.5" PointX="31.75" PointY="567.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.TIPO_CARTEIRA_CLASSE" Width="1.5" PointX="14.5" PointY="519.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.TIPO_CONTA" Width="1.5" PointX="11.25" PointY="481.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.TIPO_CONTRIBUINTE" Width="1.5" PointX="22.75" PointY="467.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.TIPO_CONTROLE" Width="1.5" PointX="24.75" PointY="460.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.TIPO_CRM" Width="1.5" PointX="45.25" PointY="481.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.TIPO_DOCUMENTO" Width="1.5" PointX="5.25" PointY="672.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.TIPO_EMBALAGEM" Width="1.5" PointX="5.25" PointY="675.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.TIPO_EXAME" Width="1.5" PointX="22.75" PointY="464" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.TIPO_FOLLOW" Width="1.5" PointX="50.5" PointY="506.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.TIPO_FORMA" Width="1.5" PointX="24.75" PointY="457.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.TIPO_GRUPO" Width="1.5" PointX="14.75" PointY="9.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.TIPO_ITEM_EXAME" Width="1.5" PointX="14.75" PointY="12.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.TIPO_ITEM_PESQUISA" Width="1.5" PointX="20.25" PointY="475.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.TIPO_METADADO" Width="1.5" PointX="5.25" PointY="680.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.TIPO_PACIENTE" Width="1.5" PointX="5.25" PointY="683.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.TIPO_PAGAMENTO" Width="1.5" PointX="19" PointY="613.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.TIPO_PESQUISA" Width="1.5" PointX="12" PointY="476.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.TIPO_PESSOA" Width="1.5" PointX="0.75" PointY="498.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.TIPO_SERVICO_CONSULTA" Width="1.5" PointX="28.75" PointY="471" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.TIPO_TAREFA" Width="1.5" PointX="25.75" PointY="477.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.TIPO_TRANSPORTE" Width="1.5" PointX="6.75" PointY="465.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.TIPO_VALOR_CONSULTA" Width="1.5" PointX="28.75" PointY="475.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.TIPO_VEICULO" Width="1.5" PointX="17" PointY="478.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.TITULARIDADE" Width="1.5" PointX="15.75" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.TRANSPORTADORA" Width="1.5" PointX="9" PointY="488.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.TRANSPORTADORA_ANEXO" Width="1.5" PointX="11.25" PointY="488.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.TRANSPORTADORA_ANOTACAO" Width="1.5" PointX="19" PointY="499.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.TRANSPORTADORA_CONTATO" Width="1.5" PointX="11.25" PointY="491.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.TRANSPORTADORA_PROPOSTA" Width="1.5" PointX="58" PointY="522.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.TRANSPORTADORA_QUADRO_SOCIETARIO" Width="1.5" PointX="11.25" PointY="495.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.TRANSPORTADORA_REGIAO" Width="1.5" PointX="5.25" PointY="611.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.UF" Width="1.5" PointX="0.75" PointY="490.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.UNIDADE" Width="1.5" PointX="14" PointY="509.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.USUARIO" Width="1.5" PointX="16.75" PointY="493.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.USUARIO_ANEXO" Width="1.5" PointX="19" PointY="618.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.USUARIO_ANOTACAO" Width="1.5" PointX="19" PointY="626.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.USUARIO_LOGIN" Width="1.5" PointX="19" PointY="629.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.VALOR_CONSULTA" Width="1.5" PointX="31" PointY="502.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.VALOR_CONVENIO" Width="1.5" PointX="31" PointY="517.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.VALOR_SERVICO" Width="1.5" PointX="31" PointY="521.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.VEICULO" Width="1.5" PointX="19.25" PointY="491.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.VEICULO_FUNCAO" Width="1.5" PointX="17" PointY="475.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.VENDA_MENSAL" Width="1.5" PointX="15.75" PointY="575" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.VENDA_MENSAL_ANEXO" Width="1.5" PointX="18" PointY="575.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.VENDA_MENSAL_ANOTACAO" Width="1.5" PointX="30" PointY="526.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.VENDA_MENSAL_CALCULO" Width="1.5" PointX="25" PointY="497" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.VENDA_MENSAL_COMISSAO" Width="1.5" PointX="18" PointY="582.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.VENDA_MENSAL_PARTES" Width="1.5" PointX="18" PointY="621.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.VIDEO" Width="1.5" PointX="19.75" PointY="466.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.VIDEO_COMENTARIO" Width="1.5" PointX="22" PointY="497.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.VISUALIZACAO" Width="1.5" PointX="8.25" PointY="527.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="CRMSysDBModel.VOLTA_PESQUISA" Width="1.5" PointX="14.75" PointY="15.75" IsExpanded="true" />
+        <AssociationConnector Association="CRMSysDBModel.FK_ACESSO_METODO_ASSINANTE" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_ACESSO_METODO_ASSINANTE1" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_ACESSO_METODO_PACIENTE" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_ACESSO_METODO_USUARIO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_ACESSO_METODO_USUARIO1" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_AGENDA_ANEXO_AGENDA" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_AGENDA_CATEGORIA_AGENDA" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_AGENDA_CONTATO_AGENDA" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_AGENDA_CRM" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_AGENDA_CRM_ACAO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_AGENDA_PACIENTE" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_AGENDA_USUARIO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_AGENDA_USUARIO1" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_AGENDA_VINCULO_AGENDA" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_ATENDIMENTO_AGENDA_AGENDA" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_DIARIO_COMPRA_AGENDA" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_DIARIO_PROCESSO_AGENDA" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_ORDEM_SERVICO_AGENDA_AGENDA" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_AGENDA_CONTATO_USUARIO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_ANTECIPACAO_EMPRESA" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_ANTECIPACAO_MAQUINA" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_ASSINANTE_ANEXO_ASSINANTE" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_ASSINANTE_ANOTACAO_ASSINANTE" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_ASSINANTE_CONSUMO_ASSINANTE" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_ASSINANTE_PAGAMENTO_ASSINANTE" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_ASSINANTE_PLANO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_ASSINANTE_PLANO_ASSINANTE" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_ASSINANTE_PLANO_ASSINATURA_ASSINANTE" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_ASSINANTE_QUADRO_SOCIETARIO_ASSINANTE" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_ASSINANTE_TIPO_PESSOA" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_ASSINANTE_UF" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_BANCO_ASSINANTE" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_CATEGORIA_ORDEM_SERVICO_ASSINANTE" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_CENTRO_CUSTO_ASSINANTE" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_CLASSE_ASSINANTE" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_CONFIGURACAO_ASSINANTE" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_CONFIGURACAO_CRIPT_ASSINANTE" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_CONTA_BANCO_ASSINANTE" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_CONTA_RECEBER_ASSINANTE" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_CUSTO_FIXO_ASSINANTE" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_CUSTO_VARIAVEL_ASSINANTE" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_DOCUMENTO_ASSINANTE" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_DOCUMENTO_HISTORICO_ASSINANTE" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_FORMA_ENVIO_ASSINANTE" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_FORMA_FRETE_ASSINANTE" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_FORMA_PAGAMENTO_ASSINANTE" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_GRUPO_CC_ASSINANTE" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_GRUPO_DOCUMENTO_ASSINANTE" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_MENSAGENS_ENVIADAS_SISTEMA_ASSINANTE" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_MENSAGENS_ENVIADAS_SISTEMA_ASSINANTE1" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_METADADO_ASSINANTE" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_MOVIMENTO_ESTOQUE_PRODUTO_ASSINANTE" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_NIVEL_SEGURANCA_ASSINANTE" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_ORDEM_SERVICO_ASSINANTE" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_PACIENTE_ASSINANTE" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_PEDIDO_VENDA_ASSINANTE" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_PESQUISA_ASSINANTE" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_PESQUISA_RESPOSTA_ASSINANTE" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_PRECIFICACAO_ASSINANTE" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_PRODUTO_ASSINANTE" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_PRODUTO_FALHA_ASSINANTE" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_SUBCATEGORIA_PRODUTO_ASSINANTE" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_SUBGRUPO_ASSINANTE" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_TICKET_ALIMENTACAO_ASSINANTE" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_TIPO_DOCUMENTO_ASSINANTE" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_TIPO_EMBALAGEM_ASSINANTE" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_TIPO_METADADO_ASSINANTE" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_TIPO_PACIENTE_ASSINANTE" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_USUARIO_ASSINANTE" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_VENDA_MENSAL_ANOTACAO_ASSINANTE" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_VENDA_MENSAL_ASSINANTE" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_VENDA_MENSAL_CALCULO_ASSINANTE" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FKCATEGORIA_825959" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FKEMPRESA495355" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FKMAQUINA36030" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FKOUTRO_CUST578807" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FKPLATAFORMA785659" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_ASSINANTE_ANOTACAO_USUARIO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_ASSINANTE_PAGAMENTO_ANEXO_ASSINANTE_PAGAMENTO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_ASSINANTE_PAGAMENTO_PLANO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_ASSINANTE_PAGAMENTO_PLANO_ASSINATURA" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_ASSINANTE_PLANO_PLANO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_ASSINANTE_PLANO_ASSINATURA_PLANO_ASSINATURA" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_ATENDIMENTO_ACAO_ATENDIMENTO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_ATENDIMENTO_ACOMPANHAMENTO_ATENDIMENTO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_ATENDIMENTO_AGENDA_ATENDIMENTO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_ATENDIMENTO_ANEXO_ATENDIMENTO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_ATENDIMENTO_CATEGORIA_ATENDIMENTO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_ATENDIMENTO_CLIENTE" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_ATENDIMENTO_CRM_ATENDIMENTO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_ATENDIMENTO_DEPARTAMENTO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_ATENDIMENTO_EMPRESA" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_ATENDIMENTO_MOTIVO_CANCELAMENTO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_ATENDIMENTO_MOTIVO_ENCERRAMENTO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_ATENDIMENTO_PRODUTO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_ATENDIMENTO_PROPOSTA_ATENDIMENTO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_ATENDIMENTO_SERVICO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_ATENDIMENTO_USUARIO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_ORDEM_SERVICO_ATENDIMENTO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_ATENDIMENTO_ACAO_TIPO_ACAO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_ATENDIMENTO_ACAO_USUARIO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_ATENDIMENTO_ACAO_USUARIO1" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_ATENDIMENTO_ACOMPANHAMENTO_USUARIO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_ATENDIMENTO_CRM_CRM" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_ATENDIMENTO_PROPOSTA_ACOMPANHAMENTO_ATENDIMENTO_PROPOSTA" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_ATENDIMENTO_PROPOSTA_ANEXO_ATENDIMENTO_PROPOSTA" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_ATENDIMENTO_PROPOSTA_EMPRESA" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_ATENDIMENTO_PROPOSTA_MOTIVO_CANCELAMENTO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_ATENDIMENTO_PROPOSTA_MOTIVO_ENCERRAMENTO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_ATENDIMENTO_PROPOSTA_PECA_ATENDIMENTO_PROPOSTA" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_ATENDIMENTO_PROPOSTA_SERVICO_ATENDIMENTO_PROPOSTA" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_ATENDIMENTO_PROPOSTA_USUARIO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_ATENDIMENTO_PROPOSTA_ACOMPANHAMENTO_USUARIO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_ATENDIMENTO_PROPOSTA_PECA_PECA" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_ATENDIMENTO_PROPOSTA_SERVICO_SERVICO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_AVISO_LEMBRETE_PACIENTE" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_AVISO_LEMBRETE_USUARIO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_CONTA_BANCO_BANCO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_COMISSAO_CARGO_CARGO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_USUARIO_CARGO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_CLIENTE_CATEGORIA_CLIENTE" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_GRUPO_CATEGORIA_CLIENTE" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FKCUSTO_FIXO798962" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_FORNECEDOR_CATEGORIA_FORNECEDOR" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_NOTIFICACAO_CATEGORIA_NOTIFICACAO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_ORDEM_SERVICO_CATEGORIA_ORDEM_SERVICO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_PECA_CATEGORIA_PRODUTO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_PRECIFICACAO_CATEGORIA_PRODUTO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_PRODUTO_CATEGORIA_PRODUTO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_SUBCATEGORIA_PRODUTO_CATEGORIA_PRODUTO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_SERVICO_CATEGORIA_SERVICO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_SERVICOS_CATEGORIA_SERVICO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_TELEFONE_CATEGORIA_TELEFONE" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_USUARIO_CATEGORIA_USUARIO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_CENTRO_CUSTO_GRUPO_CC" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_CENTRO_CUSTO_SUBGRUPO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_CONTA_PAGAR_CENTRO_CUSTO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_CONTA_PAGAR_RATEIO_CENTRO_CUSTO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_CONTA_RECEBER_CENTRO_CUSTO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_CONTA_RECEBER_RATEIO_CENTRO_CUSTO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_CUSTO_FIXO_CENTRO_CUSTO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_PEDIDO_VENDA_CENTRO_CUSTO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_CLASSE_GRUPO_DOCUMENTO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_CLASSE_NIVEL_SEGURANCA" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_CLASSE_USUARIO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_CLASSE_VISUALIZACAO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_DOCUMENTO_CLASSE" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_METADADO_CLASSE" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_CLIENTE_ANEXO_CLIENTE" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_CLIENTE_ANOTACAO_CLIENTE" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_CLIENTE_CONTATO_CLIENTE" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_CLIENTE_EMPRESA" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_CLIENTE_EMPRESA_FILIAL" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_CLIENTE_FILIAL" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_CLIENTE_MUNICIPIO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_CLIENTE_NACIONALIDADE" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_CLIENTE_QUADRO_SOCIETARIO_CLIENTE" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_CLIENTE_REFERENCIA_CLIENTE" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_CLIENTE_REGIME_TRIBUTARIO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_CLIENTE_SEXO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_CLIENTE_TAG_CLIENTE" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_CLIENTE_TIPO_CONTRIBUINTE" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_CLIENTE_TIPO_PESSOA" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_CLIENTE_UF" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_CLIENTE_UF1" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_CLIENTE_UF2" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_CLIENTE_USUARIO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_CONTA_RECEBER_CLIENTE" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_CRM_CLIENTE" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_CRM_PEDIDO_VENDA_CLIENTE" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_DOCUMENTO_CLIENTE" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_EMAIL_AGENDAMENTO_CLIENTE" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_GRUPO_CLIENTE_CLIENTE" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_MENSAGENS_CLIENTE" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_MENSAGENS_DESTINOS_CLIENTE" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_MENSAGENS_ENVIADAS_SISTEMA_CLIENTE" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_ORDEM_SERVICO_CLIENTE" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_PEDIDO_VENDA_CLIENTE" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_PESQUISA_CLIENTE" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_PESQUISA_ENVIO_CLIENTE" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_PESQUISA_RESPOSTA_CLIENTE" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_RECURSIVIDADE_DESTINO_CLIENTE" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_RESULTADO_ROBOT_CLIENTE" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_CLIENTE_ANOTACAO_USUARIO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_CLIENTE_FALHA_USUARIO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_COMISSAO_EMPRESA" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_COMPRA_ANEXO_COMPRA" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_COMPRA_ANOTACAO_COMPRA" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_COMPRA_CONTATO_COMPRA" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_COMPRA_EMPRESA_FILIAL" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_COMPRA_FORMA_ENVIO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_COMPRA_FORMA_FRETE" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_COMPRA_FORNECEDOR" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_COMPRA_FORNECEDOR_COMPRA" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_COMPRA_FORNECEDOR_ITEM_COMPRA" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_COMPRA_ITEM_COMPRA" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_COMPRA_MOTIVO_CANCELAMENTO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_COMPRA_MOTIVO_ENCERRAMENTO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_COMPRA_TEMPLATE_PROPOSTA" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_COMPRA_USUARIO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_DIARIO_COMPRA_COMPRA" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_MENSAGENS_ENVIADAS_SISTEMA_COMPRA" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_COMPRA_ANOTACAO_USUARIO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_DIARIO_COMPRA_COMPRA_ANOTACAO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_MENSAGENS_ENVIADAS_SISTEMA_COMPRA_CONTATO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_COMPRA_FORNECEDOR_FORNECEDOR" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_COMPRA_FORNECEDOR_ITEM_COMPRA_FORNECEDOR" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_COMPRA_FORNECEDOR_ITEM_PRODUTO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_COMPRA_ITEM_EMPRESA_FILIAL" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_COMPRA_ITEM_PRODUTO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_COMPRA_ITEM_UNIDADE" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_CONFIGURACAO_CALENDARIO_BLOQUEIO_CONFIGURACAO_CALENDARIO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_CONFIGURACAO_CALENDARIO_USUARIO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_CONFIGURACAO_CALENDARIO_BLOQUEIO_USUARIO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_CONSULTA_PAGAMENTO_TIPO_PAGAMENTO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_CONSULTA_PAGAMENTO_USUARIO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_PAGAMENTO_ANEXO_CONSULTA_PAGAMENTO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_PAGAMENTO_ANOTACAO_CONSULTA_PAGAMENTO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_PAGAMENTO_NOTA_FISCAL_CONSULTA_PAGAMENTO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_CONSULTA_RECEBIMENTO_FORMA_RECEBIMENTO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_CONSULTA_RECEBIMENTO_PACIENTE" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_CONSULTA_RECEBIMENTO_PACIENTE_CONSULTA" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_CONSULTA_RECEBIMENTO_TIPO_SERVICO_CONSULTA" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_CONSULTA_RECEBIMENTO_USUARIO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_CONSULTA_RECEBIMENTO_VALOR_CONSULTA" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_CONSULTA_RECEBIMENTO_VALOR_CONVENIO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_CONSULTA_RECEBIMENTO_VALOR_SERVICO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_RECEBIMENTO_ANEXO_CONSULTA_RECEBIMENTO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_RECEBIMENTO_ANOTACAO_CONSULTA_RECEBIMENTO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_RECEBIMENTO_RECIBO_CONSULTA_RECEBIMENTO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_CONTA_BANCO_CONTATO_CONTA_BANCO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_CONTA_BANCO_LANCAMENTO_CONTA_BANCO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_CONTA_BANCO_TIPO_CONTA" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_CONTA_PAGAR_CONTA_BANCO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_CONTA_PAGAR_CONTA_BANCO1" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_CONTA_PAGAR_PARCELA_CONTA_BANCO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_CONTA_RECEBER_CONTA_BANCO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_CONTA_RECEBER_CONTA_BANCO1" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_CONTA_RECEBER_PARCELA_CONTA_BANCO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_FORMA_PAGAMENTO_CONTA_BANCO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_MOVIMENTO_ESTOQUE_PRODUTO_CONTA_BANCO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_CONTA_BANCO_LANCAMENTO_USUARIO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_CONTA_PAGAR_ANEXO_CONTA_PAGAR" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_CONTA_PAGAR_ANOTACAO_CONTA_PAGAR" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_CONTA_PAGAR_CUSTO_FIXO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_CONTA_PAGAR_EMPRESA_FILIAL" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_CONTA_PAGAR_FORMA_PAGAMENTO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_CONTA_PAGAR_FORMA_PAGAMENTO1" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_CONTA_PAGAR_FORNECEDOR" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_CONTA_PAGAR_PARCELA_CONTA_PAGAR" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_CONTA_PAGAR_PERIODICIDADE" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_CONTA_PAGAR_PERIODICIDADE_TAREFA" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_CONTA_PAGAR_RATEIO_CONTA_PAGAR" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_CONTA_PAGAR_USUARIO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_CUSTO_FIXO_CALENDARIO_CONTA_PAGAR" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_CONTA_PAGAR_ANOTACAO_USUARIO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_CONTA_PAGAR_FALHA_EMPRESA_FILIAL" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_CONTA_PAGAR_FALHA_USUARIO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_CONTA_PAGAR_PARCELA_FORMA_PAGAMENTO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_CONTA_RECEBER_ANEXO_CONTA_RECEBER" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_CONTA_RECEBER_ANOTACAO_CONTA_RECEBER" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_CONTA_RECEBER_CRM" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_CONTA_RECEBER_CRM_PEDIDO_VENDA" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_CONTA_RECEBER_EMPRESA_FILIAL" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_CONTA_RECEBER_FILIAL" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_CONTA_RECEBER_FORMA_PAGAMENTO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_CONTA_RECEBER_FORMA_PAGAMENTO1" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_CONTA_RECEBER_PARCELA_CONTA_RECEBER" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_CONTA_RECEBER_PERIODICIDADE" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_CONTA_RECEBER_PERIODICIDADE_TAREFA" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_CONTA_RECEBER_RATEIO_CONTA_RECEBER" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_CONTA_RECEBER_USUARIO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_CONTA_RECEBER_ANOTACAO_USUARIO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_CONTA_RECEBER_FALHA_USUARIO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_CONTA_RECEBER_PARCELA_FORMA_PAGAMENTO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_PACIENTE_CONVENIO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_VALOR_CONVENIO_CONVENIO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_PACIENTE_COR" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_CRM_ACAO_CRM" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_CRM_ANEXO_CRM" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_CRM_COMENTARIO_CRM" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_CRM_CONTATO_CRM" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_CRM_CRM_ORIGEM" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_CRM_EMPRESA" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_CRM_EMPRESA_FILIAL" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_CRM_FOLLOW_CRM" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_CRM_FUNIL" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_CRM_MENSAGENS" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_CRM_MOTIVO_CANCELAMENTO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_CRM_MOTIVO_ENCERRAMENTO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_CRM_PEDIDO_VENDA" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_CRM_PEDIDO_VENDA_CRM" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_CRM_TIPO_CRM" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_CRM_USUARIO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_DIARIO_PROCESSO_CRM" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_MENSAGENS_ENVIADAS_SISTEMA_CRM" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_CRM_ACAO_EMPRESA" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_CRM_ACAO_TIPO_ACAO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_CRM_ACAO_USUARIO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_CRM_ACAO_USUARIO1" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_DIARIO_PROCESSO_CRM_ACAO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_CRM_COMENTARIO_USUARIO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_DIARIO_PROCESSO_CRM_COMENTARIO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_MENSAGENS_ENVIADAS_SISTEMA_CRM_CONTATO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_CRM_FOLLOW_EMPRESA" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_CRM_FOLLOW_TIPO_FOLLOW" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_CRM_FOLLOW_USUARIO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_DIARIO_PROCESSO_CRM_FOLLOW" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_CRM_PEDIDO_ENVIO_CRM_PEDIDO_VENDA" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_CRM_PEDIDO_ENVIO_TRANSPORTADORA" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_CRM_PEDIDO_VENDA_ACOMPANHAMENTO_CRM_PEDIDO_VENDA" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_CRM_PEDIDO_VENDA_ANEXO_CRM_PEDIDO_VENDA" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_CRM_PEDIDO_VENDA_EMPRESA" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_CRM_PEDIDO_VENDA_EMPRESA_FILIAL" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_CRM_PEDIDO_VENDA_FILIAL" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_CRM_PEDIDO_VENDA_ITEM_CRM_PEDIDO_VENDA" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_CRM_PEDIDO_VENDA_ITEM_PECA_CRM_PEDIDO_VENDA" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_CRM_PEDIDO_VENDA_ITEM_SERVICO_CRM_PEDIDO_VENDA" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_CRM_PEDIDO_VENDA_MOTIVO_CANCELAMENTO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_CRM_PEDIDO_VENDA_TEMPLATE_EMAIL" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_CRM_PEDIDO_VENDA_TEMPLATE_PROPOSTA" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_CRM_PEDIDO_VENDA_USUARIO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_DIARIO_PROCESSO_CRM_PEDIDO_VENDA" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_MOVIMENTO_ESTOQUE_PRODUTO_CRM_PEDIDO_VENDA" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_TRANSPORTADORA_PROPOSTA_CRM_PEDIDO_VENDA" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_CRM_PEDIDO_VENDA_ACOMPANHAMENTO_USUARIO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_CRM_PEDIDO_VENDA_ITEM_EMPRESA_FILIAL" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_CRM_PEDIDO_VENDA_ITEM_PRODUTO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_CRM_PEDIDO_VENDA_ITEM_UNIDADE" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_CRM_PEDIDO_VENDA_ITEM_PECA_EMPRESA_FILIAL" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_CRM_PEDIDO_VENDA_ITEM_PECA_PRODUTO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_CRM_PEDIDO_VENDA_ITEM_PECA_UNIDADE" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_CRM_PEDIDO_VENDA_ITEM_SERVICO_EMPRESA_FILIAL" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_CRM_PEDIDO_VENDA_ITEM_SERVICO_SERVICO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_CRM_PEDIDO_VENDA_ITEM_SERVICO_SERVICOS" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_CRM_PEDIDO_VENDA_ITEM_SERVICO_UNIDADE" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_CUSTO_FIXO_CALENDARIO_CUSTO_FIXO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_CUSTO_FIXO_FORNECEDOR" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_CUSTO_FIXO_USUARIO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_RESULTADO_ROBOT_CUSTO_CUSTO_FIXO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FKCUSTO_FIXO481608" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FKCUSTO_FIXO921563" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_CUSTO_HISTORICO_EMPRESA" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_CUSTO_VARIAVEL_ANTECIPACAO_CUSTO_VARIAVEL" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_CUSTO_VARIAVEL_HISTORICO_EMPRESA" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_ORDEM_SERVICO_DEPARTAMENTO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_USUARIO_DEPARTAMENTO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_DIARIO_COMPRA_USUARIO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_DIARIO_PROCESSO_USUARIO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_DOCUMENTO_ANOTACAO_DOCUMENTO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_DOCUMENTO_FORNECEDOR" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_DOCUMENTO_GRUPO_DOCUMENTO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_DOCUMENTO_HISTORICO_DOCUMENTO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_DOCUMENTO_METADADO_DOCUMENTO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_DOCUMENTO_TIPO_DOCUMENTO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_DOCUMENTO_USUARIO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_DOCUMENTO_ANOTACAO_USUARIO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_DOCUMENTO_HISTORICO_TIPO_ACESSO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_DOCUMENTO_HISTORICO_USUARIO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_DOCUMENTO_METADADO_METADADO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_EMAIL_AGENDAMENTO_MENSAGENS" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_EMPRESA_ANEXO_EMPRESA" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_EMPRESA_CUSTO_VARIAVEL_EMPRESA" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_EMPRESA_CUSTO_VARIAVEL_NORMAL_EMPRESA" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_EMPRESA_FILIAL_EMPRESA" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_EMPRESA_MAQUINA" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_EMPRESA_MAQUINA_EMPRESA" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_EMPRESA_PLATAFORMA_EMPRESA" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_EMPRESA_TICKET_EMPRESA" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_EMPRESA_TIPO_PESSOA" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_EMPRESA_UF" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_GRUPO_EMPRESA" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_MENSAGENS_EMPRESA" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_MENSAGENS_ENVIADAS_SISTEMA_EMPRESA" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_META_EMPRESA" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_ORDEM_SERVICO_EMPRESA" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_PEDIDO_VENDA_EMPRESA" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_RECURSIVIDADE_GERAL_EMPRESA" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_TEMPLATE_EMAIL_EMPRESA" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_TEMPLATE_PROPOSTA_EMPRESA" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_TEMPLATE_SMS_EMPRESA" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_USUARIO_EMPRESA" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_VENDA_MENSAL_EMPRESA" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FKEMPRESA834470" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_EMPRESA_CUSTO_VARIAVEL_MAQUINA" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_EMPRESA_CUSTO_VARIAVEL_PLATAFORMA_ENTREGA" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_EMPRESA_CUSTO_VARIAVEL_TICKET_ALIMENTACAO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_EMPRESA_FILIAL_TIPO_PESSOA" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_EMPRESA_FILIAL_UF" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_ESTADO_ENTIDADE_EMPRESA_FILIAL" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_GRUPO_EMPRESA_FILIAL" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_MENSAGENS_EMPRESA_FILIAL" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_META_EMPRESA_FILIAL" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_MOVIMENTO_ESTOQUE_PRODUTO_EMPRESA_FILIAL" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_MOVIMENTO_ESTOQUE_PRODUTO_EMPRESA_FILIAL1" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_MOVIMENTO_ESTOQUE_PRODUTO_EMPRESA_FILIAL2" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_PRODUTO_ESTOQUE_FILIAL_EMPRESA_FILIAL" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_RECURSIVIDADE_EMPRESA_FILIAL" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_RECURSIVIDADE_GERAL_EMPRESA_FILIAL" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_RESULTADO_ROBOT_EMPRESA_FILIAL" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_USUARIO_EMPRESA_FILIAL" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_VENDA_MENSAL_CALCULO_EMPRESA_FILIAL" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_VENDA_MENSAL_EMPRESA_FILIAL" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_EMPRESA_MAQUINA_MAQUINA" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_EMPRESA_PLATAFORMA_PLATAFORMA_ENTREGA" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_EMPRESA_TICKET_TICKET_ALIMENTACAO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_USUARIO_ESPECIALIDADE" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_ESTADO_BASE_ESTADO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_ESTADO_MODELO_ESTADO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_ESTADO_MODELO_ESTADO_BASE" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_PACIENTE_ESTADO_CIVIL" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_ESTOQUE_PROCESSO_IMPORTACAO_USUARIO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_FICHA_TECNICA_DETALHE_FICHA_TECNICA" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_FICHA_TECNICA_PRODUTO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_FICHA_TECNICA_DETALHE_PRODUTO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_FILIAL_UF" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_FORNECEDOR_FILIAL" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_MENSAGENS_ENVIADAS_SISTEMA_FILIAL" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_MOVIMENTO_ESTOQUE_PRODUTO_FILIAL" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_SERVICO_TABELA_PRECO_FILIAL" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_PEDIDO_VENDA_Forma_ENVIO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_PEDIDO_VENDA_Forma_FRETE" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_MOVIMENTO_ESTOQUE_PRODUTO_FORMA_PAGAMENTO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_ORDEM_SERVICO_FORMA_PAGAMENTO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_PEDIDO_VENDA_FORMA_PAGAMENTO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_FORMA_RECEBIMENTO_USUARIO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_FORNECEDOR_ANEXO_FORNECEDOR" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_FORNECEDOR_ANOTACOES_FORNECEDOR" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_FORNECEDOR_CONTATO_FORNECEDOR" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_FORNECEDOR_PRODUTO_FORNECEDOR" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_FORNECEDOR_QUADRO_SOCIETARIO_FORNECEDOR" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_FORNECEDOR_TIPO_PESSOA" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_FORNECEDOR_UF" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_MENSAGENS_ENVIADAS_SISTEMA_FORNECEDOR" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_MENSAGENS_FORNECEDOR" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_MOVIMENTO_ESTOQUE_PRODUTO_FORNECEDOR" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_RECURSIVIDADE_DESTINO_FORNECEDOR" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_FORNECEDOR_ANOTACOES_USUARIO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_FORNECEDOR_PRODUTO_PRODUTO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_FUNIL_ETAPA_FUNIL" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_PACIENTE_GRAU_INSTRUCAO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_PACIENTE_CONTATO_GRAU_PARENTESCO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_GRUPO_CLIENTE_GRUPO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_GRUPO_SEXO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_GRUPO_UF" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_GRUPO_USUARIO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_MENSAGEM_AUTOMACAO_GRUPO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_MENSAGENS_DESTINOS_GRUPO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_MENSAGENS_GRUPO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_PESQUISA_GRUPO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_SUBGRUPO_GRUPO_CC" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_GRUPO_PAC_SEXO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_GRUPO_PAC_TIPO_PACIENTE" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_GRUPO_PAC_UF" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_GRUPO_PAC_USUARIO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_GRUPO_PACIENTE_GRUPO_PAC" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_MENSAGENS_GRUPO_PAC" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_GRUPO_PACIENTE_PACIENTE" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_LABORATORIO_UF" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_PACIENTE_EXAMES_LABORATORIO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_NACIONALIDADE_LINGUA" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_LOG_USUARIO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_PRODUTO_LOG_LOG" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_SERVICOS_LOG_LOG" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_LOG_EXCECAO_NOVO_USUARIO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_VENDA_MENSAL_MAQUINA" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_VENDA_MENSAL_PARTES_MAQUINA" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_MEDICAMENTO_TIPO_CONTROLE" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_MEDICAMENTO_TIPO_FORMA" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_MEDICAMENTO_USUARIO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_MENSAGEM_ANEXO_MENSAGENS" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_MENSAGEM_AUTOMACAO_DATAS_MENSAGEM_AUTOMACAO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_MENSAGEM_AUTOMACAO_PERIODICIDADE" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_MENSAGEM_AUTOMACAO_TEMPLATE_EMAIL" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_MENSAGEM_AUTOMACAO_TEMPLATE_SMS" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_MENSAGEM_AUTOMACAO_USUARIO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_MENSAGENS_DESTINOS_MENSAGENS" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_MENSAGENS_PACIENTE" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_MENSAGENS_PERIODICIDADE_TAREFA" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_MENSAGENS_PESQUISA" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_MENSAGENS_TEMPLATE" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_MENSAGENS_TEMPLATE_EMAIL" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_MENSAGENS_TEMPLATE_SMS" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_MENSAGENS_USUARIO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_MENSAGENS_USUARIO1" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_RECURSIVIDADE_MENSAGENS" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_RESULTADO_ROBOT_MENSAGENS" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_MENSAGENS_DESTINOS_PACIENTE" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_MENSAGENS_ENVIADAS_SISTEMA_PACIENTE" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_MENSAGENS_ENVIADAS_SISTEMA_USUARIO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_MENSAGENS_ENVIADAS_SISTEMA_USUARIO1" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_META_ANEXO_META" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_META_ANOTACAO_META" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_META_USUARIO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_META_ANOTACAO_USUARIO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_METADADO_TIPO_METADADO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_METADADO_USUARIO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_MOVIMENTO_ANOTACAO_MOVIMENTO_ESTOQUE_PRODUTO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_MOVIMENTO_ANOTACAO_USUARIO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_MOVIMENTO_ESTOQUE_PRODUTO_PRODUTO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_MOVIMENTO_ESTOQUE_PRODUTO_USUARIO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_MOVIMENTO_ESTOQUE_PRODUTO_USUARIO1" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_MOVIMENTO_ESTOQUE_PRODUTO_USUARIO2" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_MUNICIPIO_UF" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_PACIENTE_MUNICIPIO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_PACIENTE_NACIONALIDADE" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_SERVICO_NOMENCLATURA_BRAS_SERVICOS" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_SERVICOS_NOMENCLATURA_BRAS_SERVICOS" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_NOTICIA_COMENTARIO_NOTICIA" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_NOTICIA_COMENTARIO_USUARIO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_NOTIFICACAO_ANEXO_NOTIFICACAO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_NOTIFICACAO_USUARIO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_ORDEM_SERVICO_ACOMPANHAMENTO_ORDEM_SERVICO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_ORDEM_SERVICO_AGENDA_ORDEM_SERVICO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_ORDEM_SERVICO_ANEXO_ORDEM_SERVICO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_ORDEM_SERVICO_PRODUTO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_ORDEM_SERVICO_PRODUTO_ORDEM_SERVICO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_ORDEM_SERVICO_SERVICO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_ORDEM_SERVICO_SERVICO_ORDEM_SERVICO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_ORDEM_SERVICO_USUARIO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_OS_COMENTARIO_OS" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_ORDEM_SERVICO_ACOMPANHAMENTO_USUARIO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_ORDEM_SERVICO_PRODUTO_PRODUTO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_ORDEM_SERVICO_SERVICO_SERVICO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_PACIENTE_ANAMNESE_PACIENTE" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_PACIENTE_ANEXO_PACIENTE" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_PACIENTE_ANOTACAO_PACIENTE" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_PACIENTE_ANOTACAO_PACIENTE1" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_PACIENTE_ATESTADO_PACIENTE" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_PACIENTE_CONSULTA_PACIENTE" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_PACIENTE_CONTATO_PACIENTE" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_PACIENTE_EXAME_ANEXO_PACIENTE" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_PACIENTE_EXAME_ANOTACAO_PACIENTE" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_PACIENTE_EXAME_FISICOS_PACIENTE" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_PACIENTE_EXAMES_PACIENTE" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_PACIENTE_FICHA_PACIENTE" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_PACIENTE_HISTORICO_PACIENTE" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_PACIENTE_LOGIN_PACIENTE" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_PACIENTE_PRESCRICAO_ITEM_PACIENTE" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_PACIENTE_PRESCRICAO_PACIENTE" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_PACIENTE_SEXO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_PACIENTE_SOLICITACAO_PACIENTE" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_PACIENTE_TIPO_PACIENTE" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_PACIENTE_UF" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_PACIENTE_UF1" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_PACIENTE_USUARIO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_PACIENTE_VALOR_CONSULTA" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_RECURSIVIDADE_DESTINO_PACIENTE" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_RESULTADO_ROBOT_PACIENTE" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_PACIENTE_ANAMNESE_ANOTACAO_PACIENTE_ANAMNESE" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_PACIENTE_ANAMNESE_PACIENTE_CONSULTA" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_PACIENTE_ANAMNESE_USUARIO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_PACIENTE_ANAMNESE_ANOTACAO_USUARIO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_PACIENTE_ANOTACAO_USUARIO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_PACIENTE_ATESTADO_PACIENTE_CONSULTA" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_PACIENTE_ATESTADO_TIPO_ATESTADO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_PACIENTE_ATESTADO_USUARIO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_PACIENTE_CONSULTA_USUARIO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_PACIENTE_CONSULTA_VALOR_CONSULTA" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_PACIENTE_EXAME_FISICOS_PACIENTE_CONSULTA" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_PACIENTE_EXAMES_PACIENTE_CONSULTA" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_PACIENTE_PRESCRICAO_PACIENTE_CONSULTA" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_PACIENTE_SOLICITACAO_PACIENTE_CONSULTA" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_PACIENTE_CONTATO_USUARIO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_PACIENTE_EXAME_ANEXO_PACIENTE_EXAMES" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_PACIENTE_EXAME_ANOTACAO_PACIENTE_EXAMES" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_PACIENTE_EXAME_ANOTACAO_USUARIO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_PACIENTE_EXAME_FISICOS_USUARIO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_PACIENTE_EXAMES_PACIENTE_SOLICITACAO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_PACIENTE_EXAMES_TIPO_EXAME" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_PACIENTE_EXAMES_USUARIO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_PACIENTE_HISTORICO_USUARIO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_PACIENTE_PRESCRICAO_ITEM_PACIENTE_PRESCRICAO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_PACIENTE_PRESCRICAO_TIPO_CONTROLE" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_PACIENTE_PRESCRICAO_USUARIO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_PACIENTE_PRESCRICAO_ITEM_TIPO_FORMA" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_PACIENTE_PRESCRICAO_ITEM_USUARIO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_PACIENTE_SOLICITACAO_TIPO_EXAME" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_PACIENTE_SOLICITACAO_USUARIO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_PAGAMENTO_ANOTACAO_USUARIO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_PECA_ANEXO_PECA" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_PECA_ANOTACAO_PECA" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_PECA_SUBCATEGORIA_PRODUTO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_PECA_UNIDADE" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_PECA_ANOTACAO_USUARIO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_PEDIDO_VENDA_ACOMPANHAMENTO_PEDIDO_VENDA" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_PEDIDO_VENDA_ANEXO_PEDIDO_VENDA" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_PEDIDO_VENDA_PERIODICIDADE" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_PEDIDO_VENDA_USUARIO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_PEDIDO_VENDA_USUARIO1" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_PEDIDO_VENDA_ACOMPANHAMENTO_USUARIO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_USUARIO_PERFIL" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_TAREFA_PERIODICIDADE_TAREFA" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_PESQUISA_ENVIO_PESQUISA" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_PESQUISA_TEMPLATE_EMAIL" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_PESQUISA_USUARIO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FKPESQUISA_A636309" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FKPESQUISA_A653284" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FKPESQUISA_I132358" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FKPESQUISA_R298217" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FKPESQUISA404204" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_PESQUISA_ANOTACAO_USUARIO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_PESQUISA_RESPOSTA_PESQUISA_ITEM" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FKPESQUISA_I22249" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FKPESQUISA_I759224" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FKPESQUISA_R325328" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_PESQUISA_RESPOSTA_ITEM_PESQUISA_ITEM_OPCAO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FKPESQUISA_R293067" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_PLANO_PLANO_PERIODICIDADE" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_PLANO_ASSINATURA_PLANO_PERIODICIDADE" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_VENDA_MENSAL_PARTES_PLATAFORMA_ENTREGA" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_VENDA_MENSAL_PLATAFORMA_ENTREGA" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_PRECIFICACAO_PRODUTO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_PRECIFICACAO_PRODUTO_PRECIFICACAO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_PRECIFICACAO_USUARIO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_PRECIFICACAO_PRODUTO_PRODUTO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_PRODUTO_ANOTACAO_PRODUTO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_PRODUTO_CONCORRENTE_PRODUTO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_PRODUTO_CUSTO_PRODUTO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_PRODUTO_ESTOQUE_FILIAL_PRODUTO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_PRODUTO_ESTOQUE_HISTORICO_PRODUTO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_PRODUTO_KIT_PRODUTO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_PRODUTO_KIT_PRODUTO1" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_PRODUTO_LOG_PRODUTO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_PRODUTO_PRECO_VENDA_PRODUTO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_PRODUTO_SUBCATEGORIA_PRODUTO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_PRODUTO_TIPO_EMBALAGEM" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_PRODUTO_UNIDADE" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_PRODUTO_USUARIO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_SERVICOS_PECA_PRODUTO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FKPRODUTO_AN539356" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_PRODUTO_ANOTACAO_USUARIO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_PRODUTO_FALHA_USUARIO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_PRODUTO_LOG_USUARIO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_PRODUTO_PRECO_VENDA_TIPO_EMBALAGEM" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_RECEBIMENTO_ANOTACAO_USUARIO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_RECURSIVIDADE_DATA_RECURSIVIDADE" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_RECURSIVIDADE_DESTINO_RECURSIVIDADE" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_RECURSIVIDADE_DESTINO_USUARIO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_REGIAO_UF" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FKTRANSPORTA58775" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_RESULTADO_ROBOT_CUSTO_USUARIO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_SERVICO_ANEXO_SERVICO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_SERVICO_TABELA_PRECO_SERVICO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_SERVICO_UNIDADE" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_SERVICOS_ANOTACAO_PRODUTO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_SERVICOS_CONCORRENTE_SERVICOS" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_SERVICOS_CUSTO_SERVICOS" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_SERVICOS_LOG_SERVICOS" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_SERVICOS_PECA_SERVICO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_SERVICOS_PRECO_VENDA_SERVICOS" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_SERVICOS_UNIDADE" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_SERVICOS_USUARIO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FKSERVICOS_AN539356" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_SERVICOS_ANOTACAO_USUARIO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_SERVICOS_LOG_USUARIO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_SERVICOS_PECA_UNIDADE" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_SOLICITACAO_TIPO_EXAME" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_SOLICITACAO_USUARIO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_SUBCATEGORIA_PRODUTO_UNIDADE" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_TAREFA_ACOMPANHAMENTO_TAREFA" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_TAREFA_ANEXO_TAREFA" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_TAREFA_NOTIFICACAO_TAREFA" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_TAREFA_TAREFA" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_TAREFA_TIPO_TAREFA" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_TAREFA_USUARIO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_TAREFA_VINCULO_TAREFA" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_TAREFA_ACOMPANHAMENTO_USUARIO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_TAREFA_NOTIFICACAO_USUARIO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_TAREFA_VINCULO_USUARIO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_TELEFONE_UF" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_TEMPLATE_EMAIL_HTML_USUARIO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_VENDA_MENSAL_PARTES_TICKET_ALIMENTACAO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_VENDA_MENSAL_TICKET_ALIMENTACAO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_USUARIO_TIPO_CARTEIRA_CLASSE" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_TIPO_PAGAMENTO_USUARIO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_TRANSPORTADORA_TIPO_PESSOA" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_VALOR_SERVICO_TIPO_SERVICO_CONSULTA" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FKTRANSPORTA803357" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_VALOR_CONSULTA_TIPO_VALOR_CONSULTA" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FKVEICULO918063" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_TRANSPORTADORA_QUADRO_SOCIETARIO_TRANSPORTADORA" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_TRANSPORTADORA_UF" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FKTRANSPORTA229577" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FKTRANSPORTA298105" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FKTRANSPORTA435347" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FKTRANSPORTA49504" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FKTRANSPORTA614212" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FKVEICULO803862" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_TRANSPORTADORA_ANOTACAO_USUARIO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_USUARIO_ANEXO_USUARIO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_USUARIO_ANOTACAO_USUARIO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_USUARIO_LOGIN_USUARIO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_VALOR_CONSULTA_USUARIO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_VALOR_CONVENIO_USUARIO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_VALOR_SERVICO_USUARIO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_VENDA_MENSAL_ANOTACAO_USUARIO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_VENDA_MENSAL_CALCULO_USUARIO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_VIDEO_COMENTARIO_USUARIO" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FKVEICULO533146" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_VENDA_MENSAL_ANEXO_VENDA_MENSAL" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_VENDA_MENSAL_ANOTACAO_VENDA_MENSAL" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_VENDA_MENSAL_COMISSAO_VENDA_MENSAL" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_VENDA_MENSAL_PARTES_VENDA_MENSAL" ManuallyRouted="false" />
+        <AssociationConnector Association="CRMSysDBModel.FK_VIDEO_COMENTARIO_VIDEO" ManuallyRouted="false" />
+        <EntityTypeShape EntityType="CRMSysDBModel.PACIENTE_DADOS_EXAME_FISICO" Width="1.5" PointX="46.75" PointY="566.625" />
+        <AssociationConnector Association="CRMSysDBModel.FK_PACIENTE_DADOS_EXAME_FISICO_PACIENTE" />
+        <AssociationConnector Association="CRMSysDBModel.FK_PACIENTE_DADOS_EXAME_FISICO_PACIENTE_EXAME_FISICOS" />
+        <EntityTypeShape EntityType="CRMSysDBModel.INDICACAO" Width="1.5" PointX="19" PointY="566.625" />
+        <EntityTypeShape EntityType="CRMSysDBModel.INDICACAO_ACAO" Width="1.5" PointX="52.75" PointY="533.375" />
+        <EntityTypeShape EntityType="CRMSysDBModel.INDICACAO_ANEXO" Width="1.5" PointX="21.25" PointY="571.625" />
+        <EntityTypeShape EntityType="CRMSysDBModel.MEDICOS" Width="1.5" PointX="30.75" PointY="485.125" />
+        <EntityTypeShape EntityType="CRMSysDBModel.MEDICOS_ENVIO" Width="1.5" PointX="42" PointY="502" />
+        <EntityTypeShape EntityType="CRMSysDBModel.MEDICOS_ENVIO_ANEXO" Width="1.5" PointX="44.25" PointY="504.625" />
+        <EntityTypeShape EntityType="CRMSysDBModel.MEDICOS_ENVIO_ANOTACAO" Width="1.5" PointX="49.25" PointY="502.5" />
+        <AssociationConnector Association="CRMSysDBModel.FK_MEDICOS_ESPECIALIDADE" />
+        <AssociationConnector Association="CRMSysDBModel.FK_INDICACAO_ACAO_INDICACAO" />
+        <AssociationConnector Association="CRMSysDBModel.FK_INDICACAO_ANEXO_INDICACAO" />
+        <AssociationConnector Association="CRMSysDBModel.FK_INDICACAO_USUARIO" />
+        <AssociationConnector Association="CRMSysDBModel.FK_INDICACAO_ACAO_TIPO_ACAO" />
+        <AssociationConnector Association="CRMSysDBModel.FK_INDICACAO_ACAO_USUARIO" />
+        <AssociationConnector Association="CRMSysDBModel.FK_MEDICOS_ENVIO_MEDICOS" />
+        <AssociationConnector Association="CRMSysDBModel.FK_MEDICOS_UF" />
+        <AssociationConnector Association="CRMSysDBModel.FK_MEDICOS_ENVIO_ANEXO_MEDICOS_ENVIO" />
+        <AssociationConnector Association="CRMSysDBModel.FK_MEDICOS_ENVIO_ANOTACAO_MEDICOS_ENVIO" />
+        <AssociationConnector Association="CRMSysDBModel.FK_MEDICOS_ENVIO_USUARIO" />
+        <AssociationConnector Association="CRMSysDBModel.FK_MEDICOS_ENVIO_ANOTACAO_USUARIO" />
+        <EntityTypeShape EntityType="CRMSysDBModel.MEDICO_ENVIO_INFORMACAO" Width="1.5" PointX="36" PointY="494.75" />
+        <EntityTypeShape EntityType="CRMSysDBModel.MEDICO_ENVIO_INFORMACAO_ANEXO" Width="1.5" PointX="38.25" PointY="495.625" />
+        <EntityTypeShape EntityType="CRMSysDBModel.MEDICO_ENVIO_INFORMACAO_ANOTACAO" Width="1.5" PointX="48.25" PointY="498.625" />
+        <AssociationConnector Association="CRMSysDBModel.FK_MEDICO_ENVIO_INFORMACAO_ESPECIALIDADE" />
+        <AssociationConnector Association="CRMSysDBModel.FK_MEDICO_ENVIO_INFORMACAO_ANEXO_MEDICO_ENVIO_INFORMACAO" />
+        <AssociationConnector Association="CRMSysDBModel.FK_MEDICO_ENVIO_INFORMACAO_ANOTACAO_MEDICO_ENVIO_INFORMACAO" />
+        <AssociationConnector Association="CRMSysDBModel.FK_MEDICO_ENVIO_INFORMACAO_USUARIO" />
+        <AssociationConnector Association="CRMSysDBModel.FK_MEDICO_ENVIO_INFORMACAO_ANOTACAO_USUARIO" />
+        <EntityTypeShape EntityType="CRMSysDBModel.TIPO_ENVIO" Width="1.5" PointX="3.375" PointY="16.875" />
+        <AssociationConnector Association="CRMSysDBModel.FK_MEDICOS_ENVIO_PACIENTE" />
+        <AssociationConnector Association="CRMSysDBModel.FK_MEDICOS_ENVIO_TIPO_ENVIO" />
+        <EntityTypeShape EntityType="CRMSysDBModel.QUESTIONARIO_BERLIM" Width="1.5" PointX="9.75" PointY="598.5" />
+        <EntityTypeShape EntityType="CRMSysDBModel.QUESTIONARIO_EPWORTH" Width="1.5" PointX="9.75" PointY="594.125" />
+        <EntityTypeShape EntityType="CRMSysDBModel.QUESTIONARIO_STOPBANG" Width="1.5" PointX="9.75" PointY="603.75" />
+        <AssociationConnector Association="CRMSysDBModel.FK_QUESTIONARIO_BERLIM_PACIENTE" />
+        <AssociationConnector Association="CRMSysDBModel.FK_QUESTIONARIO_EPWORTH_PACIENTE" />
+        <AssociationConnector Association="CRMSysDBModel.FK_QUESTIONARIO_STOPBANG_PACIENTE" />
+        <EntityTypeShape EntityType="CRMSysDBModel.TIPO_VIDEO" Width="1.5" PointX="17.375" PointY="4.25" />
+        <EntityTypeShape EntityType="CRMSysDBModel.VIDEO_BASE" Width="1.5" PointX="19.625" PointY="4" />
+        <AssociationConnector Association="CRMSysDBModel.FK_VIDEO_BASE_TIPO_VIDEO" />
+        <EntityTypeShape EntityType="CRMSysDBModel.LOCACAO" Width="1.5" PointX="44.25" PointY="554.25" />
+        <EntityTypeShape EntityType="CRMSysDBModel.LOCACAO_ANEXO" Width="1.5" PointX="46.5" PointY="573.5" />
+        <EntityTypeShape EntityType="CRMSysDBModel.LOCACAO_ANOTACAO" Width="1.5" PointX="55.5" PointY="534" />
+        <EntityTypeShape EntityType="CRMSysDBModel.LOCACAO_HISTORICO" Width="1.5" PointX="52.5" PointY="525.625" />
+        <EntityTypeShape EntityType="CRMSysDBModel.LOCACAO_PARCELA" Width="1.5" PointX="46.5" PointY="560.625" />
+        <EntityTypeShape EntityType="CRMSysDBModel.TIPO_HISTORICO" Width="1.5" PointX="50.25" PointY="528.25" />
+        <AssociationConnector Association="CRMSysDBModel.FK_LOCACAO_ANEXO_LOCACAO" />
+        <AssociationConnector Association="CRMSysDBModel.FK_LOCACAO_ANOTACAO_LOCACAO" />
+        <AssociationConnector Association="CRMSysDBModel.FK_LOCACAO_HISTORICO_LOCACAO" />
+        <AssociationConnector Association="CRMSysDBModel.FK_LOCACAO_PACIENTE" />
+        <AssociationConnector Association="CRMSysDBModel.FK_LOCACAO_PARCELA_LOCACAO" />
+        <AssociationConnector Association="CRMSysDBModel.FK_LOCACAO_PERIODICIDADE_TAREFA" />
+        <AssociationConnector Association="CRMSysDBModel.FK_LOCACAO_PRODUTO" />
+        <AssociationConnector Association="CRMSysDBModel.FK_LOCACAO_ANOTACAO_USUARIO" />
+        <AssociationConnector Association="CRMSysDBModel.FK_LOCACAO_HISTORICO_TIPO_HISTORICO" />
+        <AssociationConnector Association="CRMSysDBModel.FK_LOCACAO_HISTORICO_USUARIO" />
+        <AssociationConnector Association="CRMSysDBModel.FK_MOVIMENTO_ESTOQUE_PRODUTO_CONSULTA_PAGAMENTO" />
+        <AssociationConnector Association="CRMSysDBModel.FK_PRODUTO_ESTOQUE_HISTORICO_MOVIMENTO_ESTOQUE_PRODUTO" />
+        <AssociationConnector Association="CRMSysDBModel.FK_AVISO_LEMBRETE_PRODUTO" />
+        <AssociationConnector Association="CRMSysDBModel.FK_LOCACAO_USUARIO" />
+        <EntityTypeShape EntityType="CRMSysDBModel.LOCACAO_OCORRENCIA" Width="1.5" PointX="49.5" PointY="559.875" />
+        <EntityTypeShape EntityType="CRMSysDBModel.TIPO_OCORRENCIA" Width="1.5" PointX="47.25" PointY="577.625" />
+        <AssociationConnector Association="CRMSysDBModel.FK_LOCACAO_OCORRENCIA_LOCACAO" />
+        <AssociationConnector Association="CRMSysDBModel.FK_LOCACAO_OCORRENCIA_TIPO_OCORRENCIA" />
+        <AssociationConnector Association="CRMSysDBModel.FK_LOCACAO_OCORRENCIA_USUARIO" />
+        <EntityTypeShape EntityType="CRMSysDBModel.CONTRATO_LOCACAO" Width="1.5" PointX="39" PointY="492" />
+        <EntityTypeShape EntityType="CRMSysDBModel.TIPO_CONTRATO" Width="1.5" PointX="36.75" PointY="491.5" />
+        <AssociationConnector Association="CRMSysDBModel.FK_CONTRATO_LOCACAO_TIPO_CONTRATO" />
+        <AssociationConnector Association="CRMSysDBModel.FK_CONTRATO_LOCACAO_USUARIO" />
+        <AssociationConnector Association="CRMSysDBModel.FK_LOCACAO_CONTRATO_LOCACAO" />
+        <AssociationConnector Association="CRMSysDBModel.FK_LOCACAO_CONTRATO_LOCACAO1" />
+        <AssociationConnector Association="CRMSysDBModel.FK_LOCACAO_CONTRATO_LOCACAO2" />
+        <EntityTypeShape EntityType="CRMSysDBModel.MEDICOS_MENSAGEM" Width="1.5" PointX="19" PointY="482.125" />
+        <AssociationConnector Association="CRMSysDBModel.FK_MEDICOS_ENVIO_MEDICOS_MENSAGEM" />
+        <AssociationConnector Association="CRMSysDBModel.FK_MEDICOS_MENSAGEM_USUARIO" />
+      </Diagram>
+    </edmx:Diagrams>
+  </edmx:Designer>
+</edmx:Edmx>

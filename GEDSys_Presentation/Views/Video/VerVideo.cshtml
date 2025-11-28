@@ -1,0 +1,89 @@
+﻿@using Presentation.Extensions
+@model ERP_Condominios_Solution.ViewModels.VideoViewModel
+@{
+    Layout = "~/Views/Shared/_Layout_Admin.cshtml";
+    ViewBag.Title = "WebDoctor - Videos";
+    ViewBag.MetaDescription = "WebDoctor - Videos - Visualização de video";
+    ViewBag.MetaKeywords = "WebDoctor, video";
+}
+
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="page-title">
+        <ol class="breadcrumb">
+            <li>
+                <a href="@Url.Action("MontarTelaPaciente", "BaseAdmin")">Dashboard</a>
+            </li>
+            <li>
+                <a href="@Url.Action("MontarTelaVideo", "Video")">Vídeos</a>
+            </li>
+            <li class="active">
+                <strong>Video - Visualização</strong>
+            </li>
+        </ol>
+        <br />
+    </div>
+    <div class="row">
+        <div class="col-lg-12 col-md-12 col-xs-12">
+            <div class="col-lg-12 col-md-12 col-xs-12 ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>Vídeo - Visualização</h5>
+                </div>
+                @using (Html.BeginForm("VerVideo", "Video", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal", @id = "pwd-container1" }))
+                {
+                    <div class="ibox-content">
+                        <div class="form-group">
+                            @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaVideo", controller: "Video")
+                        </div>
+
+                        <div class="row">
+                            <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Dados do Vídeo</h4>
+                            <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                <div class="col-lg-10 col-md-10 col-xs-12">
+                                    @Html.HiddenFor(m => m.ASSI_CD_ID)
+                                    @Html.HiddenFor(m => m.VIDE_CD_ID)
+                                    Nome do Vídeo
+                                    @Html.TextBoxFor(m => m.VIDE_NM_TITULO, new { @class = "form-control", @readonly = "readonly", @style = "color: green; font-weight: bold"})
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-lg-12 col-md-12 col-sm-12">
+                                <figure>
+                                    <iframe width="900" height="600" src="@Url.Content(Model.VIDE_AQ_ARQUIVO)" frameborder="0" allowfullscreen></iframe>
+                                </figure>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <link href="~/Content/themes/base/all.css" rel="stylesheet" />
+    @Styles.Render("~/Content/plugins/dataTables/dataTablesStyles")
+    @Styles.Render("~/plugins/jasnyBootstrapStyles")
+}
+@section Scripts {
+
+    @Scripts.Render("~/plugins/dataTables")
+    @Scripts.Render("~/bundles/inputmask")
+    @Scripts.Render("~/plugins/jasnyBootstrap")
+    @Scripts.Render("~/plugins/videoResponsible")
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.maskedinput/1.4.1/jquery.maskedinput.js"></script>
+    <script type="text/javascript">
+        $(document).on('webkitfullscreenchange mozfullscreenchange fullscreenchange', function (e) {
+            $('body').hasClass('fullscreen-video') ? $('body').removeClass('fullscreen-video') : $('body').addClass('fullscreen-video')
+        });
+    </script>
+
+    @if (ViewBag.Message != null)
+    {
+        <script type="text/javascript">
+            window.onload = function () {
+                  alert("@ViewBag.Message");
+            };
+        </script>
+    }
+}

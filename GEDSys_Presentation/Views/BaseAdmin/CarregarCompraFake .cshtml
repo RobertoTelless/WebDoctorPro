@@ -1,0 +1,52 @@
+﻿@using Presentation.Extensions
+@{
+    Layout = "~/Views/Shared/_Layout_Limpo.cshtml";
+}
+<div class="row">
+    <div class="col-md-12 text-center">
+        <h2 class="text-thin" style="color: darkgreen">Em Desenvolvimento</h2>
+    </div>
+</div> 
+<div class="row">
+    <div class="col-lg-12">
+        <div class="wrapper wrapper-content">
+            <div class="middle-box text-center animated fadeInRightBig">
+                <img alt="image" class="img-circle" src="~/Images/ff1.jpg" style = "width: auto; height: auto; max-height: 200px; max-width: 200px;" />
+                <br />
+                <h3 class="font-bold">Funcionalidade em Desenvolvimento</h3>
+
+                <div class="error-desc">
+                    A funcionalidade de compra on-line está sendo melhorada e logo estará novamente ativa.
+                    Se desejar comprar enquanto estamos ajustando, use a opção de SOLICITAR INFORMAÇÕES na página inicial do site do WebDoctor que enviaremos um link de pagamento com todas as opções possíveis
+                    @Html.ButtonLinkIndex(text: "Voltar", action: "CarregarLandingPage", controller: "BaseAdmin")
+                </div>              
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <link href="~/Content/themes/base/all.css" rel="stylesheet" />  
+    @Styles.Render("~/Content/plugins/dataTables/dataTablesStyles")
+    @Styles.Render("~/plugins/jasnyBootstrapStyles")
+}
+
+
+@section Scripts {
+   
+    @Scripts.Render("~/plugins/dataTables")
+    @Scripts.Render("~/bundles/inputmask")
+    @Scripts.Render("~/plugins/jasnyBootstrap")
+    @Scripts.Render("~/plugins/sparkline")
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.maskedinput/1.4.1/jquery.maskedinput.js"></script>  
+
+    @if (ViewBag.Message != null)
+    {
+        <script type="text/javascript">
+            window.onload = function () {
+                  alert("@ViewBag.Message");
+            };
+        </script>
+
+    }
+}

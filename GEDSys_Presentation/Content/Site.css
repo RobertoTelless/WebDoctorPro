@@ -1,0 +1,34 @@
+﻿body {
+    padding-top: 50px;
+    padding-bottom: 20px;
+}
+
+/* Set padding to keep content from hitting the edges */
+.body-content {
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+/* Override the default bootstrap behavior where horizontal description lists 
+   will truncate terms that are too long to fit in the left column 
+*/
+.dl-horizontal dt {
+    white-space: normal;
+}
+
+/* Set width on the form input elements since they're 100% wide by default */
+/*input,
+select,
+textarea {
+    max-width: 280px;
+}*/
+
+/* Estilos para a simulação de zoom */
+/*.zoom-90-percent {
+    transform: scale(0.9);
+    transform-origin: 0 0;*/ /* Escala a partir do canto superior esquerdo */
+    /*width: calc(100% / 0.9);*/ /* Ajusta a largura para que o conteúdo preencha a tela */
+    /*height: calc(100% / 0.9);*/ /* Ajusta a altura */
+    /* Garante que o conteúdo não cause scroll horizontal excessivo */
+    /*overflow-x: hidden;
+}*/

@@ -1,0 +1,321 @@
+﻿@using Presentation.Extensions
+@using CrossCutting;
+@model EntitiesServices.Model.PACIENTE_HISTORICO
+@{
+    Layout = "~/Views/Shared/_Layout_Admin.cshtml";
+    ViewBag.Title = "WebDoctor - Paciente - Histórico";
+    ViewBag.MetaDescription = "WebDoctor - Paciente - Histórico - Lista dos históricos do paciente ";
+    ViewBag.MetaKeywords = "WebDoctor, paciente";
+}
+
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="page-title">
+        <ol class="breadcrumb">
+            <li>
+                <a href="@Url.Action("MontarTelaPaciente", "Paciente")">Dashboard Inicial</a>
+            </li>
+            <li class="active">
+                <strong>Histórico Geral</strong>
+            </li>
+        </ol>
+        <br />
+    </div>
+
+    <div class="row">
+        <div class="col-lg-12 col-md-12 col-xs-12">
+            <div class="col-lg-12 col-md-12 col-xs-12 ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>Filtros</h5>
+                </div>
+
+                @using (Html.BeginForm("FiltrarHistoricoGeral", "Paciente", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal" }))
+                {
+                    <div class="ibox-content">
+                        <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                            <div class="col-lg-2 col-md-2 col-xs-12">
+                                Entidade
+                                @Html.DropDownListFor(m => m.PAHI_IN_TIPO, (SelectList)ViewBag.Tipos, "Selecionar", new { @class = "form-control" })
+                            </div>
+                            <div class="col-lg-3 col-md-3 col-xs-12">
+                                Operação
+                                @Html.TextBoxFor(m => m.PAHI_NM_OPERACAO, new { @class = "form-control", autofocus = true })
+                            </div>
+                            <div class="col-lg-2 col-md-2 col-xs-12">
+                                Data Inicial
+                                @Html.TextBoxFor(m => m.PAHI_DT_DUMMY, new { @class = "form-control date-picker", autofocus = true, @id = "dn" })
+                            </div>
+                            <div class="col-lg-2 col-md-2 col-xs-12">
+                                Data Final
+                                @Html.TextBoxFor(m => m.PAHI_DT_DUMMY_1, new { @class = "form-control date-picker", autofocus = true, @id = "dn1" })
+                            </div>
+                            <div class="col-lg-3 col-md-3 col-xs-12">
+                                Paciente
+                                @Html.DropDownListFor(m => m.PACI_CD_ID, (SelectList)ViewBag.Paciente, "Selecionar", new { @class = "form-control" })
+                            </div>
+                        </div>
+
+                        <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                            <div class="col-lg-12 col-md-12 col-xs-12">
+                                @Html.ButtonActionSubmit(text: "Filtrar")
+                                @Html.ButtonLinkIndex(text: "Retirar Filtro", controller: "Paciente", action: "RetirarFiltroHistoricoGeral")
+                                @Html.ButtonLinkIndex(text: "Imprimir Histórico", controller: "Paciente2", action: "GerarRelatorioHistorico")
+                                @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaPaciente", controller: "Paciente")
+                                <a href="@Url.Action((String)Session["AjudaNivel"])"  class="btn btn-sm btn-danger" target="_blank">Ajuda</a>                
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-12 col-md-12 col-xs-12">
+            <div class="col-lg-12 col-md-12 col-xs-12 ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>Pacientes - Histórico de Atividades </h5>
+                </div>
+                <div class="ibox-content">
+                    @if (!ViewData.ModelState.IsValid)
+                    {
+                        <div class="alert alert-danger">
+                            <button type="button" class="close" data-dismiss="alert">Fechar</button>
+                            @Html.ValidationSummary(false, "", new { @class = "text-danger" })
+                        </div>
+                    }
+
+                    <div class="row">
+                        <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Histórico</h4>
+                        @if (ViewBag.Listas != null &&(ViewBag.Listas as List<EntitiesServices.Model.PACIENTE_HISTORICO>).Count > 0)
+                        {
+                            <table class="table table-striped table-bordered table-hover dataTables-example">
+                                <thead style="background-color:lightsteelblue">
+                                    <tr>
+                                        <th style="width: 100px">Data</th>
+                                        <th style="width: 180px">Nome do Paciente</th>
+                                        <th style="width: auto">Entidade</th>
+                                        <th style="width: 120px">Chave de Acesso</th>
+                                        <th style="width: auto">Operação</th>
+                                        <th style="width: 120px">Usuário</th>
+                                        <th style="width: auto">Descrição</th>
+                                        <th style="width: 0.01px"></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var cond in (ViewBag.Listas as List<EntitiesServices.Model.PACIENTE_HISTORICO>).OrderByDescending(p => p.PAHI_DT_DATA))
+                                    {
+                                        <tr>
+                                            <td style="width: 100px">@cond.PAHI_DT_DATA.Value.ToShortDateString() @cond.PAHI_DT_DATA.Value.ToShortTimeString()</td>
+
+                                            @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_ACESSO_PACIENTE == 1)
+                                            {
+                                                <td style="width: auto"><a href="@Url.Action("EditarPacienteHistorico", "Paciente", new { id = cond.PACIENTE.PACI__CD_ID })" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página de edição de dados do paciente"/>@cond.PACIENTE.PACI_NM_NOME</td>
+                                            }
+                                            else
+                                            {
+                                                <td style="width: auto"><a href="@Url.Action("VerPacienteHistorico", "Paciente", new { id = cond.PACIENTE.PACI__CD_ID })" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página de visualização de dados do paciente"/>@cond.PACIENTE.PACI_NM_NOME</td>
+                                            }
+                                            @if (cond.PAHI_IN_TIPO == 1)
+                                            {
+                                                <td style="width: auto"><span class="badge badge-primary">Paciente</span></td>
+                                            }
+                                            else if (cond.PAHI_IN_TIPO == 2)
+                                            {
+                                                <td style="width: auto"><span class="badge badge-primary">Contato</span></td>
+                                            }
+                                            else if (cond.PAHI_IN_TIPO == 3)
+                                            {
+                                                <td style="width: auto"><span class="badge badge-primary">Prescrição</span></td>
+                                            }
+                                            else if (cond.PAHI_IN_TIPO == 4)
+                                            {
+                                                <td style="width: auto"><span class="badge badge-primary">Item de Prescrição</span></td>
+                                            }
+                                            else if (cond.PAHI_IN_TIPO == 5)
+                                            {
+                                                <td style="width: auto"><span class="badge badge-primary">Atestado</span></td>
+                                            }
+                                            else if (cond.PAHI_IN_TIPO == 6)
+                                            {
+                                                <td style="width: auto"><span class="badge badge-primary">Solicitação de Exame</span></td>
+                                            }
+                                            else if (cond.PAHI_IN_TIPO == 7)
+                                            {
+                                                <td style="width: auto"><span class="badge badge-primary">Resultado de Exame</span></td>
+                                            }
+                                            else if (cond.PAHI_IN_TIPO == 8)
+                                            {
+                                                <td style="width: auto"><span class="badge badge-primary">Anamnese</span></td>
+                                            }
+                                            else if (cond.PAHI_IN_TIPO == 9)
+                                            {
+                                                <td style="width: auto"><span class="badge badge-primary">Exame Físico</span></td>
+                                            }
+                                            else if (cond.PAHI_IN_TIPO == 10)
+                                            {
+                                                <td style="width: auto"><span class="badge badge-primary">Consulta</span></td>
+                                            }
+                                            else if (cond.PAHI_IN_TIPO == 11)
+                                            {
+                                                <td style="width: auto"><span class="badge badge-primary">Pagamento</span></td>
+                                            }
+                                            else if (cond.PAHI_IN_TIPO == 12)
+                                            {
+                                                <td style="width: auto"><span class="badge badge-primary">Recebimento</span></td>
+                                            }
+                                            else if (cond.PAHI_IN_TIPO == 13)
+                                            {
+                                                <td style="width: auto"><span class="badge badge-primary">Mensagem</span></td>
+                                            }
+                                            <td style="width: 120px">@cond.PAHI_IN_CHAVE</td>
+                                            <td style="width: auto">@cond.PAHI_NM_OPERACAO</td>
+                                            <td style="width: 120px">@cond.USUARIO.USUA_NM_NOME</td>
+                                            <td style="width: auto">@cond.PAHI_DS_DESCRICAO</td>
+                                            <td style="width: 0.01px"></td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        }
+                        else
+                        {
+                            <div class="row">
+                                <div class="col-lg-2 col-md-2 col-xs-2">
+                                </div>
+                                <div style="border: 5px solid #F6A54A; padding: 10px; border-radius: 8px 8px; " class="col-lg-8 col-md-8 col-xs-8">
+                                    <h2 style="font-weight: bold">Sua pesquisa não retornou nenhum resultado ou nenhum histório cadastrado</h2>
+                                    @Html.ButtonLinkIndex(text: "Retirar Filtro", controller: "Paciente", action: "RetirarFiltroHistoricoGeral")
+                                </div>
+                                <div class="col-lg-2 col-md-2 col-xs-2">
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <link href="~/Content/themes/base/jquery-ui.min.css" rel="stylesheet" />
+    <link href="~/Content/themes/base/all.css" rel="stylesheet" />
+    <link href="~/Content/jquery.datetimepicker.css" rel="stylesheet" />
+    @Styles.Render("~/Content/plugins/dataTables/dataTablesStyles")
+    @Styles.Render("~/plugins/jasnyBootstrapStyles")
+    @Styles.Render("~/plugins/toastrStyles")
+
+}
+@section Scripts {
+    @Scripts.Render("~/plugins/toastr")
+    <script src="~/Scripts/jquery-ui-1.12.1.min.js"></script>
+    @Scripts.Render("~/plugins/dataTables")
+    @Scripts.Render("~/bundles/inputmask")
+    @Scripts.Render("~/plugins/jasnyBootstrap")
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.maskedinput/1.4.1/jquery.maskedinput.js"></script>
+    <script src="~/Scripts/uploadAnexo.js"></script>
+   
+    <script type="text/javascript" src="~/Scripts/moment.min.js"></script>
+    <script type="text/javascript" src="~/Scripts/bootstrap.min.js"></script>
+   
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('[data-toggle="popover"]').popover();
+        });
+    </script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-toggle="popover"]'));
+            var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
+                return new bootstrap.Popover(popoverTriggerEl);
+            });
+        });
+    </script>
+
+    <!-- Handler de fechamento do browser -->
+    <script type="text/javascript">
+        window.onbeforeunload = function ()
+        {
+            navigator.sendBeacon('../ControleAcesso/LogSessionTime');
+        }; 
+    </script>
+
+    <script type="text/javascript" language="javascript">
+        $(function () {
+            $('.date-picker').datepicker(
+                {
+                    dateFormat: 'dd/mm/yy',
+                    dayNames: ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'],
+                    dayNamesMin: ['D', 'S', 'T', 'Q', 'Q', 'S', 'S', 'D'],
+                    dayNamesShort: ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'],
+                    monthNames: ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'],
+                    monthNamesShort: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'],
+                    nextText: 'Proximo',
+                    prevText: 'Anterior',
+                    showOn: "focus"
+                }
+            )
+                .css("display", "normal")
+                .next("button").button({
+                    icons: { primary: "ui-icon-calendar" },
+                    label: "Selecione uma data",
+                    text: false
+                });
+        });
+    </script>
+    <script type="text/javascript">
+        $(function () {
+            $("#dn").mask("99/99/9999");
+            $("#dn1").mask("99/99/9999");
+        });
+    </script>
+
+    <script>
+        function Fade() {
+            $('.dotContainer').fadeIn("fast");
+            $('#login').css("filter", "blur(4px)");
+        }
+    </script>
+    <script>
+        $(window).on("load", function () {
+            $('.dotContainer').fadeOut("slow");
+            $('#title').css("filter", "blur(0)");
+            $('#content').css("filter", "blur(0)");
+        });
+    </script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            $('.dataTables-example').DataTable({
+                pageLength: 25,
+                dom: '<"html5buttons"B>lTfgitp',
+                buttons: [
+                    { extend: 'excel', title: 'Historico_Planilha' },
+                    {
+                        extend: 'print',
+                        customize: function (win) {
+                            $(win.document.body).addClass('white-bg');
+                            $(win.document.body).css('font-size', '10px');
+
+                            $(win.document.body).find('table')
+                                    .addClass('compact')
+                                    .css('font-size', 'inherit');
+                        }
+                    }
+                ]
+            });         
+        });
+    </script>
+}
+
+@if (ViewBag.Message != null)
+{
+    <script type="text/javascript">
+            window.onload = function () {
+                alert("@ViewBag.Message");
+            };
+    </script>
+}
+

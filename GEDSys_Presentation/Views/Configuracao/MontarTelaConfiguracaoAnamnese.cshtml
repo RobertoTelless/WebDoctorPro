@@ -1,0 +1,488 @@
+﻿@using Presentation.Extensions
+@model ERP_Condominios_Solution.ViewModels.ConfiguracaoAnamneseViewModel
+@{
+    Layout = "~/Views/Shared/_Layout_Admin.cshtml";
+    ViewBag.Title = "WebDoctor - Configuração - Anamnese";
+    ViewBag.MetaDescription = "WebDoctor - Configurações de Anamnese";
+    ViewBag.MetaKeywords = "WebDoctor, Configuracao, Anamnese";
+}
+
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="page-title">
+        <ol class="breadcrumb">
+            <li>
+                <a href="@Url.Action("MontarTelaPaciente", "Paciente")">Dashboard</a>
+            </li>
+            <li class="active">
+                <strong>Configuração - Anamnese</strong>
+            </li>
+        </ol>
+        <br />
+    </div>
+
+    <div class="row">
+        <div class="col-lg-12 col-md-12 col-xs-12">
+            <div class="col-lg-12 col-md-12 col-xs-12 ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>Configuração - Anamnese</h5>
+                </div>
+                @using (Html.BeginForm("MontarTelaConfiguracaoAnamnese", "Configuracao", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal", @id="pwd-container1" }))
+                {
+                    <div class="ibox-content">
+                        @Html.AntiForgeryToken()
+                        @if (!ViewData.ModelState.IsValid)
+                        {
+                            <div class="alert alert-danger">
+                                <button type="button" class="close" data-dismiss="alert">Fechar</button>
+                                @Html.ValidationSummary(false, "Erros Encontrados:", new { @class = "text-danger" })
+                            </div>
+                        }
+                        <div class="form-group">
+                            <br />
+                            @Html.ButtonActionSubmit(text: "Confirma Alteração da Configuração de Anamnese", htmlAttributes: new { id = "basictoast" })
+                            @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaPaciente", controller: "Paciente")
+                            <a href="@Url.Action((String)Session["AjudaNivel"])" class="btn btn-sm btn-danger" target="_blank">Ajuda</a>
+                        </div>
+
+                        @*Formato*@
+                        <div class="row">
+                            <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Formato</h4>
+                            <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">  
+                                @if ((Int32)Session["PermSono"] == 1)
+                                {
+                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                        Bloco a Exibir*
+                                        @Html.DropDownListFor(m => m.COAN_IN_BLOCO_COMUM, (SelectList)ViewBag.Comum, "Selecionar", new { @class = "form-control", autofocus = true, data_toggle = "popover", data_content = "Seleciona qual bloco de perguntas da anamnese será usado no WebDoctor", data_trigger="hover", data_placement="top" , @id = "comum", onchange = "ValidaComum($(this).val())"  })
+                                        @Html.ValidationMessageFor(m => m.COAN_IN_BLOCO_COMUM, "", new { @style = "color:red" })
+                                    </div>
+                                }
+                                <div class="col-lg-3 col-md-3 col-xs-12"  id="padraoDiv">
+                                    Formato Padrão da Anamnese*
+                                    @Html.DropDownListFor(m => m.COAN_IN_PADRAO_FORMATO, (SelectList)ViewBag.Anamnese, "Selecionar", new { @class = "form-control", autofocus = true, data_toggle = "popover", data_content = "Seleciona o padrão de anamnese a ser usado: Segmentado (perguntas separadas) ou Contínua (folha em branco)", data_trigger="hover", data_placement="top", @id = "padrao", onchange = "ValidaPadrao($(this).val())"   })
+                                    @Html.ValidationMessageFor(m => m.COAN_IN_PADRAO_FORMATO, "", new { @style = "color:red" })
+                                </div>
+                                <div class="col-lg-3 col-md-3 col-xs-12" id="Continuo">
+                                    Tipo de Formato Contínuo*
+                                    @Html.DropDownListFor(m => m.COAN_IN_FORMATO_CONTINUA, (SelectList)ViewBag.Continua, "Selecionar", new { @class = "form-control", autofocus = true, data_toggle = "popover", data_content = "No caso de seleção do formato contínuo, seleciona se vai ou não ser aplicado o carimbo de data/hora ", data_trigger="hover", data_placement="top", @id = "tipo"   })
+                                    @Html.ValidationMessageFor(m => m.COAN_IN_FORMATO_CONTINUA, "", new { @style = "color:red" })
+                                </div>
+                            </div>
+                        </div>
+
+                        @*Padrão*@
+                            <div class="row" id="BlocoComum">
+                                <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Perguntas Pré-Definidas</h4>
+                                <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">                
+                                    <div class="col-lg-5 col-md-5 col-xs-12">
+                                        @Html.HiddenFor(m => m.COAN_CD_ID)
+                                        @Html.HiddenFor(m => m.ASSI_CD_ID)
+                                        Título da Pergunta
+                                        @Html.TextBoxFor(m => m.Motivo, new { @class = "form-control", @readonly = "readonly", @style = "color: green; font-weight: bold" })
+                                    </div>
+                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                        Habilita?*
+                                        @Html.TextBoxFor(m => m.Sim, new { @class = "form-control", @readonly = "readonly", @style = "color: blue; font-weight: bold" })
+                                    </div>
+                                </div>
+                                <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">                
+                                    <div class="col-lg-5 col-md-5 col-xs-12">
+                                        Título da Pergunta
+                                        @Html.TextBoxFor(m => m.Queixa, new { @class = "form-control", @readonly = "readonly", @style = "color: green; font-weight: bold" })
+                                    </div>
+                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                        Habilita?*
+                                        @Html.TextBoxFor(m => m.Sim, new { @class = "form-control", @readonly = "readonly", @style = "color: blue; font-weight: bold" })
+                                    </div>
+                                </div>
+                                <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">                
+                                    <div class="col-lg-5 col-md-5 col-xs-12">
+                                        Título da Pergunta
+                                        @Html.TextBoxFor(m => m.Familia, new { @class = "form-control", @readonly = "readonly", @style = "color: green; font-weight: bold" })
+                                    </div>
+                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                        Habilita?*
+                                        @Html.TextBoxFor(m => m.Sim, new { @class = "form-control", @readonly = "readonly", @style = "color: blue; font-weight: bold" })
+                                    </div>
+                                </div>
+                                <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">                
+                                    <div class="col-lg-5 col-md-5 col-xs-12">
+                                        Título da Pergunta
+                                        @Html.TextBoxFor(m => m.Social, new { @class = "form-control", @readonly = "readonly", @style = "color: green; font-weight: bold" })
+                                    </div>
+                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                        Habilita?*
+                                        @Html.DropDownListFor(m => m.COAN_IN_HISTORIA_SOCIAL, (SelectList)ViewBag.Motivo, "Selecionar", new { @class = "form-control", autofocus = true })
+                                    </div>
+                                </div>
+                                <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">                
+                                    <div class="col-lg-5 col-md-5 col-xs-12">
+                                        Título da Pergunta
+                                        @Html.TextBoxFor(m => m.Cardio, new { @class = "form-control", @readonly = "readonly", @style = "color: green; font-weight: bold" })
+                                    </div>
+                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                        Habilita?*
+                                        @Html.DropDownListFor(m => m.COAN_IN_CARDIOLOGICA, (SelectList)ViewBag.Motivo, "Selecionar", new { @class = "form-control", autofocus = true })
+                                    </div>
+                                </div>
+                                <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">                
+                                    <div class="col-lg-5 col-md-5 col-xs-12">
+                                        Título da Pergunta
+                                        @Html.TextBoxFor(m => m.Medic, new { @class = "form-control", @readonly = "readonly", @style = "color: green; font-weight: bold" })
+                                    </div>
+                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                        Habilita?*
+                                        @Html.DropDownListFor(m => m.COAN_IN_MEDICAMENTO, (SelectList)ViewBag.Medic, "Selecionar", new { @class = "form-control", autofocus = true })
+                                    </div>
+                                </div>
+                                <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">                
+                                    <div class="col-lg-5 col-md-5 col-xs-12">
+                                        Título da Pergunta
+                                        @Html.TextBoxFor(m => m.Respira, new { @class = "form-control", @readonly = "readonly", @style = "color: green; font-weight: bold" })
+                                    </div>
+                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                        Habilita?*
+                                        @Html.DropDownListFor(m => m.COAN_IN_RESPIRATORIA, (SelectList)ViewBag.Motivo, "Selecionar", new { @class = "form-control", autofocus = true })
+                                    </div>
+                                </div>
+                                <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">                
+                                    <div class="col-lg-5 col-md-5 col-xs-12">
+                                        Título da Pergunta
+                                        @Html.TextBoxFor(m => m.Abdomem, new { @class = "form-control", @readonly = "readonly", @style = "color: green; font-weight: bold" })
+                                    </div>
+                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                        Habilita?*
+                                        @Html.DropDownListFor(m => m.COAN_IN_ABDOMEM, (SelectList)ViewBag.Motivo, "Selecionar", new { @class = "form-control", autofocus = true })
+                                    </div>
+                                </div>
+                                <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">                
+                                    <div class="col-lg-5 col-md-5 col-xs-12">
+                                        Título da Pergunta
+                                        @Html.TextBoxFor(m => m.Membros, new { @class = "form-control", @readonly = "readonly", @style = "color: green; font-weight: bold" })
+                                    </div>
+                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                        Habilita?*
+                                        @Html.DropDownListFor(m => m.COAN_IN_MEMBROS, (SelectList)ViewBag.Motivo, "Selecionar", new { @class = "form-control", autofocus = true })
+                                    </div>
+                                </div>
+                                <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">                
+                                    <div class="col-lg-5 col-md-5 col-xs-12">
+                                        Título da Pergunta
+                                        @Html.TextBoxFor(m => m.Doenca, new { @class = "form-control", @readonly = "readonly", @style = "color: green; font-weight: bold" })
+                                    </div>
+                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                        Habilita?*
+                                        @Html.TextBoxFor(m => m.Sim, new { @class = "form-control", @readonly = "readonly", @style = "color: blue; font-weight: bold" })
+                                    </div>
+                                </div>
+                                <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">                
+                                    <div class="col-lg-5 col-md-5 col-xs-12">
+                                        Título da Pergunta
+                                        @Html.TextBoxFor(m => m.Patologia, new { @class = "form-control", @readonly = "readonly", @style = "color: green; font-weight: bold" })
+                                    </div>
+                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                        Habilita?*
+                                        @Html.DropDownListFor(m => m.COAN_IN_HISTORIA_PATOLOGIA, (SelectList)ViewBag.Motivo, "Selecionar", new { @class = "form-control", autofocus = true })
+                                    </div>
+                                </div>
+                            </div>
+
+                        @*Bloco Sono*@
+                            <div class="row" id="BlocoSono">
+                                <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Fisioterapia do Sono</h4>
+                                @*<div class="form-group" style=" margin-left: -15px; margin-right: -15px;">*@ 
+                                    <h5 style="margin-left: 5px; color:brown; background-color: beige; font-weight:normal">Neste bloco serão exibidas as perguntas referentes à fisioterapia do sono.</h5>
+                                    <h5 style="margin-left: 5px; color:brown; background-color: beige; font-weight:normal">Devido ao número elevado de perguntas elas não serão exibidas aqui</h5>
+                                    <h5 style="margin-left: 5px; color:brown; background-color: beige; font-weight:normal">Todas as perguntas referentes à fisioterapia do sono são obrigatórias</h5>
+                                    <h5 style="margin-left: 5px; color:brown; background-color: beige; font-weight:normal">Para ver a lista de perguntas disponíveis, clique no botão Lista de Perguntas abaixo e faça o download da lista completa</h5>
+                                @*</div>*@
+                                <div class="form-group" style=" margin-left: 5px; margin-right: -15px;">
+                                    <br />
+                                    @Html.ButtonLinkIndex(text: "Lista de Perguntas", action: "DownloadListaSono", controller: "Configuracao")
+                                </div>
+                            </div>
+
+                        @*Itens Opcionais*@
+                        <div class="row" id="Opcional">
+                            <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Perguntas Customizadas</h4>
+                            <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">                
+                                <div class="col-lg-5 col-md-5 col-xs-12">
+                                    Título da Pergunta Opcional #1
+                                    @Html.TextBoxFor(m => m.COAN_NM_CAMPO_1, new { @class = "form-control", autofocus = true })
+                                    @Html.ValidationMessageFor(m => m.COAN_NM_CAMPO_1, "", new { @style = "color:red" })
+                                </div>
+                                <div class="col-lg-2 col-md-2 col-xs-12">
+                                    Habilita?*
+                                    @Html.DropDownListFor(m => m.COAN_IN_CAMPO_1, (SelectList)ViewBag.Motivo, "Selecionar", new { @class = "form-control", autofocus = true })
+                                </div>
+                            </div>
+                            <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">                
+                                <div class="col-lg-5 col-md-5 col-xs-12">
+                                    Título da Pergunta Opcional #2
+                                    @Html.TextBoxFor(m => m.COAN_NM_CAMPO_2, new { @class = "form-control", autofocus = true })
+                                    @Html.ValidationMessageFor(m => m.COAN_NM_CAMPO_2, "", new { @style = "color:red" })
+                                </div>
+                                <div class="col-lg-2 col-md-2 col-xs-12">
+                                    Habilita?*
+                                    @Html.DropDownListFor(m => m.COAN_IN_CAMPO_2, (SelectList)ViewBag.Motivo, "Selecionar", new { @class = "form-control", autofocus = true })
+                                </div>
+                            </div>
+                            <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">                
+                                <div class="col-lg-5 col-md-5 col-xs-12">
+                                    Título da Pergunta Opcional #3
+                                    @Html.TextBoxFor(m => m.COAN_NM_CAMPO_3, new { @class = "form-control", autofocus = true })
+                                    @Html.ValidationMessageFor(m => m.COAN_NM_CAMPO_3, "", new { @style = "color:red" })
+                                </div>
+                                <div class="col-lg-2 col-md-2 col-xs-12">
+                                    Habilita?*
+                                    @Html.DropDownListFor(m => m.COAN_IN_CAMPO_3, (SelectList)ViewBag.Motivo, "Selecionar", new { @class = "form-control", autofocus = true })
+                                </div>
+                            </div>
+                            <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">                
+                                <div class="col-lg-5 col-md-5 col-xs-12">
+                                    Título da Pergunta Opcional #4
+                                    @Html.TextBoxFor(m => m.COAN_NM_CAMPO_4, new { @class = "form-control", autofocus = true })
+                                    @Html.ValidationMessageFor(m => m.COAN_NM_CAMPO_4, "", new { @style = "color:red" })
+                                </div>
+                                <div class="col-lg-2 col-md-2 col-xs-12">
+                                    Habilita?*
+                                    @Html.DropDownListFor(m => m.COAN_IN_CAMPO_4, (SelectList)ViewBag.Motivo, "Selecionar", new { @class = "form-control", autofocus = true })
+                                </div>
+                            </div>
+                            <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">                
+                                <div class="col-lg-5 col-md-5 col-xs-12">
+                                    Título da Pergunta Opcional #5
+                                    @Html.TextBoxFor(m => m.COAN_NM_CAMPO_5, new { @class = "form-control", autofocus = true })
+                                    @Html.ValidationMessageFor(m => m.COAN_NM_CAMPO_5, "", new { @style = "color:red" })
+                                </div>
+                                <div class="col-lg-2 col-md-2 col-xs-12">
+                                    Habilita?*
+                                    @Html.DropDownListFor(m => m.COAN_IN_CAMPO_5, (SelectList)ViewBag.Motivo, "Selecionar", new { @class = "form-control", autofocus = true })
+                                </div>
+                            </div>
+                            <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">                
+                                <div class="col-lg-5 col-md-5 col-xs-12">
+                                    Título da Pergunta Opcional #6
+                                    @Html.TextBoxFor(m => m.COAN_NM_CAMPO_6, new { @class = "form-control", autofocus = true })
+                                    @Html.ValidationMessageFor(m => m.COAN_NM_CAMPO_6, "", new { @style = "color:red" })
+                                </div>
+                                <div class="col-lg-2 col-md-2 col-xs-12">
+                                    Habilita?*
+                                    @Html.DropDownListFor(m => m.COAN_IN_CAMPO_6, (SelectList)ViewBag.Motivo, "Selecionar", new { @class = "form-control", autofocus = true })
+                                </div>
+                            </div>
+                            <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">                
+                                <div class="col-lg-5 col-md-5 col-xs-12">
+                                    Título da Pergunta Opcional #7
+                                    @Html.TextBoxFor(m => m.COAN_NM_CAMPO_7, new { @class = "form-control", autofocus = true })
+                                    @Html.ValidationMessageFor(m => m.COAN_NM_CAMPO_7, "", new { @style = "color:red" })
+                                </div>
+                                <div class="col-lg-2 col-md-2 col-xs-12">
+                                    Habilita?*
+                                    @Html.DropDownListFor(m => m.COAN_IN_CAMPO_7, (SelectList)ViewBag.Motivo, "Selecionar", new { @class = "form-control", autofocus = true })
+                                </div>
+                            </div>
+                            <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">                
+                                <div class="col-lg-5 col-md-5 col-xs-12">
+                                    Título da Pergunta Opcional #8
+                                    @Html.TextBoxFor(m => m.COAN_NM_CAMPO_8, new { @class = "form-control", autofocus = true })
+                                    @Html.ValidationMessageFor(m => m.COAN_NM_CAMPO_8, "", new { @style = "color:red" })
+                                </div>
+                                <div class="col-lg-2 col-md-2 col-xs-12">
+                                    Habilita?*
+                                    @Html.DropDownListFor(m => m.COAN_IN_CAMPO_8, (SelectList)ViewBag.Motivo, "Selecionar", new { @class = "form-control", autofocus = true })
+                                </div>
+                            </div>
+                            <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">                
+                                <div class="col-lg-5 col-md-5 col-xs-12">
+                                    Título da Pergunta Opcional #9
+                                    @Html.TextBoxFor(m => m.COAN_NM_CAMPO_9, new { @class = "form-control", autofocus = true })
+                                    @Html.ValidationMessageFor(m => m.COAN_NM_CAMPO_9, "", new { @style = "color:red" })
+                                </div>
+                                <div class="col-lg-2 col-md-2 col-xs-12">
+                                    Habilita?*
+                                    @Html.DropDownListFor(m => m.COAN_IN_CAMPO_9, (SelectList)ViewBag.Motivo, "Selecionar", new { @class = "form-control", autofocus = true })
+                                </div>
+                            </div>
+                            <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">                
+                                <div class="col-lg-5 col-md-5 col-xs-12">
+                                    Título da Pergunta Opcional #10
+                                    @Html.TextBoxFor(m => m.COAN_NM_CAMPO_10, new { @class = "form-control", autofocus = true })
+                                    @Html.ValidationMessageFor(m => m.COAN_NM_CAMPO_10, "", new { @style = "color:red" })
+                                </div>
+                                <div class="col-lg-2 col-md-2 col-xs-12">
+                                    Habilita?*
+                                    @Html.DropDownListFor(m => m.COAN_IN_CAMPO_10, (SelectList)ViewBag.Motivo, "Selecionar", new { @class = "form-control", autofocus = true })
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+         </div>
+
+    </div>
+</div>
+
+@section Styles {
+    <link href="~/Content/themes/base/all.css" rel="stylesheet" />  
+    @Styles.Render("~/plugins/jasnyBootstrapStyles")
+    @Styles.Render("~/plugins/toastrStyles")
+}
+@section Scripts {
+    @Scripts.Render("~/plugins/toastr")
+    @Scripts.Render("~/bundles/inputmask")
+    @Scripts.Render("~/plugins/jasnyBootstrap")
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.maskedinput/1.4.1/jquery.maskedinput.js"></script>
+   
+    <script>
+        function GetPaciente(id) {
+            var data = {
+                id: id
+            }
+
+            $.ajax({
+                url: '../Paciente/GetPaciente'
+                , type: 'POST'
+                , data: data
+                , success: function (r) {
+                    $('#dataNasc > input').val(r.dataNasc);
+                    $('#cpf > input').val(r.cpf);
+                    $('#email > input').val(r.email);
+
+                    $('#dataNasc').show();
+                    $('#cpf').show();
+                    $('#email').show();
+                }
+            });
+        }
+    </script>
+    <script type="text/javascript">
+        function ValidaComum(men) {
+            if (men == '1') {
+                $("#BlocoComum").show();
+                $("#BlocoSono").hide();
+                $("#padraoDiv").show();
+                $("#Continuo").show();
+            } else {
+                $("#BlocoComum").hide();
+                $("#BlocoSono").show();
+                $("#padraoDiv").hide();
+                $("#Continuo").hide();
+            }
+        }
+        $(document).ready(function () {
+            ValidaComum($('#comum').val());
+        });
+    </script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            var i = -1;
+            var toastCount = 0;
+            var $toastlast;
+            var getMessage = function () {
+                var msg = 'Hi, welcome to Inspinia. This is example of Toastr notification box.';
+                return msg;
+            };
+
+            $('#basictoast').click(function () {
+                // Display a success toast, with a title
+                toastr.success('Inclusão em andamento!')
+            });
+            $('#showtoast').click(function () {
+                var shortCutFunction = $("#toastTypeGroup input:radio:checked").val();
+                var msg = $('#message').val();
+                var title = $('#title').val() || '';
+                var $showDuration = $('#showDuration');
+                var $hideDuration = $('#hideDuration');
+                var $timeOut = $('#timeOut');
+                var $extendedTimeOut = $('#extendedTimeOut');
+                var $showEasing = $('#showEasing');
+                var $hideEasing = $('#hideEasing');
+                var $showMethod = $('#showMethod');
+                var $hideMethod = $('#hideMethod');
+                var toastIndex = toastCount++;
+                toastr.options = {
+                    closeButton: $('#closeButton').prop('checked'),
+                    debug: $('#debugInfo').prop('checked'),
+                    progressBar: $('#progressBar').prop('checked'),
+                    positionClass: $('#positionGroup input:radio:checked').val() || 'toast-top-right',
+                    onclick: null
+                };
+                if ($('#addBehaviorOnToastClick').prop('checked')) {
+                    toastr.options.onclick = function () {
+                        alert('You can perform some custom action after a toast goes away');
+                    };
+                }
+                if ($showDuration.val().length) {
+                    toastr.options.showDuration = $showDuration.val();
+                }
+                if ($hideDuration.val().length) {
+                    toastr.options.hideDuration = $hideDuration.val();
+                }
+                if ($timeOut.val().length) {
+                    toastr.options.timeOut = $timeOut.val();
+                }
+                if ($extendedTimeOut.val().length) {
+                    toastr.options.extendedTimeOut = $extendedTimeOut.val();
+                }
+                if ($showEasing.val().length) {
+                    toastr.options.showEasing = $showEasing.val();
+                }
+                if ($hideEasing.val().length) {
+                    toastr.options.hideEasing = $hideEasing.val();
+                }
+                if ($showMethod.val().length) {
+                    toastr.options.showMethod = $showMethod.val();
+                }
+                if ($hideMethod.val().length) {
+                    toastr.options.hideMethod = $hideMethod.val();
+                }
+                if (!msg) {
+                    msg = getMessage();
+                }
+                $("#toastrOptions").text("Command: toastr["
+                        + shortCutFunction
+                        + "](\""
+                        + msg
+                        + (title ? "\", \"" + title : '')
+                        + "\")\n\ntoastr.options = "
+                        + JSON.stringify(toastr.options, null, 2)
+                );
+                var $toast = toastr[shortCutFunction](msg, title); // Wire up an event handler to a button in the toast, if it exists
+                $toastlast = $toast;
+                if ($toast.find('#okBtn').length) {
+                    $toast.delegate('#okBtn', 'click', function () {
+                        alert('you clicked me. i was toast #' + toastIndex + '. goodbye!');
+                        $toast.remove();
+                    });
+                }
+                if ($toast.find('#surpriseBtn').length) {
+                    $toast.delegate('#surpriseBtn', 'click', function () {
+                        alert('Surprise! you clicked me. i was toast #' + toastIndex + '. You could perform an action here.');
+                    });
+                }
+            });
+            function getLastToast() {
+                return $toastlast;
+            }
+            $('#clearlasttoast').click(function () {
+                toastr.clear(getLastToast());
+            });
+            $('#cleartoasts').click(function () {
+                toastr.clear();
+            });
+
+        });
+    </script>
+
+
+    @if (ViewBag.Message != null)
+    {
+        <script type="text/javascript">
+            window.onload = function () {
+                  alert("@ViewBag.Message");
+            };
+        </script>
+    }
+}

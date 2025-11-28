@@ -1,0 +1,177 @@
+﻿@using Presentation.Extensions
+@model ERP_Condominios_Solution.ViewModels.UsuarioViewModel
+@{
+    Layout = "~/Views/Shared/_Layout_Limpo.cshtml";
+    ViewBag.Title = "WebDoctor - Nova Senha";
+    ViewBag.MetaDescription = "WebDoctor - Geração de nova senha";
+    ViewBag.MetaKeywords = "WebDoctor, Senha, Acesso, Segurança";
+}
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div id="modalContainer"></div>
+    <div class="row">
+        <div class="col-lg-12 col-md-12 col-xs-12">
+            <div class="col-lg-12 col-md-12 col-xs-12 ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>Geração de Senha Provisória</h5>
+                </div>
+                <div class="ibox-content">
+                    @Html.AntiForgeryToken()
+                    @if (!ViewData.ModelState.IsValid)
+                    {
+                        <div class="alert alert-danger">
+                            <button type="button" class="close" data-dismiss="alert">Fechar</button>
+                            @Html.ValidationSummary(false, "", new { @class = "text-danger" })
+                        </div>
+                    }
+                    <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                        @Html.ButtonLinkIndex(text: "Voltar", controller: "ControleAcesso", action: "Login")
+                        <br />
+                    </div>
+
+                    @using (Html.BeginForm("GerarNovaSenha", "ControleAcesso", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal" }))
+                    {
+                        <div class="form-group">
+                            <label>Informe o e-mail cadastrado no WebDoctor e o CPF o login do usuário</label>
+                            <label>Uma senha provisória será enviada para este e-mail</label>
+                        </div>
+                        <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">                
+                            <div class="col-lg-3 col-md-3 col-xs-12">
+                                CPF/CNPJ do Assinante (Apenas os dígitos)
+                                @Html.TextBoxFor(m => m.USUA_NR_TELEFONE, new { @class = "form-control", autofocus = true, @id="campoDocumento", data_toggle = "popover", data_content = "Informe o CPF ou CNPJ do assinante", data_trigger="hover", data_placement="top" })
+                                @Html.ValidationMessageFor(m => m.USUA_NR_TELEFONE, "",new { @style="color:red" })
+                            </div>
+                        </div>
+                        <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">                
+                            <div class="col-lg-2 col-md-2 col-xs-12">
+                                Login do Usuário*
+                                @Html.TextBoxFor(m => m.USUA_NM_LOGIN, new { @class = "form-control", autofocus = true, data_toggle = "popover", data_content = "Informe o login do usuário que solicita a senha", data_trigger="hover", data_placement="top" })
+                                @Html.ValidationMessageFor(m => m.USUA_NM_LOGIN, "",new { @style="color:red" })
+                            </div>
+                            <div class="col-lg-2 col-md-2 col-xs-12">
+                                CPF do Usuário*
+                                @Html.TextBoxFor(m => m.USUA_NR_CPF, new { @class = "form-control", autofocus = true, @id="cpf", data_toggle = "popover", data_content = "Informe o CPF do usuário que solicita a senha", data_trigger="hover", data_placement="top" })
+                                @Html.ValidationMessageFor(m => m.USUA_NR_CPF, "",new { @style="color:red" })
+                            </div>
+                            <div class="col-lg-3 col-md-3 col-xs-12">
+                                E-Mail*
+                                @Html.TextBoxFor(m => m.USUA_NM_EMAIL, new { @class = "form-control", autofocus = true, data_toggle = "popover", data_content = "Informe o E-Mail do usuário que solicita a senha", data_trigger="hover", data_placement="top" })
+                                @Html.ValidationMessageFor(m => m.USUA_NM_EMAIL, "",new { @style="color:red" })
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <button id="login" type="submit" class="btn btn-primary block full-width m-b" onclick="Fade()">Gerar Nova Senha</button>
+                        </div>
+                    }
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700' rel='stylesheet' type='text/css'>
+    <link href="~/Content/themes/base/jquery-ui.min.css" rel="stylesheet" />
+    <link href="~/Content/themes/base/all.css" rel="stylesheet" />
+    @Styles.Render("~/Content/plugins/dataTables/dataTablesStyles")
+    @Styles.Render("~/plugins/jasnyBootstrapStyles")
+    @Styles.Render("~/plugins/toastrStyles")
+    @Styles.Render("~/Content/css")
+    @Styles.Render("~/font-awesome/css")
+    <link href="@Url.Content("~/Scripts/plugins/jquery-ui/jquery-ui.min.css")" rel="stylesheet" type="text/css" />
+}
+@section Scripts {
+    @Scripts.Render("~/plugins/toastr")
+    <script src="~/Scripts/jquery-ui-1.12.1.min.js"></script>
+    @Scripts.Render("~/plugins/dataTables")
+    @Scripts.Render("~/bundles/inputmask")
+    @Scripts.Render("~/plugins/jasnyBootstrap")
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.maskedinput/1.4.1/jquery.maskedinput.js"></script>
+    <script src="~/Scripts/uploadAnexo.js"></script>
+    <script type="text/javascript" src="~/Scripts/moment.min.js"></script>
+    <script type="text/javascript" src="~/Scripts/bootstrap.min.js"></script>
+   
+   
+    <script type="text/javascript" src="~/Scripts/moment.min.js"></script>
+    <script type="text/javascript" src="~/Scripts/bootstrap.min.js"></script>
+   
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('[data-toggle="popover"]').popover();
+        });
+    </script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-toggle="popover"]'));
+            var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
+                return new bootstrap.Popover(popoverTriggerEl);
+            });
+        });
+    </script>
+    <script type="text/javascript">
+        $(function () {
+            $("#dn").mask("99/99/9999");
+            $("#cpf").mask("999.999.999-99");
+        });
+    </script>
+
+<script>
+        $(document).ready(function() {
+            var input = $("#campoDocumento");
+
+            // Evento para monitorar a perda de foco (blur)
+            input.on('blur', function() {
+                var val = input.val().replace(/\D/g, ''); // Remove caracteres não numéricos
+
+                // Verifica o tamanho do valor preenchido e aplica a máscara correta
+                if (val.length === 11) {
+                    // É um CPF
+                    input.mask("999.999.999-99");
+                } else if (val.length === 14) {
+                    // É um CNPJ
+                    input.mask("99.999.999/9999-99");
+                } else {
+                    // Se não é nenhum dos dois, remove a máscara
+                    input.unmask();
+                }
+            });
+            
+            // Aplica a máscara no carregamento inicial da página (opcional, mas recomendado)
+            // Para dar uma indicação visual de que o campo espera um documento
+            
+        });
+    </script>
+    
+    <script type="text/javascript" language="javascript">
+        $(function () {
+            $('.date-picker').datepicker(
+                {
+                    dateFormat: 'dd/mm/yy',
+                    dayNames: ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'],
+                    dayNamesMin: ['D', 'S', 'T', 'Q', 'Q', 'S', 'S', 'D'],
+                    dayNamesShort: ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'],
+                    monthNames: ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'],
+                    monthNamesShort: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'],
+                    nextText: 'Proximo',
+                    prevText: 'Anterior',
+                    showOn: "focus"
+                }
+            )
+                .css("display", "normal")
+                .next("button").button({
+                    icons: { primary: "ui-icon-calendar" },
+                    label: "Selecione uma data",
+                    text: false
+                });
+        });
+    </script>
+}
+@if (ViewBag.Message != null)
+{
+    <script type="text/javascript">
+        window.onload = function () {
+            alert("@ViewBag.Message");
+        };
+    </script>
+}

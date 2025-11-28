@@ -1,0 +1,534 @@
+﻿@using Presentation.Extensions
+@model ERP_Condominios_Solution.ViewModels.PacienteExameFisicoViewModel
+@{
+    Layout = "~/Views/Shared/_Layout_Admin.cshtml";
+    ViewBag.Title = "WebDoctor - Paciente - Exame Físico";
+    ViewBag.MetaDescription = "WebDoctor - Paciente - Exame Físico - Edição de exame físico do paciente";
+    ViewBag.MetaKeywords = "WebDoctor, paciente, exame , fisico";
+}
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="page-title">
+        <ol class="breadcrumb">
+            <li>
+                <a href="@Url.Action("MontarTelaPaciente", "BaseAdmin")">Dashboard</a>
+            </li>
+            <li>
+                <a href="@Url.Action("MontarTelaCentralPaciente", "Paciente")">Central de Pacientes</a>
+            </li>
+            <li>
+                <a href="@Url.Action("EditarPaciente", "Paciente")">Pacientes - Edição</a>
+            </li>
+            <li class="active">
+                <strong>Pacientes - Exames Físicos</strong>
+            </li>
+        </ol>
+        <br />
+    </div>
+
+    <div class="row">
+        <div class="col-lg-12 col-md-12 col-xs-12">
+            <div class="col-lg-12 col-md-12 col-xs-12 ibox float-e-margins">
+                <div class="ibox-title">
+                    <div style="text-align: center;" class="col-lg-12 col-md-12 col-xs-12">
+                        <h5>Exame Físico - Edição</h5>
+                        <span style="color: green; font-weight: 500; font-size: 20px;">@Model.PACIENTE.PACI_NM_NOME</span>
+                    </div>
+                </div>
+                @using (Html.BeginForm("EditarExameFisico", "Paciente", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal", @id="pwd-container1" }))
+                {
+                    <div class="ibox-content">
+                        @Html.AntiForgeryToken()
+                        @if (!ViewData.ModelState.IsValid)
+                        {
+                            <div class="alert alert-danger">
+                                <button type="button" class="close" data-dismiss="alert">Fechar</button>
+                                @Html.ValidationSummary(false, "Erros Encontrados:", new { @class = "text-danger" })
+                            </div>
+                        }
+                        <div class="form-group">
+                            @Html.ButtonActionSubmit(text: "Confirma Edição do Exame Físico", htmlAttributes: new { id = "basictoast" })
+                            @Html.ButtonLinkIndex(text: "Resultados de Exames", action: "VerListaExameConsulta", controller: "Paciente")
+                            @Html.ButtonLinkIndex(text: "Acompanhamento", action: "VerAnotacaoAnamneseBase", controller: "Paciente2")
+                            @Html.ButtonLinkIndex(text: "Anamnese", action: "VerAnamneseBase", controller: "Paciente2")
+                            @Html.ButtonLinkIndex(text: "Imprimir Exame Físico", action: "GerarExameFisicoPDFNova", controller: "Paciente")
+                            @if ((Int32)Session["VoltaFisico"] == 1)
+                            {
+                                @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarAnexoPaciente", controller: "Paciente")
+                            }
+                            else if ((Int32)Session["VoltaFisico"] == 2)
+                            {
+                                @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarProcederConsulta", controller: "Paciente")
+                            }
+                            <a href="@Url.Action((String)Session["AjudaNivel"])" class="btn btn-sm btn-danger" target="_blank">Ajuda</a>
+                        </div>
+
+                        @*Paciente*@
+                        <div class="row">
+                            <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Paciente</h4>
+                            <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">                
+                                <div class="col-lg-4 col-md-4 col-xs-12">
+                                    Nome do Paciente
+                                    @Html.TextBoxFor(m => m.PACIENTE.PACI_NM_NOME, new { @class = "form-control", @readonly = "readonly", @style = "color: green; font-weight: bold" })
+                                </div>
+                                <div class="col-lg-2 col-md-2 col-xs-12">
+                                    Data Nascimento
+                                    @Html.TextBoxFor(m => m.PACIENTE.PACI_DT_NASCIMENTO, "{0:dd/MM/yyyy}", new { @class = "form-control", @readonly = "readonly" })
+                                </div>
+                                @if (Model.PACIENTE.PACI_NR_CPF != null)
+                                {
+                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                        CPF
+                                        @Html.TextBoxFor(m => m.PACIENTE.PACI_NR_CPF, new { @class = "form-control", @readonly = "readonly" })
+                                    </div>
+                                }
+                                @if (Model.PACIENTE.PACI_NR_CELULAR != null)
+                                {
+                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                        Celular
+                                        @Html.TextBoxFor(m => m.PACIENTE.PACI_NR_CELULAR, new { @class = "form-control", @readonly = "readonly" })
+                                    </div>
+                                }
+                                @if (Model.PACIENTE.PACI_NR_TELEFONE != null)
+                                {
+                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                        Telefone
+                                        @Html.TextBoxFor(m => m.PACIENTE.PACI_NR_TELEFONE, new { @class = "form-control", @readonly = "readonly" })
+                                    </div>
+                                }
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Consulta</h4>
+                            <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">                
+                                <div class="col-lg-2 col-md-2 col-xs-12">
+                                    @Html.HiddenFor(m => m.PACI_CD_ID)
+                                    @Html.HiddenFor(m => m.PACO_CD_ID)
+                                    @Html.HiddenFor(m => m.PAEF_DT_DATA)
+                                    @Html.HiddenFor(m => m.USUA_CD_ID)
+                                    @Html.HiddenFor(m => m.ASSI_CD_ID)
+                                    @Html.HiddenFor(m => m.PAEF_IN_ATIVO)
+                                    @Html.HiddenFor(m => m.PAEF_CD_ID)
+                                    Data da Consulta
+                                    @Html.TextBoxFor(m => m.PACO_DT_CONSULTA, "{0:dd/MM/yyyy}", new { @class = "form-control", @readonly = "readonly", @style = "color: darkblue; font-weight: bold" })
+                                </div>
+                                <div class="col-lg-2 col-md-2 col-xs-12">
+                                    Tipo de Consulta
+                                    @Html.TextBoxFor(m => m.TipoConsulta, new { @class = "form-control", @readonly = "readonly" })
+                                </div>
+                                <div class="col-lg-2 col-md-2 col-xs-12">
+                                    <br />
+                                    <a href="@Url.Action("VerEvolucaoDadosBasicos", "Paciente2")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Visualização da evolução das informações do exame físico do paciente" class="btn btn-sm btn-primary" OnClick = "Fade()">Evolução das Informações do Paciente</a>                
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Exame Físico</h4>
+                                <div class="col-lg-6 col-md-6 col-xs-12">
+                                    <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                        <div class="col-lg-12 col-md-12 col-xs-12">
+                                            Ficha de Avaliacao
+                                            @Html.TextAreaFor(m => m.PAEF_DS_FICHA_AVALIACAO, new { @class = "form-control", style = "width: 100%; height: 80px; overflow:auto;", autofocus = true })
+                                            @Html.ValidationMessageFor(m => m.PAEF_DS_FICHA_AVALIACAO, "", new { @style = "color:red" })
+                                        </div>
+                                    </div>
+                                    <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                        <div class="col-lg-3 col-md-3 col-xs-12">
+                                            Pressão Diastólica (mmHg)
+                                            @Html.TextBoxFor(m => m.PAEF_NR_PA_ALTA, new { @class = "form-control", autofocus = true })
+                                            @Html.ValidationMessageFor(m => m.PAEF_NR_PA_ALTA, "", new { @style = "color:red" })
+                                        </div>
+                                        <div class="col-lg-3 col-md-3 col-xs-12">
+                                            Pressão Sistólica (mmHg)
+                                            @Html.TextBoxFor(m => m.PAEF_NR_PA_BAIXA, new { @class = "form-control", autofocus = true })
+                                            @Html.ValidationMessageFor(m => m.PAEF_NR_PA_BAIXA, "", new { @style = "color:red" })
+                                        </div>
+                                        <div class="col-lg-3 col-md-3 col-xs-12">
+                                            Frequencia Cardíaca (bpm)
+                                            @Html.TextBoxFor(m => m.PAEF_NR_FREQUENCIA_CARDIACA, new { @class = "form-control", autofocus = true })
+                                            @Html.ValidationMessageFor(m => m.PAEF_NR_FREQUENCIA_CARDIACA, "", new { @style = "color:red" })
+                                        </div>
+                                        <div class="col-lg-3 col-md-3 col-xs-12">
+                                            Temperatura (oC)
+                                            @Html.TextBoxFor(m => m.PAEF_NR_TEMPERATURA, new { @class = "form-control", autofocus = true })
+                                            @Html.ValidationMessageFor(m => m.PAEF_NR_TEMPERATURA, "", new { @style = "color:red" })
+                                        </div>
+                                    </div>
+                                    <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                        <div class="col-lg-3 col-md-3 col-xs-12">
+                                            Peso (Kg)
+                                            @Html.TextBoxFor(m => m.PAEF_NR_PESO, new { @class = "form-control", autofocus = true, @id = "peso", onfocusout = "CalculaIMC()" })
+                                            @Html.ValidationMessageFor(m => m.PAEF_NR_PESO, "", new { @style = "color:red" })
+                                        </div>
+                                        <div class="col-lg-3 col-md-3 col-xs-12">
+                                            Altura (Cm)
+                                            @Html.TextBoxFor(m => m.PAEF_NR_ALTURA, new { @class = "form-control", autofocus = true, @id = "altura", onfocusout = "CalculaIMC()" })
+                                            @Html.ValidationMessageFor(m => m.PAEF_NR_ALTURA, "", new { @style = "color:red" })
+                                        </div>
+                                        <div class="col-lg-3 col-md-3 col-xs-12">
+                                            IMC
+                                            @Html.TextBoxFor(m => m.PAEF_VL_IMC, new { @class = "form-control", @readonly="readonly", @id = "imc"  })
+                                        </div>
+                                        @if (Model.Idade > 0)
+                                        {
+                                            <div class="col-lg-2 col-md-2 col-xs-12">
+                                                Idade
+                                                @Html.TextBoxFor(m => m.Idade, new { @class = "form-control", @readonly = "readonly" })
+                                            </div>
+                                        }
+                                    </div>
+                                    <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                        <div class="col-lg-3 col-md-3 col-xs-12">
+                                            Hipertensão
+                                            <br />
+                                            @Html.CheckBoxFor(m => m.Hipertensao, new { @class = "checkbox i-checks", autofocus = true })
+                                        </div>                                                
+                                        <div class="col-lg-3 col-md-3 col-xs-12">
+                                            Hipotensão
+                                            <br />
+                                            @Html.CheckBoxFor(m => m.Hipotensao, new { @class = "checkbox i-checks", autofocus = true })
+                                        </div>                                                
+                                        <div class="col-lg-3 col-md-3 col-xs-12">
+                                            Diabetes
+                                            <br />
+                                            @Html.CheckBoxFor(m => m.Diabete, new { @class = "checkbox i-checks", autofocus = true })
+                                        </div>                                               
+                                    </div>
+                                    <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                        <div class="col-lg-3 col-md-3 col-xs-12">
+                                            Varizes
+                                            <br />
+                                            @Html.CheckBoxFor(m => m.Varizes, new { @class = "checkbox i-checks", autofocus = true })
+                                        </div>                                                
+                                        <div class="col-lg-3 col-md-3 col-xs-12">
+                                            Epilepsia
+                                            <br />
+                                            @Html.CheckBoxFor(m => m.Epilepsia, new { @class = "checkbox i-checks", autofocus = true })
+                                        </div>                                               
+                                    </div>                              
+                                    <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                        <div class="col-lg-3 col-md-3 col-xs-12">
+                                            Tabagismo
+                                            <br />
+                                            @Html.CheckBoxFor(m => m.Tabagismo, new { @class = "checkbox i-checks", autofocus = true })
+                                        </div>                                                
+                                        <div class="col-lg-9 col-md-9 col-xs-12">
+                                            Frequencia do Tabagismo
+                                            @Html.TextAreaFor(m => m.PAEF_DS_TABAGISMO_LONG, new { @class = "form-control", style = "width: 100%; height: 80px; overflow:auto;", autofocus = true })
+                                            @Html.ValidationMessageFor(m => m.PAEF_DS_TABAGISMO_LONG, "", new { @style = "color:red" })
+                                        </div>
+                                    </div>                              
+                                    <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                        <div class="col-lg-3 col-md-3 col-xs-12">
+                                            Gestante
+                                            <br />
+                                            @Html.CheckBoxFor(m => m.Gestante, new { @class = "checkbox i-checks", autofocus = true })
+                                        </div>                                                
+                                        <div class="col-lg-4 col-md-4 col-xs-12">
+                                            Semanas de Gestação
+                                            @Html.TextBoxFor(m => m.PAEF_NR_MES_GESTANTE, new { @class = "form-control", autofocus = true })
+                                            @Html.ValidationMessageFor(m => m.PAEF_NR_MES_GESTANTE, "", new { @style = "color:red" })
+                                        </div>
+                                    </div>                              
+                                    <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                        <div class="col-lg-3 col-md-3 col-xs-12">
+                                            Alcoolismo
+                                            <br />
+                                            @Html.CheckBoxFor(m => m.Alcoolismo, new { @class = "checkbox i-checks", autofocus = true })
+                                        </div>                                                
+                                        <div class="col-lg-9 col-md-9 col-xs-12">
+                                            Frequencia do Alcoolismo
+                                            @Html.TextAreaFor(m => m.PAEF_DS_ALCOOLISMO_LONG, new { @class = "form-control", style = "width: 100%; height: 80px; overflow:auto;", autofocus = true })
+                                            @Html.ValidationMessageFor(m => m.PAEF_DS_ALCOOLISMO_LONG, "", new { @style = "color:red" })
+                                        </div>
+                                    </div>                              
+                                    <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                        <div class="col-lg-3 col-md-3 col-xs-12">
+                                            Exercício Físico
+                                            <br />
+                                            @Html.CheckBoxFor(m => m.ExercicioFisico, new { @class = "checkbox i-checks", autofocus = true })
+                                        </div>                                                
+                                        <div class="col-lg-9 col-md-9 col-xs-12">
+                                            Frequencia do Exercício Físico
+                                            @Html.TextAreaFor(m => m.PAEF_DS_EXERCICIO_FISICO_LONG, new { @class = "form-control", style = "width: 100%; height: 80px; overflow:auto;", autofocus = true })
+                                            @Html.ValidationMessageFor(m => m.PAEF_DS_EXERCICIO_FISICO_LONG, "", new { @style = "color:red" })
+                                        </div>
+                                    </div>                              
+                                    <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                        <div class="col-lg-3 col-md-3 col-xs-12">
+                                            Anticoncepcional
+                                            <br />
+                                            @Html.CheckBoxFor(m => m.Anticoncepcional, new { @class = "checkbox i-checks", autofocus = true })
+                                        </div>                                                
+                                        <div class="col-lg-9 col-md-9 col-xs-12">
+                                            Anticoncepcionais Usados
+                                            @Html.TextAreaFor(m => m.PAEF_DS_ANTICONCEPCIONAL, new { @class = "form-control", style = "width: 100%; height: 80px; overflow:auto;", autofocus = true })
+                                            @Html.ValidationMessageFor(m => m.PAEF_DS_ANTICONCEPCIONAL, "", new { @style = "color:red" })
+                                        </div>
+                                    </div>                              
+                                    <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                        <div class="col-lg-3 col-md-3 col-xs-12">
+                                            Marcapasso
+                                            <br />
+                                            @Html.CheckBoxFor(m => m.Marcapasso, new { @class = "checkbox i-checks", autofocus = true })
+                                        </div>                                                
+                                        <div class="col-lg-9 col-md-9 col-xs-12">
+                                            Observações do Marcapasso
+                                            @Html.TextAreaFor(m => m.PAEF_DS_MARCAPASSO_LONG, new { @class = "form-control", style = "width: 100%; height: 80px; overflow:auto;", autofocus = true })
+                                            @Html.ValidationMessageFor(m => m.PAEF_DS_MARCAPASSO_LONG, "", new { @style = "color:red" })
+                                        </div>
+                                    </div>                              
+                                    <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                        <div class="col-lg-3 col-md-3 col-xs-12">
+                                            Cirurgias
+                                            <br />
+                                            @Html.CheckBoxFor(m => m.Cirurgia, new { @class = "checkbox i-checks"})
+                                        </div>                                                
+                                        <div class="col-lg-9 col-md-9 col-xs-12">
+                                            Descrição das Cirurgias
+                                            @Html.TextAreaFor(m => m.PAEF_TX_CIRURGIAS, new { @class = "form-control", style = "width: 100%; height: 100px; overflow:auto;", autofocus = true })
+                                            @Html.ValidationMessageFor(m => m.PAEF_TX_CIRURGIAS, "", new { @style = "color:red" })
+                                        </div>
+                                    </div>                              
+                                    <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                        <div class="col-lg-3 col-md-3 col-xs-12">
+                                            Antecedente Alérgico
+                                            <br />
+                                            @Html.CheckBoxFor(m => m.AntecedenteAlergico, new { @class = "checkbox i-checks", autofocus = true })
+                                        </div>                                                
+                                        <div class="col-lg-9 col-md-9 col-xs-12">
+                                            Descrição dos Antecedentes Alérgicos
+                                            @Html.TextAreaFor(m => m.PAEF_DS_ALERGICO_LONG, new { @class = "form-control", style = "width: 100%; height: 100px; overflow:auto;", autofocus = true })
+                                            @Html.ValidationMessageFor(m => m.PAEF_DS_ALERGICO_LONG, "", new { @style = "color:red" })
+                                        </div>
+                                    </div>                              
+                                    <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                        <div class="col-lg-3 col-md-3 col-xs-12">
+                                            Antecedente Oncológico
+                                            <br />
+                                            @Html.CheckBoxFor(m => m.AntecedenteOncologico, new { @class = "checkbox i-checks", autofocus = true })
+                                        </div>                                                
+                                        <div class="col-lg-9 col-md-9 col-xs-12">
+                                            Descrição dos Antecedentes Oncológicos
+                                            @Html.TextAreaFor(m => m.PAEF_DS_ONCOLOGICO_LONG, new { @class = "form-control", style = "width: 100%; height: 100px; overflow:auto;", autofocus = true })
+                                            @Html.ValidationMessageFor(m => m.PAEF_DS_ONCOLOGICO_LONG, "", new { @style = "color:red" })
+                                        </div>
+                                    </div>                          
+                                </div>
+
+                                <div class="col-lg-6 col-md-6 col-xs-12">
+                                    <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                        <div class="col-lg-12 col-md-12 col-xs-12">
+                                            Resultados de Exames - Histórico
+                                            @Html.TextAreaFor(m => m.PAEF_TX_RESULTADOS_OLD, new { @class = "form-control", style = "width: 100%; height: 400px; overflow:auto;", tabindex = "-1", @readonly = "readonly" })
+                                        </div>
+                                    </div>
+                                    <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                        <div class="col-lg-12 col-md-12 col-xs-12">
+                                            Resultados de Exames - Atualização
+                                            @Html.TextAreaFor(m => m.PAEF_TX_RESULTADOS, new { @class = "form-control", style = "width: 100%; height: 200px; overflow:auto;", autofocus = true })
+                                            @Html.ValidationMessageFor(m => m.PAEF_TX_RESULTADOS, "", new { @style = "color:red" })
+                                        </div>
+                                    </div>
+                                    <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">                
+                                        <div class="col-lg-12 col-md-12 col-xs-12">
+                                            Anotações Diversas
+                                            @Html.TextAreaFor(m => m.PAEF_DS_EXAME_FISICO, new { @class = "form-control", style = "width: 100%; height: 400px; overflow:auto;", autofocus = true })
+                                            @Html.ValidationMessageFor(m => m.PAEF_DS_EXAME_FISICO, "", new { @style = "color:red" })
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                }
+            </div>
+         </div>
+    </div>
+</div>
+
+@section Styles {
+    <link href="~/Content/themes/base/all.css" rel="stylesheet" />  
+    @Styles.Render("~/Content/plugins/dataTables/dataTablesStyles")
+    @Styles.Render("~/plugins/jasnyBootstrapStyles")
+    @Styles.Render("~/Content/plugins/iCheck/iCheckStyles")
+    @Styles.Render("~/plugins/touchSpinStyles")
+    @Styles.Render("~/plugins/sweetAlertStyles")
+    @Styles.Render("~/plugins/toastrStyles")
+    <link href="~/Content/themes/base/jquery-ui.min.css" rel="stylesheet" />
+    <link href="~/Content/themes/base/all.css" rel="stylesheet" />
+    <link href="~/Content/jquery.datetimepicker.css" rel="stylesheet" />
+    @Styles.Render("~/Content/plugins/dataTables/dataTablesStyles")
+    @Styles.Render("~/plugins/jasnyBootstrapStyles")
+    @Styles.Render("~/plugins/toastrStyles")
+    <link href="~/Content/jquery-ui-timepicker-addon.min.css" rel="stylesheet" />
+    <link href="~/Content/plugins/select2/select2.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote.min.js"></script>
+}
+@section Scripts {
+    @Scripts.Render("~/plugins/toastr")
+    @Scripts.Render("~/plugins/dataTables")
+    @Scripts.Render("~/bundles/inputmask")
+    @Scripts.Render("~/plugins/jasnyBootstrap")
+    @Scripts.Render("~/plugins/sparkline")
+    @Scripts.Render("~/plugins/touchSpin")
+    @Scripts.Render("~/plugins/iCheck")
+    @Scripts.Render("~/plugins/sweetAlert")
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.maskedinput/1.4.1/jquery.maskedinput.js"></script>
+    <script src="~/Scripts/jquery.datetimepicker.full.min.js"></script>
+    <script type="text/javascript" src="~/Scripts/moment.min.js"></script>
+    <script type="text/javascript" src="~/Scripts/bootstrap.min.js"></script>
+    <script type="text/javascript" src="~/Scripts/jquery.datetimepicker"></script>
+    <script src="~/Scripts/jquery-ui-timepicker-addon.min.js"></script>
+    @Scripts.Render("~/plugins/toastr")
+    <script src="~/Scripts/jquery-ui-1.12.1.min.js"></script>
+    @Scripts.Render("~/plugins/dataTables")
+    @Scripts.Render("~/bundles/inputmask")
+    @Scripts.Render("~/plugins/jasnyBootstrap")
+    @Scripts.Render("~/plugins/sparkline")
+    @*@Scripts.Render("~/Scripts/plugins/summernote/summernote.min.js")*@
+    <script src="~/Scripts/plugins/select2/select2.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.maskedinput/1.4.1/jquery.maskedinput.js"></script>    
+    <script src="~/Scripts/uploadAnexo.js"></script>
+    
+    
+    
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            $('.i-checks').iCheck({
+                checkboxClass: 'icheckbox_square-green',
+                radioClass: 'iradio_square-green',
+            });
+
+        });
+    </script>
+
+    <script>
+        function CalculaIMC() {
+            var peso = $('#peso').val() == "" ? 0 : $('#peso').val();
+            var altura = $('#altura').val() == "" ? 0 : $('#altura').val();
+
+            peso = (parseFloat(peso.replace(',', '.')));
+            altura = (parseFloat(altura.replace(',', '.')));
+
+            var tot = 0;
+            altura = altura / 100;
+            tot = peso / (altura * altura);
+            $('#imc').val(parseFloat(tot).toFixed(2).replace('.', ','));
+        }
+    </script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            var i = -1;
+            var toastCount = 0;
+            var $toastlast;
+            var getMessage = function () {
+                var msg = 'Hi, welcome to Inspinia. This is example of Toastr notification box.';
+                return msg;
+            };
+
+            $('#basictoast').click(function () {
+                // Display a success toast, with a title
+                toastr.success('Edição em andamento!')
+            });
+            $('#showtoast').click(function () {
+                var shortCutFunction = $("#toastTypeGroup input:radio:checked").val();
+                var msg = $('#message').val();
+                var title = $('#title').val() || '';
+                var $showDuration = $('#showDuration');
+                var $hideDuration = $('#hideDuration');
+                var $timeOut = $('#timeOut');
+                var $extendedTimeOut = $('#extendedTimeOut');
+                var $showEasing = $('#showEasing');
+                var $hideEasing = $('#hideEasing');
+                var $showMethod = $('#showMethod');
+                var $hideMethod = $('#hideMethod');
+                var toastIndex = toastCount++;
+                toastr.options = {
+                    closeButton: $('#closeButton').prop('checked'),
+                    debug: $('#debugInfo').prop('checked'),
+                    progressBar: $('#progressBar').prop('checked'),
+                    positionClass: $('#positionGroup input:radio:checked').val() || 'toast-top-right',
+                    onclick: null
+                };
+                if ($('#addBehaviorOnToastClick').prop('checked')) {
+                    toastr.options.onclick = function () {
+                        alert('You can perform some custom action after a toast goes away');
+                    };
+                }
+                if ($showDuration.val().length) {
+                    toastr.options.showDuration = $showDuration.val();
+                }
+                if ($hideDuration.val().length) {
+                    toastr.options.hideDuration = $hideDuration.val();
+                }
+                if ($timeOut.val().length) {
+                    toastr.options.timeOut = $timeOut.val();
+                }
+                if ($extendedTimeOut.val().length) {
+                    toastr.options.extendedTimeOut = $extendedTimeOut.val();
+                }
+                if ($showEasing.val().length) {
+                    toastr.options.showEasing = $showEasing.val();
+                }
+                if ($hideEasing.val().length) {
+                    toastr.options.hideEasing = $hideEasing.val();
+                }
+                if ($showMethod.val().length) {
+                    toastr.options.showMethod = $showMethod.val();
+                }
+                if ($hideMethod.val().length) {
+                    toastr.options.hideMethod = $hideMethod.val();
+                }
+                if (!msg) {
+                    msg = getMessage();
+                }
+                $("#toastrOptions").text("Command: toastr["
+                        + shortCutFunction
+                        + "](\""
+                        + msg
+                        + (title ? "\", \"" + title : '')
+                        + "\")\n\ntoastr.options = "
+                        + JSON.stringify(toastr.options, null, 2)
+                );
+                var $toast = toastr[shortCutFunction](msg, title); // Wire up an event handler to a button in the toast, if it exists
+                $toastlast = $toast;
+                if ($toast.find('#okBtn').length) {
+                    $toast.delegate('#okBtn', 'click', function () {
+                        alert('you clicked me. i was toast #' + toastIndex + '. goodbye!');
+                        $toast.remove();
+                    });
+                }
+                if ($toast.find('#surpriseBtn').length) {
+                    $toast.delegate('#surpriseBtn', 'click', function () {
+                        alert('Surprise! you clicked me. i was toast #' + toastIndex + '. You could perform an action here.');
+                    });
+                }
+            });
+            function getLastToast() {
+                return $toastlast;
+            }
+            $('#clearlasttoast').click(function () {
+                toastr.clear(getLastToast());
+            });
+            $('#cleartoasts').click(function () {
+                toastr.clear();
+            });
+
+        });
+    </script>
+
+
+    @if (ViewBag.Message != null)
+    {
+        <script type="text/javascript">
+            window.onload = function () {
+                  alert("@ViewBag.Message");
+            };
+        </script>
+    }
+}

@@ -1,0 +1,1429 @@
+﻿@using Presentation.Extensions
+@model ERP_Condominios_Solution.ViewModels.EmpresaViewModel
+@{
+    Layout = "~/Views/Shared/_Layout_Admin.cshtml";
+    ViewBag.Title = "WebDoctor - Assinante";
+    ViewBag.MetaDescription = "WebDoctor - Assinante - Informações do assinante";
+    ViewBag.MetaKeywords = "WebDoctor, Assinante";
+}
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div id="containerModalDesc">
+        <div class="modal fade" id="modalDesc" tabindex="-1" role="dialog" aria-labelledby="modalDesc" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="modalDesc">Descrição do Plano</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div id="modalDescBody" class="modal-body">
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modalContainer">
+        <div id="modal" class="modal" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        @*titulo gerado dinamicamente*@
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        @*Gerado dinamicamente*@
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="page-title">
+        <ol class="breadcrumb">
+            <li>
+                <a href="@Url.Action("MontarTelaPaciente", "BaseAdmin")">Dashboard</a>
+            </li>
+            <li class="active">
+                <strong>Assinante</strong>
+            </li>
+        </ol>
+        <br />
+    </div>
+
+    <div class="row">
+        <div class="col-lg-12 col-md-12 col-xs-12">
+            <div class="col-lg-12 col-md-12 col-xs-12 ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>Assinante - Configuração</h5>
+                </div>
+
+                <div class="ibox-content">
+                    @if (!ViewData.ModelState.IsValid)
+                    {
+                        <div class="alert alert-danger">
+                            <button type="button" class="close" data-dismiss="alert">Fechar</button>
+                            @Html.ValidationSummary(false, "", new { @class = "text-danger" })
+                        </div>
+                    }
+                    <div class="form-group">
+                        @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarDash", controller: "Empresa")
+                        <a href="@Url.Action((String)Session["AjudaNivel"])"  class="btn btn-sm btn-danger" target="_blank">Ajuda</a>                
+                    </div>
+                    <div class="tabs-container">
+                        <ul class="nav nav-tabs">
+                            @if ((Int32)Session["NivelEmpresa"] == 1)
+                            {
+                                <li class="active"><a data-toggle="tab" href="#tab-1">Dados Gerais</a></li>
+                                <li class=""><a data-toggle="tab" href="#tab-2">Anexos</a></li>
+                                <li class=""><a data-toggle="tab" href="#tab-3">Logotipo</a></li>
+                                <li class=""><a data-toggle="tab" href="#tab-4">Plano de Assinatura</a></li>
+                                <li class=""><a data-toggle="tab" href="#tab-5">Consumos do Plano</a></li>
+                                <li class=""><a data-toggle="tab" href="#tab-9">Pagamentos</a></li>
+                            }
+                            @if ((Int32)Session["NivelEmpresa"] == 2)
+                            {
+                                <li class=""><a data-toggle="tab" href="#tab-1">Dados Gerais</a></li>
+                                <li class="active"><a data-toggle="tab" href="#tab-2">Anexos</a></li>
+                                <li class=""><a data-toggle="tab" href="#tab-3">Logotipo</a></li>
+                                <li class=""><a data-toggle="tab" href="#tab-4">Plano de Assinatura</a></li>
+                                <li class=""><a data-toggle="tab" href="#tab-5">Consumos do Plano</a></li>
+                                <li class=""><a data-toggle="tab" href="#tab-9">Pagamentos</a></li>
+                            }
+                            @if ((Int32)Session["NivelEmpresa"] == 3)
+                            {
+                                <li class=""><a data-toggle="tab" href="#tab-1">Dados Gerais</a></li>
+                                <li class=""><a data-toggle="tab" href="#tab-2">Anexos</a></li>
+                                <li class="active"><a data-toggle="tab" href="#tab-3">Logotipo</a></li>
+                                <li class=""><a data-toggle="tab" href="#tab-4">Plano de Assinatura</a></li>
+                                <li class=""><a data-toggle="tab" href="#tab-5">Consumos do Plano</a></li>
+                                <li class=""><a data-toggle="tab" href="#tab-9">Pagamentos</a></li>
+                            }
+                            @if ((Int32)Session["NivelEmpresa"] == 4)
+                            {
+                                <li class=""><a data-toggle="tab" href="#tab-1">Dados Gerais</a></li>
+                                <li class=""><a data-toggle="tab" href="#tab-2">Anexos</a></li>
+                                <li class=""><a data-toggle="tab" href="#tab-3">Logotipo</a></li>
+                                <li class=""><a data-toggle="tab" href="#tab-4">Plano de Assinatura</a></li>
+                                <li class=""><a data-toggle="tab" href="#tab-5">Consumos do Plano</a></li>
+                                <li class="active"><a data-toggle="tab" href="#tab-9">Pagamentos</a></li>
+                            }
+                        </ul>
+                        <div class="tab-content">
+
+                            @*Dados Gerais*@
+                            @if ((Int32)Session["NivelEmpresa"] == 1)
+                            {
+                                <div id="tab-1" class="tab-pane active">
+                                    <div class="panel-body">
+                                        @using (Html.BeginForm("MontarTelaEmpresa", "Empresa", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal", @id = "pwd-container1" }))
+                                        {
+                                            <div class="row" style="width: 100%;">
+                                                <div class="col-lg-2 col-md-2 col-xs-12">
+                                                    <div style="text-align: center; margin-top: 20px; line-height: 10px;">
+                                                        @if (!String.IsNullOrEmpty(Model.EMPR_AQ_LOGO))
+                                                        {
+                                                            <img src="@Url.Content(Model.EMPR_AQ_LOGO)" style="width: auto; height: auto; max-height: 180px; max-width: 180px;">
+                                                        }
+                                                        else
+                                                        {
+                                                            <img src="~/Images/Prontuario/prontuario_icon_3.png" style="width: auto; height: auto; max-height: 180px; max-width: 120px;">
+                                                        }
+                                                        <br />
+                                                        <br />
+                                                        <br />
+                                                        <br />
+                                                        <br />
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-10 col-md-10 col-xs-12">
+                                                    <div class="row">
+                                                        <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                                            <div class="col-lg-2 col-md-2 col-xs-12">
+                                                                Tipo de Assinante
+                                                                @Html.TextBoxFor(m => m.TIPO_PESSOA.TIPE_NM_NOME, new { @class = "form-control", @readonly="readonly" })
+                                                            </div>
+                                                            <div class="col-lg-4 col-md-4 col-xs-12">
+                                                                @Html.HiddenFor(m => m.ASSI_CD_ID)
+                                                                @Html.HiddenFor(m => m.EMPR_IN_ATIVO)
+                                                                @Html.HiddenFor(m => m.EMPR_DT_CADASTRO)
+                                                                @Html.HiddenFor(m => m.EMPR_CD_ID)
+                                                                @Html.HiddenFor(m => m.EMPR_AQ_LOGO)
+                                                                @Html.HiddenFor(m => m.TIPE_CD_ID)
+                                                                @Html.HiddenFor(m => m.EMPR_NM_GUERRA)
+                                                                Nome
+                                                                @Html.TextBoxFor(m => m.EMPR_NM_NOME, new { @class = "form-control", @style = "color: green; font-weight: bold", @readonly="readonly" })
+                                                            </div>
+                                                            @if (Model.TIPE_CD_ID == 2)
+                                                            {
+                                                                <div class="col-lg-4 col-md-4 col-xs-12">
+                                                                    Razão Social
+                                                                    @Html.TextBoxFor(m => m.EMPR_NM_RAZAO, new { @class = "form-control", @readonly="readonly" })
+                                                                </div>
+                                                            }
+                                                            <div class="col-lg-2 col-md-2 col-xs-12">
+                                                                Nome de Guerra
+                                                                @Html.TextBoxFor(m => m.EMPR_NM_GUERRA, new { @class = "form-control", @readonly="readonly" , @style = "color: brown; font-weight: bold" })
+                                                                @Html.ValidationMessageFor(m => m.EMPR_NM_GUERRA, "", new { @style = "color:red" })
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                                            @if (Model.TIPE_CD_ID == 2)
+                                                            {
+                                                                <div class="col-lg-2 col-md-2 col-xs-12">
+                                                                    CNPJ
+                                                                    @Html.TextBoxFor(m => m.EMPR_NR_CNPJ, new { @class = "form-control", @id = "cnpj", @readonly="readonly" })
+                                                                </div>
+                                                                <div class="col-lg-2 col-md-2 col-xs-12">
+                                                                    Insc.Estadual
+                                                                    @Html.TextBoxFor(m => m.EMPR_NR_INSCRICAO_ESTADUAL, new { @class = "form-control", @readonly="readonly" })
+                                                                </div>
+                                                                <div class="col-lg-2 col-md-2 col-xs-12">
+                                                                    Insc.Municipal
+                                                                    @Html.TextBoxFor(m => m.EMPR_NR_INSCRICAO_MUNICIPAL, new { @class = "form-control", @readonly="readonly" })
+                                                                </div>
+                                                            }
+                                                            else
+                                                            {
+                                                                <div class="col-lg-2 col-md-2 col-xs-12">
+                                                                    CPF
+                                                                    @Html.TextBoxFor(m => m.EMPR_NR_CPF, new { @class = "form-control", @id = "cnpj", @readonly="readonly" })
+                                                                </div>
+                                                            }
+                                                        </div>
+
+                                                        <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                                            <div class="col-lg-5 col-md-5 col-xs-12">
+                                                                Endereço
+                                                                @Html.TextBoxFor(m => m.EMPR_NM_ENDERECO, new { @class = "form-control", @readonly="readonly" })
+                                                            </div>
+                                                            <div class="col-lg-2 col-md-2 col-xs-12">
+                                                                Número
+                                                                @Html.TextBoxFor(m => m.EMPR_NM_NUMERO, new { @class = "form-control", @readonly="readonly" })
+                                                            </div>
+                                                            <div class="col-lg-2 col-md-2 col-xs-12">
+                                                                Complemento
+                                                                @Html.TextBoxFor(m => m.EMPR_NM_COMPLEMENTO, new { @class = "form-control", @readonly="readonly" })
+                                                            </div>
+                                                            <div class="col-lg-3 col-md-3 col-xs-12">
+                                                                Bairro
+                                                                @Html.TextBoxFor(m => m.EMPR_NM_BAIRRO, new { @class = "form-control", @readonly="readonly" })
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                                            <div class="col-lg-3 col-md-3 col-xs-12">
+                                                                Cidade
+                                                                @Html.TextBoxFor(m => m.EMPR_NM_CIDADE, new { @class = "form-control", @readonly="readonly" })
+                                                            </div>
+                                                            <div class="col-lg-2 col-md-2 col-xs-12">
+                                                                UF
+                                                                @Html.TextBoxFor(m => m.UF.UF_NM_NOME, new { @class = "form-control", @readonly="readonly" })
+                                                            </div>
+                                                            <div class="col-lg-2 col-md-2 col-xs-12">
+                                                                CEP
+                                                                @Html.TextBoxFor(m => m.EMPR_NR_CEP, new { @class = "form-control", @readonly="readonly" })
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                                            <div class="col-lg-12 col-md-12 col-xs-12">
+                                                                <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Para alterar as  informações do assinante entre em contato com a Rti através de um dos canais disponíveis na página Fale Conosco</h4>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
+                            }
+                            else
+                            {
+                                <div id="tab-1" class="tab-pane">
+                                    <div class="panel-body">
+                                        @using (Html.BeginForm("MontarTelaEmpresa", "Empresa", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal", @id = "pwd-container1" }))
+                                        {
+                                            <div class="row" style="width: 100%;">
+                                                <div class="col-lg-2 col-md-2 col-xs-12">
+                                                    <div style="text-align: center; margin-top: 20px; line-height: 10px;">
+                                                        @if (!String.IsNullOrEmpty(Model.EMPR_AQ_LOGO))
+                                                        {
+                                                            <img src="@Url.Content(Model.EMPR_AQ_LOGO)" style="width: auto; height: auto; max-height: 180px; max-width: 180px;">
+                                                        }
+                                                        else
+                                                        {
+                                                            <img src="~/Images/Prontuario/prontuario_icon_3.png" style="width: auto; height: auto; max-height: 180px; max-width: 120px;">
+                                                        }
+                                                        <br />
+                                                        <br />
+                                                        <br />
+                                                        <br />
+                                                        <br />
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-10 col-md-10 col-xs-12">
+                                                    <div class="row">
+                                                        <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                                            <div class="col-lg-2 col-md-2 col-xs-12">
+                                                                Tipo de Assinante
+                                                                @Html.TextBoxFor(m => m.TIPO_PESSOA.TIPE_NM_NOME, new { @class = "form-control", @readonly="readonly" })
+                                                            </div>
+                                                            <div class="col-lg-4 col-md-4 col-xs-12">
+                                                                @Html.HiddenFor(m => m.ASSI_CD_ID)
+                                                                @Html.HiddenFor(m => m.EMPR_IN_ATIVO)
+                                                                @Html.HiddenFor(m => m.EMPR_DT_CADASTRO)
+                                                                @Html.HiddenFor(m => m.EMPR_CD_ID)
+                                                                @Html.HiddenFor(m => m.EMPR_AQ_LOGO)
+                                                                @Html.HiddenFor(m => m.TIPE_CD_ID)
+                                                                @Html.HiddenFor(m => m.EMPR_NM_GUERRA)
+                                                                Nome
+                                                                @Html.TextBoxFor(m => m.EMPR_NM_NOME, new { @class = "form-control", @style = "color: green; font-weight: bold", @readonly="readonly" })
+                                                            </div>
+                                                            @if (Model.TIPE_CD_ID == 2)
+                                                            {
+                                                                <div class="col-lg-4 col-md-4 col-xs-12">
+                                                                    Razão Social
+                                                                    @Html.TextBoxFor(m => m.EMPR_NM_RAZAO, new { @class = "form-control", @readonly="readonly" })
+                                                                </div>
+                                                            }
+                                                            <div class="col-lg-2 col-md-2 col-xs-12">
+                                                                Nome de Guerra
+                                                                @Html.TextBoxFor(m => m.EMPR_NM_GUERRA, new { @class = "form-control", @readonly="readonly" , @style = "color: brown; font-weight: bold" })
+                                                                @Html.ValidationMessageFor(m => m.EMPR_NM_GUERRA, "", new { @style = "color:red" })
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                                            @if (Model.TIPE_CD_ID == 2)
+                                                            {
+                                                                <div class="col-lg-2 col-md-2 col-xs-12">
+                                                                    CNPJ
+                                                                    @Html.TextBoxFor(m => m.EMPR_NR_CNPJ, new { @class = "form-control", @id = "cnpj", @readonly="readonly" })
+                                                                </div>
+                                                                <div class="col-lg-2 col-md-2 col-xs-12">
+                                                                    Insc.Estadual
+                                                                    @Html.TextBoxFor(m => m.EMPR_NR_INSCRICAO_ESTADUAL, new { @class = "form-control", @readonly="readonly" })
+                                                                </div>
+                                                                <div class="col-lg-2 col-md-2 col-xs-12">
+                                                                    Insc.Municipal
+                                                                    @Html.TextBoxFor(m => m.EMPR_NR_INSCRICAO_MUNICIPAL, new { @class = "form-control", @readonly="readonly" })
+                                                                </div>
+                                                            }
+                                                            else
+                                                            {
+                                                                <div class="col-lg-2 col-md-2 col-xs-12">
+                                                                    CPF
+                                                                    @Html.TextBoxFor(m => m.EMPR_NR_CPF, new { @class = "form-control", @id = "cnpj", @readonly="readonly" })
+                                                                </div>
+                                                            }
+                                                        </div>
+
+                                                        <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                                            <div class="col-lg-5 col-md-5 col-xs-12">
+                                                                Endereço
+                                                                @Html.TextBoxFor(m => m.EMPR_NM_ENDERECO, new { @class = "form-control", @readonly="readonly" })
+                                                            </div>
+                                                            <div class="col-lg-2 col-md-2 col-xs-12">
+                                                                Número
+                                                                @Html.TextBoxFor(m => m.EMPR_NM_NUMERO, new { @class = "form-control", @readonly="readonly" })
+                                                            </div>
+                                                            <div class="col-lg-2 col-md-2 col-xs-12">
+                                                                Complemento
+                                                                @Html.TextBoxFor(m => m.EMPR_NM_COMPLEMENTO, new { @class = "form-control", @readonly="readonly" })
+                                                            </div>
+                                                            <div class="col-lg-3 col-md-3 col-xs-12">
+                                                                Bairro
+                                                                @Html.TextBoxFor(m => m.EMPR_NM_BAIRRO, new { @class = "form-control", @readonly="readonly" })
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                                            <div class="col-lg-3 col-md-3 col-xs-12">
+                                                                Cidade
+                                                                @Html.TextBoxFor(m => m.EMPR_NM_CIDADE, new { @class = "form-control", @readonly="readonly" })
+                                                            </div>
+                                                            <div class="col-lg-2 col-md-2 col-xs-12">
+                                                                UF
+                                                                @Html.TextBoxFor(m => m.UF.UF_NM_NOME, new { @class = "form-control", @readonly="readonly" })
+                                                            </div>
+                                                            <div class="col-lg-2 col-md-2 col-xs-12">
+                                                                CEP
+                                                                @Html.TextBoxFor(m => m.EMPR_NR_CEP, new { @class = "form-control", @readonly="readonly" })
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                                            <div class="col-lg-12 col-md-12 col-xs-12">
+                                                                <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Para alterar as  informações do assinante entre em contato com a RTi através de um dos canais disponíveis na página Fale Conosco</h4>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
+                            }
+                            
+                            @*Imagens - Anexos*@
+                            @if ((Int32)Session["NivelEmpresa"] == 2)
+                            {
+                                <div id="tab-2" class="tab-pane active">
+                                    <div class="panel-body">
+                                        <div class="row">
+                                            <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Anexos</h4>
+                                            <br />
+                                            <div class="form-group">
+                                                @using (Html.BeginForm("UploadFileEmpresa", "Empresa", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { enctype = "multipart/form-data", @id = "pwd-container2" }))
+                                                {
+                                                    if (Model.EMPRESA_ANEXO.Count > 0)
+                                                    {
+                                                        <table class="table table-striped table-bordered table-hover dataTables-example">
+                                                            <thead style="background-color:lightsteelblue">
+                                                                <tr>
+                                                                    <th>Nome do Anexo</th>
+                                                                    <th>Data do Anexo</th>
+                                                                    <th>Tipo de Arquivo</th>
+                                                                    <th class="td-one-action">Ações</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                @foreach (var cond in (Model.EMPRESA_ANEXO.Where(p => p.EMAN_IN_ATIVO == 1)))
+                                                                {
+                                                                    <tr>
+                                                                        @if (cond.EMAN_IN_TIPO == 1 || cond.EMAN_IN_TIPO == 2)
+                                                                        {
+                                                                            <td style="width: auto"><a href="@Url.Action("VerAnexoEmpresa", "Empresa", new { id = cond.EMAN_CD_ID })" />@cond.EMAN_NM_TITULO</td>
+                                                                        }
+                                                                        else if (cond.EMAN_IN_TIPO == 4)
+                                                                        {
+                                                                            <td style="width: auto"><a href="@Url.Action("VerAnexoEmpresaAudio", "Empresa", new { id = cond.EMAN_CD_ID })" />@cond.EMAN_NM_TITULO</td>
+                                                                        }
+                                                                        else if (cond.EMAN_IN_TIPO == 3)
+                                                                        {
+                                                                            <td style="width: auto"><a href="~/PdfViewer/web/viewer.html?file=@(cond.EMAN_AQ_ARQUIVO.Replace("~", ""))&ReturnUrl=@Request.Url.AbsolutePath" target="_blank" />@cond.EMAN_NM_TITULO</td>
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            <td style="width: auto">@cond.EMAN_NM_TITULO</td>
+                                                                        }
+                                                                        <td>@cond.EMAN_DT_ANEXO.ToShortDateString()</td>
+                                                                        @if (cond.EMAN_IN_TIPO == 1)
+                                                                        {
+                                                                            <td>Imagem</td>
+                                                                        }
+                                                                        else if (cond.EMAN_IN_TIPO == 2)
+                                                                        {
+                                                                            <td>Vídeo</td>
+                                                                        }
+                                                                        else if (cond.EMAN_IN_TIPO == 3)
+                                                                        {
+                                                                            <td>PDF</td>
+                                                                        }
+                                                                        else if (cond.EMAN_IN_TIPO == 4)
+                                                                        {
+                                                                            <td>Audio</td>
+                                                                        }
+                                                                        else if (cond.EMAN_IN_TIPO == 5)
+                                                                        {
+                                                                            <td>Documento/Word</td>
+                                                                        }
+                                                                        else if (cond.EMAN_IN_TIPO == 6)
+                                                                        {
+                                                                            <td>Planilha/Excel</td>
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            <td>Outros</td>
+                                                                        }
+                                                                        <td class="td-one-action">
+                                                                            @if (cond.EMAN_IN_TIPO == 1 || cond.EMAN_IN_TIPO == 2)
+                                                                            {
+                                                                                @Html.TableLinkDetails(cond.EMAN_CD_ID, "VerAnexoEmpresa", "fa-camera", "Visualizar")
+                                                                            }
+                                                                            @if (cond.EMAN_IN_TIPO == 4)
+	                                                                        {
+                                                                                @Html.TableLinkDetails(cond.EMAN_CD_ID, "VerAnexoEmpresaAudio","fa-volume-up", "Visualizar")
+	                                                                        }
+                                                                            @if (cond.EMAN_IN_TIPO == 3)
+                                                                            {
+                                                                                <a title="Visualizar" class="fa fa-camera fa-lg" href="~/PdfViewer/web/viewer.html?file=@(cond.EMAN_AQ_ARQUIVO.Replace("~", ""))&ReturnUrl=@Request.Url.AbsolutePath" target="_blank" ></a>
+                                                                            }
+                                                                            @Html.TableLinkDetails(cond.EMAN_CD_ID, "DownloadEmpresa", "fa-download", "Download")
+                                                                            @if (cond.EMAN_IN_ATIVO == 1)
+	                                                                        {
+                                                                                <span style="color: #337ab7; cursor:pointer;" alt="Desativar" class="tbl-link fa-lg fa fa-trash-o" onclick="ShowModalExcluirAnexo('/Empresa/ExcluirAnexo/@cond.EMAN_CD_ID')" title="Desativar"></span>
+	                                                                        }
+                                                                        </td>
+                                                                    </tr>
+                                                                }
+                                                            </tbody>
+                                                        </table>
+                                                    }
+                                                    <div class="form-group">
+                                                        <div class="col-lg-12 col-md-12 col-xs-12">
+                                                            <input style="float: left; margin-right: 5px;" type="file" name="file" id="file" class="btn btn-sm btn-warning" />
+                                                            <input style="float: left; margin-right: 5px;" type="submit" value="Incluir Anexo no Assinante" class="btn btn-sm btn-success" />
+                                                        </div>
+                                                    </div>
+                                                }
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                            else
+                            {
+                                <div id="tab-2" class="tab-pane">
+                                    <div class="panel-body">
+                                        <div class="row">
+                                            <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Anexos</h4>
+                                            <br />
+                                            <div class="form-group">
+                                                @using (Html.BeginForm("UploadFileEmpresa", "Empresa", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { enctype = "multipart/form-data", @id = "pwd-container2" }))
+                                                {
+                                                    if (Model.EMPRESA_ANEXO.Count > 0)
+                                                    {
+                                                        <table class="table table-striped table-bordered table-hover dataTables-example">
+                                                            <thead style="background-color:lightsteelblue">
+                                                                <tr>
+                                                                    <th>Nome do Anexo</th>
+                                                                    <th>Data do Anexo</th>
+                                                                    <th>Tipo de Arquivo</th>
+                                                                    <th class="td-one-action">Ações</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                @foreach (var cond in (Model.EMPRESA_ANEXO.Where(p => p.EMAN_IN_ATIVO == 1)))
+                                                                {
+                                                                    <tr>
+                                                                        @if (cond.EMAN_IN_TIPO == 1 || cond.EMAN_IN_TIPO == 2)
+                                                                        {
+                                                                            <td style="width: auto"><a href="@Url.Action("VerAnexoEmpresa", "Empresa", new { id = cond.EMAN_CD_ID })" />@cond.EMAN_NM_TITULO</td>
+                                                                        }
+                                                                        else if (cond.EMAN_IN_TIPO == 4)
+                                                                        {
+                                                                            <td style="width: auto"><a href="@Url.Action("VerAnexoEmpresaAudio", "Empresa", new { id = cond.EMAN_CD_ID })" />@cond.EMAN_NM_TITULO</td>
+                                                                        }
+                                                                        else if (cond.EMAN_IN_TIPO == 3)
+                                                                        {
+                                                                            <td style="width: auto"><a href="~/PdfViewer/web/viewer.html?file=@(cond.EMAN_AQ_ARQUIVO.Replace("~", ""))&ReturnUrl=@Request.Url.AbsolutePath" target="_blank" />@cond.EMAN_NM_TITULO</td>
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            <td style="width: auto">@cond.EMAN_NM_TITULO</td>
+                                                                        }
+                                                                        <td>@cond.EMAN_DT_ANEXO.ToShortDateString()</td>
+                                                                        @if (cond.EMAN_IN_TIPO == 1)
+                                                                        {
+                                                                            <td>Imagem</td>
+                                                                        }
+                                                                        else if (cond.EMAN_IN_TIPO == 2)
+                                                                        {
+                                                                            <td>Vídeo</td>
+                                                                        }
+                                                                        else if (cond.EMAN_IN_TIPO == 3)
+                                                                        {
+                                                                            <td>PDF</td>
+                                                                        }
+                                                                        else if (cond.EMAN_IN_TIPO == 4)
+                                                                        {
+                                                                            <td>Audio</td>
+                                                                        }
+                                                                        else if (cond.EMAN_IN_TIPO == 5)
+                                                                        {
+                                                                            <td>Documento/Word</td>
+                                                                        }
+                                                                        else if (cond.EMAN_IN_TIPO == 6)
+                                                                        {
+                                                                            <td>Planilha/Excel</td>
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            <td>Outros</td>
+                                                                        }
+                                                                        <td class="td-one-action">
+                                                                            @if (cond.EMAN_IN_TIPO == 1 || cond.EMAN_IN_TIPO == 2)
+                                                                            {
+                                                                                @Html.TableLinkDetails(cond.EMAN_CD_ID, "VerAnexoEmpresa", "fa-camera", "Visualizar")
+                                                                            }
+                                                                            @if (cond.EMAN_IN_TIPO == 4)
+	                                                                        {
+                                                                                @Html.TableLinkDetails(cond.EMAN_CD_ID, "VerAnexoEmpresaAudio","fa-volume-up", "Visualizar")
+	                                                                        }
+                                                                            @if (cond.EMAN_IN_TIPO == 3)
+                                                                            {
+                                                                                <a title="Visualizar" class="fa fa-camera fa-lg" href="~/PdfViewer/web/viewer.html?file=@(cond.EMAN_AQ_ARQUIVO.Replace("~", ""))&ReturnUrl=@Request.Url.AbsolutePath" target="_blank" ></a>
+                                                                            }
+                                                                            @Html.TableLinkDetails(cond.EMAN_CD_ID, "DownloadEmpresa", "fa-download", "Download")
+                                                                            @if (cond.EMAN_IN_ATIVO == 1)
+	                                                                        {
+                                                                                <span style="color: #337ab7; cursor:pointer;" alt="Desativar" class="tbl-link fa-lg fa fa-trash-o" onclick="ShowModalExcluirAnexo('/Empresa/ExcluirAnexo/@cond.EMAN_CD_ID')" title="Desativar"></span>
+	                                                                        }
+                                                                        </td>
+                                                                    </tr>
+                                                                }
+                                                            </tbody>
+                                                        </table>
+                                                    }
+                                                    <div class="form-group">
+                                                        <div class="col-lg-12 col-md-12 col-xs-12">
+                                                            <input style="float: left; margin-right: 5px;" type="file" name="file" id="file" class="btn btn-sm btn-warning" />
+                                                            <input style="float: left; margin-right: 5px;" type="submit" value="Incluir Anexo no Assinante" class="btn btn-sm btn-success" />
+                                                        </div>
+                                                    </div>
+                                                }
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+
+                            @*Logotipo*@
+                            @if ((Int32)Session["NivelEmpresa"] == 3)
+                            {
+                                <div id="tab-3" class="tab-pane active">
+                                    <div class="panel-body">
+                                        <div class="row">
+                                            <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Logotipo do Assinante</h4>
+                                            <br />
+                                            <div class="row">
+                                                <div class="col-lg-2 col-md-2 col-xs-12">
+                                                    <div class="form-group">
+                                                        <div class="col-lg-12 col-md-12 col-sm-12">
+                                                            <br />
+                                                            @if (!String.IsNullOrEmpty(Model.EMPR_AQ_LOGO))
+                                                            {
+                                                                <img src="@Url.Content(Model.EMPR_AQ_LOGO)" style="width: auto; height: auto; max-height: 180px; max-width: 180px;">
+                                                            }
+                                                            else
+                                                            {
+                                                                <img src="~/Images/Prontuario/prontuario_icon_3.png" style="width: auto; height: auto; max-height: 110px; max-width: 90px;">
+                                                            }
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-10 col-md-10 col-xs-12">
+                                                    <div class="form-group">
+                                                        @using (Html.BeginForm("UploadFotoEmpresa", "Empresa", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { enctype = "multipart/form-data", @id = "pwd-container3" }))
+                                                        {
+                                                            <div class="form-group">
+                                                                <div class="col-lg-12 col-md-12 col-xs-12">
+                                                                    <input style="float: left; margin-right: 5px;" type="file" accept=".jpg, .png, .jpeg, .gif|images/*" name="file" id="file" class="btn btn-sm btn-warning" />
+                                                                    <input style="float: left;" type="submit" value="Incluir Logotipo do Assinante" class="btn btn-sm btn-success" />
+                                                                </div>
+                                                            </div>
+                                                        }
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                            else
+                            {
+                                <div id="tab-3" class="tab-pane">
+                                    <div class="panel-body">
+                                        <div class="row">
+                                            <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Logotipo do Assinante</h4>
+                                            <br />
+                                            <div class="row">
+                                                <div class="col-lg-2 col-md-2 col-xs-12">
+                                                    <div class="form-group">
+                                                        <div class="col-lg-12 col-md-12 col-sm-12">
+                                                            <br />
+                                                            @if (!String.IsNullOrEmpty(Model.EMPR_AQ_LOGO))
+                                                            {
+                                                                <img src="@Url.Content(Model.EMPR_AQ_LOGO)" style="width: auto; height: auto; max-height: 180px; max-width: 180px;">
+                                                            }
+                                                            else
+                                                            {
+                                                                <img src="~/Images/Prontuario/prontuario_icon_3.png" style="width: auto; height: auto; max-height: 110px; max-width: 90px;">
+                                                            }
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-10 col-md-10 col-xs-12">
+                                                    <div class="form-group">
+                                                        @using (Html.BeginForm("UploadFotoEmpresa", "Empresa", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { enctype = "multipart/form-data", @id = "pwd-container3" }))
+                                                        {
+                                                            <div class="form-group">
+                                                                <div class="col-lg-12 col-md-12 col-xs-12">
+                                                                    <input style="float: left; margin-right: 5px;" type="file" accept=".jpg, .png, .jpeg, .gif|images/*" name="file" id="file" class="btn btn-sm btn-warning" />
+                                                                    <input style="float: left;" type="submit" value="Incluir Logotipo do Assinante" class="btn btn-sm btn-success" />
+                                                                </div>
+                                                            </div>
+                                                        }
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+
+                            @*Planos*@
+                            <div id="tab-4" class="tab-pane">
+                                <div class="panel-body">
+                                    <div class="row">
+                                        <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                            <div class="col-lg-12 col-md-12 col-xs-12">
+                                                <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Plano de Assinatura</h4>
+                                                <br />
+                                                @if (ViewBag.ListaPlanos != null &&(ViewBag.ListaPlanos as List<EntitiesServices.Model.ASSINANTE_PLANO_ASSINATURA>).Count > 0)
+                                                {
+                                                    <table class="table table-striped table-bordered table-hover dataTables-plano">
+                                                        <thead style="background-color:lightsteelblue">
+                                                            <tr>
+                                                                <th style="width: auto">Plano</th>
+                                                                <th style="width: auto">Periodicidade</th>
+                                                                <th style="width: auto">Valor (R$)</th>
+                                                                <th style="width: auto">Data de Início</th>
+                                                                <th style="width: auto">Data de Encerramento</th>
+                                                                <th style="width: auto">Status</th>
+                                                                <th style="width: auto">Ativo</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            @foreach (var cond in (ViewBag.ListaPlanos as List<EntitiesServices.Model.ASSINANTE_PLANO_ASSINATURA>))
+                                                            {
+                                                                if (DateTime.Today.Date.AddDays(30) > cond.ASPA_DT_VALIDADE)
+                                                                {
+                                                                    <tr style="background-color: beige">
+                                                                        @*<td style="cursor: pointer; text-decoration: underline; color: green;" onclick="mostrarDesc('@cond.PLANO_ASSINATURA.PLAS_DS_DESCRICAO')">@cond.PLANO_ASSINATURA.PLAS_NM_EXIBE</td>*@
+                                                                        <td style="width: auto"><a href="@Url.Action("VerInformacaoPlano", "Empresa", new { id = cond.PLAS_CD_ID })" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Ver informações do plano"/>@cond.PLANO_ASSINATURA.PLAS_NM_NOME   </td>
+                                                                        <td style="width: auto">@cond.PLANO_ASSINATURA.PLANO_PERIODICIDADE.PLPE_NM_NOME</td>
+                                                                        <td style="width: auto">@CrossCutting.Formatters.DecimalFormatter(cond.PLANO_ASSINATURA.PLAS_VL_PRECO)</td>
+                                                                        <td style="width: auto">@cond.ASPA_DT_INICIO.ToShortDateString()</td>
+                                                                        <td style="width: auto">@cond.ASPA_DT_VALIDADE.ToShortDateString()</td>
+                                                                        @if (cond.ASPA_DT_VALIDADE > DateTime.Today.Date)
+                                                                        {
+                                                                            <td style="width: auto"><span class="badge badge-success">Em Curso</span></td>
+                                                                        }
+                                                                        else if (DateTime.Today.Date.AddDays(30) > cond.ASPA_DT_VALIDADE)
+                                                                        {
+                                                                            <td style="width: auto"><span class="badge badge-danger">Menos de 30 dias</span></td>
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            <td style="width: auto"><span class="badge badge-warning">Encerrado</span></td>
+                                                                        }
+                                                                        @if (cond.ASPA_IN_ATIVO == 1)
+                                                                        {
+                                                                            <td style="width: auto"><span class="badge badge-primary">Ativo</span></td>
+                                                                        }
+                                                                        else if (cond.ASPA_IN_ATIVO == 0)
+                                                                        {
+                                                                            <td style="width: auto"><span class="badge badge-danger">Inativo</span></td>
+                                                                        }
+                                                                        else if (cond.ASPA_IN_ATIVO == 2)
+                                                                        {
+                                                                            <td style="width: auto"><span class="badge badge-warning">Bloqueado</span></td>
+                                                                        }
+                                                                    </tr>
+                                                                }
+                                                                else if (cond.ASPA_DT_VALIDADE > DateTime.Today.Date)
+                                                                {
+                                                                    <tr>
+                                                                        @*<td style="cursor: pointer; text-decoration: underline; color: green;" onclick="mostrarDesc('@cond.PLANO_ASSINATURA.PLAS_DS_DESCRICAO')">@cond.PLANO_ASSINATURA.PLAS_NM_EXIBE</td>*@
+                                                                        <td style="width: auto"><a href="@Url.Action("VerInformacaoPlano", "Empresa", new { id = cond.PLAS_CD_ID })" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Ver informações do plano"/>@cond.PLANO_ASSINATURA.PLAS_NM_NOME</td>
+                                                                        <td style="width: auto">@cond.PLANO_ASSINATURA.PLANO_PERIODICIDADE.PLPE_NM_NOME</td>
+                                                                        <td style="width: auto">@CrossCutting.Formatters.DecimalFormatter(cond.PLANO_ASSINATURA.PLAS_VL_PRECO)</td>
+                                                                        <td style="width: auto">@cond.ASPA_DT_INICIO.ToShortDateString()</td>
+                                                                        <td style="width: auto">@cond.ASPA_DT_VALIDADE.ToShortDateString()</td>
+                                                                        @if (cond.ASPA_DT_VALIDADE > DateTime.Today.Date)
+                                                                        {
+                                                                            <td style="width: auto"><span class="badge badge-success">Em Curso</span></td>
+                                                                        }
+                                                                        else if (DateTime.Today.Date.AddDays(30) > cond.ASPA_DT_VALIDADE)
+                                                                        {
+                                                                            <td style="width: auto"><span class="badge badge-danger">Menos de 30 dias</span></td>
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            <td style="width: auto"><span class="badge badge-warning">Encerrado</span></td>
+                                                                        }
+                                                                        @if (cond.ASPA_IN_ATIVO == 1)
+                                                                        {
+                                                                            <td style="width: auto"><span class="badge badge-primary">Ativo</span></td>
+                                                                        }
+                                                                        else if (cond.ASPA_IN_ATIVO == 0)
+                                                                        {
+                                                                            <td style="width: auto"><span class="badge badge-danger">Inativo</span></td>
+                                                                        }
+                                                                        else if (cond.ASPA_IN_ATIVO == 2)
+                                                                        {
+                                                                            <td style="width: auto"><span class="badge badge-warning">Bloqueado</span></td>
+                                                                        }
+                                                                    </tr>
+                                                                }
+                                                                else
+                                                                {
+                                                                    <tr style="background-color: navajowhite">
+                                                                        @*<td style="cursor: pointer; text-decoration: underline; color: green;" onclick="mostrarDesc('@cond.PLANO_ASSINATURA.PLAS_DS_DESCRICAO')">@cond.PLANO_ASSINATURA.PLAS_NM_EXIBE</td>*@
+                                                                        <td style="width: auto"><a href="@Url.Action("VerInformacaoPlano", "Empresa", new { id = cond.PLAS_CD_ID })" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Ver informações do plano"/>@cond.PLANO_ASSINATURA.PLAS_NM_NOME</td>
+                                                                        <td style="width: auto">@cond.PLANO_ASSINATURA.PLANO_PERIODICIDADE.PLPE_NM_NOME</td>
+                                                                        <td style="width: auto">@CrossCutting.Formatters.DecimalFormatter(cond.PLANO_ASSINATURA.PLAS_VL_PRECO)</td>
+                                                                        <td style="width: auto">@cond.ASPA_DT_INICIO.ToShortDateString()</td>
+                                                                        <td style="width: auto">@cond.ASPA_DT_VALIDADE.ToShortDateString()</td>
+                                                                        @if (cond.ASPA_DT_VALIDADE > DateTime.Today.Date)
+                                                                        {
+                                                                            <td style="width: auto"><span class="badge badge-success">Em Curso</span></td>
+                                                                        }
+                                                                        else if (DateTime.Today.Date.AddDays(30) > cond.ASPA_DT_VALIDADE)
+                                                                        {
+                                                                            <td style="width: auto"><span class="badge badge-danger">Menos de 30 dias</span></td>
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            <td style="width: auto"><span class="badge badge-warning">Encerrado</span></td>
+                                                                        }
+                                                                        @if (cond.ASPA_IN_ATIVO == 1)
+                                                                        {
+                                                                            <td style="width: auto"><span class="badge badge-primary">Ativo</span></td>
+                                                                        }
+                                                                        else if (cond.ASPA_IN_ATIVO == 0)
+                                                                        {
+                                                                            <td style="width: auto"><span class="badge badge-danger">Inativo</span></td>
+                                                                        }
+                                                                        else if (cond.ASPA_IN_ATIVO == 2)
+                                                                        {
+                                                                            <td style="width: auto"><span class="badge badge-warning">Bloqueado</span></td>
+                                                                        }
+                                                                    </tr>
+                                                                }
+                                                            }
+                                                        </tbody>
+                                                    </table>
+                                                }
+                                            </div>
+                                        </div>
+                                        <br />
+                                        <div class="form-group">
+                                            @Html.ButtonLinkIndex(text: "Solicitar Mudança de Plano de Assinatura", action: "SolicitarMudancaPlano", controller: "Empresa")
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>                    
+
+                            @*Pagamentos*@
+                            @if ((Int32)Session["NivelEmpresa"] == 4)
+                            {
+                                <div id="tab-9" class="tab-pane active">
+                                    <div class="panel-body">
+                                        <div class="row">
+                                            <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                                <div class="col-lg-12 col-md-12 col-xs-12">
+                                                    <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Pagamentos</h4>
+                                                    <br />
+                                                    @if (ViewBag.ListaPags != null &&(ViewBag.ListaPags as List<EntitiesServices.Model.ASSINANTE_PAGAMENTO>).Count > 0)
+                                                    {
+                                                        <table class="table table-striped table-bordered table-hover dataTables-pag">
+                                                            <thead style="background-color:lightsteelblue">
+                                                                <tr>
+                                                                    <th style="width: auto">Plano</th>
+                                                                    <th style="width: auto">Data de Vencimento</th>
+                                                                    <th style="width: auto">Valor (R$)</th>
+                                                                    <th style="width: auto">Data de Pagamento</th>
+                                                                    <th style="width: auto">Valor Pago (R$)</th>
+                                                                    <th style="width: auto">Atraso (Dias)</th>
+                                                                    <th style="width: auto">Situação</th>
+                                                                    <th class="td-one-action">Ações</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                @foreach (var cond in (ViewBag.ListaPags as List<EntitiesServices.Model.ASSINANTE_PAGAMENTO>))
+                                                                {
+                                                                    <tr>
+                                                                        <td style="width: auto"><a href="@Url.Action("VerInformacaoPlano", "Empresa", new { id = cond.PLAS_CD_ID })" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Ver informações do plano"/>@cond.PLANO_ASSINATURA.PLAS_NM_NOME</td>
+                                                                        
+                                                                        @if (cond.ASPA_IN_PAGO == 0 & cond.ASPA_DT_VENCIMENTO < DateTime.Today.Date)
+                                                                        {
+                                                                            <td style="width: auto; color: brown; font-weight: bold ">@cond.ASPA_DT_VENCIMENTO.Value.ToShortDateString()</td>
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            <td style="width: auto">@cond.ASPA_DT_VENCIMENTO.Value.ToShortDateString()</td>
+                                                                        }
+
+                                                                        <td style="width: auto">@CrossCutting.Formatters.DecimalFormatter(cond.ASPA_VL_VALOR.Value)</td>
+                                                                        
+                                                                        @if (cond.ASPA_DT_PAGAMENTO != null)
+                                                                        {
+                                                                            <td style="width: auto">@cond.ASPA_DT_PAGAMENTO.Value.ToShortDateString()</td>
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            <td style="width: auto; color: brown">Em Aberto</td>
+                                                                        }
+                                                                       
+                                                                        @if (cond.ASPA_VL_VALOR_PAGO != null)
+                                                                        {
+                                                                            <td style="width: auto; color: green; font-weight: bold">@CrossCutting.Formatters.DecimalFormatter(cond.ASPA_VL_VALOR_PAGO.Value)</td>
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            <td style="width: auto">0,00</td>
+                                                                        }
+                                                                        
+                                                                        @if (cond.ASPA_DT_PAGAMENTO == null)
+                                                                        {
+                                                                            if (cond.ASPA_NR_ATRASO > 0)
+                                                                            {
+                                                                                if (cond.ASPA_NR_ATRASO < 30)
+                                                                                {
+                                                                                    <td style="width: auto; color: brown; font-weight: bold; background-color: beige">@cond.ASPA_NR_ATRASO</td>
+                                                                                }
+                                                                                else if (cond.ASPA_NR_ATRASO < 90)
+                                                                                {
+                                                                                    <td style="width: auto; color: brown; font-weight: bold; background-color: antiquewhite">@cond.ASPA_NR_ATRASO</td>
+                                                                                }
+                                                                                else
+                                                                                {
+                                                                                    <td style="width: auto; color: brown; font-weight: bold; background-color: navajowhite">@cond.ASPA_NR_ATRASO</td>
+                                                                                }
+                                                                            }
+                                                                            else
+                                                                            {
+                                                                                <td style="width: auto">-</td>
+                                                                            }
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            <td style="width: auto">-</td>
+                                                                        }
+
+                                                                        @if (cond.ASPA_IN_PAGO == 0 & cond.ASPA_IN_INFORMADO == 0)
+                                                                        {
+                                                                            if (cond.ASPA_DT_VENCIMENTO.Value.Date > DateTime.Today.Date)
+                                                                            {
+                                                                                <td style="width: auto"><span class="badge badge-primary">Futuro</span></td>
+                                                                            }
+                                                                            else
+                                                                            {
+                                                                                <td style="width: auto"><span class="badge badge-danger">Pendente</span></td>
+                                                                            }
+                                                                        }
+                                                                        else if (cond.ASPA_IN_PAGO == 0 & cond.ASPA_IN_INFORMADO == 1)
+                                                                        {
+                                                                            <td style="width: auto"><span class="badge badge-warning">Informado - Processamento</span></td>
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            <td style="width: auto"><span class="badge badge-success">Liquidado</span></td>
+                                                                        }
+
+                                                                        <td class="td-one-action">
+                                                                            @if (cond.ASPA_IN_INFORMADO == 0 & cond.ASPA_DT_PAGAMENTO == null)
+                                                                            {
+                                                                                @Html.TableLinkDetails(cond.ASPA_CD_ID, "IncluirPagamento", "fa-microphone", "Informar pagamento efetuado fora do WebDoctor")
+                                                                            }
+                                                                            @if (cond.ASPA_IN_INFORMADO == 0 & cond.ASPA_DT_PAGAMENTO == null)
+                                                                            {
+                                                                                @Html.TableLinkDetails(cond.ASPA_CD_ID, "EfetuarPagamento", "fa-check", "Fazer pagamento pelo WebDoctor")
+                                                                            }
+                                                                        </td>
+                                                                    </tr>
+                                                                }
+                                                            </tbody>
+                                                        </table>
+                                                    }
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>                
+                            }
+                            else
+                            {
+                                <div id="tab-9" class="tab-pane">
+                                    <div class="panel-body">
+                                        <div class="row">
+                                            <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                                <div class="col-lg-12 col-md-12 col-xs-12">
+                                                    <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Pagamentos</h4>
+                                                    <br />
+                                                    @if (ViewBag.ListaPags != null &&(ViewBag.ListaPags as List<EntitiesServices.Model.ASSINANTE_PAGAMENTO>).Count > 0)
+                                                    {
+                                                        <table class="table table-striped table-bordered table-hover dataTables-pag">
+                                                            <thead style="background-color:lightsteelblue">
+                                                                <tr>
+                                                                    <th style="width: auto">Plano</th>
+                                                                    <th style="width: auto">Data de Vencimento</th>
+                                                                    <th style="width: auto">Valor (R$)</th>
+                                                                    <th style="width: auto">Data de Pagamento</th>
+                                                                    <th style="width: auto">Valor Pago (R$)</th>
+                                                                    <th style="width: auto">Atraso (Dias)</th>
+                                                                    <th style="width: auto">Situação</th>
+                                                                    <th class="td-one-action">Ações</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                @foreach (var cond in (ViewBag.ListaPags as List<EntitiesServices.Model.ASSINANTE_PAGAMENTO>))
+                                                                {
+                                                                    <tr>
+                                                                        <td style="width: auto"><a href="@Url.Action("VerInformacaoPlano", "Empresa", new { id = cond.PLAS_CD_ID })" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Ver informações do plano"/>@cond.PLANO_ASSINATURA.PLAS_NM_NOME</td>
+                                                                        
+                                                                        @if (cond.ASPA_IN_PAGO == 0 & cond.ASPA_DT_VENCIMENTO < DateTime.Today.Date)
+                                                                        {
+                                                                            <td style="width: auto; color: brown; font-weight: bold ">@cond.ASPA_DT_VENCIMENTO.Value.ToShortDateString()</td>
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            <td style="width: auto">@cond.ASPA_DT_VENCIMENTO.Value.ToShortDateString()</td>
+                                                                        }
+
+                                                                        <td style="width: auto">@CrossCutting.Formatters.DecimalFormatter(cond.ASPA_VL_VALOR.Value)</td>
+                                                                        
+                                                                        @if (cond.ASPA_DT_PAGAMENTO != null)
+                                                                        {
+                                                                            <td style="width: auto">@cond.ASPA_DT_PAGAMENTO.Value.ToShortDateString()</td>
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            <td style="width: auto; color: brown">Em Aberto</td>
+                                                                        }
+                                                                       
+                                                                        @if (cond.ASPA_VL_VALOR_PAGO != null)
+                                                                        {
+                                                                            <td style="width: auto; color: green; font-weight: bold">@CrossCutting.Formatters.DecimalFormatter(cond.ASPA_VL_VALOR_PAGO.Value)</td>
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            <td style="width: auto">0,00</td>
+                                                                        }
+                                                                        
+                                                                        @if (cond.ASPA_DT_PAGAMENTO == null)
+                                                                        {
+                                                                            if (cond.ASPA_NR_ATRASO > 0)
+                                                                            {
+                                                                                if (cond.ASPA_NR_ATRASO < 30)
+                                                                                {
+                                                                                    <td style="width: auto; color: brown; font-weight: bold; background-color: beige">@cond.ASPA_NR_ATRASO</td>
+                                                                                }
+                                                                                else if (cond.ASPA_NR_ATRASO < 90)
+                                                                                {
+                                                                                    <td style="width: auto; color: brown; font-weight: bold; background-color: antiquewhite">@cond.ASPA_NR_ATRASO</td>
+                                                                                }
+                                                                                else
+                                                                                {
+                                                                                    <td style="width: auto; color: brown; font-weight: bold; background-color: navajowhite">@cond.ASPA_NR_ATRASO</td>
+                                                                                }
+                                                                            }
+                                                                            else
+                                                                            {
+                                                                                <td style="width: auto">-</td>
+                                                                            }
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            <td style="width: auto">-</td>
+                                                                        }
+
+                                                                        @if (cond.ASPA_IN_PAGO == 0 & cond.ASPA_IN_INFORMADO == 0)
+                                                                        {
+                                                                            if (cond.ASPA_DT_VENCIMENTO.Value.Date > DateTime.Today.Date)
+                                                                            {
+                                                                                <td style="width: auto"><span class="badge badge-primary">Futuro</span></td>
+                                                                            }
+                                                                            else
+                                                                            {
+                                                                                <td style="width: auto"><span class="badge badge-danger">Pendente</span></td>
+                                                                            }
+                                                                        }
+                                                                        else if (cond.ASPA_IN_PAGO == 0 & cond.ASPA_IN_INFORMADO == 1)
+                                                                        {
+                                                                            <td style="width: auto"><span class="badge badge-warning">Informado - Processamento</span></td>
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            <td style="width: auto"><span class="badge badge-success">Liquidado</span></td>
+                                                                        }
+
+                                                                        <td class="td-one-action">
+                                                                            @if (cond.ASPA_IN_INFORMADO == 0 & cond.ASPA_DT_PAGAMENTO == null)
+                                                                            {
+                                                                                @Html.TableLinkDetails(cond.ASPA_CD_ID, "IncluirPagamento", "fa-microphone", "Informar pagamento efetuado fora do WebDoctor")
+                                                                            }
+                                                                            @if (cond.ASPA_IN_INFORMADO == 0 & cond.ASPA_DT_PAGAMENTO == null)
+                                                                            {
+                                                                                @Html.TableLinkDetails(cond.ASPA_CD_ID, "EfetuarPagamento", "fa-check", "Fazer pagamento pelo WebDoctor")
+                                                                            }
+                                                                        </td>
+                                                                    </tr>
+                                                                }
+                                                            </tbody>
+                                                        </table>
+                                                    }
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>                
+                            }
+
+
+                            @*Consumos*@
+                            <div id="tab-5" class="tab-pane">
+                                <div class="panel-body">
+                                    <div class="row">
+                                        <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                            <div class="col-lg-12 col-md-12 col-xs-12">
+                                                <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Consumo do Plano</h4>
+                                                <br />
+                                                <div class="row">
+                                                    <div class="col-lg-2">
+                                                        <div class="ibox float-e-margins" style="border-bottom: solid; border-bottom-color: gainsboro; border-bottom-width: 1px; border-left: solid; border-left-color: gainsboro; border-left-width: 1px; border-right: solid; border-right-color: gainsboro; border-right-width: 1px;">
+                                                            <div class="ibox-title"  style="background-color: darkseagreen; color: darkgreen">
+                                                                <span class="label label-primary pull-right">Hoje</span>
+                                                                <h5>Usuários</h5>
+                                                            </div>
+                                                            <div class="ibox-content">
+                                                                <h1 class="no-margins">@ViewBag.NumUsu</h1>
+                                                                <small>Cadastrados</small>
+                                                                <br />
+                                                                <small style="color: green">Plano: @ViewBag.UsuPlano</small>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-lg-2">
+                                                        <div class="ibox float-e-margins" style="border-bottom: solid; border-bottom-color: gainsboro; border-bottom-width: 1px; border-left: solid; border-left-color: gainsboro; border-left-width: 1px; border-right: solid; border-right-color: gainsboro; border-right-width: 1px;">
+                                                            <div class="ibox-title"  style="background-color: darkseagreen; color: darkgreen">
+                                                                <span class="label label-primary pull-right">Hoje</span>
+                                                                <h5>Pacientes</h5>
+                                                            </div>
+                                                            <div class="ibox-content">
+                                                                <h1 class="no-margins">@ViewBag.NumPac</h1>
+                                                                <small>Cadastrados</small>
+                                                                <br />
+                                                                <small style="color: green">Plano: @ViewBag.PacPlano</small>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-lg-2">
+                                                        <div class="ibox float-e-margins" style="border-bottom: solid; border-bottom-color: gainsboro; border-bottom-width: 1px; border-left: solid; border-left-color: gainsboro; border-left-width: 1px; border-right: solid; border-right-color: gainsboro; border-right-width: 1px;">
+                                                            <div class="ibox-title"  style="background-color: darkseagreen; color: darkgreen">
+                                                                <span class="label label-primary pull-right">Hoje</span>
+                                                                <h5>Grupos de Pacientes</h5>
+                                                            </div>
+                                                            <div class="ibox-content">
+                                                                <h1 class="no-margins">@ViewBag.NumGru</h1>
+                                                                <small>Cadastrados</small>
+                                                                <br />
+                                                                <small style="color: green">Plano: @ViewBag.GrupoPlano</small>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    @if ((Int32)Session["PermMensageria"] == 1)
+                                                    {
+                                                        <div class="col-lg-2">
+                                                            <div class="ibox float-e-margins" style="border-bottom: solid; border-bottom-color: gainsboro; border-bottom-width: 1px; border-left: solid; border-left-color: gainsboro; border-left-width: 1px; border-right: solid; border-right-color: gainsboro; border-right-width: 1px;">
+                                                                <div class="ibox-title"  style="background-color: darkseagreen; color: darkgreen">
+                                                                    <span class="label label-primary pull-right">Hoje</span>
+                                                                    <h5>E-Mails</h5>
+                                                                </div>
+                                                                <div class="ibox-content">
+                                                                    <h1 class="no-margins">@ViewBag.NumMail</h1>
+                                                                    <small>Mês Corrente</small>
+                                                                    <br />
+                                                                    <small style="color: green">Plano: @ViewBag.MailPlano</small>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-lg-2">
+                                                            <div class="ibox float-e-margins" style="border-bottom: solid; border-bottom-color: gainsboro; border-bottom-width: 1px; border-left: solid; border-left-color: gainsboro; border-left-width: 1px; border-right: solid; border-right-color: gainsboro; border-right-width: 1px;">
+                                                                <div class="ibox-title"  style="background-color: darkseagreen; color: darkgreen">
+                                                                    <span class="label label-primary pull-right">Hoje</span>
+                                                                    <h5>SMS</h5>
+                                                                </div>
+                                                                <div class="ibox-content">
+                                                                    <h1 class="no-margins">@ViewBag.NumSMS</h1>
+                                                                    <small>Mês Corrente</small>
+                                                                    <br />
+                                                                    <small style="color: green">Plano: @ViewBag.SMSPlano</small>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    }
+                                                </div>
+                                                <div class="row">
+                                                    @if ((Int32)Session["PermFinanceiro"] == 1)
+                                                    {
+                                                        <div class="col-lg-2">
+                                                            <div class="ibox float-e-margins" style="border-bottom: solid; border-bottom-color: gainsboro; border-bottom-width: 1px; border-left: solid; border-left-color: gainsboro; border-left-width: 1px; border-right: solid; border-right-color: gainsboro; border-right-width: 1px;">
+                                                                <div class="ibox-title"  style="background-color: darkseagreen; color: darkgreen">
+                                                                    <span class="label label-primary pull-right">Hoje</span>
+                                                                    <h5>Pagamentos</h5>
+                                                                </div>
+                                                                <div class="ibox-content">
+                                                                    <h1 class="no-margins">@ViewBag.NumPag</h1>
+                                                                    <small>Mês Corrente</small>
+                                                                    <br />
+                                                                    <small style="color: green">Plano: @ViewBag.PagPlano</small>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-lg-2">
+                                                            <div class="ibox float-e-margins" style="border-bottom: solid; border-bottom-color: gainsboro; border-bottom-width: 1px; border-left: solid; border-left-color: gainsboro; border-left-width: 1px; border-right: solid; border-right-color: gainsboro; border-right-width: 1px;">
+                                                                <div class="ibox-title"  style="background-color: darkseagreen; color: darkgreen">
+                                                                    <span class="label label-primary pull-right">Hoje</span>
+                                                                    <h5>Recebimentos</h5>
+                                                                </div>
+                                                                <div class="ibox-content">
+                                                                    <h1 class="no-margins">@ViewBag.NumRec</h1>
+                                                                    <small>Mês Corrente</small>
+                                                                    <br />
+                                                                    <small style="color: green">Plano: @ViewBag.RecPlano</small>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    }
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>           
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section Styles {
+    <link href="~/Content/themes/base/jquery-ui.min.css" rel="stylesheet" />
+    <link href="~/Content/themes/base/all.css" rel="stylesheet" />
+    @Styles.Render("~/plugins/jasnyBootstrapStyles")
+    @Styles.Render("~/plugins/toastrStyles")
+}
+
+@section Scripts {
+
+    @Scripts.Render("~/plugins/toastr")
+    <script src="~/Scripts/jquery-ui-1.12.1.min.js"></script>
+    @Scripts.Render("~/bundles/inputmask")
+    @Scripts.Render("~/plugins/jasnyBootstrap")
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.maskedinput/1.4.1/jquery.maskedinput.js"></script>
+    
+    
+    <script type="text/javascript" src="~/Scripts/moment.min.js"></script>
+    <script type="text/javascript" src="~/Scripts/bootstrap.min.js"></script>
+   
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('[data-toggle="popover"]').popover();
+        });
+    </script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-toggle="popover"]'));
+            var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
+                return new bootstrap.Popover(popoverTriggerEl);
+            });
+        });
+    </script>
+
+    <!-- Handler de fechamento do browser -->
+    <script type="text/javascript">
+        window.onbeforeunload = function ()
+        {
+            navigator.sendBeacon('../ControleAcesso/LogSessionTime');
+        }; 
+    </script>
+
+    <script>
+        $(function () {
+            limpaModal();
+        });
+
+        function limpaModal() {
+            $('#btnModal').remove();
+            $('#modalTitle').remove();
+        }
+
+        function ShowModalExcluirAnexo(url) {
+            $('#modal').find('.modal-footer').prepend('<a id="btnModal" alt="Desativar" class="btn btn-primary" href="' + url + '" target="_self" title="Desativar">Confirmar</a>');
+            $('#modal').find('.modal-body').html('Confirma exclusão do Anexo?');
+            $('#modal').find('.modal-header').prepend('<h5 id="modalTitle" class="modal-title">Confimar Exclusão</h5>');
+            $('#modal').modal('show');
+        }
+
+    </script>
+    <script>
+        function mostrarDesc(desc) {
+            $('#modalDescBody').html(desc);
+            $('#modalDesc').modal('show');
+        }
+    </script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            $('.dataTables-plano').DataTable({
+                pageLength: 25,
+                dom: '<"html5buttons"B>lTfgitp',
+                buttons: [
+                    { extend: 'excel', title: 'Plano_Planilha' },
+                    {
+                        extend: 'print',
+                        customize: function (win) {
+                            $(win.document.body).addClass('white-bg');
+                            $(win.document.body).css('font-size', '10px');
+
+                            $(win.document.body).find('table')
+                                    .addClass('compact')
+                                    .css('font-size', 'inherit');
+                        }
+                    }
+                ]
+            });         
+        });
+    </script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            $('.dataTables-pag').DataTable({
+                pageLength: 25,
+                dom: '<"html5buttons"B>lTfgitp',
+                buttons: [
+                    { extend: 'excel', title: 'Pagamento_Planilha' },
+                    {
+                        extend: 'print',
+                        customize: function (win) {
+                            $(win.document.body).addClass('white-bg');
+                            $(win.document.body).css('font-size', '10px');
+
+                            $(win.document.body).find('table')
+                                    .addClass('compact')
+                                    .css('font-size', 'inherit');
+                        }
+                    }
+                ]
+            });         
+        });
+    </script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            var i = -1;
+            var toastCount = 0;
+            var $toastlast;
+            var getMessage = function () {
+                var msg = 'Hi, welcome to Inspinia. This is example of Toastr notification box.';
+                return msg;
+            };
+
+            $('#basictoast').click(function () {
+                // Display a success toast, with a title
+                toastr.success('Edição em andamento!')
+            });
+            $('#showtoast').click(function () {
+                var shortCutFunction = $("#toastTypeGroup input:radio:checked").val();
+                var msg = $('#message').val();
+                var title = $('#title').val() || '';
+                var $showDuration = $('#showDuration');
+                var $hideDuration = $('#hideDuration');
+                var $timeOut = $('#timeOut');
+                var $extendedTimeOut = $('#extendedTimeOut');
+                var $showEasing = $('#showEasing');
+                var $hideEasing = $('#hideEasing');
+                var $showMethod = $('#showMethod');
+                var $hideMethod = $('#hideMethod');
+                var toastIndex = toastCount++;
+                toastr.options = {
+                    closeButton: $('#closeButton').prop('checked'),
+                    debug: $('#debugInfo').prop('checked'),
+                    progressBar: $('#progressBar').prop('checked'),
+                    positionClass: $('#positionGroup input:radio:checked').val() || 'toast-top-right',
+                    onclick: null
+                };
+                if ($('#addBehaviorOnToastClick').prop('checked')) {
+                    toastr.options.onclick = function () {
+                        alert('You can perform some custom action after a toast goes away');
+                    };
+                }
+                if ($showDuration.val().length) {
+                    toastr.options.showDuration = $showDuration.val();
+                }
+                if ($hideDuration.val().length) {
+                    toastr.options.hideDuration = $hideDuration.val();
+                }
+                if ($timeOut.val().length) {
+                    toastr.options.timeOut = $timeOut.val();
+                }
+                if ($extendedTimeOut.val().length) {
+                    toastr.options.extendedTimeOut = $extendedTimeOut.val();
+                }
+                if ($showEasing.val().length) {
+                    toastr.options.showEasing = $showEasing.val();
+                }
+                if ($hideEasing.val().length) {
+                    toastr.options.hideEasing = $hideEasing.val();
+                }
+                if ($showMethod.val().length) {
+                    toastr.options.showMethod = $showMethod.val();
+                }
+                if ($hideMethod.val().length) {
+                    toastr.options.hideMethod = $hideMethod.val();
+                }
+                if (!msg) {
+                    msg = getMessage();
+                }
+                $("#toastrOptions").text("Command: toastr["
+                    + shortCutFunction
+                    + "](\""
+                    + msg
+                    + (title ? "\", \"" + title : '')
+                    + "\")\n\ntoastr.options = "
+                    + JSON.stringify(toastr.options, null, 2)
+                );
+                var $toast = toastr[shortCutFunction](msg, title); // Wire up an event handler to a button in the toast, if it exists
+                $toastlast = $toast;
+                if ($toast.find('#okBtn').length) {
+                    $toast.delegate('#okBtn', 'click', function () {
+                        alert('you clicked me. i was toast #' + toastIndex + '. goodbye!');
+                        $toast.remove();
+                    });
+                }
+                if ($toast.find('#surpriseBtn').length) {
+                    $toast.delegate('#surpriseBtn', 'click', function () {
+                        alert('Surprise! you clicked me. i was toast #' + toastIndex + '. You could perform an action here.');
+                    });
+                }
+            });
+            function getLastToast() {
+                return $toastlast;
+            }
+            $('#clearlasttoast').click(function () {
+                toastr.clear(getLastToast());
+            });
+            $('#cleartoasts').click(function () {
+                toastr.clear();
+            });
+
+        });
+    </script>
+
+    @if (ViewBag.Message != null)
+    {
+        <script type="text/javascript">
+            window.onload = function () {
+                  alert("@ViewBag.Message");
+            };
+        </script>
+    }
+}

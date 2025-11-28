@@ -1,0 +1,127 @@
+﻿@using Presentation.Extensions
+@model EntitiesServices.Model.MEDICOS_ENVIO_ANEXO
+@{
+    Layout = "~/Views/Shared/_Layout_Admin.cshtml";
+    ViewBag.Title = "WebDoctor - Paciente - Exame - Anexo";
+    ViewBag.MetaDescription = "WebDoctor - Paciente - Exame - Anexo - Visualização de anexo";
+    ViewBag.MetaKeywords = "WebDoctor, paciente, exame, anexo";
+}
+
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="page-title">
+        <ol class="breadcrumb">
+            <li>
+                <a href="@Url.Action("MontarTelaPaciente", "Paciente")">Dashboard</a>
+            </li>
+            <li>
+                <a href="@Url.Action("MontarTelaMedico", "Medico")">Médicos</a>
+            </li>
+            <li>
+                <a href="@Url.Action("EditarMedico", "Medico")">Médicos - Edição</a>
+            </li>
+            <li>
+                <a href="@Url.Action("EditarEnvio", "Medico")">Envio - Edição</a>
+            </li>
+            <li class="active">
+                <strong>Anexos - Envio</strong>
+            </li>
+        </ol>
+        <br />
+    </div>
+    <div class="row">
+        <div class="col-lg-12 col-md-12 col-xs-12">
+            <div class="col-lg-12 col-md-12 col-xs-12 ibox float-e-margins">
+                <div class="ibox-title">
+                    <div style="text-align: center;" class="col-lg-12 col-md-12 col-xs-12">
+                        <h5>Envio de Informações - Ver Anexo</h5>
+                    </div>
+                </div>
+                @using (Html.BeginForm("VerAnexoEnvio", "Medico", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal", @id = "pwd-container1" }))
+                {
+                    <div class="ibox-content">
+                        <div class="form-group">
+                            @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarAnexoEnvio", controller: "Medico")
+                            <a href="@Url.Action((String)Session["AjudaNivel"])"  class="btn btn-sm btn-danger" target="_blank">Ajuda</a>                
+                        </div>
+                        <div class="row">
+                            <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Dados do Envio</h4>
+                            <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                <div class="col-lg-4 col-md-4 col-xs-12">
+                                    Nome do Medico
+                                    @Html.TextBoxFor(m => m.MEDICOS_ENVIO.MEDICOS.MEDC_NM_MEDICO, new { @class = "form-control", @tabindex = "-1", @readonly = "readonly", @style = "color: green; font-weight: bold" })
+                                </div>
+                                <div class="col-lg-2 col-md-2 col-xs-12">
+                                    CRM
+                                    @Html.TextBoxFor(m => m.MEDICOS_ENVIO.MEDICOS.MEDC_NR_CRM, new { @class = "form-control", @tabindex = "-1", @readonly = "readonly" })
+                                </div>
+                                <div class="col-lg-2 col-md-2 col-xs-12">
+                                    E-Mail
+                                    @Html.TextBoxFor(m => m.MEDICOS_ENVIO.MEDICOS.MEDC_EM_EMAIL, new { @class = "form-control", @tabindex = "-1", @readonly = "readonly" })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Anexo</h4>
+                            <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                <div class="col-lg-6 col-md-6 col-xs-12">
+                                    Titulo
+                                    @Html.TextBoxFor(m => m.MVAN_NM_TITULO, new { @class = "form-control", @readonly = "readonly", @style = "color: green; font-weight: bold" })
+                                </div>
+                                <div class="col-lg-2 col-md-2 col-xs-12">
+                                    Data
+                                    @Html.TextBoxFor(m => m.MVAN_DT_ANEXO, "{0:dd/MM/yyyy}", new { @class = "form-control", @readonly = "readonly"})
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            @if (Model.MVAN_IN_TIPO == 1)
+                            {
+                                <div class="col-lg-12 col-md-12 col-sm-12">
+                                    <div class="col-lg-12 col-md-12 col-sm-12">
+                                        <img src="@Url.Content(Model.MVAN_AQ_ARQUIVO)" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Clique Ctrl+Ctrl para ampliar a fotografia" style="width: auto; height: auto; max-height: 1530px; max-width: 1530px;">
+                                    </div>
+                                </div>
+                            }
+                            @if (Model.MVAN_IN_TIPO == 2)
+                            {
+                                <div class="col-lg-12 col-md-12 col-sm-12">
+                                    <figure>
+                                        <iframe width="900" height="600" src="@Url.Content(Model.MVAN_AQ_ARQUIVO)" frameborder="0" allowfullscreen></iframe>
+                                    </figure>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <link href="~/Content/themes/base/all.css" rel="stylesheet" />
+    @Styles.Render("~/Content/plugins/dataTables/dataTablesStyles")
+    @Styles.Render("~/plugins/jasnyBootstrapStyles")
+}
+@section Scripts {
+
+    @Scripts.Render("~/plugins/dataTables")
+    @Scripts.Render("~/bundles/inputmask")
+    @Scripts.Render("~/plugins/jasnyBootstrap")
+    @Scripts.Render("~/plugins/videoResponsible")
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.maskedinput/1.4.1/jquery.maskedinput.js"></script>
+    <script type="text/javascript">
+        $(document).on('webkitfullscreenchange mozfullscreenchange fullscreenchange', function (e) {
+            $('body').hasClass('fullscreen-video') ? $('body').removeClass('fullscreen-video') : $('body').addClass('fullscreen-video')
+        });
+    </script>
+
+    @if (ViewBag.Message != null)
+    {
+        <script type="text/javascript">
+            window.onload = function () {
+                  alert("@ViewBag.Message");
+            };
+        </script>
+    }
+}

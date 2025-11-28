@@ -1,0 +1,295 @@
+﻿@using Presentation.Extensions
+@model ERP_Condominios_Solution.ViewModels.PacienteViewModel
+@{
+    Layout = "~/Views/Shared/_Layout_Admin.cshtml";
+}
+
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="page-title">
+        <ol class="breadcrumb">
+            <li>
+                <a href="@Url.Action("MontarTelaPaciente", "Paciente")">Dashboard</a>
+            </li>
+            <li class="active">
+                <strong>Fichas - Importação</strong>
+            </li>
+        </ol>
+        <br />
+    </div>
+
+    <div class="row">
+        <div class="col-lg-12 col-md-12 col-xs-12">
+            <div class="col-lg-12 col-md-12 col-xs-12 ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>Fichas - Importação</h5>
+                </div>
+                @using (Html.BeginForm("ImportarFichas", "Paciente2", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal", @id="pwd-container1" }))
+                {
+                    <div class="ibox-content">
+                        @Html.AntiForgeryToken()
+                        @if (!ViewData.ModelState.IsValid)
+                        {
+                            <div class="alert alert-danger">
+                                <button type="button" class="close" data-dismiss="alert">Fechar</button>
+                                @Html.ValidationSummary(false, "Erros Encontrados:", new { @class = "text-danger" })
+                            </div>
+                        }
+                        <div class="row">
+                            <div class="form-group" style=" margin-left: 5px; margin-right: 5px;">                
+                                @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaPaciente", controller: "Paciente")
+                                <a href="@Url.Action((String)Session["AjudaNivel"])"  class="btn btn-sm btn-danger" target="_blank">Ajuda</a>                
+                            </div>
+
+                            <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Paciente</h4>
+                            <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                <div class="col-lg-4 col-md-4 col-xs-12">
+                                    Nome do Paciente*
+                                    @Html.DropDownListFor(m => m.Paciente, (SelectList)ViewBag.Paciente, "Selecionar", new { @class = "form-control", data_toggle = "popover", data_content = "Selecione um paciente para importar as fichas, ou digite as primeiras letras do nome para acelerar a busca", data_trigger="hover", data_placement="top", autofocus = true, @id = "paciente", onchange = "GetPaciente($(this).val())" })
+                                    @Html.ValidationMessageFor(m => m.Paciente, "", new { @style = "color:red" })
+                                </div>
+                                <div style="display: none;" id="dataNasc" class="col-lg-2 col-md-2 col-xs-12">
+                                    Data de Nascimento
+                                    <input class="form-control" type="text" readonly="readonly" tabindex="-1"/>
+                                </div>
+                                <div style="display: none;" id="cpf" class="col-lg-2 col-md-2 col-xs-12">
+                                    CPF
+                                    <input class="form-control" type="text" readonly="readonly" tabindex="-1"/>
+                                </div>
+                                <div style="display: none;" id="cel" class="col-lg-2 col-md-2 col-xs-12">
+                                    Celular
+                                    <input class="form-control" type="text" readonly="readonly" tabindex="-1"/>
+                                </div>
+                                <div style="display: none;" id="tel" class="col-lg-2 col-md-2 col-xs-12">
+                                    Telefone
+                                    <input class="form-control" type="text" readonly="readonly" tabindex="-1"/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Importação</h4>
+                            <div class="form-group" style=" margin-left: 5px; margin-right: 5px;">                
+                                @Html.ButtonActionSubmit(text: "Executa importação de fichas do pacinete selecionado", htmlAttributes: new { id = "basictoast" })
+                            </div>
+                            <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">                
+                                <div class="col-lg-4 col-md-4 col-xs-12">
+                                    Arquivo a ser Importado*
+                                    @Html.DropDownListFor(m => m.SelectedArq, (SelectList)ViewBag.ArquivosFichas, "Selecionar", new { @class = "form-control", data_toggle = "popover", data_content = "Selecione um arquivo PDF de uma ficha digitalizada para importação", data_trigger="hover", data_placement="top", autofocus = true, @id = "arquivos"  })
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+         </div>
+    </div>
+</div>
+
+@section Styles {
+    <link href="~/Content/themes/base/all.css" rel="stylesheet" />  
+    @Styles.Render("~/plugins/jasnyBootstrapStyles")
+    @Styles.Render("~/plugins/toastrStyles")
+}
+@section Scripts {
+    @Scripts.Render("~/plugins/toastr")
+    @Scripts.Render("~/bundles/inputmask")
+    @Scripts.Render("~/plugins/jasnyBootstrap")
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.maskedinput/1.4.1/jquery.maskedinput.js"></script>
+   
+   
+    <script type="text/javascript" src="~/Scripts/moment.min.js"></script>
+    <script type="text/javascript" src="~/Scripts/bootstrap.min.js"></script>
+   
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('[data-toggle="popover"]').popover();
+        });
+    </script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-toggle="popover"]'));
+            var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
+                return new bootstrap.Popover(popoverTriggerEl);
+            });
+        });
+    </script>
+
+    <!-- Handler de fechamento do browser -->
+    <script type="text/javascript">
+        window.onbeforeunload = function ()
+        {
+            navigator.sendBeacon('../ControleAcesso/LogSessionTime');
+        }; 
+    </script>
+
+    <script>
+        function GetPaciente(id) {
+            var data = {
+                id: id
+            }
+
+            $.ajax({
+                url: '../Paciente/GetPaciente'
+                , type: 'POST'
+                , data: data
+                , success: function (r) {
+                    $('#dataNasc > input').val(r.dataNasc);
+                    $('#cpf > input').val(r.cpf);
+                    $('#cel > input').val(r.cel);
+                    $('#tel > input').val(r.tel);
+
+                    $('#dataNasc').show();
+                    $('#cpf').show();
+                    $('#cel').show();
+                    $('#tel').show();
+                }
+            });
+
+            var objArquivos = $('select#arquivos');
+
+            // Requisição para o controller
+            $.ajax({
+                url: '../Paciente2/FiltrarArquivos'
+                , type: 'POST'
+                , data: data
+                , success: function (r) {
+                    // Remove todos os itens da lista e adiciona o placeholder
+                    objArquivos.children('option').remove();
+                    objArquivos.append('<option>Selecionar</option>');
+
+                    // Loop para adicionar Itens específicos à categoria
+                    r.forEach(function (e) {
+                        objArquivos.append('<option value="' + e + '">' + e + '</option>');
+                    });
+                }
+            });
+        }
+    </script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            var i = -1;
+            var toastCount = 0;
+            var $toastlast;
+            var getMessage = function () {
+                var msg = 'Hi, welcome to Inspinia. This is example of Toastr notification box.';
+                return msg;
+            };
+
+            $('#basictoast').click(function () {
+                // Display a success toast, with a title
+                toastr.success('Inclusão em andamento!')
+            });
+            $('#showtoast').click(function () {
+                var shortCutFunction = $("#toastTypeGroup input:radio:checked").val();
+                var msg = $('#message').val();
+                var title = $('#title').val() || '';
+                var $showDuration = $('#showDuration');
+                var $hideDuration = $('#hideDuration');
+                var $timeOut = $('#timeOut');
+                var $extendedTimeOut = $('#extendedTimeOut');
+                var $showEasing = $('#showEasing');
+                var $hideEasing = $('#hideEasing');
+                var $showMethod = $('#showMethod');
+                var $hideMethod = $('#hideMethod');
+                var toastIndex = toastCount++;
+                toastr.options = {
+                    closeButton: $('#closeButton').prop('checked'),
+                    debug: $('#debugInfo').prop('checked'),
+                    progressBar: $('#progressBar').prop('checked'),
+                    positionClass: $('#positionGroup input:radio:checked').val() || 'toast-top-right',
+                    onclick: null
+                };
+                if ($('#addBehaviorOnToastClick').prop('checked')) {
+                    toastr.options.onclick = function () {
+                        alert('You can perform some custom action after a toast goes away');
+                    };
+                }
+                if ($showDuration.val().length) {
+                    toastr.options.showDuration = $showDuration.val();
+                }
+                if ($hideDuration.val().length) {
+                    toastr.options.hideDuration = $hideDuration.val();
+                }
+                if ($timeOut.val().length) {
+                    toastr.options.timeOut = $timeOut.val();
+                }
+                if ($extendedTimeOut.val().length) {
+                    toastr.options.extendedTimeOut = $extendedTimeOut.val();
+                }
+                if ($showEasing.val().length) {
+                    toastr.options.showEasing = $showEasing.val();
+                }
+                if ($hideEasing.val().length) {
+                    toastr.options.hideEasing = $hideEasing.val();
+                }
+                if ($showMethod.val().length) {
+                    toastr.options.showMethod = $showMethod.val();
+                }
+                if ($hideMethod.val().length) {
+                    toastr.options.hideMethod = $hideMethod.val();
+                }
+                if (!msg) {
+                    msg = getMessage();
+                }
+                $("#toastrOptions").text("Command: toastr["
+                        + shortCutFunction
+                        + "](\""
+                        + msg
+                        + (title ? "\", \"" + title : '')
+                        + "\")\n\ntoastr.options = "
+                        + JSON.stringify(toastr.options, null, 2)
+                );
+                var $toast = toastr[shortCutFunction](msg, title); // Wire up an event handler to a button in the toast, if it exists
+                $toastlast = $toast;
+                if ($toast.find('#okBtn').length) {
+                    $toast.delegate('#okBtn', 'click', function () {
+                        alert('you clicked me. i was toast #' + toastIndex + '. goodbye!');
+                        $toast.remove();
+                    });
+                }
+                if ($toast.find('#surpriseBtn').length) {
+                    $toast.delegate('#surpriseBtn', 'click', function () {
+                        alert('Surprise! you clicked me. i was toast #' + toastIndex + '. You could perform an action here.');
+                    });
+                }
+            });
+            function getLastToast() {
+                return $toastlast;
+            }
+            $('#clearlasttoast').click(function () {
+                toastr.clear(getLastToast());
+            });
+            $('#cleartoasts').click(function () {
+                toastr.clear();
+            });
+
+        });
+    </script>
+
+    <script>
+        function GetAtestado(id) {
+            var data = {
+                id: id
+            }
+
+            $.ajax({
+                url: '../Paciente2/GetTipoAtestado'
+                , type: 'POST'
+                , data: data
+                , success: function (r) {
+                    $('#finalidade').val(r.desc);
+                }
+            });
+        }
+    </script>
+    @if (ViewBag.Message != null)
+    {
+        <script type="text/javascript">
+            window.onload = function () {
+                  alert("@ViewBag.Message");
+            };
+        </script>
+    }
+}

@@ -1,0 +1,574 @@
+﻿@using Presentation.Extensions
+@model ERP_Condominios_Solution.ViewModels.ConfiguracaoCalendarioViewModel
+@{
+    Layout = "~/Views/Shared/_Layout_Admin.cshtml";
+    ViewBag.Title = "WebDoctor - Bloqueios";
+    ViewBag.MetaDescription = "WebDoctor - Lista de Bloqueios";
+    ViewBag.MetaKeywords = "WebDoctor, Calendario, Calendário, Bloqueio, Horários, Horarios";
+}
+
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="modalContainer">
+        <div id="modal" class="modal" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        @*Titulo gerado dinamicamente*@
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        @*Gerado dinamicamente*@
+                    </div>
+                    <div class="modal-footer">
+                        <button onclick="limpaModal()" type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="page-title">
+        <ol class="breadcrumb">
+            <li>
+                <a href="@Url.Action("MontarTelaPaciente", "Paciente")">Dashboard</a>
+            </li>
+            <li class="active">
+                <strong>Configuração - Calendário</strong>
+            </li>
+        </ol>
+        <br />
+    </div>
+
+    <div class="row">
+        <div class="col-lg-9 col-md-9 col-xs-12">
+            <div class="col-lg-12 col-md-12 col-xs-12 ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>Configuração - Calendário</h5>
+                </div>
+                @using (Html.BeginForm("MontarTelaBloqueio", "Configuracao", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal", @id = "pwd-container1" }))
+                {
+                    <div class="ibox-content">
+                        @Html.AntiForgeryToken()
+                        @if (!ViewData.ModelState.IsValid)
+                        {
+                            <div class="alert alert-danger">
+                                <button type="button" class="close" data-dismiss="alert">Fechar</button>
+                                @Html.ValidationSummary(false, "Avisos  :", new { @class = "text-danger" })
+                            </div>
+                        }
+
+                        @*Bloqueios*@
+                        <div class="row">
+                            <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Bloqueios de Horário</h4>
+                            <br />
+                            <div class="form-group" style=" margin-left: 0px; margin-right: 0px;">
+                                @Html.ButtonLinkIndex(text: "Novo Bloqueio", action: "IncluirBloqueio", controller: "Configuracao", buttonClass: "primary")
+                                @Html.ButtonLinkIndex(text: "Bloqueios de Hoje", action: "VerBloqueioAtivo", controller: "Configuracao")
+                                @Html.ButtonLinkIndex(text: "Bloqueios Anteriores", action: "VerBloqueioAnterior", controller: "Configuracao")
+                                @Html.ButtonLinkIndex(text: "Bloqueios Futuros", action: "VerBloqueioFuturo", controller: "Configuracao")
+                                @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaPaciente", controller: "Paciente")
+                            </div>
+                            <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                <div class="col-lg-12 col-md-12 col-xs-12">
+                                    @if (ViewBag.Itens != null && (ViewBag.Itens as List<EntitiesServices.Model.CONFIGURACAO_CALENDARIO_BLOQUEIO>).Count > 0)
+                                    {
+                                        <table class="table table-striped table-bordered table-hover dataTables-example1">
+                                            <thead style="background-color:lightsteelblue">
+                                                <tr>
+                                                    <th style="width: auto">Identificador</th>
+                                                    <th style="width: auto">Data Inicial</th>
+                                                    <th style="width: auto">Data Final</th>
+                                                    <th style="width: auto">Hora Inicial</th>
+                                                    <th style="width: auto">Hora Final</th>
+                                                    <th style="width: auto">Tipo de Bloqueio</th>
+                                                    <th style="width: auto" class="td-one-action">Ações</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach (var cond in (ViewBag.Itens as List<EntitiesServices.Model.CONFIGURACAO_CALENDARIO_BLOQUEIO>).OrderBy(p => p.COCB_DT_BLOQUEIO_INICIO))
+                                                {
+                                                    if (cond.COCB_DT_BLOQUEIO_INICIO > DateTime.Today.Date)
+                                                    {
+                                                        <tr style="background-color: aliceblue">
+                                                            <td style="width: auto"><a href="@Url.Action("EditarBloqueio", "Configuracao", new { id = cond.COCB_CD_ID })" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página de edição/consulta deste bloqueio"/>@cond.COCB_GU_IDENTIFICADOR</td>
+                                                            <td style="width: auto">@cond.COCB_DT_BLOQUEIO_INICIO.Value.ToShortDateString()</td>
+                                                            @if (cond.COCB_DT_BLOQUEIO_FINAL != null)
+                                                            {
+                                                                <td style="width: auto">@cond.COCB_DT_BLOQUEIO_FINAL.Value.ToShortDateString()</td>
+                                                            }
+                                                            else
+                                                            {
+                                                                <td style="width: auto">-</td>
+                                                            }
+                                                            <td style="width: auto">@cond.COCB_HR_INICIO.ToString()</td>
+                                                            <td style="width: auto">@cond.COCB_HR_FINAL.ToString()</td>
+                                                            @if (cond.COCB_DT_BLOQUEIO_INICIO == cond.COCB_DT_BLOQUEIO_FINAL || cond.COCB_DT_BLOQUEIO_FINAL == null)
+                                                            {
+                                                                if (cond.COCB_HR_INICIO == null)
+                                                                {
+                                                                    <td style="width: auto">Bloqueio de Data</td>
+                                                                }
+                                                                else
+                                                                {
+                                                                    <td style="width: auto">Bloqueio de Faixa de Horário</td>
+                                                                }
+                                                            }
+                                                            else if (cond.COCB_DT_BLOQUEIO_INICIO != cond.COCB_DT_BLOQUEIO_FINAL & cond.COCB_DT_BLOQUEIO_FINAL != null)
+                                                            {
+                                                                if (cond.COCB_HR_INICIO == null)
+                                                                {
+                                                                    <td style="width: auto">Bloqueio de Faixa de Datas</td>
+                                                                }
+                                                                else
+                                                                {
+                                                                    <td style="width: auto">Bloqueio de Faixa de Horário em Datas</td>
+                                                                }
+                                                            }
+                                                            <td class="td-one-action">
+                                                                @Html.TableLinkDetails(cond.COCB_CD_ID, "EditarBloqueio", "fa-edit", "Editar/Consultar Bloqueio")
+                                                                @if (cond.COCB_IN_ATIVO == 1)
+                                                                {
+                                                                    <span style="color: #337ab7; cursor:pointer;" alt="Desativar" class="tbl-link fa-lg fa fa-trash-o" onclick="ShowModalExcluirBloqueio('/Configuracao/ExcluirBloqueio/@cond.COCB_CD_ID')" title="Excluir Bloqueio"></span>
+                                                                }
+                                                            </td>
+                                                        </tr>
+                                                    }
+                                                    else if (cond.COCB_DT_BLOQUEIO_FINAL < DateTime.Today.Date)
+                                                    {
+                                                        <tr style="background-color: floralwhite">
+                                                            <td style="width: auto"><a href="@Url.Action("EditarBloqueio", "Configuracao", new { id = cond.COCB_CD_ID })" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página de edição/consulta deste bloqueio"/>@cond.COCB_GU_IDENTIFICADOR</td>
+                                                            <td style="width: auto">@cond.COCB_DT_BLOQUEIO_INICIO.Value.ToShortDateString()</td>
+                                                            @if (cond.COCB_DT_BLOQUEIO_FINAL != null)
+                                                            {
+                                                                <td style="width: auto">@cond.COCB_DT_BLOQUEIO_FINAL.Value.ToShortDateString()</td>
+                                                            }
+                                                            else
+                                                            {
+                                                                <td style="width: auto">-</td>
+                                                            }
+                                                            <td style="width: auto">@cond.COCB_HR_INICIO.ToString()</td>
+                                                            <td style="width: auto">@cond.COCB_HR_FINAL.ToString()</td>
+                                                            @if (cond.COCB_DT_BLOQUEIO_INICIO == cond.COCB_DT_BLOQUEIO_FINAL || cond.COCB_DT_BLOQUEIO_FINAL == null)
+                                                            {
+                                                                if (cond.COCB_HR_INICIO == null)
+                                                                {
+                                                                    <td style="width: auto">Bloqueio de Data</td>
+                                                                }
+                                                                else
+                                                                {
+                                                                    <td style="width: auto">Bloqueio de Faixa de Horário</td>
+                                                                }
+                                                            }
+                                                            else if (cond.COCB_DT_BLOQUEIO_INICIO != cond.COCB_DT_BLOQUEIO_FINAL & cond.COCB_DT_BLOQUEIO_FINAL != null)
+                                                            {
+                                                                if (cond.COCB_HR_INICIO == null)
+                                                                {
+                                                                    <td style="width: auto">Bloqueio de Faixa de Datas</td>
+                                                                }
+                                                                else
+                                                                {
+                                                                    <td style="width: auto">Bloqueio de Faixa de Horário em Datas</td>
+                                                                }
+                                                            }
+                                                            <td class="td-one-action">
+                                                                @Html.TableLinkDetails(cond.COCB_CD_ID, "EditarBloqueio", "fa-edit", "Editar/Consultar Bloqueio")
+                                                                @if (cond.COCB_IN_ATIVO == 1)
+                                                                {
+                                                                    <span style="color: #337ab7; cursor:pointer;" alt="Desativar" class="tbl-link fa-lg fa fa-trash-o" onclick="ShowModalExcluirBloqueio('/Configuracao/ExcluirBloqueio/@cond.COCB_CD_ID')" title="Excluir Bloqueio"></span>
+                                                                }
+                                                            </td>
+                                                        </tr>
+                                                    }
+                                                    else
+                                                    {
+                                                        <tr>
+                                                            <td style="width: auto"><a href="@Url.Action("EditarBloqueio", "Configuracao", new { id = cond.COCB_CD_ID })" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página de edição/consulta deste bloqueio"/>@cond.COCB_GU_IDENTIFICADOR</td>
+                                                            <td style="width: auto">@cond.COCB_DT_BLOQUEIO_INICIO.Value.ToShortDateString()</td>
+                                                            @if (cond.COCB_DT_BLOQUEIO_FINAL != null)
+                                                            {
+                                                                <td style="width: auto">@cond.COCB_DT_BLOQUEIO_FINAL.Value.ToShortDateString()</td>
+                                                            }
+                                                            else
+                                                            {
+                                                                <td style="width: auto">-</td>
+                                                            }
+                                                            <td style="width: auto">@cond.COCB_HR_INICIO.ToString()</td>
+                                                            <td style="width: auto">@cond.COCB_HR_FINAL.ToString()</td>
+                                                            @if (cond.COCB_DT_BLOQUEIO_INICIO == cond.COCB_DT_BLOQUEIO_FINAL || cond.COCB_DT_BLOQUEIO_FINAL == null)
+                                                            {
+                                                                if (cond.COCB_HR_INICIO == null)
+                                                                {
+                                                                    <td style="width: auto">Bloqueio de Data</td>
+                                                                }
+                                                                else
+                                                                {
+                                                                    <td style="width: auto">Bloqueio de Faixa de Horário</td>
+                                                                }
+                                                            }
+                                                            else if (cond.COCB_DT_BLOQUEIO_INICIO != cond.COCB_DT_BLOQUEIO_FINAL & cond.COCB_DT_BLOQUEIO_FINAL != null)
+                                                            {
+                                                                if (cond.COCB_HR_INICIO == null)
+                                                                {
+                                                                    <td style="width: auto">Bloqueio de Faixa de Datas</td>
+                                                                }
+                                                                else
+                                                                {
+                                                                    <td style="width: auto">Bloqueio de Faixa de Horário em Datas</td>
+                                                                }
+                                                            }
+                                                            <td class="td-one-action">
+                                                                @Html.TableLinkDetails(cond.COCB_CD_ID, "EditarBloqueio", "fa-edit", "Editar/Consultar Bloqueio")
+                                                                @if (cond.COCB_IN_ATIVO == 1)
+                                                                {
+                                                                    <span style="color: #337ab7; cursor:pointer;" alt="Desativar" class="tbl-link fa-lg fa fa-trash-o" onclick="ShowModalExcluirBloqueio('/Configuracao/ExcluirBloqueio/@cond.COCB_CD_ID')" title="Excluir Bloqueio"></span>
+                                                                }
+                                                            </td>
+                                                        </tr>
+                                                    }
+                                                }
+                                            </tbody>
+                                        </table>
+                                    }
+                                    else
+                                    {
+                                        <div class="row">
+                                            <div class="col-lg-2 col-md-2 col-xs-2">
+
+                                            </div>
+                                            <div style="border: 5px solid #F6A54A; padding: 10px; border-radius: 8px 8px; " class="col-lg-8 col-md-8 col-xs-8">
+                                                <h2 style="font-weight: bold">Nenhum bloqueio definido para a faixa de datas selecionada</h2>
+                                            </div>
+                                            <div class="col-lg-2 col-md-2 col-xs-2">
+
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <div class="col-lg-3 col-md-3 col-xs-12">
+            <div class="col-lg-12 col-md-12 col-xs-12 ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>Configuração - Bloqueios - Instruções</h5>
+                </div>
+                <div class="ibox-content">
+                    @*Bloqueios*@
+                    <div class="row">
+                        <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Bloqueios</h4>
+                        <ul>
+                            <li>Os bloqueios de horário podem ser definidos das seguintes maneiras:</li>
+                            <ul>
+                                <li>Pontual. Apenas numa data específica com faixa de horário especificada:</li>
+                                <ul>
+                                    <li>Defina apenas a data inicial do bloqueio.</li>
+                                    <li>Se não definir a faixa horária a data inteira será bloqueada.</li>
+                                </ul>
+                                <li>Faixa de Datas. Serão bloqueadas as datas da faixa definida na faixa horária espeficidada:</li>
+                                <ul>
+                                    <li>Obrigatória a definição da faixa de datas.</li>
+                                    <li>Se não definir a faixa horária a faixa de datas inteira será bloqueada.</li>
+                                </ul>
+                            </ul>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <link href="~/Content/themes/base/jquery-ui.min.css" rel="stylesheet" />
+    <link href="~/Content/themes/base/all.css" rel="stylesheet" />
+    @Styles.Render("~/Content/plugins/dataTables/dataTablesStyles")
+    @Styles.Render("~/plugins/jasnyBootstrapStyles")
+    @Styles.Render("~/plugins/toastrStyles")
+
+}
+@section Scripts {
+    @Scripts.Render("~/plugins/toastr")
+    <script src="~/Scripts/jquery-ui-1.12.1.min.js"></script>
+    @Scripts.Render("~/plugins/dataTables")
+    @Scripts.Render("~/bundles/inputmask")
+    @Scripts.Render("~/plugins/jasnyBootstrap")
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.maskedinput/1.4.1/jquery.maskedinput.js"></script>
+    <script src="~/Scripts/uploadAnexo.js"></script>
+
+    <script type="text/javascript" src="~/Scripts/moment.min.js"></script>
+    <script type="text/javascript" src="~/Scripts/bootstrap.min.js"></script>
+   
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('[data-toggle="popover"]').popover();
+        });
+    </script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-toggle="popover"]'));
+            var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
+                return new bootstrap.Popover(popoverTriggerEl);
+            });
+        });
+    </script>
+
+    <!-- Handler de fechamento do browser -->
+    <script type="text/javascript">
+        window.onbeforeunload = function ()
+        {
+            navigator.sendBeacon('../ControleAcesso/LogSessionTime');
+        }; 
+    </script>
+
+    <script>
+        $(function () {
+            limpaModal();
+        });
+
+        function limpaModal() {
+            $('#btnModal').remove();
+            $('#modalTitle').remove();
+        }
+
+        function ShowModalExcluirBloqueio(url) {
+            $('#modal').find('.modal-footer').prepend('<a id="btnModal" alt="Desativar" class="btn btn-primary" href="' + url + '" target="_self" title="Desativar">Confirmar</a>');
+            $('#modal').find('.modal-body').html('Confirma exclusão de Bloqueio?');
+            $('#modal').find('.modal-header').prepend('<h5 id="modalTitle" class="modal-title">Confimar Exclusão</h5>');
+            $('#modal').modal('show');
+        }
+    </script>
+
+    <script type="text/javascript">
+        $(function () {
+            $("#horaSeg1").mask("99:99");
+            $("#horaSeg2").mask("99:99");
+            $("#horaSeg3").mask("99:99");
+            $("#horaSeg4").mask("99:99");
+            $("#horaTer1").mask("99:99");
+            $("#horaTer2").mask("99:99");
+            $("#horaTer3").mask("99:99");
+            $("#horaTer4").mask("99:99");
+            $("#horaQua1").mask("99:99");
+            $("#horaQua2").mask("99:99");
+            $("#horaQua3").mask("99:99");
+            $("#horaQua4").mask("99:99");
+            $("#horaQui1").mask("99:99");
+            $("#horaQui2").mask("99:99");
+            $("#horaQui3").mask("99:99");
+            $("#horaQui4").mask("99:99");
+            $("#horaSex1").mask("99:99");
+            $("#horaSex2").mask("99:99");
+            $("#horaSex3").mask("99:99");
+            $("#horaSex4").mask("99:99");
+            $("#horaSab1").mask("99:99");
+            $("#horaSab2").mask("99:99");
+            $("#horaSab3").mask("99:99");
+            $("#horaSab4").mask("99:99");
+            $("#horaDom1").mask("99:99");
+            $("#horaDom2").mask("99:99");
+            $("#horaDom3").mask("99:99");
+            $("#horaDom4").mask("99:99");
+        });
+    </script>
+    <script type="text/javascript">
+        function ValidaSeg(segVal) {
+            if (segVal == '1') {
+                $("#seg").show();
+            } else {
+                $("#seg").hide();
+            }
+        }
+        $(document).ready(function () {
+            ValidaSeg($('#segVal').val());
+        });
+    </script>
+    <script type="text/javascript">
+        function ValidaTer(terVal) {
+            if (terVal == '1') {
+                $("#ter").show();
+            } else {
+                $("#ter").hide();
+            }
+        }
+        $(document).ready(function () {
+            ValidaTer($('#terVal').val());
+        });
+    </script>
+    <script type="text/javascript">
+        function ValidaQua(quaVal) {
+            if (quaVal == '1') {
+                $("#qua").show();
+            } else {
+                $("#qua").hide();
+            }
+        }
+        $(document).ready(function () {
+            ValidaQua($('#quaVal').val());
+        });
+    </script>
+    <script type="text/javascript">
+        function ValidaQui(quiVal) {
+            if (quiVal == '1') {
+                $("#qui").show();
+            } else {
+                $("#qui").hide();
+            }
+        }
+        $(document).ready(function () {
+            ValidaQui($('#quiVal').val());
+        });
+    </script>
+    <script type="text/javascript">
+        function ValidaSex(sexVal) {
+            if (sexVal == '1') {
+                $("#sex").show();
+            } else {
+                $("#sex").hide();
+            }
+        }
+        $(document).ready(function () {
+            ValidaSex($('#sexVal').val());
+        });
+    </script>
+    <script type="text/javascript">
+        function ValidaSab(sabVal) {
+            if (sabVal == '1') {
+                $("#sab").show();
+            } else {
+                $("#sab").hide();
+            }
+        }
+        $(document).ready(function () {
+            ValidaSab($('#sabVal').val());
+        });
+    </script>
+    <script type="text/javascript">
+        function ValidaDom(domVal) {
+            if (domVal == '1') {
+                $("#dom").show();
+            } else {
+                $("#dom").hide();
+            }
+        }
+        $(document).ready(function () {
+            ValidaDom($('#domVal').val());
+        });
+    </script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            var i = -1;
+            var toastCount = 0;
+            var $toastlast;
+            var getMessage = function () {
+                var msg = 'Hi, welcome to Inspinia. This is example of Toastr notification box.';
+                return msg;
+            };
+
+            $('#basictoast').click(function () {
+                // Display a success toast, with a title
+                toastr.success('Inclusão em andamento!')
+            });
+            $('#showtoast').click(function () {
+                var shortCutFunction = $("#toastTypeGroup input:radio:checked").val();
+                var msg = $('#message').val();
+                var title = $('#title').val() || '';
+                var $showDuration = $('#showDuration');
+                var $hideDuration = $('#hideDuration');
+                var $timeOut = $('#timeOut');
+                var $extendedTimeOut = $('#extendedTimeOut');
+                var $showEasing = $('#showEasing');
+                var $hideEasing = $('#hideEasing');
+                var $showMethod = $('#showMethod');
+                var $hideMethod = $('#hideMethod');
+                var toastIndex = toastCount++;
+                toastr.options = {
+                    closeButton: $('#closeButton').prop('checked'),
+                    debug: $('#debugInfo').prop('checked'),
+                    progressBar: $('#progressBar').prop('checked'),
+                    positionClass: $('#positionGroup input:radio:checked').val() || 'toast-top-right',
+                    onclick: null
+                };
+                if ($('#addBehaviorOnToastClick').prop('checked')) {
+                    toastr.options.onclick = function () {
+                        alert('You can perform some custom action after a toast goes away');
+                    };
+                }
+                if ($showDuration.val().length) {
+                    toastr.options.showDuration = $showDuration.val();
+                }
+                if ($hideDuration.val().length) {
+                    toastr.options.hideDuration = $hideDuration.val();
+                }
+                if ($timeOut.val().length) {
+                    toastr.options.timeOut = $timeOut.val();
+                }
+                if ($extendedTimeOut.val().length) {
+                    toastr.options.extendedTimeOut = $extendedTimeOut.val();
+                }
+                if ($showEasing.val().length) {
+                    toastr.options.showEasing = $showEasing.val();
+                }
+                if ($hideEasing.val().length) {
+                    toastr.options.hideEasing = $hideEasing.val();
+                }
+                if ($showMethod.val().length) {
+                    toastr.options.showMethod = $showMethod.val();
+                }
+                if ($hideMethod.val().length) {
+                    toastr.options.hideMethod = $hideMethod.val();
+                }
+                if (!msg) {
+                    msg = getMessage();
+                }
+                $("#toastrOptions").text("Command: toastr["
+                    + shortCutFunction
+                    + "](\""
+                    + msg
+                    + (title ? "\", \"" + title : '')
+                    + "\")\n\ntoastr.options = "
+                    + JSON.stringify(toastr.options, null, 2)
+                );
+                var $toast = toastr[shortCutFunction](msg, title); // Wire up an event handler to a button in the toast, if it exists
+                $toastlast = $toast;
+                if ($toast.find('#okBtn').length) {
+                    $toast.delegate('#okBtn', 'click', function () {
+                        alert('you clicked me. i was toast #' + toastIndex + '. goodbye!');
+                        $toast.remove();
+                    });
+                }
+                if ($toast.find('#surpriseBtn').length) {
+                    $toast.delegate('#surpriseBtn', 'click', function () {
+                        alert('Surprise! you clicked me. i was toast #' + toastIndex + '. You could perform an action here.');
+                    });
+                }
+            });
+            function getLastToast() {
+                return $toastlast;
+            }
+            $('#clearlasttoast').click(function () {
+                toastr.clear(getLastToast());
+            });
+            $('#cleartoasts').click(function () {
+                toastr.clear();
+            });
+
+        });
+    </script>
+
+
+    @if (ViewBag.Message != null)
+    {
+        <script type="text/javascript">
+            window.onload = function () {
+                  alert("@ViewBag.Message");
+            };
+        </script>
+    }
+}

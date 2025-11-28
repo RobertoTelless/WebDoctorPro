@@ -1,0 +1,463 @@
+﻿@using Presentation.Extensions
+@model ERP_Condominios_Solution.ViewModels.PacienteSolicitacaoViewModel
+@{
+    Layout = "~/Views/Shared/_Layout_Admin.cshtml";
+    ViewBag.Title = "WebDoctor - Paciente - Solicitação de Exame - Edição";
+    ViewBag.MetaDescription = "WebDoctor - Paciente - Solicitação de Exame - Edição de solicitação de exame de pacientes";
+    ViewBag.MetaKeywords = "WebDoctor, paciente, solicitacao, exame";
+}
+
+<div class="wrapper wrapper-content animated fadeInRight">
+    @if ((String)Session["ModuloAtual"] == "Dashboard Inicial")
+    {
+        <div class="page-title">
+            <ol class="breadcrumb">
+                <li>
+                    <a href="@Url.Action("MontarTelaPaciente", "Paciente")">Dashboard</a>
+                </li>
+                <li>
+                    <a href="@Url.Action("MontarTelaSolicitacoes", "Paciente")">Solicitações</a>
+                </li>
+                <li class="active">
+                    <strong>Solicitação - Edição</strong>
+                </li>
+            </ol>
+            <br />
+        </div>
+    }
+    else if ((String)Session["ModuloAtual"] == "Central de Pacientes")
+    {
+        <div class="page-title">
+            <ol class="breadcrumb">
+                <li>
+                    <a href="@Url.Action("MontarTelaPaciente", "Paciente")">Dashboard</a>
+                </li>
+                <li>
+                    <a href="@Url.Action("MontarTelaCentralPaciente", "Paciente")">Central de Pacientes</a>
+                </li>
+                <li>
+                    <a href="@Url.Action("MontarTelaSolicitacoes", "Paciente")">Solicitações</a>
+                </li>
+                <li class="active">
+                    <strong>Solicitação - Edição</strong>
+                </li>
+            </ol>
+            <br />
+        </div>
+    }
+    else if ((String)Session["ModuloAtual"] == "Paciente - Edição")
+    {
+        <div class="page-title">
+            <ol class="breadcrumb">
+                <li>
+                    <a href="@Url.Action("MontarTelaPaciente", "Paciente")">Dashboard</a>
+                </li>
+                <li>
+                    <a href="@Url.Action("MontarTelaCentralPaciente", "Paciente")">Central de Pacientes</a>
+                </li>
+                <li>
+                    <a href="@Url.Action("EditarPaciente", "Paciente")">Paciente - Edição</a>
+                </li>
+                <li class="active">
+                    <strong>Solicitacão - Edição</strong>
+                </li>
+            </ol>
+            <br />
+        </div>
+    }
+    <div class="row">
+        <div class="col-lg-12 col-md-12 col-xs-12">
+            <div class="col-lg-12 col-md-12 col-xs-12 ibox float-e-margins">
+                <div class="ibox-title">
+                    <div style="text-align: center;" class="col-lg-12 col-md-12 col-xs-12">
+                        <h5>Solicitação de Exame - Edição</h5>
+                        <span style="color:green; font-weight: 500; font-size: 20px;">@Model.PACIENTE.PACI_NM_NOME</span>
+                    </div>
+                </div>
+                @using (Html.BeginForm("EditarSolicitacao", "Paciente", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal", @id="pwd-container1" }))
+                {
+                    <div class="ibox-content">
+                        @Html.AntiForgeryToken()
+                        @if (!ViewData.ModelState.IsValid)
+                        {
+                            <div class="alert alert-danger">
+                                <button type="button" class="close" data-dismiss="alert">Fechar</button>
+                                @Html.ValidationSummary(false, "Erros Encontrados:", new { @class = "text-danger" })
+                            </div>
+                        }
+                        <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">  
+                            @Html.ButtonLinkIndex(text: "Imprimir Solicitação", action: "ImprimirSolicitacaoForm", controller: "Paciente")
+                            @Html.ButtonLinkIndex(text: "Enviar Solcitação por E-Mail", action: "EnviarSolicitacaoEMailForm", controller: "Paciente")
+                            @if ((Int32)Session["VoltarPesquisa"] == 1)
+                            {
+                                @Html.ButtonLinkIndex(text: "Voltar", action: "PesquisarTudo", controller: "BaseAdmin")
+                            }
+                            else
+                            {
+                                if ((Int32)Session["TipoSolicitacao"] == 1)
+                                {
+                                    if ((Int32)Session["ModoConsulta"] == 1)
+                                    {
+                                        @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarProcederConsulta", controller: "Paciente")
+                                    }
+                                    else
+                                    {
+                                        @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarAnexoPaciente", controller: "Paciente")
+                                    }
+                                }
+                                else
+                                {
+                                    @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaSolicitacoes", controller: "Paciente")
+                                }
+                            }
+                            <a href="@Url.Action((String)Session["AjudaNivel"])"  class="btn btn-sm btn-danger" target="_blank">Ajuda</a>                
+                        </div>
+                        <div class="row">
+                            <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Paciente</h4>
+                            <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">                
+                                <div class="col-lg-4 col-md-4 col-xs-12">
+                                    Nome do Paciente
+                                    @Html.TextBoxFor(m => m.PACIENTE.PACI_NM_NOME, new { @class = "form-control", @tabindex = "-1", @readonly = "readonly", @style = "color: green; font-weight: bold" })
+                                </div>
+                                <div class="col-lg-2 col-md-2 col-xs-12">
+                                    Data Nascimento
+                                    @Html.TextBoxFor(m => m.PACIENTE.PACI_DT_NASCIMENTO, "{0:dd/MM/yyyy}", new { @class = "form-control", @tabindex = "-1", @readonly = "readonly" })
+                                </div>
+                                @if (Model.PACIENTE.PACI_NR_CPF != null)
+                                {
+                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                        CPF
+                                        @Html.TextBoxFor(m => m.PACIENTE.PACI_NR_CPF, new { @class = "form-control", @tabindex = "-1", @readonly = "readonly" })
+                                    </div>
+                                }
+                                @if (Model.PACIENTE.PACI_NR_CELULAR != null)
+                                {
+                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                        Celular
+                                        @Html.TextBoxFor(m => m.PACIENTE.PACI_NR_CELULAR, new { @class = "form-control", @tabindex = "-1", @readonly = "readonly" })
+                                    </div>
+                                }
+                                @if (Model.PACIENTE.PACI_NR_TELEFONE != null)
+                                {
+                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                        Telefone
+                                        @Html.TextBoxFor(m => m.PACIENTE.PACI_NR_TELEFONE, new { @class = "form-control", @tabindex = "-1", @readonly = "readonly" })
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                        <div class="row">
+                            <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Solicitação de Exame</h4>
+                            <div class="form-group" style=" margin-left: 5px; margin-right: 5px;">                
+                                @Html.ButtonActionSubmit(text: "Confirma Edição de Solicitação de Exame", htmlAttributes: new { id = "basictoast" })
+                            </div>
+                            <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">                
+                                <div class="col-lg-2 col-md-2 col-xs-12">
+                                    Identificador
+                                    @Html.TextBoxFor(m => m.PASO_GU_GUID, new { @class = "form-control", @tabindex = "-1", @readonly = "readonly", @style = "color: darkblue; font-weight: bold", data_toggle = "popover", data_content = "Identificador único da solicitação gerado pelo WebDoctor", data_trigger="hover", data_placement="top" })
+                                </div>
+                                <div class="col-lg-2 col-md-2 col-xs-12">
+                                    @Html.HiddenFor(m => m.PACI_CD_ID)
+                                    @Html.HiddenFor(m => m.PASO_IN_ATIVO)
+                                    @Html.HiddenFor(m => m.PASO_GU_GUID)
+                                    @Html.HiddenFor(m => m.PASO_DT_EMISSAO)
+                                    @Html.HiddenFor(m => m.PASO_DT_EMISSAO_COMPLETA)
+                                    @Html.HiddenFor(m => m.USUA_CD_ID)
+                                    @Html.HiddenFor(m => m.ASSI_CD_ID)
+                                    @Html.HiddenFor(m => m.PASO_IN_ENVIADO)
+                                    @Html.HiddenFor(m => m.PASO_DT_ENVIO)
+                                    @Html.HiddenFor(m => m.PASO_GU_GUID_ENVIO)
+                                    @Html.HiddenFor(m => m.PASO_IN_PDF)
+                                    @Html.HiddenFor(m => m.PASO_NR_ENVIOS)
+                                    @Html.HiddenFor(m => m.PACO_CD_ID)
+                                    @Html.HiddenFor(m => m.PASO_CD_ID)
+                                    @Html.HiddenFor(m => m.PASO_AQ_ARQUIVO_HTML)
+                                    @Html.HiddenFor(m => m.PASO_HT_TEXT_HTML)
+                                    @Html.HiddenFor(m => m.PASO_AQ_ARQUIVO_PDF)
+                                    @Html.HiddenFor(m => m.PASO_DT_GERACAO_PDF)
+                                    @Html.HiddenFor(m => m.PASO_TK_TOKEN)
+                                    @Html.HiddenFor(m => m.PASO_AQ_ARQUIVO_QRCODE)
+                                    @Html.HiddenFor(m => m.PASO_DT_VALIDACAO)
+                                    @Html.HiddenFor(m => m.PASO_IP_VALIDACAO)
+                                    @Html.HiddenFor(m => m.PASO_NR_VALIDACAO)
+                                    @Html.HiddenFor(m => m.PASO_IN_VALIDACAO)
+                                    @Html.HiddenFor(m => m.PASO_DT_DENUNCIA)
+                                    @Html.HiddenFor(m => m.PASO_IP_DENUNCIA)
+                                    @Html.HiddenFor(m => m.PASO_NR_DENUNCIA)
+                                    @Html.HiddenFor(m => m.PASO_IN_DENUNCIA)
+                                    @Html.HiddenFor(m => m.PASO_TX_DENUNCIA)
+                                    @Html.HiddenFor(m => m.PASO_IN_ASSINADO_DIGITAL)
+                                    Data/Hora de Emissão
+                                    @Html.TextBoxFor(m => m.PASO_DT_EMISSAO_COMPLETA, new { @class = "form-control", @tabindex = "-1", @readonly = "readonly" })
+                                </div>
+                                <div class="col-lg-2 col-md-2 col-xs-12">
+                                    Última Geração do PDF
+                                    @Html.TextBoxFor(m => m.PASO_DT_GERACAO_PDF, "{0:dd/MM/yyyy}", new { @class = "form-control", @tabindex = "-1", @readonly = "readonly" })
+                                </div>
+                                <div class="col-lg-2 col-md-2 col-xs-12">
+                                    Último Envio
+                                    @Html.TextBoxFor(m => m.PASO_DT_ENVIO, "{0:dd/MM/yyyy}", new { @class = "form-control", @tabindex = "-1", @readonly = "readonly" })
+                                </div>
+                                <div class="col-lg-2 col-md-2 col-xs-12">
+                                    Num. de Envios
+                                    @Html.TextBoxFor(m => m.PASO_NR_ENVIOS, new { @class = "form-control", @tabindex = "-1", @readonly = "readonly" })
+                                </div>
+                                <div class="col-lg-2 col-md-2 col-xs-12">
+                                    Token de Acesso
+                                    @Html.TextBoxFor(m => m.PASO_TK_TOKEN, new { @class = "form-control", @tabindex = "-1", @readonly = "readonly", @style = "color: darkblue; font-weight: bold", data_toggle = "popover", data_content = "Token para validação on-line gerado automaticamente pelo WebDoctor", data_trigger="hover", data_placement="top" })
+                                </div>
+                            </div>
+                            <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">                
+                                <div class="col-lg-2 col-md-2 col-xs-12">
+                                    Assinado Digitalmente
+                                    @Html.TextBoxFor(m => m.Digital, new { @class = "form-control", @tabindex = "-1", @readonly = "readonly" })
+                                </div>
+                                <div class="col-lg-6 col-md-6 col-xs-12">
+                                    Tipo de Exame*
+                                    @Html.DropDownListFor(m => m.TIEX_CD_ID, (SelectList)ViewBag.TipoExame, "Selecionar", new { @class = "form-control", data_toggle = "popover", data_content = "Para incluir novo tipo de exame use o menu lateral acessando Tabelas Auxiliares no bloco Administração", data_trigger="hover", data_placement="top", autofocus = true, @id = "tipo" })
+                                    @Html.ValidationMessageFor(m => m.TIEX_CD_ID, "", new { @style = "color:red" })
+                                </div>
+                                <div class="col-lg-2 col-md-2 col-xs-12">
+                                    Incluir Data?
+                                    @Html.DropDownListFor(m => m.PASO_IN_DATA, (SelectList)ViewBag.TrataData, "Selecionar", new { @class = "form-control", data_toggle = "popover", data_content = "Permite escolher se quer que a data de emissão apareça na solicitação sendo gerada", data_trigger="hover", data_placement="top", autofocus = true })
+                                    @Html.ValidationMessageFor(m => m.PASO_IN_DATA, "", new { @style = "color:red" })
+                                </div>
+                            </div>
+                            <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">                
+                                <div class="col-lg-12 col-md-12 col-xs-12">
+                                    Nome do Exame*
+                                    @Html.TextBoxFor(m => m.PASO_NM_TITULO, new { @class = "form-control", autofocus = true })
+                                    @Html.ValidationMessageFor(m => m.PASO_NM_TITULO, "",new { @style="color:red" })
+                                </div>
+                            </div>
+                            <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">                
+                                <div class="col-lg-12 col-md-12 col-xs-12">
+                                    Indicação Clínica*
+                                    @Html.TextAreaFor(m => m.PASO_DS_INDICACAO_CLINICA, new { @class = "form-control", style = "width: 100%; height: 150px; overflow:auto;", autofocus = true })
+                                    @Html.ValidationMessageFor(m => m.PASO_DS_INDICACAO_CLINICA, "", new { @style = "color:red" })
+                                </div>
+                            </div>
+                            <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">                
+                                <div class="col-lg-12 col-md-12 col-xs-12">
+                                    Descrição do Exame*
+                                    @Html.TextAreaFor(m => m.PASO_TX_TEXTO, new { @class = "form-control", style = "width: 100%; height: 150px; overflow:auto;", autofocus = true })
+                                    @Html.ValidationMessageFor(m => m.PASO_TX_TEXTO, "", new { @style = "color:red" })
+                                </div>
+                            </div>
+                        </div>
+                   
+                        @*Validacao*@
+                        @if (Model.PASO_IN_VALIDACAO == 1)
+                        {
+                            <div class="row">
+                                <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Validação</h4>
+                                <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">                
+                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                        Validado
+                                        @Html.TextBoxFor(m => m.Validado, new { @class = "form-control", @tabindex = "-1", @readonly = "readonly", @style = "color: brown; font-weight: bold" })
+                                    </div>
+                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                        Data da Validação
+                                        @Html.TextBoxFor(m => m.PASO_DT_VALIDACAO, "{0:dd/MM/yyyy}", new { @class = "form-control", @tabindex = "-1", @readonly = "readonly" })
+                                    </div>
+                                    <div class="col-lg-3 col-md-3 col-xs-12">
+                                        Validado Por
+                                        @Html.TextBoxFor(m => m.PASO_IP_VALIDACAO, new { @class = "form-control", @tabindex = "-1", @readonly = "readonly" })
+                                    </div>
+                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                        Num.Validações
+                                        @Html.TextBoxFor(m => m.PASO_NR_VALIDACAO, new { @class = "form-control", @tabindex = "-1", @readonly = "readonly" })
+                                    </div>
+                                </div>
+                            </div>
+                        }
+
+                        @*Denuncia*@
+                        @if (Model.PASO_IN_DENUNCIA == 1)
+                        {
+                            <div class="row">
+                                <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Denuncia</h4>
+                                <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">                
+                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                        Denunciado
+                                        @Html.TextBoxFor(m => m.Denuncia, new { @class = "form-control", @tabindex = "-1", @readonly = "readonly", @style = "color: brown; font-weight: bold" })
+                                    </div>
+                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                        Data da Denuncia
+                                        @Html.TextBoxFor(m => m.PASO_DT_DENUNCIA, "{0:dd/MM/yyyy}", new { @class = "form-control", @tabindex = "-1", @readonly = "readonly" })
+                                    </div>
+                                    <div class="col-lg-3 col-md-3 col-xs-12">
+                                        Denunciado Por
+                                        @Html.TextBoxFor(m => m.PASO_IP_DENUNCIA, new { @class = "form-control", @tabindex = "-1", @readonly = "readonly" })
+                                    </div>
+                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                        Num.Denuncias
+                                        @Html.TextBoxFor(m => m.PASO_NR_DENUNCIA, new { @class = "form-control", @tabindex = "-1", @readonly = "readonly" })
+                                    </div>
+                                </div>                            
+                                <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">                
+                                    <div class="col-lg-12 col-md-12 col-xs-12">
+                                        Motivo da Denuncia
+                                        @Html.TextAreaFor(m => m.PASO_TX_DENUNCIA, new { @class = "form-control", @tabindex = "-1", @readonly = "readonly", style = "width: 100%; height: 100px; overflow:auto;", data_toggle = "popover", data_content = "Motivos que levaram à denuncia deste atestado", data_trigger="hover", data_placement="top"  })
+                                    </div>
+                                </div>
+                            </div>
+                        }
+
+
+                    </div>
+                }
+            </div>
+         </div>
+    </div>
+</div>
+
+@section Styles {
+    <link href="~/Content/themes/base/all.css" rel="stylesheet" />  
+    @Styles.Render("~/plugins/jasnyBootstrapStyles")
+    @Styles.Render("~/plugins/toastrStyles")
+}
+@section Scripts {
+    @Scripts.Render("~/plugins/toastr")
+    @Scripts.Render("~/bundles/inputmask")
+    @Scripts.Render("~/plugins/jasnyBootstrap")
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.maskedinput/1.4.1/jquery.maskedinput.js"></script>
+   
+    <script type="text/javascript" src="~/Scripts/moment.min.js"></script>
+    <script type="text/javascript" src="~/Scripts/bootstrap.min.js"></script>
+   
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('[data-toggle="popover"]').popover();
+        });
+    </script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-toggle="popover"]'));
+            var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
+                return new bootstrap.Popover(popoverTriggerEl);
+            });
+        });
+    </script>
+
+    <!-- Handler de fechamento do browser -->
+    <script type="text/javascript">
+        window.onbeforeunload = function ()
+        {
+            navigator.sendBeacon('../ControleAcesso/LogSessionTime');
+        }; 
+    </script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            var i = -1;
+            var toastCount = 0;
+            var $toastlast;
+            var getMessage = function () {
+                var msg = 'Hi, welcome to Inspinia. This is example of Toastr notification box.';
+                return msg;
+            };
+
+            $('#basictoast').click(function () {
+                // Display a success toast, with a title
+                toastr.success('Inclusão em andamento!')
+            });
+            $('#showtoast').click(function () {
+                var shortCutFunction = $("#toastTypeGroup input:radio:checked").val();
+                var msg = $('#message').val();
+                var title = $('#title').val() || '';
+                var $showDuration = $('#showDuration');
+                var $hideDuration = $('#hideDuration');
+                var $timeOut = $('#timeOut');
+                var $extendedTimeOut = $('#extendedTimeOut');
+                var $showEasing = $('#showEasing');
+                var $hideEasing = $('#hideEasing');
+                var $showMethod = $('#showMethod');
+                var $hideMethod = $('#hideMethod');
+                var toastIndex = toastCount++;
+                toastr.options = {
+                    closeButton: $('#closeButton').prop('checked'),
+                    debug: $('#debugInfo').prop('checked'),
+                    progressBar: $('#progressBar').prop('checked'),
+                    positionClass: $('#positionGroup input:radio:checked').val() || 'toast-top-right',
+                    onclick: null
+                };
+                if ($('#addBehaviorOnToastClick').prop('checked')) {
+                    toastr.options.onclick = function () {
+                        alert('You can perform some custom action after a toast goes away');
+                    };
+                }
+                if ($showDuration.val().length) {
+                    toastr.options.showDuration = $showDuration.val();
+                }
+                if ($hideDuration.val().length) {
+                    toastr.options.hideDuration = $hideDuration.val();
+                }
+                if ($timeOut.val().length) {
+                    toastr.options.timeOut = $timeOut.val();
+                }
+                if ($extendedTimeOut.val().length) {
+                    toastr.options.extendedTimeOut = $extendedTimeOut.val();
+                }
+                if ($showEasing.val().length) {
+                    toastr.options.showEasing = $showEasing.val();
+                }
+                if ($hideEasing.val().length) {
+                    toastr.options.hideEasing = $hideEasing.val();
+                }
+                if ($showMethod.val().length) {
+                    toastr.options.showMethod = $showMethod.val();
+                }
+                if ($hideMethod.val().length) {
+                    toastr.options.hideMethod = $hideMethod.val();
+                }
+                if (!msg) {
+                    msg = getMessage();
+                }
+                $("#toastrOptions").text("Command: toastr["
+                        + shortCutFunction
+                        + "](\""
+                        + msg
+                        + (title ? "\", \"" + title : '')
+                        + "\")\n\ntoastr.options = "
+                        + JSON.stringify(toastr.options, null, 2)
+                );
+                var $toast = toastr[shortCutFunction](msg, title); // Wire up an event handler to a button in the toast, if it exists
+                $toastlast = $toast;
+                if ($toast.find('#okBtn').length) {
+                    $toast.delegate('#okBtn', 'click', function () {
+                        alert('you clicked me. i was toast #' + toastIndex + '. goodbye!');
+                        $toast.remove();
+                    });
+                }
+                if ($toast.find('#surpriseBtn').length) {
+                    $toast.delegate('#surpriseBtn', 'click', function () {
+                        alert('Surprise! you clicked me. i was toast #' + toastIndex + '. You could perform an action here.');
+                    });
+                }
+            });
+            function getLastToast() {
+                return $toastlast;
+            }
+            $('#clearlasttoast').click(function () {
+                toastr.clear(getLastToast());
+            });
+            $('#cleartoasts').click(function () {
+                toastr.clear();
+            });
+
+        });
+    </script>
+
+
+    @if (ViewBag.Message != null)
+    {
+        <script type="text/javascript">
+            window.onload = function () {
+                  alert("@ViewBag.Message");
+            };
+        </script>
+    }
+}

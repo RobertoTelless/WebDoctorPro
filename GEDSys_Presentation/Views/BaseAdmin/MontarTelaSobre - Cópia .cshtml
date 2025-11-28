@@ -1,0 +1,243 @@
+﻿@using Presentation.Extensions
+@using CrossCutting;
+@model ERP_Condominios_Solution.ViewModels.FaleConoscoViewModel
+@{
+    Layout = "~/Views/Shared/_Layout_Admin.cshtml";
+}
+<div class="wrapper wrapper-content animated fadeInRight">
+
+    <div class="page-title">
+        <h3 class="title">Diversos</h3>
+        <br />
+        <ol class="breadcrumb">
+            <li>
+                <a href="@Url.Action("CarregarBase", "BaseAdmin")">Dashboard</a>
+            </li>
+            <li class="active">
+                <strong>Sobre Nós...</strong>
+            </li>
+        </ol>
+        <br />
+    </div>
+
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h3>Sobre Nós...</h3>
+                </div>
+                <div class="ibox-content ibox-heading">
+                    <h3><i class="fa fa-line-chart"></i> Informaçõea da Aplicação e dos Autores</h3>
+                    <small><i class="fa fa-tim"></i> Veja o mapa com as atualizações previstas</small>
+                </div>
+
+                <div class="ibox-content" style="height: 2100px">
+                    @if (!ViewData.ModelState.IsValid)
+                    {
+                        <div class="alert alert-danger">
+                            <button type="button" class="close" data-dismiss="alert">Fechar</button>
+                            @Html.ValidationSummary(false, "", new { @class = "text-danger" })
+                        </div>
+                    }
+                    <div class="col-lg-5 col-md-5 col-xs-12">
+                        <img src="~/Images/Tela_Mensageria_2.png" style="width: 100%; height: 100%; max-height: 1400px; max-width: 1400px;">
+                        <div class="col-lg-12 col-md-12 col-xs-12 ibox float-e-margins" style="border-bottom: solid; border-bottom-color: darkgreen; border-bottom-width: 2px; border-left: solid; border-left-color: darkgreen; border-left-width: 1px; border-right: solid; border-right-color: darkgreen; border-right-width: 1px; border-top: solid; border-top-color: darkgreen; border-top-width: 1px">
+                            <div class="ibox-title">
+                                <h4 style="color: saddlebrown; font-weight: bold">Desenvolvido por:</h4>
+                            </div>
+                            <div class="ibox-content">
+                                <div class="row">
+                                    <div class="col-lg-12 col-md-12 col-xs-12">
+                                        <div class="col-lg-3 col-md-3 col-sm-12">
+                                            <img alt="image" class="img-circle" src="~/Images/Logo_RTI.png" style = "width: auto; height: auto; max-height: 100px; max-width: 100px;" />
+                                        </div>
+                                        <div class="col-lg-9 col-md-9 col-sm-12">
+                                            <h3>Roberto Telles Informática Ltda</h3>
+                                        </div>
+                                        <br />
+                                    </div>             
+                                    <div class="col-lg-12 col-md-12 col-xs-12">
+                                        <div class="col-lg-3 col-md-3 col-sm-12">
+                                            <img alt="image" class="img-circle" src="~/Images/favicon_SystemBR.jpg" style = "width: auto; height: auto; max-height: 100px; max-width: 130px;" />0
+                                        </div>
+                                        <div class="col-lg-9 col-md-9 col-sm-12">
+                                            <h3>SystemBR</h3>
+                                        </div>
+                                        <br />
+                                    </div>             
+                                </div>                                   
+                            </div>
+                        </div>
+                    </div>             
+                    
+                    <div class="col-lg-7 col-md-7 col-xs-12">
+                        <div class="col-lg-12 col-md-12 col-xs-12">
+                            <div class="col-lg-8 col-md-8 col-xs-12 ibox float-e-margins" style="border-bottom: solid; border-bottom-color: darkgreen; border-bottom-width: 2px; border-left: solid; border-left-color: darkgreen; border-left-width: 1px; border-right: solid; border-right-color: darkgreen; border-right-width: 1px; border-top: solid; border-top-color: darkgreen; border-top-width: 1px">
+                                <div class="ibox-title">
+                                    <h4 style="color: saddlebrown; font-weight: bold">Descrição da Aplicação</h4>
+                                </div>
+                                <div class="ibox-content">
+                                    <div class="row">
+                                        <div class="col-lg-12 col-md-12 col-xs-12">
+                                            <h4 style="color: green; font-weight: bold">Sistema integrado de marketing eletrônico e CRM.</h4>
+                                            <h5>Cadastros:</h5>
+                                            <h5  style=" margin-left: 15px;">   Clientes e grupos de clientes</h5>
+                                            <h5  style=" margin-left: 15px;">   Modelos de mensagens e propostas</h5>
+                                            <h5>Marketing eletrônico:</h5>
+                                            <h5  style="margin-left: 15px;">   Envio de E-Mails simples ou em lote</h5>
+                                            <h5  style="margin-left: 15px;">   Envio de SMS simples ou em lote</h5>
+                                            <h5  style="margin-left: 15px;">   Agendamento e recursividade</h5>
+                                            <h5  style="margin-left: 15px;">   Envio de mensagens automatizado</h5>
+                                            <h5>CRM</h5>
+                                            <h5  style="margin-left: 15px;">   Criação e acompanhamento de procesos</h5>
+                                            <h5  style="margin-left: 15px;">   Gerenciamento de ações</h5>
+                                            <h5  style="margin-left: 15px;">   Gerenciamento de propostas</h5>
+                                            <h5  style="margin-left: 15px;">   Emissão de propostas</h5>
+                                            <h5>Utilitários:</h5>
+                                            <h5  style=" margin-left: 15px;">   Agenda</h5>
+                                            <h5  style=" margin-left: 15px;">   Gerenciamento de tarefas</h5>
+                                            <h5>Administração:</h5>
+                                            <h5  style=" margin-left: 15px;">   Usuários e acessos</h5>
+                                            <h5  style=" margin-left: 15px;">   Auditoria</h5>
+                                            <h5>E muito mais...</h5>
+                                        </div>             
+                                    </div>                                   
+                                </div>
+                            </div>
+                            <div class="col-lg-4 col-md-4 col-xs-12">
+                                <div class="col-lg-12 col-md-12 col-xs-12 ibox float-e-margins" style="border-bottom: solid; border-bottom-color: darkgreen; border-bottom-width: 2px; border-left: solid; border-left-color: darkgreen; border-left-width: 1px; border-right: solid; border-right-color: darkgreen; border-right-width: 1px; border-top: solid; border-top-color: darkgreen; border-top-width: 1px">
+                                    <div class="ibox-title">
+                                        <h4 style="color: saddlebrown; font-weight: bold">Atualizações Previstas</h4>
+                                    </div>
+                                    <div class="ibox-content">
+                                        <div class="row">
+                                            <div class="col-lg-12 col-md-12 col-xs-12">
+                                            @if ((ViewBag.Time as List<ERP_Condominios_Solution.ViewModels.ModeloViewModel>).Count > 0)
+                                            {
+                                                <div id="vertical-timeline" class="vertical-container light-timeline">
+                                                    @foreach (var item in (ViewBag.Time as List<ERP_Condominios_Solution.ViewModels.ModeloViewModel>).OrderByDescending(p => p.DataEmissao))
+                                                    {
+                                                        <div class="vertical-timeline-block">
+                                                            <div class="vertical-timeline-icon navy-bg">
+                                                                @if (item.Valor == 1)
+                                                                {
+                                                                    <i class="fa fa-briefcase"></i>
+                                                                }
+                                                                else
+                                                                {
+                                                                    <i class="fa fa-check"></i>
+                                                                }
+                                                            </div>
+
+                                                            <div class="vertical-timeline-content">
+                                                                <h2 style="cursor: pointer; color: green; font-weight:bold" >@item.Nome</h2>
+                                                                <p>
+                                                                    <br />
+                                                                    @item.Nome1                                                        
+                                                                </p>
+                                                                <span class="vertical-date">
+                                                                    <small>@item.DataEmissao.ToShortDateString()</small>
+                                                                </span>
+                                                            </div>
+                                                        </div>
+                                                    }
+                                            </div>             
+                                            }
+                                        </div>                                   
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+
+                        <div class="col-lg-12 col-md-12 col-xs-12">
+                            <div class="col-lg-12 col-md-12 col-xs-12 ibox float-e-margins" style="border-bottom: solid; border-bottom-color: darkgreen; border-bottom-width: 2px; border-left: solid; border-left-color: darkgreen; border-left-width: 1px; border-right: solid; border-right-color: darkgreen; border-right-width: 1px; border-top: solid; border-top-color: darkgreen; border-top-width: 1px">
+                                <div class="ibox-title">
+                                    <h4 style="color: saddlebrown; font-weight: bold">Informações da Versão</h4>
+                                </div>
+                                <div class="ibox-content">
+                                    <div class="row">
+                                        <div class="col-lg-12 col-md-12 col-xs-12">
+                                            <h5><b>Aplicação: </b>CRMSys</h5>
+                                            <h5><b>Descrição: </b>Sistema Integrado de Marketing Eletrônico e CRM</h5>
+                                            <h5><b>Versão: </b>1.1.0.0</h5>
+                                            <h5><b>Data do Build: </b>22/08/2023</h5>
+                                            <h5><b>GUID: </b>01b79436-c6f2-44ca-9266-f6cb83ae855f</h5>
+                                            <h5><b>Copyright ©  2023 RTi & SystemBR</b></h5>
+                                        </div>             
+                                    </div>                                   
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+@section Styles {
+    <link href="~/Content/themes/base/jquery-ui.min.css" rel="stylesheet" />
+    <link href="~/Content/themes/base/all.css" rel="stylesheet" />
+    @*<link href="~/Content/jquery.datetimepicker.css" rel="stylesheet" />*@
+    @Styles.Render("~/Content/plugins/dataTables/dataTablesStyles")
+    @Styles.Render("~/plugins/jasnyBootstrapStyles")
+    @Styles.Render("~/plugins/toastrStyles")
+    @Styles.Render("~/Content/plugins/summernote/summernote.css")
+    <link href="~/Content/jquery-ui-timepicker-addon.min.css" rel="stylesheet" />
+    <link href="~/Content/plugins/select2/select2.min.css" rel="stylesheet" />
+
+    <link href="~/Content/themes/base/all.css" rel="stylesheet" />
+    <link href="~/Content/themes/base/jquery-ui.min.css" rel="stylesheet" />
+    @Styles.Render("~/Content/plugins/dataTables/dataTablesStyles")
+    @Styles.Render("~/plugins/jasnyBootstrapStyles")
+    @Styles.Render("~/Content/plugins/iCheck/iCheckStyles")
+    @Styles.Render("~/plugins/toastrStyles")
+    @Styles.Render("~/Content/plugins/summernote/summernote.css")
+    @Styles.Render("~/plugins/touchSpinStyles")
+    <link href="~/Content/plugins/select2/select2.min.css" rel="stylesheet" />
+    <link href="~/Content/jquery-ui-timepicker-addon.min.css" rel="stylesheet" />
+}
+@section Scripts {
+    @*<script src="~/Scripts/jquery.datetimepicker.full.min.js"></script>*@
+    <script type="text/javascript" src="~/Scripts/moment.min.js"></script>
+    <script type="text/javascript" src="~/Scripts/bootstrap.min.js"></script>
+    <script type="text/javascript" src="~/Scripts/jquery.datetimepicker"></script>
+    <script src="~/Scripts/jquery-ui-timepicker-addon.min.js"></script>
+    @Scripts.Render("~/plugins/toastr")
+    <script src="~/Scripts/jquery-ui-1.12.1.min.js"></script>
+    @Scripts.Render("~/plugins/dataTables")
+    @Scripts.Render("~/bundles/inputmask")
+    @Scripts.Render("~/plugins/jasnyBootstrap")
+    @Scripts.Render("~/plugins/sparkline")
+    @Scripts.Render("~/Scripts/plugins/summernote/summernote.min.js")
+    <script src="~/Scripts/plugins/select2/select2.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.maskedinput/1.4.1/jquery.maskedinput.js"></script>    
+    <script src="~/Scripts/uploadAnexo.js"></script>
+
+        <script src="~/Scripts/jquery-ui-1.12.1.min.js"></script>
+    @Scripts.Render("~/plugins/toastr")
+    @Scripts.Render("~/plugins/dataTables")
+    @Scripts.Render("~/bundles/inputmask")
+    @Scripts.Render("~/plugins/jasnyBootstrap")
+    @Scripts.Render("~/plugins/summernote")
+    @Scripts.Render("~/plugins/touchSpin")
+    <script src="~/Scripts/jquery-ui-timepicker-addon.min.js"></script>
+    <script src="~/Scripts/plugins/select2/select2.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.maskedinput/1.4.1/jquery.maskedinput.js"></script>
+    <script src="~/Scripts/uploadAnexo.js"></script>
+
+
+}
+
+@if (ViewBag.Message != null)
+{
+    <script type="text/javascript">
+            window.onload = function () {
+                alert("@ViewBag.Message");
+            };
+    </script>
+}
+

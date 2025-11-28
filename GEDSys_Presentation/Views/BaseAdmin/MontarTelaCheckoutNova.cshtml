@@ -1,0 +1,291 @@
+﻿@using Presentation.Extensions
+@using CrossCutting;
+@model ERP_Condominios_Solution.ViewModels.FaleConoscoViewModel
+@{
+    Layout = "~/Views/Shared/_Layout_Limpo.cshtml";
+    ViewBag.Title = "WebDoctor - Contratação - Pagamento";
+}
+
+<div class="wrapper wrapper-content animated fadeInRight">
+
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h3>Contratação - Planos de Assinatura - Pagamento</h3>
+                </div>
+                <br />
+                <div class="form-group">
+                    @Html.ButtonLinkIndex(text: "Alterar Informações", controller: "BaseAdmin", action: "MontarTelaCompraBasicoNova", buttonClass: "primary")
+                    @Html.ButtonLinkIndex(text: "Encerrar/Cancelar Contratação", controller: "BaseAdmin", action: "CarregarLandingPage")
+                    <br />
+                </div>
+                <div class="ibox-content ibox-heading">
+                    <h3><i class="fa fa-credit-card"></i> Efetue o pagamento do plano de assinatura selecionado e aguarde a mensagem por e-mail com a aprovação da assinatura</h3>
+                </div>
+
+                <div class="ibox-content" style="height: 2100px">
+                    @if (!ViewData.ModelState.IsValid)
+                    {
+                        <div class="alert alert-danger">
+                            <button type="button" class="close" data-dismiss="alert">Fechar</button>
+                            @Html.ValidationSummary(false, "", new { @class = "text-primary" })
+                        </div>
+                    }
+                    <div class="col-lg-12 col-md-12 col-xs-12">
+                        <div class="col-lg-12 col-md-12 col-xs-12">
+                            <div class="col-lg-12 col-md-12 col-xs-12 ibox float-e-margins" style="border-bottom: solid; border-bottom-color: darkblue; border-bottom-width: 2px; border-left: solid; border-left-color: darkblue; border-left-width: 1px; border-right: solid; border-right-color: darkblue; border-right-width: 1px; border-top: solid; border-top-color: darkblue; border-top-width: 1px; height: 660px">
+                                <div class="ibox-title">
+                                    <h4>Contratação de Assinatura - Pagamento</h4>
+                                </div>
+                                <div class="ibox-content">
+                                    @using (Html.BeginForm("MontarTelaCheckoutNova", "BaseAdmin", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal", @id="pwd-container1" }))
+                                    {
+                                        <div class="col-lg-6 col-md-6 col-xs-12">
+                                            <h5 style="color: green; font-weight: bold">Verifique as informações fornecedas e para alterar clique em Alterar Informações.</h5>
+                                            <div class="col-lg-12 col-md-12 col-xs-12">
+                                                Informações da Assinantura
+                                                @Html.TextAreaFor(m => m.Informacoes, new { @class = "form-control", style = "color: darkgreen; width: 100%; height: 500px; overflow:auto;", data_toggle = "popover", data_content = "Informações da assinatura. Para altera-las clique em Alterar Informações", data_trigger="hover", data_placement="top" })
+                                            </div>                                        
+                                        </div>
+
+                                        <div class="col-lg-6 col-md-6 col-xs-12">
+                                            <h5 style="color: green; font-weight: bold">Prossiga para as opções de pagamento</h5>
+                                            @if (Model.Plano == 18)
+                                            {
+                                                <div class="col-lg-2 col-md-2 col-xs-12" id="Basico">
+                                                    <a href="https://pag.ae/7_Q-riVCN/button" target="_blank" title="Pagar com PagBank"><img src="//assets.pagseguro.com.br/ps-integration-assets/botoes/pagamentos/205x30-pagar-azul.gif" alt="Pague com PagBank - é rápido, grátis e seguro!" /></a>                                               
+                                                </div>
+                                            }
+                                            @if (Model.Plano == 20)
+                                            {
+                                                <div class="col-lg-2 col-md-2 col-xs-12" id="Super">
+                                                    <a href="https://pag.ae/7_Q-ufiCH/button" target="_blank" title="Pagar com PagBank"><img src="//assets.pagseguro.com.br/ps-integration-assets/botoes/pagamentos/205x30-pagar-azul.gif" alt="Pague com PagBank - é rápido, grátis e seguro!" /></a>
+                                                </div>
+                                            }
+                                            @if (Model.Plano == 24)
+                                            {
+                                                <div class="col-lg-2 col-md-2 col-xs-12" id="SuperFinanceiro">
+                                                    @*<a href="https://pag.ae/7_Sh5VMX3/button" target="_blank" title="Pagar com PagBank"><img src="//assets.pagseguro.com.br/ps-integration-assets/botoes/pagamentos/205x30-pagar.gif" alt="Pague com PagBank - é rápido, grátis e seguro!" /></a>*@                                            
+                                                    <a href="https://pag.ae/7_Sh5VMX3/button" target="_blank" title="Pagar com PagBank"><img src="//assets.pagseguro.com.br/ps-integration-assets/botoes/pagamentos/205x30-pagar-azul.gif" alt="Pague com PagBank - é rápido, grátis e seguro!" /></a>                                           
+                                                </div>
+                                            }
+                                        </div>                       
+                                    }
+                                </div>
+                            </div>
+                        </div>                          
+                            
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700' rel='stylesheet' type='text/css'>
+    <link href="~/Content/themes/base/jquery-ui.min.css" rel="stylesheet" />
+    <link href="~/Content/themes/base/all.css" rel="stylesheet" />
+    @Styles.Render("~/Content/plugins/dataTables/dataTablesStyles")
+    @Styles.Render("~/plugins/jasnyBootstrapStyles")
+    @Styles.Render("~/plugins/toastrStyles")
+    @Styles.Render("~/Content/css")
+    @Styles.Render("~/font-awesome/css")
+    <link href="@Url.Content("~/Scripts/plugins/jquery-ui/jquery-ui.min.css")" rel="stylesheet" type="text/css" />
+}
+@section Scripts {
+    @Scripts.Render("~/plugins/toastr")
+    <script src="~/Scripts/jquery-ui-1.12.1.min.js"></script>
+    @Scripts.Render("~/plugins/dataTables")
+    @Scripts.Render("~/bundles/inputmask")
+    @Scripts.Render("~/plugins/jasnyBootstrap")
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.maskedinput/1.4.1/jquery.maskedinput.js"></script>
+    <script src="~/Scripts/uploadAnexo.js"></script>
+    <script type="text/javascript" src="~/Scripts/moment.min.js"></script>
+    <script type="text/javascript" src="~/Scripts/bootstrap.min.js"></script>
+    @Scripts.Render("~/plugins/passwordMeter")
+    
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('[data-toggle="popover"]').popover();
+        });
+    </script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-toggle="popover"]'));
+            var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
+                return new bootstrap.Popover(popoverTriggerEl);
+            });
+        });
+    </script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            var options1 = {};
+            options1.ui = {
+                container: "#pwd-container1",
+                showVerdictsInsideProgressBar: true,
+                viewports: {
+                    progress: ".pwstrength_viewport_progress"
+                }
+            };
+            options1.common = {
+                debug: false,
+            };
+            $('.pwd1').pwstrength(options1);
+
+        });
+    </script>
+
+    <script>
+        function GetPlanoAssinatura(id) {
+            var data = {
+                id: id
+            }
+
+            $.ajax({
+                url: '../BaseAdmin/GetPlanoAssinatura'
+                , type: 'POST'
+                , data: data
+                , success: function (r) {
+                    $('#precoPlano > input').val(r.preco);
+                    $('#precoPlano').show();
+                }
+            });
+        }
+    </script>
+
+   
+    <script type="text/javascript">
+        $(function () {
+            $("#tel").mask("(99)9999-9999");
+            $("#cel").mask("(99)99999-9999");
+            $("#cpf").mask("999.999.999-99");
+            $("#cnpj").mask("99.999.999/9999-99");
+            $("#cep").mask("99999-999");
+        });
+    </script>
+
+    <script type="text/javascript">
+        function ValidaTipo(valTipo) {
+            if (valTipo == '1') {
+                $("#CPF").show();
+                $("#CNPJ").hide();
+            } else {
+                $("#CPF").hide();
+                $("#CNPJ").show();
+            }
+        }
+        $(document).ready(function () {
+            ValidaTipo($('#tipo').val());
+        });
+    </script>
+    <script type="text/javascript">
+        function ValidaPlano(valTipo) {
+            if (valTipo == '18') {
+                $("#Basico").show();
+                $("#Super").hide();
+                $("#SuperFinanceiro").hide();
+            } else if (valTipo == '20'){
+                $("#Basico").hide();
+                $("#Super").show();
+                $("#SuperFinanceiro").hide();
+            } else if (valTipo == '24'){
+                $("#Basico").hide();
+                $("#Super").hide();
+                $("#SuperFinanceiro").show();
+            }
+        }
+        $(document).ready(function () {
+            ValidaPlano($('#plano').val());
+        });
+    </script>   
+    
+    <script>
+        function PesquisaCep(cep, btn, tipoEnd) {
+            data = {
+                cep: cep
+                , tipoEnd: tipoEnd
+            }
+
+            //$(btn).attr("disabled", "disabled");
+
+            $.ajax({
+                url: '../Paciente/PesquisaCEP_Javascript'
+                , type: 'POST'
+                , data: data
+                , success: function (r) {
+                    if (r.Sucesso == 0) {
+                        if (tipoEnd == 1) {
+                            $("#cepval").show();
+                        //    $('#btnBuscaCep').removeAttr("disabled");
+                        }
+
+                    }
+                    else {
+                        $("#cepval").hide();
+                        $("#cepval1").hide();
+                        if (tipoEnd == 1) {
+                            $('#endereco').val(r.PACI_NM_ENDERECO);
+                            $('#nmr').val(r.PACI_NR_NUMERO);
+                            $('#bairro').val(r.PACI_NM_BAIRRO);
+                            $('#cidade').val(r.PACI_NM_CIDADE);
+                            $('#cepBase').val(r.PACI_NR_CEP);
+                            $('#uf option[value="' + r.UF_CD_ID + '"]').attr("selected", "selected");
+                            $('#btnBuscaCep').removeAttr("disabled");
+                        }
+                    }
+                }
+            });
+        }
+    </script>
+
+    <script>
+        function GetLogin(id) {
+            if (id == '1') {
+                var data = {
+                    id: id
+                }
+
+                $.ajax({
+                    url: '../BaseAdmin/GetLogin'
+                    , type: 'POST'
+                    , data: data
+                    , success: function (r) {
+                        $('#cpf').val(r.CPF);
+                        $('#cnpj').val(r.CNPJ);
+                        $('#nome').val(r.Nome);
+                        $('#razao').val(r.Razao);
+                        $('#mail').val(r.Resposta);
+                        $('#tel').val(r.Telefone);
+                        $('#cel').val(r.Celular);
+                        $('#cep').val(r.CEP);
+                        $('#endereco').val(r.Endereco);
+                        $('#nmr').val(r.Numero);
+                        $('#complemento').val(r.Complemento);
+                        $('#bairro').val(r.Bairro);
+                        $('#cidade').val(r.Cidade);
+                        $('#uf option[value="' + r.UF + '"]').attr("selected", "selected");
+
+                        $('#novo').show();
+                        $('#tipo').hide();
+                        $('#existe').hide();
+                    }
+                });
+            } 
+        }
+    </script>
+
+
+}
+@if (ViewBag.Message != null)
+{
+    <script type="text/javascript">
+            window.onload = function () {
+                alert("@ViewBag.Message");
+            };
+    </script>
+}
+

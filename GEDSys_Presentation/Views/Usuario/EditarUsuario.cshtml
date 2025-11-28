@@ -1,0 +1,729 @@
+﻿@using Presentation.Extensions
+@model ERP_Condominios_Solution.ViewModels.UsuarioViewModel
+@{
+    Layout = "~/Views/Shared/_Layout_Admin.cshtml";
+    ViewBag.Title = "WebDoctor - Usuários - Edição";
+    ViewBag.MetaDescription = "WebDoctor - Edição de usuários";
+    ViewBag.MetaKeywords = "WebDoctor, usuario, usuário, acesso";
+}
+
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="modalContainer">
+        <div id="modal" class="modal" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        @*Titulo gerado dinamicamente*@
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        @*Gerado dinamicamente*@
+                    </div>
+                    <div class="modal-footer">
+                        <button onclick="limpaModal()" type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="page-title"> 
+        <h3 class="title">Usuários</h3> 
+        <br />
+        <ol class="breadcrumb">
+            <li>
+                <a href="@Url.Action("MontarTelaPaciente", "Paciente")">Dashboard Inicial</a>
+            </li>
+            <li>
+                <a href="@Url.Action("MontarTelaUsuario", "Usuario")">Usuários</a>
+            </li>
+            <li class="active">
+                <strong>Usuário - Edição</strong>
+            </li>
+        </ol>
+        <br />
+    </div>
+
+    <div class="row">
+        <div class="col-lg-2">
+            <div class="widget style1 navy-bg">
+                <div class="row vertical-align">
+                    <div class="col-xs-2">
+                        <i class="fa fa-user fa-3x"></i>
+                    </div>
+                    <div class="col-xs-9 text-right">
+                        @if (Model.USUA_IN_ATIVO == 1)
+	                    {
+                            <h3 class="font-normal">Ativo</h3>
+                        }
+                        else
+                        {
+                            <h3 class="font-normal">Inativo</h3>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-2">
+            <div class="widget style1 blue-bg">
+                <div class="row vertical-align">
+                    @if (Model.USUA_IN_BLOQUEADO == 1)
+                    {
+                        <div class="col-xs-3">
+                            <i class="fa fa-thumbs-o-down fa-3x"></i>
+                        </div>
+                        <div class="col-xs-9 text-right">
+                            <h3 class="font-normal">Bloqueado</h3>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="col-xs-3">
+                            <i class="fa fa-thumbs-o-up fa-3x"></i>
+                        </div>
+                        <h3 class="font-normal">Desbloqueado</h3>
+                        <div class="col-xs-9 text-right">
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3">
+            <div class="widget style1 yellow-bg">
+                <div class="row vertical-align">
+                    <div class="col-xs-3">
+                        <i class="fa fa-calendar fa-3x"></i>
+                    </div>
+                    <div class="col-xs-9 text-right">
+                        <h3 class="font-normal">Último Acesso: @Model.USUA_DT_ACESSO.Value.ToShortDateString()</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-12 col-md-12 col-xs-12">
+            <div class="col-lg-12 col-md-12 col-xs-12 ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>Usuário - Edição</h5>&nbsp;&nbsp;&nbsp;
+                </div>
+
+                <div class="ibox-content">
+                    @if (!ViewData.ModelState.IsValid)
+                    {
+                        <div class="alert alert-danger">
+                            <button type="button" class="close" data-dismiss="alert">Fechar</button>
+                            @Html.ValidationSummary(false, "", new { @class = "text-danger" })
+                        </div>
+                    }
+                    @if (TempData["TemMensagem"] != null)
+                    {
+                        <div class="alert alert-success">
+                            <button type="button" class="close" data-dismiss="alert">Fechar</button>
+                            <span>@TempData["MensagemAcerto"]</span>
+                        </div>
+                    }  
+                    @if (ViewBag.Perfil == "ADM" || ViewBag.Perfil == "GER")
+                    {
+                        if (Model.USUA_IN_BLOQUEADO == 0)
+                        {
+                            <button alt="Desativar" class="btn btn-sm btn-warning demo2" onclick="ShowModalBloquear('/Usuario/BloquearUsuario/@Model.USUA_CD_ID', '@Model.USUA_NM_NOME')" title="Bloquear">Bloquear</button>
+                        }
+                        else
+                        {
+                            <button alt="Desativar" class="btn btn-sm btn-warning demo2" onclick="ShowModalDesbloquear('/Usuario/DesbloquearUsuario/@Model.USUA_CD_ID', '@Model.USUA_NM_NOME')" title="Desbloquear">Desbloquear</button>
+                        }
+                        if (Model.USUA_IN_ATIVO == 1)
+                        {
+                            <button alt="Desativar" class="btn btn-sm btn-warning demo2" onclick="ShowModalExcluir('/Usuario/DesativarUsuario/@Model.USUA_CD_ID', '@Model.USUA_NM_NOME')" title="Bloquear">Desativar</button>
+                        }
+                        else
+                        {
+                            <button alt="Desativar" class="btn btn-sm btn-warning demo2" onclick="ShowModalReativar('/Usuario/ReativarUsuario/@Model.USUA_CD_ID', '@Model.USUA_NM_NOME')" title="Desbloquear">Reativar</button>
+                        }
+                    }
+                    <a href="@Url.Action("EnviarEMailUsuarioForm", "Usuario")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acesso à página de envio de e-mail a usuários" class="btn btn-sm btn-warning" id="emp" OnClick = "Fade()">Enviar E-Mail</a>                
+                    <a href="@Url.Action("EnviarSMSUsuarioForm", "Usuario")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acesso à página de envio de SMS a usuários" class="btn btn-sm btn-warning" id="emp" OnClick = "Fade()">Enviar SMS</a>                
+                    @if ((Int32)Session["VoltaUsu"] == 4)
+                    {
+                        @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaMarcacaoConsulta", controller: "Paciente", buttonClass: "warning")
+                    }
+                    else
+                    {
+                        @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarBase", controller: "Usuario", buttonClass: "warning")
+                    }
+                    <br /><br />
+                    <div class="tabs-container">
+                        <ul class="nav nav-tabs">
+                            <li class="active"><a data-toggle="tab" href="#tab-1">Dados Gerais</a></li>
+                            <li class=""><a data-toggle="tab" href="#tab-2">Fotografia e Anexos</a></li>
+                            <li class=""><a data-toggle="tab" href="#tab-3">Informações de Acessos</a></li>
+                        </ul>
+                        <div class="tab-content">
+                            @*Dados Gerais*@
+                            <div id="tab-1" class="tab-pane active">
+                                <div class="panel-body">
+                                    @using (Html.BeginForm("EditarUsuario", "Usuario", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal", @id="pwd-container1" }))
+                                    {
+                                        @Html.AntiForgeryToken()
+                                        <div class="form-group">
+                                            @Html.ButtonActionSubmit(text: "Confirma edição de Usuário", htmlAttributes: new { id = "basictoast" })
+                                        </div>
+                                        <div class="row" style="width: 100%;">
+                                            <div class="col-lg-2 col-md-2 col-xs-12">
+                                                <div style="text-align: center; margin-top: 20px; line-height: 10px;">
+                                                    @if (!String.IsNullOrEmpty(Model.USUA_AQ_FOTO))
+                                                    {
+                                                        <img src="@Url.Content(Model.USUA_AQ_FOTO)" style="width: auto; height: auto; max-height: 250px; max-width: 200px;" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Clique Ctrl+Ctrl para ampliar a fotografia">
+                                                    }
+                                                    else
+                                                    {
+                                                        <img src="~/Imagens/Base/icone_morador.png" style="width: auto; height: auto; max-height: 250px; max-width: 200px;" data-toggle="modal" data-target="#fotoModal" onclick="CriaModal('@Model.USUA_NM_NOME', '/Imagens/Base/icone_morador.png')">
+                                                    }
+                                                    <br />
+                                                    <br />
+                                                    <br />
+                                                    <br />
+                                                    <br />
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-10 col-md-10 col-xs-12">
+                                                <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                                    <h4 style="color: green; background-color: beige; font-weight: bold">Perfil de Acesso</h4>
+                                                    <div class="col-lg-3 col-md-3 col-xs-12">
+                                                        Perfil de Acesso*
+                                                        @Html.DropDownListFor(m => m.PERF_CD_ID, (SelectList)ViewBag.Perfis, "Selecionar", new { @class = "form-control", autofocus = true, @style = "color:green; font-weight:bold"  })
+                                                        @Html.ValidationMessageFor(m => m.PERF_CD_ID, "", new { @style = "color:red" })
+                                                    </div>
+                                                    <div class="col-lg-3 col-md-3 col-xs-12">
+                                                        Categoria*
+                                                        @Html.DropDownListFor(m => m.CAUS_CD_ID, (SelectList)ViewBag.cats, "Selecionar", new { @class = "form-control", autofocus = true, @style = "color:green; font-weight:bold"  })
+                                                        @Html.ValidationMessageFor(m => m.CAUS_CD_ID, "", new { @style = "color:red" })
+                                                    </div>                                            
+                                                    <div class="col-lg-2 col-md-2    col-xs-12">
+                                                        Marca Consulta*
+                                                        @Html.DropDownListFor(m => m.USUA_IN_CONSULTA, (SelectList)ViewBag.Marca, "Selecionar", new { @class = "form-control", autofocus = true, data_toggle = "popover", data_content = "Permite a marcação de consultas", data_trigger="hover", data_placement="top"  })
+                                                        @Html.ValidationMessageFor(m => m.USUA_IN_CONSULTA, "", new { @style = "color:red" })
+                                                    </div>
+                                                    <div class="col-lg-2 col-md-2    col-xs-12">
+                                                        Permite Indicações*
+                                                        @Html.DropDownListFor(m => m.USUA_IN_INDICA, (SelectList)ViewBag.Indica, "Selecionar", new { @class = "form-control", autofocus = true, data_toggle = "popover", data_content = "Permite realizar indicações e receber comissões", data_trigger="hover", data_placement="top" })
+                                                        @Html.ValidationMessageFor(m => m.USUA_IN_INDICA, "", new { @style = "color:red" })
+                                                    </div>
+                                                </div>
+                                                <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                                    <h4 style="color: green; background-color: beige; font-weight: bold">Identificação</h4>
+                                                    <div class="col-lg-4 col-md-4 col-xs-12">
+                                                        @Html.HiddenFor(m => m.ASSI_CD_ID)
+                                                        @Html.HiddenFor(m => m.USUA_CD_ID)
+                                                        @Html.HiddenFor(m => m.USUA_DT_ACESSO)
+                                                        @Html.HiddenFor(m => m.USUA_DT_BLOQUEADO)
+                                                        @Html.HiddenFor(m => m.USUA_DT_CADASTRO)
+                                                        @Html.HiddenFor(m => m.USUA_DT_TROCA_SENHA)
+                                                        @Html.HiddenFor(m => m.USUA_DT_ULTIMA_FALHA)
+                                                        @Html.HiddenFor(m => m.USUA_IN_ATIVO)
+                                                        @Html.HiddenFor(m => m.USUA_IN_BLOQUEADO)
+                                                        @Html.HiddenFor(m => m.USUA_IN_LOGADO)
+                                                        @Html.HiddenFor(m => m.USUA_IN_LOGIN_PROVISORIO)
+                                                        @Html.HiddenFor(m => m.USUA_IN_PROVISORIO)
+                                                        @Html.HiddenFor(m => m.USUA_NM_NOVA_SENHA)
+                                                        @Html.HiddenFor(m => m.USUA_NM_SENHA)
+                                                        @Html.HiddenFor(m => m.USUA_NM_SALT)
+                                                        @Html.HiddenFor(m => m.USUA_NM_SENHA_CONFIRMA)
+                                                        @Html.HiddenFor(m => m.USUA_NR_ACESSOS)
+                                                        @Html.HiddenFor(m => m.USUA_NR_FALHAS)
+                                                        @Html.HiddenFor(m => m.CAUS_CD_ID)
+                                                        @Html.HiddenFor(m => m.USUA_AQ_FOTO)
+                                                        @Html.HiddenFor(m => m.EMPR_CD_ID)
+                                                        @Html.HiddenFor(m => m.USUA_IN_SISTEMA)
+                                                        @Html.HiddenFor(m => m.EMFI_CD_ID)
+                                                        @Html.HiddenFor(m => m.USUA_IN_ESPECIAL)
+                                                        Nome*
+                                                        @Html.TextBoxFor(m => m.USUA_NM_NOME, new { @class = "form-control", autofocus = true })
+                                                        @Html.ValidationMessageFor(m => m.USUA_NM_NOME, "", new { @style = "color:red" })
+                                                    </div>
+                                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                                        Apelido*
+                                                        @Html.TextBoxFor(m => m.USUA_NM_APELIDO, new { @class = "form-control", autofocus = true, data_toggle = "popover", data_content = "Se informado, será usado em algumas telas e relatórios", data_trigger="hover", data_placement="top" })
+                                                        @Html.ValidationMessageFor(m => m.USUA_NM_APELIDO, "", new { @style = "color:red" })
+                                                    </div>
+                                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                                        Login
+                                                        @Html.TextBoxFor(m => m.USUA_NM_LOGIN, new { @class = "form-control", autofocus = true, data_toggle = "popover", data_content = "Chave para acesso ao WebDoctor. Até 10 caracteres alfanuméricos", data_trigger="hover", data_placement="top" })
+                                                        @Html.ValidationMessageFor(m => m.USUA_NM_LOGIN, "", new { @style = "color:red" })
+                                                    </div>
+                                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                                        Tratamento
+                                                        @Html.TextBoxFor(m => m.USUA_NM_PREFIXO, new { @class = "form-control", autofocus = true, data_toggle = "popover", data_content = "Prefixo a ser acrescentado ao nome nas assinaturas. Por exemplo: Dr.", data_trigger="hover", data_placement="top" })
+                                                        @Html.ValidationMessageFor(m => m.USUA_NM_PREFIXO, "", new { @style = "color:red" })
+                                                    </div>
+                                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                                        Títulos
+                                                        @Html.TextBoxFor(m => m.USUA_NM_SUFIXO, new { @class = "form-control", autofocus = true, data_toggle = "popover", data_content = "Prefixo a ser acrescentado ao nome nas assinaturas. Por exemplo: MSc.", data_trigger="hover", data_placement="top" })
+                                                        @Html.ValidationMessageFor(m => m.USUA_NM_SUFIXO, "", new { @style = "color:red" })
+                                                    </div>
+                                                </div>
+                                                <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                                    <h4 style="color: green; background-color: beige; font-weight: bold">Documentação</h4>
+                                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                                        CPF
+                                                        @Html.TextBoxFor(m => m.USUA_NR_CPF, new { @class = "form-control", @id="cpf", @readonly="readonly"  })
+                                                        @Html.ValidationMessageFor(m => m.USUA_NR_CPF, "", new { @style = "color:red" })
+                                                    </div>
+                                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                                        RG
+                                                        @Html.TextBoxFor(m => m.USUA_NR_RG, new { @class = "form-control", autofocus = true})
+                                                        @Html.ValidationMessageFor(m => m.USUA_NR_RG, "", new { @style = "color:red" })
+                                                    </div>
+                                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                                        Chave PIX
+                                                        @Html.TextBoxFor(m => m.USUA_NR_CHAVE_PIX, new { @class = "form-control", autofocus = true, data_toggle = "popover", data_content = "Usada apenas se o usuário puder fazer indicações", data_trigger="hover", data_placement="top" })
+                                                        @Html.ValidationMessageFor(m => m.USUA_NR_CHAVE_PIX, "", new { @style = "color:red" })
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-12 col-md-12 col-xs-12">
+                                                <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                                    <h4 style="margin-left:15px; margin-right: 15px; color: green; background-color: beige; font-weight: bold">Carteira de Classe</h4>
+                                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                                        Tipo
+                                                        @Html.DropDownListFor(m => m.TICL_CD_ID, (SelectList)ViewBag.Classe, "Selecionar", new { @class = "form-control", autofocus = true })
+                                                        @Html.ValidationMessageFor(m => m.TICL_CD_ID, "", new { @style = "color:red" })
+                                                    </div>
+                                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                                        Número
+                                                        @Html.TextBoxFor(m => m.USUA_NR_CLASSE, new { @class = "form-control", autofocus = true })
+                                                        @Html.ValidationMessageFor(m => m.USUA_NR_CLASSE, "", new { @style = "color:red" })
+                                                    </div>
+                                                    <div class="col-lg-4 col-md-4 col-xs-12">
+                                                        Especialidade
+                                                        @Html.DropDownListFor(m => m.ESPE_CD_ID, (SelectList)ViewBag.Espec, "Selecionar", new { @class = "form-control", autofocus = true  })
+                                                        @Html.ValidationMessageFor(m => m.ESPE_CD_ID, "", new { @style = "color:red" })
+                                                    </div>
+                                                </div>
+                                                <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                                    <h4 style="color: green; background-color: beige; font-weight: bold">Contatos</h4>
+                                                    <div class="col-lg-3 col-md-3 col-xs-12">
+                                                        E-Mail*
+                                                        @Html.TextBoxFor(m => m.USUA_NM_EMAIL, new { @class = "form-control", autofocus = true })
+                                                        @Html.ValidationMessageFor(m => m.USUA_NM_EMAIL, "", new { @style = "color:red" })
+                                                    </div>
+                                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                                        Telefone
+                                                        @Html.TextBoxFor(m => m.USUA_NR_TELEFONE, new { @class = "form-control", autofocus = true, @id="tel" })
+                                                        @Html.ValidationMessageFor(m => m.USUA_NR_TELEFONE, "", new { @style = "color:red" })
+                                                    </div>
+                                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                                        Celular*
+                                                        @Html.TextBoxFor(m => m.USUA_NR_CELULAR, new { @class = "form-control", autofocus = true, @id="cel" })
+                                                        @Html.ValidationMessageFor(m => m.USUA_NR_CELULAR, "", new { @style = "color:red" })
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+
+                            @*Imagens - Foto e Anexos*@
+                            <div id="tab-2" class="tab-pane">
+                                <div class="panel-body">
+                                    <div class="row">
+                                        <div class="col-lg-2 col-md-2 col-xs-12">
+                                            <div class="form-group">
+                                                <div class="col-lg-12 col-md-12 col-sm-12">
+                                                    <br />
+                                                    @if (!String.IsNullOrEmpty(Model.USUA_AQ_FOTO))
+	                                                {
+                                                        <img src="@Url.Content(Model.USUA_AQ_FOTO)" style = "width: auto; height: auto; max-height: 250px; max-width: 250px;" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Clique Ctrl+Ctrl para ampliar a fotografia">
+                                                    }
+                                                    else
+                                                    {
+                                                        <img src="~/Images/icon_morador.png" style = "width: auto; height: auto; max-height: 250px; max-width: 250px;">
+                                                    }
+                                                </div>                       
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-10 col-md-10 col-xs-12">   
+                                            <div class="form-group">
+                                                <h4 style="color: green; background-color: beige; font-weight: bold">Fotografia</h4>
+                                                @using (Html.BeginForm("UploadFotoUsuario", "Usuario", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { enctype = "multipart/form-data", @id="pwd-container3" }))
+                                                {
+                                                    <div class="col-lg-12 col-md-12 col-xs-12">
+                                                        <input style="float: left; margin-right: 5px;" type="file" accept=".jpg, .png, .jpeg, .gif|images/*" name="file" id="file" class="btn btn-sm btn-warning"/>
+                                                        <input style="float: left;" type="submit" value="Incluir Foto do Usuário" class="btn btn-sm btn-success" />
+                                                    </div>
+                                                }
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <hr />
+                                        <div class="col-lg-12 col-md-12 col-xs-12"> 
+                                            <h4 style="color: green; background-color: beige; font-weight: bold">Anexos</h4>
+                                            <br />
+                                            <div class="form-group">
+                                                @using (Html.BeginForm("UploadFileUsuario", "Usuario", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { enctype = "multipart/form-data", @id="pwd-container2" }))
+                                                {
+                                                    <div class="ibox-content">
+                                                        @if (Model.USUARIO_ANEXO != null)
+	                                                    {
+                                                            if (Model.USUARIO_ANEXO.Count > 0)
+                                                            {
+                                                                <table class="table table-striped table-bordered table-hover dataTables-example">
+                                                                    <thead style ="background-color:lightsteelblue">
+                                                                        <tr>
+                                                                            <th>Nome do Anexo</th>
+                                                                            <th>Data do Anexo</th>
+                                                                            <th>Tipo de Arquivo</th>
+                                                                            <th class="td-one-action">Ações</th>
+                                                                        </tr>
+                                                                    </thead>
+                                                                    <tbody>
+                                                                        @foreach (var cond in (Model.USUARIO_ANEXO))
+                                                                        {
+                                                                            <tr>
+                                                                                <td>@cond.USAN_NM_TITULO</td>
+                                                                                <td>@cond.USAN_DT_ANEXO.Value.ToShortDateString()</td>
+                                                                                @if (cond.USAN_IN_TIPO == 1)
+                                                                                {
+                                                                                    <td>Imagem</td>
+                                                                                }
+                                                                                else if (cond.USAN_IN_TIPO == 2)
+                                                                                {
+                                                                                    <td>Vídeo</td>
+                                                                                }
+                                                                                else if (cond.USAN_IN_TIPO == 3)
+                                                                                {
+                                                                                    <td>PDF</td>
+                                                                                }
+                                                                                else if (cond.USAN_IN_TIPO == 4)
+                                                                                {
+                                                                                    <td>Audio</td>
+                                                                                }
+                                                                                else if (cond.USAN_IN_TIPO == 5)
+                                                                                {
+                                                                                    <td>Documento/Word</td>
+                                                                                }
+                                                                                else if (cond.USAN_IN_TIPO == 6)
+                                                                                {
+                                                                                    <td>Planilha/Excel</td>
+                                                                                }
+                                                                                else
+                                                                                {
+                                                                                    <td>Outros</td>
+                                                                                }
+                                                                                <td class="td-one-action">
+                                                                                    @if (cond.USAN_IN_TIPO == 1 || cond.USAN_IN_TIPO == 2)
+	                                                                                {
+                                                                                        @Html.TableLinkDetails(cond.USAN_CD_ID, "VerAnexoUsuario","fa-camera", "Visualizar")
+	                                                                                }
+                                                                                    @if (cond.USAN_IN_TIPO == 4)
+	                                                                                {
+                                                                                        @Html.TableLinkDetails(cond.USAN_CD_ID, "VerAnexoUsuarioAudio","fa-volume-up", "Visualizar")
+	                                                                                }
+                                                                                    @if (cond.USAN_IN_TIPO == 3)
+                                                                                    {
+                                                                                        <a title="Visualizar" class="fa fa-camera fa-lg" href="~/PdfViewer/web/viewer.html?file=@(cond.USAN_AQ_ARQUIVO.Replace("~", ""))&ReturnUrl=@Request.Url.AbsolutePath" target="_blank"></a>
+                                                                                    }
+                                                                                    @Html.TableLinkDetails(cond.USAN_CD_ID, "DownloadUsuario","fa-download", "Download")
+                                                                                </td>
+                                                                            </tr>
+                                                                        }
+                                                                    </tbody>
+                                                                </table>
+                                                            }
+	                                                    }
+                                                        <div class="col-lg-12 col-md-12 col-xs-12">
+                                                            <input style="float: left; margin-right: 5px;" type="file" name="file" id="file" class="btn btn-sm btn-warning"/>
+                                                            <input style="float: left; margin-right: 5px;" type="submit" value="Incluir Anexo do Usuário" class="btn btn-sm btn-success" />
+                                                        </div>
+                                                    </div>
+                                                }
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            @*Informações de Acesso*@
+                            <div id="tab-3" class="tab-pane">
+                                <div class="panel-body">
+                                    @using (Html.BeginForm("EditarUsuario", "Usuario", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal", @id="pwd-container1" }))
+                                    {
+                                        <div class="row">
+                                            <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">                
+                                                <div class="col-lg-2 col-md-2 col-xs-12">                                
+                                                    Bloqueado?
+                                                    @Html.TextBoxFor(m => m.Bloqueado, new { @class = "form-control", @readonly="readonly" })
+                                                </div>  
+                                                <div class="col-lg-2 col-md-2 col-xs-12">
+                                                    Data do Último Bloqueio
+                                                    @Html.TextBoxFor(m => m.USUA_DT_BLOQUEADO,"{0:dd/MM/yyyy}", new { @class = "form-control", @readonly="readonly" })
+                                                </div>
+                                                <div class="col-lg-2 col-md-2 col-xs-12">
+                                                    Senha Provisória?
+                                                    @Html.TextBoxFor(m => m.SenhaProvisoria, new { @class = "form-control", @readonly="readonly" })
+                                                </div>                                                
+                                                <div class="col-lg-2 col-md-2 col-xs-12">
+                                                    Login com Senha Provisória?
+                                                    @Html.TextBoxFor(m => m.LoginSenhaProvisoria, new { @class = "form-control", @readonly="readonly" })
+                                                </div>                                                
+                                                <div class="col-lg-2 col-md-2 col-xs-12">
+                                                    Login Provisório?
+                                                    @Html.TextBoxFor(m => m.LoginProvisorio1, new { @class = "form-control", @readonly="readonly" })
+                                                </div>                                                
+                                            </div>
+                                            <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">              
+                                                <div class="col-lg-2 col-md-2 col-xs-12">
+                                                    Data da Última Alteração
+                                                    @Html.TextBoxFor(m => m.USUA_DT_ALTERACAO,"{0:dd/MM/yyyy}", new { @class = "form-control", @readonly="readonly" })
+                                                </div>
+                                                <div class="col-lg-2 col-md-2 col-xs-12">
+                                                    Data de Troca de Senha
+                                                    @Html.TextBoxFor(m => m.USUA_DT_TROCA_SENHA,"{0:dd/MM/yyyy}", new { @class = "form-control", @readonly="readonly" })
+                                                </div>
+                                            </div>
+                                            <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">              
+                                                <div class="col-lg-2 col-md-2 col-xs-12">
+                                                    Número de Acessos
+                                                    @Html.TextBoxFor(m => m.USUA_NR_ACESSOS, new { @class = "form-control", @readonly="readonly" })
+                                                </div>
+                                                <div class="col-lg-2 col-md-2 col-xs-12">
+                                                    Data do Último Acesso
+                                                    @Html.TextBoxFor(m => m.USUA_DT_ACESSO, "{0:dd/MM/yyyy}", new { @class = "form-control", @readonly="readonly" })
+                                                </div>
+                                                <div class="col-lg-2 col-md-2 col-xs-12">
+                                                    Número de Falhas
+                                                    @Html.TextBoxFor(m => m.USUA_NR_FALHAS, new { @class = "form-control", @readonly="readonly" })
+                                                </div>
+                                                <div class="col-lg-2 col-md-2 col-xs-12">
+                                                    Data da Última Falha
+                                                    @Html.TextBoxFor(m => m.USUA_DT_ULTIMA_FALHA, "{0:dd/MM/yyyy}", new { @class = "form-control", @readonly="readonly" })
+                                                </div>
+                                            </div>
+                                        </div>                                        
+                                    }
+
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+         </div>
+    </div>
+</div>
+
+
+@section Styles {
+    <link href="~/Content/themes/base/all.css" rel="stylesheet" />  
+    @Styles.Render("~/Content/plugins/dataTables/dataTablesStyles")
+    @Styles.Render("~/plugins/jasnyBootstrapStyles")
+    @Styles.Render("~/plugins/toastrStyles")
+}
+@section Scripts {
+    @Scripts.Render("~/plugins/toastr")
+    @Scripts.Render("~/plugins/dataTables")
+    @Scripts.Render("~/bundles/inputmask")
+    @Scripts.Render("~/plugins/jasnyBootstrap")
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.maskedinput/1.4.1/jquery.maskedinput.js"></script>
+
+    <script type="text/javascript" src="~/Scripts/moment.min.js"></script>
+    <script type="text/javascript" src="~/Scripts/bootstrap.min.js"></script>
+   
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('[data-toggle="popover"]').popover();
+        });
+    </script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-toggle="popover"]'));
+            var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
+                return new bootstrap.Popover(popoverTriggerEl);
+            });
+        });
+    </script>
+
+    <!-- Handler de fechamento do browser -->
+    <script type="text/javascript">
+        window.onbeforeunload = function ()
+        {
+            navigator.sendBeacon('../ControleAcesso/LogSessionTime');
+        }; 
+    </script>
+    <script>
+        $(function () {
+            limpaModal();
+        });
+
+        function limpaModal() {
+            $('#btnModal').remove();
+            $('#modalTitle').remove();
+        }
+
+        function ShowModalExcluir(url, nome) {
+            $('#modal').find('.modal-footer').prepend('<a id="btnModal" alt="Desativar" class="btn btn-primary" href="' + url + '" target="_self" title="Desativar">Confirmar</a>');
+            $('#modal').find('.modal-body').html('Confirma desativação de usuario?');
+            $('#modal').find('.modal-header').prepend('<h5 id="modalTitle" class="modal-title">' + nome + '</h5>');
+            $('#modal').modal('show');
+        }
+
+        function ShowModalReativar(url, nome) {
+            $('#modal').find('.modal-footer').prepend('<a id="btnModal" alt="Reativar" class="btn btn-primary" href="' + url + '" target="_self" title="Reativar">Confirmar</a>');
+            $('#modal').find('.modal-body').html('Confirma reativação de usuario?');
+            $('#modal').find('.modal-header').prepend('<h5 id="modalTitle" class="modal-title">' + nome + '</h5>');
+            $('#modal').modal('show');
+        }
+        function ShowModalBloquear(url, nome) {
+            $('#modal').find('.modal-footer').prepend('<a id="btnModal" alt="Desativar" class="btn btn-primary" href="' + url + '" target="_self" title="Desativar">Confirmar</a>');
+            $('#modal').find('.modal-body').html('Confirma bloqueio de usuario?');
+            $('#modal').find('.modal-header').prepend('<h5 id="modalTitle" class="modal-title">' + nome + '</h5>');
+            $('#modal').modal('show');
+        }
+
+        function ShowModalDesbloquear(url, nome) {
+            $('#modal').find('.modal-footer').prepend('<a id="btnModal" alt="Reativar" class="btn btn-primary" href="' + url + '" target="_self" title="Reativar">Confirmar</a>');
+            $('#modal').find('.modal-body').html('Confirma desbloqueio de usuario?');
+            $('#modal').find('.modal-header').prepend('<h5 id="modalTitle" class="modal-title">' + nome + '</h5>');
+            $('#modal').modal('show');
+        }
+    </script>
+
+    <script type="text/javascript">
+        $(function () {
+            $("#cpf").mask("999.999.999-99");
+            $("#cnpj").mask("99.999.999/9999-99");
+            $("#cep").mask("99999-999");
+            $("#tel").mask("(99)9999-9999");
+            $("#cel").mask("(99)99999-9999");
+            $("#wh").mask("(99)99999-9999");
+
+        });
+    </script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            $('.i-checks').iCheck({
+                checkboxClass: 'icheckbox_square-green',
+                radioClass: 'iradio_square-green',
+            });
+
+        });
+    </script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            var i = -1;
+            var toastCount = 0;
+            var $toastlast;
+            var getMessage = function () {
+                var msg = 'Hi, welcome to Inspinia. This is example of Toastr notification box.';
+                return msg;
+            };
+
+            $('#basictoast').click(function () {
+                // Display a success toast, with a tiModelle
+                toastr.success('Edição em andamento!')
+            });
+            $('#showtoast').click(function () {
+                var shortCutFunction = $("#toastTypeGroup input:radio:checked").val();
+                var msg = $('#message').val();
+                var title = $('#title').val() || '';
+                var $showDuration = $('#showDuration');
+                var $hideDuration = $('#hideDuration');
+                var $timeOut = $('#timeOut');
+                var $extendedTimeOut = $('#extendedTimeOut');
+                var $showEasing = $('#showEasing');
+                var $hideEasing = $('#hideEasing');
+                var $showMethod = $('#showMethod');
+                var $hideMethod = $('#hideMethod');
+                var toastIndex = toastCount++;
+                toastr.options = {
+                    closeButton: $('#closeButton').prop('checked'),
+                    debug: $('#debugInfo').prop('checked'),
+                    progressBar: $('#progressBar').prop('checked'),
+                    positionClass: $('#positionGroup input:radio:checked').val() || 'toast-top-right',
+                    onclick: null
+                };
+                if ($('#addBehaviorOnToastClick').prop('checked')) {
+                    toastr.options.onclick = function () {
+                        alert('You can perform some custom action after a toast goes away');
+                    };
+                }
+                if ($showDuration.val().length) {
+                    toastr.options.showDuration = $showDuration.val();
+                }
+                if ($hideDuration.val().length) {
+                    toastr.options.hideDuration = $hideDuration.val();
+                }
+                if ($timeOut.val().length) {
+                    toastr.options.timeOut = $timeOut.val();
+                }
+                if ($extendedTimeOut.val().length) {
+                    toastr.options.extendedTimeOut = $extendedTimeOut.val();
+                }
+                if ($showEasing.val().length) {
+                    toastr.options.showEasing = $showEasing.val();
+                }
+                if ($hideEasing.val().length) {
+                    toastr.options.hideEasing = $hideEasing.val();
+                }
+                if ($showMethod.val().length) {
+                    toastr.options.showMethod = $showMethod.val();
+                }
+                if ($hideMethod.val().length) {
+                    toastr.options.hideMethod = $hideMethod.val();
+                }
+                if (!msg) {
+                    msg = getMessage();
+                }
+                $("#toastrOptions").text("Command: toastr["
+                        + shortCutFunction
+                        + "](\""
+                        + msg
+                        + (title ? "\", \"" + title : '')
+                        + "\")\n\ntoastr.options = "
+                        + JSON.stringify(toastr.options, null, 2)
+                );
+                var $toast = toastr[shortCutFunction](msg, title); // Wire up an event handler to a button in the toast, if it exists
+                $toastlast = $toast;
+                if ($toast.find('#okBtn').length) {
+                    $toast.delegate('#okBtn', 'click', function () {
+                        alert('you clicked me. i was toast #' + toastIndex + '. goodbye!');
+                        $toast.remove();
+                    });
+                }
+                if ($toast.find('#surpriseBtn').length) {
+                    $toast.delegate('#surpriseBtn', 'click', function () {
+                        alert('Surprise! you clicked me. i was toast #' + toastIndex + '. You could perform an action here.');
+                    });
+                }
+            });
+            function getLastToast() {
+                return $toastlast;
+            }
+            $('#clearlasttoast').click(function () {
+                toastr.clear(getLastToast());
+            });
+            $('#cleartoasts').click(function () {
+                toastr.clear();
+            });
+
+        });
+    </script>
+
+    @if (ViewBag.Message != null)
+    {
+        <script type="text/javascript">
+            window.onload = function () {
+                  alert("@ViewBag.Message");
+            };
+        </script>
+    }
+}

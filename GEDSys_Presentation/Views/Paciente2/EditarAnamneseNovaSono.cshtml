@@ -1,0 +1,1243 @@
+﻿@using Presentation.Extensions
+@model ERP_Condominios_Solution.ViewModels.PacienteAnamneseViewModel
+@{
+    Layout = "~/Views/Shared/_Layout_Admin.cshtml";
+    ViewBag.Title = "WebDoctor - Anamneses - Edição";
+    ViewBag.MetaDescription = "WebDoctor - Anamneses - Edição";
+    ViewBag.MetaKeywords = "WebDoctor, anamnese";
+}
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="page-title">
+        <ol class="breadcrumb">
+            <li>
+                <a href="@Url.Action("MontarTelaPaciente", "Paciente")">Dashboard</a>
+            </li>
+            <li>
+                <a href="@Url.Action("MontarTelaCentralPaciente", "Paciente")">Central de Pacientes</a>
+            </li>
+            <li>
+                <a href="@Url.Action("EditarPaciente", "Paciente")">Pacientes - Edição</a>
+            </li>
+            <li class="active">
+                <strong>Pacientes - Anamneses</strong>
+            </li>
+        </ol>
+        <br />
+    </div>
+
+    <div class="row">
+        <div class="col-lg-12 col-md-12 col-xs-12">
+            <div class="col-lg-12 col-md-12 col-xs-12 ibox float-e-margins">
+                <div class="ibox-title">
+                    <div style="text-align: center;" class="col-lg-12 col-md-12 col-xs-12">
+                        <h5>Anamnese - Edição</h5>
+                        <span style="color:green; font-weight: 500; font-size: 20px;">@Model.PACIENTE.PACI_NM_NOME</span>
+                    </div>
+                </div>
+                @using (Html.BeginForm("EditarAnamneseNovaSono", "Paciente2", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal", @id="pwd-container1" }))
+                {
+                    <div class="ibox-content">
+                        @Html.AntiForgeryToken()
+                        @if (!ViewData.ModelState.IsValid)
+                        {
+                            <div class="alert alert-danger">
+                                <button type="button" class="close" data-dismiss="alert">Fechar</button>
+                                @Html.ValidationSummary(false, "Erros Encontrados:", new { @class = "text-danger" })
+                            </div>
+                        }
+                        <div class="form-group">
+                            @Html.ButtonActionSubmit(text: "Confirma Edição da Anamnese", htmlAttributes: new { id = "basictoast" })
+                            @Html.ButtonLinkIndex(text: "Ver Anamnese Completa", action: "VerAnamneseCompletaChamadaSono", controller: "Paciente2")
+                            @Html.ButtonLinkIndex(text: "Acompanhamento", action: "VerAnotacaoAnamneseBase", controller: "Paciente2")
+                            @Html.ButtonLinkIndex(text: "Exame Físico", action: "VerExameFisicoBase", controller: "Paciente2")
+                            @Html.ButtonLinkIndex(text: "Imprimir Anamnese", action: "GerarAnamnesePDFNovaSono", controller: "Paciente2")
+                            @Html.ButtonLinkIndex(text: "Acerto", action: "AcertoCampo", controller: "Paciente2")
+                            @if ((Int32)Session["VoltarPesquisa"] == 44)
+                            {
+                                @Html.ButtonLinkIndex(text: "Voltar", action: "PesquisarTudo", controller: "BaseAdmin")
+                            }
+                            else
+                            {
+                                if ((Int32)Session["VoltaAnamnese"] == 1)
+                                {
+                                    @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarAnexoPaciente", controller: "Paciente")
+                                }
+                                else if ((Int32)Session["VoltaAnamnese"] == 2)
+                                {
+                                    @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarProcederConsulta", controller: "Paciente")
+                                }
+                            }
+                            <a href="@Url.Action((String)Session["AjudaNivel"])" class="btn btn-sm btn-danger" target="_blank">Ajuda</a>
+                        </div>
+
+                        @*Paciente*@
+                        <div class="row">
+                            <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Paciente</h4>
+                            <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">                
+                                <div class="col-lg-4 col-md-4 col-xs-12">
+                                    Nome do Paciente
+                                    @Html.TextBoxFor(m => m.PACIENTE.PACI_NM_NOME, new { @class = "form-control", @readonly = "readonly", @style = "color: green; font-weight: bold", tabindex = "-1" })
+                                </div>
+                                <div class="col-lg-2 col-md-2 col-xs-12">
+                                    Data Nascimento
+                                    @Html.TextBoxFor(m => m.PACIENTE.PACI_DT_NASCIMENTO, "{0:dd/MM/yyyy}", new { @class = "form-control", @readonly = "readonly", tabindex = "-1" })
+                                </div>
+                                @if (Model.PACIENTE.PACI_NR_CPF != null)
+                                {
+                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                        CPF
+                                        @Html.TextBoxFor(m => m.PACIENTE.PACI_NR_CPF, new { @class = "form-control", @readonly = "readonly", tabindex = "-1" })
+                                    </div>
+                                }
+                                @if (Model.PACIENTE.PACI_NR_CELULAR != null)
+                                {
+                                    <div class="col-lg-2 col-md-1 col-xs-12">
+                                        Celular
+                                        @Html.TextBoxFor(m => m.PACIENTE.PACI_NR_CELULAR, new { @class = "form-control", @readonly = "readonly", tabindex = "-1" })
+                                    </div>
+                                }
+                                @if (Model.PACIENTE.PACI_NR_TELEFONE != null)
+                                {
+                                    <div class="col-lg-2 col-md-1 col-xs-12">
+                                        Telefone
+                                        @Html.TextBoxFor(m => m.PACIENTE.PACI_NR_TELEFONE, new { @class = "form-control", @readonly = "readonly", tabindex = "-1" })
+                                    </div>
+                                }
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Consulta</h4>
+                            <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">                
+                                <div class="col-lg-2 col-md-2 col-xs-12">
+                                    @Html.HiddenFor(m => m.PACI_CD_ID)
+                                    @Html.HiddenFor(m => m.PACO_CD_ID)
+                                    @Html.HiddenFor(m => m.PAAM_DT_DATA)
+                                    @Html.HiddenFor(m => m.USUA_CD_ID)
+                                    @Html.HiddenFor(m => m.ASSI_CD_ID)
+                                    @Html.HiddenFor(m => m.PAAM_IN_ATIVO)
+                                    @Html.HiddenFor(m => m.PAAM_CD_ID)
+                                    @Html.HiddenFor(m => m.PAAM_DT_COPIA)
+                                    @Html.HiddenFor(m => m.PAAM_IN_CAMPO_1)
+                                    @Html.HiddenFor(m => m.PAAM_IN_CAMPO_2)
+                                    @Html.HiddenFor(m => m.PAAM_IN_CAMPO_3)
+                                    @Html.HiddenFor(m => m.PAAM_IN_FLAG_ABDOMEM)
+                                    @Html.HiddenFor(m => m.PAAM_IN_FLAG_AVALIACAO_CARDIOLOGICA)
+                                    @Html.HiddenFor(m => m.PAAM_IN_FLAG_DIAGNOSTICO_1)
+                                    @Html.HiddenFor(m => m.PAAM_IN_FLAG_DIAGNOSTICO_2)
+                                    @Html.HiddenFor(m => m.PAAM_IN_FLAG_HISTORIA_DOENCA_ATUAL)
+                                    @Html.HiddenFor(m => m.PAAM_IN_FLAG_HISTORIA_PROGRESSIVA)
+                                    @Html.HiddenFor(m => m.PAAM_IN_FLAG_HISTORIA_SOCIAL)
+                                    @Html.HiddenFor(m => m.PAAM_IN_FLAG_MEMBROS_INFERIORES)
+                                    @Html.HiddenFor(m => m.PAAM_IN_FLAG_MOTIVO_CONSULTA)
+                                    @Html.HiddenFor(m => m.PAAM_IN_FLAG_QUEIXA_PRINCIPAL)
+                                    @Html.HiddenFor(m => m.PAAM_IN_FLAG_RESPIRATORIO)
+                                    @Html.HiddenFor(m => m.PAAM_IN_PREENCHIDA)
+                                    @Html.HiddenFor(m => m.PAAM_NM_CAMPO_1)
+                                    @Html.HiddenFor(m => m.PAAM_NM_CAMPO_2)
+                                    @Html.HiddenFor(m => m.PAAM_NM_CAMPO_3)
+                                    @Html.HiddenFor(m => m.PAAM_NM_CAMPO_4)
+                                    @Html.HiddenFor(m => m.PAAM_NM_CAMPO_5)
+                                    @Html.HiddenFor(m => m.PAAM_NM_CAMPO_6)
+                                    @Html.HiddenFor(m => m.PAAM_NM_CAMPO_7)
+                                    @Html.HiddenFor(m => m.PAAM_NM_CAMPO_8)
+                                    @Html.HiddenFor(m => m.PAAM_NM_CAMPO_9)
+                                    @Html.HiddenFor(m => m.PAAM_NM_CAMPO_10)
+                                    @Html.HiddenFor(m => m.PAAM_DT_ORIGINAL)
+                                    Data da Consulta
+                                    @Html.TextBoxFor(m => m.PAAM_DT_DATA, "{0:dd/MM/yyyy}", new { @class = "form-control", @readonly = "readonly", @style = "color: darkblue; font-weight: bold", tabindex = "-1" })
+                                </div>
+                                <div class="col-lg-2 col-md-2 col-xs-12">
+                                    Tipo de Consulta
+                                    @Html.TextBoxFor(m => m.PACIENTE_CONSULTA.VALOR_CONSULTA.VACO_NM_NOME, new { @class = "form-control", @readonly = "readonly", tabindex = "-1" })
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Rotina do Sono</h4>
+                            <div class="col-lg-6 col-md-6 col-xs-12">
+                                <h4 style="margin-left: 0px; color:white; background-color: darkseagreen; font-weight:bold">Rotina do Sono</h4>
+                                <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                    <div class="col-lg-12 col-md-12 col-xs-12">
+                                        @Html.HiddenFor(m => m.PACI_CD_ID)
+                                        @Html.HiddenFor(m => m.PACO_CD_ID)
+                                        @Html.HiddenFor(m => m.PAAM_DT_DATA)
+                                        @Html.HiddenFor(m => m.USUA_CD_ID)
+                                        @Html.HiddenFor(m => m.ASSI_CD_ID)
+                                        @Html.HiddenFor(m => m.PAAM_IN_ATIVO)
+                                        @Html.HiddenFor(m => m.PAAM_CD_ID)
+                                        @Html.HiddenFor(m => m.PAAM_DT_COPIA)
+                                        @Html.HiddenFor(m => m.PAAM_IN_CAMPO_1)
+                                        @Html.HiddenFor(m => m.PAAM_IN_CAMPO_2)
+                                        @Html.HiddenFor(m => m.PAAM_IN_CAMPO_3)
+                                        @Html.HiddenFor(m => m.PAAM_IN_FLAG_ABDOMEM)
+                                        @Html.HiddenFor(m => m.PAAM_IN_FLAG_AVALIACAO_CARDIOLOGICA)
+                                        @Html.HiddenFor(m => m.PAAM_IN_FLAG_DIAGNOSTICO_1)
+                                        @Html.HiddenFor(m => m.PAAM_IN_FLAG_DIAGNOSTICO_2)
+                                        @Html.HiddenFor(m => m.PAAM_IN_FLAG_HISTORIA_DOENCA_ATUAL)
+                                        @Html.HiddenFor(m => m.PAAM_IN_FLAG_HISTORIA_PROGRESSIVA)
+                                        @Html.HiddenFor(m => m.PAAM_IN_FLAG_HISTORIA_SOCIAL)
+                                        @Html.HiddenFor(m => m.PAAM_IN_FLAG_MEMBROS_INFERIORES)
+                                        @Html.HiddenFor(m => m.PAAM_IN_FLAG_MOTIVO_CONSULTA)
+                                        @Html.HiddenFor(m => m.PAAM_IN_FLAG_QUEIXA_PRINCIPAL)
+                                        @Html.HiddenFor(m => m.PAAM_IN_FLAG_RESPIRATORIO)
+                                        @Html.HiddenFor(m => m.PAAM_IN_PREENCHIDA)
+                                        @Html.HiddenFor(m => m.PAAM_NM_CAMPO_1)
+                                        @Html.HiddenFor(m => m.PAAM_NM_CAMPO_2)
+                                        @Html.HiddenFor(m => m.PAAM_NM_CAMPO_3)
+                                        @Html.HiddenFor(m => m.PAAM_NM_CAMPO_4)
+                                        @Html.HiddenFor(m => m.PAAM_NM_CAMPO_5)
+                                        @Html.HiddenFor(m => m.PAAM_NM_CAMPO_6)
+                                        @Html.HiddenFor(m => m.PAAM_NM_CAMPO_7)
+                                        @Html.HiddenFor(m => m.PAAM_NM_CAMPO_8)
+                                        @Html.HiddenFor(m => m.PAAM_NM_CAMPO_9)
+                                        @Html.HiddenFor(m => m.PAAM_NM_CAMPO_10)
+                                        @Html.HiddenFor(m => m.PAAM_DT_ORIGINAL)
+                                        Principal queixa do sono - Histórico
+                                        @Html.TextAreaFor(m => m.PAAM_DS_SONO_PRINCIPAL_QUEIXA_OLD, new { @class = "form-control", style = "width: 100%; height: 200px; overflow:auto;", tabindex = "-1", @readonly = "readonly" })
+                                    </div>
+                                </div>
+                                <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                    <div class="col-lg-12 col-md-12 col-xs-12">
+                                        Principal queixa do sono - Consulta Atual/Revisão
+                                        @Html.TextAreaFor(m => m.PAAM_DS_SONO_PRINCIPAL_QUEIXA, new { @class = "form-control", style = "width: 100%; height: 100px; overflow:auto;", autofocus = true })
+                                        @Html.ValidationMessageFor(m => m.PAAM_DS_SONO_PRINCIPAL_QUEIXA, "", new { @style = "color:red" })
+                                    </div>
+                                </div>
+
+                                <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                    <div class="col-lg-12 col-md-12 col-xs-12">
+                                        Sintomas - Histórico
+                                        @Html.TextAreaFor(m => m.PAAM_DS_SONO_SINTOMAS_OLD, new { @class = "form-control", style = "width: 100%; height: 200px; overflow:auto;", tabindex = "-1", @readonly = "readonly" })
+                                    </div>
+                                </div>
+                                <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                    <div class="col-lg-12 col-md-12 col-xs-12">
+                                        Sintomas - Consulta Atual/Revisão
+                                        @Html.TextAreaFor(m => m.PAAM_DS_SONO_SINTOMAS, new { @class = "form-control", style = "width: 100%; height: 100px; overflow:auto;", autofocus = true })
+                                        @Html.ValidationMessageFor(m => m.PAAM_DS_SONO_SINTOMAS, "", new { @style = "color:red" })
+                                    </div>
+                                </div>
+
+                                <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                    <div class="col-lg-12 col-md-12 col-xs-12">
+                                         Horário regulares para dormir e acordar - Histórico
+                                        @Html.TextAreaFor(m => m.PAAM_DS_SONO_HORARIO_REGULAR_NOVO_OLD, new { @class = "form-control", style = "width: 100%; height: 200px; overflow:auto;", tabindex = "-1", @readonly = "readonly" })
+                                    </div>
+                                </div>
+                                <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                    <div class="col-lg-12 col-md-12 col-xs-12">
+                                         Horário regulares para dormir e acordar - Consulta Atual/Revisão
+                                        @Html.TextAreaFor(m => m.PAAM_DS_SONO_HORARIO_REGULAR_NOVO, new { @class = "form-control", style = "width: 100%; height: 100px; overflow:auto;", autofocus = true })
+                                        @Html.ValidationMessageFor(m => m.PAAM_DS_SONO_HORARIO_REGULAR_NOVO, "", new { @style = "color:red" })
+                                    </div>
+                                </div>
+
+                                <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                    <div class="col-lg-12 col-md-12 col-xs-12">
+                                         Latência para o início do sono - Histórico
+                                        @Html.TextAreaFor(m => m.PAAM_DS_SONO_LATENCIA_NOVO_OLD, new { @class = "form-control", style = "width: 100%; height: 200px; overflow:auto;", tabindex = "-1", @readonly = "readonly" })
+                                    </div>
+                                </div>
+                                <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                    <div class="col-lg-12 col-md-12 col-xs-12">
+                                        Latência para o início do sono - Consulta Atual/Revisão
+                                        @Html.TextAreaFor(m => m.PAAM_DS_SONO_LATENCIA_NOVO, new { @class = "form-control", style = "width: 100%; height: 100px; overflow:auto;", autofocus = true })
+                                        @Html.ValidationMessageFor(m => m.PAAM_DS_SONO_LATENCIA_NOVO, "", new { @style = "color:red" })
+                                    </div>
+                                </div>
+
+                                <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                    <div class="col-lg-12 col-md-12 col-xs-12">
+                                        Duração do sono - Histórico
+                                        @Html.TextAreaFor(m => m.PAAM_DS_SONO_DURACAO_OLD, new { @class = "form-control", style = "width: 100%; height: 200px; overflow:auto;", tabindex = "-1", @readonly = "readonly" })
+                                    </div>
+                                </div>
+                                <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                    <div class="col-lg-12 col-md-12 col-xs-12">
+                                        Duração do sono - Consulta Atual/Revisão
+                                        @Html.TextAreaFor(m => m.PAAM_DS_SONO_DURACAO, new { @class = "form-control", style = "width: 100%; height: 100px; overflow:auto;", autofocus = true })
+                                        @Html.ValidationMessageFor(m => m.PAAM_DS_SONO_DURACAO, "", new { @style = "color:red" })
+                                    </div>
+                                </div>
+
+                                <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                    <div class="col-lg-12 col-md-12 col-xs-12">
+                                        Manutenção da rotina nos fins de semana - Consulta Atual/Revisão
+                                        @Html.DropDownListFor(m => m.PAAM_DS_SONO_ROTINA_FDS, (SelectList)ViewBag.SimNao, "Selecionar", new { @class = "form-control", autofocus = true, @id = "menor", onchange = "ValidaMenor($(this).val())" })
+                                        @Html.ValidationMessageFor(m => m.PAAM_DS_SONO_ROTINA_FDS, "", new { @style = "color:red" })
+                                    </div>
+                                </div>
+
+                                <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                    <div class="col-lg-12 col-md-12 col-xs-12">
+                                        Cochilos diurnos - Consulta Atual/Revisão
+                                        @Html.DropDownListFor(m => m.PAAM_DS_SONO_COCHILOS, (SelectList)ViewBag.SimNao, "Selecionar", new { @class = "form-control", autofocus = true, @id = "menor", onchange = "ValidaMenor($(this).val())" })
+                                        @Html.ValidationMessageFor(m => m.PAAM_DS_SONO_COCHILOS, "", new { @style = "color:red" })
+                                    </div>
+                                </div>
+
+                                <h4 style="margin-left: 0px; color:white; background-color: darkseagreen; font-weight:bold">Higiene do Sono</h4>
+
+                                <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                    <div class="col-lg-12 col-md-12 col-xs-12">
+                                        Assiste TV na cama - Consulta Atual/Revisão
+                                        @Html.DropDownListFor(m => m.PAAM_DS_SONO_TVCAMA, (SelectList)ViewBag.SimNao, "Selecionar", new { @class = "form-control", autofocus = true, @id = "menor", onchange = "ValidaMenor($(this).val())" })
+                                        @Html.ValidationMessageFor(m => m.PAAM_DS_SONO_TVCAMA, "", new { @style = "color:red" })
+                                    </div>
+                                </div>
+
+                                <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                    <div class="col-lg-12 col-md-12 col-xs-12">
+                                        Fica deitado na cama quando está sem sono - Consulta Atual/Revisão
+                                        @Html.DropDownListFor(m => m.PAAM_DS_SONO_DEITADO_PERDE_SONO, (SelectList)ViewBag.SimNao, "Selecionar", new { @class = "form-control", autofocus = true, @id = "menor", onchange = "ValidaMenor($(this).val())" })
+                                        @Html.ValidationMessageFor(m => m.PAAM_DS_SONO_DEITADO_PERDE_SONO, "", new { @style = "color:red" })
+                                    </div>
+                                </div>
+
+                                <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                    <div class="col-lg-12 col-md-12 col-xs-12">
+                                        Lê na cama - Consulta Atual/Revisão
+                                        @Html.DropDownListFor(m => m.PAAM_DS_SONO_LECAMA, (SelectList)ViewBag.SimNao, "Selecionar", new { @class = "form-control", autofocus = true, @id = "menor", onchange = "ValidaMenor($(this).val())" })
+                                        @Html.ValidationMessageFor(m => m.PAAM_DS_SONO_LECAMA, "", new { @style = "color:red" })
+                                    </div>
+                                </div>
+
+                                <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                    <div class="col-lg-12 col-md-12 col-xs-12">
+                                        Usa celular na cama - Consulta Atual/Revisão
+                                        @Html.DropDownListFor(m => m.PAAM_DS_SONO_CELULAR_CAMA, (SelectList)ViewBag.SimNao, "Selecionar", new { @class = "form-control", autofocus = true, @id = "menor", onchange = "ValidaMenor($(this).val())" })
+                                        @Html.ValidationMessageFor(m => m.PAAM_DS_SONO_CELULAR_CAMA, "", new { @style = "color:red" })
+                                    </div>
+                                </div>
+
+                                <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                    <div class="col-lg-12 col-md-12 col-xs-12">
+                                        Fuma - Consulta Atual/Revisão
+                                        @Html.DropDownListFor(m => m.PAAM_DS_SONO_FUMA_NOITE, (SelectList)ViewBag.SimNao, "Selecionar", new { @class = "form-control", autofocus = true, @id = "menor", onchange = "ValidaMenor($(this).val())" })
+                                        @Html.ValidationMessageFor(m => m.PAAM_DS_SONO_FUMA_NOITE, "", new { @style = "color:red" })
+                                    </div>
+                                </div>
+
+                                <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                    <div class="col-lg-12 col-md-12 col-xs-12">
+                                        Último horário de consumo de álcool ou bebidas com cafeína - Histórico
+                                        @Html.TextAreaFor(m => m.PAAM_DS_SONO_ULTIMO_ALCOOL_OLD, new { @class = "form-control", style = "width: 100%; height: 200px; overflow:auto;", tabindex = "-1", @readonly = "readonly" })
+                                    </div>
+                                </div>
+                                <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                    <div class="col-lg-12 col-md-12 col-xs-12">
+                                        Último horário de consumo de álcool ou bebidas com cafeína - Consulta Atual/Revisão
+                                        @Html.TextAreaFor(m => m.PAAM_DS_SONO_ULTIMO_ALCOOL, new { @class = "form-control", style = "width: 100%; height: 100px; overflow:auto;", autofocus = true })
+                                        @Html.ValidationMessageFor(m => m.PAAM_DS_SONO_ULTIMO_ALCOOL, "", new { @style = "color:red" })
+                                    </div>
+                                </div>
+
+                                <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                    <div class="col-lg-12 col-md-12 col-xs-12">
+                                        Refeições pesadas à noite - Consulta Atual/Revisão
+                                        @Html.DropDownListFor(m => m.PAAM_DS_SONO_REFEICAO_PESADA, (SelectList)ViewBag.SimNao, "Selecionar", new { @class = "form-control", autofocus = true, @id = "menor", onchange = "ValidaMenor($(this).val())" })
+                                        @Html.ValidationMessageFor(m => m.PAAM_DS_SONO_REFEICAO_PESADA, "", new { @style = "color:red" })
+                                    </div>
+                                </div>
+
+                                <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                    <div class="col-lg-12 col-md-12 col-xs-12">
+                                        Faz todas as refeições - Consulta Atual/Revisão
+                                        @Html.DropDownListFor(m => m.PAAM_DS_SONO_TODAS_REFEICOES, (SelectList)ViewBag.SimNao, "Selecionar", new { @class = "form-control", autofocus = true, @id = "menor", onchange = "ValidaMenor($(this).val())" })
+                                        @Html.ValidationMessageFor(m => m.PAAM_DS_SONO_TODAS_REFEICOES, "", new { @style = "color:red" })
+                                    </div>
+                                </div>
+
+                                <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                    <div class="col-lg-12 col-md-12 col-xs-12">
+                                        Café da manhã - Consulta Atual/Revisão
+                                        @Html.DropDownListFor(m => m.PAAM_DS_SONO_CAFE, (SelectList)ViewBag.SimNao, "Selecionar", new { @class = "form-control", autofocus = true, @id = "menor", onchange = "ValidaMenor($(this).val())" })
+                                        @Html.ValidationMessageFor(m => m.PAAM_DS_SONO_CAFE, "", new { @style = "color:red" })
+                                    </div>
+                                </div>
+
+                                <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                    <div class="col-lg-12 col-md-12 col-xs-12">
+                                        Almoço - Consulta Atual/Revisão
+                                        @Html.DropDownListFor(m => m.PAAM_DS_SONO_ALMOCO, (SelectList)ViewBag.SimNao, "Selecionar", new { @class = "form-control", autofocus = true, @id = "menor", onchange = "ValidaMenor($(this).val())" })
+                                        @Html.ValidationMessageFor(m => m.PAAM_DS_SONO_ALMOCO, "", new { @style = "color:red" })
+                                    </div>
+                                </div>
+
+                                <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                    <div class="col-lg-12 col-md-12 col-xs-12">
+                                        Lanche - Consulta Atual/Revisão
+                                        @Html.DropDownListFor(m => m.PAAM_DS_SONO_LANCHE, (SelectList)ViewBag.SimNao, "Selecionar", new { @class = "form-control", autofocus = true, @id = "menor", onchange = "ValidaMenor($(this).val())" })
+                                        @Html.ValidationMessageFor(m => m.PAAM_DS_SONO_LANCHE, "", new { @style = "color:red" })
+                                    </div>
+                                </div>
+
+                                <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                    <div class="col-lg-12 col-md-12 col-xs-12">
+                                        Jantar - Consulta Atual/Revisão
+                                        @Html.DropDownListFor(m => m.PAAM_DS_SONO_JANTAR, (SelectList)ViewBag.SimNao, "Selecionar", new { @class = "form-control", autofocus = true, @id = "menor", onchange = "ValidaMenor($(this).val())" })
+                                        @Html.ValidationMessageFor(m => m.PAAM_DS_SONO_JANTAR, "", new { @style = "color:red" })
+                                    </div>
+                                </div>
+
+                                <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                    <div class="col-lg-12 col-md-12 col-xs-12">
+                                        Frequencia semanal do exercício físico - Histórico
+                                        @Html.TextAreaFor(m => m.PAAM_DS_SONO_EXERCICIO_FREQ_OLD, new { @class = "form-control", style = "width: 100%; height: 200px; overflow:auto;", tabindex = "-1", @readonly = "readonly" })
+                                    </div>
+                                </div>
+                                <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                    <div class="col-lg-12 col-md-12 col-xs-12">
+                                        Frequencia semanal do exercício físico - Consulta Atual/Revisão
+                                        @Html.TextAreaFor(m => m.PAAM_DS_SONO_EXERCICIO_FREQ, new { @class = "form-control", style = "width: 100%; height: 100px; overflow:auto;", autofocus = true })
+                                        @Html.ValidationMessageFor(m => m.PAAM_DS_SONO_EXERCICIO_FREQ, "", new { @style = "color:red" })
+                                    </div>
+                                </div>
+
+                                <h4 style="margin-left: 0px; color:white; background-color: darkseagreen; font-weight:bold">Fragmentação do Sono</h4>
+
+                                <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                    <div class="col-lg-12 col-md-12 col-xs-12">
+                                        Quantas vezes desperta durante o sono - Histórico
+                                        @Html.TextAreaFor(m => m.PAAM_DS_SONO_QUANTAS_DESPERTA_OLD, new { @class = "form-control", style = "width: 100%; height: 200px; overflow:auto;", tabindex = "-1", @readonly = "readonly" })
+                                    </div>
+                                </div>
+                                <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                    <div class="col-lg-12 col-md-12 col-xs-12">
+                                        Quantas vezes desperta durante o sono - Consulta Atual/Revisão
+                                        @Html.TextAreaFor(m => m.PAAM_DS_SONO_QUANTAS_DESPERTA, new { @class = "form-control", style = "width: 100%; height: 100px; overflow:auto;", autofocus = true })
+                                        @Html.ValidationMessageFor(m => m.PAAM_DS_SONO_QUANTAS_DESPERTA, "", new { @style = "color:red" })
+                                    </div>
+                                </div>
+
+                                <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                    <div class="col-lg-12 col-md-12 col-xs-12">
+                                        Quais motivos - Histórico
+                                        @Html.TextAreaFor(m => m.PAAM_DS_SONO_MOTIVOS_DESPERTA_OLD, new { @class = "form-control", style = "width: 100%; height: 200px; overflow:auto;", tabindex = "-1", @readonly = "readonly" })
+                                    </div>
+                                </div>
+                                <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                    <div class="col-lg-12 col-md-12 col-xs-12">
+                                        Quais motivos - Consulta Atual/Revisão
+                                        @Html.TextAreaFor(m => m.PAAM_DS_SONO_MOTIVOS_DESPERTA, new { @class = "form-control", style = "width: 100%; height: 100px; overflow:auto;", autofocus = true })
+                                        @Html.ValidationMessageFor(m => m.PAAM_DS_SONO_MOTIVOS_DESPERTA, "", new { @style = "color:red" })
+                                    </div>
+                                </div>
+
+                                <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                    <div class="col-lg-12 col-md-12 col-xs-12">
+                                        Quanto tempo demora para retornar ao sono - Histórico
+                                        @Html.TextAreaFor(m => m.PAAM_DS_SONO_TEMPO_PEGAR_SONO_OLD, new { @class = "form-control", style = "width: 100%; height: 200px; overflow:auto;", tabindex = "-1", @readonly = "readonly" })
+                                    </div>
+                                </div>
+                                <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                    <div class="col-lg-12 col-md-12 col-xs-12">
+                                        Quanto tempo demora para retornar ao sono - Consulta Atual/Revisão
+                                        @Html.TextAreaFor(m => m.PAAM_DS_SONO_TEMPO_PEGAR_SONO, new { @class = "form-control", style = "width: 100%; height: 100px; overflow:auto;", autofocus = true })
+                                        @Html.ValidationMessageFor(m => m.PAAM_DS_SONO_TEMPO_PEGAR_SONO, "", new { @style = "color:red" })
+                                    </div>
+                                </div>
+
+                                <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                    <div class="col-lg-12 col-md-12 col-xs-12">
+                                        Fica deitado na cama quando perde o sono - Consulta Atual/Revisão
+                                        @Html.DropDownListFor(m => m.PAAM_DS_SONO_DEITADO_PERDE_SONO, (SelectList)ViewBag.SimNao, "Selecionar", new { @class = "form-control", autofocus = true, @id = "menor", onchange = "ValidaMenor($(this).val())" })
+                                        @Html.ValidationMessageFor(m => m.PAAM_DS_SONO_DEITADO_PERDE_SONO, "", new { @style = "color:red" })
+                                    </div>
+                                </div>
+
+                                <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                    <div class="col-lg-12 col-md-12 col-xs-12">
+                                        Quantas vezes vai ao banheiro para urinar durante a noite de sono - Histórico
+                                        @Html.TextAreaFor(m => m.PAAM_DS_SONO_URINA_NOITE_OLD, new { @class = "form-control", style = "width: 100%; height: 200px; overflow:auto;", tabindex = "-1", @readonly = "readonly" })
+                                    </div>
+                                </div>
+                                <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                    <div class="col-lg-12 col-md-12 col-xs-12">
+                                        Quantas vezes vai ao banheiro para urinar durante a noite de sono - Consulta Atual/Revisão
+                                        @Html.TextAreaFor(m => m.PAAM_DS_SONO_URINA_NOITE, new { @class = "form-control", style = "width: 100%; height: 100px; overflow:auto;", autofocus = true })
+                                        @Html.ValidationMessageFor(m => m.PAAM_DS_SONO_URINA_NOITE, "", new { @style = "color:red" })
+                                    </div>
+                                </div>
+
+                                <h4 style="margin-left: 0px; color:white; background-color: darkseagreen; font-weight:bold">Ainda Durante o Sono</h4>
+
+                                <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                    <div class="col-lg-12 col-md-12 col-xs-12">
+                                        Presença de engasgos ou sensação de sufocamento - Consulta Atual/Revisão
+                                        @Html.DropDownListFor(m => m.PAAM_DS_SONO_ENGASGOS, (SelectList)ViewBag.SimNao, "Selecionar", new { @class = "form-control", autofocus = true, @id = "menor", onchange = "ValidaMenor($(this).val())" })
+                                        @Html.ValidationMessageFor(m => m.PAAM_DS_SONO_ENGASGOS, "", new { @style = "color:red" })
+                                    </div>
+                                </div>
+
+                                <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                    <div class="col-lg-12 col-md-12 col-xs-12">
+                                        Tosse - Consulta Atual/Revisão
+                                        @Html.DropDownListFor(m => m.PAAM_DS_SONO_TOSSE, (SelectList)ViewBag.SimNao, "Selecionar", new { @class = "form-control", autofocus = true, @id = "menor", onchange = "ValidaMenor($(this).val())" })
+                                        @Html.ValidationMessageFor(m => m.PAAM_DS_SONO_TOSSE, "", new { @style = "color:red" })
+                                    </div>
+                                </div>
+
+                                <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                    <div class="col-lg-12 col-md-12 col-xs-12">
+                                        Refluxo - Consulta Atual/Revisão
+                                        @Html.DropDownListFor(m => m.PAAM_DS_SONO_REFLUXO, (SelectList)ViewBag.SimNao, "Selecionar", new { @class = "form-control", autofocus = true, @id = "menor", onchange = "ValidaMenor($(this).val())" })
+                                        @Html.ValidationMessageFor(m => m.PAAM_DS_SONO_REFLUXO, "", new { @style = "color:red" })
+                                    </div>
+                                </div>
+
+                                <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                    <div class="col-lg-12 col-md-12 col-xs-12">
+                                        Sudorese - Consulta Atual/Revisão
+                                        @Html.DropDownListFor(m => m.PAAM_DS_SONO_SUDORESE, (SelectList)ViewBag.SimNao, "Selecionar", new { @class = "form-control", autofocus = true, @id = "menor", onchange = "ValidaMenor($(this).val())" })
+                                        @Html.ValidationMessageFor(m => m.PAAM_DS_SONO_SUDORESE, "", new { @style = "color:red" })
+                                    </div>
+                                </div>
+
+                                <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                    <div class="col-lg-12 col-md-12 col-xs-12">
+                                        Posição preferencial para dormir - Histórico
+                                        @Html.TextAreaFor(m => m.PAAM_DS_SONO_POSICAO_DORMIR_OLD, new { @class = "form-control", style = "width: 100%; height: 200px; overflow:auto;", tabindex = "-1", @readonly = "readonly" })
+                                    </div>
+                                </div>
+                                <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                    <div class="col-lg-12 col-md-12 col-xs-12">
+                                        Posição preferencial para dormir - Consulta Atual/Revisão
+                                        @Html.TextAreaFor(m => m.PAAM_DS_SONO_POSICAO_DORMIR, new { @class = "form-control", style = "width: 100%; height: 100px; overflow:auto;", autofocus = true })
+                                        @Html.ValidationMessageFor(m => m.PAAM_DS_SONO_POSICAO_DORMIR, "", new { @style = "color:red" })
+                                    </div>
+                                </div>
+
+                                <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                    <div class="col-lg-12 col-md-12 col-xs-12">
+                                        Range os dentes durante o sono - Consulta Atual/Revisão
+                                        @Html.DropDownListFor(m => m.PAAM_DS_SONO_RANGE, (SelectList)ViewBag.SimNao, "Selecionar", new { @class = "form-control", autofocus = true, @id = "menor", onchange = "ValidaMenor($(this).val())" })
+                                        @Html.ValidationMessageFor(m => m.PAAM_DS_SONO_RANGE, "", new { @style = "color:red" })
+                                    </div>
+                                </div>
+
+                                <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                    <div class="col-lg-12 col-md-12 col-xs-12">
+                                        Sensação de tensão ou rigidez nos músculos da face - Consulta Atual/Revisão
+                                        @Html.DropDownListFor(m => m.PAAM_DS_SONO_RIGIDEZ_FACE, (SelectList)ViewBag.SimNao, "Selecionar", new { @class = "form-control", autofocus = true, @id = "menor", onchange = "ValidaMenor($(this).val())" })
+                                        @Html.ValidationMessageFor(m => m.PAAM_DS_SONO_RIGIDEZ_FACE, "", new { @style = "color:red" })
+                                    </div>
+                                </div>
+
+                                <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                    <div class="col-lg-12 col-md-12 col-xs-12">
+                                        Apneia testemunhada - Consulta Atual/Revisão
+                                        @Html.DropDownListFor(m => m.PAAM_DS_SONO_APNEIA, (SelectList)ViewBag.SimNao, "Selecionar", new { @class = "form-control", autofocus = true, @id = "menor", onchange = "ValidaMenor($(this).val())" })
+                                        @Html.ValidationMessageFor(m => m.PAAM_DS_SONO_APNEIA, "", new { @style = "color:red" })
+                                    </div>
+                                </div>
+
+                                <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                    <div class="col-lg-12 col-md-12 col-xs-12">
+                                        Ronco alto que se ouve do quarto ao lado - Consulta Atual/Revisão
+                                        @Html.DropDownListFor(m => m.PAAM_DS_SONO_RONCO, (SelectList)ViewBag.SimNao, "Selecionar", new { @class = "form-control", autofocus = true, @id = "menor", onchange = "ValidaMenor($(this).val())" })
+                                        @Html.ValidationMessageFor(m => m.PAAM_DS_SONO_RONCO, "", new { @style = "color:red" })
+                                    </div>
+                                </div>
+
+                                <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                    <div class="col-lg-12 col-md-12 col-xs-12">
+                                        Movimentos agressivos durante o sono - Consulta Atual/Revisão
+                                        @Html.DropDownListFor(m => m.PAAM_DS_SONO_AGRESSIVO, (SelectList)ViewBag.SimNao, "Selecionar", new { @class = "form-control", autofocus = true, @id = "menor", onchange = "ValidaMenor($(this).val())" })
+                                        @Html.ValidationMessageFor(m => m.PAAM_DS_SONO_AGRESSIVO, "", new { @style = "color:red" })
+                                    </div>
+                                </div>
+
+                                <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                    <div class="col-lg-12 col-md-12 col-xs-12">
+                                        Fala durante o sono - Consulta Atual/Revisão
+                                        @Html.DropDownListFor(m => m.PAAM_DS_SONO_FALA, (SelectList)ViewBag.SimNao, "Selecionar", new { @class = "form-control", autofocus = true, @id = "menor", onchange = "ValidaMenor($(this).val())" })
+                                        @Html.ValidationMessageFor(m => m.PAAM_DS_SONO_FALA, "", new { @style = "color:red" })
+                                    </div>
+                                </div>
+
+                                <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                    <div class="col-lg-12 col-md-12 col-xs-12">
+                                        Pesadelos - Consulta Atual/Revisão
+                                        @Html.DropDownListFor(m => m.PAAM_DS_SONO_PESADELO, (SelectList)ViewBag.SimNao, "Selecionar", new { @class = "form-control", autofocus = true, @id = "menor", onchange = "ValidaMenor($(this).val())" })
+                                        @Html.ValidationMessageFor(m => m.PAAM_DS_SONO_PESADELO, "", new { @style = "color:red" })
+                                    </div>
+                                </div>
+
+                                <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                    <div class="col-lg-12 col-md-12 col-xs-12">
+                                        Sonambulismo - Consulta Atual/Revisão
+                                        @Html.DropDownListFor(m => m.PAAM_DS_SONO_SONANBULISMO, (SelectList)ViewBag.SimNao, "Selecionar", new { @class = "form-control", autofocus = true, @id = "menor", onchange = "ValidaMenor($(this).val())" })
+                                        @Html.ValidationMessageFor(m => m.PAAM_DS_SONO_SONANBULISMO, "", new { @style = "color:red" })
+                                    </div>
+                                </div>
+
+                                <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                    <div class="col-lg-12 col-md-12 col-xs-12">
+                                        Encenação durante os sonhos - Consulta Atual/Revisão
+                                        @Html.DropDownListFor(m => m.PAAM_DS_SONO_ENCENACAO, (SelectList)ViewBag.SimNao, "Selecionar", new { @class = "form-control", autofocus = true, @id = "menor", onchange = "ValidaMenor($(this).val())" })
+                                        @Html.ValidationMessageFor(m => m.PAAM_DS_SONO_ENCENACAO, "", new { @style = "color:red" })
+                                    </div>
+                                </div>
+
+                                <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                    <div class="col-lg-12 col-md-12 col-xs-12">
+                                        Movimentos periódicos de membros - Consulta Atual/Revisão
+                                        @Html.DropDownListFor(m => m.PAAM_DS_SONO_MOVE_MEMBRO, (SelectList)ViewBag.SimNao, "Selecionar", new { @class = "form-control", autofocus = true, @id = "menor", onchange = "ValidaMenor($(this).val())" })
+                                        @Html.ValidationMessageFor(m => m.PAAM_DS_SONO_MOVE_MEMBRO, "", new { @style = "color:red" })
+                                    </div>
+                                </div>
+
+                                <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                    <div class="col-lg-12 col-md-12 col-xs-12">
+                                        Cãibras - Consulta Atual/Revisão
+                                        @Html.DropDownListFor(m => m.PAAM_DS_SONO_CAIBRAS, (SelectList)ViewBag.SimNao, "Selecionar", new { @class = "form-control", autofocus = true, @id = "menor", onchange = "ValidaMenor($(this).val())" })
+                                        @Html.ValidationMessageFor(m => m.PAAM_DS_SONO_CAIBRAS, "", new { @style = "color:red" })
+                                    </div>
+                                </div>
+
+                                <h4 style="margin-left: 0px; color:white; background-color: darkseagreen; font-weight:bold">Sobre o Ambiente</h4>
+
+                                <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                    <div class="col-lg-12 col-md-12 col-xs-12">
+                                        Seu quarto é aconchegante, confortável - Consulta Atual/Revisão
+                                        @Html.DropDownListFor(m => m.PAAM_DS_SONO_ACONCHEGANTE, (SelectList)ViewBag.SimNao, "Selecionar", new { @class = "form-control", autofocus = true, @id = "menor", onchange = "ValidaMenor($(this).val())" })
+                                        @Html.ValidationMessageFor(m => m.PAAM_DS_SONO_ACONCHEGANTE, "", new { @style = "color:red" })
+                                    </div>
+                                </div>
+
+                                <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                    <div class="col-lg-12 col-md-12 col-xs-12">
+                                        Tem barulho - Consulta Atual/Revisão
+                                        @Html.DropDownListFor(m => m.PAAM_DS_SONO_BARULHO, (SelectList)ViewBag.SimNao, "Selecionar", new { @class = "form-control", autofocus = true, @id = "menor", onchange = "ValidaMenor($(this).val())" })
+                                        @Html.ValidationMessageFor(m => m.PAAM_DS_SONO_BARULHO, "", new { @style = "color:red" })
+                                    </div>
+                                </div>
+
+                                <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                    <div class="col-lg-12 col-md-12 col-xs-12">
+                                        A temperatura do ambiente é confortável - Consulta Atual/Revisão
+                                        @Html.DropDownListFor(m => m.PAAM_DS_SONO_TEMPERATURA, (SelectList)ViewBag.SimNao, "Selecionar", new { @class = "form-control", autofocus = true, @id = "menor", onchange = "ValidaMenor($(this).val())" })
+                                        @Html.ValidationMessageFor(m => m.PAAM_DS_SONO_TEMPERATURA, "", new { @style = "color:red" })
+                                    </div>
+                                </div>
+
+                                <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                    <div class="col-lg-12 col-md-12 col-xs-12">
+                                        Presença de outras pessoas - Consulta Atual/Revisão
+                                        @Html.DropDownListFor(m => m.PAAM_DS_SONO_PESSOAS, (SelectList)ViewBag.SimNao, "Selecionar", new { @class = "form-control", autofocus = true, @id = "menor", onchange = "ValidaMenor($(this).val())" })
+                                        @Html.ValidationMessageFor(m => m.PAAM_DS_SONO_PESSOAS, "", new { @style = "color:red" })
+                                    </div>
+                                </div>
+
+                                <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                    <div class="col-lg-12 col-md-12 col-xs-12">
+                                        Presença de animais - Consulta Atual/Revisão
+                                        @Html.DropDownListFor(m => m.PAAM_DS_SONO_ANIMAIS, (SelectList)ViewBag.SimNao, "Selecionar", new { @class = "form-control", autofocus = true, @id = "menor", onchange = "ValidaMenor($(this).val())" })
+                                        @Html.ValidationMessageFor(m => m.PAAM_DS_SONO_ANIMAIS, "", new { @style = "color:red" })
+                                    </div>
+                                </div>
+
+                                <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                    <div class="col-lg-12 col-md-12 col-xs-12">
+                                        Quais atividades realiza no quarto além de dormir - Histórico
+                                        @Html.TextAreaFor(m => m.PAAM_DS_SONO_ATIVIDADES_OLD, new { @class = "form-control", style = "width: 100%; height: 200px; overflow:auto;", tabindex = "-1", @readonly = "readonly" })
+                                    </div>
+                                </div>
+                                <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                    <div class="col-lg-12 col-md-12 col-xs-12">
+                                        Quais atividades realiza no quarto além de dormir - Consulta Atual/Revisão
+                                        @Html.TextAreaFor(m => m.PAAM_DS_SONO_ATIVIDADES, new { @class = "form-control", style = "width: 100%; height: 100px; overflow:auto;", autofocus = true })
+                                        @Html.ValidationMessageFor(m => m.PAAM_DS_SONO_ATIVIDADES, "", new { @style = "color:red" })
+                                    </div>
+                                </div>
+
+                                <h4 style="margin-left: 0px; color:white; background-color: darkseagreen; font-weight:bold">Sobre Condições Sócio-Econômicas</h4>
+
+                                <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                    <div class="col-lg-12 col-md-12 col-xs-12">
+                                        Problemas sociais e financeiros - Consulta Atual/Revisão
+                                        @Html.DropDownListFor(m => m.PAAM_DS_SONO_FINANCAS, (SelectList)ViewBag.SimNao, "Selecionar", new { @class = "form-control", autofocus = true, @id = "menor", onchange = "ValidaMenor($(this).val())" })
+                                        @Html.ValidationMessageFor(m => m.PAAM_DS_SONO_FINANCAS, "", new { @style = "color:red" })
+                                    </div>
+                                </div>
+
+                                <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                    <div class="col-lg-12 col-md-12 col-xs-12">
+                                        Acesso a serviços de saúde - Consulta Atual/Revisão
+                                        @Html.DropDownListFor(m => m.PAAM_DS_SONO_ACESSO_SAUDE, (SelectList)ViewBag.SimNao, "Selecionar", new { @class = "form-control", autofocus = true, @id = "menor", onchange = "ValidaMenor($(this).val())" })
+                                        @Html.ValidationMessageFor(m => m.PAAM_DS_SONO_ACESSO_SAUDE, "", new { @style = "color:red" })
+                                    </div>
+                                </div>
+
+                                <h4 style="margin-left: 0px; color:white; background-color: darkseagreen; font-weight:bold">Sintomas Matinais</h4>
+
+                                <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                    <div class="col-lg-12 col-md-12 col-xs-12">
+                                        Sono reparador - Consulta Atual/Revisão
+                                        @Html.DropDownListFor(m => m.PAAM_DS_SONO_REPARADOR, (SelectList)ViewBag.SimNao, "Selecionar", new { @class = "form-control", autofocus = true, @id = "menor", onchange = "ValidaMenor($(this).val())" })
+                                        @Html.ValidationMessageFor(m => m.PAAM_DS_SONO_REPARADOR, "", new { @style = "color:red" })
+                                    </div>
+                                </div>
+
+                                <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                    <div class="col-lg-12 col-md-12 col-xs-12">
+                                        Sonolência excessiva - Consulta Atual/Revisão
+                                        @Html.DropDownListFor(m => m.PAAM_DS_SONO_SONOLENCIA, (SelectList)ViewBag.Sonolencia, "Selecionar", new { @class = "form-control", autofocus = true, @id = "menor", onchange = "ValidaMenor($(this).val())" })
+                                        @Html.ValidationMessageFor(m => m.PAAM_DS_SONO_SONOLENCIA, "", new { @style = "color:red" })
+                                    </div>
+                                </div>
+
+                                <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                    <div class="col-lg-12 col-md-12 col-xs-12">
+                                        Boca seca ao despertar - Consulta Atual/Revisão
+                                        @Html.DropDownListFor(m => m.PAAM_DS_SONO_BOCA_SECA, (SelectList)ViewBag.SimNao, "Selecionar", new { @class = "form-control", autofocus = true, @id = "menor", onchange = "ValidaMenor($(this).val())" })
+                                        @Html.ValidationMessageFor(m => m.PAAM_DS_SONO_BOCA_SECA, "", new { @style = "color:red" })
+                                    </div>
+                                </div>
+
+                                <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                    <div class="col-lg-12 col-md-12 col-xs-12">
+                                        Dor de cabeça - Consulta Atual/Revisão
+                                        @Html.DropDownListFor(m => m.PAAM_DS_SONO_DOR_CABECA, (SelectList)ViewBag.SimNao, "Selecionar", new { @class = "form-control", autofocus = true, @id = "menor", onchange = "ValidaMenor($(this).val())" })
+                                        @Html.ValidationMessageFor(m => m.PAAM_DS_SONO_DOR_CABECA, "", new { @style = "color:red" })
+                                    </div>
+                                </div>
+
+                                <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                    <div class="col-lg-12 col-md-12 col-xs-12">
+                                        Congestão nasal - Consulta Atual/Revisão
+                                        @Html.DropDownListFor(m => m.PAAM_DS_SONO_CONGESTAO, (SelectList)ViewBag.SimNao, "Selecionar", new { @class = "form-control", autofocus = true, @id = "menor", onchange = "ValidaMenor($(this).val())" })
+                                        @Html.ValidationMessageFor(m => m.PAAM_DS_SONO_CONGESTAO, "", new { @style = "color:red" })
+                                    </div>
+                                </div>
+
+                                <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                    <div class="col-lg-12 col-md-12 col-xs-12">
+                                        Refluxo ou Azia - Consulta Atual/Revisão
+                                        @Html.DropDownListFor(m => m.PAAM_DS_SONO_AZIA, (SelectList)ViewBag.SimNao, "Selecionar", new { @class = "form-control", autofocus = true, @id = "menor", onchange = "ValidaMenor($(this).val())" })
+                                        @Html.ValidationMessageFor(m => m.PAAM_DS_SONO_AZIA, "", new { @style = "color:red" })
+                                    </div>
+                                </div>
+
+                                <h4 style="margin-left: 0px; color:white; background-color: darkseagreen; font-weight:bold">Funções Diurnas</h4>
+
+                                <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                    <div class="col-lg-12 col-md-12 col-xs-12">
+                                        Sonolência e/ou acidentes causados por sonolência - Consulta Atual/Revisão
+                                        @Html.DropDownListFor(m => m.PAAM_DS_SONO_SONOLENCIA_DIURNA, (SelectList)ViewBag.SimNao, "Selecionar", new { @class = "form-control", autofocus = true, @id = "menor", onchange = "ValidaMenor($(this).val())" })
+                                        @Html.ValidationMessageFor(m => m.PAAM_DS_SONO_SONOLENCIA_DIURNA, "", new { @style = "color:red" })
+                                    </div>
+                                </div>
+
+                                <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                    <div class="col-lg-12 col-md-12 col-xs-12">
+                                        Cansaço - Consulta Atual/Revisão
+                                        @Html.DropDownListFor(m => m.PAAM_DS_SONO_CANSACO, (SelectList)ViewBag.SimNao, "Selecionar", new { @class = "form-control", autofocus = true, @id = "menor", onchange = "ValidaMenor($(this).val())" })
+                                        @Html.ValidationMessageFor(m => m.PAAM_DS_SONO_CANSACO, "", new { @style = "color:red" })
+                                    </div>
+                                </div>
+
+                                <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                    <div class="col-lg-12 col-md-12 col-xs-12">
+                                        Fadiga - Consulta Atual/Revisão
+                                        @Html.DropDownListFor(m => m.PAAM_DS_SONO_FADIGA, (SelectList)ViewBag.SimNao, "Selecionar", new { @class = "form-control", autofocus = true, @id = "menor", onchange = "ValidaMenor($(this).val())" })
+                                        @Html.ValidationMessageFor(m => m.PAAM_DS_SONO_FADIGA, "", new { @style = "color:red" })
+                                    </div>
+                                </div>
+
+                                <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                    <div class="col-lg-12 col-md-12 col-xs-12">
+                                        Irritabilidade - Consulta Atual/Revisão
+                                        @Html.DropDownListFor(m => m.PAAM_DS_SONO_IRRITA, (SelectList)ViewBag.SimNao, "Selecionar", new { @class = "form-control", autofocus = true, @id = "menor", onchange = "ValidaMenor($(this).val())" })
+                                        @Html.ValidationMessageFor(m => m.PAAM_DS_SONO_IRRITA, "", new { @style = "color:red" })
+                                    </div>
+                                </div>
+
+                                <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                    <div class="col-lg-12 col-md-12 col-xs-12">
+                                        Deficit de concentração - Consulta Atual/Revisão
+                                        @Html.DropDownListFor(m => m.PAAM_DS_SONO_DEFICIT_CONCENTRA, (SelectList)ViewBag.SimNao, "Selecionar", new { @class = "form-control", autofocus = true, @id = "menor", onchange = "ValidaMenor($(this).val())" })
+                                        @Html.ValidationMessageFor(m => m.PAAM_DS_SONO_DEFICIT_CONCENTRA, "", new { @style = "color:red" })
+                                    </div>
+                                </div>
+
+                                <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                    <div class="col-lg-12 col-md-12 col-xs-12">
+                                        Deficit de memória - Consulta Atual/Revisão
+                                        @Html.DropDownListFor(m => m.PAAM_DS_SONO_DEFICIT_MEMORIA, (SelectList)ViewBag.SimNao, "Selecionar", new { @class = "form-control", autofocus = true, @id = "menor", onchange = "ValidaMenor($(this).val())" })
+                                        @Html.ValidationMessageFor(m => m.PAAM_DS_SONO_DEFICIT_MEMORIA, "", new { @style = "color:red" })
+                                    </div>
+                                </div>
+
+                                <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                    <div class="col-lg-12 col-md-12 col-xs-12">
+                                        Dor - Consulta Atual/Revisão
+                                        @Html.DropDownListFor(m => m.PAAM_DS_SONO_DOR, (SelectList)ViewBag.SimNao, "Selecionar", new { @class = "form-control", autofocus = true, @id = "menor", onchange = "ValidaMenor($(this).val())" })
+                                        @Html.ValidationMessageFor(m => m.PAAM_DS_SONO_DOR, "", new { @style = "color:red" })
+                                    </div>
+                                </div>
+
+                                <h4 style="margin-left: 0px; color:white; background-color: darkseagreen; font-weight:bold">Outros</h4>
+
+                                <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                    <div class="col-lg-12 col-md-12 col-xs-12">
+                                        Tipo de respiração - Consulta Atual/Revisão
+                                        @Html.DropDownListFor(m => m.PAAM_DS_SONO_DOR, (SelectList)ViewBag.TipoRespiracao, "Selecionar", new { @class = "form-control", autofocus = true, @id = "menor", onchange = "ValidaMenor($(this).val())" })
+                                        @Html.ValidationMessageFor(m => m.PAAM_DS_SONO_DOR, "", new { @style = "color:red" })
+                                    </div>
+                                </div>
+
+                                <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                    <div class="col-lg-12 col-md-12 col-xs-12">
+                                        Disfunção sexual - Consulta Atual/Revisão
+                                        @Html.DropDownListFor(m => m.PAAM_DS_SONO_DISFUNCAO, (SelectList)ViewBag.SimNao, "Selecionar", new { @class = "form-control", autofocus = true, @id = "menor", onchange = "ValidaMenor($(this).val())" })
+                                        @Html.ValidationMessageFor(m => m.PAAM_DS_SONO_DISFUNCAO, "", new { @style = "color:red" })
+                                    </div>
+                                </div>
+
+                                <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                    <div class="col-lg-12 col-md-12 col-xs-12">
+                                        Alterações ponderais - Consulta Atual/Revisão
+                                        @Html.DropDownListFor(m => m.PAAM_DS_SONO_PONDERAL, (SelectList)ViewBag.SimNao, "Selecionar", new { @class = "form-control", autofocus = true, @id = "menor", onchange = "ValidaMenor($(this).val())" })
+                                        @Html.ValidationMessageFor(m => m.PAAM_DS_SONO_PONDERAL, "", new { @style = "color:red" })
+                                    </div>
+                                </div>
+
+                                <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                    <div class="col-lg-12 col-md-12 col-xs-12">
+                                        Sensação de rigidez nos músculos da face - Consulta Atual/Revisão
+                                        @Html.DropDownListFor(m => m.PAAM_DS_SONO_RIGIDEZ_FACE_OUTROS, (SelectList)ViewBag.SimNao, "Selecionar", new { @class = "form-control", autofocus = true, @id = "menor", onchange = "ValidaMenor($(this).val())" })
+                                        @Html.ValidationMessageFor(m => m.PAAM_DS_SONO_RIGIDEZ_FACE_OUTROS, "", new { @style = "color:red" })
+                                    </div>
+                                </div>
+
+                                <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                    <div class="col-lg-12 col-md-12 col-xs-12">
+                                        Medicamentos e outras substâncias em uso - Histórico
+                                        @Html.TextAreaFor(m => m.PAAM_DS_SONO_MEDICAMENTOS_OLD, new { @class = "form-control", style = "width: 100%; height: 200px; overflow:auto;", tabindex = "-1", @readonly = "readonly" })
+                                    </div>
+                                </div>
+                                <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                    <div class="col-lg-12 col-md-12 col-xs-12">
+                                        Medicamentos e outras substâncias em uso - Consulta Atual/Revisão
+                                        @Html.TextAreaFor(m => m.PAAM_DS_SONO_MEDICAMENTOS, new { @class = "form-control", style = "width: 100%; height: 100px; overflow:auto;", autofocus = true })
+                                        @Html.ValidationMessageFor(m => m.PAAM_DS_SONO_MEDICAMENTOS, "", new { @style = "color:red" })
+                                    </div>
+                                </div>
+
+                                <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                    <div class="col-lg-12 col-md-12 col-xs-12">
+                                        Comorbidades - Histórico
+                                        @Html.TextAreaFor(m => m.PAAM_DS_SONO_COMORBIDADES_OLD, new { @class = "form-control", style = "width: 100%; height: 200px; overflow:auto;", tabindex = "-1", @readonly = "readonly" })
+                                    </div>
+                                </div>
+                                <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                    <div class="col-lg-12 col-md-12 col-xs-12">
+                                        Comorbidades - Consulta Atual/Revisão
+                                        @Html.TextAreaFor(m => m.PAAM_DS_SONO_COMORBIDADES, new { @class = "form-control", style = "width: 100%; height: 100px; overflow:auto;", autofocus = true })
+                                        @Html.ValidationMessageFor(m => m.PAAM_DS_SONO_COMORBIDADES, "", new { @style = "color:red" })
+                                    </div>
+                                </div>
+
+                                <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                    <div class="col-lg-12 col-md-12 col-xs-12">
+                                        Cirurgias prévias - Histórico
+                                        @Html.TextAreaFor(m => m.PAAM_DS_SONO_CIRURGIAS_OLD, new { @class = "form-control", style = "width: 100%; height: 200px; overflow:auto;", tabindex = "-1", @readonly = "readonly" })
+                                    </div>
+                                </div>
+                                <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                    <div class="col-lg-12 col-md-12 col-xs-12">
+                                        Cirurgias prévias - Consulta Atual/Revisão
+                                        @Html.TextAreaFor(m => m.PAAM_DS_SONO_CIRURGIAS, new { @class = "form-control", style = "width: 100%; height: 100px; overflow:auto;", autofocus = true })
+                                        @Html.ValidationMessageFor(m => m.PAAM_DS_SONO_CIRURGIAS, "", new { @style = "color:red" })
+                                    </div>
+                                </div>
+
+                                <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                    <div class="col-lg-12 col-md-12 col-xs-12">
+                                        Sensações desagradáveis nas pernas, principalmente à noite, final do dia, ou quando sentado em repouso - Consulta Atual/Revisão
+                                        @Html.DropDownListFor(m => m.PAAM_DS_SONO_SENSACAO_PERNA, (SelectList)ViewBag.SimNao, "Selecionar", new { @class = "form-control", autofocus = true, @id = "menor", onchange = "ValidaMenor($(this).val())" })
+                                        @Html.ValidationMessageFor(m => m.PAAM_DS_SONO_SENSACAO_PERNA, "", new { @style = "color:red" })
+                                    </div>
+                                </div>
+
+                                <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                    <div class="col-lg-12 col-md-12 col-xs-12">
+                                        Trabalha ou trabalhou em turno - Consulta Atual/Revisão
+                                        @Html.DropDownListFor(m => m.PAAM_DS_SONO_TURNO, (SelectList)ViewBag.SimNao, "Selecionar", new { @class = "form-control", autofocus = true, @id = "menor", onchange = "ValidaMenor($(this).val())" })
+                                        @Html.ValidationMessageFor(m => m.PAAM_DS_SONO_TURNO, "", new { @style = "color:red" })
+                                    </div>
+                                </div>
+
+                                <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                    <div class="col-lg-12 col-md-12 col-xs-12">
+                                        Dados da polissonografia - Histórico
+                                        @Html.TextAreaFor(m => m.PAAM_DS_SONO_POLISONO_OLD, new { @class = "form-control", style = "width: 100%; height: 200px; overflow:auto;", tabindex = "-1", @readonly = "readonly" })
+                                    </div>
+                                </div>
+                                <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                    <div class="col-lg-12 col-md-12 col-xs-12">
+                                        Dados da polissonografia - Consulta Atual/Revisão
+                                        @Html.TextAreaFor(m => m.PAAM_DS_SONO_POLISONO, new { @class = "form-control", style = "width: 100%; height: 100px; overflow:auto;", autofocus = true })
+                                        @Html.ValidationMessageFor(m => m.PAAM_DS_SONO_POLISONO, "", new { @style = "color:red" })
+                                    </div>
+                                </div>
+
+
+                                <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                    <div class="col-lg-12 col-md-12 col-xs-12">
+                                        Mallampati - Histórico
+                                        @Html.TextAreaFor(m => m.PAAM_DS_SONO_MALLAMPATI_OLD, new { @class = "form-control", style = "width: 100%; height: 200px; overflow:auto;", tabindex = "-1", @readonly = "readonly" })
+                                    </div>
+                                </div>
+                                <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                    <div class="col-lg-12 col-md-12 col-xs-12">
+                                        Mallampati - Consulta Atual/Revisão
+                                        @Html.TextAreaFor(m => m.PAAM_DS_SONO_MALLAMPATI, new { @class = "form-control", style = "width: 100%; height: 100px; overflow:auto;", autofocus = true })
+                                        @Html.ValidationMessageFor(m => m.PAAM_DS_SONO_MALLAMPATI, "", new { @style = "color:red" })
+                                    </div>
+                                </div>
+
+                                <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                    <div class="col-lg-12 col-md-12 col-xs-12">
+                                        Overlap - Histórico
+                                        @Html.TextAreaFor(m => m.PAAM_DS_SONO_OVERLAP_OLD, new { @class = "form-control", style = "width: 100%; height: 200px; overflow:auto;", tabindex = "-1", @readonly = "readonly" })
+                                    </div>
+                                </div>
+                                <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                    <div class="col-lg-12 col-md-12 col-xs-12">
+                                        Overlap - Consulta Atual/Revisão
+                                        @Html.TextAreaFor(m => m.PAAM_DS_SONO_OVERLAP, new { @class = "form-control", style = "width: 100%; height: 100px; overflow:auto;", autofocus = true })
+                                        @Html.ValidationMessageFor(m => m.PAAM_DS_SONO_OVERLAP, "", new { @style = "color:red" })
+                                    </div>
+                                </div>
+
+                                <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                    <div class="col-lg-12 col-md-12 col-xs-12">
+                                        Patologias associadas - Histórico
+                                        @Html.TextAreaFor(m => m.PAAM_DS_SONO_PATOLOGIAS_OLD, new { @class = "form-control", style = "width: 100%; height: 200px; overflow:auto;", tabindex = "-1", @readonly = "readonly" })
+                                    </div>
+                                </div>
+                                <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                    <div class="col-lg-12 col-md-12 col-xs-12">
+                                        Patologias associadas - Consulta Atual/Revisão
+                                        @Html.TextAreaFor(m => m.PAAM_DS_SONO_PATOLOGIAS, new { @class = "form-control", style = "width: 100%; height: 100px; overflow:auto;", autofocus = true })
+                                        @Html.ValidationMessageFor(m => m.PAAM_DS_SONO_PATOLOGIAS, "", new { @style = "color:red" })
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-lg-6 col-md-6 col-xs-12">
+                                <h4 style="margin-left: 0px; color:white; background-color: darkseagreen; font-weight:bold">Anotações e Informações Customizadas</h4>
+                                <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">                
+                                    <div class="col-lg-12 col-md-12 col-xs-12">
+                                        Anotações Livres - Histórico
+                                        @Html.TextAreaFor(m => m.PAAM_TX_TEXTO_LIVRE_OLD, new { @class = "form-control", tabindex = "-1", style = "width: 100%; height: 500px; overflow:auto;", @readonly = "readonly"})
+                                    </div>
+                                </div>
+                                <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">                
+                                    <div class="col-lg-12 col-md-12 col-xs-12">
+                                        Anotações Livres - Consulta Atual/Revisão
+                                        @Html.TextAreaFor(m => m.PAAM_TX_TEXTO_LIVRE, new { @class = "form-control", style = "width: 100%; height: 100px; overflow:auto;", autofocus = true })
+                                        @Html.ValidationMessageFor(m => m.PAAM_TX_TEXTO_LIVRE, "", new { @style = "color:red" })
+                                    </div>
+                                </div>
+
+                                @if (Model.PAAM_IN_CAMPO_1 == 1)
+                                {
+                                    <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">                
+                                        <div class="col-lg-12 col-md-12 col-xs-12">
+                                            @ViewBag.Campo1 - Histórico
+                                            @Html.TextAreaFor(m => m.PAAM_DS_CAMPO_1_OLD, new { @class = "form-control", tabindex = "-1", style = "width: 100%; height: 200px; overflow:auto;", @readonly = "readonly"})
+                                        </div>
+                                    </div>
+                                    <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">                
+                                        <div class="col-lg-12 col-md-12 col-xs-12">
+                                            @ViewBag.Campo1 - Consulta Atual/Revisão
+                                            @Html.TextAreaFor(m => m.PAAM_DS_CAMPO_1, new { @class = "form-control", style = "width: 100%; height: 100px; overflow:auto;", autofocus = true })
+                                            @Html.ValidationMessageFor(m => m.PAAM_DS_CAMPO_1, "", new { @style = "color:red" })
+                                        </div>
+                                    </div>
+                                }
+                                @if (Model.PAAM_IN_CAMPO_2 == 1)
+                                {
+                                    <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">                
+                                        <div class="col-lg-12 col-md-12 col-xs-12">
+                                            @ViewBag.Campo2 - Histórico
+                                            @Html.TextAreaFor(m => m.PAAM_DS_CAMPO_2_OLD, new { @class = "form-control", tabindex = "-1", style = "width: 100%; height: 200px; overflow:auto;", @readonly = "readonly"})
+                                        </div>
+                                    </div>
+                                    <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">                
+                                        <div class="col-lg-12 col-md-12 col-xs-12">
+                                            @ViewBag.Campo2 - Consulta Atual/Revisão
+                                            @Html.TextAreaFor(m => m.PAAM_DS_CAMPO_2, new { @class = "form-control", style = "width: 100%; height: 100px; overflow:auto;", autofocus = true })
+                                            @Html.ValidationMessageFor(m => m.PAAM_DS_CAMPO_2, "", new { @style = "color:red" })
+                                        </div>
+                                    </div>
+                                }
+                                @if (Model.PAAM_IN_CAMPO_3 == 1)
+                                {
+                                    <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">                
+                                        <div class="col-lg-12 col-md-12 col-xs-12">
+                                            @ViewBag.Campo3 - Histórico
+                                            @Html.TextAreaFor(m => m.PAAM_DS_CAMPO_3_OLD, new { @class = "form-control", tabindex = "-1", style = "width: 100%; height: 200px; overflow:auto;", @readonly = "readonly"})
+                                        </div>
+                                    </div>
+                                    <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">                
+                                        <div class="col-lg-12 col-md-12 col-xs-12">
+                                            @ViewBag.Campo3 - Consulta Atual/Revisão
+                                            @Html.TextAreaFor(m => m.PAAM_DS_CAMPO_3, new { @class = "form-control", style = "width: 100%; height: 100px; overflow:auto;", autofocus = true })
+                                            @Html.ValidationMessageFor(m => m.PAAM_DS_CAMPO_3, "", new { @style = "color:red" })
+                                        </div>
+                                    </div>
+                                }
+                                @if (Model.PAAM_IN_CAMPO_4 == 1)
+                                {
+                                    <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">                
+                                        <div class="col-lg-12 col-md-12 col-xs-12">
+                                            @ViewBag.Campo4 - Histórico
+                                            @Html.TextAreaFor(m => m.PAAM_DS_CAMPO_4_OLD, new { @class = "form-control", tabindex = "-1", style = "width: 100%; height: 200px; overflow:auto;", @readonly = "readonly"})
+                                        </div>
+                                    </div>
+                                    <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">                
+                                        <div class="col-lg-12 col-md-12 col-xs-12">
+                                            @ViewBag.Campo4 - Consulta Atual/Revisão
+                                            @Html.TextAreaFor(m => m.PAAM_DS_CAMPO_4, new { @class = "form-control", style = "width: 100%; height: 100px; overflow:auto;", autofocus = true })
+                                            @Html.ValidationMessageFor(m => m.PAAM_DS_CAMPO_4, "", new { @style = "color:red" })
+                                        </div>
+                                    </div>
+                                }
+                                @if (Model.PAAM_IN_CAMPO_5 == 1)
+                                {
+                                    <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">                
+                                        <div class="col-lg-12 col-md-12 col-xs-12">
+                                            @ViewBag.Campo5 - Histórico
+                                            @Html.TextAreaFor(m => m.PAAM_DS_CAMPO_5_OLD, new { @class = "form-control", tabindex = "-1", style = "width: 100%; height: 200px; overflow:auto;", @readonly = "readonly"})
+                                        </div>
+                                    </div>
+                                    <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">                
+                                        <div class="col-lg-12 col-md-12 col-xs-12">
+                                            @ViewBag.Campo5 - Consulta Atual/Revisão
+                                            @Html.TextAreaFor(m => m.PAAM_DS_CAMPO_5, new { @class = "form-control", style = "width: 100%; height: 100px; overflow:auto;", autofocus = true })
+                                            @Html.ValidationMessageFor(m => m.PAAM_DS_CAMPO_5, "", new { @style = "color:red" })
+                                        </div>
+                                    </div>
+                                }
+                                @if (Model.PAAM_IN_CAMPO_6 == 1)
+                                {
+                                    <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">                
+                                        <div class="col-lg-12 col-md-12 col-xs-12">
+                                            @ViewBag.Campo6 - Histórico
+                                            @Html.TextAreaFor(m => m.PAAM_DS_CAMPO_6_OLD, new { @class = "form-control", tabindex = "-1", style = "width: 100%; height: 200px; overflow:auto;", @readonly = "readonly"})
+                                        </div>
+                                    </div>
+                                    <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">                
+                                        <div class="col-lg-12 col-md-12 col-xs-12">
+                                            @ViewBag.Campo6 - Consulta Atual/Revisão
+                                            @Html.TextAreaFor(m => m.PAAM_DS_CAMPO_6, new { @class = "form-control", style = "width: 100%; height: 100px; overflow:auto;", autofocus = true })
+                                            @Html.ValidationMessageFor(m => m.PAAM_DS_CAMPO_6, "", new { @style = "color:red" })
+                                        </div>
+                                    </div>
+                                }
+                                @if (Model.PAAM_IN_CAMPO_7 == 1)
+                                {
+                                    <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">                
+                                        <div class="col-lg-12 col-md-12 col-xs-12">
+                                            @ViewBag.Campo7 - Histórico
+                                            @Html.TextAreaFor(m => m.PAAM_DS_CAMPO_7_OLD, new { @class = "form-control", tabindex = "-1", style = "width: 100%; height: 200px; overflow:auto;", @readonly = "readonly"})
+                                        </div>
+                                    </div>
+                                    <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">                
+                                        <div class="col-lg-12 col-md-12 col-xs-12">
+                                            @ViewBag.Campo7 - Consulta Atual/Revisão
+                                            @Html.TextAreaFor(m => m.PAAM_DS_CAMPO_7, new { @class = "form-control", style = "width: 100%; height: 100px; overflow:auto;", autofocus = true })
+                                            @Html.ValidationMessageFor(m => m.PAAM_DS_CAMPO_7, "", new { @style = "color:red" })
+                                        </div>
+                                    </div>
+                                }
+                                @if (Model.PAAM_IN_CAMPO_8 == 1)
+                                {
+                                    <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">                
+                                        <div class="col-lg-12 col-md-12 col-xs-12">
+                                            @ViewBag.Campo8 - Histórico
+                                            @Html.TextAreaFor(m => m.PAAM_DS_CAMPO_8_OLD, new { @class = "form-control", tabindex = "-1", style = "width: 100%; height: 200px; overflow:auto;", @readonly = "readonly"})
+                                        </div>
+                                    </div>
+                                    <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">                
+                                        <div class="col-lg-12 col-md-12 col-xs-12">
+                                            @ViewBag.Campo8 - Consulta Atual/Revisão
+                                            @Html.TextAreaFor(m => m.PAAM_DS_CAMPO_8, new { @class = "form-control", style = "width: 100%; height: 100px; overflow:auto;", autofocus = true })
+                                            @Html.ValidationMessageFor(m => m.PAAM_DS_CAMPO_8, "", new { @style = "color:red" })
+                                        </div>
+                                    </div>
+                                }
+                                @if (Model.PAAM_IN_CAMPO_9 == 1)
+                                {
+                                    <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">                
+                                        <div class="col-lg-12 col-md-12 col-xs-12">
+                                            @ViewBag.Campo9 - Histórico
+                                            @Html.TextAreaFor(m => m.PAAM_DS_CAMPO_9_OLD, new { @class = "form-control", tabindex = "-1", style = "width: 100%; height: 200px; overflow:auto;", @readonly = "readonly"})
+                                        </div>
+                                    </div>
+                                    <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">                
+                                        <div class="col-lg-12 col-md-12 col-xs-12">
+                                            @ViewBag.Campo9 - Consulta Atual/Revisão
+                                            @Html.TextAreaFor(m => m.PAAM_DS_CAMPO_9, new { @class = "form-control", style = "width: 100%; height: 100px; overflow:auto;", autofocus = true })
+                                            @Html.ValidationMessageFor(m => m.PAAM_DS_CAMPO_9, "", new { @style = "color:red" })
+                                        </div>
+                                    </div>
+                                }
+                                @if (Model.PAAM_IN_CAMPO_10 == 1)
+                                {
+                                    <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">                
+                                        <div class="col-lg-12 col-md-12 col-xs-12">
+                                            @ViewBag.Campo10 - Histórico
+                                            @Html.TextAreaFor(m => m.PAAM_DS_CAMPO_10_OLD, new { @class = "form-control", tabindex = "-1", style = "width: 100%; height: 200px; overflow:auto;", @readonly = "readonly"})
+                                        </div>
+                                    </div>
+                                    <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">                
+                                        <div class="col-lg-12 col-md-12 col-xs-12">
+                                            @ViewBag.Campo10 - Consulta Atual/Revisão
+                                            @Html.TextAreaFor(m => m.PAAM_DS_CAMPO_10, new { @class = "form-control", style = "width: 100%; height: 100px; overflow:auto;", autofocus = true })
+                                            @Html.ValidationMessageFor(m => m.PAAM_DS_CAMPO_10, "", new { @style = "color:red" })
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            @Html.ButtonActionSubmit(text: "Confirma Edição da Anamnese", htmlAttributes: new { id = "basictoast" })
+                        </div>
+                    </div>
+                }
+            </div>
+         </div>
+    </div>
+</div>
+
+@section Styles {
+    <link href="~/Content/themes/base/all.css" rel="stylesheet" />  
+    @Styles.Render("~/plugins/jasnyBootstrapStyles")
+    @Styles.Render("~/plugins/toastrStyles")
+}
+@section Scripts {
+    @Scripts.Render("~/plugins/toastr")
+    @Scripts.Render("~/bundles/inputmask")
+    @Scripts.Render("~/plugins/jasnyBootstrap")
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.maskedinput/1.4.1/jquery.maskedinput.js"></script>
+   
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            var i = -1;
+            var toastCount = 0;
+            var $toastlast;
+            var getMessage = function () {
+                var msg = 'Hi, welcome to Inspinia. This is example of Toastr notification box.';
+                return msg;
+            };
+
+            $('#basictoast').click(function () {
+                // Display a success toast, with a title
+                toastr.success('Edição em andamento!')
+            });
+            $('#showtoast').click(function () {
+                var shortCutFunction = $("#toastTypeGroup input:radio:checked").val();
+                var msg = $('#message').val();
+                var title = $('#title').val() || '';
+                var $showDuration = $('#showDuration');
+                var $hideDuration = $('#hideDuration');
+                var $timeOut = $('#timeOut');
+                var $extendedTimeOut = $('#extendedTimeOut');
+                var $showEasing = $('#showEasing');
+                var $hideEasing = $('#hideEasing');
+                var $showMethod = $('#showMethod');
+                var $hideMethod = $('#hideMethod');
+                var toastIndex = toastCount++;
+                toastr.options = {
+                    closeButton: $('#closeButton').prop('checked'),
+                    debug: $('#debugInfo').prop('checked'),
+                    progressBar: $('#progressBar').prop('checked'),
+                    positionClass: $('#positionGroup input:radio:checked').val() || 'toast-top-right',
+                    onclick: null
+                };
+                if ($('#addBehaviorOnToastClick').prop('checked')) {
+                    toastr.options.onclick = function () {
+                        alert('You can perform some custom action after a toast goes away');
+                    };
+                }
+                if ($showDuration.val().length) {
+                    toastr.options.showDuration = $showDuration.val();
+                }
+                if ($hideDuration.val().length) {
+                    toastr.options.hideDuration = $hideDuration.val();
+                }
+                if ($timeOut.val().length) {
+                    toastr.options.timeOut = $timeOut.val();
+                }
+                if ($extendedTimeOut.val().length) {
+                    toastr.options.extendedTimeOut = $extendedTimeOut.val();
+                }
+                if ($showEasing.val().length) {
+                    toastr.options.showEasing = $showEasing.val();
+                }
+                if ($hideEasing.val().length) {
+                    toastr.options.hideEasing = $hideEasing.val();
+                }
+                if ($showMethod.val().length) {
+                    toastr.options.showMethod = $showMethod.val();
+                }
+                if ($hideMethod.val().length) {
+                    toastr.options.hideMethod = $hideMethod.val();
+                }
+                if (!msg) {
+                    msg = getMessage();
+                }
+                $("#toastrOptions").text("Command: toastr["
+                        + shortCutFunction
+                        + "](\""
+                        + msg
+                        + (title ? "\", \"" + title : '')
+                        + "\")\n\ntoastr.options = "
+                        + JSON.stringify(toastr.options, null, 2)
+                );
+                var $toast = toastr[shortCutFunction](msg, title); // Wire up an event handler to a button in the toast, if it exists
+                $toastlast = $toast;
+                if ($toast.find('#okBtn').length) {
+                    $toast.delegate('#okBtn', 'click', function () {
+                        alert('you clicked me. i was toast #' + toastIndex + '. goodbye!');
+                        $toast.remove();
+                    });
+                }
+                if ($toast.find('#surpriseBtn').length) {
+                    $toast.delegate('#surpriseBtn', 'click', function () {
+                        alert('Surprise! you clicked me. i was toast #' + toastIndex + '. You could perform an action here.');
+                    });
+                }
+            });
+            function getLastToast() {
+                return $toastlast;
+            }
+            $('#clearlasttoast').click(function () {
+                toastr.clear(getLastToast());
+            });
+            $('#cleartoasts').click(function () {
+                toastr.clear();
+            });
+
+        });
+    </script>
+
+
+    @if (ViewBag.Message != null)
+    {
+        <script type="text/javascript">
+            window.onload = function () {
+                  alert("@ViewBag.Message");
+            };
+        </script>
+    }
+}

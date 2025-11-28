@@ -1,0 +1,47 @@
+@using Inspinia_MVC5;
+@using Presentation.Extensions
+@using CrossCutting
+@using EntitiesServices.Model;
+<div class="row border-bottom">
+    <nav class="navbar navbar-static-top" role="navigation" style="margin-bottom: 0">
+        <div class="navbar-header">
+            <a class="navbar-minimalize minimalize-styl-2 btn btn-primary " href="#"><i class="fa fa-bars"></i> </a>
+        </div>
+        <ul class="nav navbar-top-links navbar-right">
+            <li>
+                <span class="m-r-sm text-muted welcome-message" data-i18n="topnav.welcometext" style="color: cadetblue; font-weight: bold; margin-right: 50px">@((String)Session["Greeting"])</span>
+            </li>
+            <li>
+            </li>
+            <li>
+                <span class="m-r-sm text-muted welcome-message" data-i18n="topnav.welcometext" style="color: green; font-weight: bold; margin-right: 50px">@((String)Session["UltimoLogin"])</span>
+            </li>
+
+            <li>
+                <a href="@Url.Action("MontarTelaFaleConosco", "AreaPaciente")">
+                    <i class="fa fa-volume-control-phone"></i> Fale Conosco
+                </a>
+            </li>
+            <li>
+                <a href="@Url.Action("SairWebDoctorAreaPaciente", "AreaPaciente")">
+                    <i class="fa fa-arrow-circle-o-left"></i> Sair
+                </a>
+            </li>
+            <li>
+                @if ((PACIENTE)Session["UserCredentials"] == null)
+                {
+                    <a href="@Url.Action("LoginAreaPaciente", "AreaPaciente")">
+                        <i class="fa fa-sign-in"></i> Login
+                    </a>
+                }
+                else
+                {
+                    <a href="@Url.Action("LogoutAreaPaciente", "AreaPaciente")">
+                        <i class="fa fa-sign-out"></i> Logout
+                    </a>
+                }
+
+            </li>
+        </ul>
+    </nav>
+</div>

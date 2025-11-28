@@ -1,0 +1,363 @@
+﻿/* Estilos para o título principal (Escala de Sonolência Epworth) */
+.titulo-principal {
+    margin-left: 0px;
+    color: green;
+    background-color: beige;
+    font-weight: bold;
+    /* Usado na tag <h4> do título principal */
+}
+
+/* Estilos para os títulos dinâmicos (@ViewBag) */
+.cabecalho-epworth {
+    margin-left: 0px;
+    color: seagreen;
+    background-color: white;
+    font-weight: bold;
+    /* Usado nas tags <h3> e <h4> dos ViewBags */
+}
+
+/* Estilos para a tabela de pontuação (4 linhas) */
+.tabela-pontuacao {
+    font-family: Arial, sans-serif;
+    font-size: 16px;
+    color: #333333;
+    /* Usado na tag <table> da primeira tabela */
+}
+
+/* Estilos para a faixa verde lateral da primeira tabela */
+.faixa-verde {
+    width: 8px;
+    background-color: #008000;
+    padding: 0;
+    /* Usado na tag <td> com rowspan="4" */
+}
+
+/* Estilos para o texto da pontuação (0, 1, 2, 3) */
+.pontuacao-texto-valor {
+    color: seagreen;
+    font-weight: bold;
+    /* Usado nos <span> que contém '0 -', '1 -', etc. */
+}
+
+/* Estilos para o bloco de Critérios de Pontuação */
+.bloco-criterios {
+    font-family: Arial, sans-serif;
+    font-size: 16px;
+    max-width: 600px;
+    margin: 20px auto;
+    /* Usado na <div> que envolve os critérios */
+}
+
+/* Estilos para o cabeçalho 'Critérios de Pontuação' */
+.criterios-titulo {
+    background-color: #399936; /* Verde Escuro */
+    color: white; 
+    font-size: 20px; 
+    font-weight: bold; 
+    padding: 8px 15px; 
+    border-radius: 5px 5px 0 0;
+    margin-bottom: 15px;
+    display: inline-block;
+    /* Usado na <div> de Critérios de Pontuação */
+}
+
+/* Estilos para as linhas de pontuação (PONTUAÇÃO DE 0 A 9, PONTUAÇÃO DE 10 A 24) */
+.criterios-linha {
+    margin: 5px 0;
+    line-height: 1.5;
+    font-size: 18px;
+    /* Usado nas tags <p> dos critérios */
+}
+
+.criterios-linha-titulo {
+    color: #008000;
+    font-weight: bold;
+    /* Usado no <span> da pontuação (ex: PONTUAÇÃO DE 0 A 9) */
+}
+
+.criterios-linha-detalhe {
+    color: #333333;
+    font-weight: normal;
+    white-space: nowrap;
+    /* Usado no <span> do detalhe (ex: Considerado normal) */
+}
+
+/* Estilos para a Tabela de Situação/Probabilidade */
+.tabela-situacao {
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+    border: 1px solid #008000;
+    border-radius: 10px;
+    overflow: hidden;
+    max-width: 650px;
+    margin: 20px auto;
+    border-collapse: collapse; /* Adicionado para a tag <table> */
+    /* Usado na <div> que envolve a tabela */
+}
+
+/* Estilos do cabeçalho da Tabela de Situação */
+.tabela-situacao th {
+    background-color: #F0FFF0;
+    color: #008000;
+    font-size: 16px;
+    font-weight: bold;
+    padding: 10px;
+    text-align: left;
+}
+
+.tabela-situacao th:first-child {
+    border-right: 1px solid #008000;
+    /* Separador da coluna de SITUAÇÃO */
+}
+
+/* Estilos para as células da Tabela de Situação (coluna SITUAÇÃO) */
+.tabela-situacao-celula-situacao {
+    padding: 8px 10px;
+    border-top: 1px solid #D3D3D3;
+    color: #008000;
+}
+
+/* Estilos para as células da Tabela de Situação (coluna PROBABILIDADE) */
+.tabela-situacao-celula-probabilidade {
+    padding: 8px 10px;
+    border-top: 1px solid #D3D3D3;
+    border-left: 1px solid #008000;
+    color: #333333;
+    text-align: center;
+}
+
+.tabela-situacao-valor {
+    font-weight: bold;
+    font-size: 16px;
+    color: green;
+}
+
+/* Estilos para a linha de Resultado (rodapé) */
+.tabela-resultado {
+    background-color: #E0E0E0; /* Fundo cinza claro */
+    padding: 10px;
+    /* Usado nas tags <td> do resultado */
+}
+
+.tabela-resultado-titulo {
+    background-color: #008000;
+    color: white;
+    font-size: 18px;
+    font-weight: bold;
+    padding: 5px 15px;
+    border-radius: 5px;
+    display: inline-block;
+    /* Usado no <span> do 'Resultado' */
+}
+
+.tabela-resultado-valor {
+    background-color: white;
+    border: 1px solid #008000;
+    color: brown;
+    font-size: 18px;
+    font-weight: bold;
+    padding: 5px 15px;
+    border-radius: 5px;
+    display: inline-block;
+    /* Usado no <span> do valor @Model.QUEP_IN_RESULTADO */
+}
+
+.titulo-epworth-cab {
+    margin-left: 0px;
+    color: seagreen;
+    background-color: white;
+    font-weight: bold;
+}
+
+.titulo-epworth-texto {
+    margin-left: 0px;
+    color: seagreen;
+    background-color: white;
+    font-weight: bold;
+}
+
+/* Tabela de Pontuação - Lado Esquerdo */
+.tabela-pontuacao-epworth {
+    font-family: Arial, sans-serif;
+    font-size: 16px;
+    color: #333333;
+    /* Remover borda, cellpadding e cellspacing inline do HTML */
+    border: none;
+    border-collapse: collapse;
+}
+
+.barra-verde {
+    width: 8px;
+    background-color: #008000; /* Verde Escuro */
+    padding: 0;
+}
+
+.item-pontuacao-td {
+    padding: 5px 0 0 10px;
+    line-height: 1.2;
+}
+
+.item-pontuacao-td:last-child {
+    padding-bottom: 5px; /* Ajuste para o último item da lista */
+}
+
+.pontuacao-numero {
+    color: seagreen;
+    font-weight: bold;
+}
+
+.pontuacao-descricao-destaque {
+    color: seagreen;
+    font-weight: bold;
+}
+
+.pontuacao-descricao-normal {
+    color: #333333;
+}
+
+
+/* Caixa de Critérios de Pontuação - Lado Esquerdo Inferior */
+.caixa-criterios {
+    font-family: Arial, sans-serif;
+    font-size: 16px;
+    max-width: 600px;
+    margin: 20px auto;
+}
+
+.criterio-cabecalho {
+    background-color: #399936; /* Verde Escuro */
+    color: white;
+    font-size: 20px;
+    font-weight: bold;
+    padding: 8px 15px;
+    border-radius: 5px 5px 0 0;
+    margin-bottom: 15px;
+    display: inline-block;
+}
+
+.criterio-paragrafo {
+    margin: 5px 0;
+    line-height: 1.5;
+    font-size: 18px;
+}
+
+.criterio-faixa-pontuacao {
+    color: #008000; /* Texto Verde */
+    font-weight: bold;
+}
+
+.criterio-resultado {
+    color: #333333; /* Texto Cinza/Escuro */
+    font-weight: normal;
+    white-space: nowrap;
+}
+
+.criterio-resultado-complemento {
+    margin-left: 200px; /* Alinha o texto complementar */
+    color: #333333;
+    font-weight: normal;
+    display: inline-block;
+}
+
+/* Tabela de Perguntas - Lado Direito */
+.tabela-perguntas-container {
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+    border: 1px solid #008000;
+    border-radius: 10px;
+    overflow: hidden;
+    max-width: 650px;
+    margin: 20px auto;
+}
+
+.tabela-perguntas {
+    border-collapse: collapse;
+}
+
+/* Cabeçalho da Tabela de Perguntas */
+.tabela-perguntas thead th {
+    background-color: #F0FFF0; /* Verde claro */
+    color: #008000; /* Verde escuro */
+    font-size: 16px;
+    font-weight: bold;
+    padding: 10px;
+    text-align: left;
+}
+
+.tabela-perguntas .th-situacao {
+    border-right: 1px solid #008000;
+    width: 70%;
+}
+
+.tabela-perguntas .th-probabilidade {
+    width: 30%;
+}
+
+/* Corpo da Tabela de Perguntas */
+.tabela-perguntas tbody td {
+    padding: 8px 10px;
+    border-top: 1px solid #D3D3D3;
+}
+
+.tabela-perguntas .td-situacao {
+    color: #008000;
+}
+
+.tabela-perguntas .td-input {
+    border-left: 1px solid #008000;
+    color: #333333;
+    text-align: center;
+}
+
+.tabela-perguntas .input-wrapper {
+    font-weight: bold;
+    font-size: 16px;
+    color: green;
+}
+
+.input-validation-message {
+    color: red;
+}
+
+/* Rodapé da Tabela - Resultado */
+.tabela-resultado {
+    border-collapse: collapse;
+    margin-top: 15px;
+}
+
+.resultado-area-texto {
+    background-color: #E0E0E0; /* Fundo cinza claro */
+    width: 70%;
+    text-align: right;
+    padding: 10px;
+    border-radius: 0 0 0 10px;
+}
+
+.resultado-texto-destaque {
+    background-color: #008000;
+    color: white;
+    font-size: 18px;
+    font-weight: bold;
+    padding: 5px 15px;
+    border-radius: 5px;
+    display: inline-block;
+}
+
+.resultado-area-valor {
+    background-color: #E0E0E0; /* Fundo cinza claro */
+    width: 30%;
+    text-align: center;
+    padding: 10px;
+    border-radius: 0 0 10px 0;
+}
+
+.resultado-valor-destaque {
+    background-color: white;
+    border: 1px solid #008000;
+    color: brown;
+    font-size: 18px;
+    font-weight: bold;
+    padding: 5px 15px;
+    border-radius: 5px;
+    display: inline-block;
+}

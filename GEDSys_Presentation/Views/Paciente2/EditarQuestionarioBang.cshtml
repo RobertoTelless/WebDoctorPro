@@ -1,0 +1,581 @@
+﻿@using Presentation.Extensions
+@model ERP_Condominios_Solution.ViewModels.QuestionarioBangViewModel
+@{
+    Layout = "~/Views/Shared/_Layout_Admin.cshtml";
+    ViewBag.Title = "WebDoctor - Paciente - Questionarios - Edição";
+    ViewBag.MetaDescription = "WebDoctor - Paciente - Questionarios - Editar questionario Berlim";
+    ViewBag.MetaKeywords = "WebDoctor, paciente, questionario";
+}
+
+<style>
+    /* Estilos baseados na imagem */
+    .question-group {
+        border-radius: 10px;
+        padding: 20px;
+        margin-bottom: 20px;
+        background-color: #f7fafc; /* Cor de fundo suave */
+    }
+    .question-title {
+        color: #008000; /* Verde */
+        font-weight: bold;
+        font-size: 1.5em;
+        margin-bottom: 5px;
+        border-bottom: 2px solid #e2e8f0;
+        padding-bottom: 5px;
+    }
+    .question-description {
+        margin-bottom: 15px;
+        color: #333;
+    }
+    .select-control {
+        width: 100px; /* Largura padrão para o DDL */
+    }
+    .response-area {
+        float: right;
+        margin-top: -5px; /* Ajuste fino do alinhamento */
+    }
+</style>
+
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="page-title">
+        <ol class="breadcrumb">
+            <li>
+                <a href="@Url.Action("MontarTelaPaciente", "Paciente")">Dashboard</a>
+            </li>
+            <li>
+                <a href="@Url.Action("EditarPaciente", "Paciente")">Paciente - Edição</a>
+            </li>
+            <li class="active">
+                <strong>Questionário Stop-Bang - Edição</strong>
+            </li>
+        </ol>
+        <br />
+    </div>
+
+    <div class="row">
+        <div class="col-lg-12 col-md-12 col-xs-12">
+            <div class="col-lg-12 col-md-12 col-xs-12 ibox float-e-margins">
+                <div class="ibox-title">
+                    <div style="text-align: center;" class="col-lg-12 col-md-12 col-xs-12">
+                        <h5>Questionário Stop-Bang - Edição</h5>
+                        <span style="color:green; font-weight: 500; font-size: 20px;">@Model.PACIENTE.PACI_NM_NOME</span>
+                    </div>
+                </div>
+                @using (Html.BeginForm("EditarQuestionarioBang", "Paciente2", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal", @id="pwd-container1" }))
+                {
+                    <div class="ibox-content">
+                        @Html.AntiForgeryToken()
+                        @if (!ViewData.ModelState.IsValid)
+                        {
+                            <div class="alert alert-danger">
+                                <button type="button" class="close" data-dismiss="alert">Fechar</button>
+                                @Html.ValidationSummary(false, "Erros Encontrados:", new { @class = "text-danger" })
+                            </div>
+                        }
+                        <div class="form-group" style=" margin-left: -15px; margin-right: -15px;"> 
+                            @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarAnexoPaciente", controller: "Paciente")
+                            <a href="@Url.Action((String)Session["AjudaNivel"])"  class="btn btn-sm btn-danger" target="_blank">Ajuda</a>                
+                        </div>
+
+                        @*Paciente*@
+                        <div class="row">
+                            <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Identificação do Paciente</h4>
+                            <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">                
+                                <div class="col-lg-4 col-md-4 col-xs-12">
+                                    @Html.HiddenFor(m => m.ASSI_CD_ID)
+                                    @Html.HiddenFor(m => m.PACI_CD_ID)
+                                    @Html.HiddenFor(m => m.QUSB_CD_ID)
+                                    Nome do Paciente
+                                    @Html.TextBoxFor(m => m.PACIENTE.PACI_NM_NOME, new { @class = "form-control", @tabindex = "-1", @readonly = "readonly", @style = "color: green; font-weight: bold" })
+                                </div>
+                                <div class="col-lg-2 col-md-2 col-xs-12">
+                                    Data Nascimento
+                                    @Html.TextBoxFor(m => m.PACIENTE.PACI_DT_NASCIMENTO, "{0:dd/MM/yyyy}", new { @class = "form-control", @tabindex = "-1", @readonly = "readonly" })
+                                </div>
+                                @if (Model.PACIENTE.PACI_NR_CPF != null)
+                                {
+                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                        CPF
+                                        @Html.TextBoxFor(m => m.PACIENTE.PACI_NR_CPF, new { @class = "form-control", @tabindex = "-1", @readonly = "readonly" })
+                                    </div>
+                                }
+                                @if (Model.PACIENTE.PACI_NR_CELULAR != null)
+                                {
+                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                        Celular
+                                        @Html.TextBoxFor(m => m.PACIENTE.PACI_NR_CELULAR, new { @class = "form-control", @tabindex = "-1", @readonly = "readonly" })
+                                    </div>
+                                }
+                                @if (Model.PACIENTE.PACI_NR_TELEFONE != null)
+                                {
+                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                        Telefone
+                                        @Html.TextBoxFor(m => m.PACIENTE.PACI_NR_TELEFONE, new { @class = "form-control", @tabindex = "-1", @readonly = "readonly" })
+                                    </div>
+                                }
+                            </div>
+                        </div>
+
+
+                        @*Questionario*@
+                        <div class="row">
+                            <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Questionário Stop-Bang</h4>
+                            <div class="form-group" style=" margin-left: 5px; margin-right: 5px;">                
+                                @Html.ButtonActionSubmit(text: "Confirma Edição do Questionário Stop-Bang", htmlAttributes: new { id = "basictoast" })
+                            </div>
+                            @*<div class="question-group">
+                                <div class="form-group form-group-questionario">
+
+                                </div>
+                                <div class="question-title titulo-pergunta-destaque">RONCOS?</div>
+                                <div class="question-description">
+                                    @Html.DisplayNameFor(m => m.QUSB_IN_RONCO)
+                                </div>
+                                <div class="response-area">
+                                    @Html.DropDownListFor(m => m.QUSB_IN_RONCO, (SelectList)ViewBag.SimNao, "Selecionar", new { @class = "form-control", autofocus = true, @id = "ronco", onchange = "CalculoBang($(this).val())" })
+                                    @Html.ValidationMessageFor(m => m.QUSB_IN_RONCO, "", new { @class = "validacao-erro" })
+                                </div>
+                                <div class="clear-fix"></div>
+
+                                <div class="question-title">CANSADO?</div>
+                                <div class="question-description">
+                                    @Html.DisplayNameFor(m => m.QUSB_IN_CANSADO)
+                                </div>
+                                <div class="response-area">
+                                    @Html.DropDownListFor(m => m.QUSB_IN_CANSADO, (SelectList)ViewBag.SimNao, "Selecionar", new { @class = "form-control", autofocus = true, @id = "cansado", onchange = "CalculoBang($(this).val())" })
+                                    @Html.ValidationMessageFor(m => m.QUSB_IN_CANSADO, "", new { @class = "validacao-erro" })
+                                </div>
+                                <div class="clear-fix"></div>
+
+                                <div class="question-title">OBSERVOU?</div>
+                                <div class="question-description">
+                                    @Html.DisplayNameFor(m => m.QUSB_IN_OBSERVA)
+                                </div>
+                                <div class="response-area">
+                                    @Html.DropDownListFor(m => m.QUSB_IN_OBSERVA, (SelectList)ViewBag.SimNao, "Selecionar", new { @class = "form-control", autofocus = true, @id = "observa", onchange = "CalculoBang($(this).val())" })
+                                    @Html.ValidationMessageFor(m => m.QUSB_IN_OBSERVA, "", new { @class = "validacao-erro" })
+                                </div>
+                                <div class="clear-fix"></div>
+
+                                <div class="question-title">PRESSÃO?</div>
+                                <div class="question-description">
+                                    @Html.DisplayNameFor(m => m.QUSB_IN_PRESSAO)
+                                </div>
+                                <div class="response-area">
+                                    @Html.DropDownListFor(m => m.QUSB_IN_PRESSAO, (SelectList)ViewBag.SimNao, "Selecionar", new { @class = "form-control", autofocus = true, @id = "pressao", onchange = "CalculoBang($(this).val())" })
+                                    @Html.ValidationMessageFor(m => m.QUSB_IN_PRESSAO, "", new { @class = "validacao-erro" })
+                                </div>
+                                <div class="clear-fix"></div>
+                            </div>*@
+
+                            @* CRITÉRIOS BANG *@
+
+                            @*<div class="question-group">
+
+                                <div class="question-title">O PESCOÇO É GROSSO? (MEDIDA EM VOLTA DO POMO DE ADÃO)</div>
+                                <div class="question-description">
+                                    @ViewBag.Pescoco
+                                </div>
+                                <div class="response-area">
+                                    @Html.DropDownListFor(m => m.QUSB_IN_PESCOCO, (SelectList)ViewBag.SimNao, "Selecionar", new { @class = "form-control", autofocus = true, @id = "pescoco", onchange = "CalculoBang($(this).val())" })
+                                    @Html.ValidationMessageFor(m => m.QUSB_IN_PESCOCO, "", new { @class = "validacao-erro" })
+                                </div>
+                                <div class="clear-fix"></div>
+
+                                <br />
+
+                                <div class="coluna-metade coluna-esquerda">
+                                    <div class="question-title">IMC</div>
+                                    <div class="question-description">@Html.DisplayNameFor(m => m.QUSB_IN_IMC)</div>
+                                    <div class="response-area">
+                                        @Html.DropDownListFor(m => m.QUSB_IN_IMC, (SelectList)ViewBag.SimNao, "Selecionar", new { @class = "form-control", autofocus = true, @id = "imc", onchange = "CalculoBang($(this).val())" })
+                                        @Html.ValidationMessageFor(m => m.QUSB_IN_IMC, "", new { @class = "validacao-erro" })
+                                    </div>
+                                    <div class="clear-fix"></div>
+                                </div>
+
+                                <div class="coluna-metade coluna-direita">
+                                    <div class="question-title">IDADE</div>
+                                    <div class="question-description">@Html.DisplayNameFor(m => m.QUSB_IN_IDADE)</div>
+                                    <div class="response-area">
+                                        @Html.DropDownListFor(m => m.QUSB_IN_IDADE, (SelectList)ViewBag.SimNao, "Selecionar", new { @class = "form-control", autofocus = true, @id = "idade", onchange = "CalculoBang($(this).val())" })
+                                        @Html.ValidationMessageFor(m => m.QUSB_IN_IDADE, "", new { @class = "validacao-erro" })
+                                    </div>
+                                    <div class="clear-fix"></div>
+                                </div>
+                                <div class="clear-fix"></div>
+
+                                <br />
+
+                                <div class="question-title">SEXO MASCULINO?</div>
+                                <br />
+                                <div class="response-area">
+                                    @Html.DropDownListFor(m => m.QUSB_IN_MASCULINO, (SelectList)ViewBag.SimNao, "Selecionar", new { @class = "form-control", autofocus = true, @id = "masculino", onchange = "CalculoBang($(this).val())" })
+                                    @Html.ValidationMessageFor(m => m.QUSB_IN_MASCULINO, "", new { @class = "validacao-erro" })
+                                </div>
+                                <div class="clear-fix"></div>
+                            </div>*@
+
+                            @*<div class="area-pontuacao-total">
+                                <span class="texto-pontuacao">Pontuação de Risco Total:</span>
+                                <br /><br />
+                                <span id="pontuacao" class="valor-pontuacao">
+                                    @Model.QUSB_DS_PONTUACAO
+                                </span>
+                            </div>
+                            <div class="clear-fix"></div>*@
+
+
+
+
+
+                            <div class="question-group">   
+                                <div class="form-group" style=" margin-left: 5px; margin-right: 5px;">   
+
+                                </div>
+                                    <div class="question-title" style="color: green; font-weight: bold">RONCOS?</div>
+                                    <div class="question-description">
+                                        @Html.DisplayNameFor(m => m.QUSB_IN_RONCO)
+                                    </div>
+                                    <div class="response-area">
+                                        @Html.DropDownListFor(m => m.QUSB_IN_RONCO, (SelectList)ViewBag.SimNao, "Selecionar", new { @class = "form-control", autofocus = true, @id = "ronco", onchange = "CalculoBang($(this).val())" })
+                                        @Html.ValidationMessageFor(m => m.QUSB_IN_RONCO, "", new { @style = "color:red" })
+                                    </div>
+                                    <div style="clear: both;"></div>
+
+                                    <div class="question-title">CANSADO?</div>
+                                    <div class="question-description">
+                                        @Html.DisplayNameFor(m => m.QUSB_IN_CANSADO)
+                                    </div>
+                                    <div class="response-area">
+                                        @Html.DropDownListFor(m => m.QUSB_IN_CANSADO, (SelectList)ViewBag.SimNao, "Selecionar", new { @class = "form-control", autofocus = true, @id = "cansado", onchange = "CalculoBang($(this).val())" })
+                                        @Html.ValidationMessageFor(m => m.QUSB_IN_CANSADO, "", new { @style = "color:red" })
+                                    </div>
+                                    <div style="clear: both;"></div>
+
+                                    <div class="question-title">OBSERVOU?</div>
+                                    <div class="question-description">
+                                        @Html.DisplayNameFor(m => m.QUSB_IN_OBSERVA)
+                                    </div>
+                                    <div class="response-area">
+                                        @Html.DropDownListFor(m => m.QUSB_IN_OBSERVA, (SelectList)ViewBag.SimNao, "Selecionar", new { @class = "form-control", autofocus = true, @id = "observa", onchange = "CalculoBang($(this).val())" })
+                                        @Html.ValidationMessageFor(m => m.QUSB_IN_OBSERVA, "", new { @style = "color:red" })
+                                    </div>
+                                    <div style="clear: both;"></div>
+
+                                    <div class="question-title">PRESSÃO?</div>
+                                    <div class="question-description">
+                                        @Html.DisplayNameFor(m => m.QUSB_IN_PRESSAO)
+                                    </div>
+                                    <div class="response-area">
+                                        @Html.DropDownListFor(m => m.QUSB_IN_PRESSAO, (SelectList)ViewBag.SimNao, "Selecionar", new { @class = "form-control", autofocus = true, @id = "pressao", onchange = "CalculoBang($(this).val())" })
+                                        @Html.ValidationMessageFor(m => m.QUSB_IN_PRESSAO, "", new { @style = "color:red" })
+                                    </div>
+                                    <div style="clear: both;"></div>
+                                </div>
+    
+                                 CRITÉRIOS BANG 
+
+                                <div class="question-group">
+
+                                    <div class="question-title">O PESCOÇO É GROSSO? (MEDIDA EM VOLTA DO POMO DE ADÃO)</div>
+                                    <div class="question-description">
+                                        @ViewBag.Pescoco
+                                    </div>
+                                    <div class="response-area">
+                                        @Html.DropDownListFor(m => m.QUSB_IN_PESCOCO, (SelectList)ViewBag.SimNao, "Selecionar", new { @class = "form-control", autofocus = true, @id = "pescoco", onchange = "CalculoBang($(this).val())" })
+                                        @Html.ValidationMessageFor(m => m.QUSB_IN_PESCOCO, "", new { @style = "color:red" })
+                                    </div>
+                                    <div style="clear: both;"></div>
+        
+                                    <br/>
+        
+                                    <div style="float: left; width: 45%;">
+                                        <div class="question-title">IMC</div>
+                                        <div class="question-description">@Html.DisplayNameFor(m => m.QUSB_IN_IMC)</div>
+                                        <div class="response-area">
+                                            @Html.DropDownListFor(m => m.QUSB_IN_IMC, (SelectList)ViewBag.SimNao, "Selecionar", new { @class = "form-control", autofocus = true, @id = "imc", onchange = "CalculoBang($(this).val())" })
+                                            @Html.ValidationMessageFor(m => m.QUSB_IN_IMC, "", new { @style = "color:red" })
+                                        </div>
+                                        <div style="clear: both;"></div>
+                                    </div>
+
+                                    <div style="float: right; width: 45%;">
+                                        <div class="question-title">IDADE</div>
+                                        <div class="question-description">@Html.DisplayNameFor(m => m.QUSB_IN_IDADE)</div>
+                                        <div class="response-area">
+                                            @Html.DropDownListFor(m => m.QUSB_IN_IDADE, (SelectList)ViewBag.SimNao, "Selecionar", new { @class = "form-control", autofocus = true, @id = "idade", onchange = "CalculoBang($(this).val())" })
+                                            @Html.ValidationMessageFor(m => m.QUSB_IN_IDADE, "", new { @style = "color:red" })
+                                        </div>
+                                        <div style="clear: both;"></div>
+                                    </div>
+                                    <div style="clear: both;"></div>
+        
+                                    <br/>
+
+                                    <div class="question-title">SEXO MASCULINO?</div>
+                                    <br/>
+                                    <div class="response-area">
+                                        @Html.DropDownListFor(m => m.QUSB_IN_MASCULINO, (SelectList)ViewBag.SimNao, "Selecionar", new { @class = "form-control", autofocus = true, @id = "masculino", onchange = "CalculoBang($(this).val())" })
+                                        @Html.ValidationMessageFor(m => m.QUSB_IN_MASCULINO, "", new { @style = "color:red" })
+                                    </div>
+                                    <div style="clear: both;"></div>
+                                </div>
+    
+                                <div style="float: right; margin-top: 20px;">
+                                    <span style="font-weight: bold; font-size: 1.2em;">Pontuação de Risco Total:</span> 
+                                    <br/><br/>
+                                    <span id="pontuacao" style="font-size: 1.5em; font-weight: bold; margin-left: 10px;">
+                                        @Model.QUSB_DS_PONTUACAO
+                                    </span> 
+                               </div>
+                                <div style="clear: both;"></div> 
+                        </div>
+                    </div>
+                }
+            </div>
+         </div>
+    </div>
+</div>
+
+@section Styles {
+    <link href="~/Content/themes/base/all.css" rel="stylesheet" />  
+    <link rel="stylesheet" href="~/Content/StopBang_style.css" />
+    @Styles.Render("~/plugins/jasnyBootstrapStyles")
+    @Styles.Render("~/plugins/toastrStyles")
+}
+@section Scripts {
+    @Scripts.Render("~/plugins/toastr")
+    @Scripts.Render("~/bundles/inputmask")
+    @Scripts.Render("~/plugins/jasnyBootstrap")
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.maskedinput/1.4.1/jquery.maskedinput.js"></script>
+   
+    <script type="text/javascript" src="~/Scripts/moment.min.js"></script>
+    <script type="text/javascript" src="~/Scripts/bootstrap.min.js"></script>
+   
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('[data-toggle="popover"]').popover();
+        });
+    </script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-toggle="popover"]'));
+            var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
+                return new bootstrap.Popover(popoverTriggerEl);
+            });
+        });
+    </script>
+
+    <!-- Handler de fechamento do browser -->
+    <script type="text/javascript">
+        window.onbeforeunload = function ()
+        {
+            navigator.sendBeacon('../ControleAcesso/LogSessionTime');
+        }; 
+    </script>
+
+    <script>
+        function CalculoBang() {
+            // --- 1. CAPTURA DOS VALORES (Conversão para número, assume-se que '1' é SIM) ---
+            // Seus campos de entrada devem retornar "1" para SIM e "0" para NÃO, ou o valor numérico.
+            // Usamos Number() para garantir que tratamos os valores como números (0 ou 1).
+
+            var ronco = Number($('#ronco').val());       // vm.QUSB_IN_RONCO
+            var cansado = Number($('#cansado').val());   // vm.QUSB_IN_CANSADO
+            var observa = Number($('#observa').val());   // vm.QUSB_IN_OBSERVA
+            var pressao = Number($('#pressao').val());   // vm.QUSB_IN_PRESSAO
+            var pressao = Number($('#pressao').val());   // vm.QUSB_IN_PRESSAO
+            var pescoco = Number($('#pescoco').val());   // vm.QUSB_IN_PRESSAO
+            var imc = Number($('#imc').val());   // vm.QUSB_IN_PRESSAO
+            var idade = Number($('#idade').val());   // vm.QUSB_IN_PRESSAO
+            var masculino = Number($('#masculino').val());   // vm.QUSB_IN_PRESSAO
+        
+            // --- 2. EXECUÇÃO DO CÁLCULO C# TRADUZIDO ---
+        
+            let risco = 0;
+            let diag = ""; // Usa string vazia em vez de String.Empty
+            let conta_Bloco1 = 0;
+            let cor = "black";
+
+            // Bloco STOP (Ronco, Cansado, Observa, Pressao)
+            if (ronco === 1) { risco++; conta_Bloco1++; }
+            if (cansado === 1) { risco++; conta_Bloco1++; }
+            if (observa === 1) { risco++; conta_Bloco1++; }
+            if (pressao === 1) { risco++; conta_Bloco1++; }        
+            if (pescoco === 1) { risco++; } // Testando se o paciente marcou 'Sim' para pescoço grosso
+            if (imc === 1) { risco++; }     // Testando se o paciente marcou 'Sim' para IMC > 35
+            if (idade === 1) { risco++; }
+            if (masculino === 1) { risco++; }        
+        
+            // --- 3. CÁLCULO DO DIAGNÓSTICO (Classificação STOP-BANG) ---
+
+            // As regras de diagnóstico são complexas e sobrepostas (o último 'if' vitorioso define a diag).
+            // Recriando a lógica exata do seu C#:
+
+            // Classificação inicial baseada no risco total (Regra geral STOP-BANG)
+            if (risco <= 2) {
+                diag = "Risco baixo de AOS (apnéia obstrutiva do sono";
+                cor = "green";
+            }
+
+            if (risco >= 2 && risco <= 4) {
+                diag = "Risco intermediário de AOS";
+                cor = "seagreen";            
+            }
+            if (risco > 4) {
+                diag = "Risco alto de AOS";
+                cor = "red";            
+            }        
+       
+            if (conta_Bloco1 > 2 && masculino === 1) {
+                diag = "Risco alto de AOS";
+            }
+            if (conta_Bloco1 > 2 && imc === 1) { 
+                diag = "Risco alto de AOS";
+                cor = "red";            
+            }
+            
+
+            if (conta_Bloco1 > 2) {
+            
+                if (masculino === 1 && pescoco === 1) {
+                    diag = "Risco alto de AOS";
+                    cor = "red";            
+                }
+                else if (masculino === 0 && pescoco === 1) {
+                    diag = "Risco alto de AOS";
+                    cor = "red";            
+                }
+            
+            }
+        
+            // Finalização (substituindo 'diag == null' que não existe em JS)
+            if (diag === "") {
+                diag = "Sem resultado";
+                cor = "darkblue";            
+            }
+
+            // --- 4. ATUALIZAÇÃO DO CAMPO NA TELA ---
+            const $pontuacaoSpan = $('#pontuacao');
+            $pontuacaoSpan.text(diag);
+            $pontuacaoSpan.css('color', cor);
+        }
+        $(document).ready(function() {
+                CalculoBang();
+            });
+    </script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            var i = -1;
+            var toastCount = 0;
+            var $toastlast;
+            var getMessage = function () {
+                var msg = 'Hi, welcome to Inspinia. This is example of Toastr notification box.';
+                return msg;
+            };
+
+            $('#basictoast').click(function () {
+                // Display a success toast, with a title
+                toastr.success('Edição em andamento!')
+            });
+            $('#showtoast').click(function () {
+                var shortCutFunction = $("#toastTypeGroup input:radio:checked").val();
+                var msg = $('#message').val();
+                var title = $('#title').val() || '';
+                var $showDuration = $('#showDuration');
+                var $hideDuration = $('#hideDuration');
+                var $timeOut = $('#timeOut');
+                var $extendedTimeOut = $('#extendedTimeOut');
+                var $showEasing = $('#showEasing');
+                var $hideEasing = $('#hideEasing');
+                var $showMethod = $('#showMethod');
+                var $hideMethod = $('#hideMethod');
+                var toastIndex = toastCount++;
+                toastr.options = {
+                    closeButton: $('#closeButton').prop('checked'),
+                    debug: $('#debugInfo').prop('checked'),
+                    progressBar: $('#progressBar').prop('checked'),
+                    positionClass: $('#positionGroup input:radio:checked').val() || 'toast-top-right',
+                    onclick: null
+                };
+                if ($('#addBehaviorOnToastClick').prop('checked')) {
+                    toastr.options.onclick = function () {
+                        alert('You can perform some custom action after a toast goes away');
+                    };
+                }
+                if ($showDuration.val().length) {
+                    toastr.options.showDuration = $showDuration.val();
+                }
+                if ($hideDuration.val().length) {
+                    toastr.options.hideDuration = $hideDuration.val();
+                }
+                if ($timeOut.val().length) {
+                    toastr.options.timeOut = $timeOut.val();
+                }
+                if ($extendedTimeOut.val().length) {
+                    toastr.options.extendedTimeOut = $extendedTimeOut.val();
+                }
+                if ($showEasing.val().length) {
+                    toastr.options.showEasing = $showEasing.val();
+                }
+                if ($hideEasing.val().length) {
+                    toastr.options.hideEasing = $hideEasing.val();
+                }
+                if ($showMethod.val().length) {
+                    toastr.options.showMethod = $showMethod.val();
+                }
+                if ($hideMethod.val().length) {
+                    toastr.options.hideMethod = $hideMethod.val();
+                }
+                if (!msg) {
+                    msg = getMessage();
+                }
+                $("#toastrOptions").text("Command: toastr["
+                        + shortCutFunction
+                        + "](\""
+                        + msg
+                        + (title ? "\", \"" + title : '')
+                        + "\")\n\ntoastr.options = "
+                        + JSON.stringify(toastr.options, null, 2)
+                );
+                var $toast = toastr[shortCutFunction](msg, title); // Wire up an event handler to a button in the toast, if it exists
+                $toastlast = $toast;
+                if ($toast.find('#okBtn').length) {
+                    $toast.delegate('#okBtn', 'click', function () {
+                        alert('you clicked me. i was toast #' + toastIndex + '. goodbye!');
+                        $toast.remove();
+                    });
+                }
+                if ($toast.find('#surpriseBtn').length) {
+                    $toast.delegate('#surpriseBtn', 'click', function () {
+                        alert('Surprise! you clicked me. i was toast #' + toastIndex + '. You could perform an action here.');
+                    });
+                }
+            });
+            function getLastToast() {
+                return $toastlast;
+            }
+            $('#clearlasttoast').click(function () {
+                toastr.clear(getLastToast());
+            });
+            $('#cleartoasts').click(function () {
+                toastr.clear();
+            });
+
+        });
+    </script>
+
+
+    @if (ViewBag.Message != null)
+    {
+        <script type="text/javascript">
+            window.onload = function () {
+                  alert("@ViewBag.Message");
+            };
+        </script>
+    }
+}

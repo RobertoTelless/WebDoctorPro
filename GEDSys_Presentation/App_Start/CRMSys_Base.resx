@@ -1,0 +1,2196 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="M0001" xml:space="preserve">
+    <value>E-mail invalido</value>
+  </data>
+  <data name="M0002" xml:space="preserve">
+    <value>Login não cadastrado</value>
+  </data>
+  <data name="M0003" xml:space="preserve">
+    <value>O usuario esta inativo</value>
+  </data>
+  <data name="M0004" xml:space="preserve">
+    <value>O usuario esta bloqueado. Entre em contato com o administrador do sistema para executar o desbloqueio</value>
+  </data>
+  <data name="M0005" xml:space="preserve">
+    <value>O usuario ja efetuou um login com a senha provisoria. Favor gerar outra senha provisória.</value>
+  </data>
+  <data name="M0006" xml:space="preserve">
+    <value>Numero de falhas de login superior ao limite diario de falhas</value>
+  </data>
+  <data name="M0007" xml:space="preserve">
+    <value>Credenciais invalidas</value>
+  </data>
+  <data name="M0008" xml:space="preserve">
+    <value>A nova senha nao pode ser igual a anterior</value>
+  </data>
+  <data name="M0009" xml:space="preserve">
+    <value>A nova senha nao foi confirmada corretamente</value>
+  </data>
+  <data name="M0011" xml:space="preserve">
+    <value>Você não tem acesso a a funcionalidade </value>
+  </data>
+  <data name="M0012" xml:space="preserve">
+    <value>Usuário cadastrado mas sem acesso ao sistema. Consulte a administração.</value>
+  </data>
+  <data name="M0016" xml:space="preserve">
+    <value>Nenhum registro atendeu ao filtro especificado</value>
+  </data>
+  <data name="M0019" xml:space="preserve">
+    <value>Nenhum arquivo selecionado para anexação</value>
+  </data>
+  <data name="M0020" xml:space="preserve">
+    <value>Extensão de arquivo não suportada</value>
+  </data>
+  <data name="M0021" xml:space="preserve">
+    <value>Contato já cadastrado</value>
+  </data>
+  <data name="M0024" xml:space="preserve">
+    <value>Anexo não incluído - Nome do arquivo muito longo. Máximo de 250 caracteres</value>
+  </data>
+  <data name="M0025" xml:space="preserve">
+    <value>Grupo já cadastrado</value>
+  </data>
+  <data name="M0026" xml:space="preserve">
+    <value>O texto da mensagem deve ser preenchido</value>
+  </data>
+  <data name="M0027" xml:space="preserve">
+    <value>Contato já incluído neste grupo</value>
+  </data>
+  <data name="M0028" xml:space="preserve">
+    <value>Categoria de Contato já cadastrada</value>
+  </data>
+  <data name="M0029" xml:space="preserve">
+    <value>Não é possível excluir essa categoria. Existem informações vinculadas a ela</value>
+  </data>
+  <data name="M0030" xml:space="preserve">
+    <value>Status de Contato já cadastrado</value>
+  </data>
+  <data name="M0031" xml:space="preserve">
+    <value>Não é possível excluir esse status de contato. Existem informações vinculadas a ele</value>
+  </data>
+  <data name="M0032" xml:space="preserve">
+    <value>Padrão de Mensagem já cadastrado</value>
+  </data>
+  <data name="M0033" xml:space="preserve">
+    <value>Não é possível excluir esse status de contato. Existem informações vinculadas a ele</value>
+  </data>
+  <data name="M0034" xml:space="preserve">
+    <value>Entrada de CRM criada a partir de mensagem</value>
+  </data>
+  <data name="M0035" xml:space="preserve">
+    <value>Já existe um processo com o mesmo nome para este usuário</value>
+  </data>
+  <data name="M0036" xml:space="preserve">
+    <value>Impossível excluir esse processo. Existem ações ainda pendentes.</value>
+  </data>
+  <data name="M0037" xml:space="preserve">
+    <value>A data de cancelamento não pode ser inferior a data de criação do processo</value>
+  </data>
+  <data name="M0038" xml:space="preserve">
+    <value>A data de cancelamento não pode ser superior a data corrente</value>
+  </data>
+  <data name="M0039" xml:space="preserve">
+    <value>Já existe um contato marcado como PRINCIPAL</value>
+  </data>
+  <data name="M0040" xml:space="preserve">
+    <value>Impossível incluir nova ação. Já existe uma ação ativa neste momento.</value>
+  </data>
+  <data name="M0041" xml:space="preserve">
+    <value>Impossível editar esta ação. Ela está encerrada ou excluída.</value>
+  </data>
+  <data name="M0042" xml:space="preserve">
+    <value>Impossível criar/reativar esta ação. Já existe uma ação ativa neste momento.</value>
+  </data>
+  <data name="M0043" xml:space="preserve">
+    <value>A data de encerramento não pode ser inferior a data de criação</value>
+  </data>
+  <data name="M0044" xml:space="preserve">
+    <value>Usuário já cadastrado</value>
+  </data>
+  <data name="M0045" xml:space="preserve">
+    <value>Não é possível excluir esse usuário. Existem informações vinculadas a ele</value>
+  </data>
+  <data name="M0046" xml:space="preserve">
+    <value>A data de encerramento não pode ser superior a data corrente</value>
+  </data>
+  <data name="M0047" xml:space="preserve">
+    <value>A data de cancelamento não pode ser inferior a data de criação</value>
+  </data>
+  <data name="M0048" xml:space="preserve">
+    <value>A data de cancelamento não pode ser superior a data corrente</value>
+  </data>
+  <data name="M0049" xml:space="preserve">
+    <value>Plano já cadastrado</value>
+  </data>
+  <data name="M0050" xml:space="preserve">
+    <value>Impossível excluir esse Plano. Existem assinantes vinculados a ele</value>
+  </data>
+  <data name="M0051" xml:space="preserve">
+    <value>Impossível incluir/reativar usuário. Número de usuários ativos excede o contratado no Plano de Assinatura</value>
+  </data>
+  <data name="M0052" xml:space="preserve">
+    <value>Impossível incluir/reativar contato. Número de contatos ativos excede o contratado no Plano de Assinatura</value>
+  </data>
+  <data name="M0053" xml:space="preserve">
+    <value>Impossível enviar este e-mail. O número de e-mails enviados no mês corrente ultrapassa o contratado no Plano de Assinatura</value>
+  </data>
+  <data name="M0054" xml:space="preserve">
+    <value>Impossível enviar este SMS. O número de SMSs enviados no mês corrente ultrapassa o contratado no Plano de Assinatura</value>
+  </data>
+  <data name="M0055" xml:space="preserve">
+    <value>Impossível incluir/reativar processos. Número de processos ativos excede o contratado no Plano de Assinatura</value>
+  </data>
+  <data name="M0056" xml:space="preserve">
+    <value>Impossível incluir/reativar ações nos processos. Número de ações ativas excede o contratado no Plano de Assinatura</value>
+  </data>
+  <data name="M0057" xml:space="preserve">
+    <value>Assinante já cadastrado</value>
+  </data>
+  <data name="M0058" xml:space="preserve">
+    <value>Filial já cadastrada</value>
+  </data>
+  <data name="M0059" xml:space="preserve">
+    <value>Não é possível excluir essa Filial. Existem informações vinculadas a ela</value>
+  </data>
+  <data name="M0060" xml:space="preserve">
+    <value>Deve ser especificado um arquivo template HTML ou o corpo da mensagem</value>
+  </data>
+  <data name="M0061" xml:space="preserve">
+    <value>Corpo de mansagem especificado sem cabeçalho e área de dados (rodapé)</value>
+  </data>
+  <data name="M0062" xml:space="preserve">
+    <value>Nenhum filtro foi definido para montagem do grupo.</value>
+  </data>
+  <data name="M0063" xml:space="preserve">
+    <value>Nenhum item obedeceu ao filtro especificado</value>
+  </data>
+  <data name="M0064" xml:space="preserve">
+    <value>Este plano de assinatura não tem acesso às funcionalidades de CRM</value>
+  </data>
+  <data name="M0065" xml:space="preserve">
+    <value>Essa mensagem já foi convertida em processo CRM</value>
+  </data>
+  <data name="M0066" xml:space="preserve">
+    <value>Categoria já cadastrada</value>
+  </data>
+  <data name="M0067" xml:space="preserve">
+    <value>Cargo já cadastrado</value>
+  </data>
+  <data name="M0068" xml:space="preserve">
+    <value>Impossível excluir este cargo. Ele está vinculado a outras informações</value>
+  </data>
+  <data name="M0069" xml:space="preserve">
+    <value>Impossível excluir esta categoria. Ela está vinculada a outras informações</value>
+  </data>
+  <data name="M0070" xml:space="preserve">
+    <value>Origem do processo CRM já cadastrada</value>
+  </data>
+  <data name="M0071" xml:space="preserve">
+    <value>Impossível excluir esta origem. Ela está vinculada a outras informações</value>
+  </data>
+  <data name="M0072" xml:space="preserve">
+    <value>Motivo de Cancelameneto já cadastrado</value>
+  </data>
+  <data name="M0073" xml:space="preserve">
+    <value>A Senha não pode ficar em branco</value>
+  </data>
+  <data name="M0074" xml:space="preserve">
+    <value>Nova senha não pode ser em branco</value>
+  </data>
+  <data name="M0075" xml:space="preserve">
+    <value>Confirmação da senha não pode ser em branco</value>
+  </data>
+  <data name="M0076" xml:space="preserve">
+    <value>Impossível excluir este motivo. Ele está vinculado a outras informações</value>
+  </data>
+  <data name="M0077" xml:space="preserve">
+    <value>Motivo de Encerramento já cadastrado</value>
+  </data>
+  <data name="M0078" xml:space="preserve">
+    <value>Tipo de Ação já cadastrado</value>
+  </data>
+  <data name="M0079" xml:space="preserve">
+    <value>Impossível excluir este tipo. Ele está vinculado a outras informações</value>
+  </data>
+  <data name="M0080" xml:space="preserve">
+    <value>Impossível incluir/reativar cliente. Número de clientes ativos excede o contratado no Plano de Assinatura</value>
+  </data>
+  <data name="M0081" xml:space="preserve">
+    <value>Impossível incluir/reativar fornecedor. Número de fornecedores ativos excede o contratado no Plano de Assinatura</value>
+  </data>
+  <data name="M0082" xml:space="preserve">
+    <value>Categoria de Equipamento já cadastrada</value>
+  </data>
+  <data name="M0083" xml:space="preserve">
+    <value>Categoria de Fornecedor já cadastrada</value>
+  </data>
+  <data name="M0084" xml:space="preserve">
+    <value>O valor residual não pode ser maior que o valor de compra</value>
+  </data>
+  <data name="M0085" xml:space="preserve">
+    <value>Impossível incluir/reativar produto. Número de produtos ativos excede o contratado no Plano de Assinatura</value>
+  </data>
+  <data name="M0086" xml:space="preserve">
+    <value>Impossível excluir este produto. Ele está vinculado a outras informações</value>
+  </data>
+  <data name="M0087" xml:space="preserve">
+    <value>Impossível excluir este produto. Ele está vinculado a um ou mais pedidos de venda</value>
+  </data>
+  <data name="M0088" xml:space="preserve">
+    <value>Categoria de Produto já cadastrada</value>
+  </data>
+  <data name="M0089" xml:space="preserve">
+    <value>Subcategoria de Produto já cadastrada</value>
+  </data>
+  <data name="M0090" xml:space="preserve">
+    <value>Impossível excluir esta subcategoria. Ela está vinculada a outras informações</value>
+  </data>
+  <data name="M0091" xml:space="preserve">
+    <value>Tamanho já cadastrado</value>
+  </data>
+  <data name="M0092" xml:space="preserve">
+    <value>Impossível excluir este tamanho. Ele está vinculado a outras informações</value>
+  </data>
+  <data name="M0093" xml:space="preserve">
+    <value>Unidade já cadastrada</value>
+  </data>
+  <data name="M0094" xml:space="preserve">
+    <value>Impossível excluir esta unidade. Ela está vinculada a outras informações</value>
+  </data>
+  <data name="M0096" xml:space="preserve">
+    <value>E-Mail não cadastrado.</value>
+  </data>
+  <data name="M0109" xml:space="preserve">
+    <value>O login não pode ficar em branco</value>
+  </data>
+  <data name="M0110" xml:space="preserve">
+    <value>E-Mail já existente</value>
+  </data>
+  <data name="M0111" xml:space="preserve">
+    <value>Login já existente</value>
+  </data>
+  <data name="M0112" xml:space="preserve">
+    <value>Impossível incluir/reativar atendimentos. Número de atendimentos ativos excede o contratado no Plano de Assinatura</value>
+  </data>
+  <data name="M0113" xml:space="preserve">
+    <value>Definição de automação de mensagens já cadastrada</value>
+  </data>
+  <data name="M0114" xml:space="preserve">
+    <value>Impossível excluir este grupo. Ele está vinculaoa a outras informações</value>
+  </data>
+  <data name="M0115" xml:space="preserve">
+    <value>Grupo já cadastrado</value>
+  </data>
+  <data name="M0116" xml:space="preserve">
+    <value>Impossível excluir este subgrupo. Ele está vinculaoa a outras informações</value>
+  </data>
+  <data name="M0117" xml:space="preserve">
+    <value>Subgrupo já cadastrado</value>
+  </data>
+  <data name="M0118" xml:space="preserve">
+    <value>Impossível incluir/reativar ordens de serviço. Número de ordens de serviço ativas excede o contratado no Plano de Assinatura</value>
+  </data>
+  <data name="M0119" xml:space="preserve">
+    <value>Justificativa de cancelamento não preenchida</value>
+  </data>
+  <data name="M0120" xml:space="preserve">
+    <value>Departamento já cadastrado</value>
+  </data>
+  <data name="M0121" xml:space="preserve">
+    <value>Impossível excluir este departamento. Ele está vinculada a outras informações</value>
+  </data>
+  <data name="M0122" xml:space="preserve">
+    <value>Impossível criar/reativar esta proposta. Já existe uma proposta sendo processada neste momento.</value>
+  </data>
+  <data name="M0123" xml:space="preserve">
+    <value>Impossível editar esta proposta. Ela está encerrada, cancelada ou reprovada</value>
+  </data>
+  <data name="M0124" xml:space="preserve">
+    <value>A justificativa do cancelamento é obrigatória</value>
+  </data>
+  <data name="M0125" xml:space="preserve">
+    <value>Data de cancelamento não informada</value>
+  </data>
+  <data name="M0126" xml:space="preserve">
+    <value>A data de reprovação não pode ser inferior a data de criação do processo</value>
+  </data>
+  <data name="M0127" xml:space="preserve">
+    <value>A data de reprovação não pode ser superior a data corrente</value>
+  </data>
+  <data name="M0128" xml:space="preserve">
+    <value>A justificativa da reprovação é obrigatória</value>
+  </data>
+  <data name="M0129" xml:space="preserve">
+    <value>Data de reprovação não informada</value>
+  </data>
+  <data name="M0130" xml:space="preserve">
+    <value>A data de aprovação não pode ser inferior a data de criação do processo</value>
+  </data>
+  <data name="M0131" xml:space="preserve">
+    <value>A data de aprovação não pode ser superior a data corrente</value>
+  </data>
+  <data name="M0132" xml:space="preserve">
+    <value>A justificativa da aprovação é obrigatória</value>
+  </data>
+  <data name="M0133" xml:space="preserve">
+    <value>Data de aprovação não informada</value>
+  </data>
+  <data name="M0134" xml:space="preserve">
+    <value>Data de envio não informada</value>
+  </data>
+  <data name="M0135" xml:space="preserve">
+    <value>A data de envio não pode ser inferior a data de criação do processo</value>
+  </data>
+  <data name="M0136" xml:space="preserve">
+    <value>A data de envio não pode ser superior a data corrente</value>
+  </data>
+  <data name="M0137" xml:space="preserve">
+    <value>Ocorreu erro no envio da proposta por e-mail</value>
+  </data>
+  <data name="M0138" xml:space="preserve">
+    <value>Impossível enviar. Nenhum arquivo anexado a essa proposta</value>
+  </data>
+  <data name="M0139" xml:space="preserve">
+    <value>Nenhum template de mensagem selecionado</value>
+  </data>
+  <data name="M0140" xml:space="preserve">
+    <value>Impossível criar/reativar este pedido. Já existe um pedido sendo processado neste momento.</value>
+  </data>
+  <data name="M0141" xml:space="preserve">
+    <value>Cliente não especificado</value>
+  </data>
+  <data name="M0142" xml:space="preserve">
+    <value>Tipo de ação não especificado</value>
+  </data>
+  <data name="M0143" xml:space="preserve">
+    <value>Responsável pela ação não especificado</value>
+  </data>
+  <data name="M0144" xml:space="preserve">
+    <value>Template de proposta não especificado</value>
+  </data>
+  <data name="M0145" xml:space="preserve">
+    <value>Motivo de cancelamento não especificado</value>
+  </data>
+  <data name="M0146" xml:space="preserve">
+    <value>Transportadora não especificada</value>
+  </data>
+  <data name="M0147" xml:space="preserve">
+    <value>Data prevista para entrega não especificada</value>
+  </data>
+  <data name="M0148" xml:space="preserve">
+    <value>Data de saida para entrega não especificada</value>
+  </data>
+  <data name="M0149" xml:space="preserve">
+    <value>Descrição do Motivo de cancelamento não especificada</value>
+  </data>
+  <data name="M0150" xml:space="preserve">
+    <value>Maquina de cartão já cadastrada</value>
+  </data>
+  <data name="M0151" xml:space="preserve">
+    <value>Impossível excluir esta máqiuna de cartão. Existem registros vinculados a ela.</value>
+  </data>
+  <data name="M0152" xml:space="preserve">
+    <value>Plataforma de Entregas já cadastrada</value>
+  </data>
+  <data name="M0153" xml:space="preserve">
+    <value>Impossível excluir esta plataforma de entregas. Existem registros vinculados a ela.</value>
+  </data>
+  <data name="M0154" xml:space="preserve">
+    <value>Cargo já cadastrado</value>
+  </data>
+  <data name="M0155" xml:space="preserve">
+    <value>Impossível excluir este cargo. Existem registros vinculados a ele</value>
+  </data>
+  <data name="M0156" xml:space="preserve">
+    <value>Pessoa Externa já cadastrada</value>
+  </data>
+  <data name="M0157" xml:space="preserve">
+    <value>Impossível excluir esta pessoa externa. Existem registros vinculados a ela</value>
+  </data>
+  <data name="M0158" xml:space="preserve">
+    <value>CPF já existente na lista de usuários</value>
+  </data>
+  <data name="M0159" xml:space="preserve">
+    <value>Grupo já cadastrado</value>
+  </data>
+  <data name="M0160" xml:space="preserve">
+    <value>Impossível excluir este grupo. Existem registros vinculados a ele.</value>
+  </data>
+  <data name="M0161" xml:space="preserve">
+    <value>Subgrupo já cadastrado</value>
+  </data>
+  <data name="M0162" xml:space="preserve">
+    <value>Impossível excluir este subgrupo. Existem registros vinculados a ele.</value>
+  </data>
+  <data name="M0163" xml:space="preserve">
+    <value>Conta já cadastrada no Plano de Contas</value>
+  </data>
+  <data name="M0164" xml:space="preserve">
+    <value>Impossível excluir esta conta do plano de contas. Existem registros vinculados a ela.</value>
+  </data>
+  <data name="M0165" xml:space="preserve">
+    <value>Banco já cadastrado</value>
+  </data>
+  <data name="M0166" xml:space="preserve">
+    <value>Impossível excluir este banco. Existem registros vinculados a ele</value>
+  </data>
+  <data name="M0167" xml:space="preserve">
+    <value>Conta bancária já cadastrada</value>
+  </data>
+  <data name="M0168" xml:space="preserve">
+    <value>Já existe uma conta marcada como principal</value>
+  </data>
+  <data name="M0169" xml:space="preserve">
+    <value>Nenhum lançamento cadastrado nessa conta</value>
+  </data>
+  <data name="M0170" xml:space="preserve">
+    <value>Fornecedor já cadastrado</value>
+  </data>
+  <data name="M0171" xml:space="preserve">
+    <value>Impossível excluir este fornecedor. Existem registros vinculados a ele</value>
+  </data>
+  <data name="M0172" xml:space="preserve">
+    <value>Forma de Pagamento/Recebimento já cadastrada</value>
+  </data>
+  <data name="M0173" xml:space="preserve">
+    <value>Impossível excluir esta Forma de Pagamento/Recebomento. Existem registros vinculados a ela</value>
+  </data>
+  <data name="M0174" xml:space="preserve">
+    <value>Cliente já cadastrado</value>
+  </data>
+  <data name="M0175" xml:space="preserve">
+    <value>Impossível excluir este cliente. Existem registros vinculados a ele</value>
+  </data>
+  <data name="M0176" xml:space="preserve">
+    <value>Categoria já cadastrada</value>
+  </data>
+  <data name="M0177" xml:space="preserve">
+    <value>Impossível excluir esta categoria. Existem registros vinculados a ela</value>
+  </data>
+  <data name="M0178" xml:space="preserve">
+    <value>Categoria de fornecedor já cadastrada</value>
+  </data>
+  <data name="M0179" xml:space="preserve">
+    <value>Impossível excluir esta categoria. Existem registros vinculados a ela</value>
+  </data>
+  <data name="M0180" xml:space="preserve">
+    <value>Máquina de cartão já associada à empresa</value>
+  </data>
+  <data name="M0181" xml:space="preserve">
+    <value>CPF/CNPJ já existente para um cliente cadastrado</value>
+  </data>
+  <data name="M0182" xml:space="preserve">
+    <value>Impossível excluir este contato. Existem registros vinculados a ele</value>
+  </data>
+  <data name="M0183" xml:space="preserve">
+    <value>Tipo de Ação já cadastrado</value>
+  </data>
+  <data name="M0184" xml:space="preserve">
+    <value>Impossível excluir este tipo de ação. Existem registros vinculados a ele</value>
+  </data>
+  <data name="M0185" xml:space="preserve">
+    <value>Motivo  já cadastrado</value>
+  </data>
+  <data name="M0186" xml:space="preserve">
+    <value>Impossível excluir este motivo. Existem registros vinculados a ele</value>
+  </data>
+  <data name="M0187" xml:space="preserve">
+    <value>Já existe um contato marcado como principal para este processo</value>
+  </data>
+  <data name="M0188" xml:space="preserve">
+    <value>Filial já cadastrada</value>
+  </data>
+  <data name="M0189" xml:space="preserve">
+    <value>Impossível excluir esta filial. Existem registros vinculados a ela</value>
+  </data>
+  <data name="M0190" xml:space="preserve">
+    <value>Já existe uma filial marcada com Matriz</value>
+  </data>
+  <data name="M0191" xml:space="preserve">
+    <value>Padrão de proposta já cadastrado</value>
+  </data>
+  <data name="M0192" xml:space="preserve">
+    <value>Impossível excluir este padrão de proposta.  Existem registros vinculados a ele</value>
+  </data>
+  <data name="M0193" xml:space="preserve">
+    <value>Funil de processo já cadastrado</value>
+  </data>
+  <data name="M0194" xml:space="preserve">
+    <value>Impossível excluir este funil de processo. Existem registros vinculados a ele</value>
+  </data>
+  <data name="M0195" xml:space="preserve">
+    <value>Número de etapas excede o máximo permitido</value>
+  </data>
+  <data name="M0196" xml:space="preserve">
+    <value>Ordem de processo não pode ser menor que uma já existente</value>
+  </data>
+  <data name="M0197" xml:space="preserve">
+    <value>Ordem de processo não pode ser maior que o número máximo de etapas</value>
+  </data>
+  <data name="M0198" xml:space="preserve">
+    <value>Já existe uma etapa neste funil marcada como possível de encerramento</value>
+  </data>
+  <data name="M0199" xml:space="preserve">
+    <value>Já existe uma etapa neste funil marcada como etapa seguinte ao envio de proposta</value>
+  </data>
+  <data name="M0200" xml:space="preserve">
+    <value>Nenhum parâmetro informado para pesquisa</value>
+  </data>
+  <data name="M0201" xml:space="preserve">
+    <value>Plano de Assinatura já cadastrado</value>
+  </data>
+  <data name="M0202" xml:space="preserve">
+    <value>Impossível excluir este funil de plano de assinatura. Existem registros vinculados a ele</value>
+  </data>
+  <data name="M0203" xml:space="preserve">
+    <value>Impossível uma nova ação. Número de ações ativas excede o contratado no Plano de Assinatura</value>
+  </data>
+  <data name="M0204" xml:space="preserve">
+    <value>Data de vencimento não pode ser menor que a data corrente</value>
+  </data>
+  <data name="M0205" xml:space="preserve">
+    <value>Data de pagamento não pode ser maior que a data corrente</value>
+  </data>
+  <data name="M0206" xml:space="preserve">
+    <value>Já existe um pagamento vencendo no mês informado</value>
+  </data>
+  <data name="M0207" xml:space="preserve">
+    <value>Data de início do plano não pode ser maior que a data corrente</value>
+  </data>
+  <data name="M0208" xml:space="preserve">
+    <value>Data de término do plano não pode ser menor que a data corrente</value>
+  </data>
+  <data name="M0209" xml:space="preserve">
+    <value>Data de término do plano não pode ser menor que a data inicial</value>
+  </data>
+  <data name="M0210" xml:space="preserve">
+    <value>Plano de assinatura já incluído neste assinante</value>
+  </data>
+  <data name="M0211" xml:space="preserve">
+    <value>Assinante sem nenhum plano ativo. Contrate ou reative o seuplano de assinatura</value>
+  </data>
+  <data name="M0212" xml:space="preserve">
+    <value>Tipo de tarefa já cadastrado</value>
+  </data>
+  <data name="M0213" xml:space="preserve">
+    <value>Impossível excluir este tipo de tarefa. Existem registros vinculados a ele</value>
+  </data>
+  <data name="M0214" xml:space="preserve">
+    <value>Duração do plano de assinatura incompatível com sua periodicidade</value>
+  </data>
+  <data name="M0215" xml:space="preserve">
+    <value>Não existe nenhum plano de assinatura ativo para esse assinante</value>
+  </data>
+  <data name="M0216" xml:space="preserve">
+    <value>Faça novamente login no ERPSys para efetivar o cancelamento do plano</value>
+  </data>
+  <data name="M0217" xml:space="preserve">
+    <value>Plano de assinatura já solicitado por este assinante</value>
+  </data>
+  <data name="M0218" xml:space="preserve">
+    <value>Padrão de mensagem já cadastrado</value>
+  </data>
+  <data name="M0219" xml:space="preserve">
+    <value>Impossível excluir este padrão de mensagem. Existem registros vinculados a ele</value>
+  </data>
+  <data name="M0220" xml:space="preserve">
+    <value>Padrão de SMS já cadastrado</value>
+  </data>
+  <data name="M0221" xml:space="preserve">
+    <value>Impossível excluir este padrão de SMS. Existem registros vinculados a ele</value>
+  </data>
+  <data name="M0222" xml:space="preserve">
+    <value>Exibindo apenas o cliente alterado. Para visualizar todos, clique em Retirar Filtro</value>
+  </data>
+  <data name="M0223" xml:space="preserve">
+    <value>A senha deve ter no mínimo o número de caracteres definido na configuração</value>
+  </data>
+  <data name="M0224" xml:space="preserve">
+    <value>A senha deve conter pelo menos uma letra maiúscula, uma minúscula e um dígito numérico</value>
+  </data>
+  <data name="M0225" xml:space="preserve">
+    <value>A senha deve conter pelo menos um  caracter especial (@#$%&amp;)</value>
+  </data>
+  <data name="M0226" xml:space="preserve">
+    <value>A senha não pode conter o login nem o e-mail do usuário</value>
+  </data>
+  <data name="M0227" xml:space="preserve">
+    <value>A senha não pode ser igual à anterior</value>
+  </data>
+  <data name="M0228" xml:space="preserve">
+    <value>Sua senha precisa ser redefinida. Já ultrapassou a validade definida nas configurações do sistema</value>
+  </data>
+  <data name="M0229" xml:space="preserve">
+    <value>Impossível agendar para data/hora anterior à data/hora corrente</value>
+  </data>
+  <data name="M0230" xml:space="preserve">
+    <value>Impossível incluir/reativar pesquisa. O Número de pesquisas ativas excede o contratado no Plano de Assinatura</value>
+  </data>
+  <data name="M0231" xml:space="preserve">
+    <value>Pesquisa já cadastrada</value>
+  </data>
+  <data name="M0232" xml:space="preserve">
+    <value>Impossível excluir esta pesquisa. Existem registros vinculados a ela</value>
+  </data>
+  <data name="M0233" xml:space="preserve">
+    <value>Código de validação inválido. Tente novamente.</value>
+  </data>
+  <data name="M0234" xml:space="preserve">
+    <value>Código de validação não informado.</value>
+  </data>
+  <data name="M0235" xml:space="preserve">
+    <value>Uma mensagem com o código de validação foi enviada para o e-mail </value>
+  </data>
+  <data name="M0236" xml:space="preserve">
+    <value>Já existe uma categoria de ckiente com este número de ordem</value>
+  </data>
+  <data name="M0237" xml:space="preserve">
+    <value>A data de validade não pode ser anterior à data de criação da pesquisa</value>
+  </data>
+  <data name="M0238" xml:space="preserve">
+    <value>Impossível excluir esta pergunta. Já existem respostas associadas a ela.</value>
+  </data>
+  <data name="M0239" xml:space="preserve">
+    <value>Já existe uma pergunta com esse número de ordem</value>
+  </data>
+  <data name="M0240" xml:space="preserve">
+    <value>Envio de pesquisa sem destinatários definidos</value>
+  </data>
+  <data name="M0241" xml:space="preserve">
+    <value>Modelo de e-mail não especificado para este envio</value>
+  </data>
+  <data name="M0242" xml:space="preserve">
+    <value>Cliente inválido</value>
+  </data>
+  <data name="M0243" xml:space="preserve">
+    <value>Modelo de envio pesquisa inválido</value>
+  </data>
+  <data name="M0244" xml:space="preserve">
+    <value>Erro na gravação de mensagem enviada</value>
+  </data>
+  <data name="M0245" xml:space="preserve">
+    <value>Erro na gravação do resgistro de envio</value>
+  </data>
+  <data name="M0246" xml:space="preserve">
+    <value>Grupo de clientes inválido</value>
+  </data>
+  <data name="M0247" xml:space="preserve">
+    <value>Grupo sem clientes cadastrados</value>
+  </data>
+  <data name="M0248" xml:space="preserve">
+    <value>Pergunta obrigatória não pode ficar sem resposta</value>
+  </data>
+  <data name="M0249" xml:space="preserve">
+    <value>A pesquisa já foi respondida pelo usuário logado</value>
+  </data>
+  <data name="M0250" xml:space="preserve">
+    <value>Unidade já cadastrada</value>
+  </data>
+  <data name="M0251" xml:space="preserve">
+    <value>O dia de entrada deve ser um dia válido</value>
+  </data>
+  <data name="M0252" xml:space="preserve">
+    <value>Máquina já cadastrada</value>
+  </data>
+  <data name="M0253" xml:space="preserve">
+    <value>Impossível excluir essa máquina. Ela está vinculada a outros registros</value>
+  </data>
+  <data name="M0254" xml:space="preserve">
+    <value>Plataforma de entregas já cadastrada</value>
+  </data>
+  <data name="M0255" xml:space="preserve">
+    <value>Impossível excluir essa plataforma de entregas. Ela está vinculada a outros registros</value>
+  </data>
+  <data name="M0256" xml:space="preserve">
+    <value>Ticket alimentação já cadastrado</value>
+  </data>
+  <data name="M0257" xml:space="preserve">
+    <value>Impossível excluir esse ticket alimentação. Ele está vinculada a outros registros</value>
+  </data>
+  <data name="M0258" xml:space="preserve">
+    <value>Tipo de embalagem já cadastrado</value>
+  </data>
+  <data name="M0259" xml:space="preserve">
+    <value>Impossível excluir esse tipo de embalagem. Ele está vinculada a outros registros</value>
+  </data>
+  <data name="M0260" xml:space="preserve">
+    <value>Impossível excluir esse produto. Ele está vinculada a outros registros</value>
+  </data>
+  <data name="M0261" xml:space="preserve">
+    <value>Produto já cadastrado</value>
+  </data>
+  <data name="M0262" xml:space="preserve">
+    <value>Custo fixo já cadastrado</value>
+  </data>
+  <data name="M0263" xml:space="preserve">
+    <value>Data de agendamento inválida</value>
+  </data>
+  <data name="M0264" xml:space="preserve">
+    <value>Data de início não especificada</value>
+  </data>
+  <data name="M0265" xml:space="preserve">
+    <value>Data de término não especificada</value>
+  </data>
+  <data name="M0266" xml:space="preserve">
+    <value>Data de início superior a de término</value>
+  </data>
+  <data name="M0267" xml:space="preserve">
+    <value>Custo variável já cadastrado</value>
+  </data>
+  <data name="M0268" xml:space="preserve">
+    <value>Máquina não especificada</value>
+  </data>
+  <data name="M0269" xml:space="preserve">
+    <value>Plataforma de entrga não especificada</value>
+  </data>
+  <data name="M0270" xml:space="preserve">
+    <value>Ticket alimentação não especificado</value>
+  </data>
+  <data name="M0271" xml:space="preserve">
+    <value>Soma dos percentuais de vendas superior a 100%</value>
+  </data>
+  <data name="M0272" xml:space="preserve">
+    <value>Soma dos percentuais de vendas ainda inferior a 100%</value>
+  </data>
+  <data name="M0273" xml:space="preserve">
+    <value>Taxa não especificada</value>
+  </data>
+  <data name="M0274" xml:space="preserve">
+    <value>Antecipação já cadastrada</value>
+  </data>
+  <data name="M0275" xml:space="preserve">
+    <value>Produto não especificado</value>
+  </data>
+  <data name="M0276" xml:space="preserve">
+    <value>Categoria não especificada</value>
+  </data>
+  <data name="M0277" xml:space="preserve">
+    <value>Preço desejado não especificado</value>
+  </data>
+  <data name="M0278" xml:space="preserve">
+    <value>Margem de contribuição desejada não especificada</value>
+  </data>
+  <data name="M0279" xml:space="preserve">
+    <value>CMV desejado não especificado</value>
+  </data>
+  <data name="M0280" xml:space="preserve">
+    <value>Desconto não especificado</value>
+  </data>
+  <data name="M0281" xml:space="preserve">
+    <value>Dia de entrada deve ser um dia válido</value>
+  </data>
+  <data name="M0282" xml:space="preserve">
+    <value>Existe algum produto composto no escopo desta precificação que não tem valor de CMV calculado</value>
+  </data>
+  <data name="M0283" xml:space="preserve">
+    <value>Existe algum produto não composto no escopo desta precificação que não tem preço de custo informado</value>
+  </data>
+  <data name="M0284" xml:space="preserve">
+    <value>Venda Mensal já cadastrada para essa data de referência e tipo de venda</value>
+  </data>
+  <data name="M0285" xml:space="preserve">
+    <value>Valor total das vendas não pode ser zero para data de referencia e para o tipo de venda selecionado</value>
+  </data>
+  <data name="M0286" xml:space="preserve">
+    <value>Soma das parcelas de comissão diferentes do valor total</value>
+  </data>
+  <data name="M0287" xml:space="preserve">
+    <value>Custo de produto/servico já inserido para esta data</value>
+  </data>
+  <data name="M0288" xml:space="preserve">
+    <value>Impossível excluir este custo. O histórico de custos não pode ficar vazio</value>
+  </data>
+  <data name="M0289" xml:space="preserve">
+    <value>Impossível reativar. Custo de produto/serviço já inserido para esta data</value>
+  </data>
+  <data name="M0290" xml:space="preserve">
+    <value>Impossível excluir este preço de venda. O histórico de preços não pode ficar vazio</value>
+  </data>
+  <data name="M0291" xml:space="preserve">
+    <value>Impossível reativar. Preço de venda de produto/serviço já inserido para esta data</value>
+  </data>
+  <data name="M0292" xml:space="preserve">
+    <value>Preço de venda de produto/serviço já inserido para esta data</value>
+  </data>
+  <data name="M0293" xml:space="preserve">
+    <value>Cálculo de Custos Variáveis desatualizado. Execute o cálculo e retorne a essa tela</value>
+  </data>
+  <data name="M0294" xml:space="preserve">
+    <value>Nenhuma venda cadastrada para o mês corrente. Impossivel calcular os percentuais de custis variáveis para vendas</value>
+  </data>
+  <data name="M0295" xml:space="preserve">
+    <value>Categoria de custo já cadastrada</value>
+  </data>
+  <data name="M0296" xml:space="preserve">
+    <value>Impossível excluir esta categoria de custo. Ela está vinculada a outros registros</value>
+  </data>
+  <data name="M0297" xml:space="preserve">
+    <value>A data de início não pode ser inferior a data de término</value>
+  </data>
+  <data name="M0298" xml:space="preserve">
+    <value>Máquina de cartão incluída com sucesso</value>
+  </data>
+  <data name="M0299" xml:space="preserve">
+    <value>Meta já definida para esta data de referencia.</value>
+  </data>
+  <data name="M0300" xml:space="preserve">
+    <value>A soma das metas de comissões não pode ser maior que a soma das metas de vendas</value>
+  </data>
+  <data name="M0301" xml:space="preserve">
+    <value>Para periodicidade semanal, o dia da semana deverá ser informado</value>
+  </data>
+  <data name="M0302" xml:space="preserve">
+    <value>Dia do vencimento não informado</value>
+  </data>
+  <data name="M0303" xml:space="preserve">
+    <value>Ficha técnica já cadastrada para esse produto</value>
+  </data>
+  <data name="M0304" xml:space="preserve">
+    <value>Nenhum insumo definido nesta ficha técnica</value>
+  </data>
+  <data name="M0305" xml:space="preserve">
+    <value>Mensagem de E-Mail enviada com sucesso.</value>
+  </data>
+  <data name="M0306" xml:space="preserve">
+    <value>Falha no envio de E-Mail.</value>
+  </data>
+  <data name="M0307" xml:space="preserve">
+    <value>Validade do código de validação de alteração de senha expirado. Solicite uma senha provisória para entrar no CRMSys.</value>
+  </data>
+  <data name="M0308" xml:space="preserve">
+    <value>Usuário com senha pendente de validação.</value>
+  </data>
+  <data name="M0309" xml:space="preserve">
+    <value>Código de validação errado.</value>
+  </data>
+  <data name="M0310" xml:space="preserve">
+    <value>Sua senha precisa ser redefinida. Já ultrapassou a validade definida nas configurações do sistema</value>
+  </data>
+  <data name="M0311" xml:space="preserve">
+    <value>Data final da faixa de datas não pode ser inferior a data corrente</value>
+  </data>
+  <data name="M0312" xml:space="preserve">
+    <value>Número de linhas da planilha maior do que o máximo. Limite a 500 produtos por importação</value>
+  </data>
+  <data name="M0313" xml:space="preserve">
+    <value>Fornecedor já cadastrado</value>
+  </data>
+  <data name="M0314" xml:space="preserve">
+    <value>Impossível excluir Fornecedor. Existem registros vinculados a ele.</value>
+  </data>
+  <data name="M0315" xml:space="preserve">
+    <value>Percentual do estoque máximo não informado</value>
+  </data>
+  <data name="M0316" xml:space="preserve">
+    <value>Número de linhas da planilha maior do que o máximo. Limite a 5000 produtos por atualização de estoque</value>
+  </data>
+  <data name="M0317" xml:space="preserve">
+    <value>Foram enviadas mensagens de confirmação de reunião aos contatos do evento. Total:</value>
+  </data>
+  <data name="M0318" xml:space="preserve">
+    <value>Número de dias para início da exclusão deve ser maior que o número de dias para o final da exclusão</value>
+  </data>
+  <data name="M0319" xml:space="preserve">
+    <value>Data de início da faixa maior que a data final</value>
+  </data>
+  <data name="M0320" xml:space="preserve">
+    <value>registros de log foram movidos para o backup e removidos da base principal</value>
+  </data>
+  <data name="M0321" xml:space="preserve">
+    <value>Impossível agendar esse evento. Ele se sobrepõe a um ou mais eventos ja agendados para essa data</value>
+  </data>
+  <data name="M0322" xml:space="preserve">
+    <value>Código de entrada não informado corretamente</value>
+  </data>
+  <data name="M0323" xml:space="preserve">
+    <value>Nenhuma venda cadastrada</value>
+  </data>
+  <data name="M0324" xml:space="preserve">
+    <value>Código SKU obrigatório para este tipo de produto/serviço</value>
+  </data>
+  <data name="M0325" xml:space="preserve">
+    <value>Quantidade do estoque não informada</value>
+  </data>
+  <data name="M0326" xml:space="preserve">
+    <value>Justificativa do movimento não informada</value>
+  </data>
+  <data name="M0327" xml:space="preserve">
+    <value>Estoque especificado igual ao anterior</value>
+  </data>
+  <data name="M0328" xml:space="preserve">
+    <value>Nenhum parâmetro de seleção especificado</value>
+  </data>
+  <data name="M0329" xml:space="preserve">
+    <value>Custos variáveis recalculados com sucesso</value>
+  </data>
+  <data name="M0330" xml:space="preserve">
+    <value>A sua senha provisória foi enviada para seu e-mail cadastrado.</value>
+  </data>
+  <data name="M0331" xml:space="preserve">
+    <value>Valor total das vendas diferente da soma das vendas por categoria</value>
+  </data>
+  <data name="M0332" xml:space="preserve">
+    <value>Você foi redirecionado para a página de entrada da aplicação</value>
+  </data>
+  <data name="M0333" xml:space="preserve">
+    <value>Impossível editar um evento com data/hora inferior a data/hora corrente</value>
+  </data>
+  <data name="M0334" xml:space="preserve">
+    <value>Já existe agendamento nesta data que sobrepõe esse horário</value>
+  </data>
+  <data name="M0335" xml:space="preserve">
+    <value>Início do evento anterior ao final</value>
+  </data>
+  <data name="M0336" xml:space="preserve">
+    <value>Esse evento deve ter um contato especificado</value>
+  </data>
+  <data name="M0337" xml:space="preserve">
+    <value>Impossível desvincular essa máquina. Ela já está associada à vendas mensais</value>
+  </data>
+  <data name="M0338" xml:space="preserve">
+    <value>Impossível desvincular essa plataforma. Ela já está associada à vendas mensais</value>
+  </data>
+  <data name="M0339" xml:space="preserve">
+    <value>Impossível desvincular esse ticket. Ele já está associado à vendas mensais</value>
+  </data>
+  <data name="M0340" xml:space="preserve">
+    <value>suporte Rti pelos canais de comunicação</value>
+  </data>
+  <data name="M0341" xml:space="preserve">
+    <value>Nenhum assinante encontrado para esse usuário. Entre em contato com o suporte RTi pelos canais de comunicação</value>
+  </data>
+  <data name="M0342" xml:space="preserve">
+    <value>Assinante bloqueado. Entre em contato com o suporte Rti pelos canais de comunicação</value>
+  </data>
+  <data name="M0343" xml:space="preserve">
+    <value>Assinante com plano vencido e será bloqueado. Entre em contato com o suporte RTi pelos canais de comunicação</value>
+  </data>
+  <data name="M0344" xml:space="preserve">
+    <value>Assinante inativo. Entre em contato com o suporte RTi pelos canais de comunicação</value>
+  </data>
+  <data name="M0345" xml:space="preserve">
+    <value>Assinante com parcelas em aberto. Entre em contato com o suporte RTi pelos canais de comunicação</value>
+  </data>
+  <data name="M0346" xml:space="preserve">
+    <value>Faltam algumas tags obrigatórias no modelo de mensagem. Verifique se conteúdo</value>
+  </data>
+  <data name="M0347" xml:space="preserve">
+    <value>Texto da mensagem não especificado</value>
+  </data>
+  <data name="M0348" xml:space="preserve">
+    <value>Impossível incluir/reativar fornecedores. Número de fornecedores ativos excede o contratado no Plano de Assinatura</value>
+  </data>
+  <data name="M0349" xml:space="preserve">
+    <value>Impossível incluir/reativar produtos. Número de produtos ativos excede o contratado no Plano de Assinatura</value>
+  </data>
+  <data name="M0350" xml:space="preserve">
+    <value>Impossível executar uma nova precificação. Número de precificações executadas no mês corrente excede o contratado no Plano de Assinatura</value>
+  </data>
+  <data name="M0351" xml:space="preserve">
+    <value>Impossível enviar mensagem de e-mail. Número de envios  no mês corrente excede o contratado no Plano de Assinatura</value>
+  </data>
+  <data name="M0352" xml:space="preserve">
+    <value>Impossível enviar mensagem de SMS. Número de envios  no mês corrente excede o contratado no Plano de Assinatura</value>
+  </data>
+  <data name="M0353" xml:space="preserve">
+    <value>Texto da mensagem não informado</value>
+  </data>
+  <data name="M0354" xml:space="preserve">
+    <value>Data de pagamento não informada</value>
+  </data>
+  <data name="M0355" xml:space="preserve">
+    <value>Valor pago não informado</value>
+  </data>
+  <data name="M0356" xml:space="preserve">
+    <value>Arquivo anexo não encontrado</value>
+  </data>
+  <data name="M0357" xml:space="preserve">
+    <value>Arquivo anexo com nome maior que 150 caracteres</value>
+  </data>
+  <data name="M0358" xml:space="preserve">
+    <value>Formato de anexo inválido. Formatos permitidos: JPG e PNG</value>
+  </data>
+  <data name="M0359" xml:space="preserve">
+    <value>Telefone não informado</value>
+  </data>
+  <data name="M0360" xml:space="preserve">
+    <value>Celular não informado</value>
+  </data>
+  <data name="M0361" xml:space="preserve">
+    <value>E-Mail não informado</value>
+  </data>
+  <data name="M0362" xml:space="preserve">
+    <value>Nenhuma forma de resposta selecionada</value>
+  </data>
+  <data name="M0363" xml:space="preserve">
+    <value>Nenhum plano selecionado</value>
+  </data>
+  <data name="M0364" xml:space="preserve">
+    <value>Plano selecionado igual ao plano atual</value>
+  </data>
+  <data name="M0365" xml:space="preserve">
+    <value>E-Mail enviado ao usuário selecionado</value>
+  </data>
+  <data name="M0366" xml:space="preserve">
+    <value>Motivo de cancelamento não informado</value>
+  </data>
+  <data name="M0367" xml:space="preserve">
+    <value>E-Mail enviado para o suporte da RTi com sua solicitação de alteração do plano de assinatura</value>
+  </data>
+  <data name="M0368" xml:space="preserve">
+    <value>E-Mail enviado para o suporte da RTi com sua solicitação</value>
+  </data>
+  <data name="M0369" xml:space="preserve">
+    <value>Modelo de mensagem para reunião alterado com sucesso</value>
+  </data>
+  <data name="M0370" xml:space="preserve">
+    <value>Texto da mensagem não informado</value>
+  </data>
+  <data name="M0371" xml:space="preserve">
+    <value>Impossível excluir este lançamento. Ele já foi liquidado total ou parcialmente</value>
+  </data>
+  <data name="M0372" xml:space="preserve">
+    <value>Data de inicio de parcelamento menor que a data corrente</value>
+  </data>
+  <data name="M0373" xml:space="preserve">
+    <value>Numero de parcelas menor do que 2</value>
+  </data>
+  <data name="M0374" xml:space="preserve">
+    <value>Pagamento/Recebimento recorrente não pode ser parcelado</value>
+  </data>
+  <data name="M0375" xml:space="preserve">
+    <value>Data inicial das ocorrências não definida</value>
+  </data>
+  <data name="M0376" xml:space="preserve">
+    <value>A data de início do parcelamento deve ser especificada</value>
+  </data>
+  <data name="M0377" xml:space="preserve">
+    <value>Data de liquidacao maior que a data corrente</value>
+  </data>
+  <data name="M0378" xml:space="preserve">
+    <value>Soma dos itens diferente do valor total</value>
+  </data>
+  <data name="M0379" xml:space="preserve">
+    <value>Impossivel pagar/receber parcial um lancamento parcelado</value>
+  </data>
+  <data name="M0380" xml:space="preserve">
+    <value>Valor parcial maior que o valor total</value>
+  </data>
+  <data name="M0381" xml:space="preserve">
+    <value>Valor parcial igual ao valor total</value>
+  </data>
+  <data name="M0382" xml:space="preserve">
+    <value>Impossivel liquidar um lancamento parcelado. As parcelas devem ser liquidadas individualmente</value>
+  </data>
+  <data name="M0383" xml:space="preserve">
+    <value>Impossivel parcelar lancamento com pagamento parcial</value>
+  </data>
+  <data name="M0384" xml:space="preserve">
+    <value>Soma dos percentuais de rateio maior do que 100</value>
+  </data>
+  <data name="M0385" xml:space="preserve">
+    <value>Valor pago/recebido nulo ou inválido</value>
+  </data>
+  <data name="M0386" xml:space="preserve">
+    <value>Impossível efetuar o pagamento. Saldo insuficiente na conta bancária selecionada</value>
+  </data>
+  <data name="M0387" xml:space="preserve">
+    <value>Valor pago/recebido maior que a soma das parcelas do pagamento/recebimento</value>
+  </data>
+  <data name="M0388" xml:space="preserve">
+    <value>Valor pago/recebido menor que a soma das parcelas e já é pagamento/recebimento parcial</value>
+  </data>
+  <data name="M0389" xml:space="preserve">
+    <value>Impossível excluir este lançamento. Ele é parcelado e alguma das parcelas já foi liquidada</value>
+  </data>
+  <data name="M0390" xml:space="preserve">
+    <value>Valor pago/recebido para a parcela não pode ser menor que o valor da parcela</value>
+  </data>
+  <data name="M0391" xml:space="preserve">
+    <value>Número de linhas da planilha de importação excede o máximo de 300 linhas</value>
+  </data>
+  <data name="M0392" xml:space="preserve">
+    <value>Impossível incluir/reativar este pagamento. O número de pagamentos ativos excede o contratado no Plano de Assinatura</value>
+  </data>
+  <data name="M0393" xml:space="preserve">
+    <value>Impossível incluir/reativar os pagamentos dessa planilha. O número de pagamentos ativos excede o contratado no Plano de Assinatura</value>
+  </data>
+  <data name="M0394" xml:space="preserve">
+    <value>Número de recorrências não informado ou zerado</value>
+  </data>
+  <data name="M0395" xml:space="preserve">
+    <value>Número de parcelas não informado ou zerado</value>
+  </data>
+  <data name="M0396" xml:space="preserve">
+    <value>Modelo inválido de planilha de importação de pagamentos</value>
+  </data>
+  <data name="M0397" xml:space="preserve">
+    <value>Modelo inválido de planilha de importação de liquidação de pagamentos</value>
+  </data>
+  <data name="M0398" xml:space="preserve">
+    <value>Modelo inválido de planilha de importação de clientes</value>
+  </data>
+  <data name="M0399" xml:space="preserve">
+    <value>Impossível incluir os clientes dessa planilha. O número de clientes ativos excede o contratado no Plano de Assinatura</value>
+  </data>
+  <data name="M0400" xml:space="preserve">
+    <value>Foram enviadas </value>
+  </data>
+  <data name="M0401" xml:space="preserve">
+    <value>Nenhum arquivo HTML selecionado para envio</value>
+  </data>
+  <data name="M0402" xml:space="preserve">
+    <value>Impossível excluir esse lançamento, Existem informações vinculadas a ele</value>
+  </data>
+  <data name="M0403" xml:space="preserve">
+    <value>Impossível incluir/reativar este recebimento. O número de recebimentos ativos excede o contratado no Plano de Assinatura</value>
+  </data>
+  <data name="M0404" xml:space="preserve">
+    <value>Número de parcelas do recebimento não informado ou zerado</value>
+  </data>
+  <data name="M0405" xml:space="preserve">
+    <value>Valor recebido nulo ou inválido</value>
+  </data>
+  <data name="M0406" xml:space="preserve">
+    <value>Valor recebido para a parcela não pode ser menor que o valor da parcela</value>
+  </data>
+  <data name="M0407" xml:space="preserve">
+    <value>Número de documento já existente</value>
+  </data>
+  <data name="M0408" xml:space="preserve">
+    <value>Usuário não tem acesso ao </value>
+  </data>
+  <data name="M0409" xml:space="preserve">
+    <value>Categoria já cadastrada</value>
+  </data>
+  <data name="M0410" xml:space="preserve">
+    <value>Impossível excluir esta categoria. Existem registros vinculados a ela</value>
+  </data>
+  <data name="M0411" xml:space="preserve">
+    <value>Impossível excluir esta unidade. Existem registros vinculados a ela</value>
+  </data>
+  <data name="M0412" xml:space="preserve">
+    <value>Impossível excluir este produto. Existem registros vinculados a ele</value>
+  </data>
+  <data name="M0413" xml:space="preserve">
+    <value>Código SKU já existente</value>
+  </data>
+  <data name="M0414" xml:space="preserve">
+    <value>Produto já cadastrado</value>
+  </data>
+  <data name="M0415" xml:space="preserve">
+    <value>Impossível excluir esta filial. Existem informações vinculadas a ela</value>
+  </data>
+  <data name="M0416" xml:space="preserve">
+    <value>Proposta enviada para cliente.  </value>
+  </data>
+  <data name="M0417" xml:space="preserve">
+    <value>Serviço já cadastrado</value>
+  </data>
+  <data name="M0418" xml:space="preserve">
+    <value>Impossível excluir este serviço. Existem registros vinculados a ele</value>
+  </data>
+  <data name="M0419" xml:space="preserve">
+    <value>Impossível incluir/reativar serviço. Número de serviços ativos excede o contratado no Plano de Assinatura</value>
+  </data>
+  <data name="M0420" xml:space="preserve">
+    <value>Impossível excluir este serviço. Ele está vinculado a um ou mais pedidos de venda</value>
+  </data>
+  <data name="M0421" xml:space="preserve">
+    <value>A unidade selecionada não pode ser fracionada</value>
+  </data>
+  <data name="M0422" xml:space="preserve">
+    <value>Perfil já cadastrado</value>
+  </data>
+  <data name="M0423" xml:space="preserve">
+    <value>Impossível excluir este pefil. Existem usuários vinculados a ele</value>
+  </data>
+  <data name="M0424" xml:space="preserve">
+    <value>Impossível fazer o agendamento dessa ação por alguma divergência no horário. Faça agendamento manual.</value>
+  </data>
+  <data name="M0425" xml:space="preserve">
+    <value>Número de Celular já existente para um cliente cadastrado</value>
+  </data>
+  <data name="M0426" xml:space="preserve">
+    <value>Informações obrigatórias não preenchidas</value>
+  </data>
+  <data name="M0427" xml:space="preserve">
+    <value>Nenhum arquivo HTML de modelo de mensagem foi selecionado</value>
+  </data>
+  <data name="M0428" xml:space="preserve">
+    <value>Arquivo HTML de modelo de mensagem com nome com mais de 350 caracteres</value>
+  </data>
+  <data name="M0429" xml:space="preserve">
+    <value>Arquivo HTML de modelo de mensagem importado com sucesso</value>
+  </data>
+  <data name="M0430" xml:space="preserve">
+    <value>Arquivo HTML de modelo já cadastrado</value>
+  </data>
+  <data name="M0431" xml:space="preserve">
+    <value>Erro na Anexação - Tamanho do arquivo a anexar não pode ser superior a 50Mb</value>
+  </data>
+  <data name="M0432" xml:space="preserve">
+    <value>Cliente incluído com sucesso.</value>
+  </data>
+  <data name="M0433" xml:space="preserve">
+    <value>Impossível incluir/reativar grupo. Número de grupos ativos excede o contratado no Plano de Assinatura</value>
+  </data>
+  <data name="M0434" xml:space="preserve">
+    <value>Impossível incluir novo item neste grupo. Número de itens no grupo excede o contratado no Plano de Assinatura</value>
+  </data>
+  <data name="M0435" xml:space="preserve">
+    <value>Grupo criado sem nenhum item. Deve ser incluído pelo menos um item</value>
+  </data>
+  <data name="M0436" xml:space="preserve">
+    <value>Impossível incluir nova conta bancária. Número de contas bancárias excede o contratado no Plano de Assinatura</value>
+  </data>
+  <data name="M0437" xml:space="preserve">
+    <value>Forma de envio já cadastrada</value>
+  </data>
+  <data name="M0438" xml:space="preserve">
+    <value>Impossível excluir esta forma. Existem registros vinculados a ela</value>
+  </data>
+  <data name="M0439" xml:space="preserve">
+    <value>Forma de frete já cadastrada</value>
+  </data>
+  <data name="M0440" xml:space="preserve">
+    <value>Impossível incluir/reativar processos de compra. Número de processos de compra ativos excede o contratado no Plano de Assinatura</value>
+  </data>
+  <data name="M0441" xml:space="preserve">
+    <value>Fornecedor não especificado</value>
+  </data>
+  <data name="M0442" xml:space="preserve">
+    <value>Você não se declarou humano</value>
+  </data>
+  <data name="M0443" xml:space="preserve">
+    <value>Dia de vencimento deve ser um dia válido</value>
+  </data>
+  <data name="M0444" xml:space="preserve">
+    <value>Dia de vencimento não informado.</value>
+  </data>
+  <data name="M0445" xml:space="preserve">
+    <value>Dia de semana não informado.</value>
+  </data>
+  <data name="M0446" xml:space="preserve">
+    <value>Nenhuma empresa/filial selecionada</value>
+  </data>
+  <data name="M0447" xml:space="preserve">
+    <value>Nenhum produto selecionado para processar precificação</value>
+  </data>
+  <data name="M0448" xml:space="preserve">
+    <value>Nenhum histórico de estoque registrado para esse produto</value>
+  </data>
+  <data name="M0449" xml:space="preserve">
+    <value>Forma de pagamento não definida para esta compra manual</value>
+  </data>
+  <data name="M0450" xml:space="preserve">
+    <value>Valor da compra manual não informado ou zerado</value>
+  </data>
+  <data name="M0451" xml:space="preserve">
+    <value>Os tipos de lançamentos de pagamento a serem gerados para esta compra não foram especificados</value>
+  </data>
+  <data name="M0452" xml:space="preserve">
+    <value>Data de registro do lançamento de pagamento não pode ser inferior à data corrente</value>
+  </data>
+  <data name="M0453" xml:space="preserve">
+    <value>Data do lançamento na conta bancária não pode ser inferior à data corrente</value>
+  </data>
+  <data name="M0454" xml:space="preserve">
+    <value>A quantidade movimentada não pode ser negativa</value>
+  </data>
+  <data name="M0455" xml:space="preserve">
+    <value>Nenhum autorizador definido para esta movimentação</value>
+  </data>
+  <data name="M0456" xml:space="preserve">
+    <value>Nenhum fornecedor definido para esta movimentação como retorno de manutenção</value>
+  </data>
+  <data name="M0457" xml:space="preserve">
+    <value>Nenhuma proposta definida para esta movimentação de devolução de venda</value>
+  </data>
+  <data name="M0458" xml:space="preserve">
+    <value>Filial de origem/destino não especificada para a transferência</value>
+  </data>
+  <data name="M0459" xml:space="preserve">
+    <value>Nenhum produto selecionado para esta movimentação</value>
+  </data>
+  <data name="M0460" xml:space="preserve">
+    <value>Não fornecida senha do autorizador</value>
+  </data>
+  <data name="M0461" xml:space="preserve">
+    <value>Senha de autorização inválida ou incorreta</value>
+  </data>
+  <data name="M0462" xml:space="preserve">
+    <value>Nenhuma matriz/filial especificada para a movimentação</value>
+  </data>
+  <data name="M0463" xml:space="preserve">
+    <value>Tipo de Entrada/Saída não definido</value>
+  </data>
+  <data name="M0464" xml:space="preserve">
+    <value>Planilha de Atualização de Estoque não validada.</value>
+  </data>
+  <data name="M0465" xml:space="preserve">
+    <value>Planilha de Atualização de Estoque selecionada já foi processada integralmente</value>
+  </data>
+  <data name="M0466" xml:space="preserve">
+    <value>Planilha de Informação de Pagamentos selecionada já foi processada integralmente</value>
+  </data>
+  <data name="M0467" xml:space="preserve">
+    <value>Planilha de Informação de Recebimentos selecionada já foi processada integralmente</value>
+  </data>
+  <data name="M0468" xml:space="preserve">
+    <value>A planilha selecionada não é de Atualização de Estoque</value>
+  </data>
+  <data name="M0469" xml:space="preserve">
+    <value>A planilha selecionada não é de Atualização de Pagamentos</value>
+  </data>
+  <data name="M0470" xml:space="preserve">
+    <value>A planilha selecionada não é de Atualização de Recebimentos</value>
+  </data>
+  <data name="M0471" xml:space="preserve">
+    <value>Planilha de atualização de pagamentos gerada conforme especificado. Planilha: </value>
+  </data>
+  <data name="M0472" xml:space="preserve">
+    <value>Planilha de atualização de recebimentos gerada conforme especificado. Planilha:</value>
+  </data>
+  <data name="M0473" xml:space="preserve">
+    <value>Planilha de atualização de estoque gerada conforme especificado. Planilha:</value>
+  </data>
+  <data name="M0474" xml:space="preserve">
+    <value>Planilha gerada na pasta padrão local de download da máquina do usuário</value>
+  </data>
+  <data name="M0475" xml:space="preserve">
+    <value>Planilha selecionada não é do tipo Importação de lançamentos de Pagamentos</value>
+  </data>
+  <data name="M0476" xml:space="preserve">
+    <value>Planilha selecionada não é do tipo Atualização de Pagamentos</value>
+  </data>
+  <data name="M0477" xml:space="preserve">
+    <value>Planilha selecionada não é do tipo Importação de lançamentos de Recebimentos</value>
+  </data>
+  <data name="M0478" xml:space="preserve">
+    <value>Planilha selecionada não é do tipo Atualização de Recebimentos</value>
+  </data>
+  <data name="M0479" xml:space="preserve">
+    <value>Planilha selecionada não é do tipo Atualização de Estoque</value>
+  </data>
+  <data name="M0480" xml:space="preserve">
+    <value>Tipo de Veículo já cadastrado</value>
+  </data>
+  <data name="M0481" xml:space="preserve">
+    <value>Impossível excluir este tipo de veículo. Existem registros vinculados a ele</value>
+  </data>
+  <data name="M0482" xml:space="preserve">
+    <value>Tipo de Transporte já cadastrado</value>
+  </data>
+  <data name="M0483" xml:space="preserve">
+    <value>Impossível excluir este tipo de transporte. Existem registros vinculados a ele</value>
+  </data>
+  <data name="M0484" xml:space="preserve">
+    <value>Função de veículo já cadastrada</value>
+  </data>
+  <data name="M0485" xml:space="preserve">
+    <value>Impossível excluir esta função de veículo. Existem registros vinculados a ela</value>
+  </data>
+  <data name="M0486" xml:space="preserve">
+    <value>O CEP inicial não pode ser maior do que o CEP final</value>
+  </data>
+  <data name="M0487" xml:space="preserve">
+    <value>Região já cadastrada</value>
+  </data>
+  <data name="M0488" xml:space="preserve">
+    <value>Região cadastrada com sucesso</value>
+  </data>
+  <data name="M0489" xml:space="preserve">
+    <value>Impossível excluir esta região. Existem registros vinculados a ela</value>
+  </data>
+  <data name="M0490" xml:space="preserve">
+    <value>Não pode ser informado apenas um dos CEPs da faixa de CEP. Os dois devem ser informados</value>
+  </data>
+  <data name="M0491" xml:space="preserve">
+    <value>Nenhum delimitador de área da região foi definido. Uma UF, uma cidade ou uma faixa e CEPs deve ser informada</value>
+  </data>
+  <data name="M0492" xml:space="preserve">
+    <value>Transportadora já cadastrada</value>
+  </data>
+  <data name="M0493" xml:space="preserve">
+    <value>Impossível excluir esta transportadora. Existem registros vinculados a ela</value>
+  </data>
+  <data name="M0494" xml:space="preserve">
+    <value>Impossível incluir esse produto na proposta. Não tem estoque na matriz/filial especificada.</value>
+  </data>
+  <data name="M0495" xml:space="preserve">
+    <value>Impossível incluir esse serviço na proposta. Não tem estoque na matriz/filial especificada para as peças necessárias.</value>
+  </data>
+  <data name="M0496" xml:space="preserve">
+    <value>Data de aprovação não informada</value>
+  </data>
+  <data name="M0497" xml:space="preserve">
+    <value>Data de reprovação não informada</value>
+  </data>
+  <data name="M0498" xml:space="preserve">
+    <value>Justificativa da reprovação não informada</value>
+  </data>
+  <data name="M0499" xml:space="preserve">
+    <value>Preço de venda não informado</value>
+  </data>
+  <data name="M0500" xml:space="preserve">
+    <value>Quantidade não informada</value>
+  </data>
+  <data name="M0501" xml:space="preserve">
+    <value>Produto não selecionado</value>
+  </data>
+  <data name="M0502" xml:space="preserve">
+    <value>Serviço não selecionado</value>
+  </data>
+  <data name="M0503" xml:space="preserve">
+    <value>Tipo de Paciente já cadastrado</value>
+  </data>
+  <data name="M0504" xml:space="preserve">
+    <value>Impossível excluir este tipo de paciente. Existem registros vinculados a ele</value>
+  </data>
+  <data name="M0505" xml:space="preserve">
+    <value>Tipo de exame já cadastrado</value>
+  </data>
+  <data name="M0506" xml:space="preserve">
+    <value>Impossível excluir este tipo de exame. Existem registros vinculados a ele</value>
+  </data>
+  <data name="M0507" xml:space="preserve">
+    <value>Tipo de atestado já cadastrado</value>
+  </data>
+  <data name="M0508" xml:space="preserve">
+    <value>Impossível excluir este tipo de atestado. Existem registros vinculados a ele</value>
+  </data>
+  <data name="M0509" xml:space="preserve">
+    <value>Convênio já cadastrado</value>
+  </data>
+  <data name="M0510" xml:space="preserve">
+    <value>Impossível excluir este tipo de convênio. Existem registros vinculados a ele</value>
+  </data>
+  <data name="M0511" xml:space="preserve">
+    <value>Exibindo apenas o paciente que estava em edição. Para visualizar todos, clique em Retirar Filtro</value>
+  </data>
+  <data name="M0512" xml:space="preserve">
+    <value>Impossível incluir/reativar pacientes. Número de pacientes ativos excede o contratado no Plano de Assinatura</value>
+  </data>
+  <data name="M0513" xml:space="preserve">
+    <value>Nome do paciente não informado</value>
+  </data>
+  <data name="M0514" xml:space="preserve">
+    <value>Paciente incluído com sucesso</value>
+  </data>
+  <data name="M0515" xml:space="preserve">
+    <value>Impossível excluir este paciente. Existem consultas agendadas em aberto.</value>
+  </data>
+  <data name="M0516" xml:space="preserve">
+    <value>Impossível incluir/reativar grupos de pacientes. Número de grupos pacientes ativos excede o contratado no Plano de Assinatura</value>
+  </data>
+  <data name="M0517" xml:space="preserve">
+    <value>Prescrição encaminhada com sucesso. Identificador do envio</value>
+  </data>
+  <data name="M0518" xml:space="preserve">
+    <value>Falha no envio da prescrição</value>
+  </data>
+  <data name="M0519" xml:space="preserve">
+    <value>Não foi possível criar a consulta de forma automática. Existe superposição de horários na data especificada. Crie a consulta manualmente.</value>
+  </data>
+  <data name="M0520" xml:space="preserve">
+    <value>Atestado encaminhado com sucesso. Identificador do envio</value>
+  </data>
+  <data name="M0521" xml:space="preserve">
+    <value>Falha no envio do atestado</value>
+  </data>
+  <data name="M0522" xml:space="preserve">
+    <value>Solicitação de exame encaminhada com sucesso. Identificador do envio</value>
+  </data>
+  <data name="M0523" xml:space="preserve">
+    <value>Falha no envio da solicitação de exame</value>
+  </data>
+  <data name="M0524" xml:space="preserve">
+    <value>Não foi possível criar a consulta. Existe superposição de horários na data especificada. </value>
+  </data>
+  <data name="M0525" xml:space="preserve">
+    <value>POSOLOGIA é de preenchimento obrigatório</value>
+  </data>
+  <data name="M0526" xml:space="preserve">
+    <value>Data da consulta não pode ser anterior à data corrente</value>
+  </data>
+  <data name="M0527" xml:space="preserve">
+    <value>PACIENTE não especificado</value>
+  </data>
+  <data name="M0528" xml:space="preserve">
+    <value>Nenhuma consulta marcada para a data corrente</value>
+  </data>
+  <data name="M0529" xml:space="preserve">
+    <value>Hora inicial não pode ser igual à final</value>
+  </data>
+  <data name="M0530" xml:space="preserve">
+    <value>Hora inicial não pode ser posterior à final</value>
+  </data>
+  <data name="M0531" xml:space="preserve">
+    <value>Data de nascimento não pode ser superior a data corrente</value>
+  </data>
+  <data name="M0532" xml:space="preserve">
+    <value>SMS enviado ao usuário selecionado</value>
+  </data>
+  <data name="M0533" xml:space="preserve">
+    <value>Já existe consulta agendada na data selecionada para este paciente</value>
+  </data>
+  <data name="M0534" xml:space="preserve">
+    <value>Nova consulta marcada para </value>
+  </data>
+  <data name="M0535" xml:space="preserve">
+    <value>Erro na Anexação - Este arquivo não poderá ser anexado. Extensão não suportada.</value>
+  </data>
+  <data name="M0536" xml:space="preserve">
+    <value>Laboratório já cadastrado</value>
+  </data>
+  <data name="M0537" xml:space="preserve">
+    <value>Nenhuma consulta futura agendada.</value>
+  </data>
+  <data name="M0538" xml:space="preserve">
+    <value>Não existem consultas anteriores à data corrente</value>
+  </data>
+  <data name="M0539" xml:space="preserve">
+    <value>Anexo excluido com sucesso</value>
+  </data>
+  <data name="M0540" xml:space="preserve">
+    <value>Solicitação inválida. Anexo não encontrado</value>
+  </data>
+  <data name="M0541" xml:space="preserve">
+    <value>Medicamento já cadastrado</value>
+  </data>
+  <data name="M0542" xml:space="preserve">
+    <value>Dados incompletos para o novo paciente, Complete os dados e refaça a marcação da consulta</value>
+  </data>
+  <data name="M0543" xml:space="preserve">
+    <value>Paciente já cadastrado. Selecione o paciente na lista e refaça a marcação da consulta</value>
+  </data>
+  <data name="M0544" xml:space="preserve">
+    <value>Nenhum paciente selecionado para esta consulta</value>
+  </data>
+  <data name="M0545" xml:space="preserve">
+    <value>Horario de início ou de término da consulta não definido</value>
+  </data>
+  <data name="M0546" xml:space="preserve">
+    <value>Foi habilitada um item opcional sem o título da pergunta ser especificado</value>
+  </data>
+  <data name="M0547" xml:space="preserve">
+    <value>Data de aviso não pode ser anterior à data corrente</value>
+  </data>
+  <data name="M0548" xml:space="preserve">
+    <value>Horario de início ou de término não definido</value>
+  </data>
+  <data name="M0549" xml:space="preserve">
+    <value>Intervalo definido fora do horário comercial</value>
+  </data>
+  <data name="M0550" xml:space="preserve">
+    <value>Intervalo inválido</value>
+  </data>
+  <data name="M0551" xml:space="preserve">
+    <value>A data selecionada para a consulta não está registrada como dia útil</value>
+  </data>
+  <data name="M0552" xml:space="preserve">
+    <value>A faixa de horário da consulta está fora do horário util definido para o dia da semana</value>
+  </data>
+  <data name="M0553" xml:space="preserve">
+    <value>A faixa de horário da consulta está sobrepondo a faixa de intevalo definida para o dia da semana</value>
+  </data>
+  <data name="M0554" xml:space="preserve">
+    <value>Não foi possível criar a consulta de forma automática. A data selecionada para a consulta não está registrada como dia útil. Crie a consulta manualmente.</value>
+  </data>
+  <data name="M0555" xml:space="preserve">
+    <value>Não foi possível criar a consulta de forma automática. A faixa de horário da consulta está fora do horário util definido para o dia da semana. Crie a consulta manualmente.</value>
+  </data>
+  <data name="M0556" xml:space="preserve">
+    <value>Não foi possível criar a consulta de forma automática. A faixa de horário da consulta está sobrepondo a faixa de intevalo definida para o dia da semana. Crie a consulta manualmente.</value>
+  </data>
+  <data name="M0557" xml:space="preserve">
+    <value>Modelo de Solicitação de Exame já cadastrado</value>
+  </data>
+  <data name="M0558" xml:space="preserve">
+    <value>A data inicial da faixa deve ser definida</value>
+  </data>
+  <data name="M0559" xml:space="preserve">
+    <value>A data final da faixa não pode ser inferior à data corrente</value>
+  </data>
+  <data name="M0560" xml:space="preserve">
+    <value>A data inicial da faixa não pode ser superior à data final</value>
+  </data>
+  <data name="M0561" xml:space="preserve">
+    <value>A faixa de horário tem que estar completa</value>
+  </data>
+  <data name="M0562" xml:space="preserve">
+    <value>A faixa de horário deve ter no mínimo 1 hora de duração</value>
+  </data>
+  <data name="M0563" xml:space="preserve">
+    <value>O limite inferior da faixa de horário não pode ser maior que o limite superior</value>
+  </data>
+  <data name="M0564" xml:space="preserve">
+    <value>Impossível criar este bloqueio de data/horário. Já existem consultas marcadas nesta faixa de data/hora</value>
+  </data>
+  <data name="M0565" xml:space="preserve">
+    <value>Impossível marcar a consulta. Horário bloqueado. Consulte os horários bloqueados</value>
+  </data>
+  <data name="M0566" xml:space="preserve">
+    <value>Especialidade já cadastrada</value>
+  </data>
+  <data name="M0567" xml:space="preserve">
+    <value>Impossível excluir esta especialidade. Existem registros vinculados a ela</value>
+  </data>
+  <data name="M0568" xml:space="preserve">
+    <value>Nenhum acesso principal foi permitido (módulos principais). Impossível criar esse perfil</value>
+  </data>
+  <data name="M0569" xml:space="preserve">
+    <value>Falha na inclusão do perfil. Consulte os erros de processamento.</value>
+  </data>
+  <data name="M0570" xml:space="preserve">
+    <value>Selecione um mode de atribuição de perfil</value>
+  </data>
+  <data name="M0571" xml:space="preserve">
+    <value>Já existe um perfil cadastrado com este nome/sigla</value>
+  </data>
+  <data name="M0572" xml:space="preserve">
+    <value>Paciente já cadastrado</value>
+  </data>
+  <data name="M0573" xml:space="preserve">
+    <value>Forma de Recebimento já cadastrada</value>
+  </data>
+  <data name="M0574" xml:space="preserve">
+    <value>Impossível excluir esta forma de recebimento. Existem registros vinculados a ela</value>
+  </data>
+  <data name="M0575" xml:space="preserve">
+    <value>Tipo de Pagamento já cadastrado</value>
+  </data>
+  <data name="M0576" xml:space="preserve">
+    <value>Impossível excluir este tipo de pagamento. Existem registros vinculados a ele</value>
+  </data>
+  <data name="M0577" xml:space="preserve">
+    <value>Tipo de Consulta já cadastrado</value>
+  </data>
+  <data name="M0578" xml:space="preserve">
+    <value>Impossível excluir este tipo de consulta. Existem registros vinculados a ele</value>
+  </data>
+  <data name="M0579" xml:space="preserve">
+    <value>Tipo de Serviço já cadastrado</value>
+  </data>
+  <data name="M0580" xml:space="preserve">
+    <value>Impossível excluir este tipo de serviço. Existem registros vinculados a ele</value>
+  </data>
+  <data name="M0581" xml:space="preserve">
+    <value>A data de referência do valor não pode ser superior à data corrente</value>
+  </data>
+  <data name="M0582" xml:space="preserve">
+    <value>Impossível excluir este valor de consulta. Existem registros vinculados a ele</value>
+  </data>
+  <data name="M0583" xml:space="preserve">
+    <value>Impossível excluir este valor de convênio. Existem registros vinculados a ele</value>
+  </data>
+  <data name="M0584" xml:space="preserve">
+    <value>Valor de consulta já cadastrado</value>
+  </data>
+  <data name="M0585" xml:space="preserve">
+    <value>Valor de convênio já cadastrado</value>
+  </data>
+  <data name="M0586" xml:space="preserve">
+    <value>Impossível encerrar consultas sem nenhuma forma de recebimento cadastrada. Cadastre uma forma de recebimento e tente novamente</value>
+  </data>
+  <data name="M0587" xml:space="preserve">
+    <value>Não será possível a inclusão de novos pagamentos. O número de pagamentos no mês excedeu o limite contratado.</value>
+  </data>
+  <data name="M0588" xml:space="preserve">
+    <value>Não será possível a inclusão de novos recebimentos. O número de recebimentos no mês excedeu o limite contratado.</value>
+  </data>
+  <data name="M0589" xml:space="preserve">
+    <value>Mensagens de aniversário já enviadas na data corrente</value>
+  </data>
+  <data name="M0590" xml:space="preserve">
+    <value>Assunto da solicitação não informado</value>
+  </data>
+  <data name="M0591" xml:space="preserve">
+    <value>E-Mail para resposta não informado</value>
+  </data>
+  <data name="M0592" xml:space="preserve">
+    <value>Nome não informado</value>
+  </data>
+  <data name="M0593" xml:space="preserve">
+    <value>Impossível confirmar a consulta de </value>
+  </data>
+  <data name="M0594" xml:space="preserve">
+    <value>Existe consulta confirmada e não encerrada anterior a essa. Encerre ou cancele a consulta anterior</value>
+  </data>
+  <data name="M0595" xml:space="preserve">
+    <value>Impossível excluir este medicamento. Já está incluído em uma ou mais prescrições</value>
+  </data>
+  <data name="M0596" xml:space="preserve">
+    <value>Valor com desconto não pode ser maior do que o valor normal da consulta</value>
+  </data>
+  <data name="M0597" xml:space="preserve">
+    <value>O tipo de pagamento deve ser especificado</value>
+  </data>
+  <data name="M0598" xml:space="preserve">
+    <value>Anexo não incluído - Nome do arquivo muito longo. Máximo de 50 caracteres</value>
+  </data>
+  <data name="M0599" xml:space="preserve">
+    <value>Impossível excluir este tipo de laboratório. Existem registros vinculados a ele</value>
+  </data>
+  <data name="M0600" xml:space="preserve">
+    <value>Assunto da mensagem de solicitação não especificado</value>
+  </data>
+  <data name="M0601" xml:space="preserve">
+    <value>Nenhuma nota fiscal selecionada para inclusão neste pagamento</value>
+  </data>
+  <data name="M0602" xml:space="preserve">
+    <value>O valor da nota fiscal selecionada está diferente do informado para o pagamento</value>
+  </data>
+  <data name="M0603" xml:space="preserve">
+    <value>Já existe uma nota fiscal com estas mesmas informações anexada a este pagamento</value>
+  </data>
+  <data name="M0604" xml:space="preserve">
+    <value>Nenhum recibo selecionado para inclusão neste recebimento</value>
+  </data>
+  <data name="M0605" xml:space="preserve">
+    <value>O valor do recibo selecionado está diferente do informado para o recebimento</value>
+  </data>
+  <data name="M0606" xml:space="preserve">
+    <value>Já existe um recibo com estas mesmas informações anexada a este recebimento</value>
+  </data>
+  <data name="M0607" xml:space="preserve">
+    <value>Celular não informado</value>
+  </data>
+  <data name="M0608" xml:space="preserve">
+    <value>CPF não informado</value>
+  </data>
+  <data name="M0609" xml:space="preserve">
+    <value>CNPJ não informado</value>
+  </data>
+  <data name="M0610" xml:space="preserve">
+    <value>Já existe um assinante com esse CPF/CNPJ</value>
+  </data>
+  <data name="M0611" xml:space="preserve">
+    <value>Tipo de Assinante não especificado</value>
+  </data>
+  <data name="M0612" xml:space="preserve">
+    <value>Razão Social não informada</value>
+  </data>
+  <data name="M0613" xml:space="preserve">
+    <value>Celular não informado</value>
+  </data>
+  <data name="M0614" xml:space="preserve">
+    <value>CEP não informado</value>
+  </data>
+  <data name="M0615" xml:space="preserve">
+    <value>Endereço não informado</value>
+  </data>
+  <data name="M0616" xml:space="preserve">
+    <value>Número não informado</value>
+  </data>
+  <data name="M0617" xml:space="preserve">
+    <value>Bairro não informado</value>
+  </data>
+  <data name="M0618" xml:space="preserve">
+    <value>Cidade não informada</value>
+  </data>
+  <data name="M0619" xml:space="preserve">
+    <value>UF não informada</value>
+  </data>
+  <data name="M0620" xml:space="preserve">
+    <value>Login não informado</value>
+  </data>
+  <data name="M0621" xml:space="preserve">
+    <value>Nenhum plano de assinatura selecionado</value>
+  </data>
+  <data name="M0622" xml:space="preserve">
+    <value>Falha na criação do assinante</value>
+  </data>
+  <data name="M0623" xml:space="preserve">
+    <value>Especialidade não informada</value>
+  </data>
+  <data name="M0624" xml:space="preserve">
+    <value>Validade de assinatura de demonstração está vencida</value>
+  </data>
+  <data name="M0625" xml:space="preserve">
+    <value>Assinatura pendente de aprovação do pagamento. Entre em contato com o suporte RTi pelos canais disponibilizados no site</value>
+  </data>
+  <data name="M0626" xml:space="preserve">
+    <value>Você tem um pagamento pendente. Regularize esse pagamento e torne a acessar o WebDoctor</value>
+  </data>
+  <data name="M0627" xml:space="preserve">
+    <value>Sua assinatura foi criada com sucesso e está sendo verficada. Veja as credenciais no e-mail que será enviado para o seu endereço cadastrado</value>
+  </data>
+  <data name="M0628" xml:space="preserve">
+    <value>Assinante já existente no plano selecionado. CPF/CNPJ duplicado</value>
+  </data>
+  <data name="M0629" xml:space="preserve">
+    <value>Senha não informada</value>
+  </data>
+  <data name="M0630" xml:space="preserve">
+    <value>A senha não foi confirmada</value>
+  </data>
+  <data name="M0631" xml:space="preserve">
+    <value>Senha não foi confirmada corretamente</value>
+  </data>
+  <data name="M0632" xml:space="preserve">
+    <value>Senha não pode ser menor que o tamanho mínimo especificado nas configurações</value>
+  </data>
+  <data name="M0633" xml:space="preserve">
+    <value>Login já cadastro. Escolha outr de no máximo 10 caracteres e sem espaços</value>
+  </data>
+  <data name="M0634" xml:space="preserve">
+    <value>Assinante não localizado</value>
+  </data>
+  <data name="M0635" xml:space="preserve">
+    <value>Você está tentando mudar para o mesmo plano ativo</value>
+  </data>
+  <data name="M0636" xml:space="preserve">
+    <value>Assinatura de demonstração vencida. Contrate uma assinatura e continue a usar o WebDoctor</value>
+  </data>
+  <data name="M0637" xml:space="preserve">
+    <value>Já existe uma assinatura de demonstração para este CPF/CNPJ. Contrate uma assinatura e continue a usar o WebDoctor</value>
+  </data>
+  <data name="M0638" xml:space="preserve">
+    <value>Sua solicitação de demonstração foi processada com sucesso. Veja as credenciais no e-mail enviado para o seu endereço cadastrado</value>
+  </data>
+  <data name="M0639" xml:space="preserve">
+    <value>Nome do solicitante não informado</value>
+  </data>
+  <data name="M0640" xml:space="preserve">
+    <value>E-Mail para resposta não informado</value>
+  </data>
+  <data name="M0641" xml:space="preserve">
+    <value>Telefone de contato não informado</value>
+  </data>
+  <data name="M0642" xml:space="preserve">
+    <value>Nenhum assunto selecionado</value>
+  </data>
+  <data name="M0643" xml:space="preserve">
+    <value>Se voce selecionar criar uma consulta voce deve especificar a data e hora da consulta</value>
+  </data>
+  <data name="M0644" xml:space="preserve">
+    <value>Erro no processamento de seu pagamento. Verifique seus dados e tente novamente. Erro: </value>
+  </data>
+  <data name="M0645" xml:space="preserve">
+    <value>Data de pagamento não pode ser superior à data corrente</value>
+  </data>
+  <data name="M0646" xml:space="preserve">
+    <value>Se voce selecionar criar uma consulta voce deve especificar o tipo da consulta</value>
+  </data>
+  <data name="M0647" xml:space="preserve">
+    <value>Já existe uma consulta agendada nesta data/hora</value>
+  </data>
+  <data name="M0648" xml:space="preserve">
+    <value>Não foi especificado se o pagamento já foi quitado ou não</value>
+  </data>
+  <data name="M0649" xml:space="preserve">
+    <value>Não foi especificada nenhuma data de pagamento</value>
+  </data>
+  <data name="M0650" xml:space="preserve">
+    <value>Periodicidade da recursividade não foi especificada</value>
+  </data>
+  <data name="M0651" xml:space="preserve">
+    <value>Necessário definir a data final da recursividade ou o número de instâncias</value>
+  </data>
+  <data name="M0652" xml:space="preserve">
+    <value>A senha não pode conter caracteres das operações aritméticas (+,-,*,/ e =)</value>
+  </data>
+  <data name="M0653" xml:space="preserve">
+    <value>Preenchet todas as informações solicitadas para gerar nova senha</value>
+  </data>
+  <data name="M0654" xml:space="preserve">
+    <value>CPF inválido</value>
+  </data>
+  <data name="M0655" xml:space="preserve">
+    <value>CNPJ inválido</value>
+  </data>
+  <data name="M0656" xml:space="preserve">
+    <value>Formato inválido de CPF ou CNPJ</value>
+  </data>
+  <data name="M0657" xml:space="preserve">
+    <value>Login de usuário inexistente</value>
+  </data>
+  <data name="M0658" xml:space="preserve">
+    <value>CPF informado diferente do cadastrado</value>
+  </data>
+  <data name="M0659" xml:space="preserve">
+    <value>Login do usuário não informado</value>
+  </data>
+  <data name="M0660" xml:space="preserve">
+    <value>Senha com menos caracteres que o configurado</value>
+  </data>
+  <data name="M0661" xml:space="preserve">
+    <value>A senha deve ter pelo menos uma letra maiúscula, uma minúscula e um digito (0-9)</value>
+  </data>
+  <data name="M0662" xml:space="preserve">
+    <value>A senha não pode conter trechos do nome do usuário, de seu login ou de seu e-mail</value>
+  </data>
+  <data name="M0663" xml:space="preserve">
+    <value>A validade do código de confirmação expirou. Você tem que refazer a operação</value>
+  </data>
+  <data name="M0664" xml:space="preserve">
+    <value>Login não informado</value>
+  </data>
+  <data name="M0665" xml:space="preserve">
+    <value>Nova senha não informada</value>
+  </data>
+  <data name="M0666" xml:space="preserve">
+    <value>Senha não confirmada</value>
+  </data>
+  <data name="M0667" xml:space="preserve">
+    <value>A nova senha não pode ser igual à senha anterior</value>
+  </data>
+  <data name="M0668" xml:space="preserve">
+    <value>A senha não foi confirmada corretamente</value>
+  </data>
+  <data name="M0669" xml:space="preserve">
+    <value>Código de validação não informado</value>
+  </data>
+  <data name="M0670" xml:space="preserve">
+    <value>Código de validação inválido</value>
+  </data>
+  <data name="M0671" xml:space="preserve">
+    <value>A sua senha foi alterada com sucesso</value>
+  </data>
+  <data name="M0672" xml:space="preserve">
+    <value>Já existe um tipo de consulta definido como padrão</value>
+  </data>
+  <data name="M0673" xml:space="preserve">
+    <value>Já existe um valor de consulta definido como padrão</value>
+  </data>
+  <data name="M0674" xml:space="preserve">
+    <value>Você não definiu o modo de criação da consulta: NORMAL ou RECURSIVA</value>
+  </data>
+  <data name="M0675" xml:space="preserve">
+    <value>Paciente já cadastrado</value>
+  </data>
+  <data name="M0676" xml:space="preserve">
+    <value>Paciente inativo</value>
+  </data>
+  <data name="M0677" xml:space="preserve">
+    <value>O CPF não pode ficar em branco</value>
+  </data>
+  <data name="M0678" xml:space="preserve">
+    <value>Impossível marcar no mesmo dia em hora anterior à hora corrente</value>
+  </data>
+  <data name="M0679" xml:space="preserve">
+    <value>Nenhum tipo de documento selecionado</value>
+  </data>
+  <data name="M0680" xml:space="preserve">
+    <value>Nenhum token informado</value>
+  </data>
+  <data name="M0681" xml:space="preserve">
+    <value>Nenhum atestado encontrado com o token informado</value>
+  </data>
+  <data name="M0682" xml:space="preserve">
+    <value>Nenhuma solicitação de exame encontrada com o token informado</value>
+  </data>
+  <data name="M0683" xml:space="preserve">
+    <value>Nenhuma prescrição encontrada com o token informado</value>
+  </data>
+  <data name="M0684" xml:space="preserve">
+    <value>Médico já cadastrado</value>
+  </data>
+  <data name="M0685" xml:space="preserve">
+    <value>Impossível excluir este médico. Existem registros vinculados a ele</value>
+  </data>
+  <data name="M0686" xml:space="preserve">
+    <value>Vídeo já cadastrado</value>
+  </data>
+  <data name="M0687" xml:space="preserve">
+    <value>Produto disponível para locação tem que ter valor de locação definido</value>
+  </data>
+  <data name="M0688" xml:space="preserve">
+    <value>O preço de locação não pode ser menor que o preço promocional</value>
+  </data>
+  <data name="M0689" xml:space="preserve">
+    <value>Tipo da categoria de produto não especificado</value>
+  </data>
+  <data name="M0690" xml:space="preserve">
+    <value>Movimentação de saída impossibilidada por estoque insuficiente</value>
+  </data>
+  <data name="M0691" xml:space="preserve">
+    <value>Valor da parcela da locação não pode ser zero</value>
+  </data>
+  <data name="M0692" xml:space="preserve">
+    <value>Número de parcelas não pode ser zero</value>
+  </data>
+  <data name="M0693" xml:space="preserve">
+    <value>Essa locação já está cadastrada</value>
+  </data>
+  <data name="M0694" xml:space="preserve">
+    <value>Justificativa de cancelamento deve ser preenchida</value>
+  </data>
+  <data name="M0695" xml:space="preserve">
+    <value>Quantidade insuficiente no estoque</value>
+  </data>
+  <data name="M0696" xml:space="preserve">
+    <value>A locação não pode ser aprovada pois o contrato assinado não foi cadastrado. verifique e tente novamente</value>
+  </data>
+  <data name="M0697" xml:space="preserve">
+    <value>A data de pagamento deve ser informada</value>
+  </data>
+  <data name="M0698" xml:space="preserve">
+    <value>O valor pago não pode ser menor que o valor da parcela acrescido dos juros por atraso</value>
+  </data>
+  <data name="M0699" xml:space="preserve">
+    <value>O valor pago deve ser informado</value>
+  </data>
+  <data name="M0700" xml:space="preserve">
+    <value>A data de pagamento não pode ser superior a data corrente</value>
+  </data>
+  <data name="M0701" xml:space="preserve">
+    <value>A data da ocorrência deve ser informada</value>
+  </data>
+  <data name="M0702" xml:space="preserve">
+    <value>A data da ocorrência não pode ser superior a data corrente</value>
+  </data>
+  <data name="M0703" xml:space="preserve">
+    <value>Os números de série de entrada e saída não podem ser iguais</value>
+  </data>
+  <data name="M0704" xml:space="preserve">
+    <value>O tipo de ocorrência deve ser informado</value>
+  </data>
+  <data name="M0705" xml:space="preserve">
+    <value>Voce não pode bloquear usuário seja o único administrador</value>
+  </data>
+  <data name="M0706" xml:space="preserve">
+    <value>Um usuário não pode bloquear/desativar a si mesmo</value>
+  </data>
+  <data name="M0707" xml:space="preserve">
+    <value>Contrato de locação já cadastrado. Use outro nome</value>
+  </data>
+  <data name="M0708" xml:space="preserve">
+    <value>Tipo de contrato não selecionado</value>
+  </data>
+  <data name="M0709" xml:space="preserve">
+    <value>Impossível excluir esse contrato. Existem locações vinculadas a ele</value>
+  </data>
+  <data name="M0710" xml:space="preserve">
+    <value>Impossível excluir esse contrato pois ele é o único de seu tipo que está ativo</value>
+  </data>
+  <data name="M0711" xml:space="preserve">
+    <value>Texto para envio aos médicos já cadastrado</value>
+  </data>
+  <data name="M0712" xml:space="preserve">
+    <value>Impossível excluir esse texto de envio. Existem envios vinculados a ele</value>
+  </data>
+  <data name="M0713" xml:space="preserve">
+    <value>Impossível excluir esse texto de envio pois ele é o único ativo</value>
+  </data>
+</root>

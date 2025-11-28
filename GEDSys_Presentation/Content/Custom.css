@@ -1,0 +1,18 @@
+﻿@keyframes pisca {
+    0% { opacity: 1; }
+    50% { opacity: 0; }
+    100% { opacity: 1; }
+}
+
+.pisca {
+    animation: pisca 1s infinite;
+}
+/* Estilos para a simulação de zoom */
+.zoom-90-percent {
+    transform: scale(0.9);
+    transform-origin: 0 0;  Escala a partir do canto superior esquerdo 
+    width: calc(100% / 0.9);  Ajusta a largura para que o conteúdo preencha a tela 
+    height: calc(100% / 0.9);  Ajusta a altura 
+     Garante que o conteúdo não cause scroll horizontal excessivo 
+    overflow-x: hidden;
+}

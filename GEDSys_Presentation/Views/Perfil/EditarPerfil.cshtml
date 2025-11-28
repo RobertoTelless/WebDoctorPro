@@ -1,0 +1,705 @@
+﻿@using Presentation.Extensions
+@model ERP_Condominios_Solution.ViewModels.PerfilViewModel
+@{
+    Layout = "~/Views/Shared/_Layout_Admin.cshtml";
+    ViewBag.Title = "WebDoctor - Perfil - Edição";
+    ViewBag.MetaDescription = "WebDoctor - Edição de perfis de acesso";
+    ViewBag.MetaKeywords = "WebDoctor, Perfi, Acesso, Permissao, Permissão";
+}
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="page-title">
+        <ol class="breadcrumb">
+            <li>
+                <a href="@Url.Action("MontarTelaPaciente", "BaseAdmin")">Dashboard</a>
+            </li>
+            <li>
+                <a href="@Url.Action("MontarTelaPerfil", "Perfil")">Perfis de Acesso</a>
+            </li>
+            <li class="active">
+                <strong>Perfis de Acesso - Edição</strong>
+            </li>
+        </ol>
+        <br />
+    </div>
+    <div class="row">
+        <div class="col-lg-12 col-md-12 col-xs-12">
+            <div class="col-lg-12 col-md-12 col-xs-12 ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>Perfis de Acesso - Edição</h5>
+                </div>
+
+                <div class="ibox-content">
+                    @if (!ViewData.ModelState.IsValid)
+                    {
+                        <div class="alert alert-danger">
+                            <button type="button" class="close" data-dismiss="alert">Fechar</button>
+                            @Html.ValidationSummary(false, "", new { @class = "text-danger" })
+                        </div>
+                    }
+                    @if (TempData["TemMensagem"] != null)
+                    {
+                        <div class="alert alert-success">
+                            <button type="button" class="close" data-dismiss="alert">Fechar</button>
+                            <span>@TempData["MensagemAcerto"]</span>
+                        </div>
+                    }  
+                    <div class="tabs-container">
+                        @using (Html.BeginForm("EditarPerfil", "Perfil", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal", @id = "pwd-container1" }))
+                        {
+
+                            <ul class="nav nav-tabs">
+                                <li class="active"><a data-toggle="tab" href="#tab-1">Dados Gerais</a></li>
+                            </ul>
+
+                            <div class="tab-content">
+                                @*Dados Gerais*@
+                                <div id="tab-1" class="tab-pane active">
+                                    <div class="panel-body">
+                                        @using (Html.BeginForm("EditarPerfil", "Perfil", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal", @id = "pwd-container1" }))
+                                        {
+                                            <div class="form-group">
+                                                <br />
+                                                @if (Model.PERF_IN_FIXO == 0)
+                                                {
+                                                    @Html.ButtonActionSubmit(text: "Confirma edição de perfil de acesso", htmlAttributes: new { id = "basictoast" })
+                                                }
+                                                @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarBasePerfil", controller: "Perfil")
+                                            </div>
+                                            <div class="row">
+                                                <div class="form-group">
+                                                    <h4 style="margin-left: 15px; color:green; background-color: beige; font-weight:bold">Identificação</h4>
+                                                    @Html.HiddenFor(m => m.PERF_IN_FIXO)
+                                                    @Html.HiddenFor(m => m.ASSI_CD_ID)
+                                                    @Html.HiddenFor(m => m.PERF_IN_ATIVO)
+                                                    @Html.HiddenFor(m => m.PERF_CD_ID)
+                                                    <div class="col-lg-4 col-md-4 col-xs-12">
+                                                        Nome
+                                                        @Html.TextBoxFor(m => m.PERF_NM_NOME, new { @class = "form-control", @readonly = "readonly" })
+                                                    </div>
+                                                    <div class="col-lg-1 col-md-1 col-xs-12">
+                                                        Sigla
+                                                        @Html.TextBoxFor(m => m.PERF_SG_SIGLA, new { @class = "form-control", @readonly = "readonly" })
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <h4 style="margin-left: 15px; color:green; background-color: beige; font-weight:bold">Pacientes - Visão</h4>
+                                                    <div class="col-lg-3 col-md-3 col-xs-12">
+                                                        Visualiza Pacientes de todos Usuários*
+                                                        <br />
+                                                        @Html.CheckBoxFor(m => m.VisaoGeral, new { @class = "checkbox i-checks", autofocus = true, @id = "pacVisao"})
+                                                    </div>                                                
+                                                </div>
+                                                <div class="form-group">
+                                                    <h4 style="margin-left: 15px; color:green; background-color: beige; font-weight:bold">Pacientes</h4>
+                                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                                        Acesso*
+                                                        <br />
+                                                        @Html.CheckBoxFor(m => m.AcessoPaciente, new { @class = "checkbox i-checks", autofocus = true})
+                                                    </div>                                                
+                                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                                        Inclusão*
+                                                        <br />
+                                                        @Html.CheckBoxFor(m => m.IncluirPaciente, new { @class = "checkbox i-checks", autofocus = true})
+                                                    </div>                                                
+                                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                                        Edição*
+                                                        <br />
+                                                        @Html.CheckBoxFor(m => m.AlterarPaciente, new { @class = "checkbox i-checks", autofocus = true})
+                                                    </div>                                                
+                                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                                        Exclusão*
+                                                        <br />
+                                                        @Html.CheckBoxFor(m => m.ExcluirPaciente, new { @class = "checkbox i-checks", autofocus = true})
+                                                    </div>                                                
+                                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                                        Reativação*
+                                                        <br />
+                                                        @Html.CheckBoxFor(m => m.ReativarPaciente, new { @class = "checkbox i-checks", autofocus = true})
+                                                    </div>                                           
+                                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                                        Envio de Mensagens*
+                                                        <br />
+                                                        @Html.CheckBoxFor(m => m.PacienteMensagem, new { @class = "checkbox i-checks", autofocus = true})
+                                                    </div>                                           
+                                                </div>
+                                                <div class="form-group">
+                                                    <h4 style="margin-left: 15px; color:green; background-color: beige; font-weight:bold">Pacientes - Atestados</h4>
+                                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                                        Acesso*
+                                                        <br />
+                                                        @Html.CheckBoxFor(m => m.AcessoAtestado, new { @class = "checkbox i-checks", autofocus = true})
+                                                    </div>                                                
+                                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                                        Inclusão*
+                                                        <br />
+                                                        @Html.CheckBoxFor(m => m.IncluirAtestado, new { @class = "checkbox i-checks", autofocus = true})
+                                                    </div>                                                
+                                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                                        Edição*
+                                                        <br />
+                                                        @Html.CheckBoxFor(m => m.AlterarAtestado, new { @class = "checkbox i-checks", autofocus = true})
+                                                    </div>                                                
+                                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                                        Exclusão*
+                                                        <br />
+                                                        @Html.CheckBoxFor(m => m.ExcluirAtestado, new { @class = "checkbox i-checks", autofocus = true})
+                                                    </div>                                                
+                                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                                        Envio*
+                                                        <br />
+                                                        @Html.CheckBoxFor(m => m.EnviarAtestado, new { @class = "checkbox i-checks", autofocus = true})
+                                                    </div>                                           
+                                                </div>
+                                                <div class="form-group">
+                                                    <h4 style="margin-left: 15px; color:green; background-color: beige; font-weight:bold">Pacientes - Solicitações de Exames</h4>
+                                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                                        Acesso*
+                                                        <br />
+                                                        @Html.CheckBoxFor(m => m.AcessoSolicitacao, new { @class = "checkbox i-checks", autofocus = true})
+                                                    </div>                                                
+                                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                                        Inclusão*
+                                                        <br />
+                                                        @Html.CheckBoxFor(m => m.IncluirSolicitacao, new { @class = "checkbox i-checks", autofocus = true})
+                                                    </div>                                                
+                                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                                        Edição*
+                                                        <br />
+                                                        @Html.CheckBoxFor(m => m.AlterarSolicitacao, new { @class = "checkbox i-checks", autofocus = true})
+                                                    </div>                                                
+                                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                                        Exclusão*
+                                                        <br />
+                                                        @Html.CheckBoxFor(m => m.ExcluirSolicitacao, new { @class = "checkbox i-checks", autofocus = true})
+                                                    </div>                                                
+                                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                                        Envio*
+                                                        <br />
+                                                        @Html.CheckBoxFor(m => m.EnviarSolicitacao, new { @class = "checkbox i-checks", autofocus = true})
+                                                    </div>                                           
+                                                </div>
+                                                <div class="form-group">
+                                                    <h4 style="margin-left: 15px; color:green; background-color: beige; font-weight:bold">Pacientes - Prescrições</h4>
+                                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                                        Acesso*
+                                                        <br />
+                                                        @Html.CheckBoxFor(m => m.AcessoPrescricao, new { @class = "checkbox i-checks", autofocus = true})
+                                                    </div>                                                
+                                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                                        Inclusão*
+                                                        <br />
+                                                        @Html.CheckBoxFor(m => m.IncluirPrescricao, new { @class = "checkbox i-checks", autofocus = true})
+                                                    </div>                                                
+                                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                                        Edição*
+                                                        <br />
+                                                        @Html.CheckBoxFor(m => m.AlterarPrescricao, new { @class = "checkbox i-checks", autofocus = true})
+                                                    </div>                                                
+                                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                                        Exclusão*
+                                                        <br />
+                                                        @Html.CheckBoxFor(m => m.ExcluirPrescricao, new { @class = "checkbox i-checks", autofocus = true})
+                                                    </div>                                                
+                                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                                        Envio*
+                                                        <br />
+                                                        @Html.CheckBoxFor(m => m.EnviarPrescricao, new { @class = "checkbox i-checks", autofocus = true})
+                                                    </div>                                           
+                                                </div>
+                                                <div class="form-group">
+                                                    <h4 style="margin-left: 15px; color:green; background-color: beige; font-weight:bold">Pacientes - Resultados de Exames</h4>
+                                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                                        Acesso*
+                                                        <br />
+                                                        @Html.CheckBoxFor(m => m.AcessoExame, new { @class = "checkbox i-checks", autofocus = true})
+                                                    </div>                                                
+                                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                                        Inclusão*
+                                                        <br />
+                                                        @Html.CheckBoxFor(m => m.IncluirExame, new { @class = "checkbox i-checks", autofocus = true})
+                                                    </div>                                                
+                                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                                        Edição*
+                                                        <br />
+                                                        @Html.CheckBoxFor(m => m.AlterarExame, new { @class = "checkbox i-checks", autofocus = true})
+                                                    </div>                                                
+                                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                                        Exclusão*
+                                                        <br />
+                                                        @Html.CheckBoxFor(m => m.ExcluirExame, new { @class = "checkbox i-checks", autofocus = true})
+                                                    </div>                                                
+                                                </div>
+                                                <div class="form-group">
+                                                    <h4 style="margin-left: 15px; color:green; background-color: beige; font-weight:bold">Pacientes - Anamneses</h4>
+                                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                                        Acesso*
+                                                        <br />
+                                                        @Html.CheckBoxFor(m => m.AcessoAnamnese, new { @class = "checkbox i-checks", autofocus = true})
+                                                    </div>                                                
+                                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                                        Inclusão*
+                                                        <br />
+                                                        @Html.CheckBoxFor(m => m.IncluirAnamnese, new { @class = "checkbox i-checks", autofocus = true})
+                                                    </div>                                                
+                                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                                        Edição*
+                                                        <br />
+                                                        @Html.CheckBoxFor(m => m.AlterarAnamnese, new { @class = "checkbox i-checks", autofocus = true})
+                                                    </div>                                                
+                                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                                        Exclusão*
+                                                        <br />
+                                                        @Html.CheckBoxFor(m => m.ExcluirAnamnese, new { @class = "checkbox i-checks", autofocus = true})
+                                                    </div>                                                
+                                                </div>
+                                                <div class="form-group">
+                                                    <h4 style="margin-left: 15px; color:green; background-color: beige; font-weight:bold">Pacientes - Exames Físicos</h4>
+                                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                                        Acesso*
+                                                        <br />
+                                                        @Html.CheckBoxFor(m => m.AcessoFisico, new { @class = "checkbox i-checks", autofocus = true})
+                                                    </div>                                                
+                                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                                        Inclusão*
+                                                        <br />
+                                                        @Html.CheckBoxFor(m => m.IncluirFisico, new { @class = "checkbox i-checks", autofocus = true})
+                                                    </div>                                                
+                                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                                        Edição*
+                                                        <br />
+                                                        @Html.CheckBoxFor(m => m.AlterarFisico, new { @class = "checkbox i-checks", autofocus = true})
+                                                    </div>                                                
+                                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                                        Exclusão*
+                                                        <br />
+                                                        @Html.CheckBoxFor(m => m.ExcluirFisico, new { @class = "checkbox i-checks", autofocus = true})
+                                                    </div>                                                
+                                                </div>
+                                                <div class="form-group">
+                                                    <h4 style="margin-left: 15px; color:green; background-color: beige; font-weight:bold">Pacientes - Consultas</h4>
+                                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                                        Acesso*
+                                                        <br />
+                                                        @Html.CheckBoxFor(m => m.AcessoConsulta, new { @class = "checkbox i-checks", autofocus = true})
+                                                    </div>                                                
+                                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                                        Marcar Consulta*
+                                                        <br />
+                                                        @Html.CheckBoxFor(m => m.ConsultaIncluirPaciente, new { @class = "checkbox i-checks", autofocus = true })
+                                                    </div>
+                                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                                        Alterar Consulta*
+                                                        <br />
+                                                        @Html.CheckBoxFor(m => m.ConsultaAlterarPaciente, new { @class = "checkbox i-checks", autofocus = true })
+                                                    </div>
+                                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                                        Desmarcar Consulta*
+                                                        <br />
+                                                        @Html.CheckBoxFor(m => m.ConsultaExcluirPaciente, new { @class = "checkbox i-checks", autofocus = true })
+                                                    </div>
+                                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                                        Bloqueio de Horário*
+                                                        <br />
+                                                        @Html.CheckBoxFor(m => m.Bloqueio, new { @class = "checkbox i-checks", autofocus = true })
+                                                    </div>
+                                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                                        Enviar Informações*
+                                                        <br />
+                                                        @Html.CheckBoxFor(m => m.EnviarMedico, new { @class = "checkbox i-checks", autofocus = true })
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <h4 style="margin-left: 15px; color:green; background-color: beige; font-weight:bold">Usuários</h4>
+                                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                                        Acesso*
+                                                        <br />
+                                                        @Html.CheckBoxFor(m => m.AcessoUsuario, new { @class = "checkbox i-checks", autofocus = true})
+                                                    </div>                                                
+                                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                                        Inclusão*
+                                                        <br />
+                                                        @Html.CheckBoxFor(m => m.IncluirUsuario, new { @class = "checkbox i-checks", autofocus = true})
+                                                    </div>                                                
+                                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                                        Edição*
+                                                        <br />
+                                                        @Html.CheckBoxFor(m => m.EditarUsuario, new { @class = "checkbox i-checks", autofocus = true})
+                                                    </div>                                                
+                                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                                        Exclusão*
+                                                        <br />
+                                                        @Html.CheckBoxFor(m => m.ExcluirUsuario, new { @class = "checkbox i-checks", autofocus = true})
+                                                    </div>                                                
+                                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                                        Reativação*
+                                                        <br />
+                                                        @Html.CheckBoxFor(m => m.ReativarFunil, new { @class = "checkbox i-checks", autofocus = true})
+                                                    </div>                                           
+                                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                                        Bloqueio*
+                                                        <br />
+                                                        @Html.CheckBoxFor(m => m.BLoquearUsuario, new { @class = "checkbox i-checks", autofocus = true})
+                                                    </div>                                           
+                                                </div>
+                                                <div class="form-group">
+                                                    <h4 style="margin-left: 15px; color:green; background-color: beige; font-weight:bold">Padrões de Mensagens</h4>
+                                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                                        Acesso*
+                                                        <br />
+                                                        @Html.CheckBoxFor(m => m.AcessoTemplate, new { @class = "checkbox i-checks", autofocus = true})
+                                                    </div>                                                
+                                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                                        Inclusão*
+                                                        <br />
+                                                        @Html.CheckBoxFor(m => m.IncluirTemplate, new { @class = "checkbox i-checks", autofocus = true})
+                                                    </div>                                                
+                                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                                        Edição*
+                                                        <br />
+                                                        @Html.CheckBoxFor(m => m.EditarTemplate, new { @class = "checkbox i-checks", autofocus = true})
+                                                    </div>                                                
+                                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                                        Exclusão*
+                                                        <br />
+                                                        @Html.CheckBoxFor(m => m.ExcluirTemplate, new { @class = "checkbox i-checks", autofocus = true})
+                                                    </div>                                                
+                                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                                        Reativação*
+                                                        <br />
+                                                        @Html.CheckBoxFor(m => m.ReativarTemplate, new { @class = "checkbox i-checks", autofocus = true})
+                                                    </div>                                           
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <h4 style="margin-left: 15px; color:green; background-color: beige; font-weight:bold">Locações</h4>
+                                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                                        Acesso*
+                                                        <br />
+                                                        @Html.CheckBoxFor(m => m.LocacaoAcesso, new { @class = "checkbox i-checks", autofocus = true})
+                                                    </div>                                                
+                                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                                        Inclusão*
+                                                        <br />
+                                                        @Html.CheckBoxFor(m => m.LocacaoIncluir, new { @class = "checkbox i-checks", autofocus = true})
+                                                    </div>                                                
+                                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                                        Edição*
+                                                        <br />
+                                                        @Html.CheckBoxFor(m => m.LocacaoAlterar, new { @class = "checkbox i-checks", autofocus = true})
+                                                    </div>                                                
+                                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                                        Exclusão*
+                                                        <br />
+                                                        @Html.CheckBoxFor(m => m.LocacaoExcluir, new { @class = "checkbox i-checks", autofocus = true})
+                                                    </div>                                                
+                                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                                        Renovação*
+                                                        <br />
+                                                        @Html.CheckBoxFor(m => m.LocacaoRenovar, new { @class = "checkbox i-checks", autofocus = true})
+                                                    </div>                                           
+                                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                                        Encerramento*
+                                                        <br />
+                                                        @Html.CheckBoxFor(m => m.LocacaoEncerrar, new { @class = "checkbox i-checks", autofocus = true})
+                                                    </div>                                           
+                                                </div>
+
+                                                @if ((Int32)Session["PermFinanceiro"] == 1)
+                                                {
+                                                    <div class="form-group">
+                                                        <h4 style="margin-left: 15px; color:green; background-color: beige; font-weight:bold">Financeiro</h4>
+                                                        <div class="col-lg-2 col-md-2 col-xs-12">
+                                                            Acesso*
+                                                            <br />
+                                                            @Html.CheckBoxFor(m => m.FinanceiroAcesso, new { @class = "checkbox i-checks", autofocus = true})
+                                                        </div>                                                
+                                                        <div class="col-lg-2 col-md-2 col-xs-12">
+                                                            Envio para Contador*
+                                                            <br />
+                                                            @Html.CheckBoxFor(m => m.FinanceiroContador, new { @class = "checkbox i-checks", autofocus = true})
+                                                        </div>                                                
+                                                        <div class="col-lg-2 col-md-2 col-xs-12">
+                                                            Relatórios*
+                                                            <br />
+                                                            @Html.CheckBoxFor(m => m.FinanceiroRelatorio, new { @class = "checkbox i-checks", autofocus = true})
+                                                        </div>                                                
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <h4 style="margin-left: 15px; color:green; background-color: beige; font-weight:bold">Financeiro - Pagamentos</h4>
+                                                        <div class="col-lg-2 col-md-2 col-xs-12">
+                                                            Acesso*
+                                                            <br />
+                                                            @Html.CheckBoxFor(m => m.PagamentoAcesso, new { @class = "checkbox i-checks", autofocus = true})
+                                                        </div>                                                
+                                                        <div class="col-lg-2 col-md-2 col-xs-12">
+                                                            Inclusão de Pagamento*
+                                                            <br />
+                                                            @Html.CheckBoxFor(m => m.PagamentoInclusao, new { @class = "checkbox i-checks", autofocus = true})
+                                                        </div>                                                
+                                                        <div class="col-lg-2 col-md-2 col-xs-12">
+                                                            Alteração de Pagamento*
+                                                            <br />
+                                                            @Html.CheckBoxFor(m => m.PagamentoEdicao, new { @class = "checkbox i-checks", autofocus = true})
+                                                        </div>                                                
+                                                        <div class="col-lg-2 col-md-2 col-xs-12">
+                                                            Exclusão de Pagamento*
+                                                            <br />
+                                                            @Html.CheckBoxFor(m => m.PagamentoExclusao, new { @class = "checkbox i-checks", autofocus = true})
+                                                        </div>                                                
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <h4 style="margin-left: 15px; color:green; background-color: beige; font-weight:bold">Financeiro - Recebimentos</h4>
+                                                        <div class="col-lg-2 col-md-2 col-xs-12">
+                                                            Acesso*
+                                                            <br />
+                                                            @Html.CheckBoxFor(m => m.RecebimentoAcesso, new { @class = "checkbox i-checks", autofocus = true})
+                                                        </div>                                                
+                                                        <div class="col-lg-2 col-md-2 col-xs-12">
+                                                            Inclusão de Recebimento*
+                                                            <br />
+                                                            @Html.CheckBoxFor(m => m.RecebimentoInclusao, new { @class = "checkbox i-checks", autofocus = true})
+                                                        </div>                                                
+                                                        <div class="col-lg-2 col-md-2 col-xs-12">
+                                                            Alteração de Recebimento*
+                                                            <br />
+                                                            @Html.CheckBoxFor(m => m.RecebimentoEdicao, new { @class = "checkbox i-checks", autofocus = true})
+                                                        </div>                                                
+                                                        <div class="col-lg-2 col-md-2 col-xs-12">
+                                                            Exclusão de Recebimento*
+                                                            <br />
+                                                            @Html.CheckBoxFor(m => m.RecebimentoExclusao, new { @class = "checkbox i-checks", autofocus = true})
+                                                        </div>                                                
+                                                    </div>
+                                                }
+
+                                                @if ((Int32)Session["PermEstoque"] == 1)
+                                                {
+                                                    <div class="form-group">
+                                                        <h4 style="margin-left: 15px; color:green; background-color: beige; font-weight:bold">Produtos</h4>
+                                                        <div class="col-lg-2 col-md-2 col-xs-12">
+                                                            Acesso*
+                                                            <br />
+                                                            @Html.CheckBoxFor(m => m.AcessoProduto, new { @class = "checkbox i-checks", autofocus = true})
+                                                        </div>                                                
+                                                        <div class="col-lg-2 col-md-2 col-xs-12">
+                                                            Inclusão*
+                                                            <br />
+                                                            @Html.CheckBoxFor(m => m.IncluirProduto, new { @class = "checkbox i-checks", autofocus = true})
+                                                        </div>                                                
+                                                        <div class="col-lg-2 col-md-2 col-xs-12">
+                                                            Edição*
+                                                            <br />
+                                                            @Html.CheckBoxFor(m => m.EditarProduto, new { @class = "checkbox i-checks", autofocus = true})
+                                                        </div>                                                
+                                                        <div class="col-lg-2 col-md-2 col-xs-12">
+                                                            Exclusão*
+                                                            <br />
+                                                            @Html.CheckBoxFor(m => m.ExcluirProduto, new { @class = "checkbox i-checks", autofocus = true})
+                                                        </div>                                                
+                                                        <div class="col-lg-2 col-md-2 col-xs-12">
+                                                            Reativação*
+                                                            <br />
+                                                            @Html.CheckBoxFor(m => m.ReativarProduto, new { @class = "checkbox i-checks", autofocus = true})
+                                                        </div>                                           
+                                                    </div>
+
+                                                    <div class="form-group">
+                                                        <h4 style="margin-left: 15px; color:green; background-color: beige; font-weight:bold">Estoque</h4>
+                                                        <div class="col-lg-2 col-md-2 col-xs-12">
+                                                            Acesso*
+                                                            <br />
+                                                            @Html.CheckBoxFor(m => m.AcessoEstoque, new { @class = "checkbox i-checks", autofocus = true})
+                                                        </div>                                                
+                                                        <div class="col-lg-2 col-md-2 col-xs-12">
+                                                            Incluir Movimento*
+                                                            <br />
+                                                            @Html.CheckBoxFor(m => m.IncluirMovimentacaoEstoque, new { @class = "checkbox i-checks", autofocus = true})
+                                                        </div>                                                
+                                                        <div class="col-lg-2 col-md-2 col-xs-12">
+                                                            Ver Movimento*
+                                                            <br />
+                                                            @Html.CheckBoxFor(m => m.VerMovimentacaoEstoque, new { @class = "checkbox i-checks", autofocus = true})
+                                                        </div> 
+                                                    </div> 
+                                                    <div class="form-group">
+                                                        <div class="col-lg-2 col-md-2 col-xs-12">
+                                                            Manutenção*
+                                                            <br />
+                                                            @Html.CheckBoxFor(m => m.ManutencaoEstoque, new { @class = "checkbox i-checks", autofocus = true})
+                                                        </div> 
+                                                        <div class="col-lg-2 col-md-2 col-xs-12">
+                                                            Compra*
+                                                            <br />
+                                                            @Html.CheckBoxFor(m => m.CompraManualEstoque, new { @class = "checkbox i-checks", autofocus = true})
+                                                        </div>                                                
+                                                        <div class="col-lg-2 col-md-2 col-xs-12">
+                                                            Devolução*
+                                                            <br />
+                                                            @Html.CheckBoxFor(m => m.DevolucaoEstoque, new { @class = "checkbox i-checks", autofocus = true})
+                                                        </div>                                                
+                                                        <div class="col-lg-2 col-md-2 col-xs-12">
+                                                            Acerto*
+                                                            <br />
+                                                            @Html.CheckBoxFor(m => m.AcertoEstoque, new { @class = "checkbox i-checks", autofocus = true})
+                                                        </div>                                                
+                                                        <div class="col-lg-2 col-md-2 col-xs-12">
+                                                            Descarte*
+                                                            <br />
+                                                            @Html.CheckBoxFor(m => m.DescarteEstoque, new { @class = "checkbox i-checks", autofocus = true})
+                                                        </div>                                                
+                                                        <div class="col-lg-2 col-md-2 col-xs-12">
+                                                            Perda*
+                                                            <br />
+                                                            @Html.CheckBoxFor(m => m.PerdaEstoque, new { @class = "checkbox i-checks", autofocus = true})
+                                                        </div>                                                
+                                                    </div>
+                                                }
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <link href="~/Content/themes/base/jquery-ui.min.css" rel="stylesheet" />
+    <link href="~/Content/themes/base/all.css" rel="stylesheet" />
+    @Styles.Render("~/plugins/jasnyBootstrapStyles")
+    @Styles.Render("~/Content/plugins/iCheck/iCheckStyles")
+    @Styles.Render("~/plugins/toastrStyles")
+    @Styles.Render("~/plugins/sweetAlertStyles")
+}
+@section Scripts {
+    @Scripts.Render("~/plugins/toastr")
+    <script src="~/Scripts/jquery-ui-1.12.1.min.js"></script>
+    @Scripts.Render("~/bundles/inputmask")
+    @Scripts.Render("~/plugins/jasnyBootstrap")
+    @Scripts.Render("~/plugins/iCheck")
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.maskedinput/1.4.1/jquery.maskedinput.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            $('.i-checks').iCheck({
+                checkboxClass: 'icheckbox_square-green',
+                radioClass: 'iradio_square-green',
+            });
+
+        });
+    </script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            var i = -1;
+            var toastCount = 0;
+            var $toastlast;
+            var getMessage = function () {
+                var msg = 'Hi, welcome to Inspinia. This is example of Toastr notification box.';
+                return msg;
+            };
+
+            $('#basictoast').click(function () {
+                // Display a success toast, with a title
+                toastr.success('Edição em andamento!')
+            });
+            $('#showtoast').click(function () {
+                var shortCutFunction = $("#toastTypeGroup input:radio:checked").val();
+                var msg = $('#message').val();
+                var title = $('#title').val() || '';
+                var $showDuration = $('#showDuration');
+                var $hideDuration = $('#hideDuration');
+                var $timeOut = $('#timeOut');
+                var $extendedTimeOut = $('#extendedTimeOut');
+                var $showEasing = $('#showEasing');
+                var $hideEasing = $('#hideEasing');
+                var $showMethod = $('#showMethod');
+                var $hideMethod = $('#hideMethod');
+                var toastIndex = toastCount++;
+                toastr.options = {
+                    closeButton: $('#closeButton').prop('checked'),
+                    debug: $('#debugInfo').prop('checked'),
+                    progressBar: $('#progressBar').prop('checked'),
+                    positionClass: $('#positionGroup input:radio:checked').val() || 'toast-top-right',
+                    onclick: null
+                };
+                if ($('#addBehaviorOnToastClick').prop('checked')) {
+                    toastr.options.onclick = function () {
+                        alert('You can perform some custom action after a toast goes away');
+                    };
+                }
+                if ($showDuration.val().length) {
+                    toastr.options.showDuration = $showDuration.val();
+                }
+                if ($hideDuration.val().length) {
+                    toastr.options.hideDuration = $hideDuration.val();
+                }
+                if ($timeOut.val().length) {
+                    toastr.options.timeOut = $timeOut.val();
+                }
+                if ($extendedTimeOut.val().length) {
+                    toastr.options.extendedTimeOut = $extendedTimeOut.val();
+                }
+                if ($showEasing.val().length) {
+                    toastr.options.showEasing = $showEasing.val();
+                }
+                if ($hideEasing.val().length) {
+                    toastr.options.hideEasing = $hideEasing.val();
+                }
+                if ($showMethod.val().length) {
+                    toastr.options.showMethod = $showMethod.val();
+                }
+                if ($hideMethod.val().length) {
+                    toastr.options.hideMethod = $hideMethod.val();
+                }
+                if (!msg) {
+                    msg = getMessage();
+                }
+                $("#toastrOptions").text("Command: toastr["
+                    + shortCutFunction
+                    + "](\""
+                    + msg
+                    + (title ? "\", \"" + title : '')
+                    + "\")\n\ntoastr.options = "
+                    + JSON.stringify(toastr.options, null, 2)
+                );
+                var $toast = toastr[shortCutFunction](msg, title); // Wire up an event handler to a button in the toast, if it exists
+                $toastlast = $toast;
+                if ($toast.find('#okBtn').length) {
+                    $toast.delegate('#okBtn', 'click', function () {
+                        alert('you clicked me. i was toast #' + toastIndex + '. goodbye!');
+                        $toast.remove();
+                    });
+                }
+                if ($toast.find('#surpriseBtn').length) {
+                    $toast.delegate('#surpriseBtn', 'click', function () {
+                        alert('Surprise! you clicked me. i was toast #' + toastIndex + '. You could perform an action here.');
+                    });
+                }
+            });
+            function getLastToast() {
+                return $toastlast;
+            }
+            $('#clearlasttoast').click(function () {
+                toastr.clear(getLastToast());
+            });
+            $('#cleartoasts').click(function () {
+                toastr.clear();
+            });
+
+        });
+    </script>
+
+    @if (ViewBag.Message != null)
+    {
+        <script type="text/javascript">
+            window.onload = function () {
+                  alert("@ViewBag.Message");
+            };
+        </script>
+    }
+}

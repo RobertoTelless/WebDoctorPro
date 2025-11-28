@@ -1,0 +1,387 @@
+﻿@using Presentation.Extensions
+@model ERP_Condominios_Solution.ViewModels.TemplateEMailViewModel
+@{
+    Layout = "~/Views/Shared/_Layout_Admin.cshtml";
+    ViewBag.Title = "WebDoctor - Modelos de E-Mails - Inclusão";
+    ViewBag.MetaDescription = "WebDoctor - Criação de modelos de e-mails";
+    ViewBag.MetaKeywords = "WebDoctor, modelos, template, e-mail";
+}
+
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="page-title">
+        <h3 class="title">Modelos de E-Mails</h3>
+        <br />
+        <ol class="breadcrumb">
+            <li>
+                <a href="@Url.Action("MontarTelaPaciente", "Paciente")">Dashboard</a>
+            </li>
+            <li>
+                <a href="@Url.Action("MontarTelaTemplateEMail", "TemplateEMail")">Modelos de E-Mails</a>
+            </li>
+            <li class="active">
+                <strong>Modelos de E-Mails - Inclusão</strong>
+            </li>
+        </ol>
+        <br />
+    </div>
+
+    <div class="row">
+        <div class="col-lg-12 col-md-12 col-xs-12">
+            <div class="col-lg-12 col-md-12 col-xs-12 ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>Modelos de E-Mails - Inclusão</h5>
+                </div>
+                <div class="ibox-content">
+                    @Html.AntiForgeryToken()
+                    @if (!ViewData.ModelState.IsValid)
+                    {
+                        <div class="alert alert-danger">
+                            <button type="button" class="close" data-dismiss="alert">Fechar</button>
+                            @Html.ValidationSummary(false, "", new { @class = "text-danger" })
+                        </div>
+                    }
+                    <div class="tabs-container">
+                        @using (Html.BeginForm("IncluirTemplateEMail", "TemplateEMail", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal", @id = "pwd-container1" }))
+                        {
+                            <div class="form-group">
+                                <br />
+                                <div class="col-lg-12 col-md-12 col-xs-12">
+                                    @Html.ButtonActionSubmit(text: "Confirma Inclusão do Modelo de E-Mail", htmlAttributes: new { id = "basictoast" })
+                                    @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarBaseTemplateEMail", controller: "TemplateEMail")
+                                    <a href="@Url.Action((String)Session["AjudaNivel"])"  class="btn btn-sm btn-danger" target="_blank">Ajuda</a>                
+                                </div>
+                            </div>
+                            
+                            <ul class="nav nav-tabs">
+                                <li class="active"><a data-toggle="tab" href="#tab-1">Informações do Modelo de E-Mail</a></li>
+                            </ul>
+
+                            <div class="tab-content">
+                                @*Dados Gerais*@
+                                <div id="tab-1" class="tab-pane active">
+                                    <div class="panel-body">
+                                        <div class="row">
+                                            @Html.HiddenFor(m => m.ASSI_CD_ID)
+                                            @Html.HiddenFor(m => m.TEEM_IN_ATIVO)
+                                            @Html.HiddenFor(m => m.EMPR_CD_ID)
+                                            @Html.HiddenFor(m => m.TEEM_IN_HTML)
+                                            @Html.HiddenFor(m => m.TEEM_IN_SISTEMA)
+                                            @Html.HiddenFor(m => m.TEEM_IN_ROBOT)
+                                            @Html.HiddenFor(m => m.TEEM_IN_FIXO)
+                                            <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                                <div class="col-lg-2 col-md-2 col-xs-12">
+                                                    Sigla do Modelo*
+                                                    @Html.TextBoxFor(m => m.TEEM_SG_SIGLA, new { @class = "form-control", autofocus = true, @id = "sigla", data_toggle = "popover", data_content = "Especifique uma sigla (Abreviação) que ira identifiar esse modelo", data_trigger="hover", data_placement="top" })
+                                                    @Html.ValidationMessageFor(m => m.TEEM_SG_SIGLA, "", new { @style = "color:red" })
+                                                </div>
+                                                <div class="col-lg-4 col-md-4 col-xs-12">
+                                                    Nome do Modelo*
+                                                    @Html.TextBoxFor(m => m.TEEM_NM_NOME, new { @class = "form-control", autofocus = true, data_toggle = "popover", data_content = "Especifique um nome que ira identifiar esse modelo", data_trigger="hover", data_placement="top" })
+                                                    @Html.ValidationMessageFor(m => m.TEEM_NM_NOME, "", new { @style = "color:red" })
+                                                </div>
+                                                <div class="col-lg-2 col-md-2 col-xs-12">
+                                                    Editável*
+                                                    @Html.DropDownListFor(m => m.TEEM_IN_EDITAVEL, (SelectList)ViewBag.Editavel, "Selecionar", new { @class = "form-control", autofocus = true, data_toggle = "popover", data_content = "Indica se o modelo poderá ou não ser alterado posteriormente", data_trigger="hover", data_placement="top" })
+                                                    @Html.ValidationMessageFor(m => m.TEEM_IN_EDITAVEL, "", new { @style = "color:red" })
+                                                </div>
+                                                <div class="col-lg-2 col-md-2 col-xs-12">
+                                                    Fixo*
+                                                    @Html.DropDownListFor(m => m.TEEM_IN_FIXO, (SelectList)ViewBag.Fixo, "Selecionar", new { @class = "form-control", autofocus = true, data_toggle = "popover", data_content = "Indica se este modelo poderá ou não ser excluído", data_trigger="hover", data_placement="top" })
+                                                    @Html.ValidationMessageFor(m => m.TEEM_IN_FIXO, "", new { @style = "color:red" })
+                                                </div>
+                                                <div class="col-lg-2 col-md-2 col-xs-12">
+                                                    Aniversário*
+                                                    @Html.DropDownListFor(m => m.TEEM_IN_ANIVERSARIO, (SelectList)ViewBag.Aniversario, "Selecionar", new { @class = "form-control", autofocus = true, data_toggle = "popover", data_content = "Indica se o modelo será pelo mecanismo de mensagens de aniversário", data_trigger="hover", data_placement="top" })
+                                                    @Html.ValidationMessageFor(m => m.TEEM_IN_ANIVERSARIO, "", new { @style = "color:red" })
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <h4 style="color: green; font-weight: bold; background-color:beige">ATENÇÃO: A tag {Nome} pode ser usada em todos os campos. Se for utilizada, ela será substituída pelo nome do destinatário</h4>
+                                            <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                                <div class="col-lg-12 col-md-12 col-xs-12">
+                                                    <div class="col-lg-12 col-md-12 col-xs-12">
+                                                        Cabeçalho (Opcional)
+                                                        @Html.TextAreaFor(m => m.TEEM_TX_CABECALHO, new { @class = "form-control summernote", style = "width: 100%; height: 200px;", autofocus = true })
+                                                    </div>
+                                                    <div class="col-lg-12 col-md-12 col-xs-12">
+                                                        Corpo*
+                                                        @Html.TextAreaFor(m => m.TEEM_TX_CORPO, new { @class = "form-control summernote", style = "width: 100%; height: 400px;", autofocus = true })
+                                                    </div>
+                                                    <div class="col-lg-12 col-md-12 col-xs-12">
+                                                        Rodapé (Opcional)
+                                                        @Html.TextAreaFor(m => m.TEEM_TX_DADOS, new { @class = "form-control summernote", style = "width: 100%; height: 200px;", autofocus = true })
+                                                    </div>
+                                                </div>
+                                           </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <link href="~/Content/themes/base/jquery-ui.min.css" rel="stylesheet" />
+    <link href="~/Content/themes/base/all.css" rel="stylesheet" />
+    @Styles.Render("~/Content/plugins/dataTables/dataTablesStyles")
+    @Styles.Render("~/plugins/jasnyBootstrapStyles")
+    @Styles.Render("~/plugins/toastrStyles")
+    <link href="https://cdn.jsdelivr.net/npm/summernote@0.9.0/dist/summernote.min.css" rel="stylesheet">
+}
+@section Scripts {
+    @Scripts.Render("~/plugins/toastr")
+    <script src="~/Scripts/jquery-ui-1.12.1.min.js"></script>
+    @Scripts.Render("~/bundles/inputmask")
+    @Scripts.Render("~/plugins/jasnyBootstrap")
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.maskedinput/1.4.1/jquery.maskedinput.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/summernote@0.9.0/dist/summernote.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.bundle.min.js"></script>   
+    
+    <script type="text/javascript" src="~/Scripts/moment.min.js"></script>
+    <script type="text/javascript" src="~/Scripts/bootstrap.min.js"></script>
+   
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('[data-toggle="popover"]').popover();
+        });
+    </script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-toggle="popover"]'));
+            var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
+                return new bootstrap.Popover(popoverTriggerEl);
+            });
+        });
+    </script>
+
+    <!-- Handler de fechamento do browser -->
+    <script type="text/javascript">
+        window.onbeforeunload = function ()
+        {
+            navigator.sendBeacon('../ControleAcesso/LogSessionTime');
+        }; 
+    </script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            $('.summernote').summernote(
+            {
+                toolbar: [
+                    ['ur', ['undo', 'redo']],
+                    ['font', ['bold', 'italic', 'underline', 'superscript', 'subscript']],
+                    ['fontname', ['fontname']],
+                    ['fontsize', ['fontsize', 'fontsizeunit']],
+                    ['color', ['color']],
+                    ['para', ['ul', 'ol', 'paragraph']],
+                    ['height', ['height']],
+                    ['table', ['table']],
+                    ['insert', ['link', 'hr']],
+                    ['view', ['fullscreen', 'codeview']],
+                ],
+                lineHeights: ['0.2', '0.3', '0.4', '0.5', '0.6', '0.8', '1.0', '1.2', '1.4', '1.5', '2.0', '3.0'],
+                fontNames: ['Arial', 'Arial Black', 'Comic Sans MS', 'Courier New', 'Helvetica', 'Impact', 'Lucida Grande', 'Tahoma', 'Times New Roman', 'Verdana'],
+                spellCheck: false
+            });
+            $('.note-editable').css('line-height', '1.0');
+        });
+
+        var edit = function () {
+            $('.click2edit').summernote({ focus: true });
+        };
+
+        var save = function () {
+            var aHTML = $('.click2edit').code(); //save HTML If you need(aHTML: array).
+            $('.click2edit').destroy();
+        };
+    </script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            $('.summernote1').summernote(
+            {
+              toolbar: [
+                  ['ur', ['undo', 'redo']],
+                  ['font', ['bold', 'italic', 'underline', 'superscript', 'subscript']],
+                  ['fontname', ['fontname']],
+                  ['fontsize', ['fontsize', 'fontsizeunit']],
+                  ['color', ['color']],
+                  ['para', ['ul', 'ol', 'paragraph']],
+                  ['height', ['height']],
+                  ['table', ['table']],
+                  ['insert', ['link', 'hr']],
+                  ['view', ['fullscreen', 'codeview']],
+                ],
+                lineHeights: ['0.2', '0.3', '0.4', '0.5', '0.6', '0.8', '1.0', '1.2', '1.4', '1.5', '2.0', '3.0'],
+                fontNames: ['Arial', 'Arial Black', 'Comic Sans MS', 'Courier New', 'Helvetica', 'Impact', 'Lucida Grande', 'Tahoma', 'Times New Roman', 'Verdana'],
+                spellCheck: false
+            });
+            $('.note-editable').css('line-height', '1.0');
+
+        });
+
+        var edit = function () {
+            $('.click2edit').summernote({ focus: true });
+        };
+
+        var save = function () {
+            var aHTML = $('.click2edit').code(); //save HTML If you need(aHTML: array).
+            $('.click2edit').destroy();
+        };
+    </script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            $('.summernote2').summernote(
+            {
+              toolbar: [
+                  ['ur', ['undo', 'redo']],
+                  ['font', ['bold', 'italic', 'underline', 'superscript', 'subscript']],
+                  ['fontname', ['fontname']],
+                  ['fontsize', ['fontsize', 'fontsizeunit']],
+                  ['color', ['color']],
+                  ['para', ['ul', 'ol', 'paragraph']],
+                  ['height', ['height']],
+                  ['table', ['table']],
+                  ['insert', ['link', 'hr']],
+                  ['view', ['fullscreen', 'codeview']],
+                ],
+                lineHeights: ['0.2', '0.3', '0.4', '0.5', '0.6', '0.8', '1.0', '1.2', '1.4', '1.5', '2.0', '3.0'],
+                fontNames: ['Arial', 'Arial Black', 'Comic Sans MS', 'Courier New', 'Helvetica', 'Impact', 'Lucida Grande', 'Tahoma', 'Times New Roman', 'Verdana'],
+                spellCheck: false
+            });
+
+        });
+
+        var edit = function () {
+            $('.click2edit').summernote({ focus: true });
+        };
+
+        var save = function () {
+            var aHTML = $('.click2edit').code(); //save HTML If you need(aHTML: array).
+            $('.click2edit').destroy();
+        };
+    </script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            var i = -1;
+            var toastCount = 0;
+            var $toastlast;
+            var getMessage = function () {
+                var msg = 'Hi, welcome to Inspinia. This is example of Toastr notification box.';
+                return msg;
+            };
+
+            $('#basictoast').click(function () {
+                // Display a success toast, with a title
+                toastr.success('Inclusão em andamento!')
+            });
+            $('#showtoast').click(function () {
+                var shortCutFunction = $("#toastTypeGroup input:radio:checked").val();
+                var msg = $('#message').val();
+                var title = $('#title').val() || '';
+                var $showDuration = $('#showDuration');
+                var $hideDuration = $('#hideDuration');
+                var $timeOut = $('#timeOut');
+                var $extendedTimeOut = $('#extendedTimeOut');
+                var $showEasing = $('#showEasing');
+                var $hideEasing = $('#hideEasing');
+                var $showMethod = $('#showMethod');
+                var $hideMethod = $('#hideMethod');
+                var toastIndex = toastCount++;
+                toastr.options = {
+                    closeButton: $('#closeButton').prop('checked'),
+                    debug: $('#debugInfo').prop('checked'),
+                    progressBar: $('#progressBar').prop('checked'),
+                    positionClass: $('#positionGroup input:radio:checked').val() || 'toast-top-right',
+                    onclick: null
+                };
+                if ($('#addBehaviorOnToastClick').prop('checked')) {
+                    toastr.options.onclick = function () {
+                        alert('You can perform some custom action after a toast goes away');
+                    };
+                }
+                if ($showDuration.val().length) {
+                    toastr.options.showDuration = $showDuration.val();
+                }
+                if ($hideDuration.val().length) {
+                    toastr.options.hideDuration = $hideDuration.val();
+                }
+                if ($timeOut.val().length) {
+                    toastr.options.timeOut = $timeOut.val();
+                }
+                if ($extendedTimeOut.val().length) {
+                    toastr.options.extendedTimeOut = $extendedTimeOut.val();
+                }
+                if ($showEasing.val().length) {
+                    toastr.options.showEasing = $showEasing.val();
+                }
+                if ($hideEasing.val().length) {
+                    toastr.options.hideEasing = $hideEasing.val();
+                }
+                if ($showMethod.val().length) {
+                    toastr.options.showMethod = $showMethod.val();
+                }
+                if ($hideMethod.val().length) {
+                    toastr.options.hideMethod = $hideMethod.val();
+                }
+                if (!msg) {
+                    msg = getMessage();
+                }
+                $("#toastrOptions").text("Command: toastr["
+                    + shortCutFunction
+                    + "](\""
+                    + msg
+                    + (title ? "\", \"" + title : '')
+                    + "\")\n\ntoastr.options = "
+                    + JSON.stringify(toastr.options, null, 2)
+                );
+                var $toast = toastr[shortCutFunction](msg, title); // Wire up an event handler to a button in the toast, if it exists
+                $toastlast = $toast;
+                if ($toast.find('#okBtn').length) {
+                    $toast.delegate('#okBtn', 'click', function () {
+                        alert('you clicked me. i was toast #' + toastIndex + '. goodbye!');
+                        $toast.remove();
+                    });
+                }
+                if ($toast.find('#surpriseBtn').length) {
+                    $toast.delegate('#surpriseBtn', 'click', function () {
+                        alert('Surprise! you clicked me. i was toast #' + toastIndex + '. You could perform an action here.');
+                    });
+                }
+            });
+            function getLastToast() {
+                return $toastlast;
+            }
+            $('#clearlasttoast').click(function () {
+                toastr.clear(getLastToast());
+            });
+            $('#cleartoasts').click(function () {
+                toastr.clear();
+            });
+
+        });
+    </script>
+
+
+
+    @if (ViewBag.Message != null)
+    {
+        <script type="text/javascript">
+            window.onload = function () {
+                  alert("@ViewBag.Message");
+            };
+        </script>
+    }
+}

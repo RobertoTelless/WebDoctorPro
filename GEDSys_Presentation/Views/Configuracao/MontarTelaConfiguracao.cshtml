@@ -1,0 +1,578 @@
+﻿@using Presentation.Extensions
+@model ERP_Condominios_Solution.ViewModels.ConfiguracaoViewModel
+@{
+    Layout = "~/Views/Shared/_Layout_Admin.cshtml";
+    ViewBag.Title = "WebDoctor - Configuração";
+    ViewBag.MetaDescription = "WebDoctor - Configurações Gerais";
+    ViewBag.MetaKeywords = "WebDoctor, Configuracao";
+}
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="page-title">
+        <h3 class="title">Configuração</h3>
+        <br />
+        <ol class="breadcrumb">
+            <li>
+                <a href="@Url.Action("MontarTelaPaciente", "Paciente")">Dashboard</a>
+            </li>
+            <li class="active">
+                <strong>Configurações Gerais</strong>
+            </li>
+        </ol>
+        <br />
+    </div>
+    <div class="row">
+        <div class="col-lg-12 col-md-12 col-xs-12">
+            <div class="col-lg-12 col-md-12 col-xs-12 ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>Configurações Gerais</h5>
+                </div>
+
+                <div class="ibox-content">
+                    @if (!ViewData.ModelState.IsValid)
+                    {
+                        <div class="alert alert-danger">
+                            <button type="button" class="close" data-dismiss="alert">Fechar</button>
+                            @Html.ValidationSummary(false, "", new { @class = "text-danger" })
+                        </div>
+                    }
+                    <div class="tabs-container">
+                        @using (Html.BeginForm("MontarTelaConfiguracao", "Configuracao", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal", @id = "pwd-container1" }))
+                        {
+
+                            <ul class="nav nav-tabs">
+                                <li class="active"><a data-toggle="tab" href="#tab-1">Configurações Gerais</a></li>
+                            </ul>
+
+                            <div class="tab-content">
+                                @*Dados Gerais*@
+                                <div id="tab-1" class="tab-pane active">
+                                    <div class="panel-body">
+                                        @using (Html.BeginForm("MontarTelaConfiguracao", "Configuracao", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal", @id = "pwd-container1" }))
+                                        {
+                                            <div class="form-group">
+                                                <br />
+                                                @Html.ButtonActionSubmit(text: "Confirma Alteração das Configurações Gerais", htmlAttributes: new { id = "basictoast" })
+                                                @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaPaciente", controller: "Paciente")
+                                                <a href="@Url.Action((String)Session["AjudaNivel"])"  class="btn btn-sm btn-danger" target="_blank">Ajuda</a>                
+                                            </div>
+
+                                            <div class="row">
+                                                <div class="form-group">
+                                                    @Html.HiddenFor(m => m.CONF_CD_ID)
+                                                    @Html.HiddenFor(m => m.ASSI_CD_ID)
+                                                    @Html.HiddenFor(m => m.CONF_NM_HOST_SMTP)
+                                                    @Html.HiddenFor(m => m.CONF_NM_EMAIL_EMISSOO)
+                                                    @Html.HiddenFor(m => m.CONF_NM_SENHA_EMISSOR)
+                                                    @Html.HiddenFor(m => m.CONF_NR_DIAS_LOG)
+                                                    @Html.HiddenFor(m => m.CONF_NR_DIAS_FIM_LOG)
+                                                    @Html.HiddenFor(m => m.CONF_CS_CONNECTION_STRING_AZURE_CRIP)
+                                                    @Html.HiddenFor(m => m.CONF_CS_CONNECTION_STRING_AZURE)
+                                                    @Html.HiddenFor(m => m.CONF_NM_KEY_AZURE_CRIP)
+                                                    @Html.HiddenFor(m => m.CONF_NM_KEY_AZURE)
+                                                    @Html.HiddenFor(m => m.CONF_NM_ENDPOINT_AZURE_CRIP)
+                                                    @Html.HiddenFor(m => m.CONF_NM_SENDGRID_APIKEY_CRIP)
+                                                    @Html.HiddenFor(m => m.CONF_CS_CONNECTION_STRING_AZURE)
+                                                    @Html.HiddenFor(m => m.CONF_NM_EMISSOR_AZURE_CRIP)
+                                                    @Html.HiddenFor(m => m.CONF_NR_REFRESH_DASH)
+                                                    @Html.HiddenFor(m => m.CONF_NM_ARQUIVO_ALARME)
+
+                                                    @Html.HiddenFor(m => m.CONF_NR_REFRESH_NOTIFICACAO)
+                                                    @Html.HiddenFor(m => m.CONF_SG_LOGIN_SMS)
+                                                    @Html.HiddenFor(m => m.CONF_SG_LOGIN_SMS_CRIP)
+                                                    @Html.HiddenFor(m => m.CONF_SG_SENHA_SMS)
+                                                    @Html.HiddenFor(m => m.CONF_SG_SENHA_SMS_CRIP)
+                                                    @Html.HiddenFor(m => m.CONF_SG_LOGIN_SMS_PRIORITARIO)
+                                                    @Html.HiddenFor(m => m.CONF_SG_LOGIN_SMS_PRIORITARIO_CRIP)
+                                                    @Html.HiddenFor(m => m.CONF_SG_SENHA_SMS_PRIORITARIO)
+                                                    @Html.HiddenFor(m => m.CONF_SG_SENHA_SMS_PRIORITARIO_CRIP)
+                                                    @Html.HiddenFor(m => m.CONF_NM_SENDGRID_LOGIN)
+                                                    @Html.HiddenFor(m => m.CONF_NM_SENDGRID_LOGIN_CRIP)
+                                                    @Html.HiddenFor(m => m.CONF_NM_SENDGRID_PWD)
+                                                    @Html.HiddenFor(m => m.CONF_NM_SENDGRID_PWD_CRIP)
+                                                    @Html.HiddenFor(m => m.CONF_IN_RESIDUAL)
+
+                                                    @Html.HiddenFor(m => m.CONF_NR_DIAS_ACAO)
+                                                    @Html.HiddenFor(m => m.CONF_NR_DIAS_PROPOSTA)
+                                                    @Html.HiddenFor(m => m.CONF_NR_MARGEM_ATRASO)
+                                                    @Html.HiddenFor(m => m.CONF_IN_DIAS_RESERVA_ESTOQUE)
+                                                    @Html.HiddenFor(m => m.CONF_IN_NUMERO_INICIAL_PROPOSTA)
+                                                    @Html.HiddenFor(m => m.CONF_IN_NUMERO_INICIAL_PEDIDO)
+                                                    @Html.HiddenFor(m => m.CONF_IN_CNPJ_DUPLICADO)
+                                                    @Html.HiddenFor(m => m.CONF_IN_INCLUIR_SEM_ESTOQUE)
+
+                                                    @Html.HiddenFor(m => m.CONF_IN_ASSINANTE_FILIAL)
+                                                    @Html.HiddenFor(m => m.CONF_IN_FALHA_IMPORTACAO)
+                                                    @Html.HiddenFor(m => m.CONF_IN_ETAPAS_CRM)
+                                                    @Html.HiddenFor(m => m.CONF_IN_NOTIF_ACAO_ADM)
+                                                    @Html.HiddenFor(m => m.CONF_IN_NOTIF_ACAO_GER)
+                                                    @Html.HiddenFor(m => m.CONF_IN_NOTIF_ACAO_VEN)
+                                                    @Html.HiddenFor(m => m.CONF_IN_NOTIF_ACAO_OPR)
+                                                    @Html.HiddenFor(m => m.CONF_IN_NOTIF_ACAO_USU)
+                                                    @Html.HiddenFor(m => m.CONF_NR_GRID_PRODUTO)
+                                                    @Html.HiddenFor(m => m.CONF_NR_GRID_MENSAGEM)
+                                                    @Html.HiddenFor(m => m.CONF_NR_GRID_DOCUMENTO)
+
+                                                    @Html.HiddenFor(m => m.CONF_EM_CONTATO)
+                                                    @Html.HiddenFor(m => m.CONF_NR_AVISO_CONTAS)
+                                                    @Html.HiddenFor(m => m.CONF_IN_ROBOT)
+                                                    @Html.HiddenFor(m => m.CONF_IN_CLIENTE_SISTEMA)
+                                                    @Html.HiddenFor(m => m.CONF_IN_FORNECEDOR_SISTEMA)
+                                                    @Html.HiddenFor(m => m.CONF_IN_BANCO_SISTEMA)
+                                                    @Html.HiddenFor(m => m.CONF_IN_CONTA_SISTEMA)
+                                                    @Html.HiddenFor(m => m.CONF_IN_MODELO_MAIL_SISTEMA)
+                                                    @Html.HiddenFor(m => m.CONF_IN_CENTRO_CUSTO_SISTEMA)
+                                                    @Html.HiddenFor(m => m.CONF_IN_PAGAR_SISTEMA)
+                                                    @Html.HiddenFor(m => m.CONF_IN_USUARIO_SISTEMA)
+                                                    @Html.HiddenFor(m => m.CONF_IN_PAGAR_SEM_SALDO)
+                                                    @Html.HiddenFor(m => m.CONF_NM_SUFIXO_NUMERO)
+                                                    @Html.HiddenFor(m => m.CONF_IN_SUFIXO_NUMERO)
+                                                    @Html.HiddenFor(m => m.CONF_IN_DASH_INICIAL)
+                                                    @Html.HiddenFor(m => m.CONF_IN_CRM_SISTEMA)
+                                                    @Html.HiddenFor(m => m.CONF_IN_MENSAGEM_CRM)
+                                                    @Html.HiddenFor(m => m.CONF_IN_EMAIL_ROBOT)
+                                                    @Html.HiddenFor(m => m.CONF_IN_SMS_ROBOT)
+                                                    @Html.HiddenFor(m => m.CONF_IN_KANBAN_GRID)
+                                                    @Html.HiddenFor(m => m.CONF_IN_DIAS_ESTADO)
+                                                    @Html.HiddenFor(m => m.CONF_IN_MENSAGEM_COMPRA)
+                                                    @Html.HiddenFor(m => m.CONF_IN_COMISSAO_GERENTE)
+                                                    @Html.HiddenFor(m => m.CONF_NM_JUSTIFICATIVA_PADRAO)
+                                                    @Html.HiddenFor(m => m.CONF_PC_ALTERACAO_ESTOQUE)
+                                                    @Html.HiddenFor(m => m.CONF_NM_CAMINHO_PLANILHA)
+                                                    @Html.HiddenFor(m => m.CONF_IN_MENSAGEM_COMPRA)
+                                                    @Html.HiddenFor(m => m.CONF_IN_MENSAGEM_COMPRA)
+                                                    @Html.HiddenFor(m => m.CONF_IN_MENSAGEM_COMPRA)
+                                                    @Html.HiddenFor(m => m.CONF_IN_EMAIL_AUTOMATICO)
+                                                    @Html.HiddenFor(m => m.CONF_NM_PORTA_SMTP)
+
+                                                    @Html.HiddenFor(m => m.CONF_NR_DIAS_ATENDIMENTO)
+                                                    @Html.HiddenFor(m => m.CONF_NR_DIAS_VENDA)
+                                                    @Html.HiddenFor(m => m.CONF_LK_LINK_SISTEMA)
+                                                    @Html.HiddenFor(m => m.CONF_NR_SUPORTE_ZAP1)
+                                                    @Html.HiddenFor(m => m.CONF_NR_VALIDADE_PESQUISA)
+                                                    @Html.HiddenFor(m => m.CONF_NM_ENDPOINT_AZURE)
+                                                    @Html.HiddenFor(m => m.CONF_NM_EMISSOR_AZURE)
+                                                    @Html.HiddenFor(m => m.CONF_IN_MENSAGENS_CP)
+                                                    @Html.HiddenFor(m => m.CONF_IN_MENSAGENS_CR)
+                                                    @Html.HiddenFor(m => m.CONF_IN_PAGAR_SISTEMA)
+                                                    @Html.HiddenFor(m => m.CONF_IN_RECEBER_SISTEMA)
+                                                    @Html.HiddenFor(m => m.CONF_NM_SUFIXO_RECORRENCIA)
+                                                    @Html.HiddenFor(m => m.CONF_LK_VALIDACAO)
+                                                    @Html.HiddenFor(m => m.CONF_LK_LINK_VALIDACAO)
+                                                    @Html.HiddenFor(m => m.CONF_NR_DIAS_CONFIRMACAO)
+                                                    @Html.HiddenFor(m => m.CONF_NR_MESES_RETORNO)
+                                                    @Html.HiddenFor(m => m.CONF_IN_PACIENTE_FOTO_CAMERA)
+                                                    @Html.HiddenFor(m => m.CONF_IN_PADRAO_ANAMNESE)
+                                                    @Html.HiddenFor(m => m.CONF_FD_FICHAS)
+                                                    @Html.HiddenFor(m => m.CONF_IN_PAGAR_SISTEMA)
+                                                    @Html.HiddenFor(m => m.CONF_NM_SENDGRID_APIKEY) 
+                                                    @Html.HiddenFor(m => m.CON_TK_TOKEN_API_PAGTO) 
+                                                    <h4 style="margin-left: 15px; color:green; background-color: beige; font-weight:bold">Configurações Genéricas</h4>
+                                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                                        Usa Logotipo do Assinante*
+                                                        @Html.DropDownListFor(m => m.CONF_IN_LOGO_EMPRESA, (SelectList)ViewBag.Logotipo, "Selecionar", new { @class = "form-control", autofocus = true, data_toggle = "popover", data_content = "Define se o WebDoctor vai usar o logotipo fornecido pelo assinante ou vai usar o logotipo padrão. Será utilizada apenas se houver um logotipo definido pelo assinante", data_trigger="hover", data_placement="top" })
+                                                        @Html.ValidationMessageFor(m => m.CONF_IN_LOGO_EMPRESA, "", new { @style = "color:red" })
+                                                    </div>
+                                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                                        Logotipo nos Documentos*
+                                                        @Html.DropDownListFor(m => m.CONF_IN_EXIBE_LOGO, (SelectList)ViewBag.Logo, "Selecionar", new { @class = "form-control", autofocus = true, data_toggle = "popover", data_content = "Define se, nos documentos gerados, será ou não exibido o logotipo ativo", data_trigger="hover", data_placement="top" })
+                                                        @Html.ValidationMessageFor(m => m.CONF_IN_EXIBE_LOGO, "", new { @style = "color:red" })
+                                                    </div>
+                                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                                        Grids - Limite de Linhas*
+                                                        @Html.TextBoxFor(m => m.CONF_NR_GRID_CLIENTE, new { @class = "form-control", autofocus = true, data_toggle = "popover", data_content = "Define o número máximo de linhas em cada paginação das tabelas de exibição (grids)", data_trigger="hover", data_placement="top" })
+                                                        @Html.ValidationMessageFor(m => m.CONF_NR_GRID_CLIENTE, "", new { @style = "color:red" })
+                                                    </div>
+                                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                                        Mensagens da RTi*
+                                                        @Html.DropDownListFor(m => m.CONF_IN_MENSAGEM_FABRICANTE, (SelectList)ViewBag.MensFab, "Selecionar", new { @class = "form-control", autofocus = true, data_toggle = "popover", data_content = "Define se as mensagens enviadas pela RTi estarão disponíveis para visualização", data_trigger="hover", data_placement="top" })
+                                                        @Html.ValidationMessageFor(m => m.CONF_IN_MENSAGEM_FABRICANTE, "", new { @style = "color:red" })
+                                                    </div>
+                                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                                        Botão Piscante*
+                                                        @Html.DropDownListFor(m => m.CONF_IN_PISCA, (SelectList)ViewBag.Pisca, "Selecionar", new { @class = "form-control", autofocus = true, data_toggle = "popover", data_content = "Define se o botão de encerramento de consulta será exibido piscante", data_trigger="hover", data_placement="top" })
+                                                        @Html.ValidationMessageFor(m => m.CONF_IN_PISCA, "", new { @style = "color:red" })
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <h4 style="margin-left: 15px; color:green; background-color: beige; font-weight:bold">Configurações de Acesso e Senhas</h4>
+                                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                                        Máximo Falhas/Dia*
+                                                        @Html.TextBoxFor(m => m.CONF_NR_FALHAS_DIA, new { @class = "form-control touchspin1", autofocus = true, data_toggle = "popover", data_content = "Define o número máximo de falhas de login por dia. Se esse limite for atingido, o login do usuario será bloqueado", data_trigger="hover", data_placement="top" })
+                                                        @Html.ValidationMessageFor(m => m.CONF_NR_FALHAS_DIA, "", new { @style = "color:red" })
+                                                    </div>
+                                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                                        Validade (Meses)*
+                                                        @Html.TextBoxFor(m => m.CONF_NR_VALIDADE_SENHA, new { @class = "form-control", autofocus = true, data_toggle = "popover", data_content = "Define o prazo de validade, em meses, das senhas dos usuários", data_trigger="hover", data_placement="top" })
+                                                        @Html.ValidationMessageFor(m => m.CONF_NR_VALIDADE_SENHA, "", new { @style = "color:red" })
+                                                    </div>
+                                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                                        Tamanho Mínimo*
+                                                        @Html.TextBoxFor(m => m.CONF_NR_TAMANHO_SENHA, new { @class = "form-control", autofocus = true, data_toggle = "popover", data_content = "Define o tamanho mínimo da senha do usuário. O padrão é 6 caracteres", data_trigger="hover", data_placement="top" })
+                                                        @Html.ValidationMessageFor(m => m.CONF_NR_TAMANHO_SENHA, "", new { @style = "color:red" })
+                                                    </div>
+                                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                                        Validade do Código (Min)*
+                                                        @Html.TextBoxFor(m => m.CONF_IN_VALIDADE_CODIGO, new { @class = "form-control", autofocus = true, data_toggle = "popover", data_content = "Define o prazo de validade, em minutos, do código de verificação enviado ao usuário no ato da troca de senha", data_trigger="hover", data_placement="top" })
+                                                        @Html.ValidationMessageFor(m => m.CONF_IN_VALIDADE_CODIGO, "", new { @style = "color:red" })
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <h4 style="margin-left: 15px; color:green; background-color: beige; font-weight:bold">Configurações de Pacientes</h4>
+                                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                                        Atraso de Consulta (Meses)*
+                                                        @Html.TextBoxFor(m => m.CONF_IN_PACIENTE_ATRASO, new { @class = "form-control", autofocus = true, data_toggle = "popover", data_content = "Define o número de meses após a data de previsão de retorno do paciente para se considerar atraso", data_trigger="hover", data_placement="top" })
+                                                        @Html.ValidationMessageFor(m => m.CONF_IN_PACIENTE_ATRASO, "", new { @style = "color:red" })
+                                                    </div>
+                                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                                        Ausência de Consulta (Meses)*
+                                                        @Html.TextBoxFor(m => m.CONF_IN_PACIENTE_AUSENCIA, new { @class = "form-control", autofocus = true, data_toggle = "popover", data_content = "Define o número de meses após a data de previsão de retorno do paciente para se considerar ausência", data_trigger="hover", data_placement="top" })
+                                                        @Html.ValidationMessageFor(m => m.CONF_IN_PACIENTE_AUSENCIA, "", new { @style = "color:red" })
+                                                    </div>
+                                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                                        Inclusão Sequencial*
+                                                        @Html.DropDownListFor(m => m.CONF_IN_INCLUIR_PACIENTE_SEGUE, (SelectList)ViewBag.PacSegue, "Selecionar", new { @class = "form-control", autofocus = true, data_toggle = "popover", data_content = "Define se as mensagens enviadas pela RTi estarão disponíveis para visualização", data_trigger="hover", data_placement="top" })
+                                                        @Html.ValidationMessageFor(m => m.CONF_IN_INCLUIR_PACIENTE_SEGUE, "", new { @style = "color:red" })
+                                                    </div>
+                                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                                        Dias na Faixa de Preço*
+                                                        @Html.TextBoxFor(m => m.CONF_IN_VALIDADE_FAIXA, new { @class = "form-control", autofocus = true, data_toggle = "popover", data_content = "Define o número de dias que o paciente pode ficar na faixa de preço sem sinalizar para reajuste", data_trigger="hover", data_placement="top" })
+                                                        @Html.ValidationMessageFor(m => m.CONF_IN_VALIDADE_FAIXA, "", new { @style = "color:red" })
+                                                    </div>
+                                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                                        Mensagem de Cadastro*
+                                                        @Html.DropDownListFor(m => m.CONF_IN_ENVIA_PACIENTE_CADASTRO, (SelectList)ViewBag.Cadastro, "Selecionar", new { @class = "form-control", autofocus = true, data_toggle = "popover", data_content = "Define se envia ao paciente mensagem de e-mail por ocasião de seu cadastramento", data_trigger="hover", data_placement="top" })
+                                                        @Html.ValidationMessageFor(m => m.CONF_IN_ENVIA_PACIENTE_CADASTRO, "", new { @style = "color:red" })
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <h4 style="margin-left: 15px; color:green; background-color: beige; font-weight:bold">Configurações de Consultas</h4>
+                                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                                        Gera Recebimento Automatico*
+                                                        @Html.DropDownListFor(m => m.CONF_IN_GERA_RECEBIMENTO, (SelectList)ViewBag.Recebe, "Selecionar", new { @class = "form-control", autofocus = true, data_toggle = "popover", data_content = "Define se no encerramento de uma consulta será gerado um lançamento de recebimento com o valor especificado para esta consulta. Válido apenas se as funcionalidades financeiras estiverem contratadas", data_trigger="hover", data_placement="top" })
+                                                        @Html.ValidationMessageFor(m => m.CONF_IN_GERA_RECEBIMENTO, "", new { @style = "color:red" })
+                                                    </div>
+                                                    <div class="col-lg-3 col-md-3 col-xs-12">
+                                                        Envia Mensagem de Marcação de Consulta*
+                                                        @Html.DropDownListFor(m => m.CONF_IN_MENSAGEM_CONSULTA, (SelectList)ViewBag.Consulta, "Selecionar", new { @class = "form-control", autofocus = true, data_toggle = "popover", data_content = "Define se a mensagem de marcação/confirmação/cancelamento de consulta será enviada automaticamente ao usuário", data_trigger="hover", data_placement="top" })
+                                                        @Html.ValidationMessageFor(m => m.CONF_IN_MENSAGEM_CONSULTA, "", new { @style = "color:red" })
+                                                    </div>
+                                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                                        Dias para Confirmação*
+                                                        @Html.TextBoxFor(m => m.CONF_NR_DIAS_CONFIRMACAO, new { @class = "form-control", autofocus = true, data_toggle = "popover", data_content = "Define o número de dias antes da consulta para envio automático de mensagem solicitando confirmação", data_trigger="hover", data_placement="top" })
+                                                        @Html.ValidationMessageFor(m => m.CONF_NR_DIAS_CONFIRMACAO, "", new { @style = "color:red" })
+                                                    </div>
+                                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                                        Calcula Próxima Consulta*
+                                                        @Html.DropDownListFor(m => m.CONF_IN_CALCULA_PROXIMA_CONSULTA, (SelectList)ViewBag.ConsultaFutura, "Selecionar", new { @class = "form-control", autofocus = true, data_toggle = "popover", data_content = "Define se o WebDoctor calculará a data aproximada da próxima consulta do paciente, ao marcar/proceder uma consulta", data_trigger="hover", data_placement="top" })
+                                                        @Html.ValidationMessageFor(m => m.CONF_IN_CALCULA_PROXIMA_CONSULTA, "", new { @style = "color:red" })
+                                                    </div>
+                                                    <div class="col-lg-3 col-md-3 col-xs-12">
+                                                        Prazo para Marcação da Próxima Consulta (Meses)*
+                                                        @Html.TextBoxFor(m => m.CONF_NR_MESES_RETORNO, new { @class = "form-control", autofocus = true, data_toggle = "popover", data_content = "Define o prazo em dias usado no cálculo da data prevista para a próxima consulta", data_trigger="hover", data_placement="top" })
+                                                        @Html.ValidationMessageFor(m => m.CONF_NR_MESES_RETORNO, "", new { @style = "color:red" })
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <div class="col-lg-3 col-md-3 col-xs-12">
+                                                        Envia Mensagem de Atraso de Consulta*
+                                                        @Html.DropDownListFor(m => m.CONF_IN_ENVIA_ATRASO, (SelectList)ViewBag.Atraso, "Selecionar", new { @class = "form-control", autofocus = true, data_toggle = "popover", data_content = "Define se as mensagens automaticas quando ocorrer atraso na marcação de consulta prevista serão enviadas aos pacientes", data_trigger="hover", data_placement="top" })
+                                                        @Html.ValidationMessageFor(m => m.CONF_IN_ENVIA_ATRASO, "", new { @style = "color:red" })
+                                                    </div>
+                                                    <div class="col-lg-3 col-md-3 col-xs-12">
+                                                        Número Máximo de Envios - Atraso*
+                                                        @Html.TextBoxFor(m => m.CONF_IN_MAXIMO_ENVIO, new { @class = "form-control", autofocus = true, data_toggle = "popover", data_content = "Define o número máximo de envios ao paciente de mensagens de atraso na marcação de consulta prevista", data_trigger="hover", data_placement="top" })
+                                                        @Html.ValidationMessageFor(m => m.CONF_IN_MAXIMO_ENVIO, "", new { @style = "color:red" })
+                                                    </div>
+                                                    <div class="col-lg-3 col-md-3 col-xs-12">
+                                                        Intervalo entre Envios - Atraso*
+                                                        @Html.TextBoxFor(m => m.CONF_IN_INTERVALO_ENVIO, new { @class = "form-control", autofocus = true, data_toggle = "popover", data_content = "Define o intervalo entre mensagens enviadas ao paciente no atraso na marcação de consulta prevista", data_trigger="hover", data_placement="top" })
+                                                        @Html.ValidationMessageFor(m => m.CONF_IN_INTERVALO_ENVIO, "", new { @style = "color:red" })
+                                                    </div>
+                                                    <div class="col-lg-3 col-md-3 col-xs-12">
+                                                        Permite Marcar Consulta Passada*
+                                                        @Html.DropDownListFor(m => m.CONF_IN_MARCA_CONSULTA_HORA, (SelectList)ViewBag.Hora, "Selecionar", new { @class = "form-control", autofocus = true, data_toggle = "popover", data_content = "Define se é permitido marcar consultas anteriores à data/hora corrente", data_trigger="hover", data_placement="top" })
+                                                        @Html.ValidationMessageFor(m => m.CONF_IN_MARCA_CONSULTA_HORA, "", new { @style = "color:red" })
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <h4 style="margin-left: 15px; color:green; background-color: beige; font-weight:bold">Anamneses</h4>
+                                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                                        Modelo da Anamnese*
+                                                        @Html.DropDownListFor(m => m.CONF_IN_MODELO_ANAMNESE, (SelectList)ViewBag.Modelo, "Selecionar", new { @class = "form-control", autofocus = true, data_toggle = "popover", data_content = "Define o modelo a ser usado na anamnese segmentada para todos os pacientes", data_trigger="hover", data_placement="top" })
+                                                        @Html.ValidationMessageFor(m => m.CONF_IN_MODELO_ANAMNESE, "", new { @style = "color:red" })
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <h4 style="margin-left: 15px; color:green; background-color: beige; font-weight:bold">Locação</h4>
+                                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                                        Multa por Atraso (%)*
+                                                        @Html.TextBoxFor(m => m.CONF_VL_ACRESCIMO_ATRASO_PARCELA, new { @class = "form-control", autofocus = true, data_toggle = "popover", data_content = "Multa aplicada sobre o valor da parcela no caso de atraso de pagamento", data_trigger="hover", data_placement="top" })
+                                                        @Html.ValidationMessageFor(m => m.CONF_VL_ACRESCIMO_ATRASO_PARCELA, "", new { @style = "color:red" })
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <h4 style="margin-left: 15px; color:green; background-color: beige; font-weight:bold">Configurações de Assinatura Digital</h4>
+                                                    <div class="col-lg-3 col-md-3 col-xs-12">
+                                                        Assinatura em  Atestados*
+                                                        @Html.DropDownListFor(m => m.CONF_IN_ASSINA_DIGITAL_ATESTADO, (SelectList)ViewBag.AssinaAtestado, "Selecionar", new { @class = "form-control", autofocus = true, data_toggle = "popover", data_content = "Define se os atestados emitidos terão assinatura digital. Válido apenas se tiver o arquivo PFX localizado nas configurações", data_trigger="hover", data_placement="top" })
+                                                        @Html.ValidationMessageFor(m => m.CONF_IN_ASSINA_DIGITAL_ATESTADO, "", new { @style = "color:red" })
+                                                    </div>
+                                                    <div class="col-lg-3 col-md-3 col-xs-12">
+                                                        Assinatura em  Solicitações*
+                                                        @Html.DropDownListFor(m => m.CONF_IN_ASSINA_DIGITAL_SOLICITACAO, (SelectList)ViewBag.AssinaSolicitacao, "Selecionar", new { @class = "form-control", autofocus = true, data_toggle = "popover", data_content = "Define se as solicitações de exames emitidas terão assinatura digital. Válido apenas se tiver o arquivo PFX localizado nas configurações", data_trigger="hover", data_placement="top" })
+                                                        @Html.ValidationMessageFor(m => m.CONF_IN_ASSINA_DIGITAL_SOLICITACAO, "", new { @style = "color:red" })
+                                                    </div>
+                                                    <div class="col-lg-3 col-md-3 col-xs-12">
+                                                        Assinatura em  Prescrições*
+                                                        @Html.DropDownListFor(m => m.CONF_IN_ASSINA_DIGITAL_PRESCRICAO, (SelectList)ViewBag.AssinaPrescricao, "Selecionar", new { @class = "form-control", autofocus = true, data_toggle = "popover", data_content = "Define se as prescrições emitidas terão assinatura digital. Válido apenas se tiver o arquivo PFX localizado nas configurações", data_trigger="hover", data_placement="top" })
+                                                        @Html.ValidationMessageFor(m => m.CONF_IN_ASSINA_DIGITAL_PRESCRICAO, "", new { @style = "color:red" })
+                                                    </div>
+                                                    <div class="col-lg-3 col-md-3 col-xs-12">
+                                                        Assinatura em  Contratos*
+                                                        @Html.DropDownListFor(m => m.CONF_IN_ASSINA_DIGITAL_LOCACAO, (SelectList)ViewBag.AssinaContrato, "Selecionar", new { @class = "form-control", autofocus = true, data_toggle = "popover", data_content = "Define se os contratos de locação emitidos terão assinatura digital. Válido apenas se tiver o arquivo PFX localizado nas configurações", data_trigger="hover", data_placement="top" })
+                                                        @Html.ValidationMessageFor(m => m.CONF_IN_ASSINA_DIGITAL_LOCACAO, "", new { @style = "color:red" })
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <div class="col-lg-4 col-md-4 col-xs-12">
+                                                        Localização do Arquivo de Assinatura Digital .PFX*
+                                                        @Html.TextBoxFor(m => m.CONF_IN_ASSINA_DIGITAL_LOCAL_PFX, new { @class = "form-control", autofocus = true, data_toggle = "popover", data_content = "Define o local, na máquina do usuário, onde o arquivo de assinatura digital de formato PFX se enontra", data_trigger="hover", data_placement="top" })
+                                                        @Html.ValidationMessageFor(m => m.CONF_IN_ASSINA_DIGITAL_LOCAL_PFX, "", new { @style = "color:red" })
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <h4 style="margin-left: 15px; color:green; background-color: beige; font-weight:bold">Envio Automatico de Mensagens</h4>
+                                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                                        Aniversariantes*
+                                                        @Html.DropDownListFor(m => m.CONF_IN_ENVIA_ANIVERSARIO, (SelectList)ViewBag.Aniversario, "Selecionar", new { @class = "form-control", autofocus = true, data_toggle = "popover", data_content = "Define se a máquina de envio de mensagens enviará mensagem automaticamante para os aniversariantes do dia", data_trigger="hover", data_placement="top" })
+                                                        @Html.ValidationMessageFor(m => m.CONF_IN_ENVIA_ANIVERSARIO, "", new { @style = "color:red" })
+                                                    </div>
+                                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                                        Confirmação de Consultas*
+                                                        @Html.DropDownListFor(m => m.CONF_IN_ENVIA_CONFIRMACAO, (SelectList)ViewBag.Confirmacao, "Selecionar", new { @class = "form-control", autofocus = true, data_toggle = "popover", data_content = "Define se a máquina de envio de mensagens enviará mensagem automaticamante para os pacientes confirmarem suas consultas", data_trigger="hover", data_placement="top" })
+                                                        @Html.ValidationMessageFor(m => m.CONF_IN_ENVIA_CONFIRMACAO, "", new { @style = "color:red" })
+                                                    </div>
+                                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                                        Aviso de Vencimentos*
+                                                        @Html.DropDownListFor(m => m.CONF_IN_ENVIA_PAGAMENTO, (SelectList)ViewBag.Pagamento, "Selecionar", new { @class = "form-control", autofocus = true, data_toggle = "popover", data_content = "Define se a máquina de envio de mensagens enviará mensagem automaticamante para os responsáveis pelos pagamentos a vencer", data_trigger="hover", data_placement="top" })
+                                                        @Html.ValidationMessageFor(m => m.CONF_IN_ENVIA_PAGAMENTO, "", new { @style = "color:red" })
+                                                    </div>
+                                                    <div class="col-lg-3 col-md-3 col-xs-12">
+                                                        Permite receber de exames por WhatsApp*
+                                                        @Html.DropDownListFor(m => m.CONF_IN_ENVIA_EXAME_ZAP, (SelectList)ViewBag.Zap, "Selecionar", new { @class = "form-control", autofocus = true, data_toggle = "popover", data_content = "Define se o paciente poderá enviar os seus exames antecipadamente pelo WhatsApp", data_trigger="hover", data_placement="top" })
+                                                        @Html.ValidationMessageFor(m => m.CONF_IN_ENVIA_EXAME_ZAP, "", new { @style = "color:red" })
+                                                    </div>
+                                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                                        Número do WhatsApp*
+                                                        @Html.TextBoxFor(m => m.CONF_NR_WHAPSAPP, new { @class = "form-control", autofocus = true, data_toggle = "popover", data_content = "Define o número do WhatsApp que será informado ao paciente na mensagem de confirmação de consulta", data_trigger="hover", data_placement="top", @id = "cel" })
+                                                        @Html.ValidationMessageFor(m => m.CONF_NR_WHAPSAPP, "", new { @style = "color:red" })
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <h4 style="margin-left: 15px; color:green; background-color: beige; font-weight:bold">Automações</h4>
+                                                    <div class="col-lg-3 col-md-3 col-xs-12">
+                                                        Inclui medicamento automaticamente*
+                                                        @Html.DropDownListFor(m => m.CONF_IN_INCLUIR_REMEDIO, (SelectList)ViewBag.Remedio, "Selecionar", new { @class = "form-control", autofocus = true, data_toggle = "popover", data_content = "Define se um medicamento utilizado pela primeira vez em uma prescrição será incluído au-tomaticamente do cadastro de medicamentos para uso futuro", data_trigger="hover", data_placement="top" })
+                                                        @Html.ValidationMessageFor(m => m.CONF_IN_INCLUIR_REMEDIO, "", new { @style = "color:red" })
+                                                    </div>
+                                                    <div class="col-lg-3 col-md-3 col-xs-12">
+                                                        Inclui modelo de solicitação automaticamente*
+                                                        @Html.DropDownListFor(m => m.CONF_IN_INCLUIR_SOLICITACAO, (SelectList)ViewBag.Solicitacao, "Selecionar", new { @class = "form-control", autofocus = true, data_toggle = "popover", data_content = "Define se uma nova solicitação de exame será incluída automaticamente como modelo para uso futuro", data_trigger="hover", data_placement="top" })
+                                                        @Html.ValidationMessageFor(m => m.CONF_IN_INCLUIR_SOLICITACAO, "", new { @style = "color:red" })
+                                                    </div>
+                                                    <div class="col-lg-3 col-md-3 col-xs-12">
+                                                        Aviso de Estoque Baixo ou Zerado*
+                                                        @Html.DropDownListFor(m => m.CONF_IN_AVISO_ESTOQUE, (SelectList)ViewBag.Estoque, "Selecionar", new { @class = "form-control", autofocus = true, data_toggle = "popover", data_content = "Define se o aviso de estoque baixo ou zerado está ativo e se será criado uma única vez ou diariamente", data_trigger="hover", data_placement="top" })
+                                                        @Html.ValidationMessageFor(m => m.CONF_IN_AVISO_ESTOQUE, "", new { @style = "color:red" })
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <h4 style="margin-left: 15px; color:green; background-color: beige; font-weight:bold">Suporte</h4>
+                                                    <div class="col-lg-3 col-md-3 col-xs-12">
+                                                        E-Mail de Suporte
+                                                        @Html.TextBoxFor(m => m.CONF_EM_CRMSYS, new { @class = "form-control", @readonly = "readonly" })
+                                                    </div>
+                                                    <div class="col-lg-3 col-md-3 col-xs-12">
+                                                        E-Mail Alternativo de Suporte
+                                                        @Html.TextBoxFor(m => m.CONF_EM_CRMSYS1, new { @class = "form-control", @readonly = "readonly" })
+                                                    </div>
+                                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                                        WhatsApp
+                                                        @Html.TextBoxFor(m => m.CONF_NR_SUPORTE_ZAP, new { @class = "form-control", @id="zap", @readonly = "readonly" })
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <link href="~/Content/themes/base/jquery-ui.min.css" rel="stylesheet" />
+    <link href="~/Content/themes/base/all.css" rel="stylesheet" />
+    @Styles.Render("~/Content/plugins/dataTables/dataTablesStyles")
+    @Styles.Render("~/plugins/jasnyBootstrapStyles")
+    @Styles.Render("~/plugins/toastrStyles")
+
+}
+@section Scripts {
+    <script type="text/javascript" src="~/Scripts/moment.min.js"></script>
+    <script type="text/javascript" src="~/Scripts/bootstrap.min.js"></script>
+    @Scripts.Render("~/plugins/toastr")
+    <script src="~/Scripts/jquery-ui-1.12.1.min.js"></script>
+    @Scripts.Render("~/plugins/dataTables")
+    @Scripts.Render("~/bundles/inputmask")
+    @Scripts.Render("~/plugins/jasnyBootstrap")
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.maskedinput/1.4.1/jquery.maskedinput.js"></script>
+
+    <script type="text/javascript" src="~/Scripts/moment.min.js"></script>
+    <script type="text/javascript" src="~/Scripts/bootstrap.min.js"></script>
+   
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('[data-toggle="popover"]').popover();
+        });
+    </script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-toggle="popover"]'));
+            var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
+                return new bootstrap.Popover(popoverTriggerEl);
+            });
+        });
+    </script>
+
+    <!-- Handler de fechamento do browser -->
+    <script type="text/javascript">
+        window.onbeforeunload = function ()
+        {
+            navigator.sendBeacon('../ControleAcesso/LogSessionTime');
+        }; 
+    </script>
+
+    <script type="text/javascript">
+        $(function () {
+            $("#cel").mask("(99)99999-9999");
+        });
+    </script>
+
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            var i = -1;
+            var toastCount = 0;
+            var $toastlast;
+            var getMessage = function () {
+                var msg = 'Hi, welcome to Inspinia. This is example of Toastr notification box.';
+                return msg;
+            };
+
+            $('#basictoast').click(function () {
+                // Display a success toast, with a title
+                toastr.success('Edição em andamento!')
+            });
+            $('#showtoast').click(function () {
+                var shortCutFunction = $("#toastTypeGroup input:radio:checked").val();
+                var msg = $('#message').val();
+                var title = $('#title').val() || '';
+                var $showDuration = $('#showDuration');
+                var $hideDuration = $('#hideDuration');
+                var $timeOut = $('#timeOut');
+                var $extendedTimeOut = $('#extendedTimeOut');
+                var $showEasing = $('#showEasing');
+                var $hideEasing = $('#hideEasing');
+                var $showMethod = $('#showMethod');
+                var $hideMethod = $('#hideMethod');
+                var toastIndex = toastCount++;
+                toastr.options = {
+                    closeButton: $('#closeButton').prop('checked'),
+                    debug: $('#debugInfo').prop('checked'),
+                    progressBar: $('#progressBar').prop('checked'),
+                    positionClass: $('#positionGroup input:radio:checked').val() || 'toast-top-right',
+                    onclick: null
+                };
+                if ($('#addBehaviorOnToastClick').prop('checked')) {
+                    toastr.options.onclick = function () {
+                        alert('You can perform some custom action after a toast goes away');
+                    };
+                }
+                if ($showDuration.val().length) {
+                    toastr.options.showDuration = $showDuration.val();
+                }
+                if ($hideDuration.val().length) {
+                    toastr.options.hideDuration = $hideDuration.val();
+                }
+                if ($timeOut.val().length) {
+                    toastr.options.timeOut = $timeOut.val();
+                }
+                if ($extendedTimeOut.val().length) {
+                    toastr.options.extendedTimeOut = $extendedTimeOut.val();
+                }
+                if ($showEasing.val().length) {
+                    toastr.options.showEasing = $showEasing.val();
+                }
+                if ($hideEasing.val().length) {
+                    toastr.options.hideEasing = $hideEasing.val();
+                }
+                if ($showMethod.val().length) {
+                    toastr.options.showMethod = $showMethod.val();
+                }
+                if ($hideMethod.val().length) {
+                    toastr.options.hideMethod = $hideMethod.val();
+                }
+                if (!msg) {
+                    msg = getMessage();
+                }
+                $("#toastrOptions").text("Command: toastr["
+                    + shortCutFunction
+                    + "](\""
+                    + msg
+                    + (title ? "\", \"" + title : '')
+                    + "\")\n\ntoastr.options = "
+                    + JSON.stringify(toastr.options, null, 2)
+                );
+                var $toast = toastr[shortCutFunction](msg, title); // Wire up an event handler to a button in the toast, if it exists
+                $toastlast = $toast;
+                if ($toast.find('#okBtn').length) {
+                    $toast.delegate('#okBtn', 'click', function () {
+                        alert('you clicked me. i was toast #' + toastIndex + '. goodbye!');
+                        $toast.remove();
+                    });
+                }
+                if ($toast.find('#surpriseBtn').length) {
+                    $toast.delegate('#surpriseBtn', 'click', function () {
+                        alert('Surprise! you clicked me. i was toast #' + toastIndex + '. You could perform an action here.');
+                    });
+                }
+            });
+            function getLastToast() {
+                return $toastlast;
+            }
+            $('#clearlasttoast').click(function () {
+                toastr.clear(getLastToast());
+            });
+            $('#cleartoasts').click(function () {
+                toastr.clear();
+            });
+
+        });
+    </script>
+
+    @if (ViewBag.Message != null)
+    {
+        <script type="text/javascript">
+            window.onload = function () {
+                  alert("@ViewBag.Message");
+            };
+        </script>
+    }
+}

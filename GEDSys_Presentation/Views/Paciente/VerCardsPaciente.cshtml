@@ -1,0 +1,282 @@
+﻿@using Presentation.Extensions
+@using CrossCutting;
+@model EntitiesServices.Model.PACIENTE
+@{
+    Layout = "~/Views/Shared/_Layout_Admin.cshtml";
+    ViewBag.Title = "WebDoctor - Paciente";
+    ViewBag.MetaDescription = "WebDoctor - Paciente - Lista de Pacientes ";
+    ViewBag.MetaKeywords = "WebDoctor, paciente";
+}
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="modalContainer">
+        <div id="modal" class="modal" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        @*Titulo gerado dinamicamente*@
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        @*Gerado dinamicamente*@
+                    </div>
+                    <div class="modal-footer">
+                        <button onclick="limpaModal()" type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="page-title">
+        <ol class="breadcrumb">
+            <li>
+                <a href="@Url.Action("MontarTelaPaciente", "BaseAdmin")">Dashboard</a>
+            </li>
+            <li class="active">
+                <strong>Central de Pacientes</strong>
+            </li>
+        </ol>
+        <br />
+    </div>
+    <div class="row">
+        <div class="col-lg-12 col-md-12 col-xs-12">
+            <div class="col-lg-12 col-md-12 col-xs-12 ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>Filtros</h5>
+                </div>
+
+                @using (Html.BeginForm("FiltrarPaciente", "Paciente", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal" }))
+                {
+                    <div class="ibox-content">
+                        <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                            <div class="col-lg-2 col-md-2 col-xs-12">
+                                Tipo de Paciente
+                                @Html.DropDownListFor(m => m.TIPA_CD_ID, (SelectList)ViewBag.Tipos, "Selecionar", new { @class = "form-control" })
+                            </div>
+                            <div class="col-lg-4 col-md-4 col-xs-12">
+                                Nome/Nome Social
+                                @Html.TextBoxFor(m => m.PACI_NM_NOME, new { @class = "form-control", autofocus = true })
+                            </div>
+                            <div class="col-lg-2 col-md-2 col-xs-12">
+                                CPF
+                                @Html.TextBoxFor(m => m.PACI_NR_CPF, new { @class = "form-control", @id = "cpf", autofocus = true })
+                            </div>
+                            <div class="col-lg-2 col-md-2 col-xs-12">
+                                Matrícula
+                                @Html.TextBoxFor(m => m.PACI_NR_MATRICULA, new { @class = "form-control", autofocus = true })
+                            </div>
+                            <div class="col-lg-2 col-md-2 col-xs-12">
+                                Sexo
+                                @Html.DropDownListFor(m => m.SEXO_CD_ID, (SelectList)ViewBag.Sexo, "Selecionar", new { @class = "form-control" })
+                            </div>
+                        </div>
+                        <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                            <div class="col-lg-2 col-md-1 col-xs-12">
+                                Celular
+                                @Html.TextBoxFor(m => m.PACI_NR_CELULAR, new { @class = "form-control", autofocus = true, @id = "cel" })
+                            </div>
+                            <div class="col-lg-3 col-md-3 col-xs-12">
+                                E-Mail
+                                @Html.TextBoxFor(m => m.PACI_NM_EMAIL, new { @class = "form-control", autofocus = true })
+                            </div>
+                            <div class="col-lg-3 col-md-3 col-xs-12">
+                                Cidade
+                                @Html.TextBoxFor(m => m.PACI_NM_CIDADE, new { @class = "form-control", autofocus = true })
+                            </div>
+                            <div class="col-lg-1 col-md-1 col-xs-12">
+                                UF
+                                @Html.DropDownListFor(m => m.UF_CD_ID, (SelectList)ViewBag.UF, "Selecionar", new { @class = "form-control" })
+                            </div>
+                            <div class="col-lg-3 col-md-3 col-xs-12">
+                                Indicação
+                                @Html.TextBoxFor(m => m.PACI_NM_INDICACAO, new { @class = "form-control", autofocus = true })
+                            </div>
+                        </div>
+
+                        <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                            <div class="col-lg-12 col-md-12 col-xs-12">
+                                @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_INCLUIR_PACIENTE == 1)
+                                {
+                                    @Html.ButtonLinkIndex(text: "Novo Paciente", controller: "Paciente", action: "IncluirPaciente", buttonClass: "primary")
+                                }
+                                @Html.ButtonActionSubmit(text: "Filtrar")
+                                @Html.ButtonLinkIndex(text: "Retirar Filtro", controller: "Paciente", action: "RetirarFiltroPaciente")
+                                @Html.ButtonLinkIndex(text: "Exibir Inativos", controller: "Paciente", action: "MostrarTudoPaciente")
+                                @Html.ButtonLinkIndex(text: "Exibir Lista", controller: "Paciente", action: "MontarTelaCentralPaciente")
+                                @Html.ButtonLinkIndex(text: "Gerar Listagem", controller: "Paciente", action: "GerarRelatorioLista")
+                                @Html.ButtonLinkIndex(text: "Voltar", controller: "Paciente", action: "MontarTelaCentralPaciente")
+                                <a href="@Url.Action((String)Session["AjudaNivel"])"  class="btn btn-sm btn-danger" target="_blank">Ajuda</a>                
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-12 col-md-12 col-xs-12">
+            <div class="col-lg-12 col-md-12 col-xs-12 ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>Pacientes</h5>
+                </div>
+                <div class="ibox-content">
+                    @if (!ViewData.ModelState.IsValid)
+                    {
+                        <div class="alert alert-danger">
+                            <button type="button" class="close" data-dismiss="alert">Fechar</button>
+                            @Html.ValidationSummary(false, "", new { @class = "text-danger" })
+                        </div>
+                    }
+                    <div class="row">
+                            @if ((ViewBag.Listas as List<EntitiesServices.Model.PACIENTE>).Count > 0)
+                            {
+                                foreach (var cond in (ViewBag.Listas as List<EntitiesServices.Model.PACIENTE>))
+                                {
+                                    <div class="col-lg-4">  
+                                        <div style="height: 280px;" class="contact-box">
+                                            @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_ALTERAR_PACIENTE == 1)
+                                            {
+                                                <a href="@Url.Action("EditarPaciente", "Paciente", new { id = cond.PACI__CD_ID })"></a>
+                                            }
+                                            <div class="col-sm-3">
+                                                @if (!String.IsNullOrEmpty(cond.PACI_AQ_FOTO))
+                                                {
+                                                    <div class="text-center">
+                                                        <img alt="image" class="img-circle m-t-xs img-responsive" src="@Url.Content(cond.PACI_AQ_FOTO)" style="width: auto; height: auto; max-height: 100px; max-width: 100px;">
+                                                    </div>
+                                                }
+                                                else
+                                                {
+                                                    <div class="text-center">
+                                                        <img src="~/Images/icon_morador.png" style="width: auto; height: auto; max-height: 55px; max-width: 45px;">
+                                                    </div>
+                                                }
+                                            </div>
+                                            <div class="col-sm-9">
+                                                <h3><strong>@cond.TIPO_PACIENTE.TIPA_NM_NOME</strong></h3><br />
+                                                <h3><strong>@cond.PACI_NM_NOME</strong></h3>
+                                                @if (ViewBag.EMail == 1)
+                                                {
+                                                    <p><i class="fa fa-envelope"></i> <a href="@Url.Action("EnviarEMailPaciente", "Paciente", new { id = cond.PACI__CD_ID})">@cond.PACI_NM_EMAIL</a> </p>
+                                                }
+                                                else
+                                                {
+                                                    <p><i class="fa fa-envelope"></i> @cond.PACI_NM_EMAIL</p>
+                                                }
+                                                <address>
+                                                        @cond.PACI_NM_ENDERECO<br>
+                                                        @cond.PACI_NR_NUMERO  @cond.PACI_NR_COMPLEMENTO<br />
+                                                        @if (cond.UF != null)
+                                                        {
+                                                            @cond.PACI_NM_BAIRRO  @cond.PACI_NM_CIDADE   @cond.UF.UF_SG_SIGLA<br>
+                                                        }
+                                                        else
+                                                        {
+                                                            @cond.PACI_NM_BAIRRO   @cond.PACI_NM_CIDADE<br>
+                                                        }
+                                                        @cond.PACI_NR_CEP<br>
+                                                    <abbr title="Telefone">P:</abbr> @cond.PACI_NR_TELEFONE <br />
+                                                    @if (ViewBag.SMS == 1)
+                                                    {
+                                                        <abbr title="Cel">C:</abbr> <a href="@Url.Action("EnviarSMSPaciente", "Paciente", new { id = cond.PACI__CD_ID})">@cond.PACI_NR_CELULAR</a>
+                                                    }
+                                                    else
+                                                    {
+                                                        <abbr title="Cel">C:</abbr>@cond.PACI_NR_CELULAR
+                                                    }
+                                                </address>
+                                            </div>
+                                            <div class="clearfix"></div>
+                                        </div>
+                                    </div>
+                                }   
+                            }
+                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <link href="~/Content/themes/base/all.css" rel="stylesheet" />  
+    @Styles.Render("~/Content/plugins/dataTables/dataTablesStyles")
+    @Styles.Render("~/plugins/jasnyBootstrapStyles")
+}
+
+@section Scripts {
+
+    @Scripts.Render("~/plugins/dataTables")
+    @Scripts.Render("~/bundles/inputmask")
+    @Scripts.Render("~/plugins/jasnyBootstrap")
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.maskedinput/1.4.1/jquery.maskedinput.js"></script>
+    
+    <script>
+        $(function () {
+            limpaModal();
+        });
+
+        function limpaModal() {
+            $('#btnModal').remove();
+            $('#modalTitle').remove();
+        }
+
+        function ShowModalExcluir(url) {
+            $('#modal').find('.modal-footer').prepend('<a id="btnModal" alt="Desativar" class="btn btn-primary" href="' + url + '" target="_self" title="Desativar">Confirmar</a>');
+            $('#modal').find('.modal-body').html('Confirma exclusão de Paciente?');
+            $('#modal').find('.modal-header').prepend('<h5 id="modalTitle" class="modal-title">Confimar Exclusão</h5>');
+            $('#modal').modal('show');
+        }
+
+        function ShowModalReativar(url) {
+            $('#modal').find('.modal-footer').prepend('<a id="btnModal" alt="Reativar" class="btn btn-primary" href="' + url + '" target="_self" title="Reativar">Confirmar</a>');
+            $('#modal').find('.modal-body').html('Confirma reativação de Paciente?');
+            $('#modal').find('.modal-header').prepend('<h5 id="modalTitle" class="modal-title">Confimar Reativação</h5>');
+            $('#modal').modal('show');
+        }
+    </script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            $('.dataTables-example').DataTable({
+                pageLength: 25,
+                dom: '<"html5buttons"B>lTfgitp',
+                buttons: [
+                    { extend: 'excel', title: 'Pacientes_Planilha' },
+                    {
+                        extend: 'print',
+                        customize: function (win) {
+                            $(win.document.body).addClass('white-bg');
+                            $(win.document.body).css('font-size', '10px');
+
+                            $(win.document.body).find('table')
+                                    .addClass('compact')
+                                    .css('font-size', 'inherit');
+                        }
+                    }
+                ]
+            });         
+        });
+    </script>
+
+    <script type="text/javascript">
+        $(function () {
+            $("#cpf").mask("999.999.999-99");
+            $("#cel").mask("(99)99999-9999");
+        });
+    </script>
+}
+
+@if (ViewBag.Message != null)
+{
+    <script type="text/javascript">
+            window.onload = function () {
+                alert("@ViewBag.Message");
+            };
+    </script>
+}
+

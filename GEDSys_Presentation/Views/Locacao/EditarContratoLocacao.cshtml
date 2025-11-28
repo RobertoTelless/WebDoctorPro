@@ -1,0 +1,309 @@
+﻿@using Presentation.Extensions
+@model ERP_Condominios_Solution.ViewModels.ContratoLocacaoViewModel
+@{
+    Layout = "~/Views/Shared/_Layout_Admin.cshtml";
+    ViewBag.Title = "WebDoctor - LOcacao";
+    ViewBag.MetaDescription = "WebDoctor - Contrao - Inclusão";
+    ViewBag.MetaKeywords = "WebDoctor, contrato, locacao";
+}
+
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="page-title">
+        <h3 class="title">Locação</h3>
+        <br />
+        <ol class="breadcrumb">
+            <li>
+                <a href="@Url.Action("MontarTelaPaciente", "Paciente")">Dashboard</a>
+            </li>
+            <li>
+                <a href="@Url.Action("MontarTelaContratoLocacao", "Locacao")">Contratos</a>
+            </li>
+            <li class="active">
+                <strong>Contrato - Edição</strong>
+            </li>
+        </ol>
+        <br />
+    </div>
+
+    <div class="row">
+        <div class="col-lg-12 col-md-12 col-xs-12">
+            <div class="col-lg-12 col-md-12 col-xs-12 ibox float-e-margins">
+                <div class="ibox-title">
+                    <div style="text-align: center;" class="col-lg-12 col-md-12 col-xs-12">
+                        <h5>Contrato - Edição</h5>
+                    </div>
+                </div>
+                @using (Html.BeginForm("EditarContratoLocacao", "Locacao", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal", @id = "pwd-container1" }))
+                {
+                    <div class="ibox-content">
+                        @Html.AntiForgeryToken()
+                        @if (!ViewData.ModelState.IsValid)
+                        {
+                            <div class="alert alert-danger">
+                                <button type="button" class="close" data-dismiss="alert">Fechar</button>
+                                @Html.ValidationSummary(false, "Erros Encontrados:", new { @class = "text-danger" })
+                            </div>
+                        }
+                        @if (TempData["TemMensagem"] != null)
+                        {
+                            <div class="alert alert-success">
+                                <button type="button" class="close" data-dismiss="alert">Fechar</button>
+                                <span>@TempData["MensagemAcerto"]</span>
+                            </div>
+                        }                    
+
+                        <div class="row">
+                            <div class="col-lg-8 col-md-8 col-xs-12">
+                                <h4 style="margin-left: -15px; color:green; background-color: beige; font-weight:bold">Dados do Contrato de Locação</h4>
+                                <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                    @Html.ButtonActionSubmit(text: "Confirma Edição do Contrato", htmlAttributes: new { id = "basictoast" })
+                                    @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaContratoLocacao", controller: "Locacao")
+                                    <a href="@Url.Action((String)Session["AjudaNivel"])" class="btn btn-sm btn-danger" target="_blank">Ajuda</a>
+                                </div>
+                                <div class="form-group" style=" margin-left: -30px; margin-right: -15px;">
+                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                        @Html.HiddenFor(m => m.ASSI_CD_ID)
+                                        @Html.HiddenFor(m => m.USUA_CD_ID)
+                                        @Html.HiddenFor(m => m.COLO_IN_ATIVO)
+                                        @Html.HiddenFor(m => m.COLO_CD_ID)
+                                        @Html.HiddenFor(m => m.COLO_DT_CRIACAO)
+                                        @Html.HiddenFor(m => m.TICO_CD_ID)
+                                        Data de Cadastro
+                                        @Html.TextBoxFor(m => m.COLO_DT_CRIACAO, "{0:dd/MM/yyyy}", new { @class = "form-control", @tabindex = "-1", @readonly = "readonly" })
+                                    </div>
+                                    <div class="col-lg-3 col-md-3 col-xs-12">
+                                        Tipo de Contrato
+                                        @Html.TextBoxFor(m => m.TIPO_CONTRATO.TICO_NM_NOME, new { @class = "form-control", @tabindex = "-1", @readonly = "readonly" })
+                                    </div>
+                                </div>
+                                <div class="form-group" style=" margin-left: -30px; margin-right: -15px;">
+                                    <div class="col-lg-12 col-md-12 col-xs-12">
+                                        Nome do Contrato*
+                                        @Html.TextBoxFor(m => m.COLO_NM_NOME, new { @class = "form-control", autofocus = true, @id = "titulo", data_toggle = "popover", data_content = "Informe o nome que vai identificar esse contrato nas listas de seleção", data_trigger="hover", data_placement="top" })
+                                        @Html.ValidationMessageFor(m => m.COLO_NM_NOME, "", new { @style = "color:red" })
+                                    </div>
+                                </div>
+                                <div class="form-group" style=" margin-left: -30px; margin-right: -15px;">
+                                    <div class="col-lg-12 col-md-12 col-xs-12">
+                                        Texto do Contrato*
+                                        @Html.TextAreaFor(m => m.COLO_TX_TEXTO, new { @class = "form-control", style = "width: 100%; height: 400px; overflow:auto;", autofocus = true, @id="desc", data_toggle = "popover", data_content = "Informe o texto do contrato observando sempre as regras no painel a direita", data_trigger="hover", data_placement="top" })
+                                        @Html.ValidationMessageFor(m => m.COLO_TX_TEXTO, "", new { @style = "color:red" })
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-lg-4 col-md-4 col-xs-4">
+                                <div class="ibox float-e-margins" style="background-color:beige">
+                                    <div class="ibox-title"  style="background-color: darkseagreen; color: darkgreen">
+                                        <h5>Regras para o texto do contrato</h5>
+                                    </div>
+                                    <div class="ibox-content" style="background-color:beige">
+                                        <div class="form-group" style=" margin-left: 5px; margin-right: 5px;">  
+                                            <br />
+                                            <ul style="margin:0; padding-left:20px; list-style-type:disc;">
+                                                <li style="margin-bottom:2px; line-height:1.1;">Pode conter caracteres especiais ($,&, etc.)</li>
+                                                <li style="margin-bottom:2px; line-height:1.1;">Tem que ter no mínimo 10 caracteres</li>
+                                                <li style="margin-bottom:2px; line-height:1.1;">Não pode conter os caracteres especiais (+ - * / =)</li>
+                                                <li style="margin-bottom:2px; line-height:1.1;">Não pode conter tags de HTML</li>
+                                            </ul> 
+
+                                            <p style="margin-top: 15px; font-size: 12px; line-height: 1.4; color: #555;">
+                                                <b>**INFORMAÇÃO IMPORTANTE:**</b><br />
+                                                O WebDoctor oferece marcas opcionais para substituição (placeholders).<br />
+                                                Você poderá usa-las ou não.<br />
+                                                Elas aparecem dentro de chaves ( {} ).<br />
+                                                O conteúdo das marcas deverão estar sempre em minúsculas.<br />
+                                                Ao encontrar uma marca o WebDoctor substituirá pelo valor correspondente.<br />
+                                                As tags permitidas são:<br />
+                                                {assinante} colocará o nome do assinante.<br />
+                                                {cnpj} colocará o CNPJ do assinante.<br />
+                                                {cpf} colocará o CPF do paciente.<br />
+                                                {equipamento} colocará o nome do equipamento sendo locado.<br />
+                                                {sede} colocará o endereço do assinante.<br />
+                                                {data} colocará a data de início da locação.<br />
+                                                {final} colocará a data de término da locação.<br />
+                                                {numParc} colocará o número de parcelas.<br />
+                                                {valor} colocará o valor da parcela (R$).<br />
+                                                {dia} colocará o dia do vencimento mensal.<br />
+                                                {marca} colocará a marca do equipamento sendo locado.<br />
+                                                {modelo} colocará o modelo do equipamento sendo locado.<br />
+                                                {serie} colocará o número de série do equipamento sendo locado.<br />
+                                                {garantia} colocará a informação de garantia (S/N).<br />
+                                                {total} colocará o valor total da locação (R$).<br />
+                                                {produto} colocará o nome do equipamento sendo locado.<br />
+                                                {justificativa} colocará a justificativa para o cancelamento*.<br />
+                                                {observacao} colocará as observações para o encerramento**.<br />
+                                                <b>Certifique-se de que a formatação está correta antes de salvar o documento.</b>
+                                            </p>
+                                            <p style="margin-top: 15px; font-size: 12px; line-height: 1.4; color: #555;">
+                                                (*) Apenas para os distratos de locação.<br />
+                                                (**) Apenas para formalizações de encerramento.<br />
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <link href="~/Content/themes/base/jquery-ui.min.css" rel="stylesheet" />
+    <link href="~/Content/themes/base/all.css" rel="stylesheet" />
+    @Styles.Render("~/Content/plugins/dataTables/dataTablesStyles")
+    @Styles.Render("~/plugins/jasnyBootstrapStyles")
+    @Styles.Render("~/plugins/toastrStyles")
+
+}
+@section Scripts {
+    @Scripts.Render("~/plugins/toastr")
+    <script src="~/Scripts/jquery-ui-1.12.1.min.js"></script>
+    @Scripts.Render("~/plugins/dataTables")
+    @Scripts.Render("~/bundles/inputmask")
+    @Scripts.Render("~/plugins/jasnyBootstrap")
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.maskedinput/1.4.1/jquery.maskedinput.js"></script>
+    <script src="~/Scripts/uploadAnexo.js"></script>
+
+    <script type="text/javascript" src="~/Scripts/moment.min.js"></script>
+    <script type="text/javascript" src="~/Scripts/bootstrap.min.js"></script>
+   
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('[data-toggle="popover"]').popover();
+        });
+    </script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-toggle="popover"]'));
+            var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
+                return new bootstrap.Popover(popoverTriggerEl);
+            });
+        });
+    </script>
+
+    <!-- Handler de fechamento do browser -->
+    <script type="text/javascript">
+        window.onbeforeunload = function ()
+        {
+            navigator.sendBeacon('../ControleAcesso/LogSessionTime');
+        }; 
+    </script>
+
+    </script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            var i = -1;
+            var toastCount = 0;
+            var $toastlast;
+            var getMessage = function () {
+                var msg = 'Hi, welcome to Inspinia. This is example of Toastr notification box.';
+                return msg;
+            };
+
+            $('#basictoast').click(function () {
+                // Display a success toast, with a title
+                toastr.success('Edição em andamento!')
+            });
+            $('#showtoast').click(function () {
+                var shortCutFunction = $("#toastTypeGroup input:radio:checked").val();
+                var msg = $('#message').val();
+                var title = $('#title').val() || '';
+                var $showDuration = $('#showDuration');
+                var $hideDuration = $('#hideDuration');
+                var $timeOut = $('#timeOut');
+                var $extendedTimeOut = $('#extendedTimeOut');
+                var $showEasing = $('#showEasing');
+                var $hideEasing = $('#hideEasing');
+                var $showMethod = $('#showMethod');
+                var $hideMethod = $('#hideMethod');
+                var toastIndex = toastCount++;
+                toastr.options = {
+                    closeButton: $('#closeButton').prop('checked'),
+                    debug: $('#debugInfo').prop('checked'),
+                    progressBar: $('#progressBar').prop('checked'),
+                    positionClass: $('#positionGroup input:radio:checked').val() || 'toast-top-right',
+                    onclick: null
+                };
+                if ($('#addBehaviorOnToastClick').prop('checked')) {
+                    toastr.options.onclick = function () {
+                        alert('You can perform some custom action after a toast goes away');
+                    };
+                }
+                if ($showDuration.val().length) {
+                    toastr.options.showDuration = $showDuration.val();
+                }
+                if ($hideDuration.val().length) {
+                    toastr.options.hideDuration = $hideDuration.val();
+                }
+                if ($timeOut.val().length) {
+                    toastr.options.timeOut = $timeOut.val();
+                }
+                if ($extendedTimeOut.val().length) {
+                    toastr.options.extendedTimeOut = $extendedTimeOut.val();
+                }
+                if ($showEasing.val().length) {
+                    toastr.options.showEasing = $showEasing.val();
+                }
+                if ($hideEasing.val().length) {
+                    toastr.options.hideEasing = $hideEasing.val();
+                }
+                if ($showMethod.val().length) {
+                    toastr.options.showMethod = $showMethod.val();
+                }
+                if ($hideMethod.val().length) {
+                    toastr.options.hideMethod = $hideMethod.val();
+                }
+                if (!msg) {
+                    msg = getMessage();
+                }
+                $("#toastrOptions").text("Command: toastr["
+                    + shortCutFunction
+                    + "](\""
+                    + msg
+                    + (title ? "\", \"" + title : '')
+                    + "\")\n\ntoastr.options = "
+                    + JSON.stringify(toastr.options, null, 2)
+                );
+                var $toast = toastr[shortCutFunction](msg, title); // Wire up an event handler to a button in the toast, if it exists
+                $toastlast = $toast;
+                if ($toast.find('#okBtn').length) {
+                    $toast.delegate('#okBtn', 'click', function () {
+                        alert('you clicked me. i was toast #' + toastIndex + '. goodbye!');
+                        $toast.remove();
+                    });
+                }
+                if ($toast.find('#surpriseBtn').length) {
+                    $toast.delegate('#surpriseBtn', 'click', function () {
+                        alert('Surprise! you clicked me. i was toast #' + toastIndex + '. You could perform an action here.');
+                    });
+                }
+            });
+            function getLastToast() {
+                return $toastlast;
+            }
+            $('#clearlasttoast').click(function () {
+                toastr.clear(getLastToast());
+            });
+            $('#cleartoasts').click(function () {
+                toastr.clear();
+            });
+
+        });
+    </script>
+
+
+    @if (ViewBag.Message != null)
+    {
+        <script type="text/javascript">
+            window.onload = function () {
+                  alert("@ViewBag.Message");
+            };
+        </script>
+    }
+}

@@ -1,0 +1,986 @@
+﻿@using Presentation.Extensions
+@using CrossCutting
+@model EntitiesServices.Model.CONSULTA_PAGAMENTO
+@{
+    Layout = "~/Views/Shared/_Layout_Admin.cshtml";
+    ViewBag.Title = "WebDoctor - Financeiro";
+    ViewBag.MetaDescription = "WebDoctor - Financeiro - Dashhboard Financeiro";
+    ViewBag.MetaKeywords = "WebDoctor, Financeiro, dashboard";
+}
+<div id="content" class="wraper container-fluid">
+    <div class="modalContainer">
+        <div id="modal" class="modal" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        @*Titulo gerado dinamicamente*@
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        @*Gerado dinamicamente*@
+                    </div>
+                    <div class="modal-footer">
+                        <button onclick="limpaModal()" type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-12 col-md-12 col-sm-12">
+        @*Atalhos*@
+        <div class="row">
+            <h3 style="color:olivedrab; font-weight:bold">WebDoctor - Dashboard Financeiro</h3>
+        </div>
+
+        @*Widgets*@
+        <br />
+        <div class="row">
+            <div class="col-lg-2">
+                <div class="ibox float-e-margins">
+                    <div class="ibox-title" style="background-color: darkseagreen; color: darkgreen">
+                        <span class="label label-primary pull-right">Hoje</span>
+                        <h5>Pagamentos</h5>
+                    </div>
+                    <div class="ibox-content">
+                        <h1 class="no-margins">@CrossCutting.Formatters.DecimalFormatter(ViewBag.VencimentoHoje)</h1>
+                        <small>Vencimento Hoje (R$)</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-2">
+                <div class="ibox float-e-margins">
+                    <div class="ibox-title" style="background-color: darkseagreen; color: darkgreen">
+                        <span class="label label-primary pull-right">Hoje</span>
+                        <h5>Pagamentos</h5>
+                    </div>
+                    <div class="ibox-content">
+                        <h1 class="no-margins">@CrossCutting.Formatters.DecimalFormatter(ViewBag.PagtosMes)</h1>
+                        <small>Pagamentos Mês Corrente (R$)</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-2">
+                <div class="ibox float-e-margins">
+                    <div class="ibox-title" style="background-color: darkseagreen; color: darkgreen">
+                        <span class="label label-primary pull-right">Hoje</span>
+                        <h5>Pagamentos</h5>
+                    </div>
+                    <div class="ibox-content">
+                        <h1 class="no-margins">@CrossCutting.Formatters.DecimalFormatter(ViewBag.PagtosAno)</h1>
+                        <small>Pagamentos Ano Corrente (R$)</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-2">
+                <div class="ibox float-e-margins">
+                    <div class="ibox-title" style="background-color: darkseagreen; color: darkgreen">
+                        <span class="label label-primary pull-right">Hoje</span>
+                        <h5>Recebimentos</h5>
+                    </div>
+                    <div class="ibox-content">
+                        <h1 class="no-margins">@CrossCutting.Formatters.DecimalFormatter(ViewBag.RectosMes)</h1>
+                        <small>Recebimentos Mês Corrente (R$)</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-2">
+                <div class="ibox float-e-margins">
+                    <div class="ibox-title" style="background-color: darkseagreen; color: darkgreen">
+                        <span class="label label-primary pull-right">Hoje</span>
+                        <h5>Recebimentos</h5>
+                    </div>
+                    <div class="ibox-content">
+                        <h1 class="no-margins">@CrossCutting.Formatters.DecimalFormatter(ViewBag.RectosAno)</h1>
+                        <small>Recebimentos Ano Corrente (R$)</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-2">
+                <div style="display: none; z-index:1000" class="dotContainer">
+                    <div class="spiner-example">
+                        <div class="sk-spinner sk-spinner-three-bounce">
+                            <div class="sk-bounce1"></div>
+                            <div class="sk-bounce2"></div>
+                            <div class="sk-bounce3"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        @*Atalhos*@
+        <div class="row">
+            <div class="form-group">
+                <div class="col-lg-12 col-md-12 col-xs-12">
+                    @Html.ButtonLinkIndex(text: "Central de Pagamentos", action: "MontarTelaPagamento", controller: "Financeiro", buttonClass: "success", htmlAttributes: new { @id = "emp", OnClick = "Fade()" })
+                    @Html.ButtonLinkIndex(text: "Central de Recebimentos", action: "MontarTelaRecebimento", controller: "Financeiro", buttonClass: "success", htmlAttributes: new { @id = "emp", OnClick = "Fade()" })
+                    @Html.ButtonLinkIndex(text: "Consultas - Valores", controller: "Financeiro", action: "MontarTelaValorConsulta", htmlAttributes: new { @id = "emp", OnClick = "Fade()" })
+                    @Html.ButtonLinkIndex(text: "Relatórios", controller: "Financeiro", action: "MontarTelaRelatorios", htmlAttributes: new { @id = "emp", OnClick = "Fade()" })
+                    @Html.ButtonLinkIndex(text: "Envio para Contador", action: "CarregarDesenvolvimento", controller: "BaseAdmin", buttonClass: "primary", htmlAttributes: new { @id = "emp", OnClick = "Fade()" })
+                    @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaPaciente", controller: "Paciente", htmlAttributes: new { @id = "emp", OnClick = "Fade()" })
+                    <a href="@Url.Action((String)Session["AjudaNivel"])"  class="btn btn-sm btn-danger" target="_blank">Ajuda</a>                
+                </div>
+                <br /><br />
+            </div>
+        </div>  
+
+        @*Corpo*@
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="ibox float-e-margins">
+                    <div class="ibox-title">
+                        <h5>Dashboard Financeiro</h5>
+                    </div>
+                    <div class="ibox-content" style="height: 2100px">
+
+                        @*Graficos*@
+                        <div class="col-lg-7 col-md-7 col-xs-12">
+                            <div class="row">                           
+                                <div class="col-lg-6 col-md-6 col-xs-12">
+                                    <div class="col-lg-12 col-md-12 col-xs-12 ibox float-e-margins" style="border-bottom: solid; border-bottom-color: darkblue; border-bottom-width: 2px; border-left: solid; border-left-color: darkblue; border-left-width: 1px; border-right: solid; border-right-color: darkblue; border-right-width: 1px; border-top: solid; border-top-color: darkblue; border-top-width: 1px">
+                                        <div class="ibox-title">
+                                            <h4>@Html.ActionLink("Pagamentos e Recebimentos x Dia (R$) - Mês Corrente", "VerPagamentos", "Financeiro")</h4>
+                                        </div>
+                                        <div class="ibox-content">
+                                            <div class="row">
+                                                <canvas id="lineChartPagtoRecto" height="150"></canvas>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-6 col-md-6 col-xs-12">
+                                    <div class="col-lg-12 col-md-12 col-xs-12 ibox float-e-margins" style="border-bottom: solid; border-bottom-color: darkblue; border-bottom-width: 2px; border-left: solid; border-left-color: darkblue; border-left-width: 1px; border-right: solid; border-right-color: darkblue; border-right-width: 1px; border-top: solid; border-top-color: darkblue; border-top-width: 1px">
+                                        <div class="ibox-title">
+                                            <h4>@Html.ActionLink("Pagamentos e Recebimentos x Mês (R$) - 12 meses", "VerPagamentos", "Financeiro")</h4>
+                                        </div>
+                                        <div class="ibox-content">
+                                            <div class="row">
+                                                <canvas id="lineChartPagtoRectoMes" height="150"></canvas>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">                           
+                                <div class="col-lg-6 col-md-6 col-xs-12">
+                                    <div class="col-lg-12 col-md-12 col-xs-12 ibox float-e-margins" style="border-bottom: solid; border-bottom-color: darkblue; border-bottom-width: 2px; border-left: solid; border-left-color: darkblue; border-left-width: 1px; border-right: solid; border-right-color: darkblue; border-right-width: 1px; border-top: solid; border-top-color: darkblue; border-top-width: 1px">
+                                        <div class="ibox-title">
+                                            <h4>@Html.ActionLink("Pagamentos e Média x Dia (R$) - Mês Corrente", "VerPagamentos", "Financeiro")</h4>
+                                        </div>
+                                        <div class="ibox-content">
+                                            <div class="row">
+                                                <canvas id="lineChartPagtoMedia" height="150"></canvas>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-6 col-md-6 col-xs-12">
+                                    <div class="col-lg-12 col-md-12 col-xs-12 ibox float-e-margins" style="border-bottom: solid; border-bottom-color: darkblue; border-bottom-width: 2px; border-left: solid; border-left-color: darkblue; border-left-width: 1px; border-right: solid; border-right-color: darkblue; border-right-width: 1px; border-top: solid; border-top-color: darkblue; border-top-width: 1px">
+                                        <div class="ibox-title">
+                                            <h4>@Html.ActionLink("Recebimentos e Média x Dia (R$) - Mês Corrente", "VerRecebimentos", "Financeiro")</h4>
+                                        </div>
+                                        <div class="ibox-content">
+                                            <div class="row">
+                                                <canvas id="lineChartRectoMedia" height="150"></canvas>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">                           
+                                <div class="col-lg-6 col-md-6 col-xs-12">
+                                    <div class="col-lg-12 col-md-12 col-xs-12 ibox float-e-margins" style="border-bottom: solid; border-bottom-color: darkblue; border-bottom-width: 2px; border-left: solid; border-left-color: darkblue; border-left-width: 1px; border-right: solid; border-right-color: darkblue; border-right-width: 1px; border-top: solid; border-top-color: darkblue; border-top-width: 1px">
+                                        <div class="ibox-title">
+                                            <h4>@Html.ActionLink("Total de Pagamentos x Dia (R$) - Mês Corrente", "VerPagamentos", "Financeiro")</h4>
+                                        </div>
+                                        <div class="ibox-content">
+                                            <div class="row">
+                                                <canvas id="barChartPagtoDia" height="150"></canvas>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-6 col-md-6 col-xs-12">
+                                    <div class="col-lg-12 col-md-12 col-xs-12 ibox float-e-margins" style="border-bottom: solid; border-bottom-color: darkblue; border-bottom-width: 2px; border-left: solid; border-left-color: darkblue; border-left-width: 1px; border-right: solid; border-right-color: darkblue; border-right-width: 1px; border-top: solid; border-top-color: darkblue; border-top-width: 1px">
+                                        <div class="ibox-title">
+                                            <h4>@Html.ActionLink("Total de Recebimentos x Dia (R$) - Mês Corrente", "VerRecebimentos", "Financeiro")</h4>
+                                        </div>
+                                        <div class="ibox-content">
+                                            <div class="row">
+                                                <canvas id="barChartRectoDia" height="150"></canvas>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">                           
+                                <div class="col-lg-6 col-md-6 col-xs-12">
+                                    <div class="col-lg-12 col-md-12 col-xs-12 ibox float-e-margins" style="border-bottom: solid; border-bottom-color: darkblue; border-bottom-width: 2px; border-left: solid; border-left-color: darkblue; border-left-width: 1px; border-right: solid; border-right-color: darkblue; border-right-width: 1px; border-top: solid; border-top-color: darkblue; border-top-width: 1px">
+                                        <div class="ibox-title">
+                                            <h4>@Html.ActionLink("Pagamentos x Tipo - Mês Corrente", "VerPagamentos", "Financeiro")</h4>
+                                        </div>
+                                        <div class="ibox-content">
+                                            <div class="row">
+                                                <canvas id="doughnutChartPagtoTipo" height="150"></canvas>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-6 col-md-6 col-xs-12">
+                                    <div class="col-lg-12 col-md-12 col-xs-12 ibox float-e-margins" style="border-bottom: solid; border-bottom-color: darkblue; border-bottom-width: 2px; border-left: solid; border-left-color: darkblue; border-left-width: 1px; border-right: solid; border-right-color: darkblue; border-right-width: 1px; border-top: solid; border-top-color: darkblue; border-top-width: 1px">
+                                        <div class="ibox-title">
+                                            <h4>@Html.ActionLink("Recebimentos x Tipo de Consulta - Mês Corrente", "VerRecebimentos", "Financeiro")</h4>
+                                        </div>
+                                        <div class="ibox-content">
+                                            <div class="row">
+                                                <canvas id="doughnutChartRectoTipo" height="150"></canvas>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">                           
+                                <div class="col-lg-6 col-md-6 col-xs-12">
+                                    <div class="col-lg-12 col-md-12 col-xs-12 ibox float-e-margins" style="border-bottom: solid; border-bottom-color: darkblue; border-bottom-width: 2px; border-left: solid; border-left-color: darkblue; border-left-width: 1px; border-right: solid; border-right-color: darkblue; border-right-width: 1px; border-top: solid; border-top-color: darkblue; border-top-width: 1px">
+                                        <div class="ibox-title">
+                                            <h4>@Html.ActionLink("Recebimentos x Forma de Pagamento - Mês Corrente", "VerRecebimentos", "Financeiro")</h4>
+                                        </div>
+                                        <div class="ibox-content">
+                                            <div class="row">
+                                                <canvas id="doughnutChartRectoForma" height="150"></canvas>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-6 col-md-6 col-xs-12">
+                                    <div class="col-lg-12 col-md-12 col-xs-12 ibox float-e-margins" style="border-bottom: solid; border-bottom-color: darkblue; border-bottom-width: 2px; border-left: solid; border-left-color: darkblue; border-left-width: 1px; border-right: solid; border-right-color: darkblue; border-right-width: 1px; border-top: solid; border-top-color: darkblue; border-top-width: 1px">
+                                        <div class="ibox-title">
+                                            <h4>@Html.ActionLink("Pagamentos Consolidados", "VerPagamentos", "Financeiro")</h4>
+                                        </div>
+                                        <div class="ibox-content">
+                                            <div class="row">
+                                                <canvas id="doughnutChartPagtoConsolidado" height="150"></canvas>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">                           
+                                <div class="col-lg-6 col-md-6 col-xs-12">
+                                    <div class="col-lg-12 col-md-12 col-xs-12 ibox float-e-margins" style="border-bottom: solid; border-bottom-color: darkblue; border-bottom-width: 2px; border-left: solid; border-left-color: darkblue; border-left-width: 1px; border-right: solid; border-right-color: darkblue; border-right-width: 1px; border-top: solid; border-top-color: darkblue; border-top-width: 1px">
+                                        <div class="ibox-title">
+                                            <h4>@Html.ActionLink("Recebimentos Consolidados", "VerRecebimentos", "Financeiro")</h4>
+                                        </div>
+                                        <div class="ibox-content">
+                                            <div class="row">
+                                                <canvas id="doughnutChartRectoConsolidado" height="150"></canvas>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        @*Listas*@
+                        <div class="col-lg-5 col-md-5 col-xs-12">
+                            <div class="col-lg-12 col-md-12 col-xs-12">
+                                <div class="col-lg-12 col-md-12 col-xs-12 ibox float-e-margins" style="border-bottom: solid; border-bottom-color: darkblue; border-bottom-width: 2px; border-left: solid; border-left-color: darkblue; border-left-width: 1px; border-right: solid; border-right-color: darkblue; border-right-width: 1px; border-top: solid; border-top-color: darkblue; border-top-width: 1px">
+                                    <div class="ibox-title">
+                                        @*<h4>Pagamentos - Média Diária - @ViewBag.MesCorrente </h4>*@
+                                        <h4>@Html.ActionLink("Pagamentos - Total por Mês (R$)", "VerPagamentos", "Financeiro")</h4>
+                                    </div>
+                                    <div class="ibox-content">
+                                        <div class="row">
+                                            @if (ViewBag.ListaPagtosMes != null && (ViewBag.ListaPagtosMes as List<ERP_Condominios_Solution.ViewModels.ModeloViewModel>).Count > 0)
+                                            {
+                                                <table class="table table-striped table-bordered table-hover">
+                                                    <thead style="background-color:lightsteelblue">
+                                                        <tr>
+                                                            <th>Mês</th>
+                                                            <th>Total (R$)</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        @foreach (var cond in (ViewBag.ListaPagtosMes as List<ERP_Condominios_Solution.ViewModels.ModeloViewModel>).OrderByDescending(p => p.DataEmissao))
+                                                        {
+                                                            <tr>
+                                                                <td>@cond.Nome</td>
+                                                                <td>@CrossCutting.Formatters.DecimalFormatter(cond.ValorDec1)</td>
+                                                            </tr>
+                                                        }
+                                                    </tbody>
+                                                </table>
+                                            }
+                                            else
+                                            {
+                                                <div class="row">
+                                                    <div class="col-lg-1 col-md-1 col-xs-12">
+                                                    </div>
+                                                    <div style="border: 5px solid #F6A54A; padding: 10px; border-radius: 8px 8px; " class="col-lg-10 col-md-10 col-xs-8">
+                                                        <h4 style="font-weight: bold">Nenhum pagamento cadastrado</h4>
+                                                    </div>
+                                                    <div class="col-lg-1 col-md-1 col-xs-12">
+                                                    </div>
+                                                </div>
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>                          
+
+                            <div class="col-lg-12 col-md-12 col-xs-12">
+                                <div class="col-lg-12 col-md-12 col-xs-12 ibox float-e-margins" style="border-bottom: solid; border-bottom-color: darkblue; border-bottom-width: 2px; border-left: solid; border-left-color: darkblue; border-left-width: 1px; border-right: solid; border-right-color: darkblue; border-right-width: 1px; border-top: solid; border-top-color: darkblue; border-top-width: 1px">
+                                    <div class="ibox-title">
+                                        @*<h4>Pagamentos - Média Diária - @ViewBag.MesCorrente </h4>*@
+                                        <h4>@Html.ActionLink("Recebimentos - Total por Mês (R$)", "VerRecebimentos", "Financeiro")</h4>
+                                    </div>
+                                    <div class="ibox-content">
+                                        <div class="row">
+                                            @if (ViewBag.ListaRectosMes != null && (ViewBag.ListaRectosMes as List<ERP_Condominios_Solution.ViewModels.ModeloViewModel>).Count > 0)
+                                            {
+                                                <table class="table table-striped table-bordered table-hover">
+                                                    <thead style="background-color:lightsteelblue">
+                                                        <tr>
+                                                            <th>Mês</th>
+                                                            <th>Total (R$)</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        @foreach (var cond in (ViewBag.ListaRectosMes as List<ERP_Condominios_Solution.ViewModels.ModeloViewModel>).OrderByDescending(p => p.DataEmissao))
+                                                        {
+                                                            <tr>
+                                                                <td>@cond.Nome</td>
+                                                                <td>@CrossCutting.Formatters.DecimalFormatter(cond.ValorDec1)</td>
+                                                            </tr>
+                                                        }
+                                                    </tbody>
+                                                </table>
+                                            }
+                                            else
+                                            {
+                                                <div class="row">
+                                                    <div class="col-lg-1 col-md-1 col-xs-12">
+                                                    </div>
+                                                    <div style="border: 5px solid #F6A54A; padding: 10px; border-radius: 8px 8px; " class="col-lg-10 col-md-10 col-xs-8">
+                                                        <h4 style="font-weight: bold">Nenhum recebimento cadastrado</h4>
+                                                    </div>
+                                                    <div class="col-lg-1 col-md-1 col-xs-12">
+                                                    </div>
+                                                </div>
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>                          
+                            <div class="col-lg-12 col-md-12 col-xs-12">
+                                <div class="col-lg-12 col-md-12 col-xs-12 ibox float-e-margins" style="border-bottom: solid; border-bottom-color: darkblue; border-bottom-width: 2px; border-left: solid; border-left-color: darkblue; border-left-width: 1px; border-right: solid; border-right-color: darkblue; border-right-width: 1px; border-top: solid; border-top-color: darkblue; border-top-width: 1px">
+                                    <div class="ibox-title">
+                                        @*<h4>Pagamentos - Média Diária - @ViewBag.MesCorrente </h4>*@
+                                        <h4>@Html.ActionLink("Pagamentos - Média Diária - Mês Corrente", "VerPagamentos", "Financeiro")</h4>
+                                    </div>
+                                    <div class="ibox-content">
+                                        <div class="row">
+                                            @if (ViewBag.ListaMediaPagtoMes != null && (ViewBag.ListaPagtoMedia as List<ERP_Condominios_Solution.ViewModels.ModeloViewModel>).Count > 0)
+                                            {
+                                                <table class="table table-striped table-bordered table-hover">
+                                                    <thead style="background-color:lightsteelblue">
+                                                        <tr>
+                                                            <th>Data</th>
+                                                            <th>Lançamentos</th>
+                                                            <th>Média (R$)</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        @foreach (var cond in (ViewBag.ListaMediaPagtoMes as List<ERP_Condominios_Solution.ViewModels.ModeloViewModel>).OrderByDescending(p => p.DataEmissao))
+                                                        {
+                                                            <tr>
+                                                                <td>@cond.DataEmissao.ToShortDateString()</td>
+                                                                <td>@cond.Valor</td>
+                                                                <td>@CrossCutting.Formatters.DecimalFormatter(cond.ValorDec)</td>
+                                                            </tr>
+                                                        }
+                                                    </tbody>
+                                                </table>
+                                            }
+                                            else
+                                            {
+                                                <div class="row">
+                                                    <div class="col-lg-1 col-md-1 col-xs-12">
+                                                    </div>
+                                                    <div style="border: 5px solid #F6A54A; padding: 10px; border-radius: 8px 8px; " class="col-lg-10 col-md-10 col-xs-8">
+                                                        <h4 style="font-weight: bold">Nenhum pagamento no Mês</h4>
+                                                    </div>
+                                                    <div class="col-lg-1 col-md-1 col-xs-12">
+                                                    </div>
+                                                </div>
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>                          
+                       
+                            <div class="col-lg-12 col-md-12 col-xs-12">
+                                <div class="col-lg-12 col-md-12 col-xs-12 ibox float-e-margins" style="border-bottom: solid; border-bottom-color: darkblue; border-bottom-width: 2px; border-left: solid; border-left-color: darkblue; border-left-width: 1px; border-right: solid; border-right-color: darkblue; border-right-width: 1px; border-top: solid; border-top-color: darkblue; border-top-width: 1px">
+                                    <div class="ibox-title">
+                                        @*<h4>Recebimentos - Média Diária - @ViewBag.MesCorrente </h4>*@
+                                        <h4>@Html.ActionLink("Recebimentos - Média Diária - Mês Corrente", "VerRecebimentos", "Financeiro")</h4>
+                                    </div>
+                                    <div class="ibox-content">
+                                        <div class="row">
+                                            @if (ViewBag.ListaMediaRectoMes != null && (ViewBag.ListaMediaRectoMes as List<ERP_Condominios_Solution.ViewModels.ModeloViewModel>).Count > 0)
+                                            {
+                                                <table class="table table-striped table-bordered table-hover">
+                                                    <thead style="background-color:lightsteelblue">
+                                                        <tr>
+                                                            <th>Data</th>
+                                                            <th>Lançamentos</th>
+                                                            <th>Média (R$)</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        @foreach (var cond in (ViewBag.ListaMediaRectoMes as List<ERP_Condominios_Solution.ViewModels.ModeloViewModel>).OrderByDescending(p => p.DataEmissao))
+                                                        {
+                                                            <tr>
+                                                                <td>@cond.DataEmissao.ToShortDateString()</td>
+                                                                <td>@cond.Valor</td>
+                                                                <td>@CrossCutting.Formatters.DecimalFormatter(cond.ValorDec)</td>
+                                                            </tr>
+                                                        }
+                                                    </tbody>
+                                                </table>
+                                            }
+                                            else
+                                            {
+                                                <div class="row">
+                                                    <div class="col-lg-1 col-md-1 col-xs-12">
+                                                    </div>
+                                                    <div style="border: 5px solid #F6A54A; padding: 10px; border-radius: 8px 8px; " class="col-lg-10 col-md-10 col-xs-8">
+                                                        <h4 style="font-weight: bold">Nenhum recebimento no Mês</h4>
+                                                    </div>
+                                                    <div class="col-lg-1 col-md-1 col-xs-12">
+                                                    </div>
+                                                </div>
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>                          
+
+                            <div class="col-lg-12 col-md-12 col-xs-12">
+                                <div class="col-lg-12 col-md-12 col-xs-12 ibox float-e-margins" style="border-bottom: solid; border-bottom-color: darkblue; border-bottom-width: 2px; border-left: solid; border-left-color: darkblue; border-left-width: 1px; border-right: solid; border-right-color: darkblue; border-right-width: 1px; border-top: solid; border-top-color: darkblue; border-top-width: 1px">
+                                    <div class="ibox-title">
+                                        @*<h4>Pagamentos - Total Diário - @ViewBag.MesCorrente</h4>*@
+                                        <h4>@Html.ActionLink("Pagamentos - Total Diário - Mês Corrente", "VerPagamentos", "Financeiro")</h4>
+                                    </div>
+                                    <div class="ibox-content">
+                                        <div class="row">
+                                            @if (ViewBag.ListaPagtoMes != null && (ViewBag.ListaPagtoMes as List<ERP_Condominios_Solution.ViewModels.ModeloViewModel>).Count > 0)
+                                            {
+                                                <table class="table table-striped table-bordered table-hover">
+                                                    <thead style="background-color:lightsteelblue">
+                                                        <tr>
+                                                            <th>Data</th>
+                                                            <th>Lançamentos</th>
+                                                            <th>Total (R$)</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        @foreach (var cond in (ViewBag.ListaPagtoMes as List<ERP_Condominios_Solution.ViewModels.ModeloViewModel>).OrderByDescending(p => p.DataEmissao))
+                                                        {
+                                                            <tr>
+                                                                <td>@cond.DataEmissao.ToShortDateString()</td>
+                                                                <td>@cond.Valor</td>
+                                                                <td>@CrossCutting.Formatters.DecimalFormatter(cond.ValorDec)</td>
+                                                            </tr>
+                                                        }
+                                                    </tbody>
+                                                </table>
+                                            }
+                                            else
+                                            {
+                                                <div class="row">
+                                                    <div class="col-lg-1 col-md-1 col-xs-12">
+                                                    </div>
+                                                    <div style="border: 5px solid #F6A54A; padding: 10px; border-radius: 8px 8px; " class="col-lg-10 col-md-10 col-xs-8">
+                                                        <h4 style="font-weight: bold">Nenhum pagamento no Mês</h4>
+                                                    </div>
+                                                    <div class="col-lg-1 col-md-1 col-xs-12">
+                                                    </div>
+                                                </div>
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>                          
+                        
+                            <div class="col-lg-12 col-md-12 col-xs-12">
+                                <div class="col-lg-12 col-md-12 col-xs-12 ibox float-e-margins" style="border-bottom: solid; border-bottom-color: darkblue; border-bottom-width: 2px; border-left: solid; border-left-color: darkblue; border-left-width: 1px; border-right: solid; border-right-color: darkblue; border-right-width: 1px; border-top: solid; border-top-color: darkblue; border-top-width: 1px">
+                                    <div class="ibox-title">
+                                        @*<h4>Recebimentos - Total Diário - @ViewBag.MesCorrente</h4>*@
+                                        <h4>@Html.ActionLink("Recebimentos - Total Diário - Mês Corrente", "VerRecebimentos", "Financeiro")</h4>
+                                    </div>
+                                    <div class="ibox-content">
+                                        <div class="row">
+                                            @if (ViewBag.ListaRectoMes != null && (ViewBag.ListaRectoMes as List<ERP_Condominios_Solution.ViewModels.ModeloViewModel>).Count > 0)
+                                            {
+                                                <table class="table table-striped table-bordered table-hover">
+                                                    <thead style="background-color:lightsteelblue">
+                                                        <tr>
+                                                            <th>Data</th>
+                                                            <th>Lançamentos</th>
+                                                            <th>Total (R$)</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        @foreach (var cond in (ViewBag.ListaRectoMes as List<ERP_Condominios_Solution.ViewModels.ModeloViewModel>).OrderByDescending(p => p.DataEmissao))
+                                                        {
+                                                            <tr>
+                                                                <td>@cond.DataEmissao.ToShortDateString()</td>
+                                                                <td>@cond.Valor</td>
+                                                                <td>@CrossCutting.Formatters.DecimalFormatter(cond.ValorDec)</td>
+                                                            </tr>
+                                                        }
+                                                    </tbody>
+                                                </table>
+                                            }
+                                            else
+                                            {
+                                                <div class="row">
+                                                    <div class="col-lg-1 col-md-1 col-xs-12">
+                                                    </div>
+                                                    <div style="border: 5px solid #F6A54A; padding: 10px; border-radius: 8px 8px; " class="col-lg-10 col-md-10 col-xs-8">
+                                                        <h4 style="font-weight: bold">Nenhum recebimento no Mês</h4>
+                                                    </div>
+                                                    <div class="col-lg-1 col-md-1 col-xs-12">
+                                                    </div>
+                                                </div>
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>                        
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+</div>
+
+
+@section Styles {
+    <link href="~/Content/themes/base/jquery-ui.min.css" rel="stylesheet" />
+    <link href="~/Content/themes/base/all.css" rel="stylesheet" />
+    @Styles.Render("~/Content/plugins/dataTables/dataTablesStyles")
+    @Styles.Render("~/plugins/jasnyBootstrapStyles")
+    @Styles.Render("~/plugins/toastrStyles")
+    <link href="~/Content/themes/base/jquery-ui.min.css" rel="stylesheet" />
+    <link href="~/Content/themes/base/all.css" rel="stylesheet" />
+    <link href="~/Content/jquery.datetimepicker.css" rel="stylesheet" />
+    @Styles.Render("~/Content/plugins/dataTables/dataTablesStyles")
+    @Styles.Render("~/plugins/jasnyBootstrapStyles")
+    @Styles.Render("~/plugins/toastrStyles")
+    @Styles.Render("~/Content/plugins/iCheck/iCheckStyles")
+    @Styles.Render("~/plugins/touchSpinStyles")
+    @Styles.Render("~/plugins/sweetAlertStyles")
+    @Styles.Render("~/plugins/toastrStyles")
+    @Scripts.Render("~/plugins/wow")
+    @Scripts.Render("~/bundles/inspinia")
+    @Styles.Render("~/Content/css")
+    @Styles.Render("~/font-awesome/css")
+}
+
+@section Scripts {
+
+    <script src="~/Scripts/jquery.datetimepicker.full.min.js"></script>
+    <script type="text/javascript" src="~/Scripts/moment.min.js"></script>
+    <script type="text/javascript" src="~/Scripts/bootstrap.min.js"></script>
+    <script type="text/javascript" src="~/Scripts/jquery.datetimepicker"></script>
+
+    @Scripts.Render("~/plugins/toastr")
+    <script src="~/Scripts/jquery-ui-1.12.1.min.js"></script>
+    @Scripts.Render("~/plugins/dataTables")
+    @Scripts.Render("~/bundles/inputmask")
+    @Scripts.Render("~/plugins/jasnyBootstrap")
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.maskedinput/1.4.1/jquery.maskedinput.js"></script>
+    <script src="~/Scripts/uploadAnexo.js"></script>
+    <script src="~/Scripts/jquery-ui-1.12.1.min.js"></script>
+    @Scripts.Render("~/plugins/toastr")
+    @Scripts.Render("~/plugins/dataTables")
+    @Scripts.Render("~/bundles/inputmask")
+    @Scripts.Render("~/plugins/jasnyBootstrap")
+    @Scripts.Render("~/plugins/sparkline")
+    @Scripts.Render("~/plugins/switchery")
+    @Scripts.Render("~/plugins/touchSpin")
+    @Scripts.Render("~/plugins/iCheck")
+    @Scripts.Render("~/plugins/sweetAlert")
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.maskedinput/1.4.1/jquery.maskedinput.js"></script>
+    <script src="~/Scripts/uploadAnexo.js"></script> 
+    @Scripts.Render("~/plugins/switchery")
+    @Scripts.Render("~/plugins/chartjs")
+    @Scripts.Render("~/plugins/sparkline")
+        <script>
+        function Fade() {
+            $('.dotContainer').fadeIn("fast");
+            $('#login').css("filter", "blur(4px)");
+        }
+    </script>
+    <script>
+        $(window).on("load", function () {
+            $('.dotContainer').fadeOut("slow");
+            $('#title').css("filter", "blur(0)");
+            $('#content').css("filter", "blur(0)");
+        });
+    </script>
+
+    <!-- Handler de fechamento do browser -->
+    <script type="text/javascript">
+        window.onbeforeunload = function ()
+        {
+            navigator.sendBeacon('../ControleAcesso/LogSessionTime');
+        }; 
+    </script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            $.ajax({
+                url: '../Financeiro/GetDadosPagamentoDia'
+                , type: 'POST'
+                , success: function (result) {
+                    var barData = {
+                        labels: result.dias,
+                        datasets: [
+                            {
+                                label: "Pagamentos por Dia",
+                                backgroundColor: 'rgba(26,179,148,0.5)',
+                                pointBorderColor: "#fff",
+                                data: result.valores
+                            }
+                        ]
+                    };
+
+                    var barOptions = {
+                        responsive: true
+                    };
+
+                    var ctx2 = document.getElementById("barChartPagtoDia").getContext("2d");
+                    new Chart(ctx2, { type: 'bar', data: barData, options: barOptions });
+                }
+            });
+        });
+    </script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            $.ajax({
+                url: '../Financeiro/GetDadosRecebimentoDia'
+                , type: 'POST'
+                , success: function (result) {
+                    var barData = {
+                        labels: result.dias,
+                        datasets: [
+                            {
+                                label: "Recebimentos por Dia",
+                                backgroundColor: 'rgba(26,179,148,0.5)',
+                                pointBorderColor: "#fff",
+                                data: result.valores
+                            }
+                        ]
+                    };
+
+                    var barOptions = {
+                        responsive: true
+                    };
+
+                    var ctx2 = document.getElementById("barChartRectoDia").getContext("2d");
+                    new Chart(ctx2, { type: 'bar', data: barData, options: barOptions });
+                }
+            });
+        });
+    </script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            $.ajax({
+                url: '../Financeiro/GetDadosPagtoTipo'
+                , type: 'POST'
+                , success: function (result) {
+                var doughnutData = {
+                   labels: result.labels,
+                   datasets: [{
+                     data: result.valores,
+                     backgroundColor: result.cores
+                   }]
+                };
+                var doughnutOptions = {
+                   responsive: true
+                };
+                var ctx4 = document.getElementById("doughnutChartPagtoTipo").getContext("2d");
+                new Chart(ctx4, { type: 'doughnut', data: doughnutData, options: doughnutOptions });
+              }
+            });
+        });
+    </script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            $.ajax({
+                url: '../Financeiro/GetDadosRectoTipo'
+                , type: 'POST'
+                , success: function (result) {
+                var doughnutData = {
+                   labels: result.labels,
+                   datasets: [{
+                     data: result.valores,
+                     backgroundColor: result.cores
+                   }]
+                };
+                var doughnutOptions = {
+                   responsive: true
+                };
+                var ctx4 = document.getElementById("doughnutChartRectoTipo").getContext("2d");
+                new Chart(ctx4, { type: 'doughnut', data: doughnutData, options: doughnutOptions });
+              }
+            });
+        });
+    </script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            $.ajax({
+                url: '../Financeiro/GetDadosRectoForma'
+                , type: 'POST'
+                , success: function (result) {
+                var doughnutData = {
+                   labels: result.labels,
+                   datasets: [{
+                     data: result.valores,
+                     backgroundColor: result.cores
+                   }]
+                };
+                var doughnutOptions = {
+                   responsive: true
+                };
+                var ctx4 = document.getElementById("doughnutChartRectoForma").getContext("2d");
+                new Chart(ctx4, { type: 'doughnut', data: doughnutData, options: doughnutOptions });
+              }
+            });
+        });
+    </script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            $.ajax({
+                url: '/Financeiro/GetDadosPagtoMedia'
+                , type: 'POST'
+                , success: function (result) {
+                    var lineData = {
+                        labels: result.dias,
+                        datasets: [
+
+                            {
+                                label: "Pagamentos (R$)",
+                                backgroundColor: 'rgba(26,179,148,0.5)',
+                                borderColor: "rgba(26,179,148,0.7)",
+                                pointBackgroundColor: "rgba(26,179,148,1)",
+                                pointBorderColor: "#fff",
+                                data: result.pagtos
+                            }, {
+                                label: "Média (R$)",
+                                backgroundColor: 'rgba(225, 133, 6, 0.5)',
+                                borderColor: "rgba(225, 133, 6,0.7)",
+                                pointBackgroundColor: "rgba(225, 133, 6,1)",
+                                pointBorderColor: "#fff",
+                                data: result.media
+                            }
+                        ]
+                    };
+
+                    var lineOptions = {
+                        responsive: true
+                    };
+                    var ctx = document.getElementById("lineChartPagtoMedia").getContext("2d");
+                    new Chart(ctx, { type: 'line', data: lineData, options: lineOptions });
+              }
+            });
+        });
+    </script>
+    
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            $.ajax({
+                url: '/Financeiro/GetDadosRectoMedia'
+                , type: 'POST'
+                , success: function (result) {
+                    var lineData = {
+                        labels: result.dias,
+                        datasets: [
+
+                            {
+                                label: "Recebimentos (R$)",
+                                backgroundColor: 'rgba(26,179,148,0.5)',
+                                borderColor: "rgba(26,179,148,0.7)",
+                                pointBackgroundColor: "rgba(26,179,148,1)",
+                                pointBorderColor: "#fff",
+                                data: result.rectos
+                            }, {
+                                label: "Média (R$)",
+                                backgroundColor: 'rgba(225, 133, 6, 0.5)',
+                                borderColor: "rgba(225, 133, 6,0.7)",
+                                pointBackgroundColor: "rgba(225, 133, 6,1)",
+                                pointBorderColor: "#fff",
+                                data: result.media
+                            }
+                        ]
+                    };
+
+                    var lineOptions = {
+                        responsive: true
+                    };
+                    var ctx = document.getElementById("lineChartRectoMedia").getContext("2d");
+                    new Chart(ctx, { type: 'line', data: lineData, options: lineOptions });
+              }
+            });
+        });
+    </script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            $.ajax({
+                url: '/Financeiro/GetDadosPagtoRecto'
+                , type: 'POST'
+                , success: function (result) {
+                    var lineData = {
+                        labels: result.dias,
+                        datasets: [
+
+                            {
+                                label: "Pagamentos (R$)",
+                                backgroundColor: 'rgba(26,179,148,0.5)',
+                                borderColor: "rgba(26,179,148,0.7)",
+                                pointBackgroundColor: "rgba(26,179,148,1)",
+                                pointBorderColor: "#fff",
+                                data: result.pagtos
+                            }, {
+                                label: "Recebimentos (R$)",
+                                backgroundColor: 'rgba(225, 133, 6, 0.5)',
+                                borderColor: "rgba(225, 133, 6,0.7)",
+                                pointBackgroundColor: "rgba(225, 133, 6,1)",
+                                pointBorderColor: "#fff",
+                                data: result.rectos
+                            }
+                        ]
+                    };
+
+                    var lineOptions = {
+                        responsive: true
+                    };
+                    var ctx = document.getElementById("lineChartPagtoRecto").getContext("2d");
+                    new Chart(ctx, { type: 'line', data: lineData, options: lineOptions });
+              }
+            });
+        });
+    </script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            $.ajax({
+                url: '/Financeiro/GetDadosPagtoRectoMes'
+                , type: 'POST'
+                , success: function (result) {
+                    var lineData = {
+                        labels: result.dias,
+                        datasets: [
+
+                            {
+                                label: "Pagamentos (R$)",
+                                backgroundColor: 'rgba(26,179,148,0.5)',
+                                borderColor: "rgba(26,179,148,0.7)",
+                                pointBackgroundColor: "rgba(26,179,148,1)",
+                                pointBorderColor: "#fff",
+                                data: result.pagtos
+                            }, {
+                                label: "Recebimentos (R$)",
+                                backgroundColor: 'rgba(225, 133, 6, 0.5)',
+                                borderColor: "rgba(225, 133, 6,0.7)",
+                                pointBackgroundColor: "rgba(225, 133, 6,1)",
+                                pointBorderColor: "#fff",
+                                data: result.rectos
+                            }
+                        ]
+                    };
+
+                    var lineOptions = {
+                        responsive: true
+                    };
+                    var ctx = document.getElementById("lineChartPagtoRectoMes").getContext("2d");
+                    new Chart(ctx, { type: 'line', data: lineData, options: lineOptions });
+              }
+            });
+        });
+    </script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            $.ajax({
+                url: '../Financeiro/GetDadosPagtoConsolidado'
+                , type: 'POST'
+                , success: function (result) {
+                var doughnutData = {
+                   labels: result.labels,
+                   datasets: [{
+                     data: result.valores,
+                     backgroundColor: result.cores
+                   }]
+                };
+                var doughnutOptions = {
+                   responsive: true
+                };
+                var ctx4 = document.getElementById("doughnutChartPagtoConsolidado").getContext("2d");
+                new Chart(ctx4, { type: 'doughnut', data: doughnutData, options: doughnutOptions });
+              }
+            });
+        });
+    </script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            $.ajax({
+                url: '../Financeiro/GetDadosRectoConsolidado'
+                , type: 'POST'
+                , success: function (result) {
+                var doughnutData = {
+                   labels: result.labels,
+                   datasets: [{
+                     data: result.valores,
+                     backgroundColor: result.cores
+                   }]
+                };
+                var doughnutOptions = {
+                   responsive: true
+                };
+                var ctx4 = document.getElementById("doughnutChartRectoConsolidado").getContext("2d");
+                new Chart(ctx4, { type: 'doughnut', data: doughnutData, options: doughnutOptions });
+              }
+            });
+        });
+    </script>
+
+    @if (ViewBag.Message != null)
+    {
+        <script type="text/javascript">
+            window.onload = function () {
+                  alert("@ViewBag.Message");
+            };
+        </script>
+    }
+}
+
