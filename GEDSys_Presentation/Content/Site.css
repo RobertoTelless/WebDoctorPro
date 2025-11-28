@@ -16,6 +16,17 @@
     white-space: normal;
 }
 
+/* Exemplo de CSS para a classe que você criou */
+.btn-loading {
+    /* Mãozinha para indicar que algo vai acontecer */
+    cursor: pointer; 
+}
+
+/* Garante que o botão desabilitado não possa ser clicado novamente */
+.btn-loading:disabled, .btn-loading.disabled {
+    pointer-events: none;
+    opacity: 0.65;
+}
 /* Set width on the form input elements since they're 100% wide by default */
 /*input,
 select,

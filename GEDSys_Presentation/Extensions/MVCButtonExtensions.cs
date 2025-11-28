@@ -119,10 +119,35 @@ namespace Presentation.Extensions
         /// <param name="buttonClass">The button class.</param>
         /// <param name="text">The text.</param>
         /// <returns></returns>
+        //public static MvcHtmlString ButtonLink(this HtmlHelper html, string action, string controller, object routeValues, object htmlAttributes, string buttonClass, string text)
+        //{
+        //    var attrs = HtmlHelper.AnonymousObjectToHtmlAttributes(htmlAttributes) ?? new RouteValueDictionary();
+        //    attrs.Add("class", "btn btn-sm btn-" + buttonClass);
+        //    return html.ActionLink(text, action, controller, new RouteValueDictionary(routeValues), attrs);
+        //}
         public static MvcHtmlString ButtonLink(this HtmlHelper html, string action, string controller, object routeValues, object htmlAttributes, string buttonClass, string text)
         {
+            // 1. Converte atributos do objeto anônimo (pode conter a chave 'class')
             var attrs = HtmlHelper.AnonymousObjectToHtmlAttributes(htmlAttributes) ?? new RouteValueDictionary();
-            attrs.Add("class", "btn btn-sm btn-" + buttonClass);
+
+            // 2. Define as classes de estilo padrão que o helper quer forçar
+            string forcedClasses = "btn btn-sm btn-" + buttonClass;
+
+            // --- LÓGICA DE CORREÇÃO (Substituindo a linha 125) ---
+            if (attrs.ContainsKey("class"))
+            {
+                // Se a classe já existe, concatena a classe existente com as novas
+                forcedClasses = attrs["class"].ToString() + " " + forcedClasses;
+
+                // Remove a chave duplicada
+                attrs.Remove("class");
+            }
+
+            // 3. Adiciona a chave 'class' UMA ÚNICA VEZ com todos os valores concatenados
+            attrs.Add("class", forcedClasses);
+            // ----------------------------------------------------
+
+            // O retorno usa o ActionLink padrão, passando os atributos mesclados
             return html.ActionLink(text, action, controller, new RouteValueDictionary(routeValues), attrs);
         }
 
@@ -231,14 +256,45 @@ namespace Presentation.Extensions
         /// <param name="type">The type.</param>
         /// <param name="text">The text.</param>
         /// <returns></returns>
+        //public static MvcHtmlString ButtonAction(this HtmlHelper html, object htmlAttributes, string buttonClass, string type, string text)
+        //{
+        //    var builder = new TagBuilder("button");
+        //    builder.InnerHtml = text;
+
+        //    var attrs = HtmlHelper.AnonymousObjectToHtmlAttributes(htmlAttributes) ?? new RouteValueDictionary();
+        //    attrs.Add("class", "btn btn-sm btn-" + buttonClass);
+        //    attrs.Add("type", type);
+
+        //    builder.MergeAttributes(attrs);
+        //    return MvcHtmlString.Create(builder.ToString());
+        //}
         public static MvcHtmlString ButtonAction(this HtmlHelper html, object htmlAttributes, string buttonClass, string type, string text)
         {
             var builder = new TagBuilder("button");
             builder.InnerHtml = text;
 
+            // 1. Converte atributos do objeto anônimo (pode conter a chave 'class')
             var attrs = HtmlHelper.AnonymousObjectToHtmlAttributes(htmlAttributes) ?? new RouteValueDictionary();
-            attrs.Add("class", "btn btn-sm btn-" + buttonClass);
+
+            // 2. Define as classes de estilo padrão que o helper quer forçar
+            string forcedClasses = "btn btn-sm btn-" + buttonClass;
+
+            // --- LÓGICA DE CORREÇÃO ---
+            if (attrs.ContainsKey("class"))
+            {
+                // Se a classe já existe, concatena a classe existente com as novas
+                forcedClasses = attrs["class"].ToString() + " " + forcedClasses;
+
+                // Remove a chave duplicada
+                attrs.Remove("class");
+            }
+
+            // 3. Adiciona a chave 'class' UMA ÚNICA VEZ com todos os valores concatenados
+            attrs.Add("class", forcedClasses);
+
+            // 4. Adiciona 'type' (essa linha não tinha conflito)
             attrs.Add("type", type);
+            // -------------------------
 
             builder.MergeAttributes(attrs);
             return MvcHtmlString.Create(builder.ToString());

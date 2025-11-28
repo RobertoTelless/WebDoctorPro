@@ -1111,7 +1111,7 @@ namespace ERP_Condominios_Solution.Controllers
             Session["MensTemplateEMailHTML"] = 61;
 
             // Finaliza
-            Session["MensTemplateEMail"] = 32;
+            Session["MensTemplateEMail"] = null;
             Session["NomeHTML"] = fileName;
             return RedirectToAction("MontarTelaTemplateEMailHTML");
         }

@@ -52,9 +52,14 @@
                             <div class="form-group">
                                 <br />
                                 <div class="col-lg-12 col-md-12 col-xs-12">
-                                    @Html.ButtonActionSubmit(text: "Confirma Edição do Modelo de E-Mail", htmlAttributes: new { id = "basictoast" })
-                                    @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarBaseTemplateEMail", controller: "TemplateEMail")
-                                    <a href="@Url.Action((String)Session["AjudaNivel"])"  class="btn btn-sm btn-danger" target="_blank">Ajuda</a>                
+                                    <div style="display: inline-block;">
+                                        @Html.ButtonActionSubmit(text: "Confirma Edição do Modelo de E-Mail", htmlAttributes: new { id = "basictoast" })
+                                        @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarBaseTemplateEMail", controller: "TemplateEMail",  htmlAttributes: new { @class = "btn-loading" })
+                                        <a href="@Url.Action((String)Session["AjudaNivel"])"  class="btn btn-sm btn-danger" target="_blank">Ajuda</a>                
+                                        <span id="loadingIndicator" style="display: none; margin-left: 10px; color: #007bff;">
+                                            <i class="fa fa-spinner fa-spin"></i> Processando...
+                                        </span>
+                                    </div>
                                 </div>
                             </div>
                             

@@ -95,7 +95,7 @@
                         <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
                             <div class="col-lg-3 col-md-3 col-xs-12">
                                 Nome do Usuário
-                                @Html.TextBoxFor(m => m.USUA_NM_NOME, new { @class = "form-control", autofocus = true })
+                                @Html.TextBoxFor(m => m.USUA_NM_NOME, new { @class = "form-control", autofocus = true, @id = "txtNomeUsuario" })
                             </div>
                             <div class="col-lg-3 col-md-3 col-xs-12">
                                 Apelido
@@ -358,7 +358,29 @@
             $('#modal').modal('show');
         }
     </script>
-
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#txtNomeUsuario').autocomplete({
+                minLength: 2, 
+                source: function (request, response) {
+                    $.ajax({
+                        url: '@Url.Action("GetUsuarios", "Usuario")', 
+                        type: 'POST',
+                        dataType: 'json',
+                        data: {
+                            term: request.term 
+                        },
+                        success: function (data) {
+                            response(data); 
+                        },
+                        error: function () {
+                            console.log("Erro ao buscar dados para autocomplete.");
+                        }
+                    });
+                }
+            });
+        });
+    </script>
     <script type="text/javascript">
         $(document).ready(function () {
 

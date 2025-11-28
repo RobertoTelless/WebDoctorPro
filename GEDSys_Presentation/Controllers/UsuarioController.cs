@@ -4919,5 +4919,16 @@ namespace ERP_Condominios_Solution.Controllers
             return RedirectToAction("MontarTelaIndicacao");
         }
 
+        [HttpPost]
+        public JsonResult GetUsuarios(String term)
+        {
+            List<USUARIO> usu = CarregaUsuario();
+            List<String> nomes = usu.Select(p => p.USUA_NM_NOME).Distinct().ToList();
+            var resultados = nomes
+                .Where(n => n.ToLower().StartsWith(term.ToLower()))
+                .Select(n => new { label = n, value = n }) 
+                .ToList();
+            return Json(resultados, JsonRequestBehavior.AllowGet);
+        }
     }
 }
