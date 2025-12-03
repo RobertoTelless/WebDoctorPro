@@ -13,6 +13,7 @@ using System.IO;
 using EntitiesServices.WorkClasses;
 using ERP_Condominios_Solution.Classes;
 using GEDSys_Presentation.App_Start;
+using System.Net;
 
 namespace ERP_Condominios_Solution.Controllers
 {
@@ -433,12 +434,21 @@ namespace ERP_Condominios_Solution.Controllers
                     vm.TEEM_TX_CABECALHO = CrossCutting.UtilitariosGeral.CleanStringTextoHTML(vm.TEEM_TX_CABECALHO);
 
                     // Prepara HTML
-                    vm.TEEM_TX_CABECALHO = vm.TEEM_TX_CABECALHO.Replace("<p>", " ");
-                    vm.TEEM_TX_CABECALHO = vm.TEEM_TX_CABECALHO.Replace("</p>", "<br />");
-                    vm.TEEM_TX_CORPO = vm.TEEM_TX_CORPO.Replace("<p>", " ");
-                    vm.TEEM_TX_CORPO = vm.TEEM_TX_CORPO.Replace("</p>", "<br />");
-                    vm.TEEM_TX_DADOS = vm.TEEM_TX_DADOS.Replace("<p>", " ");
-                    vm.TEEM_TX_DADOS = vm.TEEM_TX_DADOS.Replace("</p>", "<br />");
+                    if (vm.TEEM_TX_CABECALHO != null)
+                    {
+                        vm.TEEM_TX_CABECALHO = vm.TEEM_TX_CABECALHO.Replace("<p>", " ");
+                        vm.TEEM_TX_CABECALHO = vm.TEEM_TX_CABECALHO.Replace("</p>", "<br />");
+                    }
+                    if (vm.TEEM_TX_CORPO != null)
+                    {
+                        vm.TEEM_TX_CORPO = vm.TEEM_TX_CORPO.Replace("<p>", " ");
+                        vm.TEEM_TX_CORPO = vm.TEEM_TX_CORPO.Replace("</p>", "<br />");
+                    }
+                    if (vm.TEEM_TX_DADOS != null)
+                    {
+                        vm.TEEM_TX_DADOS = vm.TEEM_TX_DADOS.Replace("<p>", " ");
+                        vm.TEEM_TX_DADOS = vm.TEEM_TX_DADOS.Replace("</p>", "<br />");
+                    }
 
                     // Preparação
                     TEMPLATE_EMAIL item = Mapper.Map<TemplateEMailViewModel, TEMPLATE_EMAIL>(vm);
@@ -1072,7 +1082,7 @@ namespace ERP_Condominios_Solution.Controllers
             if (file == null)
             {
                 Session["MensTemplateEMail"] = 30;
-                return RedirectToAction("MontarTelaTemplateEMail");
+                return RedirectToAction("MontarTelaTemplateEMailHTML");
             }
                       
             // Checa nome
@@ -1080,19 +1090,19 @@ namespace ERP_Condominios_Solution.Controllers
             if (fileName.Length > 250)
             {
                 Session["MensTemplateEMail"] = 31;
-                return RedirectToAction("MontarTelaTemplateEMail");
+                return RedirectToAction("MontarTelaTemplateEMailHTML");
             }
 
             // Checa existencia
-            TEMPLATE_EMAIL_HTML volta = htmApp.GetItemByNome(fileName);
-            if (volta != null)
-            {
-                Session["MensTemplateEMail"] = 33;
-                return RedirectToAction("MontarTelaTemplateEMail");
-            }
+            //TEMPLATE_EMAIL_HTML volta = htmApp.GetItemByNome(fileName);
+            //if (volta != null)
+            //{
+            //    Session["MensTemplateEMail"] = 33;
+            //    return RedirectToAction("MontarTelaTemplateEMail");
+            //}
 
             // Copia arquivo
-            String caminho = "/TemplateEMail/Modelos/" + idAss.ToString() +"/";
+            String caminho = "/TemplateEMail/Modelos/" + idAss.ToString() + "/";
             String path = Path.Combine(Server.MapPath(caminho), fileName);
             file.SaveAs(path);
 
@@ -1101,7 +1111,7 @@ namespace ERP_Condominios_Solution.Controllers
             htm.ASSI_CD_ID = idAss;
             htm.TEHT_IN_SISTEMA = 6;
             htm.TEHT_NM_NOME = fileName;
-            htm.TEHT_AQ_ARQUIVO =  fileName;
+            htm.TEHT_AQ_ARQUIVO =  "~" + caminho + fileName;;
             htm.TEHT_DT_CADASTRO = DateTime.Today.Date;
             htm.USUA_CD_ID = usu.USUA_CD_ID;
             Int32 voltad = htmApp.ValidateCreate(htm, usu);
@@ -1155,13 +1165,52 @@ namespace ERP_Condominios_Solution.Controllers
                 // Indicadores
                 ViewBag.Perfil = usuario.PERFIL.PERF_SG_SIGLA;
 
-                if (Session["MensTemplateEMailHTML"] != null)
+                if (Session["MensTemplateEMail"] != null)
                 {
-                    if ((Int32)Session["MensTemplateEMailHTML"] == 1)
+                    if ((Int32)Session["MensTemplateEMail"] == 1)
                     {
                         ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0016", CultureInfo.CurrentCulture));
                     }
-                    if ((Int32)Session["MensTemplateEMailHTML"] == 61)
+                    if ((Int32)Session["MensTemplateEMail"] == 2)
+                    {
+                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0011", CultureInfo.CurrentCulture));
+                    }
+                    if ((Int32)Session["MensTemplateEMail"] == 3)
+                    {
+                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0218", CultureInfo.CurrentCulture));
+                    }
+                    if ((Int32)Session["MensTemplateEMail"] == 4)
+                    {
+                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0219", CultureInfo.CurrentCulture));
+                    }
+                    if ((Int32)Session["MensTemplateEMail"] == 10)
+                    {
+                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0061", CultureInfo.CurrentCulture));
+                    }
+                    if ((Int32)Session["MensTemplateEMail"] == 11)
+                    {
+                        String frase = CRMSys_Base.ResourceManager.GetString("M0254", CultureInfo.CurrentCulture) + " - " + (String)Session["NomeImagem"];
+                        ModelState.AddModelError("", frase);
+                    }
+                    if ((Int32)Session["MensTemplateEMail"] == 30)
+                    {
+                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0427", CultureInfo.CurrentCulture));
+                    }
+                    if ((Int32)Session["MensTemplateEMail"] == 31)
+                    {
+                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0428", CultureInfo.CurrentCulture));
+                    }
+                    if ((Int32)Session["MensTemplateEMail"] == 32)
+                    {
+
+                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0429", CultureInfo.CurrentCulture));
+                    }
+                    if ((Int32)Session["MensTemplateEMail"] == 33)
+                    {
+
+                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0430", CultureInfo.CurrentCulture));
+                    }
+                    if ((Int32)Session["MensTemplateEMail"] == 61)
                     {
                         TempData["MensagemAcerto"] = (String)Session["MsgCRUD"];
                         TempData["TemMensagem"] = 1;
@@ -1306,5 +1355,44 @@ namespace ERP_Condominios_Solution.Controllers
             }
         }
 
+        [HttpPost]
+        public ActionResult UploadImage()
+        {
+            if (Request.Files.Count > 0)
+            {
+                try
+                {
+                    HttpPostedFileBase file = Request.Files[0];
+
+                    // 1. Define o caminho para salvar a imagem
+                    string caminhoPasta = Server.MapPath("~/Content/ImagensUpload/");
+
+                    // Cria a pasta se não existir
+                    if (!Directory.Exists(caminhoPasta))
+                    {
+                        Directory.CreateDirectory(caminhoPasta);
+                    }
+
+                    // 2. Define o nome do arquivo (Use um GUID para evitar conflitos de nome)
+                    string nomeArquivo = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
+                    string caminhoCompleto = Path.Combine(caminhoPasta, nomeArquivo);
+
+                    // 3. Salva o arquivo no disco
+                    file.SaveAs(caminhoCompleto);
+
+                    // 4. Retorna a URL pública para o JavaScript
+                    string urlPublica = Url.Content("~/Content/ImagensUpload/" + nomeArquivo);
+
+                    // Retorna a URL em texto puro ou JSON, dependendo da sua necessidade
+                    return Content(urlPublica);
+                }
+                catch (Exception ex)
+                {
+                    // Tratar erro de upload
+                    return new HttpStatusCodeResult(HttpStatusCode.InternalServerError, ex.Message);
+                }
+            }
+            return new HttpStatusCodeResult(HttpStatusCode.BadRequest, "Nenhum arquivo enviado.");
+        }
     }
 }

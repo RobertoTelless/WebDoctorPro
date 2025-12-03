@@ -102,6 +102,7 @@ namespace ERP_Condominios_Solution.Controllers
             Session["ModuloAtual"] = null;
             Session["AvisosAbertos"] = 0;
             Session["ListaEstoqueBase"] = null;
+            Session["VoltarMsgPaciente"] = 0;
 
             // Permissões
             Session["PermProntuario"] = 0;

@@ -1050,6 +1050,10 @@
     <Content Include="Content\fullcalendar.min.css" />
     <Content Include="Content\fullcalendar.print.css" />
     <Content Include="Content\fullcalendar.print.min.css" />
+    <Content Include="Content\ImagensUpload\32d862ab-9934-46f7-bdee-4a0d83639453.png" />
+    <Content Include="Content\ImagensUpload\4a01cf36-501a-4a1a-a503-e8a8d69cc46c.png" />
+    <Content Include="Content\ImagensUpload\a37eef78-edda-479e-9558-fa8c5589d732.png" />
+    <Content Include="Content\ImagensUpload\e88a2c7c-9918-4fa5-a4e5-f91f45125654.png" />
     <Content Include="Content\jquery-ui-timepicker-addon.css" />
     <Content Include="Content\jquery-ui-timepicker-addon.min.css" />
     <Content Include="Content\jquery.datetimepicker.css" />
@@ -1672,6 +1676,7 @@
     <Content Include="Images\angular_logo.png" />
     <Content Include="Images\assembleia_icone.jpg" />
     <Content Include="Images\autorizacao_icone.png" />
+    <Content Include="Images\beefree-001.html" />
     <Content Include="Images\Clayton - Cópia .jpg" />
     <Content Include="Images\Clayton.jpg" />
     <Content Include="Images\controle_veiculo_icone.jpg" />
@@ -2573,6 +2578,7 @@
     <Content Include="Images\Logo_RTI.png" />
     <Content Include="Images\Mensageria_Icone_1.jpg" />
     <Content Include="Images\mudanca_icone.png" />
+    <Content Include="Images\new-email_2024-04-03T215423.755415.html" />
     <Content Include="Images\off_canvas.jpg" />
     <Content Include="Images\p1.jpg" />
     <Content Include="Images\p2.jpg" />
@@ -4848,7 +4854,7 @@
     <Content Include="Scripts\tinymce\tinymce.min.js" />
     <Content Include="Scripts\UploadAnexo.js" />
     <Content Include="Sounds\chimes.wav" />
-    <Content Include="TemplateEMail\Modelos\1\beefree-bdre9wegb2h.html" />
+    <Content Include="TemplateEMail\Modelos\1\beefree-001.html" />
     <Content Include="TemplateEMail\Modelos\1\new-email_2024-04-03T215423.755415.html" />
     <Content Include="Views\Mensagem\IncluirMensagemEMail.cshtml" />
     <Content Include="Views\Mensagem\MontarTelaDashboardMensagens.cshtml" />

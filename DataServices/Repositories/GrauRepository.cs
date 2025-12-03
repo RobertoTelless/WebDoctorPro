@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using EntitiesServices.Model;  
 using ModelServices.Interfaces.Repositories;
 using System.Linq;
+using System.Data.Entity;
 
 namespace DataServices.Repositories
 {
@@ -18,7 +19,8 @@ namespace DataServices.Repositories
         public List<GRAU_INSTRUCAO> GetAllItens()
         {
             IQueryable<GRAU_INSTRUCAO> query = Db.GRAU_INSTRUCAO;
-            return query.ToList();
+            query = query.Where(p => p.GRAU_IN_ATIVO == 1);
+            return query.AsNoTracking().ToList();
         }
 
     }

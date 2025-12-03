@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using EntitiesServices.Model;  
 using ModelServices.Interfaces.Repositories;
 using System.Linq;
+using System.Data.Entity;
 
 namespace DataServices.Repositories
 {
@@ -19,7 +20,7 @@ namespace DataServices.Repositories
         {
             IQueryable<PACIENTE_DADOS_EXAME_FISICO> query = Db.PACIENTE_DADOS_EXAME_FISICO;
             query = query.Where(p => p.ASSI_CD_ID == idAss);
-            return query.ToList();
+            return query.AsNoTracking().ToList();
         }
 
     }

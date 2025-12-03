@@ -3979,15 +3979,24 @@ namespace GEDSys_Presentation.Controllers
                     item.ASSI_CD_ID = usuarioLogado.ASSI_CD_ID;
                     Int32 volta = baseApp.ValidateCreateAnamneseAnotacao(item);
 
+                    // Configura serilização
+                    JsonSerializerSettings settings = new JsonSerializerSettings
+                    {
+                        ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+                        NullValueHandling = NullValueHandling.Ignore
+                    };
+
                     // Monta Log
+                    DTO_Paciente_Anamnese_Anotacao dto = MontarPacienteAnamneseAnotacaoDTOObj(item);
+                    String json = JsonConvert.SerializeObject(dto, settings);
                     LOG log = new LOG
                     {
                         LOG_DT_DATA = DateTime.Now,
                         ASSI_CD_ID = usuarioLogado.ASSI_CD_ID,
                         USUA_CD_ID = usuarioLogado.USUA_CD_ID,
-                        LOG_NM_OPERACAO = "iaaPAAM",
+                        LOG_NM_OPERACAO = "Paciente - Anamnese - Anotação - Inclusão",
                         LOG_IN_ATIVO = 1,
-                        LOG_TX_REGISTRO = "Paciente: " + not.PACIENTE.PACI_NM_NOME + " | Data: " + item.PAAA_DT_ANOTACAO.ToString() + " | Anotação: " + item.PAAA_TX_ANOTACAO,
+                        LOG_TX_REGISTRO = json,
                         LOG_IN_SISTEMA = 6
                     };
                     Int32 volta1 = logApp.ValidateCreate(log);
@@ -4096,15 +4105,24 @@ namespace GEDSys_Presentation.Controllers
                     PACIENTE_ANAMNESE copa = baseApp.GetAnamneseById(item.PAAM_CD_ID);
                     Int32 volta = baseApp.ValidateEditAnamneseAnotacao(item);
 
+                    // Configura serilização
+                    JsonSerializerSettings settings = new JsonSerializerSettings
+                    {
+                        ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+                        NullValueHandling = NullValueHandling.Ignore
+                    };
+
                     // Monta Log
+                    DTO_Paciente_Anamnese_Anotacao dto = MontarPacienteAnamneseAnotacaoDTOObj(item);
+                    String json = JsonConvert.SerializeObject(dto, settings);
                     LOG log = new LOG
                     {
                         LOG_DT_DATA = DateTime.Now,
                         ASSI_CD_ID = usuarioLogado.ASSI_CD_ID,
                         USUA_CD_ID = usuarioLogado.USUA_CD_ID,
-                        LOG_NM_OPERACAO = "eaaPAAM",
+                        LOG_NM_OPERACAO = "Paciente - Anamnese - Anotação - Alteração",
                         LOG_IN_ATIVO = 1,
-                        LOG_TX_REGISTRO = "Paciente: " + copa.PACIENTE.PACI_NM_NOME + " | Data: " + item.PAAA_DT_ANOTACAO.ToString() + " | Anotação: " + item.PAAA_TX_ANOTACAO,
+                        LOG_TX_REGISTRO = json,
                         LOG_IN_SISTEMA = 6
                     };
                     Int32 volta1 = logApp.ValidateCreate(log);
@@ -4169,15 +4187,24 @@ namespace GEDSys_Presentation.Controllers
                 Session["AnamneseAlterada"] = 1;
                 Session["NivelPaciente"] = 1;
 
+                // Configura serilização
+                JsonSerializerSettings settings = new JsonSerializerSettings
+                {
+                    ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+                    NullValueHandling = NullValueHandling.Ignore
+                };
+
                 // Monta Log
+                DTO_Paciente_Anamnese_Anotacao dto = MontarPacienteAnamneseAnotacaoDTOObj(item);
+                String json = JsonConvert.SerializeObject(dto, settings);
                 LOG log = new LOG
                 {
                     LOG_DT_DATA = DateTime.Now,
                     ASSI_CD_ID = usuarioLogado.ASSI_CD_ID,
                     USUA_CD_ID = usuarioLogado.USUA_CD_ID,
-                    LOG_NM_OPERACAO = "xaaPAAM",
+                    LOG_NM_OPERACAO = "Paciente - Anamnese - Anotação - Exclusão",
                     LOG_IN_ATIVO = 1,
-                    LOG_TX_REGISTRO = "Paciente: " + copa.PACIENTE.PACI_NM_NOME + " | Data: " + item.PAAA_DT_ANOTACAO.ToString() + " | Anotação: " + item.PAAA_TX_ANOTACAO,
+                    LOG_TX_REGISTRO = json,
                     LOG_IN_SISTEMA = 6
                 };
                 Int32 volta1 = logApp.ValidateCreate(log);
@@ -18861,10 +18888,68 @@ namespace GEDSys_Presentation.Controllers
             return Json(hash);
         }
 
+        public DTO_Paciente_Anotacao MontarPacienteAnotacaoDTOObj(PACIENTE_ANOTACAO l)
+        {
+            using (var context = new CRMSysDBEntities())
+            {
+                var mediDTO = new DTO_Paciente_Anotacao()
+                {
+                    PAAN_CD_ID = l.PAAN_CD_ID,
+                    PAAN_DT_ANOTACAO = l.PAAN_DT_ANOTACAO,
+                    PAAN_IN_ATIVO = l.PAAN_IN_ATIVO,
+                    PAAN_TX_ANOTACAO = l.PAAN_TX_ANOTACAO,
+                    PACI_CD_ID = l.PACI_CD_ID,
+                };
+                return mediDTO;
+            }
+
+        }
+
+        public DTO_Paciente_Anamnese_Anotacao MontarPacienteAnamneseAnotacaoDTOObj(PACIENTE_ANAMNESE_ANOTACAO l)
+        {
+            using (var context = new CRMSysDBEntities())
+            {
+                var mediDTO = new DTO_Paciente_Anamnese_Anotacao()
+                {
+                    ASSI_CD_ID = l.ASSI_CD_ID,
+                    PAAA_CD_ID = l.PAAA_CD_ID,
+                    PAAA_DT_ANOTACAO = l.PAAA_DT_ANOTACAO,
+                    PAAA_IN_ATIVO = l.PAAA_IN_ATIVO,
+                    PAAA_TX_ANOTACAO = l.PAAA_TX_ANOTACAO,
+                    PAAA_TX_TEXTO = l.PAAA_TX_TEXTO,
+                    PAAM_CD_ID = l.PAAM_CD_ID,
+                };
+                return mediDTO;
+            }
+
+        }
+
+        [HttpPost]
+        public JsonResult GetPacienteNome(String term)
+        {
+            List<PACIENTE> usu = CarregaPaciente();
+            List<String> nomes = usu.Select(p => p.PACI_NM_NOME).Distinct().ToList();
+            var resultados = nomes
+                .Where(n => n.ToLower().StartsWith(term.ToLower()))
+                .Select(n => new { label = n, value = n })
+                .ToList();
+            return Json(resultados, JsonRequestBehavior.AllowGet);
+        }
+
+        [HttpPost]
+        public JsonResult GetIndicado(String term)
+        {
+            List<PACIENTE> usu = CarregaPaciente();
+            List<String> nomes = usu.Select(p => p.PACI_NM_INDICACAO).Distinct().ToList();
+            var resultados = nomes
+                .Where(n => n.ToLower().StartsWith(term.ToLower()))
+                .Select(n => new { label = n, value = n })
+                .ToList();
+            return Json(resultados, JsonRequestBehavior.AllowGet);
+        }
 
     }
 }
-
 public class AssinaturaExternaPfx : IExternalSignature
 {
     private readonly X509Certificate2 _certificadoDotNet;

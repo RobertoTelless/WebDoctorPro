@@ -20,7 +20,7 @@ namespace DataServices.Repositories
         {
             IQueryable<PACIENTE_HISTORICO> query = Db.PACIENTE_HISTORICO;
             query = query.Where(p => p.ASSI_CD_ID == idAss);
-            return query.ToList();
+            return query.AsNoTracking().ToList();
         }
 
         public List<PACIENTE_HISTORICO> ExecuteFilter(Int32? tipo, String operacao, DateTime? dataInicio, DateTime? dataFim, String descricao, Int32 idAss)
@@ -55,7 +55,7 @@ namespace DataServices.Repositories
             {
                 query = query.Where(p => p.ASSI_CD_ID == idAss);
                 query = query.OrderBy(a => a.PAHI_DT_DATA);
-                lista = query.ToList<PACIENTE_HISTORICO>();
+                lista = query.AsNoTracking().ToList<PACIENTE_HISTORICO>();
             }
             return lista;
         }
@@ -92,7 +92,7 @@ namespace DataServices.Repositories
             {
                 query = query.Where(p => p.ASSI_CD_ID == idAss);
                 query = query.OrderBy(a => a.PAHI_DT_DATA);
-                lista = query.ToList<PACIENTE_HISTORICO>();
+                lista = query.AsNoTracking().ToList<PACIENTE_HISTORICO>();
             }
             return lista;
         }

@@ -14,7 +14,7 @@ namespace DataServices.Repositories
             IQueryable<PACIENTE_CONSULTA> query = Db.PACIENTE_CONSULTA;
             query = query.Where(p => p.PACO_DT_CONSULTA == conta.PACO_DT_CONSULTA);
             query = query.Where(p => p.PACI_CD_ID == conta.PACI_CD_ID);
-            return query.FirstOrDefault();
+            return query.AsNoTracking().FirstOrDefault();
         }
 
         public PACIENTE_CONSULTA GetItemById(Int32 id)
@@ -35,7 +35,7 @@ namespace DataServices.Repositories
         {
             IQueryable<PACIENTE_CONSULTA> query = Db.PACIENTE_CONSULTA.Where(p => p.PACO_IN_ATIVO == 1);
             query = query.Where(p => p.ASSI_CD_ID == idAss);
-            return query.ToList();
+            return query.AsNoTracking().ToList();
         }
 
         public List<PACIENTE_CONSULTA> GetByCPF(String cpf)
@@ -49,7 +49,7 @@ namespace DataServices.Repositories
         {
             IQueryable<PACIENTE_CONSULTA> query = Db.PACIENTE_CONSULTA;
             query = query.Where(p => p.ASSI_CD_ID == idAss);
-            return query.ToList();
+            return query.AsNoTracking().ToList();
         }
 
         public List<PACIENTE_CONSULTA> ExecuteFilter(Int32? tipo, String nome, DateTime? dataInicio, DateTime? dataFim, Int32? confirmada, Int32? usuario, Int32 idAss)
@@ -89,7 +89,7 @@ namespace DataServices.Repositories
                 query = query.Where(p => p.ASSI_CD_ID == idAss);
                 query = query.Where(p => p.PACO_IN_ATIVO == 1);
                 query = query.OrderBy(a => a.PACO_DT_CONSULTA);
-                lista = query.ToList<PACIENTE_CONSULTA>();
+                lista = query.AsNoTracking().ToList<PACIENTE_CONSULTA>();
             }
             return lista;
         }
@@ -131,7 +131,7 @@ namespace DataServices.Repositories
                 query = query.Where(p => p.ASSI_CD_ID == idAss);
                 query = query.Where(p => p.PACO_IN_ATIVO == 1);
                 query = query.OrderBy(a => a.PACO_DT_CONSULTA);
-                lista = query.ToList<PACIENTE_CONSULTA>();
+                lista = query.AsNoTracking().ToList<PACIENTE_CONSULTA>();
             }
             return lista;
         }

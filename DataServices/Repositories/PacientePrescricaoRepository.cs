@@ -22,14 +22,14 @@ namespace DataServices.Repositories
             IQueryable<PACIENTE_PRESCRICAO> query = Db.PACIENTE_PRESCRICAO;
             query = query.Where(p => p.ASSI_CD_ID == idAss);
             query = query.Include(p => p.PACIENTE_PRESCRICAO_ITEM);
-            return query.ToList();
+            return query.AsNoTracking().ToList();
         }
 
         public List<PACIENTE_PRESCRICAO> GetAll()
         {
             IQueryable<PACIENTE_PRESCRICAO> query = Db.PACIENTE_PRESCRICAO;
             query = query.Include(p => p.PACIENTE_PRESCRICAO_ITEM);
-            return query.ToList();
+            return query.AsNoTracking().ToList();
         }
 
         public List<PACIENTE_PRESCRICAO> GetByCPF(String cpf)
@@ -68,7 +68,7 @@ namespace DataServices.Repositories
                 query = query.Where(p => p.ASSI_CD_ID == idAss);
                 query = query.Where(p => p.PAPR_IN_ATIVO == 1);
                 query = query.OrderBy(a => a.PAPR_DT_EMISSAO);
-                lista = query.ToList<PACIENTE_PRESCRICAO>();
+                lista = query.AsNoTracking().ToList<PACIENTE_PRESCRICAO>();
             }
             return lista;
         }

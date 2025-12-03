@@ -112,11 +112,12 @@
                                         @if (Model.TEEM_IN_HTML == 1)
                                         {
                                             <div class="row" id="EM">
-                                                <h4 style="color: green; font-weight: bold; background-color:beige">ATENÇÃO: A tag {Nome} pode ser usada em todos os campos. Se for utilizada, ela será substituída pelo nome do destinatário</h4>
+                                                <h4 style="color: green; font-weight: bold; background-color:beige">ATENÇÃO: A tag {nome} pode ser usada em todos os campos. Se for utilizada, ela será substituída pelo nome do destinatário</h4>
+                                                <h4 style="color: green; font-weight: bold; background-color:beige">ATENÇÃO: A tag {assinatura} pode ser usada em todos os campos. Se for utilizada, ela será substituída pela assinatura do emissor</h4>
                                                 <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
                                                     <div class="col-lg-12 col-md-12 col-xs-12">
                                                         Cabeçalho
-                                                        @Html.TextAreaFor(m => m.TEEM_TX_CABECALHO, new { @class = "form-control summernote", style = "width: 100%; height: 200px;", autofocus = true, @id = "cab" })
+                                                        @Html.TextAreaFor(m => m.TEEM_TX_CABECALHO, new { @class = "form-control summernote1", style = "width: 100%; height: 200px;", autofocus = true, @id = "cab" })
                                                     </div>
                                                 </div>
                                                 <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
@@ -128,7 +129,7 @@
                                                 <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
                                                     <div class="col-lg-12 col-md-12 col-xs-12">
                                                         Rodapé
-                                                        @Html.TextAreaFor(m => m.TEEM_TX_DADOS, new { @class = "form-control summernote", style = "width: 100%; height: 200px;", autofocus = true, @id = "rodape" })
+                                                        @Html.TextAreaFor(m => m.TEEM_TX_DADOS, new { @class = "form-control summernote2", style = "width: 100%; height: 200px;", autofocus = true, @id = "rodape" })
                                                     </div>
                                                 </div>
                                             </div>
@@ -189,31 +190,126 @@
         }; 
     </script>
 
-
     <script type="text/javascript">
         $(document).ready(function () {
 
             $('.summernote').summernote(
             {
-              toolbar: [
-                  ['ur', ['undo', 'redo']],
-                  ['font', ['bold', 'italic', 'underline', 'superscript', 'subscript']],
-                  ['fontname', ['fontname']],
-                  ['fontsize', ['fontsize', 'fontsizeunit']],
-                  ['color', ['color']],
-                  ['para', ['ul', 'ol', 'paragraph']],
-                  ['height', ['height']],
-                  ['table', ['table']],
-                  ['insert', ['link', 'hr']],
-                  ['view', ['fullscreen', 'codeview']],
+                toolbar: [
+                    ['ur', ['undo', 'redo']],
+                    ['font', ['bold', 'italic', 'underline', 'superscript', 'subscript']],
+                    ['fontname', ['fontname']],
+                    ['fontsize', ['fontsize', 'fontsizeunit']],
+                    ['color', ['color']],
+                    ['para', ['ul', 'ol', 'paragraph']],
+                    ['height', ['height']],
+                    ['table', ['table']],
+                    ['insert', ['link', 'picture', 'hr']],
+                    ['view', ['fullscreen', 'codeview']],
                 ],
                 lineHeights: ['0.2', '0.3', '0.4', '0.5', '0.6', '0.8', '1.0', '1.2', '1.4', '1.5', '2.0', '3.0'],
                 fontNames: ['Arial', 'Arial Black', 'Comic Sans MS', 'Courier New', 'Helvetica', 'Impact', 'Lucida Grande', 'Tahoma', 'Times New Roman', 'Verdana'],
-                spellCheck: false
+                spellCheck: false,
+                callbacks: {
+                    onImageUpload: function(files) {
+                        for(let i = 0; i < files.length; i++) {
+                            uploadFile(files[i]);
+                        }
+                    }
+                }
             });
             $('.note-editable').css('line-height', '1.0');
         });
 
+        function uploadFile(file) {
+            // 1. Cria o FormData
+            var data = new FormData();
+            data.append("file", file);
+
+            // 2. Chama a Action do Controller ASP.NET para salvar a imagem no servidor
+            $.ajax({
+                url: '@Url.Action("UploadImage", "TemplateEMail")', // MUDAR AQUI: SeuController
+                data: data,
+                cache: false,
+                contentType: false,
+                processData: false,
+                type: 'POST',
+                success: function (url) {
+                    // 3. Insere a imagem no editor após o upload bem-sucedido
+                    // O 'url' deve ser o caminho absoluto da imagem no servidor
+                    $('.summernote').summernote('insertImage', url);
+                },
+                error: function (data) {
+                    console.error("Erro no upload da imagem:", data);
+                    alert("Ocorreu um erro ao enviar a imagem.");
+                }
+            });
+        }
+        var edit = function () {
+            $('.click2edit').summernote({ focus: true });
+        };
+
+        var save = function () {
+            var aHTML = $('.click2edit').code(); //save HTML If you need(aHTML: array).
+            $('.click2edit').destroy();
+        };
+    </script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            $('.summernote1').summernote(
+            {
+                toolbar: [
+                    ['ur', ['undo', 'redo']],
+                    ['font', ['bold', 'italic', 'underline', 'superscript', 'subscript']],
+                    ['fontname', ['fontname']],
+                    ['fontsize', ['fontsize', 'fontsizeunit']],
+                    ['color', ['color']],
+                    ['para', ['ul', 'ol', 'paragraph']],
+                    ['height', ['height']],
+                    ['table', ['table']],
+                    ['insert', ['link', 'picture', 'hr']],
+                    ['view', ['fullscreen', 'codeview']],
+                ],
+                lineHeights: ['0.2', '0.3', '0.4', '0.5', '0.6', '0.8', '1.0', '1.2', '1.4', '1.5', '2.0', '3.0'],
+                fontNames: ['Arial', 'Arial Black', 'Comic Sans MS', 'Courier New', 'Helvetica', 'Impact', 'Lucida Grande', 'Tahoma', 'Times New Roman', 'Verdana'],
+                spellCheck: false,
+                callbacks: {
+                    onImageUpload: function(files) {
+                        for(let i = 0; i < files.length; i++) {
+                            uploadFile(files[i]);
+                        }
+                    }
+                }
+            });
+            $('.note-editable').css('line-height', '1.0');
+        });
+
+        function uploadFile(file) {
+            // 1. Cria o FormData
+            var data = new FormData();
+            data.append("file", file);
+
+            // 2. Chama a Action do Controller ASP.NET para salvar a imagem no servidor
+            $.ajax({
+                url: '@Url.Action("UploadImage", "TemplateEMail")', // MUDAR AQUI: SeuController
+                data: data,
+                cache: false,
+                contentType: false,
+                processData: false,
+                type: 'POST',
+                success: function (url) {
+                    // 3. Insere a imagem no editor após o upload bem-sucedido
+                    // O 'url' deve ser o caminho absoluto da imagem no servidor
+                    $('.summernote1').summernote('insertImage', url);
+                },
+                error: function (data) {
+                    console.error("Erro no upload da imagem:", data);
+                    alert("Ocorreu um erro ao enviar a imagem.");
+                }
+            });
+        }
         var edit = function () {
             $('.click2edit').summernote({ focus: true });
         };
@@ -229,25 +325,56 @@
 
             $('.summernote2').summernote(
             {
-              toolbar: [
-                  ['ur', ['undo', 'redo']],
-                  ['font', ['bold', 'italic', 'underline', 'superscript', 'subscript']],
-                  ['fontname', ['fontname']],
-                  ['fontsize', ['fontsize', 'fontsizeunit']],
-                  ['color', ['color']],
-                  ['para', ['ul', 'ol', 'paragraph']],
-                  ['height', ['height']],
-                  ['table', ['table']],
-                  ['insert', ['link', 'hr']],
-                  ['view', ['fullscreen', 'codeview']],
+                toolbar: [
+                    ['ur', ['undo', 'redo']],
+                    ['font', ['bold', 'italic', 'underline', 'superscript', 'subscript']],
+                    ['fontname', ['fontname']],
+                    ['fontsize', ['fontsize', 'fontsizeunit']],
+                    ['color', ['color']],
+                    ['para', ['ul', 'ol', 'paragraph']],
+                    ['height', ['height']],
+                    ['table', ['table']],
+                    ['insert', ['link', 'picture', 'hr']],
+                    ['view', ['fullscreen', 'codeview']],
                 ],
                 lineHeights: ['0.2', '0.3', '0.4', '0.5', '0.6', '0.8', '1.0', '1.2', '1.4', '1.5', '2.0', '3.0'],
                 fontNames: ['Arial', 'Arial Black', 'Comic Sans MS', 'Courier New', 'Helvetica', 'Impact', 'Lucida Grande', 'Tahoma', 'Times New Roman', 'Verdana'],
-                spellCheck: false
+                spellCheck: false,
+                callbacks: {
+                    onImageUpload: function(files) {
+                        for(let i = 0; i < files.length; i++) {
+                            uploadFile(files[i]);
+                        }
+                    }
+                }
             });
             $('.note-editable').css('line-height', '1.0');
         });
 
+        function uploadFile(file) {
+            // 1. Cria o FormData
+            var data = new FormData();
+            data.append("file", file);
+
+            // 2. Chama a Action do Controller ASP.NET para salvar a imagem no servidor
+            $.ajax({
+                url: '@Url.Action("UploadImage", "TemplateEMail")', // MUDAR AQUI: SeuController
+                data: data,
+                cache: false,
+                contentType: false,
+                processData: false,
+                type: 'POST',
+                success: function (url) {
+                    // 3. Insere a imagem no editor após o upload bem-sucedido
+                    // O 'url' deve ser o caminho absoluto da imagem no servidor
+                    $('.summernote2').summernote('insertImage', url);
+                },
+                error: function (data) {
+                    console.error("Erro no upload da imagem:", data);
+                    alert("Ocorreu um erro ao enviar a imagem.");
+                }
+            });
+        }
         var edit = function () {
             $('.click2edit').summernote({ focus: true });
         };

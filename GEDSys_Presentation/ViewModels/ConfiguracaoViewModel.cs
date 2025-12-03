@@ -169,6 +169,8 @@ namespace ERP_Condominios_Solution.ViewModels
         public Nullable<int> CONF_IN_ASSINA_DIGITAL_LOCACAO { get; set; }
         [RegularExpression(@"^[0-9]+([,.][0-9]+)?$", ErrorMessage = "Deve ser um valor numérico positivo")]
         public Nullable<decimal> CONF_VL_ACRESCIMO_ATRASO_PARCELA { get; set; }
+        [StringLength(12, ErrorMessage = "SENHA DO PACIENTE deve conter no máximo 12 caracteres.")]
+        public string CONF_NM_SENHA_PACIENTE { get; set; }
 
         public virtual ASSINANTE ASSINANTE { get; set; }
     }

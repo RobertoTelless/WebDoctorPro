@@ -14,7 +14,7 @@ namespace DataServices.Repositories
             IQueryable<PACIENTE_PRESCRICAO_ITEM> query = Db.PACIENTE_PRESCRICAO_ITEM.Where(p => p.PAPI_IN_ATIVO == 1);
             query = query.Where(p => p.ASSI_CD_ID == idUsu);
             query = query.OrderBy(a => a.PAPI_NM_REMEDIO);
-            return query.ToList();
+            return query.AsNoTracking().ToList();
         }
 
         public PACIENTE_PRESCRICAO_ITEM GetItemById(Int32 id)
@@ -60,7 +60,7 @@ namespace DataServices.Repositories
                 query = query.Where(p => p.ASSI_CD_ID == idAss);
                 query = query.Where(p => p.PAPI_IN_ATIVO == 1);
                 query = query.OrderBy(a => a.PAPI_NM_REMEDIO);
-                lista = query.ToList<PACIENTE_PRESCRICAO_ITEM>();
+                lista = query.AsNoTracking().ToList<PACIENTE_PRESCRICAO_ITEM>();
             }
             return lista;
         }

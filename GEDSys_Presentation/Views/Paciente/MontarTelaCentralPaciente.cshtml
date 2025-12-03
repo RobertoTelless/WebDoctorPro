@@ -57,8 +57,8 @@
                                 @Html.DropDownListFor(m => m.TIPA_CD_ID, (SelectList)ViewBag.Tipos, "Selecionar", new { @class = "form-control" })
                             </div>
                             <div class="col-lg-3 col-md-3 col-xs-12">
-                                Nome/Nome Social
-                                @Html.TextBoxFor(m => m.PACI_NM_NOME, new { @class = "form-control", autofocus = true })
+                                Nome
+                                @Html.TextBoxFor(m => m.PACI_NM_NOME, new { @class = "form-control", autofocus = true, @id = "txtNomePaciente" })
                             </div>
                             <div class="col-lg-2 col-md-2 col-xs-12">
                                 CPF
@@ -101,36 +101,39 @@
                                 @Html.ButtonActionSubmit(text: "Filtrar")
                                 @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_INCLUIR_PACIENTE == 1)
                                 {
-                                    <a href="@Url.Action("IncluirPaciente", "Paciente")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Abre a página de inclusão de novo paciente" class="btn btn-sm btn-primary" id="emp" OnClick = "Fade()">Novo Paciente</a>                
+                                    <a href="@Url.Action("IncluirPaciente", "Paciente")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Abre a página de inclusão de novo paciente" class="btn btn-sm btn-primary btn-loading" id="emp" OnClick = "Fade()">Novo Paciente</a>                
                                 }
                                 @Html.ButtonLinkIndex(text: "Retirar Filtro", controller: "Paciente", action: "RetirarFiltroPaciente")
                                 @Html.ButtonLinkIndex(text: "Ver Todos", controller: "Paciente", action: "MostrarTudoPaciente")
                                 @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_PACIENTE_CONSULTA_ACESSO == 1)
                                 {
-                                    <a href="@Url.Action("MontarTelaConsultas", "Paciente")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acesso à Central de Consultas" class="btn btn-sm btn-warning" id="emp" OnClick = "Fade()">Consultas</a>                
+                                    <a href="@Url.Action("MontarTelaConsultas", "Paciente")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acesso à Central de Consultas" class="btn btn-sm btn-warning btn-loading" id="emp" OnClick = "Fade()">Consultas</a>                
                                 }
                                 @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_PRESCRICAO_ACESSO == 1)
                                 {
-                                    <a href="@Url.Action("MontarTelaPrescricoes", "Paciente")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acesso à Central de Prescrições para todos os pacientes" class="btn btn-sm btn-warning" id="emp" OnClick = "Fade()">Prescrições</a>                
+                                    <a href="@Url.Action("MontarTelaPrescricoes", "Paciente")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acesso à Central de Prescrições para todos os pacientes" class="btn btn-sm btn-warning btn-loading" id="emp" OnClick = "Fade()">Prescrições</a>                
                                 }
                                 @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_ATESTADO_ACESSO == 1)
                                 {
-                                    <a href="@Url.Action("MontarTelaAtestados", "Paciente")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acesso à Central de Atestados para todos os pacientes" class="btn btn-sm btn-warning" id="emp" OnClick = "Fade()">Atestados</a>                
+                                    <a href="@Url.Action("MontarTelaAtestados", "Paciente")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acesso à Central de Atestados para todos os pacientes" class="btn btn-sm btn-warning btn-loading" id="emp" OnClick = "Fade()">Atestados</a>                
                                 }
                                 @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_SOLICITACAO_ACESSO == 1)
                                 {
-                                    <a href="@Url.Action("MontarTelaSolicitacoes", "Paciente")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acesso à Central de Solicitações de Exames para todos os pacientes" class="btn btn-sm btn-warning" id="emp" OnClick = "Fade()">Solicitações de Exames</a>                
+                                    <a href="@Url.Action("MontarTelaSolicitacoes", "Paciente")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acesso à Central de Solicitações de Exames para todos os pacientes" class="btn btn-sm btn-warning btn-loading" id="emp" OnClick = "Fade()">Solicitações de Exames</a>                
                                 }
                                 @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_EXAME_ACESSO == 1)
                                 {
-                                    <a href="@Url.Action("MontarTelaExames", "Paciente")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acesso à Central de Resultados de Exames para todos os pacientes" class="btn btn-sm btn-warning" id="emp" OnClick = "Fade()">Resultados de Exames</a>                
+                                    <a href="@Url.Action("MontarTelaExames", "Paciente")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acesso à Central de Resultados de Exames para todos os pacientes" class="btn btn-sm btn-warning btn-loading" id="emp" OnClick = "Fade()">Resultados de Exames</a>                
                                 }
                                 @if (ViewBag.ListaClienteAnivDiaConta > 0)
                                 {
-                                    <a href="@Url.Action("EnviarMailAniversario", "Paciente")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acesso à Central de Aniversariantes" class="btn btn-sm btn-success" id="emp" OnClick = "Fade()">Aniversariantes</a>                
+                                    <a href="@Url.Action("EnviarMailAniversario", "Paciente")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acesso à Central de Aniversariantes" class="btn btn-sm btn-success btn-loading" id="emp" OnClick = "Fade()">Aniversariantes</a>                
                                 }
                                 @Html.ButtonLinkIndex(text: "Voltar", controller: "Paciente", action: "MontarTelaPaciente")
                                 <a href="@Url.Action((String)Session["AjudaNivel"])"  class="btn btn-sm btn-danger" target="_blank">Ajuda</a>                
+                                <span id="loadingIndicator" style="display: none; margin-left: 10px; color: #007bff;">
+                                    <i class="fa fa-spinner fa-spin"></i> Processando...
+                                </span>
                             </div>
                         </div>
                     </div>
@@ -661,6 +664,49 @@
             $('.dotContainer').fadeOut("slow");
             $('#title').css("filter", "blur(0)");
             $('#content').css("filter", "blur(0)");
+        });
+    </script>
+
+    <script type="text/javascript">
+        $(document).ready(function () { 
+            $('.btn-loading').on('click', function (e) {            
+                $(this).prop('disabled', true);
+                $(this).addClass('disabled');
+                $('#loadingIndicator').show();
+                var tagName = $(this).prop('tagName').toLowerCase();
+                if (tagName === 'a') {
+                    e.preventDefault(); 
+                    var targetUrl = $(this).attr('href');
+                    window.location.href = targetUrl;
+
+                } else if (tagName === 'button' || tagName === 'input') {
+                    $(this).closest('form').submit();
+                }
+            });
+        });
+    </script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#txtNomePaciente').autocomplete({
+                minLength: 2, 
+                source: function (request, response) {
+                    $.ajax({
+                        url: '@Url.Action("GetPacienteNome", "Paciente2")', 
+                        type: 'POST',
+                        dataType: 'json',
+                        data: {
+                            term: request.term 
+                        },
+                        success: function (data) {
+                            response(data); 
+                        },
+                        error: function () {
+                            console.log("Erro ao buscar dados para autocomplete.");
+                        }
+                    });
+                }
+            });
         });
     </script>
     <script>

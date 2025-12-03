@@ -42,6 +42,9 @@
                                     @Html.HiddenFor(m => m.MENS_DT_CRIACAO)
                                     @Html.HiddenFor(m => m.MENS_IN_TIPO)
                                     @Html.HiddenFor(m => m.MENS_NM_NOME)
+                                    @Html.HiddenFor(m => m.MENS_IN_TIPO_SMS)
+                                    @Html.HiddenFor(m => m.TIPO_ENVIO)
+                                    @Html.HiddenFor(m => m.MENS_IN_TIPO_EMAIL)
                                     Nome do Paciente
                                     @Html.TextBoxFor(m => m.NOME, new { @class = "form-control", @readonly="readonly" })
                                 </div>
@@ -63,7 +66,7 @@
                             </div>
                         </div>
                         <div class="form-group">
-                            @Html.ButtonActionSubmit(text: "Confirma Envio de SMS", htmlAttributes: new { id = "basictoast" })
+                            @Html.ButtonActionSubmit(text: "Confirma Envio de SMS", htmlAttributes: new { id = "basictoast", @class = "btn-loading1" })
                             @if ((Int32)Session["VoltaConfirmar"] == 1)
                             {
                                 @Html.ButtonLinkIndex(text: "Voltar", action: "ConfirmarCancelarConsulta", controller: "Paciente")
@@ -84,6 +87,9 @@
                                 }
                             }
                             <a href="@Url.Action((String)Session["AjudaNivel"])"  class="btn btn-sm btn-danger" target="_blank">Ajuda</a>                
+                            <span id="loadingIndicator1" style="display: none; margin-left: 10px; color: #007bff;">
+                                <i class="fa fa-spinner fa-spin"></i> Processando...
+                            </span>
                         </div>
                     </div>
                 }
@@ -103,6 +109,29 @@
     @Scripts.Render("~/plugins/jasnyBootstrap")
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.maskedinput/1.4.1/jquery.maskedinput.js"></script>
     
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('.btn-loading1').on('click', function (e) {
+            
+                var $this = $(this);
+                var tagName = $this.prop('tagName').toLowerCase();
+                $this.addClass('disabled'); 
+                $('#loadingIndicator1').show();
+
+                if (tagName === 'a') {
+                    e.preventDefault();
+                
+                    var targetUrl = $this.attr('href');
+                    window.location.href = targetUrl;
+                
+                } else if (tagName === 'button' || tagName === 'input') {               
+                    $this.closest('form').submit();
+                    $this.prop('disabled', true);
+                }
+            });
+        });
+    </script>
+
     <script type="text/javascript">
         $(document).ready(function () {
 

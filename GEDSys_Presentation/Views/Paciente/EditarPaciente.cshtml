@@ -122,7 +122,8 @@
                             <button type="button" class="close" data-dismiss="alert">Fechar</button>
                             <span>@TempData["MensagemAcerto"]</span>
                         </div>
-                    }                    
+                    } 
+                   
                     <div class="form-group">
                         @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PAERF_IN_PACIENTE_MENSAGEM == 1)
                         {
@@ -130,7 +131,7 @@
                             {
                                 if (Model.PACI_NM_EMAIL != null)
                                 {
-                                    @Html.ButtonLinkIndex(text: "Enviar E-Mail", action: "EnviarEMailPacienteForm", controller: "Paciente")
+                                    @Html.ButtonLinkIndex(text: "Enviar E-Mail", action: "EnviarEMailPacienteForm", controller: "Paciente",  htmlAttributes: new { @class = "btn-loading" })
                                 }
                             }
                         }
@@ -140,59 +141,62 @@
                             {
                                 if (Model.PACI_NR_CELULAR != null)
                                 {
-                                    @Html.ButtonLinkIndex(text: "Enviar SMS", action: "EnviarSMSPacienteForm", controller: "Paciente")
+                                    @Html.ButtonLinkIndex(text: "Enviar SMS", action: "EnviarSMSPacienteForm", controller: "Paciente",  htmlAttributes: new { @class = "btn-loading" })
                                 }
                             }
                         }
-                        @Html.ButtonLinkIndex(text: "Vídeos", action: "MontarTelaVideo", controller: "Video")
-                        @Html.ButtonLinkIndex(text: "Histórico de Atividades", action: "MontarTelaPacienteHistorico", controller: "Paciente")
-                        @Html.ButtonLinkIndex(text: "Resumo do Paciente", action: "GerarRelatorioDetalheGeral", controller: "Paciente2")
+                        @Html.ButtonLinkIndex(text: "Vídeos", action: "MontarTelaVideo", controller: "Video",  htmlAttributes: new { @class = "btn-loading" })
+                        @Html.ButtonLinkIndex(text: "Histórico de Atividades", action: "MontarTelaPacienteHistorico", controller: "Paciente",  htmlAttributes: new { @class = "btn-loading" })
+                        @Html.ButtonLinkIndex(text: "Resumo do Paciente", action: "GerarRelatorioDetalheGeral", controller: "Paciente2",  htmlAttributes: new { @class = "btn-loading" })
                         @if ((Int32)Session["VoltarPesquisa"] == 1)
                         {
-                            @Html.ButtonLinkIndex(text: "Voltar", action: "PesquisarTudo", controller: "BaseAdmin")
+                            @Html.ButtonLinkIndex(text: "Voltar", action: "PesquisarTudo", controller: "BaseAdmin",  htmlAttributes: new { @class = "btn-loading" })
                         }
                         else
                         {
                             if ((Int32)Session["VoltarProceder"] == 1)
                             {
-                                @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarProcederConsulta", controller: "Paciente")
+                                @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarProcederConsulta", controller: "Paciente",  htmlAttributes: new { @class = "btn-loading" })
                             }
                             else
                             {
                                 if ((Int32)Session["TipoSolicitacao"] == 2)
                                 {
-                                    @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaSolicitacoes", controller: "Paciente")
+                                    @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaSolicitacoes", controller: "Paciente",  htmlAttributes: new { @class = "btn-loading" })
                                 }
                                 else if ((Int32)Session["TipoSolicitacao"] == 3)
                                 {
-                                    @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaAtestados", controller: "Paciente")
+                                    @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaAtestados", controller: "Paciente",  htmlAttributes: new { @class = "btn-loading" })
                                 }
                                 else if ((Int32)Session["TipoSolicitacao"] == 4)
                                 {
-                                    @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaExames", controller: "Paciente")
+                                    @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaExames", controller: "Paciente",  htmlAttributes: new { @class = "btn-loading" })
                                 }
                                 else if ((Int32)Session["TipoSolicitacao"] == 5)
                                 {
-                                    @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaPrescricoes", controller: "Paciente")
+                                    @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaPrescricoes", controller: "Paciente",  htmlAttributes: new { @class = "btn-loading" })
                                 }
                                 else if ((Int32)Session["TipoSolicitacao"] == 8)
                                 {
-                                    @Html.ButtonLinkIndex(text: "Voltar", action: "VerMedicamentosPacienteForm", controller: "Paciente")
+                                    @Html.ButtonLinkIndex(text: "Voltar", action: "VerMedicamentosPacienteForm", controller: "Paciente",  htmlAttributes: new { @class = "btn-loading" })
                                 }
                                 else if ((Int32)Session["TipoSolicitacao"] == 12)
                                 {
-                                    @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaHistoricoGeral", controller: "Paciente")
+                                    @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaHistoricoGeral", controller: "Paciente",  htmlAttributes: new { @class = "btn-loading" })
                                 }
                                 else if ((Int32)Session["TipoSolicitacao"] == 99)
                                 {
-                                    @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaAusencias", controller: "Paciente2")
+                                    @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaAusencias", controller: "Paciente2",  htmlAttributes: new { @class = "btn-loading" })
                                 }
                                 else
                                 {
-                                    @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarBasePaciente", controller: "Paciente")
+                                    @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarBasePaciente", controller: "Paciente",  htmlAttributes: new { @class = "btn-loading" })
                                 }
                             }
                         }
+                        <span id="loadingIndicator" style="display: none; margin-left: 10px; color: #007bff;">
+                            <i class="fa fa-spinner fa-spin"></i> Processando...
+                        </span>
                     </div>
                     <div class="tabs-container">
                         <ul class="nav nav-tabs">
@@ -1057,8 +1061,11 @@
                                         {
                                             @Html.AntiForgeryToken()
                                             <div class="form-group">
-                                                @Html.ButtonActionSubmit(text: "Confirma edição de Paciente", htmlAttributes: new { id = "basictoast" })
+                                                @Html.ButtonActionSubmit(text: "Confirma edição de Paciente", htmlAttributes: new { id = "basictoast", @class = "btn-loading1" })
                                                 <a href="@Url.Action((String)Session["AjudaNivel"])" class="btn btn-sm btn-danger" target="_blank">Ajuda</a>
+                                                <span id="loadingIndicator1" style="display: none; margin-left: 10px; color: #007bff;">
+                                                    <i class="fa fa-spinner fa-spin"></i> Processando...
+                                                </span>
                                             </div>
                                             <div class="row" style="width: 100%;">
                                                 <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Identificação</h4>
@@ -1436,8 +1443,11 @@
                                         {
                                             @Html.AntiForgeryToken()
                                             <div class="form-group">
-                                                @Html.ButtonActionSubmit(text: "Confirma edição de Paciente", htmlAttributes: new { id = "basictoast" })
+                                                @Html.ButtonActionSubmit(text: "Confirma edição de Paciente", htmlAttributes: new { id = "basictoast", @class = "btn-loading1" })
                                                 <a href="@Url.Action((String)Session["AjudaNivel"])" class="btn btn-sm btn-danger" target="_blank">Ajuda</a>
+                                                <span id="loadingIndicator1" style="display: none; margin-left: 10px; color: #007bff;">
+                                                    <i class="fa fa-spinner fa-spin"></i> Processando...
+                                                </span>
                                             </div>
                                             <div class="row" style="width: 100%;">
                                                 <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Identificação</h4>
@@ -7066,6 +7076,48 @@
             var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-toggle="popover"]'));
             var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
                 return new bootstrap.Popover(popoverTriggerEl);
+            });
+        });
+    </script>
+
+    <script type="text/javascript">
+        $(document).ready(function () { 
+            $('.btn-loading').on('click', function (e) {            
+                $(this).prop('disabled', true);
+                $(this).addClass('disabled');
+                $('#loadingIndicator').show();
+                var tagName = $(this).prop('tagName').toLowerCase();
+                if (tagName === 'a') {
+                    e.preventDefault(); 
+                    var targetUrl = $(this).attr('href');
+                    window.location.href = targetUrl;
+
+                } else if (tagName === 'button' || tagName === 'input') {
+                    $(this).closest('form').submit();
+                }
+            });
+        });
+    </script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('.btn-loading1').on('click', function (e) {
+            
+                var $this = $(this);
+                var tagName = $this.prop('tagName').toLowerCase();
+                $this.addClass('disabled'); 
+                $('#loadingIndicator1').show();
+
+                if (tagName === 'a') {
+                    e.preventDefault();
+                
+                    var targetUrl = $this.attr('href');
+                    window.location.href = targetUrl;
+                
+                } else if (tagName === 'button' || tagName === 'input') {               
+                    $this.closest('form').submit();
+                    $this.prop('disabled', true);
+                }
             });
         });
     </script>

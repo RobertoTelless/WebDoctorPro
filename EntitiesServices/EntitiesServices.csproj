@@ -1583,6 +1583,11 @@
     <Compile Include="WorkClasses\DTO_ModeloEMail.cs" />
     <Compile Include="WorkClasses\DTO_ModeloSMS.cs" />
     <Compile Include="WorkClasses\DTO_ContratoLocacao.cs" />
+    <Compile Include="WorkClasses\DTO_Paciente .cs" />
+    <Compile Include="WorkClasses\DTO_Paciente_Anexo.cs" />
+    <Compile Include="WorkClasses\DTO_Paciente_Anamnese_Anotacao.cs" />
+    <Compile Include="WorkClasses\DTO_Paciente_Contato.cs" />
+    <Compile Include="WorkClasses\DTO_Paciente_Anotacao .cs" />
     <Compile Include="WorkClasses\DTO_ValorConsulta.cs" />
     <Compile Include="WorkClasses\DTO_Video .cs" />
     <Compile Include="WorkClasses\DTO_Medico_Mensagem.cs" />

@@ -8,6 +8,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Net;
 using ModelServices.EntitiesServices;
+using EntitiesServices.Work_Classes;
+using Newtonsoft.Json;
 
 namespace ApplicationServices.Services
 {
@@ -806,15 +808,25 @@ namespace ApplicationServices.Services
                     item.PACI_NM_MAE = CommonHelpers.ToPascalCase(item.PACI_NM_MAE);
                 }
 
+                // Configura serilização
+                JsonSerializerSettings settings = new JsonSerializerSettings
+                {
+                    ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+                    NullValueHandling = NullValueHandling.Ignore
+                };
+
+
                 // Monta Log
+                DTO_Paciente dto = MontarPacienteDTOObj(item);
+                String json = JsonConvert.SerializeObject(dto, settings);
                 LOG log = new LOG
                 {
                     LOG_DT_DATA = DateTime.Now,
                     ASSI_CD_ID = usuario.ASSI_CD_ID,
                     USUA_CD_ID = usuario.USUA_CD_ID,
-                    LOG_NM_OPERACAO = "AddPACI",
+                    LOG_NM_OPERACAO = "Paciente - Inclusão",
                     LOG_IN_ATIVO = 1,
-                    LOG_TX_REGISTRO = Serialization.SerializeJSON<PACIENTE>(item),
+                    LOG_TX_REGISTRO = json,
                     LOG_IN_SISTEMA = 6
                 };
 
@@ -871,15 +883,25 @@ namespace ApplicationServices.Services
                     item.PACI_NM_MAE = CommonHelpers.ToPascalCase(item.PACI_NM_MAE);
                 }
 
+                // Configura serilização
+                JsonSerializerSettings settings = new JsonSerializerSettings
+                {
+                    ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+                    NullValueHandling = NullValueHandling.Ignore
+                };
+
+
                 // Monta Log
+                DTO_Paciente dto = MontarPacienteDTOObj(item);
+                String json = JsonConvert.SerializeObject(dto, settings);
                 LOG log = new LOG
                 {
                     LOG_DT_DATA = DateTime.Now,
                     ASSI_CD_ID = usuario.ASSI_CD_ID,
                     USUA_CD_ID = usuario.USUA_CD_ID,
-                    LOG_NM_OPERACAO = "AddPACI",
+                    LOG_NM_OPERACAO = "Paciente - Inclusão",
                     LOG_IN_ATIVO = 1,
-                    LOG_TX_REGISTRO = linha,
+                    LOG_TX_REGISTRO = json,
                     LOG_IN_SISTEMA = 6
                 };
 
@@ -897,16 +919,28 @@ namespace ApplicationServices.Services
         {
             try
             {
+                // Configura serilização
+                JsonSerializerSettings settings = new JsonSerializerSettings
+                {
+                    ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+                    NullValueHandling = NullValueHandling.Ignore
+                };
+
+
                 // Monta Log
-                String linha = "Id:" + item.PACI__CD_ID + "|IdCat:" + item.TIPA_CD_ID + "|Nome:" + item.TIPA_CD_ID + "|CPF:" + item.PACI_NR_CPF;
+                DTO_Paciente dto = MontarPacienteDTOObj(item);
+                String json = JsonConvert.SerializeObject(dto, settings);
+                DTO_Paciente dtoAntes = MontarPacienteDTOObj(itemAntes);
+                String jsonAntes = JsonConvert.SerializeObject(dtoAntes, settings);
                 LOG log = new LOG
                 {
                     LOG_DT_DATA = DateTime.Now,
                     ASSI_CD_ID = usuario.ASSI_CD_ID,
                     USUA_CD_ID = usuario.USUA_CD_ID,
-                    LOG_NM_OPERACAO = "EdtPACI",
+                    LOG_NM_OPERACAO = "Paciente - Edição",
                     LOG_IN_ATIVO = 1,
-                    LOG_TX_REGISTRO = linha,
+                    LOG_TX_REGISTRO = json,
+                    LOG_TX_REGISTRO_ANTES = jsonAntes,
                     LOG_IN_SISTEMA = 6
                 };
 
@@ -1005,16 +1039,24 @@ namespace ApplicationServices.Services
                 // Acerta campos
                 item.PACI_IN_ATIVO = 0;
 
+                // Configura serilização
+                JsonSerializerSettings settings = new JsonSerializerSettings
+                {
+                    ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+                    NullValueHandling = NullValueHandling.Ignore
+                };
+
                 // Monta Log
-                String linha = "Id:" + item.PACI__CD_ID + "|IdCat:" + item.TIPA_CD_ID + "|Nome:" + item.TIPA_CD_ID + "|CPF:" + item.PACI_NR_CPF;
+                DTO_Paciente dto = MontarPacienteDTO(item.PACI__CD_ID);
+                String json = JsonConvert.SerializeObject(dto, settings);
                 LOG log = new LOG
                 {
                     LOG_DT_DATA = DateTime.Now,
                     ASSI_CD_ID = usuario.ASSI_CD_ID,
                     USUA_CD_ID = usuario.USUA_CD_ID,
                     LOG_IN_ATIVO = 1,
-                    LOG_NM_OPERACAO = "DelPACI",
-                    LOG_TX_REGISTRO = linha,
+                    LOG_NM_OPERACAO = "Paciente - Exclusão",
+                    LOG_TX_REGISTRO = json,
                     LOG_IN_SISTEMA = 6
                 };
 
@@ -1045,15 +1087,24 @@ namespace ApplicationServices.Services
                 // Acerta campos
                 item.PACI_IN_ATIVO = 0;
 
+                // Configura serilização
+                JsonSerializerSettings settings = new JsonSerializerSettings
+                {
+                    ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+                    NullValueHandling = NullValueHandling.Ignore
+                };
+
                 // Monta Log
+                DTO_Paciente dto = MontarPacienteDTO(item.PACI__CD_ID);
+                String json = JsonConvert.SerializeObject(dto, settings);
                 LOG log = new LOG
                 {
                     LOG_DT_DATA = DateTime.Now,
                     ASSI_CD_ID = usuario.ASSI_CD_ID,
                     USUA_CD_ID = usuario.USUA_CD_ID,
                     LOG_IN_ATIVO = 1,
-                    LOG_NM_OPERACAO = "DelPACI",
-                    LOG_TX_REGISTRO = linha,
+                    LOG_NM_OPERACAO = "Paciente - Exclusão",
+                    LOG_TX_REGISTRO = json,
                     LOG_IN_SISTEMA = 6
                 };
 
@@ -1076,16 +1127,24 @@ namespace ApplicationServices.Services
                 // Acerta campos
                 item.PACI_IN_ATIVO = 1;
 
+                // Configura serilização
+                JsonSerializerSettings settings = new JsonSerializerSettings
+                {
+                    ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+                    NullValueHandling = NullValueHandling.Ignore
+                };
+
                 // Monta Log
-                String linha = "Id:" + item.PACI__CD_ID + "|IdCat:" + item.TIPA_CD_ID + "|Nome:" + item.TIPA_CD_ID + "|CPF:" + item.PACI_NR_CPF;
+                DTO_Paciente dto = MontarPacienteDTO(item.PACI__CD_ID);
+                String json = JsonConvert.SerializeObject(dto, settings);
                 LOG log = new LOG
                 {
                     LOG_DT_DATA = DateTime.Now,
                     ASSI_CD_ID = usuario.ASSI_CD_ID,
                     USUA_CD_ID = usuario.USUA_CD_ID,
                     LOG_IN_ATIVO = 1,
-                    LOG_NM_OPERACAO = "ReaPACI",
-                    LOG_TX_REGISTRO = linha,
+                    LOG_NM_OPERACAO = "Paciente - Reativação",
+                    LOG_TX_REGISTRO = json,
                     LOG_IN_SISTEMA = 6
                 };
 
@@ -1767,6 +1826,157 @@ namespace ApplicationServices.Services
             catch (Exception ex)
             {
                 throw;
+            }
+        }
+
+        public DTO_Paciente MontarPacienteDTO(Int32 mediId)
+        {
+            using (var context = new CRMSysDBEntities())
+            {
+                var mediDTO = context.PACIENTE
+                    .Where(l => l.PACI__CD_ID == mediId)
+                    .Select(l => new DTO_Paciente
+                    {
+                        ASSI_CD_ID = l.ASSI_CD_ID,
+                        GRAU_CD_ID = l.GRAU_CD_ID,
+                        NACI_CD_ID = l.NACI_CD_ID,
+                        CONV_CD_ID = l.CONV_CD_ID,
+                        MUNI_CD_ID = l.MUNI_CD_ID,
+                        MUNI_SG_UF = l.MUNI_SG_UF,
+                        PACI_DT_CONSULTA = l.PACI_DT_CONSULTA,
+                        PACI_DT_NASCIMENTO = l.PACI_DT_NASCIMENTO,
+                        PACI_DT_PREVISAO_RETORNO = l.PACI_DT_PREVISAO_RETORNO,
+                        PACI_DT_ULTIMO_ENVIO = l.PACI_DT_ULTIMO_ENVIO,
+                        PACI_IN_ATIVO = l.PACI_IN_ATIVO,
+                        PACI_IN_COMPLETADO = l.PACI_IN_COMPLETADO,
+                        PACI_IN_FICHAS = l.PACI_IN_FICHAS,
+                        PACI_IN_FIM_ENVIO = l.PACI_IN_FIM_ENVIO,
+                        PACI_IN_HUMANO = l.PACI_IN_HUMANO,
+                        PACI_IN_MENOR = l.PACI_IN_MENOR,
+                        PACI_IN_MENSAGEM_ATRASO = l.PACI_IN_MENSAGEM_ATRASO,
+                        PACI_IN_NUMERO_ENVIO = l.PACI_IN_NUMERO_ENVIO,
+                        PACI_IN_PADRAO_ANAMNESE = l.PACI_IN_PADRAO_ANAMNESE,
+                        PACI_IN_PADRAO_CONTINUA = l.PACI_IN_PADRAO_CONTINUA,
+                        PACI_NM_BAIRRO = l.PACI_NM_BAIRRO,
+                        PACI_NM_CIDADE = l.PACI_NM_CIDADE,
+                        PACI_NM_EMAIL = l.PACI_NM_EMAIL,
+                        PACI_NM_ENDERECO = l.PACI_NM_ENDERECO,
+                        PACI_NM_INDICACAO = l.PACI_NM_INDICACAO,
+                        PACI_NM_LOGIN = l.PACI_NM_LOGIN,
+                        PACI_NM_MAE = l.PACI_NM_MAE,
+                        PACI_NM_NACIONALIDADE = l.PACI_NM_NACIONALIDADE,
+                        PACI_NM_NATURALIDADE = l.PACI_NM_NATURALIDADE,
+                        PACI_NM_NOME = l.PACI_NM_NOME,
+                        PACI_NM_NOVA_SENHA = l.PACI_NM_NOVA_SENHA,
+                        PACI_NM_PAI = l.PACI_NM_PAI,
+                        PACI_NM_PROFISSAO = l.PACI_NM_PROFISSAO,
+                        PACI_NM_RESPONSAVEL = l.PACI_NM_RESPONSAVEL,
+                        PACI_NM_SENHA = l.PACI_NM_SENHA,
+                        PACI_NM_SENHA_CONFIRMA = l.PACI_NM_SENHA_CONFIRMA,
+                        PACI_NM_SOCIAL = l.PACI_NM_SOCIAL,
+                        PACI_NR_CELULAR = l.PACI_NR_CELULAR,
+                        PACI_NR_CEP = l.PACI_NR_CEP,
+                        PACI_NR_COMPLEMENTO = l.PACI_NR_COMPLEMENTO,
+                        PACI_NR_CPF = l.PACI_NR_CPF,
+                        PACI_NR_IDADE = l.PACI_NR_IDADE,
+                        PACI_NR_MATRICULA = l.PACI_NR_MATRICULA,
+                        PACI_NR_NUMERO = l.PACI_NR_NUMERO,
+                        PACI_NR_RG = l.PACI_NR_RG,
+                        PACI_NR_TELEFONE = l.PACI_NR_TELEFONE,
+                        PACI_SG_NATURALIDADE_UF = l.PACI_SG_NATURALIDADE_UF,
+                        COR1_CD_ID = l.COR1_CD_ID,
+                        ESCI_CD_ID = l.ESCI_CD_ID,
+                        PACI_AQ_FOTO = l.PACI_AQ_FOTO,
+                        PACI_DT_ACESSO = l.PACI_DT_ACESSO,
+                        PACI_DT_ALTERACAO = l.PACI_DT_ALTERACAO,
+                        PACI_DT_CADASTRO = l.PACI_DT_CADASTRO,
+                        PACI_DT_PRECO = l.PACI_DT_PRECO,
+                        PACI_DT_ULTIMO_ACESSO = l.PACI_DT_ULTIMO_ACESSO,
+                        PACI_GU_GUID = l.PACI_GU_GUID,
+                        PACI_TX_OBSERVACOES = l.PACI_TX_OBSERVACOES,
+                        PACI__CD_ID = l.PACI__CD_ID,
+                        SEXO_CD_ID = l.SEXO_CD_ID,
+                        TIPA_CD_ID = l.TIPA_CD_ID,
+                        UF_CD_ID = l.UF_CD_ID,
+                        USUA_CD_ID = l.USUA_CD_ID,
+                        VACO_CD_ID = l.VACO_CD_ID,
+                    })
+                    .FirstOrDefault();
+                return mediDTO;
+            }
+        }
+
+        public DTO_Paciente MontarPacienteDTOObj(PACIENTE l)
+        {
+            using (var context = new CRMSysDBEntities())
+            {
+                var mediDTO = new DTO_Paciente()
+                {
+                    ASSI_CD_ID = l.ASSI_CD_ID,
+                    GRAU_CD_ID = l.GRAU_CD_ID,
+                    NACI_CD_ID = l.NACI_CD_ID,
+                    CONV_CD_ID = l.CONV_CD_ID,
+                    MUNI_CD_ID = l.MUNI_CD_ID,
+                    MUNI_SG_UF = l.MUNI_SG_UF,
+                    PACI_DT_CONSULTA = l.PACI_DT_CONSULTA,
+                    PACI_DT_NASCIMENTO = l.PACI_DT_NASCIMENTO,
+                    PACI_DT_PREVISAO_RETORNO = l.PACI_DT_PREVISAO_RETORNO,
+                    PACI_DT_ULTIMO_ENVIO = l.PACI_DT_ULTIMO_ENVIO,
+                    PACI_IN_ATIVO = l.PACI_IN_ATIVO,
+                    PACI_IN_COMPLETADO = l.PACI_IN_COMPLETADO,
+                    PACI_IN_FICHAS = l.PACI_IN_FICHAS,
+                    PACI_IN_FIM_ENVIO = l.PACI_IN_FIM_ENVIO,
+                    PACI_IN_HUMANO = l.PACI_IN_HUMANO,
+                    PACI_IN_MENOR = l.PACI_IN_MENOR,
+                    PACI_IN_MENSAGEM_ATRASO = l.PACI_IN_MENSAGEM_ATRASO,
+                    PACI_IN_NUMERO_ENVIO = l.PACI_IN_NUMERO_ENVIO,
+                    PACI_IN_PADRAO_ANAMNESE = l.PACI_IN_PADRAO_ANAMNESE,
+                    PACI_IN_PADRAO_CONTINUA = l.PACI_IN_PADRAO_CONTINUA,
+                    PACI_NM_BAIRRO = l.PACI_NM_BAIRRO,
+                    PACI_NM_CIDADE = l.PACI_NM_CIDADE,
+                    PACI_NM_EMAIL = l.PACI_NM_EMAIL,
+                    PACI_NM_ENDERECO = l.PACI_NM_ENDERECO,
+                    PACI_NM_INDICACAO = l.PACI_NM_INDICACAO,
+                    PACI_NM_LOGIN = l.PACI_NM_LOGIN,
+                    PACI_NM_MAE = l.PACI_NM_MAE,
+                    PACI_NM_NACIONALIDADE = l.PACI_NM_NACIONALIDADE,
+                    PACI_NM_NATURALIDADE = l.PACI_NM_NATURALIDADE,
+                    PACI_NM_NOME = l.PACI_NM_NOME,
+                    PACI_NM_NOVA_SENHA = l.PACI_NM_NOVA_SENHA,
+                    PACI_NM_PAI = l.PACI_NM_PAI,
+                    PACI_NM_PROFISSAO = l.PACI_NM_PROFISSAO,
+                    PACI_NM_RESPONSAVEL = l.PACI_NM_RESPONSAVEL,
+                    PACI_NM_SENHA = l.PACI_NM_SENHA,
+                    PACI_NM_SENHA_CONFIRMA = l.PACI_NM_SENHA_CONFIRMA,
+                    PACI_NM_SOCIAL = l.PACI_NM_SOCIAL,
+                    PACI_NR_CELULAR = l.PACI_NR_CELULAR,
+                    PACI_NR_CEP = l.PACI_NR_CEP,
+                    PACI_NR_COMPLEMENTO = l.PACI_NR_COMPLEMENTO,
+                    PACI_NR_CPF = l.PACI_NR_CPF,
+                    PACI_NR_IDADE = l.PACI_NR_IDADE,
+                    PACI_NR_MATRICULA = l.PACI_NR_MATRICULA,
+                    PACI_NR_NUMERO = l.PACI_NR_NUMERO,
+                    PACI_NR_RG = l.PACI_NR_RG,
+                    PACI_NR_TELEFONE = l.PACI_NR_TELEFONE,
+                    PACI_SG_NATURALIDADE_UF = l.PACI_SG_NATURALIDADE_UF,
+                    COR1_CD_ID = l.COR1_CD_ID,
+                    ESCI_CD_ID = l.ESCI_CD_ID,
+                    PACI_AQ_FOTO = l.PACI_AQ_FOTO,
+                    PACI_DT_ACESSO = l.PACI_DT_ACESSO,
+                    PACI_DT_ALTERACAO = l.PACI_DT_ALTERACAO,
+                    PACI_DT_CADASTRO = l.PACI_DT_CADASTRO,
+                    PACI_DT_PRECO = l.PACI_DT_PRECO,
+                    PACI_DT_ULTIMO_ACESSO = l.PACI_DT_ULTIMO_ACESSO,
+                    PACI_GU_GUID = l.PACI_GU_GUID,
+                    PACI_TX_OBSERVACOES = l.PACI_TX_OBSERVACOES,
+                    PACI__CD_ID = l.PACI__CD_ID,
+                    SEXO_CD_ID = l.SEXO_CD_ID,
+                    TIPA_CD_ID = l.TIPA_CD_ID,
+                    UF_CD_ID = l.UF_CD_ID,
+                    USUA_CD_ID = l.USUA_CD_ID,
+                    VACO_CD_ID = l.VACO_CD_ID,
+                };
+                return mediDTO;
             }
         }
 

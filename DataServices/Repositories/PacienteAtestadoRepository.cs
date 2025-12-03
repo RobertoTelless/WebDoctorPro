@@ -21,13 +21,13 @@ namespace DataServices.Repositories
         {
             IQueryable<PACIENTE_ATESTADO> query = Db.PACIENTE_ATESTADO;
             query = query.Where(p => p.ASSI_CD_ID == idAss);
-            return query.ToList();
+            return query.AsNoTracking().ToList();
         }
 
         public List<PACIENTE_ATESTADO> GetAll()
         {
             IQueryable<PACIENTE_ATESTADO> query = Db.PACIENTE_ATESTADO;
-            return query.ToList();
+            return query.AsNoTracking().ToList();
         }
 
         public List<PACIENTE_ATESTADO> GetByCPF(String cpf)
@@ -74,7 +74,7 @@ namespace DataServices.Repositories
                 query = query.Where(p => p.ASSI_CD_ID == idAss);
                 query = query.Where(p => p.PAAT_IN_ATIVO == 1);
                 query = query.OrderBy(a => a.PAAT_DT_DATA);
-                lista = query.ToList<PACIENTE_ATESTADO>();
+                lista = query.AsNoTracking().ToList<PACIENTE_ATESTADO>();
             }
             return lista;
         }
