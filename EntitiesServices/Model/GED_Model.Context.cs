@@ -409,5 +409,6 @@ namespace EntitiesServices.Model
         public virtual DbSet<CONTRATO_LOCACAO> CONTRATO_LOCACAO { get; set; }
         public virtual DbSet<TIPO_CONTRATO> TIPO_CONTRATO { get; set; }
         public virtual DbSet<MEDICOS_MENSAGEM> MEDICOS_MENSAGEM { get; set; }
+        public virtual DbSet<RACA> RACA { get; set; }
     }
 }

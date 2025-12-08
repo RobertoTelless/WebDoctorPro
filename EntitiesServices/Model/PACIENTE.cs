@@ -115,6 +115,7 @@ namespace EntitiesServices.Model
         public Nullable<int> PACI_IN_NUMERO_ENVIO { get; set; }
         public Nullable<System.DateTime> PACI_DT_ULTIMO_ENVIO { get; set; }
         public Nullable<int> PACI_IN_FIM_ENVIO { get; set; }
+        public Nullable<int> RACA_CD_ID { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<ACESSO_METODO> ACESSO_METODO { get; set; }
@@ -195,5 +196,6 @@ namespace EntitiesServices.Model
         public virtual ICollection<QUESTIONARIO_STOPBANG> QUESTIONARIO_STOPBANG { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<LOCACAO> LOCACAO { get; set; }
+        public virtual RACA RACA { get; set; }
     }
 }

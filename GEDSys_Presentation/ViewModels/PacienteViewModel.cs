@@ -115,6 +115,7 @@ namespace ERP_Condominios_Solution.ViewModels
         [DataType(DataType.Date, ErrorMessage = "Deve ser uma data válida")]
         public Nullable<System.DateTime> PACI_DT_ULTIMO_ENVIO { get; set; }
         public Nullable<int> PACI_IN_FIM_ENVIO { get; set; }
+        public Nullable<int> RACA_CD_ID { get; set; }
 
         public System.DateTime PAAN_DT_DATA { get; set; }
         public string PAAN_NM_ABDOMEM { get; set; }
@@ -1081,5 +1082,6 @@ namespace ERP_Condominios_Solution.ViewModels
         public virtual ICollection<QUESTIONARIO_STOPBANG> QUESTIONARIO_STOPBANG { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<LOCACAO> LOCACAO { get; set; }
+        public virtual RACA RACA { get; set; }
     }
 }

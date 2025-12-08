@@ -20,7 +20,7 @@ namespace DataServices.Repositories
             query = query.Where(p => p.GRUP_NM_NOME == conta.GRUP_NM_NOME);
             query = query.Where(p => p.ASSI_CD_ID == idAss);
             query = query.Where(p => p.GRUP_IN_ATIVO == 1);
-            return query.FirstOrDefault();
+            return query.AsNoTracking().FirstOrDefault();
         }
 
         public GRUPO_PAC GetItemById(Int32 id)
@@ -35,14 +35,14 @@ namespace DataServices.Repositories
         {
             IQueryable<GRUPO_PAC> query = Db.GRUPO_PAC.Where(p => p.GRUP_IN_ATIVO == 1);
             query = query.Where(p => p.ASSI_CD_ID == idAss);
-            return query.ToList();
+            return query.AsNoTracking().ToList();
         }
 
         public List<GRUPO_PAC> GetAllItensAdm(Int32 idAss)
         {
             IQueryable<GRUPO_PAC> query = Db.GRUPO_PAC;
             query = query.Where(p => p.ASSI_CD_ID == idAss);
-            return query.ToList();
+            return query.AsNoTracking().ToList();
         }
 
     }

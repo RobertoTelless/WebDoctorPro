@@ -1307,6 +1307,7 @@ namespace GEDSys_Presentation.Controllers
                 List<UF> uFs = CarregaUF();
                 ViewBag.Tipos = new SelectList(CarregaCatPaciente(), "TIPA_CD_ID", "TIPA_NM_NOME");
                 ViewBag.Sexo = new SelectList(CarregaSexo(), "SEXO_CD_ID", "SEXO_NM_NOME");
+                ViewBag.Raca = new SelectList(baseApp.GetAllRaca(), "RACA_CD_ID", "RACA_NM_NOME");
                 ViewBag.Cor = new SelectList(CarregaCor(), "COR1_CD_ID", "COR1_NM_NOME");
                 ViewBag.EstadoCivil = new SelectList(CarregaEstadoCivil(), "ESCI_CD_ID", "ESCI_NM_NOME");
                 ViewBag.Convenio = new SelectList(CarregaConvenio(), "CONV_CD_ID", "CONV_NM_NOME");
@@ -1401,6 +1402,7 @@ namespace GEDSys_Presentation.Controllers
 
             ViewBag.Tipos = new SelectList(CarregaCatPaciente(), "TIPA_CD_ID", "TIPA_NM_NOME");
             ViewBag.Sexo = new SelectList(CarregaSexo(), "SEXO_CD_ID", "SEXO_NM_NOME");
+            ViewBag.Raca = new SelectList(baseApp.GetAllRaca(), "RACA_CD_ID", "RACA_NM_NOME");
             ViewBag.Cor = new SelectList(CarregaCor(), "COR1_CD_ID", "COR1_NM_NOME");
             ViewBag.EstadoCivil = new SelectList(CarregaEstadoCivil(), "ESCI_CD_ID", "ESCI_NM_NOME");
             ViewBag.Convenio = new SelectList(CarregaConvenio(), "CONV_CD_ID", "CONV_NM_NOME");
@@ -1511,6 +1513,10 @@ namespace GEDSys_Presentation.Controllers
                     if (vm.SEXO_CD_ID == null || vm.SEXO_CD_ID == 0)
                     {
                         vm.SEXO_CD_ID = CarregaSexo().Where(p => p.SEXO_NM_NOME.Contains("Informad")).FirstOrDefault().SEXO_CD_ID;
+                    }
+                    if (vm.RACA_CD_ID == null || vm.RACA_CD_ID == 0)
+                    {
+                        vm.RACA_CD_ID = 6;
                     }
                     if (vm.COR1_CD_ID == null || vm.COR1_CD_ID == 0)
                     {
@@ -2174,6 +2180,29 @@ namespace GEDSys_Presentation.Controllers
                 item.PACIENTE_ANEXO.Add(foto);
                 objetoAntes = item;
                 Int32 volta = baseApp.ValidateEdit(item, objetoAntes);
+
+                // Configura serilização
+                JsonSerializerSettings settings = new JsonSerializerSettings
+                {
+                    ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+                    NullValueHandling = NullValueHandling.Ignore
+                };
+
+                // Monta Log
+                DTO_Paciente_Anexo dto = MontarPacienteAnexoDTOObj(foto);
+                String json = JsonConvert.SerializeObject(dto, settings);
+                LOG log = new LOG
+                {
+                    LOG_DT_DATA = DateTime.Now,
+                    ASSI_CD_ID = usu.ASSI_CD_ID,
+                    USUA_CD_ID = usu.USUA_CD_ID,
+                    LOG_NM_OPERACAO = "Paciente - Anexo - Inclusão",
+                    LOG_IN_ATIVO = 1,
+                    LOG_TX_REGISTRO = json,
+                    LOG_IN_SISTEMA = 6
+                };
+                Int32 volta1 = logApp.ValidateCreate(log);
+
                 return 0;
             }
             catch (Exception ex)
@@ -3797,6 +3826,7 @@ namespace GEDSys_Presentation.Controllers
                 List<UF> uFs = CarregaUF();
                 ViewBag.Tipos = new SelectList(CarregaCatPaciente(), "TIPA_CD_ID", "TIPA_NM_NOME");
                 ViewBag.Sexo = new SelectList(CarregaSexo(), "SEXO_CD_ID", "SEXO_NM_NOME");
+                ViewBag.Raca = new SelectList(baseApp.GetAllRaca(), "RACA_CD_ID", "RACA_NM_NOME");
                 ViewBag.Cor = new SelectList(CarregaCor(), "COR1_CD_ID", "COR1_NM_NOME");
                 ViewBag.EstadoCivil = new SelectList(CarregaEstadoCivil(), "ESCI_CD_ID", "ESCI_NM_NOME");
                 ViewBag.Convenio = new SelectList(CarregaConvenio(), "CONV_CD_ID", "CONV_NM_NOME");
@@ -4428,6 +4458,7 @@ namespace GEDSys_Presentation.Controllers
             List<UF> uFs = CarregaUF();
             ViewBag.Tipos = new SelectList(CarregaCatPaciente(), "TIPA_CD_ID", "TIPA_NM_NOME");
             ViewBag.Sexo = new SelectList(CarregaSexo(), "SEXO_CD_ID", "SEXO_NM_NOME");
+            ViewBag.Raca = new SelectList(baseApp.GetAllRaca(), "RACA_CD_ID", "RACA_NM_NOME");
             ViewBag.Cor = new SelectList(CarregaCor(), "COR1_CD_ID", "COR1_NM_NOME");
             ViewBag.EstadoCivil = new SelectList(CarregaEstadoCivil(), "ESCI_CD_ID", "ESCI_NM_NOME");
             ViewBag.Convenio = new SelectList(CarregaConvenio(), "CONV_CD_ID", "CONV_NM_NOME");
@@ -5051,19 +5082,6 @@ namespace GEDSys_Presentation.Controllers
                 USUARIO usuarioLogado = (USUARIO)Session["UserCredentials"];
                 PACIENTE_ANEXO item = baseApp.GetAnexoById(id);
                 PACIENTE pac = baseApp.GetItemById(item.PACI_CD_ID);
-
-                // Exclusão fisica
-                //String caminho = "/Imagens/" + usuarioLogado.ASSI_CD_ID.ToString() + "/Pacientes/" + pac.PACI__CD_ID.ToString() + "/Anexos/";
-                //String filePath = Path.Combine(Server.MapPath(caminho), item.PAAX_NM_TITULO);
-                //if (System.IO.File.Exists(filePath))
-                //{
-                //    System.IO.File.Delete(filePath);
-                //    Session["MensPaciente"] = 69;
-                //}
-                //else
-                //{
-                //    Session["MensPaciente"] = 70;
-                //}
 
                 // Exclui na base de dados
                 item.PAAX_IN_ATIVO = 0;
@@ -10075,6 +10093,29 @@ namespace GEDSys_Presentation.Controllers
                 item.PACIENTE_ANEXO.Add(foto);
                 objetoAntes = item;
                 Int32 volta = baseApp.ValidateEdit(item, objetoAntes);
+
+                // Configura serilização
+                JsonSerializerSettings settings = new JsonSerializerSettings
+                {
+                    ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+                    NullValueHandling = NullValueHandling.Ignore
+                };
+
+                // Monta Log
+                DTO_Paciente_Anexo dto = MontarPacienteAnexoDTOObj(foto);
+                String json = JsonConvert.SerializeObject(dto, settings);
+                LOG log = new LOG
+                {
+                    LOG_DT_DATA = DateTime.Now,
+                    ASSI_CD_ID = usu.ASSI_CD_ID,
+                    USUA_CD_ID = usu.USUA_CD_ID,
+                    LOG_NM_OPERACAO = "Paciente - Anexo - Inclusão",
+                    LOG_IN_ATIVO = 1,
+                    LOG_TX_REGISTRO = json,
+                    LOG_IN_SISTEMA = 6
+                };
+                Int32 volta1 = logApp.ValidateCreate(log);
+
                 Session["NivelPaciente"] = 2;
                 Session["PacienteAlterada"] = 1;
                 if ((Int32)Session["VoltaAnexo"] == 1)

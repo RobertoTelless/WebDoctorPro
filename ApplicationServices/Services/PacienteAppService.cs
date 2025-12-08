@@ -399,6 +399,12 @@ namespace ApplicationServices.Services
             return lista;
         }
 
+        public List<RACA> GetAllRaca()
+        {
+            List<RACA> lista = _baseService.GetAllRaca();
+            return lista;
+        }
+
         public List<GRAU_PARENTESCO> GetAllGrauParentesco()
         {
             List<GRAU_PARENTESCO> lista = _baseService.GetAllGrauParentesco();

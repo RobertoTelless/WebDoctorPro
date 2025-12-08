@@ -240,6 +240,7 @@
     <Compile Include="Interfaces\Repositories\IQuestionarioEpworthRepository.cs" />
     <Compile Include="Interfaces\Repositories\IQuestionarioBerlimRepository.cs" />
     <Compile Include="Interfaces\Repositories\IContratoLocacaoRepository.cs" />
+    <Compile Include="Interfaces\Repositories\IRacaRepository.cs" />
     <Compile Include="Interfaces\Repositories\ITipoContratoRepository.cs" />
     <Compile Include="Interfaces\Repositories\ITipoOcorrenciaRepository.cs" />
     <Compile Include="Interfaces\Repositories\ITipoHistoricoRepository.cs" />
@@ -1260,6 +1261,9 @@
     <Compile Include="Model\QUESTIONARIO_STOPBANG.cs">
       <DependentUpon>GED_Model.tt</DependentUpon>
     </Compile>
+    <Compile Include="Model\RACA.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
     <Compile Include="Model\RECEBIMENTO_ANEXO.cs">
       <DependentUpon>GED_Model.tt</DependentUpon>
     </Compile>
@@ -1584,6 +1588,9 @@
     <Compile Include="WorkClasses\DTO_ModeloSMS.cs" />
     <Compile Include="WorkClasses\DTO_ContratoLocacao.cs" />
     <Compile Include="WorkClasses\DTO_Paciente .cs" />
+    <Compile Include="WorkClasses\DTO_Paciente_Acompanhamento.cs" />
+    <Compile Include="WorkClasses\DTO_Grupo.cs" />
+    <Compile Include="WorkClasses\DTO_Paciente_Ficha.cs" />
     <Compile Include="WorkClasses\DTO_Paciente_Anexo.cs" />
     <Compile Include="WorkClasses\DTO_Paciente_Anamnese_Anotacao.cs" />
     <Compile Include="WorkClasses\DTO_Paciente_Contato.cs" />

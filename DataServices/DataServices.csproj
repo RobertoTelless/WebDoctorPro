@@ -250,6 +250,7 @@
     <Compile Include="Repositories\QuestionarioEpworthRepository.cs" />
     <Compile Include="Repositories\QuestionarioBerlimRepository.cs" />
     <Compile Include="Repositories\ContratoLocacaoRepository.cs" />
+    <Compile Include="Repositories\RacaRepository.cs" />
     <Compile Include="Repositories\TipoContratoRepository.cs" />
     <Compile Include="Repositories\TipoOcorrenciaRepository.cs" />
     <Compile Include="Repositories\TipoHistoricoRepository.cs" />

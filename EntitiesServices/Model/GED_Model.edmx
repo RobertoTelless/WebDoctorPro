@@ -3960,6 +3960,7 @@
           <Property Name="PACI_IN_NUMERO_ENVIO" Type="int" />
           <Property Name="PACI_DT_ULTIMO_ENVIO" Type="date" />
           <Property Name="PACI_IN_FIM_ENVIO" Type="int" />
+          <Property Name="RACA_CD_ID" Type="int" />
         </EntityType>
         <EntityType Name="PACIENTE_ANAMNESE">
           <Key>
@@ -5607,6 +5608,14 @@
           <Property Name="QUSB_DS_PONTUACAO" Type="varchar" MaxLength="50" />
           <Property Name="QUSB_IN_ATIVO" Type="int" />
           <Property Name="QUSB_IN_PONTUACAO" Type="int" />
+        </EntityType>
+        <EntityType Name="RACA">
+          <Key>
+            <PropertyRef Name="RACA_CD_ID" />
+          </Key>
+          <Property Name="RACA_CD_ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="RACA_NM_NOME" Type="varchar" MaxLength="50" />
+          <Property Name="RACA_IN_ATIVO" Type="int" />
         </EntityType>
         <EntityType Name="RECEBIMENTO_ANEXO">
           <Key>
@@ -13404,6 +13413,18 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_PACIENTE_RACA">
+          <End Role="RACA" Type="Self.RACA" Multiplicity="0..1" />
+          <End Role="PACIENTE" Type="Self.PACIENTE" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="RACA">
+              <PropertyRef Name="RACA_CD_ID" />
+            </Principal>
+            <Dependent Role="PACIENTE">
+              <PropertyRef Name="RACA_CD_ID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_PACIENTE_SEXO">
           <End Role="SEXO" Type="Self.SEXO" Multiplicity="0..1" />
           <End Role="PACIENTE" Type="Self.PACIENTE" Multiplicity="*" />
@@ -16384,6 +16405,7 @@
           <EntitySet Name="QUESTIONARIO_BERLIM" EntityType="Self.QUESTIONARIO_BERLIM" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="QUESTIONARIO_EPWORTH" EntityType="Self.QUESTIONARIO_EPWORTH" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="QUESTIONARIO_STOPBANG" EntityType="Self.QUESTIONARIO_STOPBANG" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="RACA" EntityType="Self.RACA" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="RECEBIMENTO_ANEXO" EntityType="Self.RECEBIMENTO_ANEXO" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="RECEBIMENTO_ANOTACAO" EntityType="Self.RECEBIMENTO_ANOTACAO" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="RECEBIMENTO_RECIBO" EntityType="Self.RECEBIMENTO_RECIBO" Schema="dbo" store:Type="Tables" />
@@ -18604,6 +18626,10 @@
           <AssociationSet Name="FK_PACIENTE_PRESCRICAO_USUARIO" Association="Self.FK_PACIENTE_PRESCRICAO_USUARIO">
             <End Role="USUARIO" EntitySet="USUARIO" />
             <End Role="PACIENTE_PRESCRICAO" EntitySet="PACIENTE_PRESCRICAO" />
+          </AssociationSet>
+          <AssociationSet Name="FK_PACIENTE_RACA" Association="Self.FK_PACIENTE_RACA">
+            <End Role="RACA" EntitySet="RACA" />
+            <End Role="PACIENTE" EntitySet="PACIENTE" />
           </AssociationSet>
           <AssociationSet Name="FK_PACIENTE_SEXO" Association="Self.FK_PACIENTE_SEXO">
             <End Role="SEXO" EntitySet="SEXO" />
@@ -23981,6 +24007,8 @@
           <NavigationProperty Name="QUESTIONARIO_EPWORTH" Relationship="CRMSysDBModel.FK_QUESTIONARIO_EPWORTH_PACIENTE" FromRole="PACIENTE" ToRole="QUESTIONARIO_EPWORTH" />
           <NavigationProperty Name="QUESTIONARIO_STOPBANG" Relationship="CRMSysDBModel.FK_QUESTIONARIO_STOPBANG_PACIENTE" FromRole="PACIENTE" ToRole="QUESTIONARIO_STOPBANG" />
           <NavigationProperty Name="LOCACAO" Relationship="CRMSysDBModel.FK_LOCACAO_PACIENTE" FromRole="PACIENTE" ToRole="LOCACAO" />
+          <Property Name="RACA_CD_ID" Type="Int32" />
+          <NavigationProperty Name="RACA" Relationship="CRMSysDBModel.FK_PACIENTE_RACA" FromRole="PACIENTE" ToRole="RACA" />
         </EntityType>
         <EntityType Name="PACIENTE_ANAMNESE">
           <Key>
@@ -39384,6 +39412,11 @@
             <End Role="USUARIO" EntitySet="USUARIO" />
             <End Role="MEDICOS_MENSAGEM" EntitySet="MEDICOS_MENSAGEM" />
           </AssociationSet>
+          <EntitySet Name="RACA" EntityType="CRMSysDBModel.RACA" />
+          <AssociationSet Name="FK_PACIENTE_RACA" Association="CRMSysDBModel.FK_PACIENTE_RACA">
+            <End Role="RACA" EntitySet="RACA" />
+            <End Role="PACIENTE" EntitySet="PACIENTE" />
+          </AssociationSet>
         </EntityContainer>
         <EntityType Name="PACIENTE_DADOS_EXAME_FISICO">
           <Key>
@@ -40516,6 +40549,27 @@
             </Principal>
             <Dependent Role="MEDICOS_MENSAGEM">
               <PropertyRef Name="USUA_CD_ID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="RACA">
+          <Key>
+            <PropertyRef Name="RACA_CD_ID" />
+          </Key>
+          <Property Name="RACA_CD_ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="RACA_NM_NOME" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="RACA_IN_ATIVO" Type="Int32" />
+          <NavigationProperty Name="PACIENTE" Relationship="CRMSysDBModel.FK_PACIENTE_RACA" FromRole="RACA" ToRole="PACIENTE" />
+        </EntityType>
+        <Association Name="FK_PACIENTE_RACA">
+          <End Type="CRMSysDBModel.RACA" Role="RACA" Multiplicity="0..1" />
+          <End Type="CRMSysDBModel.PACIENTE" Role="PACIENTE" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="RACA">
+              <PropertyRef Name="RACA_CD_ID" />
+            </Principal>
+            <Dependent Role="PACIENTE">
+              <PropertyRef Name="RACA_CD_ID" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -44277,6 +44331,7 @@
           <EntitySetMapping Name="PACIENTE">
             <EntityTypeMapping TypeName="CRMSysDBModel.PACIENTE">
               <MappingFragment StoreEntitySet="PACIENTE">
+                <ScalarProperty Name="RACA_CD_ID" ColumnName="RACA_CD_ID" />
                 <ScalarProperty Name="PACI__CD_ID" ColumnName="PACI__CD_ID" />
                 <ScalarProperty Name="ASSI_CD_ID" ColumnName="ASSI_CD_ID" />
                 <ScalarProperty Name="TIPA_CD_ID" ColumnName="TIPA_CD_ID" />
@@ -47957,6 +48012,15 @@
                 <ScalarProperty Name="USUA_CD_ID" ColumnName="USUA_CD_ID" />
                 <ScalarProperty Name="ASSI_CD_ID" ColumnName="ASSI_CD_ID" />
                 <ScalarProperty Name="METX_CD_ID" ColumnName="METX_CD_ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="RACA">
+            <EntityTypeMapping TypeName="CRMSysDBModel.RACA">
+              <MappingFragment StoreEntitySet="RACA">
+                <ScalarProperty Name="RACA_IN_ATIVO" ColumnName="RACA_IN_ATIVO" />
+                <ScalarProperty Name="RACA_NM_NOME" ColumnName="RACA_NM_NOME" />
+                <ScalarProperty Name="RACA_CD_ID" ColumnName="RACA_CD_ID" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

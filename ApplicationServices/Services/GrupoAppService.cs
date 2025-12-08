@@ -10,6 +10,7 @@ using ApplicationServices.Interfaces;
 using ModelServices.Interfaces.EntitiesServices;
 using CrossCutting;
 using System.Text.RegularExpressions;
+using Newtonsoft.Json;
 
 namespace ApplicationServices.Services
 {
@@ -78,15 +79,25 @@ namespace ApplicationServices.Services
                 item.GRUP_IN_ATIVO = 1;
                 item.GRUP_DT_CADASTRO = DateTime.Today.Date;
 
+                // Configura serilização
+                JsonSerializerSettings settings = new JsonSerializerSettings
+                {
+                    ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+                    NullValueHandling = NullValueHandling.Ignore
+                };
+
                 // Monta Log
+                DTO_Grupo dto = MontarGrupoDTOObj(item);
+                String json = JsonConvert.SerializeObject(dto, settings);
                 LOG log = new LOG
                 {
                     LOG_DT_DATA = DateTime.Now,
-                    ASSI_CD_ID = usuario.ASSI_CD_ID,
                     USUA_CD_ID = usuario.USUA_CD_ID,
-                    LOG_NM_OPERACAO = "AddGRUP",
+                    ASSI_CD_ID = usuario.ASSI_CD_ID,
+                    LOG_NM_OPERACAO = "Grupo de Pacientes - Inclusão",
                     LOG_IN_ATIVO = 1,
-                    LOG_TX_REGISTRO = Serialization.SerializeJSON<GRUPO_PAC>(item)
+                    LOG_TX_REGISTRO = json,
+                    LOG_IN_SISTEMA = 6
                 };
 
                 // Persiste grupo
@@ -105,7 +116,7 @@ namespace ApplicationServices.Services
                         grupoCriado.GRUPO_PACIENTE.Add(gru);
                         gru = new GRUPO_PACIENTE();
                     }
-                    Int32 volta1 = _baseService.Edit(grupoCriado, log);
+                    Int32 volta1 = _baseService.Edit(grupoCriado);
                 }
                 return itens;
             }
@@ -156,16 +167,28 @@ namespace ApplicationServices.Services
                     itemAntes.USUARIO = null;
                 }
 
+                // Configura serilização
+                JsonSerializerSettings settings = new JsonSerializerSettings
+                {
+                    ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+                    NullValueHandling = NullValueHandling.Ignore
+                };
+
                 // Monta Log
+                DTO_Grupo dto = MontarGrupoDTOObj(item);
+                String json = JsonConvert.SerializeObject(dto, settings);
+                DTO_Grupo dtoAntes = MontarGrupoDTOObj(itemAntes);
+                String jsonAntes = JsonConvert.SerializeObject(dtoAntes, settings);
                 LOG log = new LOG
                 {
                     LOG_DT_DATA = DateTime.Now,
-                    ASSI_CD_ID = usuario.ASSI_CD_ID,
                     USUA_CD_ID = usuario.USUA_CD_ID,
-                    LOG_NM_OPERACAO = "EditGRUP",
+                    ASSI_CD_ID = usuario.ASSI_CD_ID,
+                    LOG_NM_OPERACAO = "Grupo de Pacientes - Alteração",
                     LOG_IN_ATIVO = 1,
-                    LOG_TX_REGISTRO = Serialization.SerializeJSON<GRUPO_PAC>(item),
-                    LOG_TX_REGISTRO_ANTES = Serialization.SerializeJSON<GRUPO_PAC>(itemAntes)
+                    LOG_TX_REGISTRO = json,
+                    LOG_TX_REGISTRO_ANTES = jsonAntes,
+                    LOG_IN_SISTEMA = 6
                 };
 
                 // Persiste
@@ -206,16 +229,29 @@ namespace ApplicationServices.Services
                 // Acerta campos
                 item.GRUP_IN_ATIVO = 0;
 
+                // Configura serilização
+                JsonSerializerSettings settings = new JsonSerializerSettings
+                {
+                    ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+                    NullValueHandling = NullValueHandling.Ignore
+                };
+
                 // Monta Log
+                DTO_Grupo dto = MontarGrupoDTOObj(item);
+                String json = JsonConvert.SerializeObject(dto, settings);
                 LOG log = new LOG
                 {
                     LOG_DT_DATA = DateTime.Now,
-                    ASSI_CD_ID = usuario.ASSI_CD_ID,
                     USUA_CD_ID = usuario.USUA_CD_ID,
+                    ASSI_CD_ID = usuario.ASSI_CD_ID,
+                    LOG_NM_OPERACAO = "Grupo de Pacientes - Exclusão",
                     LOG_IN_ATIVO = 1,
-                    LOG_NM_OPERACAO = "DelGRUP",
-                    LOG_TX_REGISTRO = item.GRUP_NM_NOME
+                    LOG_TX_REGISTRO = json,
+                    LOG_IN_SISTEMA = 6
                 };
+
+                // Persiste grupo
+                Int32 volta = _baseService.Create(item, log);
 
                 // Persiste
                 return _baseService.Edit(item, log);
@@ -235,15 +271,25 @@ namespace ApplicationServices.Services
                 // Acerta campos
                 item.GRUP_IN_ATIVO = 1;
 
+                // Configura serilização
+                JsonSerializerSettings settings = new JsonSerializerSettings
+                {
+                    ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+                    NullValueHandling = NullValueHandling.Ignore
+                };
+
                 // Monta Log
+                DTO_Grupo dto = MontarGrupoDTOObj(item);
+                String json = JsonConvert.SerializeObject(dto, settings);
                 LOG log = new LOG
                 {
                     LOG_DT_DATA = DateTime.Now,
-                    ASSI_CD_ID = usuario.ASSI_CD_ID,
                     USUA_CD_ID = usuario.USUA_CD_ID,
+                    ASSI_CD_ID = usuario.ASSI_CD_ID,
+                    LOG_NM_OPERACAO = "Grupo de Pacientes - Reativação",
                     LOG_IN_ATIVO = 1,
-                    LOG_NM_OPERACAO = "ReatGRUP",
-                    LOG_TX_REGISTRO = item.GRUP_NM_NOME
+                    LOG_TX_REGISTRO = json,
+                    LOG_IN_SISTEMA = 6
                 };
 
                 // Persiste
@@ -285,6 +331,30 @@ namespace ApplicationServices.Services
             catch (Exception ex)
             {
                 throw;
+            }
+        }
+
+        public DTO_Grupo MontarGrupoDTOObj(GRUPO_PAC antes)
+        {
+            using (var context = new CRMSysDBEntities())
+            {
+                var mediDTO = new DTO_Grupo()
+                {
+                    ASSI_CD_ID = antes.ASSI_CD_ID,
+                    GRUP_DT_CADASTRO = antes.GRUP_DT_CADASTRO,
+                    GRUP_CD_ID = antes.GRUP_CD_ID,
+                    GRUP_DT_NASCIMENTO = antes.GRUP_DT_NASCIMENTO,
+                    GRUP_IN_ATIVO = antes.GRUP_IN_ATIVO,
+                    GRUP_NM_CIDADE = antes.GRUP_NM_CIDADE,
+                    GRUP_NM_NOME = antes.GRUP_NM_NOME,
+                    GRUP_NR_ANO = antes.GRUP_NR_ANO,
+                    GRUP_NR_DIA = antes.GRUP_NR_DIA,
+                    GRUP_NR_MES = antes.GRUP_NR_MES,
+                    SEXO_CD_ID = antes.SEXO_CD_ID,
+                    TIPA_CD_ID = antes.TIPA_CD_ID,
+                    USUA_CD_ID = antes.USUA_CD_ID,
+                };
+                return mediDTO;
             }
         }
 

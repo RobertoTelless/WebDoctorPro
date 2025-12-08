@@ -1143,6 +1143,8 @@
         <EntityTypeShape EntityType="CRMSysDBModel.MEDICOS_MENSAGEM" Width="1.5" PointX="19" PointY="482.125" />
         <AssociationConnector Association="CRMSysDBModel.FK_MEDICOS_ENVIO_MEDICOS_MENSAGEM" />
         <AssociationConnector Association="CRMSysDBModel.FK_MEDICOS_MENSAGEM_USUARIO" />
+        <EntityTypeShape EntityType="CRMSysDBModel.RACA" Width="1.5" PointX="5.375" PointY="16.75" />
+        <AssociationConnector Association="CRMSysDBModel.FK_PACIENTE_RACA" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

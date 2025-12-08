@@ -38,6 +38,7 @@ namespace ApplicationServices.Interfaces
         List<TIPO_PACIENTE> GetAllTipos(Int32 idAss);
         List<TIPO_PESSOA> GetAllTiposPessoa();
         List<SEXO> GetAllSexo();
+        List<RACA> GetAllRaca();
         List<COR> GetAllCor();
         List<TIPO_CONTROLE> GetAllTipoControle();
         List<GRAU_INSTRUCAO> GetAllGrau();

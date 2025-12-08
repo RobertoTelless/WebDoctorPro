@@ -61,7 +61,7 @@
                             <div class="form-group">
                                 <br />
                                 @Html.ButtonActionSubmit(text: "Confirmar edição do grupo de pacientes", htmlAttributes: new { id = "basictoast" })
-                                <a href="@Url.Action("RemontarGrupoForn", "Grupo")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Possibilita a remontagem de um grupo de pacientes. O grupo será remontado baseado em suas definições iniciais. Pacientes incluídos manualmente não serão incluídos no grupo." class="btn btn-sm btn-warning" id = "remontar">Remontar grupo de pacientes</a>
+                                <a href="@Url.Action("RemontarGrupoForn", "Grupo")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Possibilita a remontagem de um grupo de pacientes. O grupo será remontado baseado em suas definições iniciais. Pacientes incluídos manualmente não serão incluídos no grupo." class="btn btn-sm btn-warning btn-loading" id = "remontar">Remontar grupo de pacientes</a>
                                 @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarBaseGrupo", controller: "Grupo")
                                 <a href="@Url.Action((String)Session["AjudaNivel"])"  class="btn btn-sm btn-danger" target="_blank">Ajuda</a>                
                             </div>
@@ -144,7 +144,7 @@
                                                     <h4 style="color:green; background-color: beige">Pacientes do Grupo</h4>                                                
                                                     <br />
                                                     <div class="form-group" style=" margin-left: 0px; margin-right: 0px;">
-                                                        <a href="@Url.Action("IncluirContatoGrupo", "Grupo")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Possibilita a inclusão de um novo paciente no grupo, independente do filtro especificado" class="btn btn-sm btn-primary" id="emp" OnClick = "Fade()">Incluir novo paciente no grupo</a>                
+                                                        <a href="@Url.Action("IncluirContatoGrupo", "Grupo")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Possibilita a inclusão de um novo paciente no grupo, independente do filtro especificado" class="btn btn-sm btn-primary btn-loading" id="emp" OnClick = "Fade()">Incluir novo paciente no grupo</a>                
                                                     </div>
                                                     @if (Model.GRUPO_PACIENTE.Count > 0)
                                                     {
@@ -262,7 +262,24 @@
             navigator.sendBeacon('../ControleAcesso/LogSessionTime');
         }; 
     </script>
+    <script type="text/javascript">
+        $(document).ready(function () { 
+            $('.btn-loading').on('click', function (e) {            
+                $(this).prop('disabled', true);
+                $(this).addClass('disabled');
+                $('#loadingIndicator').show();
+                var tagName = $(this).prop('tagName').toLowerCase();
+                if (tagName === 'a') {
+                    e.preventDefault(); 
+                    var targetUrl = $(this).attr('href');
+                    window.location.href = targetUrl;
 
+                } else if (tagName === 'button' || tagName === 'input') {
+                    $(this).closest('form').submit();
+                }
+            });
+        });
+    </script>
     <script>
         $(function () {
             limpaModal();

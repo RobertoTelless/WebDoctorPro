@@ -4059,7 +4059,7 @@ namespace GEDSys_Presentation.Controllers
                 Int32 idAss = (Int32)Session["IdAssinante"];
 
                 // Prepara view
-                Session["NivelPaciente"] = 1;
+                Session["NivelPaciente"] = 13;
                 PACIENTE_ANAMNESE_ANOTACAO item = baseApp.GetAnamneseAnotacaoById(id);
                 PacienteAnamneseAnotacaoViewModel vm = Mapper.Map<PACIENTE_ANAMNESE_ANOTACAO, PacienteAnamneseAnotacaoViewModel>(item);
 
@@ -4130,7 +4130,8 @@ namespace GEDSys_Presentation.Controllers
                     // Verifica retorno
                     Session["AnamneseAlterada"] = 1;
                     Session["NivelPaciente"] = 1;
-                    return RedirectToAction("VerAnotacaoAnamnese");
+                    //return RedirectToAction("VerAnotacaoAnamnese");
+                    return RedirectToAction("VoltarAnexoPaciente", "Paciente");
                 }
                 catch (Exception ex)
                 {
@@ -9620,6 +9621,29 @@ namespace GEDSys_Presentation.Controllers
                 item.PACIENTE_FICHA.Add(foto);
                 objetoAntes = item;
                 Int32 volta = baseApp.ValidateEdit(item, objetoAntes);
+
+                // Configura serilização
+                JsonSerializerSettings settings = new JsonSerializerSettings
+                {
+                    ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+                    NullValueHandling = NullValueHandling.Ignore
+                };
+
+                // Monta Log
+                DTO_Paciente_Ficha dto = MontarPacienteFichaDTOObj(foto);
+                String json = JsonConvert.SerializeObject(dto, settings);
+                LOG log = new LOG
+                {
+                    LOG_DT_DATA = DateTime.Now,
+                    ASSI_CD_ID = usu.ASSI_CD_ID,
+                    USUA_CD_ID = usu.USUA_CD_ID,
+                    LOG_NM_OPERACAO = "Paciente - Ficha - Inclusão",
+                    LOG_IN_ATIVO = 1,
+                    LOG_TX_REGISTRO = json,
+                    LOG_IN_SISTEMA = 6
+                };
+                Int32 volta1 = logApp.ValidateCreate(log);
+
                 Session["NivelPaciente"] = 2;
                 Session["PacienteAlterada"] = 1;
                 if ((Int32)Session["VoltaAnexo"] == 1)
@@ -9642,6 +9666,26 @@ namespace GEDSys_Presentation.Controllers
                 Int32 voltaX = grava.GravarLogExcecao(ex, "Paciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
                 return RedirectToAction("TrataExcecao", "BaseAdmin");
             }
+        }
+
+        public DTO_Paciente_Ficha MontarPacienteFichaDTOObj(PACIENTE_FICHA l)
+        {
+            using (var context = new CRMSysDBEntities())
+            {
+                var mediDTO = new DTO_Paciente_Ficha()
+                {
+                    ASSI_CD_ID = l.ASSI_CD_ID,
+                    PAFC_AQ_ARQUIVO = l.PAFC_AQ_ARQUIVO,
+                    PAFC_CD_ID = l.PAFC_CD_ID,
+                    PAFC_DT_FICHA = l.PAFC_DT_FICHA,
+                    PACI_CD_ID = l.PACI_CD_ID,
+                    PAFC_IN_ATIVO = l.PAFC_IN_ATIVO,
+                    PAFC_IN_TIPO = l.PAFC_IN_TIPO,
+                    PAFC_NM_TITULO = l.PAFC_NM_TITULO,
+                };
+                return mediDTO;
+            }
+
         }
 
         [HttpPost]
@@ -9761,6 +9805,29 @@ namespace GEDSys_Presentation.Controllers
                 item.PACIENTE_FICHA.Add(foto);
                 objetoAntes = item;
                 Int32 volta = baseApp.ValidateEdit(item, objetoAntes);
+
+                // Configura serilização
+                JsonSerializerSettings settings = new JsonSerializerSettings
+                {
+                    ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+                    NullValueHandling = NullValueHandling.Ignore
+                };
+
+                // Monta Log
+                DTO_Paciente_Ficha dto = MontarPacienteFichaDTOObj(foto);
+                String json = JsonConvert.SerializeObject(dto, settings);
+                LOG log = new LOG
+                {
+                    LOG_DT_DATA = DateTime.Now,
+                    ASSI_CD_ID = usu.ASSI_CD_ID,
+                    USUA_CD_ID = usu.USUA_CD_ID,
+                    LOG_NM_OPERACAO = "Paciente - Ficha - Inclusão",
+                    LOG_IN_ATIVO = 1,
+                    LOG_TX_REGISTRO = json,
+                    LOG_IN_SISTEMA = 6
+                };
+                Int32 volta1 = logApp.ValidateCreate(log);
+
                 Session["NivelPaciente"] = 2;
                 Session["PacienteAlterada"] = 1;
                 if ((Int32)Session["VoltaAnexo"] == 1)
@@ -9800,32 +9867,28 @@ namespace GEDSys_Presentation.Controllers
                 PACIENTE_FICHA item = baseApp.GetFichaById(id);
                 PACIENTE pac = baseApp.GetItemById(item.PACI_CD_ID);
 
-                // Exclusão fisica
-                //String caminho = "/Imagens/" + usuarioLogado.ASSI_CD_ID.ToString() + "/Pacientes/" + pac.PACI__CD_ID.ToString() + "/Fichas/";
-                //String filePath = Path.Combine(Server.MapPath(caminho), item.PAFC_NM_TITULO);
-                //if (System.IO.File.Exists(filePath))
-                //{
-                //    System.IO.File.Delete(filePath);
-                //    Session["MensPaciente"] = 69;
-                //}
-                //else
-                //{
-                //    Session["MensPaciente"] = 70;
-                //}
-
                 // Exclui na base de dados
                 item.PAFC_IN_ATIVO = 0;
                 Int32 volta = baseApp.ValidateEditFicha(item);
 
+                // Configura serilização
+                JsonSerializerSettings settings = new JsonSerializerSettings
+                {
+                    ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+                    NullValueHandling = NullValueHandling.Ignore
+                };
+
                 // Monta Log
+                DTO_Paciente_Ficha dto = MontarPacienteFichaDTOObj(item);
+                String json = JsonConvert.SerializeObject(dto, settings);
                 LOG log = new LOG
                 {
                     LOG_DT_DATA = DateTime.Now,
                     ASSI_CD_ID = usuarioLogado.ASSI_CD_ID,
                     USUA_CD_ID = usuarioLogado.USUA_CD_ID,
-                    LOG_NM_OPERACAO = "efcPACI",
+                    LOG_NM_OPERACAO = "Paciente - Ficha - Exclusão",
                     LOG_IN_ATIVO = 1,
-                    LOG_TX_REGISTRO = "Paciente: " + item.PACIENTE.PACI_NM_NOME + " | Ficha: " + item.PAFC_NM_TITULO + " | Data: " + item.PAFC_DT_FICHA.ToShortDateString(),
+                    LOG_TX_REGISTRO = json,
                     LOG_IN_SISTEMA = 6
                 };
                 Int32 volta1 = logApp.ValidateCreate(log);
@@ -18946,6 +19009,26 @@ namespace GEDSys_Presentation.Controllers
                 .Select(n => new { label = n, value = n })
                 .ToList();
             return Json(resultados, JsonRequestBehavior.AllowGet);
+        }
+
+        public DTO_Paciente_Acompanhamento MontarPacienteAcompanhamentoDTOObj(PACIENTE_ANAMNESE_ANOTACAO l)
+        {
+            using (var context = new CRMSysDBEntities())
+            {
+                var mediDTO = new DTO_Paciente_Acompanhamento()
+                {
+                    ASSI_CD_ID = l.ASSI_CD_ID,
+                    PAAA_CD_ID = l.PAAA_CD_ID,
+                    PAAA_DT_ANOTACAO = l.PAAA_DT_ANOTACAO,
+                    PAAA_IN_ATIVO = l.PAAA_IN_ATIVO,
+                    PAAA_TX_ANOTACAO = l.PAAA_TX_ANOTACAO,
+                    PAAA_TX_TEXTO = l.PAAA_TX_TEXTO,
+                    PAAM_CD_ID = l.PAAM_CD_ID,
+                    USUA_CD_ID = l.USUA_CD_ID,
+                };
+                return mediDTO;
+            }
+
         }
 
     }

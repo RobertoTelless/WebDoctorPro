@@ -95,13 +95,13 @@ namespace ERP_Condominios_Solution.Controllers
                     {
                         Session["MensPermissao"] = 2;
                         Session["ModuloPermissao"] = "Grupos";
-                        return RedirectToAction("MontarTelaDashboardCadastros", "BaseAdmin");
+                        return RedirectToAction("MontarTelaPaciente", "Paciente");
                     }
                     if (usuario.PERFIL.PERF_IN_ACESSO_GRUPO == 0)
                     {
                         Session["MensPermissao"] = 2;
                         Session["ModuloPermissao"] = "Grupos";
-                        return RedirectToAction("MontarTelaDashboardCadastros", "BaseAdmin");
+                        return RedirectToAction("MontarTelaPaciente", "Paciente");
                     }
                 }
                 else
@@ -153,7 +153,8 @@ namespace ERP_Condominios_Solution.Controllers
                     if ((Int32)Session["MensGrupo"] == 12)
                     {
                         String frase = "Foram incluídos um total de " + (String)Session["TotalGrupo"] + " pacientes após o processamento do grupo";
-                        ModelState.AddModelError("", frase);
+                        TempData["MensagemAcerto"] = frase;
+                        TempData["TemMensagem"] = 1;
                     }
                     if ((Int32)Session["MensGrupo"] == 22)
                     {
@@ -173,7 +174,8 @@ namespace ERP_Condominios_Solution.Controllers
                     }
                     if ((Int32)Session["MensGrupo"] == 61)
                     {
-                        ModelState.AddModelError("", (String)Session["MsgCRUD"]);
+                        TempData["MensagemAcerto"] = (String)Session["MsgCRUD"];
+                        TempData["TemMensagem"] = 1;
                     }
                 }
 
@@ -440,8 +442,8 @@ namespace ERP_Condominios_Solution.Controllers
                 try
                 {
                     // Sanitizar
-                    vm.GRUP_NM_CIDADE = CrossCutting.UtilitariosGeral.CleanStringGeral(vm.GRUP_NM_CIDADE);
-                    vm.GRUP_NM_NOME = CrossCutting.UtilitariosGeral.CleanStringGeral(vm.GRUP_NM_NOME);
+                    vm.GRUP_NM_CIDADE = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(vm.GRUP_NM_CIDADE);
+                    vm.GRUP_NM_NOME = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(vm.GRUP_NM_NOME);
 
                     // Crítica
                     if (vm.SEXO_CD_ID == null & vm.TIPA_CD_ID == null & vm.GRUP_NM_CIDADE == null & vm.UF_CD_ID == null & vm.GRUP_DT_NASCIMENTO == null & vm.GRUP_NR_DIA == null & vm.GRUP_NR_MES == null & vm.GRUP_NR_ANO == null)
@@ -490,7 +492,6 @@ namespace ERP_Condominios_Solution.Controllers
                     }
 
                     // Trata retorno
-                    Session["MensGrupo"] = 12;
                     if ((Int32)Session["VoltaGrupo"] == 11)
                     {
                         return RedirectToAction("VoltarAnexoPaciente", "Paciente");
@@ -632,7 +633,8 @@ namespace ERP_Condominios_Solution.Controllers
                     }
                     if ((Int32)Session["MensGrupo"] == 61)
                     {
-                        ModelState.AddModelError("", (String)Session["MsgCRUD"]);
+                        TempData["MensagemAcerto"] = (String)Session["MsgCRUD"];
+                        TempData["TemMensagem"] = 1;
                     }
                 }
 
@@ -678,8 +680,8 @@ namespace ERP_Condominios_Solution.Controllers
                 try
                 {
                     // Sanitizar
-                    vm.GRUP_NM_CIDADE = CrossCutting.UtilitariosGeral.CleanStringGeral(vm.GRUP_NM_CIDADE);
-                    vm.GRUP_NM_NOME = CrossCutting.UtilitariosGeral.CleanStringGeral(vm.GRUP_NM_NOME);
+                    vm.GRUP_NM_CIDADE = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(vm.GRUP_NM_CIDADE);
+                    vm.GRUP_NM_NOME = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(vm.GRUP_NM_NOME);
 
                     // Executa a operação
                     USUARIO usuario = (USUARIO)Session["UserCredentials"];
@@ -694,6 +696,10 @@ namespace ERP_Condominios_Solution.Controllers
                     Session["GrupoAlterada"] = 1;
                     Session["LinhaAlterada"] = item.GRUP_CD_ID;
                     Session["FlagAlteraEstado"] = 1;
+
+                    // Mensagem do CRUD
+                    Session["MsgCRUD"] = "O grupo " + item.GRUP_NM_NOME + " foi alterado com sucesso.";
+                    Session["MensGrupo"] = 61;
 
                     // Trata retorno
                     if ((Int32)Session["VoltaGrupo"] == 10)
@@ -831,6 +837,11 @@ namespace ERP_Condominios_Solution.Controllers
                     return RedirectToAction("MontarTelaGrupo");
                 }
 
+                // Mensagem do CRUD
+                Session["MsgCRUD"] = "O grupo " + item.GRUP_NM_NOME + " foi excluído com sucesso.";
+                Session["MensGrupo"] = 61;
+
+
                 Session["ListaGrupo"] = null;
                 Session["GrupoAlterada"] = 1;
                 return RedirectToAction("MontarTelaGrupo");
@@ -889,6 +900,11 @@ namespace ERP_Condominios_Solution.Controllers
                 objetoAntes = (GRUPO_PAC)Session["Grupo"];
                 item.GRUP_IN_ATIVO = 1;
                 Int32 volta = baseApp.ValidateReativar(item, usuario);
+
+                // Mensagem do CRUD
+                Session["MsgCRUD"] = "O grupo " + item.GRUP_NM_NOME + " foi reativado com sucesso.";
+                Session["MensGrupo"] = 61;
+
                 Session["ListaGrupo"] = null;
                 Session["GrupoAlterada"] = 1;
                 return RedirectToAction("MontarTelaGrupo");
@@ -955,6 +971,11 @@ namespace ERP_Condominios_Solution.Controllers
                     if ((Int32)Session["MensGrupo"] == 14)
                     {
                         ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0268", CultureInfo.CurrentCulture));
+                    }
+                    if ((Int32)Session["MensGrupo"] == 61)
+                    {
+                        TempData["MensagemAcerto"] = (String)Session["MsgCRUD"];
+                        TempData["TemMensagem"] = 1;
                     }
                 }
                 Session["MensGrupo"] = 0;
@@ -1060,6 +1081,8 @@ namespace ERP_Condominios_Solution.Controllers
                     }
 
                     // Executa a operação
+                    PACIENTE pac = cliApp.GetItemById(vm.PACI__CD_ID.Value);
+                    GRUPO_PAC gru = baseApp.GetItemById(vm.GRUP_CD_ID.Value);
                     GRUPO_PACIENTE item = Mapper.Map<GrupoContatoViewModel, GRUPO_PACIENTE>(vm);
                     USUARIO usuarioLogado = (USUARIO)Session["UserCredentials"];
                     Int32 volta = baseApp.ValidateCreateContato(item);
@@ -1070,6 +1093,10 @@ namespace ERP_Condominios_Solution.Controllers
                         Session["MensGrupo"] = 4;
                         return RedirectToAction("IncluirContatoGrupo");
                     }
+
+                    // Mensagem do CRUD
+                    Session["MsgCRUD"] = "O paciente " + pac.PACI_NM_NOME + " foi Incluído com sucesso no grupo " + gru.GRUP_NM_NOME;
+                    Session["MensGrupo"] = 61;
 
                     // Verifica retorno
                     Session["GrupoAlterada"] = 1;
@@ -1123,9 +1150,15 @@ namespace ERP_Condominios_Solution.Controllers
                 Int32 idAss = (Int32)Session["IdAssinante"];
 
                 GRUPO_PACIENTE item = baseApp.GetContatoById(id);
-                objetoAntes = (GRUPO_PAC)Session["Grupo"];
+                PACIENTE pac = cliApp.GetItemById(item.PACI_CD_ID.Value);
+                GRUPO_PAC gru = baseApp.GetItemById(item.GRUP_CD_ID.Value);
                 item.GRCL_IN_ATIVO = 0;
                 Int32 volta = baseApp.ValidateEditContato(item);
+
+                // Mensagem do CRUD
+                Session["MsgCRUD"] = "O paciente " + pac.PACI_NM_NOME + " foi excluído com sucesso no grupo " + gru.GRUP_NM_NOME;
+                Session["MensGrupo"] = 61;
+
                 return RedirectToAction("VoltarAnexoGrupo");
             }
             catch (Exception ex)
@@ -1171,9 +1204,16 @@ namespace ERP_Condominios_Solution.Controllers
                 Int32 idAss = (Int32)Session["IdAssinante"];
 
                 GRUPO_PACIENTE item = baseApp.GetContatoById(id);
+                PACIENTE pac = cliApp.GetItemById(item.PACI_CD_ID.Value);
+                GRUPO_PAC gru = baseApp.GetItemById(item.GRUP_CD_ID.Value);
                 objetoAntes = (GRUPO_PAC)Session["Grupo"];
                 item.GRCL_IN_ATIVO = 1;
                 Int32 volta = baseApp.ValidateEditContato(item);
+
+                // Mensagem do CRUD
+                Session["MsgCRUD"] = "O paciente " + pac.PACI_NM_NOME + " foi reativado com sucesso no grupo " + gru.GRUP_NM_NOME;
+                Session["MensGrupo"] = 61;
+
                 return RedirectToAction("VoltarAnexoGrupo");
             }
             catch (Exception ex)
