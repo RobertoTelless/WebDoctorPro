@@ -480,7 +480,7 @@ namespace GEDSys_Presentation.Controllers
                 PdfPTable headerTable = null;
                 PdfPCell cell = new PdfPCell();
                 Image image = null;
-                if (conf.CONF_IN_EXIBE_LOGO == 1)
+                if (conf.CONF_IN_LOGO_EMPRESA == 1)
                 {
                     headerTable = new PdfPTable(new float[] { 20f, 700f });
                     headerTable.WidthPercentage = 100;
@@ -532,7 +532,7 @@ namespace GEDSys_Presentation.Controllers
                     cell.Border = 0;
                     cell.Colspan = 4;
                     cell.VerticalAlignment = Element.ALIGN_MIDDLE;
-                    cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                    cell.HorizontalAlignment = Element.ALIGN_CENTER;
                     table1.AddCell(cell);
                 }
 
@@ -637,12 +637,6 @@ namespace GEDSys_Presentation.Controllers
                 cell.HorizontalAlignment = Element.ALIGN_LEFT;
                 table1.AddCell(cell);
                 cell = new PdfPCell(new Paragraph(enderecoCont, meuFont));
-                cell.Border = 0;
-                cell.Colspan = 4;
-                cell.VerticalAlignment = Element.ALIGN_MIDDLE;
-                cell.HorizontalAlignment = Element.ALIGN_LEFT;
-                table1.AddCell(cell);
-                cell = new PdfPCell(new Paragraph("Documento assinado digitalmente", meuFont));
                 cell.Border = 0;
                 cell.Colspan = 4;
                 cell.VerticalAlignment = Element.ALIGN_MIDDLE;
@@ -871,18 +865,36 @@ namespace GEDSys_Presentation.Controllers
                     cell.VerticalAlignment = Element.ALIGN_MIDDLE;
                     cell.HorizontalAlignment = Element.ALIGN_LEFT;
                     table.AddCell(cell);
-                    cell = new PdfPCell(new Paragraph("UF: " + paciente.UF.UF_NM_NOME, meuFont1));
-                    cell.Border = 0;
-                    cell.Colspan = 1;
-                    cell.VerticalAlignment = Element.ALIGN_MIDDLE;
-                    cell.HorizontalAlignment = Element.ALIGN_LEFT;
-                    table.AddCell(cell);
-                    cell = new PdfPCell(new Paragraph("CEP: " + paciente.PACI_NR_CEP, meuFont1));
-                    cell.Border = 0;
-                    cell.Colspan = 3;
-                    cell.VerticalAlignment = Element.ALIGN_MIDDLE;
-                    cell.HorizontalAlignment = Element.ALIGN_LEFT;
-                    table.AddCell(cell);
+                    if (paciente.UF != null)
+                    {
+                        cell = new PdfPCell(new Paragraph("UF: " + paciente.UF.UF_NM_NOME, meuFont1));
+                        cell.Border = 0;
+                        cell.Colspan = 1;
+                        cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                        cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                        table.AddCell(cell);
+                        cell = new PdfPCell(new Paragraph("CEP: " + paciente.PACI_NR_CEP, meuFont1));
+                        cell.Border = 0;
+                        cell.Colspan = 3;
+                        cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                        cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                        table.AddCell(cell);
+                    }
+                    else
+                    {
+                        cell = new PdfPCell(new Paragraph("UF: - ", meuFont1));
+                        cell.Border = 0;
+                        cell.Colspan = 1;
+                        cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                        cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                        table.AddCell(cell);
+                        cell = new PdfPCell(new Paragraph("CEP: " + paciente.PACI_NR_CEP, meuFont1));
+                        cell.Border = 0;
+                        cell.Colspan = 3;
+                        cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                        cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                        table.AddCell(cell);
+                    }
                 }
 
                 cell = new PdfPCell(new Paragraph("  ", meuFont1));
@@ -951,7 +963,7 @@ namespace GEDSys_Presentation.Controllers
                 }
                 if (paciente.COR != null)
                 {
-                    cell = new PdfPCell(new Paragraph("Cor: " + paciente.COR.COR1_NM_NOME, meuFont1));
+                    cell = new PdfPCell(new Paragraph("Raça: " + paciente.COR.COR1_NM_NOME, meuFont1));
                     cell.Border = 0;
                     cell.Colspan = 1;
                     cell.VerticalAlignment = Element.ALIGN_MIDDLE;
@@ -960,7 +972,7 @@ namespace GEDSys_Presentation.Controllers
                 }
                 else
                 {
-                    cell = new PdfPCell(new Paragraph("Cor: -", meuFont1));
+                    cell = new PdfPCell(new Paragraph("Raça: -", meuFont1));
                     cell.Border = 0;
                     cell.Colspan = 1;
                     cell.VerticalAlignment = Element.ALIGN_MIDDLE;
@@ -3087,7 +3099,8 @@ namespace GEDSys_Presentation.Controllers
                 Response.Cache.SetCacheability(HttpCacheability.NoCache);
                 Response.Write(pdfDoc);
                 Response.End();
-                return RedirectToAction("VoltarAnexoPaciente", "Paciente");
+
+                return RedirectToAction("VoltarAnexoPaciente");
             }
             catch (Exception ex)
             {
@@ -8768,33 +8781,50 @@ namespace GEDSys_Presentation.Controllers
                 headerTable.SpacingBefore = 1f;
                 headerTable.SpacingAfter = 1f;
 
-                PdfPCell cell = new PdfPCell();
-                cell.Border = 0;
-                cell.Colspan = 1;
-                Image image = null;
                 if (conf.CONF_IN_LOGO_EMPRESA == 1)
                 {
+                    PdfPCell cell1 = new PdfPCell();
+                    cell1.Border = 0;
+                    cell1.Colspan = 1;
+                    Image image = null;
                     EMPRESA empresa = empApp.GetItemByAssinante(idAss);
                     image = Image.GetInstance(Server.MapPath(empresa.EMPR_AQ_LOGO));
+                    image.ScaleAbsolute(50, 50);
+                    cell1.AddElement(image);
+                    cell1.Border = PdfPCell.BOTTOM_BORDER;
+                    headerTable.AddCell(cell1);
+
+                    cell1 = new PdfPCell(new Paragraph("Histórico dos Pacientes", meuFont2))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_CENTER
+                    };
+                    cell1.Border = 0;
+                    cell1.Colspan = 1;
+                    cell1.Border = PdfPCell.BOTTOM_BORDER;
+                    headerTable.AddCell(cell1);
                 }
                 else
                 {
-                    image = Image.GetInstance(Server.MapPath("~/Images/Prontuario_Icone_1.png"));
-                }
-                image.ScaleAbsolute(50, 50);
-                cell.AddElement(image);
-                cell.Border = PdfPCell.BOTTOM_BORDER;
-                headerTable.AddCell(cell);
+                    PdfPCell cell2 = new PdfPCell(new Paragraph("Histórico dos Pacientes", meuFont2))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_CENTER
+                    };
+                    cell2.Border = 0;
+                    cell2.Colspan = 2;
+                    headerTable.AddCell(cell2);
 
-                cell = new PdfPCell(new Paragraph("Histórico de Transações", meuFont2))
-                {
-                    VerticalAlignment = Element.ALIGN_MIDDLE,
-                    HorizontalAlignment = Element.ALIGN_CENTER
-                };
-                cell.Border = 0;
-                cell.Colspan = 1;
-                cell.Border = PdfPCell.BOTTOM_BORDER;
-                headerTable.AddCell(cell);
+                    cell2 = new PdfPCell(new Paragraph(" ", meuFont))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    cell2.Colspan = 2;
+                    cell2.Border = PdfPCell.BOTTOM_BORDER;
+                    headerTable.AddCell(cell2);
+
+                }
 
                 // Rodape
                 PdfPTable footerTable = new PdfPTable(1);
@@ -8803,7 +8833,7 @@ namespace GEDSys_Presentation.Controllers
                 footerTable.SpacingBefore = 1f;
                 footerTable.SpacingAfter = 1f;
 
-                cell = new PdfPCell();
+                PdfPCell cell = new PdfPCell();
                 cell.Border = PdfPCell.TOP_BORDER;
                 cell = new PdfPCell(new Paragraph("Gerado por WebDoctor 1.0 em " + DateTime.Today.Date.ToLongDateString(), meuFont));
                 footerTable.AddCell(cell);

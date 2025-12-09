@@ -6287,5 +6287,14 @@ namespace GEDSys_Presentation.App_Start {
                 return ResourceManager.GetString("M0713", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Consulta uma cadeia de caracteres localizada semelhante a Paciente já incluído neste grupo.
+        /// </summary>
+        internal static string M0714 {
+            get {
+                return ResourceManager.GetString("M0714", resourceCulture);
+            }
+        }
     }
 }

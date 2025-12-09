@@ -117,6 +117,7 @@ namespace ModelServices.EntitiesServices
                     item.TIPO_PACIENTE = null;
                     item.SEXO = null;
                     item.UF = null;
+                    item.USUARIO = null;
                     GRUPO_PAC obj = _baseRepository.GetById(item.GRUP_CD_ID);
                     _baseRepository.Detach(obj);
                     _logRepository.Add(log);

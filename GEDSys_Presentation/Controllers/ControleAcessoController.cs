@@ -148,7 +148,7 @@ namespace ERP_Condominios_Solution.Controllers
             Session["Videos"] = null;
             Session["Video"] = null;
             Session["VoltarVideo"] = 1;
-
+            Session["VoltaCliGrupo"] = 0;
 
 
 

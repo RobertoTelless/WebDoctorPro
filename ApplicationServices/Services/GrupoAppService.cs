@@ -218,6 +218,7 @@ namespace ApplicationServices.Services
             try
             {
                 // Verifica integridade referencial
+                item.GRUPO_PACIENTE = null;
                 if (item.MENSAGENS.Count > 0)
                 {
                     if (item.MENSAGENS.Where(p => p.MENS_IN_ATIVO == 1).ToList().Count > 0)

@@ -1583,6 +1583,7 @@
     <Compile Include="WorkClasses\AttachmentForn.cs" />
     <Compile Include="WorkClasses\CNPJ.cs" />
     <Compile Include="WorkClasses\CEP.cs" />
+    <Compile Include="WorkClasses\DTO_GrupoPaciente.cs" />
     <Compile Include="WorkClasses\DTO_ModeloEMailHTML.cs" />
     <Compile Include="WorkClasses\DTO_ModeloEMail.cs" />
     <Compile Include="WorkClasses\DTO_ModeloSMS.cs" />

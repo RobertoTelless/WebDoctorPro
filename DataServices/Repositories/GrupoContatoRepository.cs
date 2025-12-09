@@ -18,7 +18,7 @@ namespace DataServices.Repositories
             IQueryable<GRUPO_PACIENTE> query = Db.GRUPO_PACIENTE;
             query = query.Where(p => p.GRUP_CD_ID == conta.GRUP_CD_ID);
             query = query.Where(p => p.PACI_CD_ID == conta.PACI_CD_ID);
-            return query.FirstOrDefault();
+            return query.AsNoTracking().FirstOrDefault();
         }
 
         public List<GRUPO_PACIENTE> GetAllItens()

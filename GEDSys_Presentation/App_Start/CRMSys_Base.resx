@@ -2193,4 +2193,7 @@
   <data name="M0713" xml:space="preserve">
     <value>Impossível excluir esse texto de envio pois ele é o único ativo</value>
   </data>
+  <data name="M0714" xml:space="preserve">
+    <value>Paciente já incluído neste grupo</value>
+  </data>
 </root>

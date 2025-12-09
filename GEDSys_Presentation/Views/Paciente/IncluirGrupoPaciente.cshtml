@@ -31,7 +31,7 @@
                 <div class="ibox-title">
                     <div style="text-align: center;" class="col-lg-12 col-md-12 col-xs-12">
                         <h5>Paciente - Grupo - Inclusão</h5>
-                        <span style="color:green; font-weight: 500; font-size: 20px;">@Model.PACIENTE.PACI_NM_NOME</span>
+                        <span style="color:green; font-weight: 500; font-size: 20px;">@ViewBag.Paciente</span>
                     </div>
                 </div>
                 @using (Html.BeginForm("IncluirGrupoPaciente", "Paciente", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal", @id = "pwd-container1" }))
@@ -42,7 +42,14 @@
                         {
                             <div class="alert alert-danger">
                                 <button type="button" class="close" data-dismiss="alert">Fechar</button>
-                                @Html.ValidationSummary(false, "Erros Encontrados:", new { @class = "text-danger" })
+                                @Html.ValidationSummary(false, "", new { @class = "text-danger" })
+                            </div>
+                        }
+                        @if (TempData["TemMensagem"] != null)
+                        {
+                            <div class="alert alert-success">
+                                <button type="button" class="close" data-dismiss="alert">Fechar</button>
+                                <span>@TempData["MensagemAcerto"]</span>
                             </div>
                         }
                         <div class="row">

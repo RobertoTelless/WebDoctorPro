@@ -37,7 +37,14 @@
                     {
                         <div class="alert alert-danger">
                             <button type="button" class="close" data-dismiss="alert">Fechar</button>
-                            @Html.ValidationSummary(false, "Erros de Crítica Encontrados:", new { @class = "text-danger" })
+                            @Html.ValidationSummary(false, "", new { @class = "text-danger" })
+                        </div>
+                    }
+                    @if (TempData["TemMensagem"] != null)
+                    {
+                        <div class="alert alert-success">
+                            <button type="button" class="close" data-dismiss="alert">Fechar</button>
+                            <span>@TempData["MensagemAcerto"]</span>
                         </div>
                     }
                     <div class="tabs-container">

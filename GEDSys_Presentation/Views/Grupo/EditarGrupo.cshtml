@@ -55,6 +55,13 @@
                             @Html.ValidationSummary(false, "", new { @class = "text-danger" })
                         </div>
                     }
+                    @if (TempData["TemMensagem"] != null)
+                    {
+                        <div class="alert alert-success">
+                            <button type="button" class="close" data-dismiss="alert">Fechar</button>
+                            <span>@TempData["MensagemAcerto"]</span>
+                        </div>
+                    }
                     <div class="tabs-container">
                         @using (Html.BeginForm("EditarGrupo", "Grupo", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal", @id = "pwd-container1" }))
                         {

@@ -15,6 +15,7 @@ using System.Web.UI.WebControls;
 using System.Reflection;
 using ERP_Condominios_Solution.Classes;
 using GEDSys_Presentation.App_Start;
+using Newtonsoft.Json;
 
 namespace ERP_Condominios_Solution.Controllers
 {
@@ -184,6 +185,7 @@ namespace ERP_Condominios_Solution.Controllers
                 Int32 voltaX = grava.GravaAcesso(usuario.USUA_CD_ID, usuario.ASSI_CD_ID, "GRUPO", "Grupo", "MontarTelaGrupo");
 
                 // Abre view
+                Session["VoltaCliGrupo"] = 0;
                 Session["MensGrupo"] = null;
                 Session["LinhaAlterada"] = 0;
                 Session["VoltaGrupo"] = 1;
@@ -481,7 +483,7 @@ namespace ERP_Condominios_Solution.Controllers
                     Session["LinhaAlterada"] = item.GRUP_CD_ID;
 
                     // Mensagem do CRUD
-                    Session["MsgCRUD"] = "O grupo " + item.GRUP_NM_NOME + " foi criado com sucesso. Foram incluídos " + volta.ToString() + " pacientes.";
+                    Session["MsgCRUD"] = "O grupo " + item.GRUP_NM_NOME.ToUpper() + " foi criado com sucesso. Foram incluídos " + volta.ToString() + " pacientes.";
                     Session["MensGrupo"] = 61;
 
                     // Grupo vazio
@@ -564,13 +566,13 @@ namespace ERP_Condominios_Solution.Controllers
                 // Mensagem do CRUD
                 if (volta == itens)
                 {
-                    Session["MsgCRUD"] = "O grupo " + item.GRUP_NM_NOME + " foi remontado com sucesso. Foram incluídos " + volta.ToString() + " pacientes.";
+                    Session["MsgCRUD"] = "O grupo " + item.GRUP_NM_NOME.ToUpper() + " foi remontado com sucesso. Foram incluídos " + volta.ToString() + " pacientes.";
                     Session["MensGrupo"] = 61;
                 }
                 else
                 {
                     Int32 dif = itens - volta;
-                    Session["MsgCRUD"] = "O grupo " + item.GRUP_NM_NOME + " foi remontado com sucesso. Foram incluídos " + volta.ToString() + " pacientes. Foram abandonados " + dif.ToString() + " pacientes.";
+                    Session["MsgCRUD"] = "O grupo " + item.GRUP_NM_NOME.ToUpper() + " foi remontado com sucesso. Foram incluídos " + volta.ToString() + " pacientes. Foram abandonados " + dif.ToString() + " pacientes.";
                     Session["MensGrupo"] = 61;
                 }
 
@@ -652,7 +654,7 @@ namespace ERP_Condominios_Solution.Controllers
 
                 // Monta view
                 Session["VoltaGrupo"] = 2;
-                objetoAntes = item;
+                Session["GrupoAntes"] = item;
                 Session["IdGrupo"] = id;
                 GrupoViewModel vm = Mapper.Map<GRUPO_PAC, GrupoViewModel>(item);
                 return View(vm);
@@ -686,7 +688,7 @@ namespace ERP_Condominios_Solution.Controllers
                     // Executa a operação
                     USUARIO usuario = (USUARIO)Session["UserCredentials"];
                     GRUPO_PAC item = Mapper.Map<GrupoViewModel, GRUPO_PAC>(vm);
-                    Int32 volta = baseApp.ValidateEdit(item, objetoAntes, usuario);
+                    Int32 volta = baseApp.ValidateEdit(item, (GRUPO_PAC)Session["GrupoAntes"], usuario);
 
                     // Verifica retorno
 
@@ -698,7 +700,7 @@ namespace ERP_Condominios_Solution.Controllers
                     Session["FlagAlteraEstado"] = 1;
 
                     // Mensagem do CRUD
-                    Session["MsgCRUD"] = "O grupo " + item.GRUP_NM_NOME + " foi alterado com sucesso.";
+                    Session["MsgCRUD"] = "O grupo " + item.GRUP_NM_NOME.ToUpper() + " foi alterado com sucesso.";
                     Session["MensGrupo"] = 61;
 
                     // Trata retorno
@@ -838,7 +840,7 @@ namespace ERP_Condominios_Solution.Controllers
                 }
 
                 // Mensagem do CRUD
-                Session["MsgCRUD"] = "O grupo " + item.GRUP_NM_NOME + " foi excluído com sucesso.";
+                Session["MsgCRUD"] = "O grupo " + item.GRUP_NM_NOME.ToUpper() + " foi excluído com sucesso.";
                 Session["MensGrupo"] = 61;
 
 
@@ -902,7 +904,7 @@ namespace ERP_Condominios_Solution.Controllers
                 Int32 volta = baseApp.ValidateReativar(item, usuario);
 
                 // Mensagem do CRUD
-                Session["MsgCRUD"] = "O grupo " + item.GRUP_NM_NOME + " foi reativado com sucesso.";
+                Session["MsgCRUD"] = "O grupo " + item.GRUP_NM_NOME.ToUpper() + " foi reativado com sucesso.";
                 Session["MensGrupo"] = 61;
 
                 Session["ListaGrupo"] = null;
@@ -1081,7 +1083,7 @@ namespace ERP_Condominios_Solution.Controllers
                     }
 
                     // Executa a operação
-                    PACIENTE pac = cliApp.GetItemById(vm.PACI__CD_ID.Value);
+                    PACIENTE pac = cliApp.GetItemById(vm.PACI_CD_ID.Value);
                     GRUPO_PAC gru = baseApp.GetItemById(vm.GRUP_CD_ID.Value);
                     GRUPO_PACIENTE item = Mapper.Map<GrupoContatoViewModel, GRUPO_PACIENTE>(vm);
                     USUARIO usuarioLogado = (USUARIO)Session["UserCredentials"];
@@ -1094,12 +1096,35 @@ namespace ERP_Condominios_Solution.Controllers
                         return RedirectToAction("IncluirContatoGrupo");
                     }
 
+                    // Configura serilização
+                    JsonSerializerSettings settings = new JsonSerializerSettings
+                    {
+                        ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+                        NullValueHandling = NullValueHandling.Ignore
+                    };
+
+                    // Monta Log
+                    DTO_GrupoPaciente dto = MontarGrupoPacienteDTOObj(item);
+                    String json = JsonConvert.SerializeObject(dto, settings);
+                    LOG log = new LOG
+                    {
+                        LOG_DT_DATA = DateTime.Now,
+                        USUA_CD_ID = usuario.USUA_CD_ID,
+                        ASSI_CD_ID = usuario.ASSI_CD_ID,
+                        LOG_NM_OPERACAO = "Grupo de Pacientes - Inclusão de Paciente",
+                        LOG_IN_ATIVO = 1,
+                        LOG_TX_REGISTRO = json,
+                        LOG_IN_SISTEMA = 6
+                    };
+                    Int32 volta1 = logApp.ValidateCreate(log);
+
                     // Mensagem do CRUD
-                    Session["MsgCRUD"] = "O paciente " + pac.PACI_NM_NOME + " foi Incluído com sucesso no grupo " + gru.GRUP_NM_NOME;
+                    Session["MsgCRUD"] = "O paciente " + pac.PACI_NM_NOME.ToUpper() + " foi Incluído com sucesso no grupo " + gru.GRUP_NM_NOME.ToUpper();
                     Session["MensGrupo"] = 61;
 
                     // Verifica retorno
                     Session["GrupoAlterada"] = 1;
+                    Session["PacienteAlterada"] = 1;
                     return RedirectToAction("IncluirContatoGrupo");
                 }
                 catch (Exception ex)
@@ -1117,6 +1142,21 @@ namespace ERP_Condominios_Solution.Controllers
             else
             {
                 return View(vm);
+            }
+        }
+
+        public DTO_GrupoPaciente MontarGrupoPacienteDTOObj(GRUPO_PACIENTE antes)
+        {
+            using (var context = new CRMSysDBEntities())
+            {
+                var mediDTO = new DTO_GrupoPaciente()
+                {
+                    GRCL_IN_ATIVO = antes.GRCL_IN_ATIVO,
+                    PACI_CD_ID = antes.PACI_CD_ID,
+                    GRUP_CD_ID = antes.GRUP_CD_ID,
+                    GRCL_CD_ID = antes.GRCL_CD_ID,
+                };
+                return mediDTO;
             }
         }
 
@@ -1155,8 +1195,30 @@ namespace ERP_Condominios_Solution.Controllers
                 item.GRCL_IN_ATIVO = 0;
                 Int32 volta = baseApp.ValidateEditContato(item);
 
+                // Configura serilização
+                JsonSerializerSettings settings = new JsonSerializerSettings
+                {
+                    ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+                    NullValueHandling = NullValueHandling.Ignore
+                };
+
+                // Monta Log
+                DTO_GrupoPaciente dto = MontarGrupoPacienteDTOObj(item);
+                String json = JsonConvert.SerializeObject(dto, settings);
+                LOG log = new LOG
+                {
+                    LOG_DT_DATA = DateTime.Now,
+                    USUA_CD_ID = usuario.USUA_CD_ID,
+                    ASSI_CD_ID = usuario.ASSI_CD_ID,
+                    LOG_NM_OPERACAO = "Grupo de Pacientes - Exclusão de Paciente",
+                    LOG_IN_ATIVO = 1,
+                    LOG_TX_REGISTRO = json,
+                    LOG_IN_SISTEMA = 6
+                };
+                Int32 volta1 = logApp.ValidateCreate(log);
+
                 // Mensagem do CRUD
-                Session["MsgCRUD"] = "O paciente " + pac.PACI_NM_NOME + " foi excluído com sucesso no grupo " + gru.GRUP_NM_NOME;
+                Session["MsgCRUD"] = "O paciente " + pac.PACI_NM_NOME.ToUpper() + " foi excluído com sucesso no grupo " + gru.GRUP_NM_NOME.ToUpper();
                 Session["MensGrupo"] = 61;
 
                 return RedirectToAction("VoltarAnexoGrupo");
@@ -1210,8 +1272,29 @@ namespace ERP_Condominios_Solution.Controllers
                 item.GRCL_IN_ATIVO = 1;
                 Int32 volta = baseApp.ValidateEditContato(item);
 
+                // Configura serilização
+                JsonSerializerSettings settings = new JsonSerializerSettings
+                {
+                    ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+                    NullValueHandling = NullValueHandling.Ignore
+                };
+
+                // Monta Log
+                DTO_GrupoPaciente dto = MontarGrupoPacienteDTOObj(item);
+                String json = JsonConvert.SerializeObject(dto, settings);
+                LOG log = new LOG
+                {
+                    LOG_DT_DATA = DateTime.Now,
+                    USUA_CD_ID = usuario.USUA_CD_ID,
+                    ASSI_CD_ID = usuario.ASSI_CD_ID,
+                    LOG_NM_OPERACAO = "Grupo de Pacientes - Reativação de Paciente",
+                    LOG_IN_ATIVO = 1,
+                    LOG_TX_REGISTRO = json,
+                    LOG_IN_SISTEMA = 6
+                };
+
                 // Mensagem do CRUD
-                Session["MsgCRUD"] = "O paciente " + pac.PACI_NM_NOME + " foi reativado com sucesso no grupo " + gru.GRUP_NM_NOME;
+                Session["MsgCRUD"] = "O paciente " + pac.PACI_NM_NOME.ToUpper() + " foi reativado com sucesso no grupo " + gru.GRUP_NM_NOME.ToUpper();
                 Session["MensGrupo"] = 61;
 
                 return RedirectToAction("VoltarAnexoGrupo");
