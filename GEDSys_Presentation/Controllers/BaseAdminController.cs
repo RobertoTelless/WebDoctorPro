@@ -2302,7 +2302,6 @@ namespace ERP_Condominios_Solution.Controllers
             }
         }
 
-
         public ActionResult VoltarMensagensEnviadas()
         {
             if ((String)Session["Ativa"] == null)

@@ -7109,33 +7109,50 @@ namespace GEDSys_Presentation.Controllers
                 headerTable.SpacingBefore = 1f;
                 headerTable.SpacingAfter = 1f;
 
-                PdfPCell cell = new PdfPCell();
-                cell.Border = 0;
-                cell.Colspan = 1;
-                Image image = null;
                 if (conf.CONF_IN_LOGO_EMPRESA == 1)
                 {
+                    PdfPCell cell1 = new PdfPCell();
+                    cell1.Border = 0;
+                    cell1.Colspan = 1;
+                    Image image = null;
                     EMPRESA empresa = empApp.GetItemByAssinante(idAss);
                     image = Image.GetInstance(Server.MapPath(empresa.EMPR_AQ_LOGO));
+                    image.ScaleAbsolute(50, 50);
+                    cell1.AddElement(image);
+                    cell1.Border = PdfPCell.BOTTOM_BORDER;
+                    headerTable.AddCell(cell1);
+
+                    cell1 = new PdfPCell(new Paragraph("Pacientes - Ausentes por mais de " + conf.CONF_IN_PACIENTE_AUSENCIA.ToString() + " meses após data prevista de retorno", meuFont2))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_CENTER
+                    };
+                    cell1.Border = 0;
+                    cell1.Colspan = 1;
+                    cell1.Border = PdfPCell.BOTTOM_BORDER;
+                    headerTable.AddCell(cell1);
                 }
                 else
                 {
-                    image = Image.GetInstance(Server.MapPath("~/Images/Prontuario_Icone_1.png"));
-                }
-                image.ScaleAbsolute(50, 50);
-                cell.AddElement(image);
-                cell.Border = PdfPCell.BOTTOM_BORDER;
-                headerTable.AddCell(cell);
+                    PdfPCell cell2 = new PdfPCell(new Paragraph("Pacientes - Ausentes por mais de " + conf.CONF_IN_PACIENTE_AUSENCIA.ToString() + " meses após data prevista de retorno", meuFont2))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_CENTER
+                    };
+                    cell2.Border = 0;
+                    cell2.Colspan = 2;
+                    headerTable.AddCell(cell2);
 
-                cell = new PdfPCell(new Paragraph("Pacientes - Ausentes por mais de " + conf.CONF_IN_PACIENTE_AUSENCIA.ToString() + " meses após data prevista de retorno", meuFont2))
-                {
-                    VerticalAlignment = Element.ALIGN_MIDDLE,
-                    HorizontalAlignment = Element.ALIGN_CENTER
-                };
-                cell.Border = 0;
-                cell.Colspan = 1;
-                cell.Border = PdfPCell.BOTTOM_BORDER;
-                headerTable.AddCell(cell);
+                    cell2 = new PdfPCell(new Paragraph(" ", meuFont))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    cell2.Colspan = 2;
+                    cell2.Border = PdfPCell.BOTTOM_BORDER;
+                    headerTable.AddCell(cell2);
+
+                }
 
                 // Rodape
                 PdfPTable footerTable = new PdfPTable(1);
@@ -7144,7 +7161,7 @@ namespace GEDSys_Presentation.Controllers
                 footerTable.SpacingBefore = 1f;
                 footerTable.SpacingAfter = 1f;
 
-                cell = new PdfPCell();
+                PdfPCell cell = new PdfPCell();
                 cell.Border = PdfPCell.TOP_BORDER;
                 cell = new PdfPCell(new Paragraph("Gerado por WebDoctor 1.0 em " + DateTime.Today.Date.ToLongDateString(), meuFont));
                 footerTable.AddCell(cell);
@@ -7425,7 +7442,7 @@ namespace GEDSys_Presentation.Controllers
                     if (System.IO.File.Exists(Server.MapPath(item.PACI_AQ_FOTO)))
                     {
                         cell = new PdfPCell();
-                        image = Image.GetInstance(Server.MapPath(item.PACI_AQ_FOTO));
+                        Image image = Image.GetInstance(Server.MapPath(item.PACI_AQ_FOTO));
                         image.ScaleAbsolute(40, 40);
                         cell.AddElement(image);
                         table.AddCell(cell);
@@ -8206,7 +8223,7 @@ namespace GEDSys_Presentation.Controllers
                 PdfPTable headerTable = null;
                 PdfPCell cell = new PdfPCell();
                 Image image = null;
-                if (conf.CONF_IN_EXIBE_LOGO == 1)
+                if (conf.CONF_IN_LOGO_EMPRESA == 1)
                 {
                     headerTable = new PdfPTable(new float[] { 20f, 700f });
                     headerTable.WidthPercentage = 100;
@@ -16089,7 +16106,7 @@ namespace GEDSys_Presentation.Controllers
                 PdfPTable headerTable = null;
                 PdfPCell cell = new PdfPCell();
                 Image image = null;
-                if (conf.CONF_IN_EXIBE_LOGO == 1)
+                if (conf.CONF_IN_LOGO_EMPRESA == 1)
                 {
                     headerTable = new PdfPTable(new float[] { 20f, 700f });
                     headerTable.WidthPercentage = 100;

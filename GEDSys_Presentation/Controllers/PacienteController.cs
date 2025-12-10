@@ -3640,6 +3640,8 @@ namespace GEDSys_Presentation.Controllers
                 Session["MensPaciente"] = null;
                 mensVolta.MENS_DT_CRIACAO = DateTime.Today.Date;
                 mensVolta.MENS_IN_TIPO = 1;
+                mensVolta.MENS_IN_TIPO_EMAIL = 1;
+                mensVolta.TIPO_ENVIO = 1;
                 mensVolta.MENS_NM_CAMPANHA = "Mensagem de Aniversário";
                 mensVolta.MENS_NM_NOME = "Aniversário";
                 return View(mensVolta);
@@ -3716,7 +3718,14 @@ namespace GEDSys_Presentation.Controllers
                     }
 
                     // Mensagem
-                    Session["MsgCRUD"] = "As mensagens de aniversário de " + DateTime.Today.Date.ToShortDateString() + " foram enviadas com sucesso. Total de mensagens: " + (String)Session["TotMensagens"];
+                    if ((Int32)Session["TotErros"] == 0)
+                    {
+                        Session["MsgCRUD"] = "As mensagens de aniversário de " + DateTime.Today.Date.ToShortDateString() + " foram enviadas com sucesso. Foram enviadas " + ((Int32)Session["TotEnvios"]).ToString() + " mensagens de um total de " + ((Int32)Session["TotMensagens"]).ToString() + " mensagens";
+                    }
+                    else
+                    {
+                        Session["MsgCRUD"] = "As mensagens de aniversário de " + DateTime.Today.Date.ToShortDateString() + " foram enviadas com falhas. Foram enviadas " + ((Int32)Session["TotEnvios"]).ToString() + " mensagens em um total de " + ((Int32)Session["TotMensagens"]).ToString() + " mensagens";
+                    }
                     Session["MensPaciente"] = 888;
 
                     // Retorno
@@ -20463,6 +20472,15 @@ namespace GEDSys_Presentation.Controllers
             return Json(hash);
         }
 
+        public JsonResult GetTextoHTML(Int32 id)
+        {
+            var mod = temApp.GetItemById(id);
+            String texto = mod.TEEM_TX_CABECALHO + "<br />" + mod.TEEM_TX_CORPO + "<br />" + mod.TEEM_TX_DADOS;
+            var hash = new Hashtable();
+            hash.Add("textoHTML", texto);
+            return Json(hash);
+        }
+
         public JsonResult GetSolicitacaoPaciente(Int32 id)
         {
             var solic = baseApp.GetSolicitacaoById(id);
@@ -32669,7 +32687,7 @@ namespace GEDSys_Presentation.Controllers
                 PdfPTable headerTable = null;
                 PdfPCell cell = new PdfPCell();
                 Image image = null;
-                if (conf.CONF_IN_EXIBE_LOGO == 1)
+                if (conf.CONF_IN_LOGO_EMPRESA == 1)
                 {
                     headerTable = new PdfPTable(new float[] { 20f, 700f });
                     headerTable.WidthPercentage = 100;
@@ -33433,7 +33451,7 @@ namespace GEDSys_Presentation.Controllers
                 PdfPTable headerTable = null;
                 PdfPCell cell = new PdfPCell();
                 Image image = null;
-                if (conf.CONF_IN_EXIBE_LOGO == 1)
+                if (conf.CONF_IN_LOGO_EMPRESA == 1)
                 {
                     headerTable = new PdfPTable(new float[] { 20f, 700f });
                     headerTable.WidthPercentage = 100;
@@ -33485,7 +33503,7 @@ namespace GEDSys_Presentation.Controllers
                     cell.Border = 0;
                     cell.Colspan = 4;
                     cell.VerticalAlignment = Element.ALIGN_MIDDLE;
-                    cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                    cell.HorizontalAlignment = Element.ALIGN_CENTER;
                     table1.AddCell(cell);
                 }
 
@@ -36197,8 +36215,7 @@ namespace GEDSys_Presentation.Controllers
                 {
                     link = "http://" + link;
                 }
-                str.AppendLine(link + " Clique aqui para maiores informações");
-                texto += "  " + link;
+                str.AppendLine("Clique aqui para maiores informações " + link);
             }
 
             // Monta corpo
@@ -36214,14 +36231,15 @@ namespace GEDSys_Presentation.Controllers
 
             // inicia processo
             String resposta = String.Empty;
-#pragma warning disable CS0219 // A variável é atribuída, mas seu valor nunca é usado
             String status = "Succeeded";
-#pragma warning restore CS0219 // A variável é atribuída, mas seu valor nunca é usado
             String iD = Xid.NewXid().ToString();
+            Int32 erroVolta = 0;
+            Int32 envios = 0;
 
             // Decriptografa chaves
             String emissor = CrossCutting.Cryptography.Decrypt(conf.CONF_NM_EMISSOR_AZURE_CRIP);
             String conn = CrossCutting.Cryptography.Decrypt(conf.CONF_CS_CONNECTION_STRING_AZURE_CRIP);
+            List<AttachmentModel> models = new List<AttachmentModel>();
 
             try
             {
@@ -36231,67 +36249,59 @@ namespace GEDSys_Presentation.Controllers
                     PACIENTE paciente = baseApp.GetItemById(item.Valor1);
 
                     // Prepara texto
-                    String textoNome = emailBody.Replace("{nome}", paciente.PACI_NM_NOME);
+                    String textoMsg = emailBody.Replace("{nome}", paciente.PACI_NM_NOME);
+                    textoMsg = textoMsg.Replace("{data}", DateTime.Today.Date.ToLongDateString());
+                    textoMsg = textoMsg.Replace("{assinatura}", " ");
                     totMens++;
 
-                    // Monta recursividade
-                    RECURSIVIDADE rec = new RECURSIVIDADE();
-                    rec.ASSI_CD_ID = idAss;
-                    rec.MENS_CD_ID = null;
-                    rec.EMPR_CD_ID = usuario.EMPR_CD_ID;
-                    rec.RECU_IN_TIPO_MENSAGEM = 1;
-                    rec.RECU_DT_CRIACAO = DateTime.Today.Date;
-                    rec.RECU_IN_TIPO_SMS = 0;
-                    rec.RECU_NM_NOME = "Envio de Mensagem para Paciente - Aniversário " + paciente.PACI_NM_NOME + " - " + DateTime.Now.ToString();
-                    rec.RECU_LK_LINK = null;
-                    rec.RECU_IN_SISTEMA = 6;
-                    rec.EMFI_CD_ID = usuario.EMFI_CD_ID;
-                    rec.RECU_IN_TIPO_ENVIO = 7;
-                    rec.RECU_TX_TEXTO = textoNome;
-                    rec.RECU_IN_ATIVO = 1;
+                    // Monta e-mail
+                    NetworkCredential net = new NetworkCredential(conf.CONF_NM_SENDGRID_LOGIN, conf.CONF_NM_SENDGRID_PWD);
+                    EmailAzure mensagem = new EmailAzure();
+                    mensagem.ASSUNTO = "Paciente - " + paciente.PACI_NM_NOME + " - Mensagem de Aniversário";
+                    mensagem.CORPO = textoMsg;
+                    mensagem.DEFAULT_CREDENTIALS = false;
+                    mensagem.EMAIL_TO_DESTINO = paciente.PACI_NM_EMAIL;
+                    mensagem.NOME_EMISSOR_AZURE = emissor;
+                    mensagem.ENABLE_SSL = true;
+                    mensagem.NOME_EMISSOR = usuario.USUA_NM_NOME;
+                    mensagem.PORTA = conf.CONF_NM_PORTA_SMTP;
+                    mensagem.PRIORIDADE = System.Net.Mail.MailPriority.High;
+                    mensagem.SENHA_EMISSOR = conf.CONF_NM_SENDGRID_PWD;
+                    mensagem.SMTP = conf.CONF_NM_HOST_SMTP;
+                    mensagem.IS_HTML = true;
+                    mensagem.NETWORK_CREDENTIAL = net;
+                    mensagem.ConnectionString = conn;
 
-                    // Monta destinos
-                    RECURSIVIDADE_DESTINO dest1 = new RECURSIVIDADE_DESTINO();
-                    dest1.FORN_CD_ID = null;
-                    dest1.CLIE_CD_ID = null;
-                    dest1.REDE_TX_CORPO = textoNome;
-                    dest1.REDE_IN_ATIVO = 1;
-                    dest1.PACI_CD_ID = paciente.PACI__CD_ID;
-                    dest1.ASSI_CD_ID = idAss;
-                    dest1.USUA_CD_ID = usuario.USUA_CD_ID;
-                    dest1.REDE_EM_EMAIL = paciente.PACI_NM_EMAIL;
-                    dest1.REDE_NM_NOME = paciente.PACI_NM_NOME;
-                    rec.RECURSIVIDADE_DESTINO.Add(dest1);
+                    // Envia mensagem
+                    try
+                    {
+                        await CrossCutting.CommunicationAzurePackage.SendMailAsync(mensagem, models);
+                    }
+                    catch (Exception ex)
+                    {
+                        ViewBag.Message = ex.Message;
+                        Session["TipoVolta"] = 2;
+                        Session["VoltaExcecao"] = "Paciente";
+                        Session["Excecao"] = ex;
+                        Session["ExcecaoTipo"] = ex.GetType().ToString();
+                        GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                        Int32 voltaX = grava.GravarLogExcecao(ex, "Paciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                        erroVolta++;
+                        continue;
+                    }
 
-                    // Monta Datas
-                    RECURSIVIDADE_DATA data1 = new RECURSIVIDADE_DATA();
-                    data1.REDA_DT_PROGRAMADA = DateTime.Now.AddMinutes(10);
-                    data1.REDA_IN_PROCESSADA = 0;
-                    data1.REDA_IN_ATIVO = 1;
-                    data1.ASSI_CD_ID = idAss;
-                    data1.REDA_IN_SISTEMA = 6;
-                    rec.RECURSIVIDADE_DATA.Add(data1);
-
-                    // Grava recursividade
-                    Int32 voltaRec = recuApp.ValidateCreate(rec, usuario);
-
-                    // Grava mensagem enviada
-                    MensagemViewModel mens = new MensagemViewModel();
-                    mens.NOME = paciente.PACI_NM_NOME;
-                    mens.ID = paciente.PACI__CD_ID;
-                    mens.MODELO = paciente.PACI_NM_EMAIL;
-                    mens.MENS_DT_CRIACAO = DateTime.Today.Date;
-                    mens.MENS_IN_TIPO = 1;
-                    mens.MENS_NM_CAMPANHA = paciente.PACI_NM_EMAIL;
-                    mens.MENS_NM_NOME = "Mensagem para Paciente - Aniversário: " + paciente.PACI_NM_NOME;
-                    mens.PACI_CD_ID = paciente.PACI__CD_ID;
-                    mens.MENS_TX_TEXTO = textoNome;
-
+                    // Grava envio
+                    envios++;
+                    status = "Succeeded";
+                    vm.MENS_NM_CAMPANHA = paciente.PACI_NM_EMAIL;
+                    vm.PACI_CD_ID = paciente.PACI__CD_ID;
                     EnvioEMailGeralBase envio = new EnvioEMailGeralBase(usuApp, confApp, meApp);
                     String guid = Xid.NewXid().ToString();
-                    Int32 volta1 = envio.GravarMensagemEnviada(mens, usuario, mens.MENS_TX_TEXTO, "Succeeded", guid, null, "Aniversário de Paciente - " + paciente.PACI_NM_NOME);
+                    Int32 volta1 = envio.GravarMensagemEnviada(vm, usuario, textoMsg, "Success", guid, null, "Mensagem E-Mail para Aniversariante");
                 }
-                Session["TotMensagens"] = lista.Count.ToString();
+                Session["TotMensagens"] = lista.Count;
+                Session["TotEnvios"] = envios;
+                Session["TotErros"] = erroVolta;
             }
             catch (Exception ex)
             {

@@ -304,42 +304,39 @@ namespace ERP_Condominios_Solution.Controllers
         {
             Int32 idAss = usuario.ASSI_CD_ID;
             Int32 volta = 1;
-            if (status == "Succeeded")
+            MENSAGENS_ENVIADAS_SISTEMA env = new MENSAGENS_ENVIADAS_SISTEMA();
+            env.ASSI_CD_ID = idAss;
+            env.CLIE_CD_ID = vm.CLIE_CD_ID;
+            env.FORN_CD_ID = vm.FORN_CD_ID;
+            env.PACI_CD_ID = vm.PACI_CD_ID;
+            env.MEEN_IN_USUARIO = vm.MENS_IN_USUARIO;
+            env.MEEN_IN_TIPO = 1;
+            env.MEEN_DT_DATA_ENVIO = DateTime.Now;
+            env.MEEN_EM_EMAIL_DESTINO = vm.MENS_NM_CAMPANHA;
+            env.MEEN_NR_CELULAR_DESTINO = vm.LINK;
+            env.MEEN_NM_ORIGEM = vm.MENS_NM_NOME;
+            env.MEEN_TX_CORPO = emailBody;
+            env.MEEN_NM_TITULO = titulo;
+            env.MEEN_IN_ANEXOS = 0;
+            env.MEEN_IN_ATIVO = 1;
+            env.MEEN_IN_ESCOPO = 2;
+            env.MEEN_TX_CORPO_COMPLETO = emailBody;
+            env.USUA_CD_ID = usuario.USUA_CD_ID;
+            if (erro == null)
             {
-                MENSAGENS_ENVIADAS_SISTEMA env = new MENSAGENS_ENVIADAS_SISTEMA();
-                env.ASSI_CD_ID = idAss;
-                env.CLIE_CD_ID = vm.CLIE_CD_ID;
-                env.FORN_CD_ID = vm.FORN_CD_ID;
-                env.PACI_CD_ID = vm.PACI_CD_ID;
-                env.MEEN_IN_USUARIO = vm.MENS_IN_USUARIO;
-                env.MEEN_IN_TIPO = 1;
-                env.MEEN_DT_DATA_ENVIO = DateTime.Now;
-                env.MEEN_EM_EMAIL_DESTINO = vm.MENS_NM_CAMPANHA;
-                env.MEEN_NR_CELULAR_DESTINO = vm.LINK;
-                env.MEEN_NM_ORIGEM = vm.MENS_NM_NOME;
-                env.MEEN_TX_CORPO = emailBody;
-                env.MEEN_NM_TITULO = titulo;
-                env.MEEN_IN_ANEXOS = 0;
-                env.MEEN_IN_ATIVO = 1;
-                env.MEEN_IN_ESCOPO = 2;
-                env.MEEN_TX_CORPO_COMPLETO = emailBody;
-                env.USUA_CD_ID = usuario.USUA_CD_ID;
-                if (erro == null)
-                {
-                    env.MEEN_IN_ENTREGUE = 1;
-                }
-                else
-                {
-                    env.MEEN_IN_ENTREGUE = 0;
-                    env.MEEN_TX_RETORNO = erro;
-                }
-                env.MEEN_SG_STATUS = status;
-                env.MEEN_GU_ID_MENSAGEM = Guid.NewGuid().ToString();
-                env.MEEN_ID_IDENTIFICADOR = Xid.NewXid().ToString();
-                env.EMPR_CD_ID = usuario.EMPR_CD_ID;
-                env.MEEN_IN_SISTEMA = 6;
-                volta = meApp.ValidateCreate(env);
+                env.MEEN_IN_ENTREGUE = 1;
             }
+            else
+            {
+                env.MEEN_IN_ENTREGUE = 0;
+                env.MEEN_TX_RETORNO = erro;
+            }
+            env.MEEN_SG_STATUS = status;
+            env.MEEN_GU_ID_MENSAGEM = Guid.NewGuid().ToString();
+            env.MEEN_ID_IDENTIFICADOR = Xid.NewXid().ToString();
+            env.EMPR_CD_ID = usuario.EMPR_CD_ID;
+            env.MEEN_IN_SISTEMA = 6;
+            volta = meApp.ValidateCreate(env);
             return volta;
         }
 

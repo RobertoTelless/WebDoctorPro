@@ -33,7 +33,10 @@
                 </div>
 
                 <div class="ibox-content">
-                    @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaMensagensEnviadas", controller: "BaseAdmin", buttonClass: "warning")
+                    @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaMensagensEnviadas", controller: "BaseAdmin",  htmlAttributes: new { @class = "btn-loading" })
+                    <span id="loadingIndicator" style="display: none; margin-left: 10px; color: #007bff;">
+                        <i class="fa fa-spinner fa-spin"></i> Processando...
+                    </span>
                     <div class="tabs-container">
                         <ul class="nav nav-tabs">
                             <li class="active"><a data-toggle="tab" href="#tab-1">Conteúdo da Mensagem</a></li>
@@ -47,7 +50,7 @@
                                         <div class="row" style="width: 100%;">
                                             <div class="col-md-12">
                                                 <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
-                                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                                    <div class="col-lg-4 col-md-4 col-xs-12">
                                                         Usuário Responsável
                                                         @Html.TextBoxFor(m => m.USUARIO.USUA_NM_NOME, new { @class = "form-control", @readonly="readonly", @style = "color:green; font-weight:bold" })
                                                     </div>
@@ -68,7 +71,7 @@
                                                     </div>
                                                     @if (Model.MEEN_GU_ID_MENSAGEM != null)
                                                     {
-                                                        <div class="col-lg-3 col-md-3 col-xs-12">
+                                                        <div class="col-lg-2 col-md-2 col-xs-12">
                                                             Identificador da Mensagem
                                                             @Html.TextBoxFor(m => m.MEEN_ID_IDENTIFICADOR, new { @class = "form-control", @readonly="readonly", @style = "color:green; font-weight:bold" })
                                                         </div>
@@ -77,7 +80,7 @@
                                                 <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
                                                     <div class="col-lg-2 col-md-2 col-xs-12">
                                                         Data Envio
-                                                        @Html.TextBoxFor(m => m.MEEN_DT_DATA_ENVIO, "{0:dd/MM/yyyy}", new { @class = "form-control", @readonly="readonly", @style = "color:green; font-weight:bold" })
+                                                        @Html.TextBoxFor(m => m.MEEN_DT_DATA_ENVIO, "{0:dd/MM/yyyy HH:mm}", new { @class = "form-control", @readonly="readonly", @style = "color:green; font-weight:bold" })
                                                     </div>
                                                     @if (Model.MEEN_IN_TIPO == 1)
                                                     {
@@ -96,10 +99,6 @@
                                                     <div class="col-lg-2 col-md-2 col-xs-12">
                                                         Anexos
                                                         @Html.TextBoxFor(m => m.Anexo, new { @class = "form-control", @readonly="readonly" })
-                                                    </div>
-                                                    <div class="col-lg-2 col-md-2 col-xs-12">
-                                                        Entregue
-                                                        @Html.TextBoxFor(m => m.Entregue, new { @class = "form-control", @readonly="readonly" })
                                                     </div>
                                                 </div>
                                                 <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
@@ -155,7 +154,24 @@
     @Scripts.Render("~/plugins/sweetAlert")
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.maskedinput/1.4.1/jquery.maskedinput.js"></script>
 
+    <script type="text/javascript">
+        $(document).ready(function () { 
+            $('.btn-loading').on('click', function (e) {            
+                $(this).prop('disabled', true);
+                $(this).addClass('disabled');
+                $('#loadingIndicator').show();
+                var tagName = $(this).prop('tagName').toLowerCase();
+                if (tagName === 'a') {
+                    e.preventDefault(); 
+                    var targetUrl = $(this).attr('href');
+                    window.location.href = targetUrl;
 
+                } else if (tagName === 'button' || tagName === 'input') {
+                    $(this).closest('form').submit();
+                }
+            });
+        });
+    </script>
     @if (ViewBag.Message != null)
     {
         <script type="text/javascript">

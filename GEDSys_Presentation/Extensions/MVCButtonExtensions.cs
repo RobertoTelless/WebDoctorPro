@@ -154,6 +154,7 @@ namespace Presentation.Extensions
         public static MvcHtmlString ButtonLinkShort(this HtmlHelper html, string controller, object htmlAttributes, string buttonClass, string text)
         {
             var attrs = HtmlHelper.AnonymousObjectToHtmlAttributes(htmlAttributes) ?? new RouteValueDictionary();
+            string newClasses = "btn btn-sm btn-" + buttonClass;
             attrs.Add("class", "btn btn-sm btn-" + buttonClass);
             return html.ActionLink(text, null, controller, null, attrs);
         }

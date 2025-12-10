@@ -69,7 +69,7 @@
                     <div class="ibox-content">
                         <h1 class="no-margins">@ViewBag.Ausencia</h1>
                         <small>
-                            <a href="@Url.Action("MontarTelaAusencias", "Paciente2")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Ver pacientes ausentes. Sem retorno após a data prevista. Ativa apenas se a opção de cálculo da data da próxima consulta estiver ativa na Configuração">Mais de @ViewBag.AusenciaDias meses</a>
+                            <a href="@Url.Action("MontarTelaAusencias", "Paciente2")" class="btn-loading" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Ver pacientes ausentes. Sem retorno após a data prevista. Ativa apenas se a opção de cálculo da data da próxima consulta estiver ativa na Configuração">Mais de @ViewBag.AusenciaDias meses</a>
                         </small>
                     </div>
                 </div>
@@ -82,7 +82,7 @@
                     </div>
                     <div class="ibox-content">
                         <h1 class="no-margins">@ViewBag.ListaPacienteAnivDiaConta</h1>
-                        <small><a href="@Url.Action("EnviarMailAniversario", "Paciente")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Consultar aniversariantes do dia e envio de mensagem por e-mail" >Aniversariantes</a></small>
+                        <small><a href="@Url.Action("EnviarMailAniversario", "Paciente")" class="btn-loading" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Consultar aniversariantes do dia e envio de mensagem por e-mail" >Aniversariantes</a></small>
                     </div>
                 </div>
             </div>
@@ -94,7 +94,7 @@
                     </div>
                     <div class="ibox-content">
                         <h1 class="no-margins">@ViewBag.NumConsultas</h1>
-                        <small><a href="@Url.Action("MontarTelaConsultas", "Paciente")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Verificar as consultas marcadas para a data corrente" >Consultas do Dia</a></small>
+                        <small><a href="@Url.Action("MontarTelaConsultas", "Paciente")" class="btn-loading" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Verificar as consultas marcadas para a data corrente" >Consultas do Dia</a></small>
                     </div>
                 </div>
             </div>
@@ -108,11 +108,11 @@
                         <h1 class="no-margins">@ViewBag.NaoEncerradasNumero</h1>
                         @if (ViewBag.NaoEncerradasNumero > 0)
                         {
-                            <small class="pisca"><a href="@Url.Action("MontarTelaEncerrarConsulta", "Financeiro")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Verificar e processar as consultas não encerradas" >Não Encerradas</a></small>
+                            <small class="pisca"><a href="@Url.Action("MontarTelaEncerrarConsulta", "Financeiro")" class="btn-loading" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Verificar e processar as consultas não encerradas" >Não Encerradas</a></small>
                         }
                         else
                         {
-                            <small><a href="@Url.Action("MontarTelaEncerrarConsulta", "Financeiro")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Verificar e processar as consultas não encerradas">Não Encerradas</a></small>
+                            <small><a href="@Url.Action("MontarTelaEncerrarConsulta", "Financeiro")" class="btn-loading" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Verificar e processar as consultas não encerradas">Não Encerradas</a></small>
                         }
                     </div>
                 </div>
@@ -125,7 +125,7 @@
                     </div>
                     <div class="ibox-content">
                         <h1 class="no-margins">@ViewBag.NumListasFabricante</h1>
-                        <small><a href="@Url.Action("MontarTelaAvisosRTi", "Paciente2")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Consultar todos os avisos da Rti disponíveis">Avisos Disponíveis</a></small>
+                        <small><a href="@Url.Action("MontarTelaAvisosRTi", "Paciente2")" class="btn-loading" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Consultar todos os avisos da Rti disponíveis">Avisos Disponíveis</a></small>
                     </div>
                 </div>
             </div>
