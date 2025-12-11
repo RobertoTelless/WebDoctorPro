@@ -34,7 +34,7 @@
             <div class="ibox-content">
                 <div class="form-group">
                     <br />
-                    @Html.ButtonLinkIndex(text: "Nova Consulta", controller: "Paciente2", action: "IncluirConsultaGeralCompleta", buttonClass: "primary")
+                    @Html.ButtonLinkIndex(text: "Nova Consulta", controller: "Paciente2", action: "IncluirConsultaGeralCompleta", buttonClass: "primary", htmlAttributes: new { @class = "btn-loading" } )
                     @if ((Int32)Session["VoltaInfoConsulta"] == 1)
                     {
                         @Html.ButtonLinkIndex(text: "Voltar", action: "IncluirConsulta", controller: "Paciente")
@@ -61,7 +61,6 @@
 @section Styles {
     <link href="~/Content/themes/base/jquery-ui.min.css" rel="stylesheet" />
     <link href="~/Content/themes/base/all.css" rel="stylesheet" />
-    <link href="~/Content/jquery.datetimepicker.css" rel="stylesheet" />
     @Styles.Render("~/Content/plugins/dataTables/dataTablesStyles")
     @Styles.Render("~/plugins/jasnyBootstrapStyles")
     @Styles.Render("~/plugins/toastrStyles")
@@ -69,11 +68,6 @@
 }
 
 @section Scripts {
-    <script src="~/Scripts/jquery.datetimepicker.full.min.js"></script>
-    <script type="text/javascript" src="~/Scripts/moment.min.js"></script>
-    <script type="text/javascript" src="~/Scripts/bootstrap.min.js"></script>
-    <script type="text/javascript" src="~/Scripts/jquery.datetimepicker"></script>
-
     @Scripts.Render("~/plugins/toastr")
     <script src="~/Scripts/jquery-ui-1.12.1.min.js"></script>
     @Scripts.Render("~/plugins/dataTables")
@@ -81,8 +75,10 @@
     @Scripts.Render("~/plugins/jasnyBootstrap")
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.maskedinput/1.4.1/jquery.maskedinput.js"></script>
     <script src="~/Scripts/uploadAnexo.js"></script>
-    @Scripts.Render("~/Scripts/plugins/fullcalendar/moment.min.js")
     @Scripts.Render("~/Scripts/plugins/fullcalendar/fullcalendar.min.js")
+    
+    <script type="text/javascript" src="~/Scripts/moment.min.js"></script>
+    <script type="text/javascript" src="~/Scripts/bootstrap.min.js"></script>
     
     <script>
         $('#modalCadastroEvento').on('hidden.bs.modal', function () {
@@ -90,10 +86,11 @@
         });
 
         $.ajax({
-            url: '../Paciente2/GetEventosCalendario'
+            url: '../Paciente/GetEventosCalendario'
             , type: 'POST'
             , success: function (r) {
                 $('#calendario').fullCalendar({
+                    timezone: 'local',
                     events: r
                     , editable: true
                     , initialView: 'agendaWeek'
@@ -128,6 +125,21 @@
                         $(element).attr('data-placement', 'top');
                         $(element).attr('title', 'Confirmada: ' + event.confirm);
                         $(element).tooltip();
+
+                        if (event.confirm === 'Não') {
+                            $(element).css({
+                                'background-color': '#F5E8E0', 
+                                'border-color': '#F5E8E0'      
+                            });        
+                            $(element).find('.fc-time, .fc-title').css('color', 'brown');
+                        }
+                        else {
+                            $(element).css({
+                                'background-color': '#B6D6B4', 
+                                'border-color': '#B6D6B4'      
+                            });        
+                            $(element).find('.fc-time, .fc-title').css('color', 'green');
+                        }
                     }
                     , eventDrop: function (info) {
                         var data = {
@@ -136,7 +148,7 @@
                         }
 
                         $.ajax({
-                            url: '../Paciente2/EditarConsultaOnChange'
+                            url: '../Paciente/EditarConsultaOnChange'
                             , type: 'POST'
                             , data: data
                             , success: function (r) {
@@ -173,7 +185,7 @@
                 }
 
                 $.ajax({
-                    url: '../Paciente2/GetDetalhesEventoMarcacao'
+                    url: '../Paciente/GetDetalhesEvento'
                     , type: 'POST'
                     , data: data
                     , success: function (det) {
@@ -293,6 +305,7 @@
             });
         });
     </script>
+
 
 }
 

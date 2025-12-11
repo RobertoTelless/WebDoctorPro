@@ -15,6 +15,9 @@
                 <li>
                     <a href="@Url.Action("MontarTelaPaciente", "Paciente")">Dashboard</a>
                 </li>
+                <li>
+                    <a href="@Url.Action("MontarTelaConsultas", "Paciente")">Consultas</a>
+                </li>
                 <li class="active">
                     <strong>Consultas - Marcação</strong>
                 </li>
@@ -33,7 +36,7 @@
                     <a href="@Url.Action("MontarTelaConsultas", "Paciente")">Central de Consultas</a>
                 </li>
                 <li class="active">
-                    <strong>Pacientes - Consultas</strong>
+                    <strong>Consultas - Marcação</strong>
                 </li>
             </ol>
             <br />
@@ -65,7 +68,6 @@
                             <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Profissional</h4>
                             @Html.HiddenFor(m => m.PACO_IN_ATIVO)
                             @Html.HiddenFor(m => m.PACO_IN_ENCERRADA)
-                            @*@Html.HiddenFor(m => m.USUA_CD_ID)*@
                             @Html.HiddenFor(m => m.ASSI_CD_ID)
                             @Html.HiddenFor(m => m.PACO_IN_CONFIRMADA)
                             <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
@@ -201,7 +203,7 @@
                                 @Html.ButtonActionSubmit(text: "Confirma Criação de Consulta", htmlAttributes: new { id = "basictoast", @class = "btn-loading1" })
                                 @if ((Int32)Session["VoltarProceder"] == 1)
                                 {
-                                    @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarProcederConsulta", controller: "Paciente", htmlAttributes: new { @class = "btn-loading" })
+                                    @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarProcederConsulta", controller: "Paciente", htmlAttributes: new { @class = "btn-loading" }))
                                 }
                                 else
                                 {
@@ -437,29 +439,6 @@
     @Scripts.Render("~/plugins/jasnyBootstrap")
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.maskedinput/1.4.1/jquery.maskedinput.js"></script>
     <script src="~/Scripts/uploadAnexo.js"></script>
-    @Scripts.Render("~/plugins/toastr")
-    <script src="~/Scripts/jquery-ui-1.12.1.min.js"></script>
-    @Scripts.Render("~/plugins/dataTables")
-    @Scripts.Render("~/bundles/inputmask")
-    @Scripts.Render("~/plugins/jasnyBootstrap")
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.maskedinput/1.4.1/jquery.maskedinput.js"></script>
-    <script type="text/javascript" src="~/Scripts/moment.min.js"></script>
-    <script type="text/javascript" src="~/Scripts/bootstrap.min.js"></script>
-
-    <script type="text/javascript">
-        $(document).ready(function () {
-            $('[data-toggle="popover"]').popover();
-        });
-    </script>
-
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-toggle="popover"]'));
-            var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
-                return new bootstrap.Popover(popoverTriggerEl);
-            });
-        });
-    </script>
 
     <script type="text/javascript">
         $(document).ready(function () { 
@@ -475,6 +454,29 @@
 
                 } else if (tagName === 'button' || tagName === 'input') {
                     $(this).closest('form').submit();
+                }
+            });
+        });
+    </script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('.btn-loading1').on('click', function (e) {
+            
+                var $this = $(this);
+                var tagName = $this.prop('tagName').toLowerCase();
+                $this.addClass('disabled'); 
+                $('#loadingIndicator').show();
+
+                if (tagName === 'a') {
+                    e.preventDefault();
+                
+                    var targetUrl = $this.attr('href');
+                    window.location.href = targetUrl;
+                
+                } else if (tagName === 'button' || tagName === 'input') {               
+                    $this.closest('form').submit();
+                    $this.prop('disabled', true);
                 }
             });
         });

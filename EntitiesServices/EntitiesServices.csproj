@@ -1591,6 +1591,7 @@
     <Compile Include="WorkClasses\DTO_Paciente .cs" />
     <Compile Include="WorkClasses\DTO_Paciente_Acompanhamento.cs" />
     <Compile Include="WorkClasses\DTO_Grupo.cs" />
+    <Compile Include="WorkClasses\DTO_Paciente_Consulta.cs" />
     <Compile Include="WorkClasses\DTO_Paciente_Ficha.cs" />
     <Compile Include="WorkClasses\DTO_Paciente_Anexo.cs" />
     <Compile Include="WorkClasses\DTO_Paciente_Anamnese_Anotacao.cs" />

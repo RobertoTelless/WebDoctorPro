@@ -34,8 +34,11 @@
             <div class="ibox-content">
                 <div class="form-group">
                     <br />
-                    @Html.ButtonLinkIndex(text: "Nova Consulta", controller: "Paciente", action: "IncluirConsultaCompleta", buttonClass: "primary")
-                    @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaMarcacaoConsulta", controller: "Paciente")
+                    @Html.ButtonLinkIndex(text: "Nova Consulta", controller: "Paciente", action: "IncluirConsultaCompleta", buttonClass: "primary", htmlAttributes: new { @class = "btn-loading" })
+                    @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaMarcacaoConsulta", controller: "Paciente", htmlAttributes: new { @class = "btn-loading" })
+                    <span id="loadingIndicator" style="display: none; margin-left: 10px; color: #007bff;">
+                        <i class="fa fa-spinner fa-spin"></i> Processando...
+                    </span>
                 </div>
                 <div id="calendario"></div>
             </div>
@@ -46,7 +49,6 @@
 @section Styles {
     <link href="~/Content/themes/base/jquery-ui.min.css" rel="stylesheet" />
     <link href="~/Content/themes/base/all.css" rel="stylesheet" />
-    <link href="~/Content/jquery.datetimepicker.css" rel="stylesheet" />
     @Styles.Render("~/Content/plugins/dataTables/dataTablesStyles")
     @Styles.Render("~/plugins/jasnyBootstrapStyles")
     @Styles.Render("~/plugins/toastrStyles")
@@ -54,11 +56,6 @@
 }
 
 @section Scripts {
-    <script src="~/Scripts/jquery.datetimepicker.full.min.js"></script>
-    <script type="text/javascript" src="~/Scripts/moment.min.js"></script>
-    <script type="text/javascript" src="~/Scripts/bootstrap.min.js"></script>
-    <script type="text/javascript" src="~/Scripts/jquery.datetimepicker"></script>
-
     @Scripts.Render("~/plugins/toastr")
     <script src="~/Scripts/jquery-ui-1.12.1.min.js"></script>
     @Scripts.Render("~/plugins/dataTables")
@@ -66,19 +63,64 @@
     @Scripts.Render("~/plugins/jasnyBootstrap")
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.maskedinput/1.4.1/jquery.maskedinput.js"></script>
     <script src="~/Scripts/uploadAnexo.js"></script>
-    @Scripts.Render("~/Scripts/plugins/fullcalendar/moment.min.js")
     @Scripts.Render("~/Scripts/plugins/fullcalendar/fullcalendar.min.js")
     
+    <script type="text/javascript" src="~/Scripts/moment.min.js"></script>
+    <script type="text/javascript" src="~/Scripts/bootstrap.min.js"></script>
+   
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('[data-toggle="popover"]').popover();
+        });
+    </script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-toggle="popover"]'));
+            var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
+                return new bootstrap.Popover(popoverTriggerEl);
+            });
+        });
+    </script>
+
+    <!-- Handler de fechamento do browser -->
+    <script type="text/javascript">
+        window.onbeforeunload = function ()
+        {
+            navigator.sendBeacon('../ControleAcesso/LogSessionTime');
+        }; 
+    </script>
+
+    <script type="text/javascript">
+        $(document).ready(function () { 
+            $('.btn-loading').on('click', function (e) {            
+                $(this).prop('disabled', true);
+                $(this).addClass('disabled');
+                $('#loadingIndicator').show();
+                var tagName = $(this).prop('tagName').toLowerCase();
+                if (tagName === 'a') {
+                    e.preventDefault(); 
+                    var targetUrl = $(this).attr('href');
+                    window.location.href = targetUrl;
+
+                } else if (tagName === 'button' || tagName === 'input') {
+                    $(this).closest('form').submit();
+                }
+            });
+        });
+    </script>
+
     <script>
         $('#modalCadastroEvento').on('hidden.bs.modal', function () {
             $('#calendario').fullCalendar('removeEvents', 0);
         });
 
         $.ajax({
-            url: '../Paciente/GetEventosMarcacaoCalendario'
+            url: '../Paciente/GetEventosCalendario'
             , type: 'POST'
             , success: function (r) {
                 $('#calendario').fullCalendar({
+                    timezone: 'local',
                     events: r
                     , editable: true
                     , initialView: 'agendaWeek'
@@ -113,6 +155,21 @@
                         $(element).attr('data-placement', 'top');
                         $(element).attr('title', 'Confirmada: ' + event.confirm);
                         $(element).tooltip();
+
+                        if (event.confirm === 'Não') {
+                            $(element).css({
+                                'background-color': '#F5E8E0', 
+                                'border-color': '#F5E8E0'      
+                            });        
+                            $(element).find('.fc-time, .fc-title').css('color', 'brown');
+                        }
+                        else {
+                            $(element).css({
+                                'background-color': '#B6D6B4', 
+                                'border-color': '#B6D6B4'      
+                            });        
+                            $(element).find('.fc-time, .fc-title').css('color', 'green');
+                        }
                     }
                     , eventDrop: function (info) {
                         var data = {
@@ -158,7 +215,7 @@
                 }
 
                 $.ajax({
-                    url: '../Paciente/GetDetalhesEventoMarcacao'
+                    url: '../Paciente/GetDetalhesEvento'
                     , type: 'POST'
                     , data: data
                     , success: function (det) {

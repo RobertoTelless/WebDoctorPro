@@ -37,23 +37,26 @@
                 <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Consultas Encerradas ou Canceladas não serão exibidas no calendário</h4>
                 <div class="form-group"  style="color:">
                     <br />
-                    @Html.ButtonLinkIndex(text: "Nova Consulta", controller: "Paciente", action: "IncluirConsultaCompleta", buttonClass: "primary")
+                    @Html.ButtonLinkIndex(text: "Nova Consulta", controller: "Paciente", action: "IncluirConsultaCompleta", buttonClass: "primary", htmlAttributes: new { @class = "btn-loading" })
                     @if ((Int32)Session["VoltaConfCalendario"] == 1)
                     {
-                        @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaConsultas", controller: "Paciente")
+                        @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaConsultas", controller: "Paciente", htmlAttributes: new { @class = "btn-loading" })
                     }
                     else if ((Int32)Session["VoltaConfCalendario"] == 2)
                     {
-                        @Html.ButtonLinkIndex(text: "Voltar", action: "IncluirConsulta", controller: "Paciente")
+                        @Html.ButtonLinkIndex(text: "Voltar", action: "IncluirConsulta", controller: "Paciente", htmlAttributes: new { @class = "btn-loading" })
                     }
                     else if ((Int32)Session["VoltaConfCalendario"] == 5)
                     {
-                        @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaMarcacaoConsulta", controller: "Paciente")
+                        @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaMarcacaoConsulta", controller: "Paciente", htmlAttributes: new { @class = "btn-loading" })
                     }
                     else
                     {
-                        @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaConsultas", controller: "Paciente")
+                        @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaConsultas", controller: "Paciente", htmlAttributes: new { @class = "btn-loading" })
                     }
+                    <span id="loadingIndicator" style="display: none; margin-left: 10px; color: #007bff;">
+                        <i class="fa fa-spinner fa-spin"></i> Processando...
+                    </span>
                 </div>
                 <div id="calendario"></div>
             </div>
@@ -78,7 +81,6 @@
     @Scripts.Render("~/plugins/jasnyBootstrap")
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.maskedinput/1.4.1/jquery.maskedinput.js"></script>
     <script src="~/Scripts/uploadAnexo.js"></script>
-    @*@Scripts.Render("~/Scripts/plugins/fullcalendar/moment.min.js")*@
     @Scripts.Render("~/Scripts/plugins/fullcalendar/fullcalendar.min.js")
     
     <script type="text/javascript" src="~/Scripts/moment.min.js"></script>
@@ -105,6 +107,25 @@
         {
             navigator.sendBeacon('../ControleAcesso/LogSessionTime');
         }; 
+    </script>
+
+    <script type="text/javascript">
+        $(document).ready(function () { 
+            $('.btn-loading').on('click', function (e) {            
+                $(this).prop('disabled', true);
+                $(this).addClass('disabled');
+                $('#loadingIndicator').show();
+                var tagName = $(this).prop('tagName').toLowerCase();
+                if (tagName === 'a') {
+                    e.preventDefault(); 
+                    var targetUrl = $(this).attr('href');
+                    window.location.href = targetUrl;
+
+                } else if (tagName === 'button' || tagName === 'input') {
+                    $(this).closest('form').submit();
+                }
+            });
+        });
     </script>
     <script>
         $('#modalCadastroEvento').on('hidden.bs.modal', function () {

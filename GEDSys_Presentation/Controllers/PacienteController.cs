@@ -16521,11 +16521,11 @@ namespace GEDSys_Presentation.Controllers
                 try
                 {
                     // Sanitização
-                    vm.PACI_NM_NOME = CrossCutting.UtilitariosGeral.CleanStringDocto(vm.PACI_NM_NOME);
+                    vm.PACI_NM_NOME = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(vm.PACI_NM_NOME);
                     vm.PACI_NR_CPF = CrossCutting.UtilitariosGeral.CleanStringDocto(vm.PACI_NR_CPF);
                     vm.PACI_NM_EMAIL = CrossCutting.UtilitariosGeral.CleanStringMail(vm.PACI_NM_EMAIL);
                     vm.PACI_NR_CELULAR = CrossCutting.UtilitariosGeral.CleanStringPhone(vm.PACI_NR_CELULAR);
-                    vm.PACI_NM_INDICADO = CrossCutting.UtilitariosGeral.CleanStringDocto(vm.PACI_NM_INDICADO);
+                    vm.PACI_NM_INDICADO = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(vm.PACI_NM_INDICADO);
 
                     // Critica usuario
                     if (vm.USUA_CD_ID == 0 || vm.USUA_CD_ID == null)
@@ -16763,6 +16763,8 @@ namespace GEDSys_Presentation.Controllers
                             Directory.CreateDirectory(Server.MapPath(caminho));
                             caminho = "/Imagens/" + idAss.ToString() + "/Pacientes/" + key.ToString() + "/Consultas/";
                             Directory.CreateDirectory(Server.MapPath(caminho));
+                            caminho = "/Imagens/" + idAss.ToString() + "/Pacientes/" + key.ToString() + "/Fichas/";
+                            Directory.CreateDirectory(Server.MapPath(caminho));
 
                             // Mensagem de cadastramento
                             PACIENTE pac1 = baseApp.GetItemById(paciente.PACI__CD_ID);
@@ -16922,16 +16924,24 @@ namespace GEDSys_Presentation.Controllers
                             Int32 voltaCons = await EnviarEMailConsulta(consMensagem, 5);
                         }
 
+                        // Configura serilização
+                        JsonSerializerSettings settings = new JsonSerializerSettings
+                        {
+                            ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+                            NullValueHandling = NullValueHandling.Ignore
+                        };
+
                         // Monta Log
-                        String frase = item.PACI_CD_ID.ToString() + "|" + item.PACI_CD_ID.ToString() + "|" + item.PACO_DT_CONSULTA.ToString() + "|" + item.PACO_HR_INICIO.ToString() + "|" + item.PACO_HR_FINAL.ToString() + "|" + item.VACO_CD_ID.ToString();
+                        DTO_Paciente_Consulta dto = MontarPacienteConsultaDTOObj(item);
+                        String json = JsonConvert.SerializeObject(dto, settings);
                         LOG log = new LOG
                         {
                             LOG_DT_DATA = DateTime.Now,
                             ASSI_CD_ID = usuario.ASSI_CD_ID,
                             USUA_CD_ID = usuario.USUA_CD_ID,
-                            LOG_NM_OPERACAO = "icoPACI",
+                            LOG_NM_OPERACAO = "Paciente - Consulta - Marcação",
                             LOG_IN_ATIVO = 1,
-                            LOG_TX_REGISTRO = frase,
+                            LOG_TX_REGISTRO = json,
                             LOG_IN_SISTEMA = 6
                         };
                         Int32 volta1 = logApp.ValidateCreate(log);
@@ -16944,8 +16954,8 @@ namespace GEDSys_Presentation.Controllers
                         hist.PAHI_DT_DATA = DateTime.Now;
                         hist.PAHI_IN_TIPO = 10;
                         hist.PAHI_IN_CHAVE = item.PACO_CD_ID;
-                        hist.PAHI_NM_OPERACAO = "Paciente - Inclusão de Consulta";
-                        hist.PAHI_DS_DESCRICAO = "Paciente: " + pac.PACI_NM_NOME + " - Consulta incluída: " + item.PACO_DT_CONSULTA.ToShortDateString();
+                        hist.PAHI_NM_OPERACAO = "Paciente - Marcação de Consulta";
+                        hist.PAHI_DS_DESCRICAO = "Paciente: " + pac.PACI_NM_NOME + " - Consulta marcada: " + item.PACO_DT_CONSULTA.ToShortDateString();
                         Int32 voltaHist = baseApp.ValidateCreateHistorico(hist);
 
                         Session["ListaPacienteBase"] = null;
@@ -17124,6 +17134,7 @@ namespace GEDSys_Presentation.Controllers
                 // Decriptografa chaves
                 String emissor = CrossCutting.Cryptography.Decrypt(conf.CONF_NM_EMISSOR_AZURE_CRIP);
                 String conn = CrossCutting.Cryptography.Decrypt(conf.CONF_CS_CONNECTION_STRING_AZURE_CRIP);
+                List<AttachmentModel> models = new List<AttachmentModel>();
 
                 // Monta e-mail
                 NetworkCredential net = new NetworkCredential(conf.CONF_NM_SENDGRID_LOGIN, conf.CONF_NM_SENDGRID_PWD);
@@ -17154,7 +17165,7 @@ namespace GEDSys_Presentation.Controllers
                 // Envia mensagem
                 try
                 {
-                    await CrossCutting.CommunicationAzurePackage.SendMailAsyncNew(mensagem);
+                    await CrossCutting.CommunicationAzurePackage.SendMailAsync(mensagem, models);
                 }
                 catch (Exception ex)
                 {
@@ -17217,7 +17228,6 @@ namespace GEDSys_Presentation.Controllers
             // Recupera informações
             Int32 idAss = (Int32)Session["IdAssinante"];
             USUARIO usuario = (USUARIO)Session["UserCredentials"];
-            //PACIENTE paciente = (PACIENTE)Session["PacienteConsulta"];
             PACIENTE paciente = baseApp.GetItemById(consulta.PACI_CD_ID);
 
             // Processo
@@ -17294,10 +17304,6 @@ namespace GEDSys_Presentation.Controllers
 
                 // processa envio
                 String listaDest = "55" + Regex.Replace(paciente.PACI_NR_CELULAR, "[^a-zA-Z0-9_.]+", "", RegexOptions.Compiled).ToString();
-                //var httpWebRequest = (HttpWebRequest)WebRequest.Create("https://api-v2.smsfire.com.br/sms/send/bulk");
-                //httpWebRequest.Headers["Authorization"] = auth;
-                //httpWebRequest.ContentType = "application/json";
-                //httpWebRequest.Method = "POST";
                 String customId = Cryptography.GenerateRandomPassword(8);
                 String data = String.Empty;
                 String json = String.Empty;
@@ -17339,18 +17345,6 @@ namespace GEDSys_Presentation.Controllers
                     resposta = streamReader.ReadToEnd();
                 }
 
-                //using (var streamWriter = new StreamWriter(httpWebRequest.GetRequestStream()))
-                //{
-                //    json = String.Concat("{\"destinations\": [{\"to\": \"", listaDest, "\", \"text\": \"", texto, "\", \"customId\": \"" + customId + "\", \"from\": \"WebDoctor\"}]}");
-                //    streamWriter.Write(json);
-                //}
-                //var httpResponse = (HttpWebResponse)httpWebRequest.GetResponse();
-                //using (var streamReader = new StreamReader(httpResponse.GetResponseStream()))
-                //{
-                //    var result = streamReader.ReadToEnd();
-                //    resposta = result;
-                //}
-
                 // Grava mensagem enviada
                 MensagemViewModel mens = new MensagemViewModel();
                 mens.NOME = paciente.PACI_NM_NOME;
@@ -17359,13 +17353,13 @@ namespace GEDSys_Presentation.Controllers
                 mens.MENS_DT_CRIACAO = DateTime.Today.Date;
                 mens.MENS_IN_TIPO = 2;
                 mens.MENS_NM_CAMPANHA = paciente.PACI_NM_EMAIL;
-                mens.MENS_NM_NOME = "Mensagem SMS para Paciente - Consulta: " + paciente.PACI_NM_NOME;
+                mens.MENS_NM_NOME = "Mensagem SMS para Paciente - Consulta - Marcação: " + paciente.PACI_NM_NOME;
                 mens.PACI_CD_ID = paciente.PACI__CD_ID;
                 mens.MENS_TX_TEXTO = smsBody;
 
                 EnvioEMailGeralBase envio = new EnvioEMailGeralBase(usuApp, confApp, meApp);
                 String guid = Xid.NewXid().ToString();
-                Int32 volta1 = envio.GravarMensagemEnviada(mens, usuario, mens.MENS_TX_TEXTO, "Succeeded", guid, null, "Confirmação de Consulta de Paciente - SMS - " + paciente.PACI_NM_NOME);
+                Int32 volta1 = envio.GravarMensagemEnviada(mens, usuario, mens.MENS_TX_TEXTO, "Succeeded", guid, null, "Marcação de Consulta de Paciente - SMS - " + paciente.PACI_NM_NOME);
 
                 // Sucesso
                 Session["NivelPaciente"] = 1;
@@ -17607,12 +17601,52 @@ namespace GEDSys_Presentation.Controllers
                         Int32 voltaA = baseApp.ValidateEditAnamnese(anamNova);
                     }
 
+                    // Acerta exame fisico
+                    PACIENTE_EXAME_FISICOS fis = pac.PACIENTE_EXAME_FISICOS.Where(p => p.PAEF_IN_ATIVO == 1).FirstOrDefault();
+                    PACIENTE_EXAME_FISICOS fisNova = RemontarFisico(fis);
+                    if (fisNova.PAEF_DT_DATA.Value.Date == ((DateTime)Session["DataOriginal"]).Date)
+                    {
+                        fisNova.PAEF_DT_DATA = item.PACO_DT_CONSULTA;
+                        Int32 voltaA = baseApp.ValidateEditExameFisico(fisNova);
+                    }
+
                     // Finaliza edição
                     if (sai == 0)
                     {
-                        // Acerta paciente
-                        //pac.PACI_DT_PREVISAO_RETORNO = vm.PACO_DT_CONSULTA;
-                        Int32 voltaP = baseApp.ValidateEdit(pac, pac);
+                        // Acerta proxima consulta do paciente
+                        Int32? ret = conf.CONF_NR_MESES_RETORNO;
+                        Int32? calc = conf.CONF_IN_CALCULA_PROXIMA_CONSULTA;
+                        List<PACIENTE_CONSULTA> cons = pac.PACIENTE_CONSULTA.Where(p => p.PACO_DT_CONSULTA.Date >= DateTime.Today.Date & p.PACO_IN_ATIVO == 1 & p.PACO_IN_CONFIRMADA < 2).ToList();
+                        if (cons.Count == 0)
+                        {
+                            pac.PACI_DT_CONSULTA = item.PACO_DT_CONSULTA;
+                            if (calc == 1)
+                            {
+                                pac.PACI_DT_PREVISAO_RETORNO = item.PACO_DT_CONSULTA.AddMonths(ret.Value);
+                            }
+                            else
+                            {
+                                pac.PACI_DT_PREVISAO_RETORNO = null;
+                            }
+                            Int32 voltaP = baseApp.ValidateEdit(pac, pac);
+                        }
+                        else
+                        {
+                            cons = pac.PACIENTE_CONSULTA.Where(p => p.PACO_DT_CONSULTA.Date < item.PACO_DT_CONSULTA.Date & p.PACO_IN_ATIVO == 1 & p.PACO_IN_CONFIRMADA < 2).ToList();
+                            if (cons.Count == 0)
+                            {
+                                pac.PACI_DT_CONSULTA = item.PACO_DT_CONSULTA;
+                                if (calc == 1)
+                                {
+                                    pac.PACI_DT_PREVISAO_RETORNO = item.PACO_DT_CONSULTA.AddMonths(ret.Value);
+                                }
+                                else
+                                {
+                                    pac.PACI_DT_PREVISAO_RETORNO = null;
+                                }
+                                Int32 voltaP = baseApp.ValidateEdit(pac, pac);
+                            }
+                        }
                         Session["PacienteConsulta"] = pac;
 
                         // Envia mensagem
@@ -17631,16 +17665,24 @@ namespace GEDSys_Presentation.Controllers
                         Session["MensPaciente"] = 888;
                     }
 
+                    // Configura serilização
+                    JsonSerializerSettings settings = new JsonSerializerSettings
+                    {
+                        ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+                        NullValueHandling = NullValueHandling.Ignore
+                    };
+
                     // Monta Log
-                    String frase = "Paciente " + pac.PACI_NM_NOME + " - Consulta editada " + item.PACO_DT_CONSULTA.ToShortDateString();
+                    DTO_Paciente_Consulta dto = MontarPacienteConsultaDTOObj(item);
+                    String json = JsonConvert.SerializeObject(dto, settings);
                     LOG log = new LOG
                     {
                         LOG_DT_DATA = DateTime.Now,
                         ASSI_CD_ID = usuario.ASSI_CD_ID,
                         USUA_CD_ID = usuario.USUA_CD_ID,
-                        LOG_NM_OPERACAO = "ecoPACI",
+                        LOG_NM_OPERACAO = "Paciente - Consulta - Alteração",
                         LOG_IN_ATIVO = 1,
-                        LOG_TX_REGISTRO = frase,
+                        LOG_TX_REGISTRO = json,
                         LOG_IN_SISTEMA = 6
                     };
                     Int32 volta1 = logApp.ValidateCreate(log);
@@ -17653,8 +17695,8 @@ namespace GEDSys_Presentation.Controllers
                     hist.PAHI_DT_DATA = DateTime.Now;
                     hist.PAHI_IN_TIPO = 10;
                     hist.PAHI_IN_CHAVE = item.PACO_CD_ID;
-                    hist.PAHI_NM_OPERACAO = "Paciente - Edição de Consulta";
-                    hist.PAHI_DS_DESCRICAO = "Paciente " + pac.PACI_NM_NOME + " - Consulta editada " + item.PACO_DT_CONSULTA.ToShortDateString();
+                    hist.PAHI_NM_OPERACAO = "Paciente - Alteração de Consulta";
+                    hist.PAHI_DS_DESCRICAO = "Paciente " + pac.PACI_NM_NOME + " - Consulta alterada " + item.PACO_DT_CONSULTA.ToShortDateString();
                     Int32 voltaHist = baseApp.ValidateCreateHistorico(hist);
 
                     // Retorno
@@ -17753,29 +17795,38 @@ namespace GEDSys_Presentation.Controllers
                     Int32 voltax = baseApp.ValidateEdit(cli, cli);
                 }
 
+                // Configura serilização
+                JsonSerializerSettings settings = new JsonSerializerSettings
+                {
+                    ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+                    NullValueHandling = NullValueHandling.Ignore
+                };
+
                 // Monta Log
+                PACIENTE pac = baseApp.GetItemById(item.PACI_CD_ID);
+                DTO_Paciente_Consulta dto = MontarPacienteConsultaDTOObj(item);
+                String json = JsonConvert.SerializeObject(dto, settings);
                 LOG log = new LOG
                 {
                     LOG_DT_DATA = DateTime.Now,
                     ASSI_CD_ID = usuarioLogado.ASSI_CD_ID,
                     USUA_CD_ID = usuarioLogado.USUA_CD_ID,
-                    LOG_NM_OPERACAO = "xcoPACI",
+                    LOG_NM_OPERACAO = "Paciente - Consulta - Exclusão",
                     LOG_IN_ATIVO = 1,
-                    LOG_TX_REGISTRO = "Paciente: " + cli.PACI_NM_NOME + " | Data: " + item.PACO_DT_CONSULTA,
+                    LOG_TX_REGISTRO = json,
                     LOG_IN_SISTEMA = 6
                 };
                 Int32 volta1 = logApp.ValidateCreate(log);
 
                 // Grava historico
                 PACIENTE_HISTORICO hist = new PACIENTE_HISTORICO();
-                PACIENTE pac = baseApp.GetItemById(item.PACI_CD_ID);
                 hist.ASSI_CD_ID = usuario.ASSI_CD_ID;
                 hist.USUA_CD_ID = usuario.USUA_CD_ID;
                 hist.PACI_CD_ID = item.PACI_CD_ID;
                 hist.PAHI_DT_DATA = DateTime.Now;
                 hist.PAHI_IN_TIPO = 10;
                 hist.PAHI_IN_CHAVE = item.PACO_CD_ID;
-                hist.PAHI_NM_OPERACAO = "Paciente - Exclusão de Consulta";
+                hist.PAHI_NM_OPERACAO = "Paciente - Consulta - Exclusão";
                 hist.PAHI_DS_DESCRICAO = "Paciente " + pac.PACI_NM_NOME + " - Consulta excluída " + item.PACO_DT_CONSULTA.ToShortDateString();
                 Int32 voltaHist = baseApp.ValidateCreateHistorico(hist);
 
@@ -17900,15 +17951,24 @@ namespace GEDSys_Presentation.Controllers
                 Session["ConsultasAlterada"] = 1;
                 Session["ListaConfirma"] = null;
 
+                // Configura serilização
+                JsonSerializerSettings settings = new JsonSerializerSettings
+                {
+                    ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+                    NullValueHandling = NullValueHandling.Ignore
+                };
+
                 // Monta Log
+                DTO_Paciente_Consulta dto = MontarPacienteConsultaDTOObj(item);
+                String json = JsonConvert.SerializeObject(dto, settings);
                 LOG log = new LOG
                 {
                     LOG_DT_DATA = DateTime.Now,
                     ASSI_CD_ID = usuarioLogado.ASSI_CD_ID,
                     USUA_CD_ID = usuarioLogado.USUA_CD_ID,
-                    LOG_NM_OPERACAO = "ccoPACI",
+                    LOG_NM_OPERACAO = "Paciente - Consulta - Confirmação",
                     LOG_IN_ATIVO = 1,
-                    LOG_TX_REGISTRO = "Paciente: " + pac.PACI_NM_NOME + " | Data: " + item.PACO_DT_CONSULTA,
+                    LOG_TX_REGISTRO = json,
                     LOG_IN_SISTEMA = 6
                 };
                 Int32 volta1 = logApp.ValidateCreate(log);
@@ -17922,7 +17982,7 @@ namespace GEDSys_Presentation.Controllers
                 hist.PAHI_IN_TIPO = 10;
                 hist.PAHI_IN_CHAVE = item.PACO_CD_ID;
                 hist.PAHI_NM_OPERACAO = "Paciente - Confirmação de Consulta";
-                hist.PAHI_DS_DESCRICAO = "Paciente " + pac.PACI_NM_NOME + " - Consulta confirmada " + item.PACO_DT_CONSULTA.ToShortDateString();
+                hist.PAHI_DS_DESCRICAO = "Paciente " + paciente.PACI_NM_NOME + " - Consulta confirmada " + item.PACO_DT_CONSULTA.ToShortDateString();
                 Int32 voltaHist = baseApp.ValidateCreateHistorico(hist);
 
                 // Mensagem do CRUD
@@ -23708,15 +23768,6 @@ namespace GEDSys_Presentation.Controllers
 
                     listaCalendario.Add(hash);
                 }
-
-
-
-
-
-
-
-
-
                 return Json(listaCalendario);
             }
             catch (Exception ex)
@@ -36627,6 +36678,7 @@ namespace GEDSys_Presentation.Controllers
                 // Decriptografa chaves
                 String emissor = CrossCutting.Cryptography.Decrypt(conf.CONF_NM_EMISSOR_AZURE_CRIP);
                 String conn = CrossCutting.Cryptography.Decrypt(conf.CONF_CS_CONNECTION_STRING_AZURE_CRIP);
+                List<AttachmentModel> models = new List<AttachmentModel>();
 
                 // Monta e-mail
                 NetworkCredential net = new NetworkCredential(conf.CONF_NM_SENDGRID_LOGIN, conf.CONF_NM_SENDGRID_PWD);
@@ -36649,7 +36701,7 @@ namespace GEDSys_Presentation.Controllers
                 // Envia mensagem
                 try
                 {
-                    await CrossCutting.CommunicationAzurePackage.SendMailAsyncNew(mensagem);
+                    await CrossCutting.CommunicationAzurePackage.SendMailAsync(mensagem, models);
                 }
                 catch (Exception ex)
                 {
@@ -36789,6 +36841,36 @@ namespace GEDSys_Presentation.Controllers
                     PAAN_IN_ATIVO = l.PAAN_IN_ATIVO,
                     PAAN_TX_ANOTACAO = l.PAAN_TX_ANOTACAO,
                     PACI_CD_ID = l.PACI_CD_ID,
+                };
+                return mediDTO;
+            }
+
+        }
+
+        public DTO_Paciente_Consulta MontarPacienteConsultaDTOObj(PACIENTE_CONSULTA l)
+        {
+            using (var context = new CRMSysDBEntities())
+            {
+                var mediDTO = new DTO_Paciente_Consulta()
+                {
+                    ASSI_CD_ID = l.ASSI_CD_ID,
+                    PACO_CD_ID = l.PACO_CD_ID,
+                    PACO_DT_CONSULTA = l.PACO_DT_CONSULTA,
+                    PACO_DT_DUMMY = l.PACO_DT_DUMMY,
+                    PACO_DT_PROXIMA = l.PACO_DT_PROXIMA,
+                    PACO_HR_FINAL = l.PACO_HR_FINAL,
+                    PACO_HR_INICIO = l.PACO_HR_INICIO,
+                    PACO_IN_ATIVO = l.PACO_IN_ATIVO,
+                    PACO_IN_CONFIRMADA = l.PACO_IN_CONFIRMADA,
+                    PACO_IN_ENCERRADA = l.PACO_IN_ENCERRADA,
+                    PACO_IN_RECEBE = l.PACO_IN_RECEBE,
+                    PACO_IN_RECORRENTE = l.PACO_IN_RECORRENTE,
+                    PACO_IN_TIPO = l.PACO_IN_TIPO,
+                    PACO_TX_JUSTIFICATIVA_CANCELA = l.PACO_TX_JUSTIFICATIVA_CANCELA,
+                    PACI_CD_ID = l.PACI_CD_ID,
+                    PACO_TX_RESUMO = l.PACO_TX_RESUMO,
+                    USUA_CD_ID = l.USUA_CD_ID,
+                    VACO_CD_ID = l.VACO_CD_ID,
                 };
                 return mediDTO;
             }

@@ -7557,8 +7557,8 @@ namespace GEDSys_Presentation.Controllers
                     }
                     if ((Int32)Session["MensPaciente"] == 63)
                     {
-                        String msg = (String)Session["MsgCRUD"];
-                        ModelState.AddModelError("", msg);
+                        TempData["MensagemAcerto"] = (String)Session["MsgCRUD"];
+                        TempData["TemMensagem"] = 1;
                     }
                 }
 
@@ -7759,7 +7759,7 @@ namespace GEDSys_Presentation.Controllers
                         {
                             if (conf.CONF_IN_GERA_RECEBIMENTO == 1 & fr != null)
                             {
-                                String nome = "Recebimento de consulta de " + pac.PACI_NM_NOME + " em " + item.PACO_DT_CONSULTA.ToLongDateString();
+                                String nome = "Recebimento de consulta de " + pac.PACI_NM_NOME.ToUpper() + " em " + item.PACO_DT_CONSULTA.ToLongDateString();
                                 CONSULTA_RECEBIMENTO rec = new CONSULTA_RECEBIMENTO();
                                 rec.CORE_IN_ATIVO = 1;
                                 rec.CORE_DT_RECEBIMENTO = DateTime.Today.Date;
@@ -7801,18 +7801,27 @@ namespace GEDSys_Presentation.Controllers
                 Session["Consultas"] = null;
                 Session["ListaConsultasGeral"] = null;
 
+                // Configura serilização
+                JsonSerializerSettings settings = new JsonSerializerSettings
+                {
+                    ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+                    NullValueHandling = NullValueHandling.Ignore
+                };
+
                 // Monta Log
+                DTO_Paciente_Consulta dto = MontarPacienteConsultaDTOObj(item);
+                String json = JsonConvert.SerializeObject(dto, settings);
                 LOG log = new LOG
                 {
                     LOG_DT_DATA = DateTime.Now,
                     ASSI_CD_ID = usuario.ASSI_CD_ID,
                     USUA_CD_ID = usuario.USUA_CD_ID,
-                    LOG_NM_OPERACAO = "encPACO",
+                    LOG_NM_OPERACAO = "Paciente - Consulta - Encerramento",
                     LOG_IN_ATIVO = 1,
-                    LOG_TX_REGISTRO = crud,
+                    LOG_TX_REGISTRO = json,
                     LOG_IN_SISTEMA = 6
                 };
-                Int32 volta2 = logApp.ValidateCreate(log);
+                Int32 volta1 = logApp.ValidateCreate(log);
 
                 // Grava historico
                 PACIENTE_HISTORICO hist = new PACIENTE_HISTORICO();
@@ -7823,7 +7832,7 @@ namespace GEDSys_Presentation.Controllers
                 hist.PAHI_IN_TIPO = 10;
                 hist.PAHI_IN_CHAVE = item.PACO_CD_ID;
                 hist.PAHI_NM_OPERACAO = "Paciente - Encerramento de Consulta";
-                hist.PAHI_DS_DESCRICAO = "Paciente " + pac.PACI_NM_NOME + " - Consulta encerrada " + item.PACO_DT_CONSULTA.ToShortDateString();
+                hist.PAHI_DS_DESCRICAO = "Paciente " + pac.PACI_NM_NOME.ToUpper() + " - Consulta encerrada " + item.PACO_DT_CONSULTA.ToShortDateString();
                 Int32 voltaHist = baseApp.ValidateCreateHistorico(hist);
 
                 // Retorno
@@ -7840,6 +7849,36 @@ namespace GEDSys_Presentation.Controllers
                 Int32 voltaX = grava.GravarLogExcecao(ex, "Paciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
                 return RedirectToAction("TrataExcecao", "BaseAdmin");
             }
+        }
+
+        public DTO_Paciente_Consulta MontarPacienteConsultaDTOObj(PACIENTE_CONSULTA l)
+        {
+            using (var context = new CRMSysDBEntities())
+            {
+                var mediDTO = new DTO_Paciente_Consulta()
+                {
+                    ASSI_CD_ID = l.ASSI_CD_ID,
+                    PACO_CD_ID = l.PACO_CD_ID,
+                    PACO_DT_CONSULTA = l.PACO_DT_CONSULTA,
+                    PACO_DT_DUMMY = l.PACO_DT_DUMMY,
+                    PACO_DT_PROXIMA = l.PACO_DT_PROXIMA,
+                    PACO_HR_FINAL = l.PACO_HR_FINAL,
+                    PACO_HR_INICIO = l.PACO_HR_INICIO,
+                    PACO_IN_ATIVO = l.PACO_IN_ATIVO,
+                    PACO_IN_CONFIRMADA = l.PACO_IN_CONFIRMADA,
+                    PACO_IN_ENCERRADA = l.PACO_IN_ENCERRADA,
+                    PACO_IN_RECEBE = l.PACO_IN_RECEBE,
+                    PACO_IN_RECORRENTE = l.PACO_IN_RECORRENTE,
+                    PACO_IN_TIPO = l.PACO_IN_TIPO,
+                    PACO_TX_JUSTIFICATIVA_CANCELA = l.PACO_TX_JUSTIFICATIVA_CANCELA,
+                    PACI_CD_ID = l.PACI_CD_ID,
+                    PACO_TX_RESUMO = l.PACO_TX_RESUMO,
+                    USUA_CD_ID = l.USUA_CD_ID,
+                    VACO_CD_ID = l.VACO_CD_ID,
+                };
+                return mediDTO;
+            }
+
         }
 
         public ActionResult GerarRelatorioConsultasEncerramento()
@@ -7889,7 +7928,7 @@ namespace GEDSys_Presentation.Controllers
                 cell.Border = PdfPCell.BOTTOM_BORDER;
                 headerTable.AddCell(cell);
 
-                cell = new PdfPCell(new Paragraph("Consultas - Encerramento", meuFont2))
+                cell = new PdfPCell(new Paragraph("Consultas - Em Aberto", meuFont2))
                 {
                     VerticalAlignment = Element.ALIGN_MIDDLE,
                     HorizontalAlignment = Element.ALIGN_CENTER
