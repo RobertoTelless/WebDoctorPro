@@ -17129,6 +17129,10 @@ namespace GEDSys_Presentation.Controllers
                 {
                     texto = texto.Replace("{paciente}", paciente.PACI_NM_NOME);
                 }
+                if (texto.Contains("{justificativa}"))
+                {
+                    texto = texto.Replace("{justificativa}", consulta.PACO_TX_JUSTIFICATIVA_CANCELA);
+                }
                 String emailBody = cab + "<br />" + texto + "<br /><br />" + assinatura;
 
                 // Decriptografa chaves
@@ -22816,14 +22820,16 @@ namespace GEDSys_Presentation.Controllers
                     {
                         temHoje = 1;
                     }
-                    listaMasterConsulta = listaMasterConsulta.OrderBy(p => p.PACO_DT_CONSULTA).ThenBy(p => p.PACO_HR_INICIO).ToList();
+                    //listaMasterConsulta = listaMasterConsulta.OrderBy(p => p.PACO_DT_CONSULTA).ThenBy(p => p.PACO_HR_INICIO).ToList();
+                    listaMasterConsulta = listaMasterConsulta.OrderBy(p => p.PACO_DT_CONSULTA).ToList();
                     Session["ListaConsultasGeral"] = listaMasterConsulta;
                     Session["TemHoje"] = temHoje;
                 }
 
 
                 // Monta demais listas
-                listaMasterConsulta = listaMasterConsulta.OrderBy(p => p.PACO_DT_CONSULTA).ThenBy(p => p.PACO_HR_INICIO).ToList();
+                //listaMasterConsulta = listaMasterConsulta.OrderBy(p => p.PACO_DT_CONSULTA).ThenBy(p => p.PACO_HR_INICIO).ToList();
+                listaMasterConsulta = listaMasterConsulta.OrderBy(p => p.PACO_DT_CONSULTA).ToList();
                 ViewBag.Listas = (List<PACIENTE_CONSULTA>)Session["ListaConsultasGeral"];
                 var tipo = new List<SelectListItem>();
                 tipo.Add(new SelectListItem() { Text = "Presencial", Value = "1" });
@@ -23479,33 +23485,49 @@ namespace GEDSys_Presentation.Controllers
                 headerTable.SpacingBefore = 1f;
                 headerTable.SpacingAfter = 1f;
 
-                PdfPCell cell = new PdfPCell();
-                cell.Border = 0;
-                cell.Colspan = 1;
-                Image image = null;
                 if (conf.CONF_IN_LOGO_EMPRESA == 1)
                 {
+                    PdfPCell cell1 = new PdfPCell();
+                    cell1.Border = 0;
+                    cell1.Colspan = 1;
+                    Image image = null;
                     EMPRESA empresa = empApp.GetItemByAssinante(idAss);
                     image = Image.GetInstance(Server.MapPath(empresa.EMPR_AQ_LOGO));
+                    image.ScaleAbsolute(50, 50);
+                    cell1.AddElement(image);
+                    cell1.Border = PdfPCell.BOTTOM_BORDER;
+                    headerTable.AddCell(cell1);
+
+                    cell1 = new PdfPCell(new Paragraph("Consultas Marcadas", meuFont2))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_CENTER
+                    };
+                    cell1.Border = 0;
+                    cell1.Colspan = 1;
+                    cell1.Border = PdfPCell.BOTTOM_BORDER;
+                    headerTable.AddCell(cell1);
                 }
                 else
                 {
-                    image = Image.GetInstance(Server.MapPath("~/Images/Prontuario_Icone_1.png"));
-                }
-                image.ScaleAbsolute(50, 50);
-                cell.AddElement(image);
-                cell.Border = PdfPCell.BOTTOM_BORDER;
-                headerTable.AddCell(cell);
+                    PdfPCell cell2 = new PdfPCell(new Paragraph("Consultas Marcadas", meuFont2))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_CENTER
+                    };
+                    cell2.Border = 0;
+                    cell2.Colspan = 2;
+                    headerTable.AddCell(cell2);
 
-                cell = new PdfPCell(new Paragraph("Consultas", meuFont2))
-                {
-                    VerticalAlignment = Element.ALIGN_MIDDLE,
-                    HorizontalAlignment = Element.ALIGN_CENTER
-                };
-                cell.Border = 0;
-                cell.Colspan = 1;
-                cell.Border = PdfPCell.BOTTOM_BORDER;
-                headerTable.AddCell(cell);
+                    cell2 = new PdfPCell(new Paragraph(" ", meuFont))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    cell2.Colspan = 2;
+                    cell2.Border = PdfPCell.BOTTOM_BORDER;
+                    headerTable.AddCell(cell2);
+                }
 
                 // Rodape
                 PdfPTable footerTable = new PdfPTable(1);
@@ -23514,7 +23536,7 @@ namespace GEDSys_Presentation.Controllers
                 footerTable.SpacingBefore = 1f;
                 footerTable.SpacingAfter = 1f;
 
-                cell = new PdfPCell();
+                PdfPCell cell = new PdfPCell();
                 cell.Border = PdfPCell.TOP_BORDER;
                 cell = new PdfPCell(new Paragraph("Gerado por WebDoctor 1.0 em " + DateTime.Today.Date.ToLongDateString(), meuFont));
                 footerTable.AddCell(cell);
@@ -23977,6 +23999,8 @@ namespace GEDSys_Presentation.Controllers
                     hash.Add("desc", "Consulta remarcada com sucesso");
                     ((List<PACIENTE_CONSULTA>)Session["ListaAgenda"]).Where(x => x.PACO_CD_ID == id).First().PACO_DT_CONSULTA = data;
                 }
+                Session["Consultas"] = null;
+                Session["ConsultaAlterada"] = 1;
                 return Json(hash);
             }
             catch (Exception ex)

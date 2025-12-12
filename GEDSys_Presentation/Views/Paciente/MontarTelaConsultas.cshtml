@@ -111,7 +111,7 @@
                                     <a href="@Url.Action("ConfirmarCancelarConsulta", "Paciente")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acesso à página de confirmação/cancelamento de consultas" class="btn btn-sm btn-warning btn-loading" id="emp" OnClick = "Fade()">Confirmação</a>                
                                 }
                                 <a href="@Url.Action("MontarTelaEncerrarConsulta", "Financeiro")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acesso à página de encerramento de consultas" class="btn btn-sm btn-warning btn-loading" id="emp" OnClick = "Fade()">Encerramento</a>                
-                                @Html.ButtonLinkIndex(text: "Imprimir", controller: "Paciente", action: "GerarRelatorioConsultas", htmlAttributes: new { @class = "btn-loading" })
+                                @Html.ButtonLinkIndex(text: "Imprimir", controller: "Paciente", action: "GerarRelatorioConsultas")
                                 @Html.ButtonLinkIndex(text: "Voltar", controller: "Paciente", action: "VoltarCentrais", htmlAttributes: new { @class = "btn-loading" })
                                 <a href="@Url.Action((String)Session["AjudaNivel"])" class="btn btn-sm btn-danger" target="_blank">Ajuda</a>
                                 <span id="loadingIndicator" style="display: none; margin-left: 10px; color: #007bff;">
@@ -173,16 +173,31 @@
                                                 {
                                                     if (cond.PACO_DT_CONSULTA.Date >= DateTime.Today.Date & cond.PACO_IN_CONFIRMADA < 2)
                                                     {
-                                                        <td style="width: auto"><a href="@Url.Action("EditarConsultaCompleta", "Paciente", new { id = cond.PACO_CD_ID })" class="btn-loading" />@cond.PACO_DT_CONSULTA.ToShortDateString()</td>
+                                                        <td style="width: auto">
+                                                            <a href="@Url.Action("EditarConsultaCompleta", "Paciente", new { id = cond.PACO_CD_ID })" class="btn-loading">
+                                                                @cond.PACO_DT_CONSULTA.ToShortDateString()
+                                                            </a>
+                                                        </td>
+                                                        @*<td style="width: auto"><a href="@Url.Action("EditarConsultaCompleta", "Paciente", new { id = cond.PACO_CD_ID })" class="btn-loading" />@cond.PACO_DT_CONSULTA.ToShortDateString()</td>*@
                                                     }
                                                     else
                                                     {
-                                                        <td style="width: auto"><a href="@Url.Action("VerConsultaCompleta", "Paciente", new { id = cond.PACO_CD_ID })" class="btn-loading" />@cond.PACO_DT_CONSULTA.ToShortDateString()</td>
+                                                        <td style="width: auto">
+                                                            <a href="@Url.Action("VerConsultaCompleta", "Paciente", new { id = cond.PACO_CD_ID })" class="btn-loading">
+                                                                @cond.PACO_DT_CONSULTA.ToShortDateString()
+                                                            </a>
+                                                        </td>
+                                                        @*<td style="width: auto"><a href="@Url.Action("VerConsultaCompleta", "Paciente", new { id = cond.PACO_CD_ID })" class="btn-loading" />@cond.PACO_DT_CONSULTA.ToShortDateString()</td>*@
                                                     }
                                                 }
                                                 else
                                                 {
-                                                    <td style="width: auto"><a href="@Url.Action("VerConsultaCompleta", "Paciente", new { id = cond.PACO_CD_ID })" class="btn-loading" />@cond.PACO_DT_CONSULTA.ToShortDateString()</td>
+                                                        <td style="width: auto">
+                                                            <a href="@Url.Action("VerConsultaCompleta", "Paciente", new { id = cond.PACO_CD_ID })" class="btn-loading">
+                                                                @cond.PACO_DT_CONSULTA.ToShortDateString()
+                                                            </a>
+                                                        </td>
+                                                        @*<td style="width: auto"><a href="@Url.Action("VerConsultaCompleta", "Paciente", new { id = cond.PACO_CD_ID })" class="btn-loading" />@cond.PACO_DT_CONSULTA.ToShortDateString()</td>*@
                                                 }
                                                 <td style="width: auto">@cond.PACO_HR_INICIO.ToString()</td>
                                                 <td style="width: auto">@cond.PACO_HR_FINAL.ToString()</td>
@@ -276,7 +291,12 @@
                                         else if (cond.PACO_DT_CONSULTA < DateTime.Today.Date)
                                         {
                                             <tr style="background-color: floralwhite">
-                                                <td style="width: auto"><a href="@Url.Action("VerConsultaCompleta", "Paciente", new { id = cond.PACO_CD_ID })" class="btn-loading" />@cond.PACO_DT_CONSULTA.ToShortDateString()</td>
+                                                <td style="width: auto">
+                                                    <a href="@Url.Action("VerConsultaCompleta", "Paciente", new { id = cond.PACO_CD_ID })" class="btn-loading">
+                                                        @cond.PACO_DT_CONSULTA.ToShortDateString()
+                                                    </a>
+                                                </td>
+                                                @*<td style="width: auto"><a href="@Url.Action("VerConsultaCompleta", "Paciente", new { id = cond.PACO_CD_ID })" class="btn-loading" />@cond.PACO_DT_CONSULTA.ToShortDateString()</td>*@
                                                 <td style="width: auto">@cond.PACO_HR_INICIO.ToString()</td>
                                                 <td style="width: auto">@cond.PACO_HR_FINAL.ToString()</td>
                                                 <td style="width: auto">@cond.PACIENTE.PACI_NM_NOME</td>
@@ -341,16 +361,31 @@
                                                 {
                                                     if (cond.PACO_DT_CONSULTA.Date >= DateTime.Today.Date & cond.PACO_IN_CONFIRMADA < 2)
                                                     {
-                                                        <td style="width: auto"><a href="@Url.Action("EditarConsultaCompleta", "Paciente", new { id = cond.PACO_CD_ID })" class="btn-loading" />@cond.PACO_DT_CONSULTA.ToShortDateString()</td>
+                                                        <td style="width: auto">
+                                                            <a href="@Url.Action("EditarConsultaCompleta", "Paciente", new { id = cond.PACO_CD_ID })" class="btn-loading">
+                                                                @cond.PACO_DT_CONSULTA.ToShortDateString()
+                                                            </a>
+                                                        </td>
+                                                        @*<td style="width: auto"><a href="@Url.Action("EditarConsultaCompleta", "Paciente", new { id = cond.PACO_CD_ID })" class="btn-loading" />@cond.PACO_DT_CONSULTA.ToShortDateString()</td>*@
                                                     }
                                                     else
                                                     {
-                                                        <td style="width: auto"><a href="@Url.Action("VerConsultaCompleta", "Paciente", new { id = cond.PACO_CD_ID })" class="btn-loading" />@cond.PACO_DT_CONSULTA.ToShortDateString()</td>
+                                                        <td style="width: auto">
+                                                            <a href="@Url.Action("VerConsultaCompleta", "Paciente", new { id = cond.PACO_CD_ID })" class="btn-loading">
+                                                                @cond.PACO_DT_CONSULTA.ToShortDateString()
+                                                            </a>
+                                                        </td>
+                                                        @*<td style="width: auto"><a href="@Url.Action("VerConsultaCompleta", "Paciente", new { id = cond.PACO_CD_ID })" class="btn-loading" />@cond.PACO_DT_CONSULTA.ToShortDateString()</td>*@
                                                     }
                                                 }
                                                 else
                                                 {
-                                                    <td style="width: auto"><a href="@Url.Action("VerConsultaCompleta", "Paciente", new { id = cond.PACO_CD_ID })" class="btn-loading" />@cond.PACO_DT_CONSULTA.ToShortDateString()</td>
+                                                        <td style="width: auto">
+                                                            <a href="@Url.Action("VerConsultaCompleta", "Paciente", new { id = cond.PACO_CD_ID })" class="btn-loading">
+                                                                @cond.PACO_DT_CONSULTA.ToShortDateString()
+                                                            </a>
+                                                        </td>
+                                                        @*<td style="width: auto"><a href="@Url.Action("VerConsultaCompleta", "Paciente", new { id = cond.PACO_CD_ID })" class="btn-loading" />@cond.PACO_DT_CONSULTA.ToShortDateString()</td>*@
                                                 }
                                                 <td style="width: auto">@cond.PACO_HR_INICIO.ToString()</td>
                                                 <td style="width: auto">@cond.PACO_HR_FINAL.ToString()</td>
@@ -487,6 +522,8 @@
 
     <script type="text/javascript" src="~/Scripts/moment.min.js"></script>
     <script type="text/javascript" src="~/Scripts/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+    <script src="https://cdn.datatables.net/plug-ins/1.10.25/sorting/datetime-moment.js"></script>
 
     <script type="text/javascript">
         $(document).ready(function () {
@@ -680,18 +717,28 @@
     <script type="text/javascript">
         $(document).ready(function () {
 
+            moment.fn.dataTable.ext.type.order['datetime-moment-pre'] = function ( data ) {
+                         return moment( data, 'DD/MM/YYYY' ).valueOf();
+                    };
             $('.dataTables-example').DataTable({
                 pageLength: 25,
                 dom: '<"html5buttons"B>lTfgitp',
-                // --- NOVO BLOCO DE CONFIGURAÇÃO ---
+                order: [[0, 'desc'], [1, 'asc']],
+
+
                 columnDefs: [
-                    {
-                        // Altera o tipo de ordenação para a primeira coluna (índice 0)
-                        "type": "datetime-moment", // Se você incluiu o momento.js
-                        // OU
-                        // "type": "date-eu", // Para o formato DD/MM/AAAA
-                        "targets": 0 // Aplica à coluna "Data da Transação"
-                    }
+                                {
+                                    // Aplicar o tipo de ordenação de data na Coluna 0
+                                    "type": "datetime-moment", 
+                                    "targets": 0 
+                                },
+                                {
+                                    // As colunas de Ações, Tipo, Situação, etc., podem ter elementos HTML 
+                                    // que atrapalham a ordenação. Usamos "html-num" (ou customizado)
+                                    // ou simplesmente garantir que não tente ordenar o conteúdo do link da data.
+                                    "orderable": false, // Desabilita ordenação para a coluna Ações
+                                    "targets": 7 
+                                }
                 ],
                 // ---------------------------------     
                 buttons: [

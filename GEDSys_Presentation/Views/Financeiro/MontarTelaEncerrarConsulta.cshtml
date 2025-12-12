@@ -79,7 +79,7 @@
                             <div class="col-lg-12 col-md-12 col-xs-12">
                                 @Html.ButtonActionSubmit(text: "Filtrar", htmlAttributes: new { @class = "btn-loading1" })
                                 @Html.ButtonLinkIndex(text: "Retirar Filtro", controller: "Financeiro", action: "RetirarFiltroConsultasEncerramento", htmlAttributes: new { @class = "btn-loading" })
-                                @Html.ButtonLinkIndex(text: "Imprimir Consultas", controller: "Financeiro", action: "GerarRelatorioConsultasEncerramento", htmlAttributes: new { @class = "btn-loading" })
+                                @Html.ButtonLinkIndex(text: "Imprimir Consultas", controller: "Financeiro", action: "GerarRelatorioConsultasEncerramento")
                                 @Html.ButtonLinkIndex(text: "Voltar", controller: "Financeiro", action: "VoltarEncerramento", htmlAttributes: new { @class = "btn-loading" })
                                 <a href="@Url.Action((String)Session["AjudaNivel"])" class="btn btn-sm btn-danger" target="_blank">Ajuda</a>
                                 <span id="loadingIndicator" style="display: none; margin-left: 10px; color: #007bff;">

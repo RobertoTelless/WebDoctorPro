@@ -69,7 +69,7 @@
                     <div class="ibox-content">
                         <h1 class="no-margins">@ViewBag.Ausencia</h1>
                         <small>
-                            <a href="@Url.Action("MontarTelaAusencias", "Paciente2")" class="btn-loading" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Ver pacientes ausentes. Sem retorno após a data prevista. Ativa apenas se a opção de cálculo da data da próxima consulta estiver ativa na Configuração">Mais de @ViewBag.AusenciaDias meses</a>
+                            <a href="@Url.Action("MontarTelaAusencias", "Paciente2")" class="btn-loading" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Ver pacientes ausentes. Sem retorno após a data prevista. Ativa apenas se a opção de cálculo da data da próxima consulta estiver ativa na Configuração">Mais de @ViewBag.AusenciaDias meses da data de retorno</a>
                         </small>
                     </div>
                 </div>
@@ -82,7 +82,7 @@
                     </div>
                     <div class="ibox-content">
                         <h1 class="no-margins">@ViewBag.ListaPacienteAnivDiaConta</h1>
-                        <small><a href="@Url.Action("EnviarMailAniversario", "Paciente")" class="btn-loading" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Consultar aniversariantes do dia e envio de mensagem por e-mail" >Aniversariantes</a></small>
+                        <small><a href="@Url.Action("EnviarMailAniversario", "Paciente")" class="btn-loading" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Consultar aniversariantes do dia e envio de mensagem por e-mail" >Aniversariantes do Dia</a></small>
                     </div>
                 </div>
             </div>
@@ -94,7 +94,7 @@
                     </div>
                     <div class="ibox-content">
                         <h1 class="no-margins">@ViewBag.NumConsultas</h1>
-                        <small><a href="@Url.Action("MontarTelaConsultas", "Paciente")" class="btn-loading" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Verificar as consultas marcadas para a data corrente" >Consultas do Dia</a></small>
+                        <small><a href="@Url.Action("MontarTelaConsultas", "Paciente")" class="btn-loading" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Verificar as consultas marcadas para a data corrente" >Consultas Confirmadas do Dia</a></small>
                     </div>
                 </div>
             </div>
@@ -108,11 +108,11 @@
                         <h1 class="no-margins">@ViewBag.NaoEncerradasNumero</h1>
                         @if (ViewBag.NaoEncerradasNumero > 0)
                         {
-                            <small class="pisca"><a href="@Url.Action("MontarTelaEncerrarConsulta", "Financeiro")" class="btn-loading" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Verificar e processar as consultas não encerradas" >Não Encerradas</a></small>
+                            <small class="pisca"><a href="@Url.Action("MontarTelaEncerrarConsulta", "Financeiro")" class="btn-loading" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Verificar e processar as consultas não encerradas" >Consultas Não Encerradas</a></small>
                         }
                         else
                         {
-                            <small><a href="@Url.Action("MontarTelaEncerrarConsulta", "Financeiro")" class="btn-loading" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Verificar e processar as consultas não encerradas">Não Encerradas</a></small>
+                            <small><a href="@Url.Action("MontarTelaEncerrarConsulta", "Financeiro")" class="btn-loading" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Verificar e processar as consultas não encerradas">Consultas Não Encerradas</a></small>
                         }
                     </div>
                 </div>
@@ -379,7 +379,7 @@
                                                     <div class="col-lg-1 col-md-1 col-xs-12">
                                                     </div>
                                                     <div style="border: 5px solid #F6A54A; padding: 10px; border-radius: 8px 8px; " class="col-lg-10 col-md-10 col-xs-8">
-                                                        <h4 style="font-weight: bold">Nenhuma consulta hoje</h4>
+                                                        <h4 style="font-weight: bold">Nenhuma consulta confirmada hoje</h4>
                                                     </div>
                                                     <div class="col-lg-1 col-md-1 col-xs-12">
                                                     </div>

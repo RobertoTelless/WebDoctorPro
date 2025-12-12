@@ -1082,7 +1082,6 @@ namespace GEDSys_Presentation.Controllers
                     cell2.Colspan = 2;
                     cell2.Border = PdfPCell.BOTTOM_BORDER;
                     headerTable.AddCell(cell2);
-
                 }
 
                 // Rodape
