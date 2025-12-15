@@ -50,6 +50,7 @@ namespace EntitiesServices.Model
             this.QUESTIONARIO_EPWORTH = new HashSet<QUESTIONARIO_EPWORTH>();
             this.QUESTIONARIO_STOPBANG = new HashSet<QUESTIONARIO_STOPBANG>();
             this.LOCACAO = new HashSet<LOCACAO>();
+            this.RESPOSTA_CONSULTA = new HashSet<RESPOSTA_CONSULTA>();
         }
     
         public int PACI__CD_ID { get; set; }
@@ -197,5 +198,7 @@ namespace EntitiesServices.Model
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<LOCACAO> LOCACAO { get; set; }
         public virtual RACA RACA { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<RESPOSTA_CONSULTA> RESPOSTA_CONSULTA { get; set; }
     }
 }

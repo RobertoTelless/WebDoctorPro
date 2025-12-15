@@ -1145,6 +1145,9 @@
         <AssociationConnector Association="CRMSysDBModel.FK_MEDICOS_MENSAGEM_USUARIO" />
         <EntityTypeShape EntityType="CRMSysDBModel.RACA" Width="1.5" PointX="5.375" PointY="16.75" />
         <AssociationConnector Association="CRMSysDBModel.FK_PACIENTE_RACA" />
+        <AssociationConnector Association="CRMSysDBModel.FK_RESPOSTA_CONSULTA_PACIENTE" />
+        <AssociationConnector Association="CRMSysDBModel.FK_RESPOSTA_CONSULTA_USUARIO" />
+        <AssociationConnector Association="CRMSysDBModel.FK_RESPOSTA_CONSULTA_PACIENTE_CONSULTA" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

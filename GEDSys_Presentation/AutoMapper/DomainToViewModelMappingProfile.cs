@@ -99,6 +99,7 @@ namespace MvcMapping.Mappers
             CreateMap<LOCACAO_OCORRENCIA, LocacaoOcorrenciaViewModel>();
             CreateMap<CONTRATO_LOCACAO, ContratoLocacaoViewModel>();
             CreateMap<MEDICOS_MENSAGEM, MedicoMensagemViewModel>();
+            CreateMap<RESPOSTA_CONSULTA, PacienteRespostaViewModel>();
 
         }
     }

@@ -1100,6 +1100,7 @@
           <Property Name="CONF_IN_ASSINA_DIGITAL_LOCACAO" Type="int" />
           <Property Name="CONF_VL_ACRESCIMO_ATRASO_PARCELA" Type="decimal" Precision="18" Scale="2" />
           <Property Name="CONF_NM_SENHA_PACIENTE" Type="varchar" MaxLength="50" />
+          <Property Name="CONF_IN_RECIBO_SRF" Type="int" />
         </EntityType>
         <EntityType Name="CONFIGURACAO_ANAMNESE">
           <Key>
@@ -5802,6 +5803,8 @@
           <Property Name="ASSI_CD_ID" Type="int" />
           <Property Name="RECO_NR_CPF" Type="varchar" MaxLength="50" />
           <Property Name="PACI_CD_ID" Type="int" />
+          <Property Name="RECO_IN_VISTO" Type="int" />
+          <Property Name="PACO_CD_ID" Type="int" />
         </EntityType>
         <EntityType Name="RESULTADO_ROBOT">
           <Key>
@@ -14553,6 +14556,42 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_RESPOSTA_CONSULTA_PACIENTE">
+          <End Role="PACIENTE" Type="Self.PACIENTE" Multiplicity="0..1" />
+          <End Role="RESPOSTA_CONSULTA" Type="Self.RESPOSTA_CONSULTA" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="PACIENTE">
+              <PropertyRef Name="PACI__CD_ID" />
+            </Principal>
+            <Dependent Role="RESPOSTA_CONSULTA">
+              <PropertyRef Name="PACI_CD_ID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_RESPOSTA_CONSULTA_PACIENTE_CONSULTA">
+          <End Role="PACIENTE_CONSULTA" Type="Self.PACIENTE_CONSULTA" Multiplicity="0..1" />
+          <End Role="RESPOSTA_CONSULTA" Type="Self.RESPOSTA_CONSULTA" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="PACIENTE_CONSULTA">
+              <PropertyRef Name="PACO_CD_ID" />
+            </Principal>
+            <Dependent Role="RESPOSTA_CONSULTA">
+              <PropertyRef Name="PACO_CD_ID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_RESPOSTA_CONSULTA_USUARIO">
+          <End Role="USUARIO" Type="Self.USUARIO" Multiplicity="0..1" />
+          <End Role="RESPOSTA_CONSULTA" Type="Self.RESPOSTA_CONSULTA" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="USUARIO">
+              <PropertyRef Name="USUA_CD_ID" />
+            </Principal>
+            <Dependent Role="RESPOSTA_CONSULTA">
+              <PropertyRef Name="USUA_CD_ID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_RESULTADO_ROBOT_CLIENTE">
           <End Role="CLIENTE" Type="Self.CLIENTE" Multiplicity="1" />
           <End Role="RESULTADO_ROBOT" Type="Self.RESULTADO_ROBOT" Multiplicity="*" />
@@ -19007,6 +19046,18 @@
             <End Role="UF" EntitySet="UF" />
             <End Role="REGIAO" EntitySet="REGIAO" />
           </AssociationSet>
+          <AssociationSet Name="FK_RESPOSTA_CONSULTA_PACIENTE" Association="Self.FK_RESPOSTA_CONSULTA_PACIENTE">
+            <End Role="PACIENTE" EntitySet="PACIENTE" />
+            <End Role="RESPOSTA_CONSULTA" EntitySet="RESPOSTA_CONSULTA" />
+          </AssociationSet>
+          <AssociationSet Name="FK_RESPOSTA_CONSULTA_PACIENTE_CONSULTA" Association="Self.FK_RESPOSTA_CONSULTA_PACIENTE_CONSULTA">
+            <End Role="PACIENTE_CONSULTA" EntitySet="PACIENTE_CONSULTA" />
+            <End Role="RESPOSTA_CONSULTA" EntitySet="RESPOSTA_CONSULTA" />
+          </AssociationSet>
+          <AssociationSet Name="FK_RESPOSTA_CONSULTA_USUARIO" Association="Self.FK_RESPOSTA_CONSULTA_USUARIO">
+            <End Role="USUARIO" EntitySet="USUARIO" />
+            <End Role="RESPOSTA_CONSULTA" EntitySet="RESPOSTA_CONSULTA" />
+          </AssociationSet>
           <AssociationSet Name="FK_RESULTADO_ROBOT_CLIENTE" Association="Self.FK_RESULTADO_ROBOT_CLIENTE">
             <End Role="CLIENTE" EntitySet="CLIENTE" />
             <End Role="RESULTADO_ROBOT" EntitySet="RESULTADO_ROBOT" />
@@ -20891,6 +20942,7 @@
           <Property Name="CONF_IN_ASSINA_DIGITAL_LOCACAO" Type="Int32" />
           <Property Name="CONF_VL_ACRESCIMO_ATRASO_PARCELA" Type="Decimal" Precision="18" Scale="2" />
           <Property Name="CONF_NM_SENHA_PACIENTE" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="CONF_IN_RECIBO_SRF" Type="Int32" />
         </EntityType>
         <EntityType Name="CONFIGURACAO_ANAMNESE">
           <Key>
@@ -24009,6 +24061,7 @@
           <NavigationProperty Name="LOCACAO" Relationship="CRMSysDBModel.FK_LOCACAO_PACIENTE" FromRole="PACIENTE" ToRole="LOCACAO" />
           <Property Name="RACA_CD_ID" Type="Int32" />
           <NavigationProperty Name="RACA" Relationship="CRMSysDBModel.FK_PACIENTE_RACA" FromRole="PACIENTE" ToRole="RACA" />
+          <NavigationProperty Name="RESPOSTA_CONSULTA" Relationship="CRMSysDBModel.FK_RESPOSTA_CONSULTA_PACIENTE" FromRole="PACIENTE" ToRole="RESPOSTA_CONSULTA" />
         </EntityType>
         <EntityType Name="PACIENTE_ANAMNESE">
           <Key>
@@ -24315,6 +24368,7 @@
           <NavigationProperty Name="PACIENTE_PRESCRICAO" Relationship="Self.FK_PACIENTE_PRESCRICAO_PACIENTE_CONSULTA" FromRole="PACIENTE_CONSULTA" ToRole="PACIENTE_PRESCRICAO" />
           <NavigationProperty Name="PACIENTE_SOLICITACAO" Relationship="Self.FK_PACIENTE_SOLICITACAO_PACIENTE_CONSULTA" FromRole="PACIENTE_CONSULTA" ToRole="PACIENTE_SOLICITACAO" />
           <Property Name="PACO_TX_JUSTIFICATIVA_CANCELA" Type="String" MaxLength="5000" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="RESPOSTA_CONSULTA" Relationship="CRMSysDBModel.FK_RESPOSTA_CONSULTA_PACIENTE_CONSULTA" FromRole="PACIENTE_CONSULTA" ToRole="RESPOSTA_CONSULTA" />
         </EntityType>
         <EntityType Name="PACIENTE_CONTATO">
           <Key>
@@ -25981,6 +26035,11 @@
           <Property Name="ASSI_CD_ID" Type="Int32" />
           <Property Name="RECO_NR_CPF" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
           <Property Name="PACI_CD_ID" Type="Int32" />
+          <Property Name="RECO_IN_VISTO" Type="Int32" />
+          <NavigationProperty Name="PACIENTE" Relationship="CRMSysDBModel.FK_RESPOSTA_CONSULTA_PACIENTE" FromRole="RESPOSTA_CONSULTA" ToRole="PACIENTE" />
+          <NavigationProperty Name="USUARIO" Relationship="CRMSysDBModel.FK_RESPOSTA_CONSULTA_USUARIO" FromRole="RESPOSTA_CONSULTA" ToRole="USUARIO" />
+          <Property Name="PACO_CD_ID" Type="Int32" />
+          <NavigationProperty Name="PACIENTE_CONSULTA" Relationship="CRMSysDBModel.FK_RESPOSTA_CONSULTA_PACIENTE_CONSULTA" FromRole="RESPOSTA_CONSULTA" ToRole="PACIENTE_CONSULTA" />
         </EntityType>
         <EntityType Name="RESULTADO_ROBOT">
           <Key>
@@ -27262,6 +27321,7 @@
           <NavigationProperty Name="LOCACAO_OCORRENCIA" Relationship="CRMSysDBModel.FK_LOCACAO_OCORRENCIA_USUARIO" FromRole="USUARIO" ToRole="LOCACAO_OCORRENCIA" />
           <NavigationProperty Name="CONTRATO_LOCACAO" Relationship="CRMSysDBModel.FK_CONTRATO_LOCACAO_USUARIO" FromRole="USUARIO" ToRole="CONTRATO_LOCACAO" />
           <NavigationProperty Name="MEDICOS_MENSAGEM" Relationship="CRMSysDBModel.FK_MEDICOS_MENSAGEM_USUARIO" FromRole="USUARIO" ToRole="MEDICOS_MENSAGEM" />
+          <NavigationProperty Name="RESPOSTA_CONSULTA" Relationship="CRMSysDBModel.FK_RESPOSTA_CONSULTA_USUARIO" FromRole="USUARIO" ToRole="RESPOSTA_CONSULTA" />
         </EntityType>
         <EntityType Name="USUARIO_ANEXO">
           <Key>
@@ -39417,6 +39477,18 @@
             <End Role="RACA" EntitySet="RACA" />
             <End Role="PACIENTE" EntitySet="PACIENTE" />
           </AssociationSet>
+          <AssociationSet Name="FK_RESPOSTA_CONSULTA_PACIENTE" Association="CRMSysDBModel.FK_RESPOSTA_CONSULTA_PACIENTE">
+            <End Role="PACIENTE" EntitySet="PACIENTE" />
+            <End Role="RESPOSTA_CONSULTA" EntitySet="RESPOSTA_CONSULTA" />
+          </AssociationSet>
+          <AssociationSet Name="FK_RESPOSTA_CONSULTA_USUARIO" Association="CRMSysDBModel.FK_RESPOSTA_CONSULTA_USUARIO">
+            <End Role="USUARIO" EntitySet="USUARIO" />
+            <End Role="RESPOSTA_CONSULTA" EntitySet="RESPOSTA_CONSULTA" />
+          </AssociationSet>
+          <AssociationSet Name="FK_RESPOSTA_CONSULTA_PACIENTE_CONSULTA" Association="CRMSysDBModel.FK_RESPOSTA_CONSULTA_PACIENTE_CONSULTA">
+            <End Role="PACIENTE_CONSULTA" EntitySet="PACIENTE_CONSULTA" />
+            <End Role="RESPOSTA_CONSULTA" EntitySet="RESPOSTA_CONSULTA" />
+          </AssociationSet>
         </EntityContainer>
         <EntityType Name="PACIENTE_DADOS_EXAME_FISICO">
           <Key>
@@ -40573,6 +40645,42 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_RESPOSTA_CONSULTA_PACIENTE">
+          <End Type="CRMSysDBModel.PACIENTE" Role="PACIENTE" Multiplicity="0..1" />
+          <End Type="CRMSysDBModel.RESPOSTA_CONSULTA" Role="RESPOSTA_CONSULTA" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="PACIENTE">
+              <PropertyRef Name="PACI__CD_ID" />
+            </Principal>
+            <Dependent Role="RESPOSTA_CONSULTA">
+              <PropertyRef Name="PACI_CD_ID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_RESPOSTA_CONSULTA_USUARIO">
+          <End Type="CRMSysDBModel.USUARIO" Role="USUARIO" Multiplicity="0..1" />
+          <End Type="CRMSysDBModel.RESPOSTA_CONSULTA" Role="RESPOSTA_CONSULTA" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="USUARIO">
+              <PropertyRef Name="USUA_CD_ID" />
+            </Principal>
+            <Dependent Role="RESPOSTA_CONSULTA">
+              <PropertyRef Name="USUA_CD_ID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_RESPOSTA_CONSULTA_PACIENTE_CONSULTA">
+          <End Type="CRMSysDBModel.PACIENTE_CONSULTA" Role="PACIENTE_CONSULTA" Multiplicity="0..1" />
+          <End Type="CRMSysDBModel.RESPOSTA_CONSULTA" Role="RESPOSTA_CONSULTA" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="PACIENTE_CONSULTA">
+              <PropertyRef Name="PACO_CD_ID" />
+            </Principal>
+            <Dependent Role="RESPOSTA_CONSULTA">
+              <PropertyRef Name="PACO_CD_ID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -41592,6 +41700,7 @@
           <EntitySetMapping Name="CONFIGURACAO">
             <EntityTypeMapping TypeName="CRMSysDBModel.CONFIGURACAO">
               <MappingFragment StoreEntitySet="CONFIGURACAO">
+                <ScalarProperty Name="CONF_IN_RECIBO_SRF" ColumnName="CONF_IN_RECIBO_SRF" />
                 <ScalarProperty Name="CONF_NM_SENHA_PACIENTE" ColumnName="CONF_NM_SENHA_PACIENTE" />
                 <ScalarProperty Name="CONF_VL_ACRESCIMO_ATRASO_PARCELA" ColumnName="CONF_VL_ACRESCIMO_ATRASO_PARCELA" />
                 <ScalarProperty Name="CONF_IN_ASSINA_DIGITAL_LOCACAO" ColumnName="CONF_IN_ASSINA_DIGITAL_LOCACAO" />
@@ -46203,6 +46312,8 @@
           <EntitySetMapping Name="RESPOSTA_CONSULTA">
             <EntityTypeMapping TypeName="CRMSysDBModel.RESPOSTA_CONSULTA">
               <MappingFragment StoreEntitySet="RESPOSTA_CONSULTA">
+                <ScalarProperty Name="PACO_CD_ID" ColumnName="PACO_CD_ID" />
+                <ScalarProperty Name="RECO_IN_VISTO" ColumnName="RECO_IN_VISTO" />
                 <ScalarProperty Name="RECO_CD_ID" ColumnName="RECO_CD_ID" />
                 <ScalarProperty Name="RECO_DT_DATA" ColumnName="RECO_DT_DATA" />
                 <ScalarProperty Name="RECO_NM_NOME" ColumnName="RECO_NM_NOME" />

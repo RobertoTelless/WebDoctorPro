@@ -171,6 +171,7 @@ namespace ERP_Condominios_Solution.ViewModels
         public Nullable<decimal> CONF_VL_ACRESCIMO_ATRASO_PARCELA { get; set; }
         [StringLength(12, ErrorMessage = "SENHA DO PACIENTE deve conter no máximo 12 caracteres.")]
         public string CONF_NM_SENHA_PACIENTE { get; set; }
+        public Nullable<int> CONF_IN_RECIBO_SRF { get; set; }
 
         public virtual ASSINANTE ASSINANTE { get; set; }
     }

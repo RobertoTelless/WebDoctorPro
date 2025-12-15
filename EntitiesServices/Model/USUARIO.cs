@@ -145,6 +145,7 @@ namespace EntitiesServices.Model
             this.LOCACAO_OCORRENCIA = new HashSet<LOCACAO_OCORRENCIA>();
             this.CONTRATO_LOCACAO = new HashSet<CONTRATO_LOCACAO>();
             this.MEDICOS_MENSAGEM = new HashSet<MEDICOS_MENSAGEM>();
+            this.RESPOSTA_CONSULTA = new HashSet<RESPOSTA_CONSULTA>();
         }
     
         public int USUA_CD_ID { get; set; }
@@ -479,5 +480,7 @@ namespace EntitiesServices.Model
         public virtual ICollection<CONTRATO_LOCACAO> CONTRATO_LOCACAO { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<MEDICOS_MENSAGEM> MEDICOS_MENSAGEM { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<RESPOSTA_CONSULTA> RESPOSTA_CONSULTA { get; set; }
     }
 }

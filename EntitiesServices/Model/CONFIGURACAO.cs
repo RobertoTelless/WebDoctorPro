@@ -156,6 +156,7 @@ namespace EntitiesServices.Model
         public Nullable<int> CONF_IN_ASSINA_DIGITAL_LOCACAO { get; set; }
         public Nullable<decimal> CONF_VL_ACRESCIMO_ATRASO_PARCELA { get; set; }
         public string CONF_NM_SENHA_PACIENTE { get; set; }
+        public Nullable<int> CONF_IN_RECIBO_SRF { get; set; }
     
         public virtual ASSINANTE ASSINANTE { get; set; }
     }

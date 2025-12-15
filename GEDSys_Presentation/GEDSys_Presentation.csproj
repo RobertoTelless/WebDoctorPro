@@ -567,6 +567,7 @@
     <Compile Include="ViewModels\MedicoMensagemViewModel.cs" />
     <Compile Include="ViewModels\MedicoEnvioViewModel.cs" />
     <Compile Include="ViewModels\LocacaoViewModel.cs" />
+    <Compile Include="ViewModels\PacienteRespostaViewModel.cs" />
     <Compile Include="ViewModels\QuestionarioBangViewModel.cs" />
     <Compile Include="ViewModels\QuestionarioEpworthViewModel.cs" />
     <Compile Include="ViewModels\QuestionarioBerlimViewModel.cs" />
@@ -5245,6 +5246,7 @@
     <Content Include="Views\Medico\IncluirTextoEnvio.cshtml" />
     <Content Include="Views\Medico\EditarTextoEnvio.cshtml" />
     <Content Include="Views\Paciente\IncluirConsulta.cshtml" />
+    <Content Include="Views\Paciente2\VisualizarPrevia.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

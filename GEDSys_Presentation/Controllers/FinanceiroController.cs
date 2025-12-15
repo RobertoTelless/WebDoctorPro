@@ -7601,6 +7601,7 @@ namespace GEDSys_Presentation.Controllers
                 Session["VoltaTelaEncerra"] = 1;
 
                 // Carrega view
+                ViewBag.SRF = conf.CONF_IN_RECIBO_SRF;
                 objetoPC = new PACIENTE_CONSULTA();
 
                 // Grava Acesso

@@ -270,6 +270,10 @@ namespace ERP_Condominios_Solution.Controllers
             assCont.Add(new SelectListItem() { Text = "Sim", Value = "1" });
             assCont.Add(new SelectListItem() { Text = "Não", Value = "0" });
             ViewBag.AssinaContrato = new SelectList(assCont, "Value", "Text");
+            var recibo = new List<SelectListItem>();
+            recibo.Add(new SelectListItem() { Text = "Sim", Value = "1" });
+            recibo.Add(new SelectListItem() { Text = "Não", Value = "0" });
+            ViewBag.Recibo = new SelectList(recibo, "Value", "Text");
 
             // Indicadores
 
@@ -419,6 +423,10 @@ namespace ERP_Condominios_Solution.Controllers
             assCont.Add(new SelectListItem() { Text = "Sim", Value = "1" });
             assCont.Add(new SelectListItem() { Text = "Não", Value = "0" });
             ViewBag.AssinaContrato = new SelectList(assCont, "Value", "Text");
+            var recibo = new List<SelectListItem>();
+            recibo.Add(new SelectListItem() { Text = "Sim", Value = "1" });
+            recibo.Add(new SelectListItem() { Text = "Não", Value = "0" });
+            ViewBag.Recibo = new SelectList(recibo, "Value", "Text");
             if (ModelState.IsValid)
             {
                 try

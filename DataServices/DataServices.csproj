@@ -246,6 +246,7 @@
     <Compile Include="Repositories\MedicoAnexoRepository.cs" />
     <Compile Include="Repositories\LocacaoHistoricoRepository.cs" />
     <Compile Include="Repositories\LocacaoRepository.cs" />
+    <Compile Include="Repositories\RespostaConsultaRepository.cs" />
     <Compile Include="Repositories\QuestionarioBangRepository.cs" />
     <Compile Include="Repositories\QuestionarioEpworthRepository.cs" />
     <Compile Include="Repositories\QuestionarioBerlimRepository.cs" />

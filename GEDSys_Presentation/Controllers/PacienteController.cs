@@ -363,6 +363,29 @@ namespace GEDSys_Presentation.Controllers
                     ViewBag.ListaPacienteAnivDiaConta = ((List<ModeloViewModel>)Session["ListaPacienteAnivDiaConta"]).Count;
                 }
 
+                // Informações prévias
+                if ((Int32)Session["PacienteAlterada"] == 1 || (Int32)Session["FlagPaciente"] == 1 || Session["ListaPrevia"] == null)
+                {
+                    List<ModeloViewModel> lista4 = new List<ModeloViewModel>();
+                    List<RESPOSTA_CONSULTA> resp = baseApp.GetAllResposta(idAss);
+                    resp = resp.Where(p => p.RECO_IN_ATIVO == 1 & p.RECO_IN_VISTO == 0).ToList();
+                    foreach (RESPOSTA_CONSULTA item in resp)
+                    {
+                        ModeloViewModel mod = new ModeloViewModel();
+                        mod.DataEmissao = item.PACIENTE_CONSULTA.PACO_DT_CONSULTA;
+                        mod.Nome = (baseApp.GetItemById(item.PACI_CD_ID.Value)).PACI_NM_NOME;
+                        mod.Valor1 = item.RECO_CD_ID;
+                        mod.Valor2 = item.PACI_CD_ID.Value;
+                        lista4.Add(mod);
+                    }
+                    ViewBag.ListaPrevia = lista4;
+                    Session["ListaPrevia"] = lista4;
+                }
+                else
+                {
+                    ViewBag.ListaPrevia = (List<ModeloViewModel>)Session["ListaPrevia"];
+                }
+
                 // Gera aviso de estoque baixo
                 if (conf.CONF_IN_AVISO_ESTOQUE != 0)
                 {
@@ -2292,6 +2315,15 @@ namespace GEDSys_Presentation.Controllers
             return RedirectToAction("EditarPaciente", new { id = (Int32)Session["IdPaciente"] });
         }
 
+        public ActionResult VisualizarPrevia(Int32 id)
+        {
+            if ((String)Session["Ativa"] == null)
+            {
+                return RedirectToAction("Logout", "ControleAcesso");
+            }
+            return RedirectToAction("VisualizarPrevia", "Paciente2", new { id = id });
+        }
+
         public ActionResult VoltarVerAnexoPaciente()
         {
             if ((String)Session["Ativa"] == null)
@@ -3895,6 +3927,8 @@ namespace GEDSys_Presentation.Controllers
                 Session["ListaRemedio"] = listaRemedio;
                 List<LOCACAO> listaLocacao= item.LOCACAO.Where(p => p.LOCA_IN_ATIVO == 1).ToList();
                 Session["ListaLocacao"] = listaLocacao;
+                List<RESPOSTA_CONSULTA> listaResposta= item.RESPOSTA_CONSULTA.Where(p => p.RECO_IN_ATIVO == 1).ToList();
+                Session["ListaResposta"] = listaResposta;
 
                 // Checa questionario Berlim
                 QUESTIONARIO_BERLIM berlim = item.QUESTIONARIO_BERLIM.FirstOrDefault();

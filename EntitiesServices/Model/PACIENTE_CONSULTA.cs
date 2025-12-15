@@ -24,6 +24,7 @@ namespace EntitiesServices.Model
             this.PACIENTE_EXAMES = new HashSet<PACIENTE_EXAMES>();
             this.PACIENTE_PRESCRICAO = new HashSet<PACIENTE_PRESCRICAO>();
             this.PACIENTE_SOLICITACAO = new HashSet<PACIENTE_SOLICITACAO>();
+            this.RESPOSTA_CONSULTA = new HashSet<RESPOSTA_CONSULTA>();
         }
     
         public int PACO_CD_ID { get; set; }
@@ -62,5 +63,7 @@ namespace EntitiesServices.Model
         public virtual ICollection<PACIENTE_PRESCRICAO> PACIENTE_PRESCRICAO { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<PACIENTE_SOLICITACAO> PACIENTE_SOLICITACAO { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<RESPOSTA_CONSULTA> RESPOSTA_CONSULTA { get; set; }
     }
 }

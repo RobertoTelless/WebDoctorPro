@@ -7,6 +7,10 @@
     ViewBag.MetaDescription = "WebDoctor - Financeiro - Consulta - Encerramento de consulta";
     ViewBag.MetaKeywords = "WebDoctor, Financeiro, Consulta, Encerramento";
 }
+@{
+    // Define a URL da Receita Federal
+    string urlReceita = "https://cav.receita.fazenda.gov.br/autenticacao/login";
+}
 <div class="wrapper wrapper-content animated fadeInRight">
     <div class="modalContainer">
         <div id="modal" class="modal" tabindex="-1" role="dialog">
@@ -182,6 +186,15 @@
                                                     {
                                                         <span style="color: #337ab7; cursor:pointer;" alt="Encerrar" class="tbl-link fa-lg fa fa-check btn-loading" onclick="ShowModalConfirmar('/Financeiro/EncerrarConsulta/@cond.PACO_CD_ID')" title="Encerrar Consulta"></span>
                                                         <span style="color: #337ab7; cursor:pointer;" alt="Cancelar" class="tbl-link fa-lg fa fa-times btn-loading" onclick="ShowModalCancelar('/Paciente/CancelarConsulta/@cond.PACO_CD_ID')" title="Cancelar Consulta"></span>
+                                                    }
+                                                    if (ViewBag.SRF != null && ViewBag.SRF == 1)
+                                                    {
+                                                        <a href="@urlReceita" 
+                                                            target="_blank" 
+                                                            style="color: #337ab7; cursor: pointer;" 
+                                                            title="Abrir Portal e-CAC (Receita Federal)"
+                                                            class="fa fa-external-link-square fa-lg">
+                                                        </a>            
                                                     }
                                                 }
                                             </td>

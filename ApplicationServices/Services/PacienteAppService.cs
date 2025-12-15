@@ -1986,5 +1986,29 @@ namespace ApplicationServices.Services
             }
         }
 
+        public RESPOSTA_CONSULTA GetRespostaById(Int32 id)
+        {
+            RESPOSTA_CONSULTA lista = _baseService.GetRespostaById(id);
+            return lista;
+        }
+
+        public Int32 ValidateEditResposta(RESPOSTA_CONSULTA item)
+        {
+            try
+            {
+                // Persiste
+                return _baseService.EditResposta(item);
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
+        public List<RESPOSTA_CONSULTA> GetAllResposta(Int32 idAss)
+        {
+            return _baseService.GetAllResposta(idAss);
+        }
+
     }
 }

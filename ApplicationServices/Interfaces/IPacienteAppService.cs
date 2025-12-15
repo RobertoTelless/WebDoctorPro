@@ -157,5 +157,9 @@ namespace ApplicationServices.Interfaces
         Int32 ValidateEditEpworth(QUESTIONARIO_EPWORTH item);
         Int32 ValidateEditBang(QUESTIONARIO_STOPBANG item);
 
+        RESPOSTA_CONSULTA GetRespostaById(Int32 id);
+        Int32 ValidateEditResposta(RESPOSTA_CONSULTA item);
+        List<RESPOSTA_CONSULTA> GetAllResposta(Int32 idAss);
+
     }
 }

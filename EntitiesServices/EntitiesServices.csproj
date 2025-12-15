@@ -236,6 +236,7 @@
     <Compile Include="Interfaces\Repositories\IMedicoAnexoRepository.cs" />
     <Compile Include="Interfaces\Repositories\ILocacaoHistoricoRepository.cs" />
     <Compile Include="Interfaces\Repositories\ILocacaoRepository.cs" />
+    <Compile Include="Interfaces\Repositories\IRespostaConsultaRepository.cs" />
     <Compile Include="Interfaces\Repositories\IQuestionarioBangRepository.cs" />
     <Compile Include="Interfaces\Repositories\IQuestionarioEpworthRepository.cs" />
     <Compile Include="Interfaces\Repositories\IQuestionarioBerlimRepository.cs" />
@@ -1592,6 +1593,7 @@
     <Compile Include="WorkClasses\DTO_Paciente_Acompanhamento.cs" />
     <Compile Include="WorkClasses\DTO_Grupo.cs" />
     <Compile Include="WorkClasses\DTO_Paciente_Consulta.cs" />
+    <Compile Include="WorkClasses\DTO_Paciente_Resposta.cs" />
     <Compile Include="WorkClasses\DTO_Paciente_Ficha.cs" />
     <Compile Include="WorkClasses\DTO_Paciente_Anexo.cs" />
     <Compile Include="WorkClasses\DTO_Paciente_Anamnese_Anotacao.cs" />
