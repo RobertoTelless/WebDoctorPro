@@ -16,5 +16,7 @@ namespace EntitiesServices.Work_Classes
         public string RECO_NR_CPF { get; set; }
         public Nullable<int> PACI_CD_ID { get; set; }
         public Nullable<int> RECO_IN_VISTO { get; set; }
+        public Nullable<int> RECO_IN_ANAMNESE { get; set; }
+
     }
 }

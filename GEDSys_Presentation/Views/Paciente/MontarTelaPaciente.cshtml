@@ -340,11 +340,11 @@
                                                             <tr>
                                                                 @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_ALTERAR_PACIENTE == 1)
                                                                 {
-                                                                    <td style="width: auto; cursor: pointer; text-decoration: underline;"><a href="@Url.Action("EditarPaciente", "Paciente", new { id = cond.PACIENTE.PACI__CD_ID })" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Editar/Consultar paciente" />@cond.PACIENTE.PACI_NM_NOME</td>
+                                                                    <td style="width: auto; cursor: pointer; text-decoration: underline;"><a href="@Url.Action("EditarPaciente", "Paciente", new { id = cond.PACIENTE.PACI__CD_ID })" class="btn-loading3"  data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Editar/Consultar paciente" />@cond.PACIENTE.PACI_NM_NOME</td>
                                                                 }
                                                                 else
                                                                 {
-                                                                    <td style="width: auto; cursor: pointer; text-decoration: underline;"><a href="@Url.Action("ConsultarPaciente", "Paciente", new { id = cond.PACIENTE.PACI__CD_ID })" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Consultar paciente"/>@cond.PACIENTE.PACI_NM_NOME</td>
+                                                                    <td style="width: auto; cursor: pointer; text-decoration: underline;"><a href="@Url.Action("ConsultarPaciente", "Paciente", new { id = cond.PACIENTE.PACI__CD_ID })" class="btn-loading3"  data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Consultar paciente"/>@cond.PACIENTE.PACI_NM_NOME</td>
                                                                 }
                                                                 <td>@cond.PACO_HR_INICIO.ToString()</td>
                                                                 <td class="td-one-action">
@@ -352,7 +352,7 @@
                                                                     {
                                                                         if (cond.PACO_IN_CONFIRMADA == 1)
                                                                         {
-                                                                            @Html.TableLinkDetails(cond.PACO_CD_ID, "ProcederConsulta", "fa-clock-o", "Proceder a Consulta")
+                                                                            @Html.TableLinkDetails(cond.PACO_CD_ID, "ProcederConsulta", "fa-clock-o btn-loading3", "Proceder a Consulta")
                                                                         }
                                                                         else if (cond.PACO_IN_CONFIRMADA == 0)
                                                                         {
@@ -365,7 +365,7 @@
                                                                     }
                                                                     else
                                                                     {
-                                                                        @Html.TableLinkDetails(cond.PACO_CD_ID, "VerConsulta", "fa-search", "Ver")
+                                                                        @Html.TableLinkDetails(cond.PACO_CD_ID, "VerConsulta", "fa-search btn-loading3", "Ver")
                                                                     }
                                                                 </td>
                                                             </tr>
@@ -385,6 +385,10 @@
                                                     </div>
                                                 </div>
                                             }
+                                            <span id="loadingIndicator3" style="display: none; margin-left: 10px; color: #007bff;">
+                                                <i class="fa fa-spinner fa-spin"></i> Processando...
+                                            </span>
+
                                         </div>
                                     </div>
                                 </div>
@@ -414,14 +418,14 @@
                                                                 <td>@cond.DataEmissao.ToShortDateString()</td>
                                                                 @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_ALTERAR_PACIENTE == 1)
                                                                 {
-                                                                    <td style="width: auto; cursor: pointer; text-decoration: underline;"><a href="@Url.Action("EditarPaciente", "Paciente", new { id = cond.Valor2 })" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Editar/Consultar paciente" />@cond.Nome</td>
+                                                                    <td style="width: auto; cursor: pointer; text-decoration: underline;"><a href="@Url.Action("EditarPaciente", "Paciente", new { id = cond.Valor2 })"  class="btn-loading2" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Editar/Consultar paciente" />@cond.Nome</td>
                                                                 }
                                                                 else
                                                                 {
-                                                                    <td style="width: auto; cursor: pointer; text-decoration: underline;"><a href="@Url.Action("ConsultarPaciente", "Paciente", new { id = cond.Valor2})" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Consultar paciente"/>@cond.Nome</td>
+                                                                    <td style="width: auto; cursor: pointer; text-decoration: underline;"><a href="@Url.Action("ConsultarPaciente", "Paciente", new { id = cond.Valor2})"  class="btn-loading2" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Consultar paciente"/>@cond.Nome</td>
                                                                 }
                                                                 <td class="td-one-action">
-                                                                    @Html.TableLinkDetails(cond.Valor1, "VisualizarPrevia", "fa-search", "Visualizar")
+                                                                    @Html.TableLinkDetails(cond.Valor1, "VisualizarPrevia", "fa-search btn-loading2", "Visualizar")
                                                                 </td>
                                                             </tr>
                                                         }
@@ -440,6 +444,9 @@
                                                     </div>
                                                 </div>
                                             }
+                                            <span id="loadingIndicator2" style="display: none; margin-left: 10px; color: #007bff;">
+                                                <i class="fa fa-spinner fa-spin"></i> Processando...
+                                            </span>
                                         </div>
                                     </div>
                                 </div>
@@ -469,11 +476,11 @@
                                                             <tr>
                                                                 @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_ALTERAR_PACIENTE == 1)
                                                                 {
-                                                                    <td style="width: auto; cursor: pointer; text-decoration: underline;"><a href="@Url.Action("EditarPaciente", "Paciente", new { id = cond.Valor1})" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Editar/Consultar paciente"/>@cond.Nome</td>
+                                                                    <td style="width: auto; cursor: pointer; text-decoration: underline;"><a href="@Url.Action("EditarPaciente", "Paciente", new { id = cond.Valor1})" class="btn-loading4"  data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Editar/Consultar paciente"/>@cond.Nome</td>
                                                                 }
                                                                 else
                                                                 {
-                                                                    <td style="width: auto; cursor: pointer; text-decoration: underline;"><a href="@Url.Action("ConsultarPaciente", "Paciente", new { id = cond.Valor1})" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Consultar paciente" />@cond.Nome</td>
+                                                                    <td style="width: auto; cursor: pointer; text-decoration: underline;"><a href="@Url.Action("ConsultarPaciente", "Paciente", new { id = cond.Valor1})" class="btn-loading4"  data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Consultar paciente" />@cond.Nome</td>
                                                                 }
                                                                 @if (cond.DataEmissao.Date == DateTime.Today.Date)
                                                                 {
@@ -486,11 +493,11 @@
                                                                 <td class="td-one-action">
                                                                     @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_ALTERAR_PACIENTE == 1)
                                                                     {
-                                                                        @Html.TableLinkDetails(cond.Valor1, "EditarPaciente", "fa-edit", "Editar")
+                                                                        @Html.TableLinkDetails(cond.Valor1, "EditarPaciente", "fa-edit  btn-loading4", "Editar")
                                                                     }
                                                                     else
                                                                     {
-                                                                        @Html.TableLinkDetails(cond.Valor1, "ConsultarPaciente", "fa-search", "Ver")
+                                                                        @Html.TableLinkDetails(cond.Valor1, "ConsultarPaciente", "fa-search  btn-loading4", "Ver")
                                                                     }
                                                                 </td>
                                                             </tr>
@@ -510,6 +517,9 @@
                                                     </div>
                                                 </div>
                                             }
+                                            <span id="loadingIndicator4" style="display: none; margin-left: 10px; color: #007bff;">
+                                                <i class="fa fa-spinner fa-spin"></i> Processando...
+                                            </span>
                                         </div>
                                     </div>
                                 </div>
@@ -536,10 +546,10 @@
                                                         @foreach (var cond in (ViewBag.ListaAvisoAtivo as List<ERP_Condominios_Solution.ViewModels.ModeloViewModel>).OrderBy(p => p.DataEmissao).ThenBy(p => p.Nome))
                                                         {
                                                             <tr>
-                                                                <td style="width: auto; cursor: pointer; text-decoration: underline;"><a href="@Url.Action("EditarAviso", "Aviso" , new { id = cond.Valor2})" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Visualizar o aviso/lembrete" />@cond.Nome</td>
+                                                                <td style="width: auto; cursor: pointer; text-decoration: underline;"><a href="@Url.Action("EditarAviso", "Aviso" , new { id = cond.Valor2})" class="btn-loading5" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Visualizar o aviso/lembrete" />@cond.Nome</td>
                                                                 <td>@cond.DataEmissao.ToShortDateString()</td>
                                                                 <td class="td-one-action">
-                                                                    @Html.TableLinkDetails(cond.Valor2, "VerAviso", "fa-search", "Ver")
+                                                                    @Html.TableLinkDetails(cond.Valor2, "VerAviso", "fa-search btn-loading5", "Ver")
                                                                 </td>
                                                             </tr>
                                                         }
@@ -558,6 +568,9 @@
                                                     </div>
                                                 </div>
                                             }
+                                            <span id="loadingIndicator5" style="display: none; margin-left: 10px; color: #007bff;">
+                                                <i class="fa fa-spinner fa-spin"></i> Processando...
+                                            </span>
                                         </div>
                                     </div>
                                 </div>
@@ -711,6 +724,81 @@
                 } else if (tagName === 'button' || tagName === 'input') {               
                     $this.closest('form').submit();
                     $this.prop('disabled', true);
+                }
+            });
+        });
+    </script>
+    <script type="text/javascript">
+        $(document).ready(function () { 
+            $('.btn-loading2').on('click', function (e) {            
+                $(this).prop('disabled', true);
+                $(this).addClass('disabled');
+                $('#loadingIndicator2').show();
+                var tagName = $(this).prop('tagName').toLowerCase();
+                if (tagName === 'a') {
+                    e.preventDefault(); 
+                    var targetUrl = $(this).attr('href');
+                    window.location.href = targetUrl;
+
+                } else if (tagName === 'button' || tagName === 'input') {
+                    $(this).closest('form').submit();
+                }
+            });
+        });
+    </script>
+
+    <script type="text/javascript">
+        $(document).ready(function () { 
+            $('.btn-loading3').on('click', function (e) {            
+                $(this).prop('disabled', true);
+                $(this).addClass('disabled');
+                $('#loadingIndicator3').show();
+                var tagName = $(this).prop('tagName').toLowerCase();
+                if (tagName === 'a') {
+                    e.preventDefault(); 
+                    var targetUrl = $(this).attr('href');
+                    window.location.href = targetUrl;
+
+                } else if (tagName === 'button' || tagName === 'input') {
+                    $(this).closest('form').submit();
+                }
+            });
+        });
+    </script>
+
+    <script type="text/javascript">
+        $(document).ready(function () { 
+            $('.btn-loading4').on('click', function (e) {            
+                $(this).prop('disabled', true);
+                $(this).addClass('disabled');
+                $('#loadingIndicator4').show();
+                var tagName = $(this).prop('tagName').toLowerCase();
+                if (tagName === 'a') {
+                    e.preventDefault(); 
+                    var targetUrl = $(this).attr('href');
+                    window.location.href = targetUrl;
+
+                } else if (tagName === 'button' || tagName === 'input') {
+                    $(this).closest('form').submit();
+                }
+            });
+        });
+    </script>
+
+    <script type="text/javascript">
+        $(document).ready(function () { 
+            $('.btn-loading5').on('click', function (e) {            
+                $(this).prop('disabled', true);
+                $(this).addClass('disabled');
+                $('#loadingIndicator5').show();
+                var tagName = $(this).prop('tagName').toLowerCase();
+                if (tagName === 'a') {
+                    e.preventDefault(); 
+                    var targetUrl = $(this).attr('href');
+                    window.location.href = targetUrl;
+
+                } else if (tagName === 'button' || tagName === 'input') {
+                    $(this).closest('form').submit();
                 }
             });
         });

@@ -65,7 +65,6 @@
                             <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Profissional</h4>
                             @Html.HiddenFor(m => m.PACO_IN_ATIVO)
                             @Html.HiddenFor(m => m.PACO_IN_ENCERRADA)
-                            @*@Html.HiddenFor(m => m.USUA_CD_ID)*@
                             @Html.HiddenFor(m => m.ASSI_CD_ID)
                             @Html.HiddenFor(m => m.PACO_IN_CONFIRMADA)
                             <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
@@ -479,8 +478,29 @@
             });
         });
     </script>
-
     <script type="text/javascript">
+        $(document).ready(function () {
+            $('.btn-loading1').on('click', function (e) {
+            
+                var $this = $(this);
+                var tagName = $this.prop('tagName').toLowerCase();
+                $this.addClass('disabled'); 
+                $('#loadingIndicator').show();
+
+                if (tagName === 'a') {
+                    e.preventDefault();
+                
+                    var targetUrl = $this.attr('href');
+                    window.location.href = targetUrl;
+                
+                } else if (tagName === 'button' || tagName === 'input') {               
+                    $this.closest('form').submit();
+                    $this.prop('disabled', true);
+                }
+            });
+        });
+    </script>
+     <script type="text/javascript">
         function ValidaSeg(segVal) {
             if (segVal == '1') {
                 $("#iniSeg").show();

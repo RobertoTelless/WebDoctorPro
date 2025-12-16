@@ -5805,6 +5805,7 @@
           <Property Name="PACI_CD_ID" Type="int" />
           <Property Name="RECO_IN_VISTO" Type="int" />
           <Property Name="PACO_CD_ID" Type="int" />
+          <Property Name="RECO_IN_ANAMNESE" Type="int" />
         </EntityType>
         <EntityType Name="RESULTADO_ROBOT">
           <Key>
@@ -26040,6 +26041,7 @@
           <NavigationProperty Name="USUARIO" Relationship="CRMSysDBModel.FK_RESPOSTA_CONSULTA_USUARIO" FromRole="RESPOSTA_CONSULTA" ToRole="USUARIO" />
           <Property Name="PACO_CD_ID" Type="Int32" />
           <NavigationProperty Name="PACIENTE_CONSULTA" Relationship="CRMSysDBModel.FK_RESPOSTA_CONSULTA_PACIENTE_CONSULTA" FromRole="RESPOSTA_CONSULTA" ToRole="PACIENTE_CONSULTA" />
+          <Property Name="RECO_IN_ANAMNESE" Type="Int32" />
         </EntityType>
         <EntityType Name="RESULTADO_ROBOT">
           <Key>
@@ -46312,6 +46314,7 @@
           <EntitySetMapping Name="RESPOSTA_CONSULTA">
             <EntityTypeMapping TypeName="CRMSysDBModel.RESPOSTA_CONSULTA">
               <MappingFragment StoreEntitySet="RESPOSTA_CONSULTA">
+                <ScalarProperty Name="RECO_IN_ANAMNESE" ColumnName="RECO_IN_ANAMNESE" />
                 <ScalarProperty Name="PACO_CD_ID" ColumnName="PACO_CD_ID" />
                 <ScalarProperty Name="RECO_IN_VISTO" ColumnName="RECO_IN_VISTO" />
                 <ScalarProperty Name="RECO_CD_ID" ColumnName="RECO_CD_ID" />

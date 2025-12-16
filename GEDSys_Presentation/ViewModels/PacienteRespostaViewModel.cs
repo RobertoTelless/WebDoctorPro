@@ -24,6 +24,29 @@ namespace ERP_Condominios_Solution.ViewModels
         public Nullable<int> PACI_CD_ID { get; set; }
         public Nullable<int> RECO_IN_VISTO { get; set; }
         public Nullable<int> PACO_CD_ID { get; set; }
+        public Nullable<int> RECO_IN_ANAMNESE { get; set; }
+        public String Anamnese
+        {
+            get
+            {
+                if (RECO_IN_ANAMNESE == 1)
+                {
+                    return "Sim";
+                }
+                return "Não";
+            }
+        }
+        public String Visto
+        {
+            get
+            {
+                if (RECO_IN_VISTO == 1)
+                {
+                    return "Sim";
+                }
+                return "Não";
+            }
+        }
 
         public virtual PACIENTE PACIENTE { get; set; }
         public virtual USUARIO USUARIO { get; set; }

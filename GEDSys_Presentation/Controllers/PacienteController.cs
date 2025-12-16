@@ -308,6 +308,7 @@ namespace GEDSys_Presentation.Controllers
                 ViewBag.NaoEncerradasNumero = naoEncerradas.Count;
 
                 // Consultas por data
+                Session["ListaConsultaData"] = null;
                 List<DateTime> datas = cons.Select(p => p.PACO_DT_CONSULTA.Date).Distinct().ToList();
                 DateTime limite = DateTime.Today.Date.AddDays(-30);
                 DateTime limiteSuperior = DateTime.Today.Date.AddDays(30);
@@ -581,6 +582,7 @@ namespace GEDSys_Presentation.Controllers
                 Session["VoltarVideo"] = 1;
                 Session["VoltaLocacaoBase"] = 1;
                 Session["VoltaContratoLocacao"] = 1;
+                Session["VoltaResposta"] = 0;
                 if (confAna.COAN_IN_BLOCO_COMUM == 0 || confAna.COAN_IN_BLOCO_COMUM == null)
                 {
                     Session["BlocoAnamnese"] = 1;
@@ -4157,6 +4159,7 @@ namespace GEDSys_Presentation.Controllers
                 Session["VoltarMsgPaciente"] = 1;
                 Session["TipoLocacao"] = 1;
                 Session["VoltaCliGrupo"] = 1;
+                Session["VoltaResposta"] = 1;
 
                 Session["AjudaNivel"] = "../BaseAdmin/Ajuda/3/Ajuda3_2.pdf";
                 Session["AjudaNivelAt"] = "../BaseAdmin/Ajuda/3/Ajuda3_3.pdf";

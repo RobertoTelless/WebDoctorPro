@@ -27,6 +27,7 @@ namespace EntitiesServices.Model
         public Nullable<int> PACI_CD_ID { get; set; }
         public Nullable<int> RECO_IN_VISTO { get; set; }
         public Nullable<int> PACO_CD_ID { get; set; }
+        public Nullable<int> RECO_IN_ANAMNESE { get; set; }
     
         public virtual PACIENTE PACIENTE { get; set; }
         public virtual USUARIO USUARIO { get; set; }

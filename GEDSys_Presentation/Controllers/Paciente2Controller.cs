@@ -4764,6 +4764,8 @@ namespace GEDSys_Presentation.Controllers
 
                 // Sucesso
                 Session["NivelPaciente"] = 3;
+                Session["Consultas"] = null;
+                Session["ConsultaAlterada"] = 1;
                 if ((Int32)Session["TipoSolicitacao"] == 1)
                 {
                     if ((Int32)Session["VoltaAtestado"] == 1)
@@ -8003,66 +8005,135 @@ namespace GEDSys_Presentation.Controllers
         {
             try
             {
-                Int32 idAss = (Int32)Session["IdAssinante"];
-                USUARIO usuario = (USUARIO)Session["UserCredentials"];
-                PACIENTE_ANAMNESE item = baseApp.GetAnamneseById(id);
-                String frase = String.Empty;
-                frase += "=== MOTIVO DA CONSULTA ===" + "\r\n" + item.PAAM_DS_MOTIVO_CONSULTA + "\r\n";
-                frase += "\r\n" + "=== QUEIXA PRINCIPAL ===" + "\r\n" + item.PAAM_DS_QUEIXA_PRINCIPAL + "\r\n";
-                frase += "\r\n" + "=== HISTÓRICO FAMILIAR ===" + "\r\n" + item.PAAM_DS_HISTORIA_FAMILIAR + "\r\n";
-                frase += "\r\n" + "=== HISTÓRIA SOCIAL ===" + "\r\n" + item.PAAM_DS_HISTORIA_SOCIAL + "\r\n";
-                frase += "\r\n" + "=== HISTÓRIO DA DOENÇA ATUAL ===" + "\r\n" + item.PAAM_DS_HISTORIA_DOENCA_ATUAL + "\r\n";
-                frase += "\r\n" + "=== MEDICAMENTOS EM USO ===" + "\r\n" + item.PAAM_NM_MEDICAMENTO + "\r\n";
-                frase += "\r\n" + "=== HISTÓRIA PATOLÓGICA PROGRESSIVA ===" + "\r\n" + item.PAAM_DS_HISTORIA_PATOLOGICA_PROGRESSIVA + "\r\n";
-                frase += "\r\n" + "=== AVALIAÇÃO CARDIOLÓGICA ===" + "\r\n" + item.PAAN_NM_AVALIACAO_CARDIOLOGICA_LONG + "\r\n";
-                frase += "\r\n" + "=== AVALIAÇÃO RESPIRATÓRIA  ===" + "\r\n" + item.PAAN_NM_RESPIRATORIO_LONG + "\r\n";
-                frase += "\r\n" + "=== AVALIAÇÃO DO ABDÔMEM ===" + "\r\n" + item.PAAN_NM_ABDOMEM + "\r\n";
-                frase += "\r\n" + "=== AVALIAÇÃO DOS MEMBROS INFERIORES ===" + "\r\n" + item.PAAN_NM_MEMBROS_INFERIORES + "\r\n";
-                if (item.PAAM_IN_CAMPO_1 == 1)
+                if ((Int32)Session["BlocoAnamnese"] == 1)
                 {
-                    frase += "\r\n" + "=== " + item.PAAM_NM_CAMPO_1 + " ===" + "\r\n" + item.PAAM_DS_CAMPO_1 + "\r\n";
+                    Int32 idAss = (Int32)Session["IdAssinante"];
+                    USUARIO usuario = (USUARIO)Session["UserCredentials"];
+                    PACIENTE_ANAMNESE item = baseApp.GetAnamneseById(id);
+                    String frase = String.Empty;
+                    frase += "=== MOTIVO DA CONSULTA ===" + "\r\n" + item.PAAM_DS_MOTIVO_CONSULTA + "\r\n";
+                    frase += "\r\n" + "=== QUEIXA PRINCIPAL ===" + "\r\n" + item.PAAM_DS_QUEIXA_PRINCIPAL + "\r\n";
+                    frase += "\r\n" + "=== HISTÓRICO FAMILIAR ===" + "\r\n" + item.PAAM_DS_HISTORIA_FAMILIAR + "\r\n";
+                    frase += "\r\n" + "=== HISTÓRIA SOCIAL ===" + "\r\n" + item.PAAM_DS_HISTORIA_SOCIAL + "\r\n";
+                    frase += "\r\n" + "=== HISTÓRIO DA DOENÇA ATUAL ===" + "\r\n" + item.PAAM_DS_HISTORIA_DOENCA_ATUAL + "\r\n";
+                    frase += "\r\n" + "=== MEDICAMENTOS EM USO ===" + "\r\n" + item.PAAM_NM_MEDICAMENTO + "\r\n";
+                    frase += "\r\n" + "=== HISTÓRIA PATOLÓGICA PROGRESSIVA ===" + "\r\n" + item.PAAM_DS_HISTORIA_PATOLOGICA_PROGRESSIVA + "\r\n";
+                    frase += "\r\n" + "=== AVALIAÇÃO CARDIOLÓGICA ===" + "\r\n" + item.PAAN_NM_AVALIACAO_CARDIOLOGICA_LONG + "\r\n";
+                    frase += "\r\n" + "=== AVALIAÇÃO RESPIRATÓRIA  ===" + "\r\n" + item.PAAN_NM_RESPIRATORIO_LONG + "\r\n";
+                    frase += "\r\n" + "=== AVALIAÇÃO DO ABDÔMEM ===" + "\r\n" + item.PAAN_NM_ABDOMEM + "\r\n";
+                    frase += "\r\n" + "=== AVALIAÇÃO DOS MEMBROS INFERIORES ===" + "\r\n" + item.PAAN_NM_MEMBROS_INFERIORES + "\r\n";
+                    if (item.PAAM_IN_CAMPO_1 == 1)
+                    {
+                        frase += "\r\n" + "=== " + item.PAAM_NM_CAMPO_1 + " ===" + "\r\n" + item.PAAM_DS_CAMPO_1 + "\r\n";
+                    }
+                    if (item.PAAM_IN_CAMPO_2 == 1)
+                    {
+                        frase += "\r\n" + "=== " + item.PAAM_NM_CAMPO_2 + " ===" + "\r\n" + item.PAAM_DS_CAMPO_2 + "\r\n";
+                    }
+                    if (item.PAAM_IN_CAMPO_3 == 1)
+                    {
+                        frase += "\r\n" + "=== " + item.PAAM_NM_CAMPO_3 + " ===" + "\r\n" + item.PAAM_DS_CAMPO_3 + "\r\n";
+                    }
+                    if (item.PAAM_IN_CAMPO_4 == 1)
+                    {
+                        frase += "\r\n" + "=== " + item.PAAM_NM_CAMPO_4 + " ===" + "\r\n" + item.PAAM_DS_CAMPO_4 + "\r\n";
+                    }
+                    if (item.PAAM_IN_CAMPO_5 == 1)
+                    {
+                        frase += "\r\n" + "=== " + item.PAAM_NM_CAMPO_5 + " ===" + "\r\n" + item.PAAM_DS_CAMPO_5 + "\r\n";
+                    }
+                    if (item.PAAM_IN_CAMPO_6 == 1)
+                    {
+                        frase += "\r\n" + "=== " + item.PAAM_NM_CAMPO_6 + " ===" + "\r\n" + item.PAAM_DS_CAMPO_6 + "\r\n";
+                    }
+                    if (item.PAAM_IN_CAMPO_7 == 1)
+                    {
+                        frase += "\r\n" + "=== " + item.PAAM_NM_CAMPO_7 + " ===" + "\r\n" + item.PAAM_DS_CAMPO_7 + "\r\n";
+                    }
+                    if (item.PAAM_IN_CAMPO_8 == 1)
+                    {
+                        frase += "\r\n" + "=== " + item.PAAM_NM_CAMPO_8 + " ===" + "\r\n" + item.PAAM_DS_CAMPO_8 + "\r\n";
+                    }
+                    if (item.PAAM_IN_CAMPO_9 == 1)
+                    {
+                        frase += "\r\n" + "=== " + item.PAAM_NM_CAMPO_9 + " ===" + "\r\n" + item.PAAM_DS_CAMPO_9 + "\r\n";
+                    }
+                    if (item.PAAM_IN_CAMPO_10 == 1)
+                    {
+                        frase += "\r\n" + "=== " + item.PAAM_NM_CAMPO_10 + " ===" + "\r\n" + item.PAAM_DS_CAMPO_10 + "\r\n";
+                    }
+                    frase += "\r\n" + "=== DIAGNÓSTICO ===" + "\r\n" + item.PAAM_DS_DIAGNOSTICO_1_LONG + "\r\n";
+                    frase += "\r\n" + "=== CONDUTA ADOTADA ===" + "\r\n" + item.PAAM_DS_CONDUTA + "\r\n";
+                    item.PAAM_TX_COMPLETA = frase;
+                    Int32 voltaAna = baseApp.ValidateEditAnamneseConfirma(item);
                 }
-                if (item.PAAM_IN_CAMPO_2 == 1)
+                else
                 {
-                    frase += "\r\n" + "=== " + item.PAAM_NM_CAMPO_2 + " ===" + "\r\n" + item.PAAM_DS_CAMPO_2 + "\r\n";
+                    Int32 idAss = (Int32)Session["IdAssinante"];
+                    USUARIO usuario = (USUARIO)Session["UserCredentials"];
+                    PACIENTE_ANAMNESE item = baseApp.GetAnamneseById(id);
+                    String frase = String.Empty;
+                    frase += "=== PRINCIPAL QUEIXA DO SONO ===" + "\r\n" + item.PAAM_DS_SONO_PRINCIPAL_QUEIXA + "\r\n";
+                    frase += "\r\n" + "=== POLISSONOGRAFIA ===" + "\r\n" + item.PAAM_DS_SONO_POLISONO + "\r\n";
+                    frase += "\r\n" + "=== SINTOMAS ===" + "\r\n" + item.PAAM_DS_SONO_SINTOMAS + "\r\n";
+                    frase += "\r\n" + "=== HORÁRIOS REGULARES ===" + "\r\n" + item.PAAM_DS_SONO_HORARIO_REGULAR_NOVO + "\r\n";
+                    frase += "\r\n" + "=== MEDICAMENTOS ===" + "\r\n" + item.PAAM_DS_SONO_MEDICAMENTOS + "\r\n";
+                    frase += "\r\n" + "=== MEDICAMENTOS EM USO ===" + "\r\n" + item.PAAM_NM_MEDICAMENTO + "\r\n";
+                    frase += "\r\n" + "=== HISTÓRIA PATOLÓGICA PROGRESSIVA ===" + "\r\n" + item.PAAM_DS_HISTORIA_PATOLOGICA_PROGRESSIVA + "\r\n";
+                    frase += "\r\n" + "=== AVALIAÇÃO CARDIOLÓGICA ===" + "\r\n" + item.PAAN_NM_AVALIACAO_CARDIOLOGICA_LONG + "\r\n";
+                    frase += "\r\n" + "=== AVALIAÇÃO RESPIRATÓRIA  ===" + "\r\n" + item.PAAN_NM_RESPIRATORIO_LONG + "\r\n";
+                    frase += "\r\n" + "=== AVALIAÇÃO DO ABDÔMEM ===" + "\r\n" + item.PAAN_NM_ABDOMEM + "\r\n";
+                    frase += "\r\n" + "=== AVALIAÇÃO DOS MEMBROS INFERIORES ===" + "\r\n" + item.PAAN_NM_MEMBROS_INFERIORES + "\r\n";
+                    if (item.PAAM_IN_CAMPO_1 == 1)
+                    {
+                        frase += "\r\n" + "=== " + item.PAAM_NM_CAMPO_1 + " ===" + "\r\n" + item.PAAM_DS_CAMPO_1 + "\r\n";
+                    }
+                    if (item.PAAM_IN_CAMPO_2 == 1)
+                    {
+                        frase += "\r\n" + "=== " + item.PAAM_NM_CAMPO_2 + " ===" + "\r\n" + item.PAAM_DS_CAMPO_2 + "\r\n";
+                    }
+                    if (item.PAAM_IN_CAMPO_3 == 1)
+                    {
+                        frase += "\r\n" + "=== " + item.PAAM_NM_CAMPO_3 + " ===" + "\r\n" + item.PAAM_DS_CAMPO_3 + "\r\n";
+                    }
+                    if (item.PAAM_IN_CAMPO_4 == 1)
+                    {
+                        frase += "\r\n" + "=== " + item.PAAM_NM_CAMPO_4 + " ===" + "\r\n" + item.PAAM_DS_CAMPO_4 + "\r\n";
+                    }
+                    if (item.PAAM_IN_CAMPO_5 == 1)
+                    {
+                        frase += "\r\n" + "=== " + item.PAAM_NM_CAMPO_5 + " ===" + "\r\n" + item.PAAM_DS_CAMPO_5 + "\r\n";
+                    }
+                    if (item.PAAM_IN_CAMPO_6 == 1)
+                    {
+                        frase += "\r\n" + "=== " + item.PAAM_NM_CAMPO_6 + " ===" + "\r\n" + item.PAAM_DS_CAMPO_6 + "\r\n";
+                    }
+                    if (item.PAAM_IN_CAMPO_7 == 1)
+                    {
+                        frase += "\r\n" + "=== " + item.PAAM_NM_CAMPO_7 + " ===" + "\r\n" + item.PAAM_DS_CAMPO_7 + "\r\n";
+                    }
+                    if (item.PAAM_IN_CAMPO_8 == 1)
+                    {
+                        frase += "\r\n" + "=== " + item.PAAM_NM_CAMPO_8 + " ===" + "\r\n" + item.PAAM_DS_CAMPO_8 + "\r\n";
+                    }
+                    if (item.PAAM_IN_CAMPO_9 == 1)
+                    {
+                        frase += "\r\n" + "=== " + item.PAAM_NM_CAMPO_9 + " ===" + "\r\n" + item.PAAM_DS_CAMPO_9 + "\r\n";
+                    }
+                    if (item.PAAM_IN_CAMPO_10 == 1)
+                    {
+                        frase += "\r\n" + "=== " + item.PAAM_NM_CAMPO_10 + " ===" + "\r\n" + item.PAAM_DS_CAMPO_10 + "\r\n";
+                    }
+                    frase += "\r\n" + "=== DIAGNÓSTICO ===" + "\r\n" + item.PAAM_DS_DIAGNOSTICO_1_LONG + "\r\n";
+                    frase += "\r\n" + "=== CONDUTA ADOTADA ===" + "\r\n" + item.PAAM_DS_CONDUTA + "\r\n";
+                    item.PAAM_TX_COMPLETA = frase;
+                    Int32 voltaAna = baseApp.ValidateEditAnamneseConfirma(item);
                 }
-                if (item.PAAM_IN_CAMPO_3 == 1)
-                {
-                    frase += "\r\n" + "=== " + item.PAAM_NM_CAMPO_3 + " ===" + "\r\n" + item.PAAM_DS_CAMPO_3 + "\r\n";
-                }
-                if (item.PAAM_IN_CAMPO_4 == 1)
-                {
-                    frase += "\r\n" + "=== " + item.PAAM_NM_CAMPO_4 + " ===" + "\r\n" + item.PAAM_DS_CAMPO_4 + "\r\n";
-                }
-                if (item.PAAM_IN_CAMPO_5 == 1)
-                {
-                    frase += "\r\n" + "=== " + item.PAAM_NM_CAMPO_5 + " ===" + "\r\n" + item.PAAM_DS_CAMPO_5 + "\r\n";
-                }
-                if (item.PAAM_IN_CAMPO_6 == 1)
-                {
-                    frase += "\r\n" + "=== " + item.PAAM_NM_CAMPO_6 + " ===" + "\r\n" + item.PAAM_DS_CAMPO_6 + "\r\n";
-                }
-                if (item.PAAM_IN_CAMPO_7 == 1)
-                {
-                    frase += "\r\n" + "=== " + item.PAAM_NM_CAMPO_7 + " ===" + "\r\n" + item.PAAM_DS_CAMPO_7 + "\r\n";
-                }
-                if (item.PAAM_IN_CAMPO_8 == 1)
-                {
-                    frase += "\r\n" + "=== " + item.PAAM_NM_CAMPO_8 + " ===" + "\r\n" + item.PAAM_DS_CAMPO_8 + "\r\n";
-                }
-                if (item.PAAM_IN_CAMPO_9 == 1)
-                {
-                    frase += "\r\n" + "=== " + item.PAAM_NM_CAMPO_9 + " ===" + "\r\n" + item.PAAM_DS_CAMPO_9 + "\r\n";
-                }
-                if (item.PAAM_IN_CAMPO_10 == 1)
-                {
-                    frase += "\r\n" + "=== " + item.PAAM_NM_CAMPO_10 + " ===" + "\r\n" + item.PAAM_DS_CAMPO_10 + "\r\n";
-                }
-                frase += "\r\n" + "=== DIAGNÓSTICO ===" + "\r\n" + item.PAAM_DS_DIAGNOSTICO_1_LONG + "\r\n";
-                frase += "\r\n" + "=== CONDUTA ADOTADA ===" + "\r\n" + item.PAAM_DS_CONDUTA + "\r\n";
 
-                item.PAAM_TX_COMPLETA = frase;
-                Int32 voltaAna = baseApp.ValidateEditAnamneseConfirma(item);
+
+
+
+
                 return 1;
             }
             catch (Exception ex)
@@ -19123,6 +19194,7 @@ namespace GEDSys_Presentation.Controllers
                     RECO_NM_NOME = l.RECO_NM_NOME,
                     RECO_NR_CPF = l.RECO_NR_CPF,
                     RECO_TX_MOTIVO = l.RECO_TX_MOTIVO,
+                    RECO_IN_ANAMNESE = l.RECO_IN_ANAMNESE,
                 };
                 return mediDTO;
             }
@@ -19267,7 +19339,7 @@ namespace GEDSys_Presentation.Controllers
                 };
 
                 // Monta Log
-                PACIENTE pac = baseApp.GetItemById(item.PACI_CD_ID.Value);
+                PACIENTE pac = baseApp.GetItemById((Int32)Session["IdPaciente"]);
                 DTO_Paciente_Resposta dto = MontarPacienteRespostaDTOObj(item);
                 String json = JsonConvert.SerializeObject(dto, settings);
                 LOG log = new LOG
@@ -19286,13 +19358,65 @@ namespace GEDSys_Presentation.Controllers
                 PACIENTE_HISTORICO hist = new PACIENTE_HISTORICO();
                 hist.ASSI_CD_ID = usuarioLogado.ASSI_CD_ID;
                 hist.USUA_CD_ID = usuarioLogado.USUA_CD_ID;
-                hist.PACI_CD_ID = objetoAntes.PACI__CD_ID;
+                hist.PACI_CD_ID = pac.PACI__CD_ID;
                 hist.PAHI_DT_DATA = DateTime.Now;
                 hist.PAHI_IN_TIPO = 2;
                 hist.PAHI_IN_CHAVE = item.RECO_CD_ID;
                 hist.PAHI_NM_OPERACAO = "Paciente - Visualização de Resposta";
-                hist.PAHI_DS_DESCRICAO = "Paciente " + objetoAntes.PACI_NM_NOME + " Resposta visualizada " + item.RECO_TX_MOTIVO;
+                hist.PAHI_DS_DESCRICAO = "Paciente " + pac.PACI_NM_NOME + " Resposta visualizada " + item.RECO_TX_MOTIVO;
                 Int32 voltaHist = baseApp.ValidateCreateHistorico(hist);
+
+                // Atualiza Anamnese
+                if (item.RECO_IN_ANAMNESE == 0)
+                {
+                    String dataHoje = DateTime.Today.Date.ToLongDateString();
+                    Session["Pacientes"] = null;
+                    List<PACIENTE> pacis = CarregaPaciente();
+                    PACIENTE paci = pacis.Where(p => p.PACI__CD_ID == (Int32)Session["IdPaciente"]).FirstOrDefault();
+                    String dataHoje1 = DateTime.Today.Date.ToLongDateString();
+                    PACIENTE_ANAMNESE anam = paci.PACIENTE_ANAMNESE.FirstOrDefault();
+                    if (item.RECO_TX_MOTIVO != null)
+                    {
+                        String velho = anam.PAAM_TX_TEXTO_LIVRE;
+                        String novo = "=== Informação Prévia de Consulta === " + Environment.NewLine + item.RECO_TX_MOTIVO;
+                        if (velho == null & novo != String.Empty)
+                        {
+                            anam.PAAM_TX_TEXTO_LIVRE = dataHoje1 + Environment.NewLine + novo;
+                        }
+                        if (velho != null & novo != String.Empty)
+                        {
+                            String tripa = velho.Substring(velho.Length - 4, 4);
+                            if (tripa == "\r\n")
+                            {
+                                velho = velho.Substring(0, velho.Length - 4);
+                            }
+                            anam.PAAM_TX_TEXTO_LIVRE = velho + "\r\n\r\n" + dataHoje1 + Environment.NewLine + novo;
+                        }
+                    }
+                    if (item.RECO_TX_MOTIVO != null)
+                    {
+                        String velho = anam.PAAM_TX_COMPLETA;
+                        String novo = "=== Informação Prévia de Consulta === " + Environment.NewLine + item.RECO_TX_MOTIVO;
+                        if (velho == null & novo != String.Empty)
+                        {
+                            anam.PAAM_TX_COMPLETA = dataHoje1 + Environment.NewLine + novo;
+                        }
+                        if (velho != null & novo != String.Empty)
+                        {
+                            String tripa = velho.Substring(velho.Length - 4, 4);
+                            if (tripa == "\r\n")
+                            {
+                                velho = velho.Substring(0, velho.Length - 4);
+                            }
+                            anam.PAAM_TX_COMPLETA = velho + "\r\n\r\n" + dataHoje1+ Environment.NewLine + novo;
+                        }
+                    }
+                    Int32 voltaAna = baseApp.ValidateEditAnamnese(anam);
+
+                    RESPOSTA_CONSULTA resp = baseApp.GetRespostaById(id);
+                    resp.RECO_IN_ANAMNESE = 1;
+                    Int32 volta2 = baseApp.ValidateEditResposta(resp);
+                }
 
                 // Mensagem do CRUD
                 Session["MsgCRUD"] = "A resposta do paciente " + pac.PACI_NM_NOME.ToUpper() + " em " + item.RECO_DT_DATA.Value.ToShortDateString() + " foi visualizada com sucesso";
@@ -19348,6 +19472,10 @@ namespace GEDSys_Presentation.Controllers
                 ver.Add(new SelectListItem() { Text = "Sim", Value = "1" });
                 ver.Add(new SelectListItem() { Text = "Não", Value = "0" });
                 ViewBag.Ver = new SelectList(ver, "Value", "Text");
+                List<SelectListItem> ana = new List<SelectListItem>();
+                ana.Add(new SelectListItem() { Text = "Normal", Value = "1" });
+                ana.Add(new SelectListItem() { Text = "Recursiva", Value = "2" });
+                ViewBag.Anamnese = new SelectList(ana, "Value", "Text");
                 PACIENTE pac = baseApp.GetItemById((Int32)Session["IdPaciente"]);
                 ViewBag.NomePaciente = pac.PACI_NM_NOME;
 
@@ -19389,17 +19517,83 @@ namespace GEDSys_Presentation.Controllers
             ver.Add(new SelectListItem() { Text = "Sim", Value = "1" });
             ver.Add(new SelectListItem() { Text = "Não", Value = "0" });
             ViewBag.Ver = new SelectList(ver, "Value", "Text");
+            List<SelectListItem> ana = new List<SelectListItem>();
+            ana.Add(new SelectListItem() { Text = "Normal", Value = "1" });
+            ana.Add(new SelectListItem() { Text = "Recursiva", Value = "2" });
+            ViewBag.Anamnese = new SelectList(ana, "Value", "Text");
             if (ModelState.IsValid)
             {
                 try
                 {
                     // Sanitização
 
+                    // Critica
+                    if (vm.RECO_IN_ANAMNESE == null)
+                    {
+                        vm.RECO_IN_ANAMNESE = 0;
+                    }
+                    if (vm.RECO_IN_VISTO == null)
+                    {
+                        vm.RECO_IN_VISTO = 0;
+                    }
+
                     // Executa a operação
+                    Int32? anamnese = vm.RECO_IN_ANAMNESE;
                     USUARIO usuarioLogado = (USUARIO)Session["UserCredentials"];
                     RESPOSTA_CONSULTA item = Mapper.Map<PacienteRespostaViewModel, RESPOSTA_CONSULTA>(vm);
                     PACIENTE pac = (PACIENTE)Session["Paciente"];
                     Int32 volta = baseApp.ValidateEditResposta(item);
+
+                    // Atualiza Anamnese
+                    if (item.RECO_IN_ANAMNESE == 0)
+                    {
+                        Session["Pacientes"] = null;
+                        List<PACIENTE> pacis = CarregaPaciente();
+                        PACIENTE paci = pacis.Where(p => p.PACI__CD_ID == (Int32)Session["IdPaciente"]).FirstOrDefault();
+                        String dataHoje = DateTime.Today.Date.ToLongDateString();
+                        PACIENTE_ANAMNESE anam = paci.PACIENTE_ANAMNESE.FirstOrDefault();
+                        if (item.RECO_TX_MOTIVO != null)
+                        {
+                            String velho = anam.PAAM_TX_TEXTO_LIVRE;
+                            String novo = "=== Informação Prévia de Consulta === " + Environment.NewLine + item.RECO_TX_MOTIVO;
+                            if (velho == null & novo != String.Empty)
+                            {
+                                anam.PAAM_TX_TEXTO_LIVRE = dataHoje + "\r\n" + novo;
+                            }
+                            if (velho != null & novo != String.Empty)
+                            {
+                                String tripa = velho.Substring(velho.Length - 4, 4);
+                                if (tripa == "\r\n")
+                                {
+                                    velho = velho.Substring(0, velho.Length - 4);
+                                }
+                                anam.PAAM_TX_TEXTO_LIVRE = velho + "\r\n\r\n" + dataHoje + "\r\n" + novo;
+                            }
+                        }
+                        if (item.RECO_TX_MOTIVO != null)
+                        {
+                            String velho = anam.PAAM_TX_COMPLETA;
+                            String novo = "=== Informação Prévia de Consulta === " + Environment.NewLine + item.RECO_TX_MOTIVO;
+                            if (velho == null & novo != String.Empty)
+                            {
+                                anam.PAAM_TX_COMPLETA = dataHoje + "\r\n" + novo;
+                            }
+                            if (velho != null & novo != String.Empty)
+                            {
+                                String tripa = velho.Substring(velho.Length - 4, 4);
+                                if (tripa == "\r\n")
+                                {
+                                    velho = velho.Substring(0, velho.Length - 4);
+                                }
+                                anam.PAAM_TX_COMPLETA = velho + "\r\n\r\n" + dataHoje + "\r\n" + novo;
+                            }
+                        }
+                        Int32 voltaAna = baseApp.ValidateEditAnamnese(anam);
+
+                        RESPOSTA_CONSULTA resp = baseApp.GetRespostaById(item.RECO_CD_ID);
+                        resp.RECO_IN_ANAMNESE = 1;
+                        Int32 volta2 = baseApp.ValidateEditResposta(resp);
+                    }
 
                     // Configura serilização
                     JsonSerializerSettings settings = new JsonSerializerSettings
