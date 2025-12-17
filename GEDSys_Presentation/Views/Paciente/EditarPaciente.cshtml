@@ -3995,7 +3995,7 @@
                                                                             <a href="@Url.Action("VoltarEditarUltimaAnamnese", "Paciente")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Abre a página de edição de  anamnese" class="btn btn-sm btn-primary btn-loadingAnam" id="emp" OnClick = "Fade()">Editar Anamnese</a>                
                                                                             <a href="@Url.Action("VerAnamneseCompletaChamadaEdit", "Paciente2")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Abre a página de visualização de  anamnese completa" class="btn btn-sm btn-primary btn-loadingAnam" id="emp" OnClick = "Fade()">Ver Anamnese Completa</a>                
                                                                             <a href="@Url.Action("VerAnotacaoAnamneseBase", "Paciente2")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Abre a página de visualização de acompanhamentos" class="btn btn-sm btn-primary btn-loadingAnam" id="emp" OnClick = "Fade()">Acompanhamento</a>                
-                                                                            <a href="@Url.Action("GerarAnamnesePDFNova", "Paciente")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Imprime a anamnese completa" class="btn btn-sm btn-primary btn-loadingAnam" id="emp" OnClick = "Fade()">Imprimir Anamnese</a>                
+                                                                            <a href="@Url.Action("GerarAnamnesePDFNova", "Paciente")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Imprime a anamnese completa" class="btn btn-sm btn-primary" id="emp" OnClick = "Fade()">Imprimir Anamnese</a>                
                                                                             <a href="@Url.Action((String)Session["AjudaNivel"])" class="btn btn-sm btn-danger" target="_blank">Ajuda</a>
                                                                             <span id="loadingIndicatorAnam" style="display: none; margin-left: 10px; color: #007bff;">
                                                                                 <i class="fa fa-spinner fa-spin"></i> Processando...
@@ -4008,7 +4008,7 @@
                                                                             <a href="@Url.Action("VoltarVerUltimaAnamnese", "Paciente")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Abre a página de visualização de  anamnese" class="btn btn-sm btn-primary btn-loadingAnam" id="emp" OnClick = "Fade()">Editar Anamnese</a>                
                                                                             <a href="@Url.Action("VerAnamneseCompletaChamadaEdit", "Paciente2")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Abre a página de visualização de  anamnese completa" class="btn btn-sm btn-primary btn-loadingAnam" id="emp" OnClick = "Fade()">Ver Anamnese Completa</a>                
                                                                             <a href="@Url.Action("VerAnotacaoAnamneseBase", "Paciente2")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Abre a página de visualização de  acompanhamentos" class="btn btn-sm btn-primary btn-loadingAnam" id="emp" OnClick = "Fade()">Acompanhamento</a>                
-                                                                            <a href="@Url.Action("GerarAnamnesePDFNova", "Paciente")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Imprime a anamnese completa" class="btn btn-sm btn-primary btn-loadingAnam" id="emp" OnClick = "Fade()">Imprimir Anamnese</a>                
+                                                                            <a href="@Url.Action("GerarAnamnesePDFNova", "Paciente")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Imprime a anamnese completa" class="btn btn-sm btn-primary" id="emp" OnClick = "Fade()">Imprimir Anamnese</a>                
                                                                             <a href="@Url.Action((String)Session["AjudaNivel"])" class="btn btn-sm btn-danger" target="_blank">Ajuda</a>
                                                                             <span id="loadingIndicatorAnam" style="display: none; margin-left: 10px; color: #007bff;">
                                                                                 <i class="fa fa-spinner fa-spin"></i> Processando...
@@ -4227,7 +4227,7 @@
                                                                     {
                                                                         <div class="form-group">
                                                                             <a href="@Url.Action("VoltarEditarUltimaAnamneseContinua", "Paciente2")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Abre a página de edição de  anamnese" class="btn btn-sm btn-primary btn-loadingAnam" id="emp" OnClick = "Fade()">Editar Anamnese</a>                
-                                                                            <a href="@Url.Action("GerarAnamnesePDFNovaContinua", "Paciente2")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Imprime a anamnese completa" class="btn btn-sm btn-primary btn-loadingAnam" id="emp" OnClick = "Fade()">Imprimir Anamnese</a>                
+                                                                            <a href="@Url.Action("GerarAnamnesePDFNovaContinua", "Paciente2")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Imprime a anamnese completa" class="btn btn-sm btn-primary" id="emp" OnClick = "Fade()">Imprimir Anamnese</a>                
                                                                             <a href="@Url.Action((String)Session["AjudaNivel"])" class="btn btn-sm btn-danger" target="_blank">Ajuda</a>
                                                                             <span id="loadingIndicatorAnam" style="display: none; margin-left: 10px; color: #007bff;">
                                                                                 <i class="fa fa-spinner fa-spin"></i> Processando...
@@ -4237,7 +4237,7 @@
                                                                     else
                                                                     {
                                                                         <div class="form-group">
-                                                                            <a href="@Url.Action("GerarAnamnesePDFNovaContinua", "Paciente2")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Imprime a anamnese completa" class="btn btn-sm btn-primary btn-loadingAnam" id="emp" OnClick = "Fade()">Imprimir Anamnese</a>                
+                                                                            <a href="@Url.Action("GerarAnamnesePDFNovaContinua", "Paciente2")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Imprime a anamnese completa" class="btn btn-sm btn-primary" id="emp" OnClick = "Fade()">Imprimir Anamnese</a>                
                                                                             <a href="@Url.Action((String)Session["AjudaNivel"])" class="btn btn-sm btn-danger" target="_blank">Ajuda</a>
                                                                             <span id="loadingIndicatorAnam" style="display: none; margin-left: 10px; color: #007bff;">
                                                                                 <i class="fa fa-spinner fa-spin"></i> Processando...
@@ -4277,7 +4277,7 @@
                                                                         <a href="@Url.Action("VoltarEditarUltimaAnamneseSono", "Paciente2")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Abre a página de edição de  anamnese" class="btn btn-sm btn-primary btn-loadingAnam" id="emp" OnClick = "Fade()">Editar Anamnese</a>                
                                                                         <a href="@Url.Action("VerAnamneseCompletaChamadaEditSono", "Paciente2")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Abre a página de visualização de  anamnese completa" class="btn btn-sm btn-primary btn-loadingAnam" id="emp" OnClick = "Fade()">Ver Anamnese Completa</a>                
                                                                         <a href="@Url.Action("VerAnotacaoAnamneseBase", "Paciente2")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Abre a página de visualização de  acompanhamentos" class="btn btn-sm btn-primary btn-loadingAnam" id="emp" OnClick = "Fade()">Acompanhamento</a>                
-                                                                        <a href="@Url.Action("GerarAnamnesePDFNovaSono", "Paciente2")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Imprime a anamnese completa" class="btn btn-sm btn-primary btn-loadingAnam" id="emp" OnClick = "Fade()">Imprimir Anamnese</a>                
+                                                                        <a href="@Url.Action("GerarAnamnesePDFNovaSono", "Paciente2")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Imprime a anamnese completa" class="btn btn-sm btn-primary" id="emp" OnClick = "Fade()">Imprimir Anamnese</a>                
                                                                         <a href="@Url.Action((String)Session["AjudaNivel"])" class="btn btn-sm btn-danger" target="_blank">Ajuda</a>
                                                                         <span id="loadingIndicatorAnam" style="display: none; margin-left: 10px; color: #007bff;">
                                                                             <i class="fa fa-spinner fa-spin"></i> Processando...
@@ -4290,7 +4290,7 @@
                                                                         <a href="@Url.Action("VoltarVerUltimaAnamneseSono", "Paciente2")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Abre a página de visualização de  anamnese" class="btn btn-sm btn-primary btn-loadingAnam" id="emp" OnClick = "Fade()">Editar Anamnese</a>                
                                                                         <a href="@Url.Action("VerAnamneseCompletaChamadaEditSono", "Paciente2")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Abre a página de visualização de  anamnese completa" class="btn btn-sm btn-primary btn-loadingAnam" id="emp" OnClick = "Fade()">Ver Anamnese Completa</a>                
                                                                         <a href="@Url.Action("VerAnotacaoAnamneseBase", "Paciente2")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Abre a página de visualização de acompanhamentos" class="btn btn-sm btn-primary btn-loadingAnam" id="emp" OnClick = "Fade()">Acompanhamento</a>                
-                                                                        <a href="@Url.Action("GerarAnamnesePDFNovaSono", "Paciente2")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Imprime a anamnese completa" class="btn btn-sm btn-primary btn-loadingAnam" id="emp" OnClick = "Fade()">Imprimir Anamnese</a>                
+                                                                        <a href="@Url.Action("GerarAnamnesePDFNovaSono", "Paciente2")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Imprime a anamnese completa" class="btn btn-sm btn-primary" id="emp" OnClick = "Fade()">Imprimir Anamnese</a>                
                                                                         <a href="@Url.Action((String)Session["AjudaNivel"])" class="btn btn-sm btn-danger" target="_blank">Ajuda</a>
                                                                         <span id="loadingIndicatorAnam" style="display: none; margin-left: 10px; color: #007bff;">
                                                                             <i class="fa fa-spinner fa-spin"></i> Processando...
@@ -4439,7 +4439,7 @@
                                                                             <a href="@Url.Action("VoltarEditarUltimaAnamnese", "Paciente")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Abre a página de edição de  anamnese" class="btn btn-sm btn-primary btn-loadingAnam" id="emp" OnClick = "Fade()">Editar Anamnese</a>                
                                                                             <a href="@Url.Action("VerAnamneseCompletaChamadaEdit", "Paciente2")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Abre a página de visualização de  anamnese completa" class="btn btn-sm btn-primary btn-loadingAnam" id="emp" OnClick = "Fade()">Ver Anamnese Completa</a>                
                                                                             <a href="@Url.Action("VerAnotacaoAnamneseBase", "Paciente2")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Abre a página de visualização de acompanhamentos" class="btn btn-sm btn-primary btn-loadingAnam" id="emp" OnClick = "Fade()">Acompanhamento</a>                
-                                                                            <a href="@Url.Action("GerarAnamnesePDFNova", "Paciente")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Imprime a anamnese completa" class="btn btn-sm btn-primary btn-loadingAnam" id="emp" OnClick = "Fade()">Imprimir Anamnese</a>                
+                                                                            <a href="@Url.Action("GerarAnamnesePDFNova", "Paciente")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Imprime a anamnese completa" class="btn btn-sm btn-primary" id="emp" OnClick = "Fade()">Imprimir Anamnese</a>                
                                                                             <a href="@Url.Action((String)Session["AjudaNivel"])" class="btn btn-sm btn-danger" target="_blank">Ajuda</a>
                                                                             <span id="loadingIndicatorAnam" style="display: none; margin-left: 10px; color: #007bff;">
                                                                                 <i class="fa fa-spinner fa-spin"></i> Processando...
@@ -4452,7 +4452,7 @@
                                                                             <a href="@Url.Action("VoltarVerUltimaAnamnese", "Paciente")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Abre a página de visualização de  anamnese" class="btn btn-sm btn-primary btn-loadingAnam" id="emp" OnClick = "Fade()">Editar Anamnese</a>                
                                                                             <a href="@Url.Action("VerAnamneseCompletaChamadaEdit", "Paciente2")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Abre a página de visualização de  anamnese completa" class="btn btn-sm btn-primary btn-loadingAnam" id="emp" OnClick = "Fade()">Ver Anamnese Completa</a>                
                                                                             <a href="@Url.Action("VerAnotacaoAnamneseBase", "Paciente2")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Abre a página de visualização de  acompanhamentos" class="btn btn-sm btn-primary btn-loadingAnam" id="emp" OnClick = "Fade()">Acompanhamento</a>                
-                                                                            <a href="@Url.Action("GerarAnamnesePDFNova", "Paciente")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Imprime a anamnese completa" class="btn btn-sm btn-primary btn-loadingAnam" id="emp" OnClick = "Fade()">Imprimir Anamnese</a>                
+                                                                            <a href="@Url.Action("GerarAnamnesePDFNova", "Paciente")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Imprime a anamnese completa" class="btn btn-sm btn-primary" id="emp" OnClick = "Fade()">Imprimir Anamnese</a>                
                                                                             <a href="@Url.Action((String)Session["AjudaNivel"])" class="btn btn-sm btn-danger" target="_blank">Ajuda</a>
                                                                             <span id="loadingIndicatorAnam" style="display: none; margin-left: 10px; color: #007bff;">
                                                                                 <i class="fa fa-spinner fa-spin"></i> Processando...
@@ -4671,7 +4671,7 @@
                                                                     {
                                                                         <div class="form-group">
                                                                             <a href="@Url.Action("VoltarEditarUltimaAnamneseContinua", "Paciente2")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Abre a página de edição de  anamnese" class="btn btn-sm btn-primary btn-loadingAnam" id="emp" OnClick = "Fade()">Editar Anamnese</a>                
-                                                                            <a href="@Url.Action("GerarAnamnesePDFNovaContinua", "Paciente2")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Imprime a anamnese completa" class="btn btn-sm btn-primary btn-loadingAnam" id="emp" OnClick = "Fade()">Imprimir Anamnese</a>                
+                                                                            <a href="@Url.Action("GerarAnamnesePDFNovaContinua", "Paciente2")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Imprime a anamnese completa" class="btn btn-sm btn-primary" id="emp" OnClick = "Fade()">Imprimir Anamnese</a>                
                                                                             <a href="@Url.Action((String)Session["AjudaNivel"])" class="btn btn-sm btn-danger" target="_blank">Ajuda</a>
                                                                             <span id="loadingIndicatorAnam" style="display: none; margin-left: 10px; color: #007bff;">
                                                                                 <i class="fa fa-spinner fa-spin"></i> Processando...
@@ -4681,7 +4681,7 @@
                                                                     else
                                                                     {
                                                                         <div class="form-group">
-                                                                            <a href="@Url.Action("GerarAnamnesePDFNovaContinua", "Paciente2")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Imprime a anamnese completa" class="btn btn-sm btn-primary btn-loadingAnam" id="emp" OnClick = "Fade()">Imprimir Anamnese</a>                
+                                                                            <a href="@Url.Action("GerarAnamnesePDFNovaContinua", "Paciente2")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Imprime a anamnese completa" class="btn btn-sm btn-primary" id="emp" OnClick = "Fade()">Imprimir Anamnese</a>                
                                                                             <a href="@Url.Action((String)Session["AjudaNivel"])" class="btn btn-sm btn-danger" target="_blank">Ajuda</a>
                                                                             <span id="loadingIndicatorAnam" style="display: none; margin-left: 10px; color: #007bff;">
                                                                                 <i class="fa fa-spinner fa-spin"></i> Processando...
@@ -4721,7 +4721,7 @@
                                                                         <a href="@Url.Action("VoltarEditarUltimaAnamneseSono", "Paciente2")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Abre a página de edição de  anamnese" class="btn btn-sm btn-primary btn-loadingAnam" id="emp" OnClick = "Fade()">Editar Anamnese</a>                
                                                                         <a href="@Url.Action("VerAnamneseCompletaChamadaEditSono", "Paciente2")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Abre a página de visualização de  anamnese completa" class="btn btn-sm btn-primary btn-loadingAnam" id="emp" OnClick = "Fade()">Ver Anamnese Completa</a>                
                                                                         <a href="@Url.Action("VerAnotacaoAnamneseBase", "Paciente2")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Abre a página de visualização de  acompanhamentos" class="btn btn-sm btn-primary btn-loadingAnam" id="emp" OnClick = "Fade()">Acompanhamento</a>                
-                                                                        <a href="@Url.Action("GerarAnamnesePDFNovaSono", "Paciente2")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Imprime a anamnese completa" class="btn btn-sm btn-primary btn-loadingAnam" id="emp" OnClick = "Fade()">Imprimir Anamnese</a>                
+                                                                        <a href="@Url.Action("GerarAnamnesePDFNovaSono", "Paciente2")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Imprime a anamnese completa" class="btn btn-sm btn-primary" id="emp" OnClick = "Fade()">Imprimir Anamnese</a>                
                                                                         <a href="@Url.Action((String)Session["AjudaNivel"])" class="btn btn-sm btn-danger" target="_blank">Ajuda</a>
                                                                         <span id="loadingIndicatorAnam" style="display: none; margin-left: 10px; color: #007bff;">
                                                                             <i class="fa fa-spinner fa-spin"></i> Processando...
@@ -4734,7 +4734,7 @@
                                                                         <a href="@Url.Action("VoltarVerUltimaAnamneseSono", "Paciente2")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Abre a página de visualização de  anamnese" class="btn btn-sm btn-primary btn-loadingAnam" id="emp" OnClick = "Fade()">Editar Anamnese</a>                
                                                                         <a href="@Url.Action("VerAnamneseCompletaChamadaEditSono", "Paciente2")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Abre a página de visualização de  anamnese completa" class="btn btn-sm btn-primary btn-loadingAnam" id="emp" OnClick = "Fade()">Ver Anamnese Completa</a>                
                                                                         <a href="@Url.Action("VerAnotacaoAnamneseBase", "Paciente2")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Abre a página de visualização de acompanhamentos" class="btn btn-sm btn-primary btn-loadingAnam" id="emp" OnClick = "Fade()">Acompanhamento</a>                
-                                                                        <a href="@Url.Action("GerarAnamnesePDFNovaSono", "Paciente2")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Imprime a anamnese completa" class="btn btn-sm btn-primary btn-loadingAnam" id="emp" OnClick = "Fade()">Imprimir Anamnese</a>                
+                                                                        <a href="@Url.Action("GerarAnamnesePDFNovaSono", "Paciente2")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Imprime a anamnese completa" class="btn btn-sm btn-primary" id="emp" OnClick = "Fade()">Imprimir Anamnese</a>                
                                                                         <a href="@Url.Action((String)Session["AjudaNivel"])" class="btn btn-sm btn-danger" target="_blank">Ajuda</a>
                                                                         <span id="loadingIndicatorAnam" style="display: none; margin-left: 10px; color: #007bff;">
                                                                             <i class="fa fa-spinner fa-spin"></i> Processando...
@@ -6204,7 +6204,14 @@
                             {
                                 <div id="tab-13" class="tab-pane active">
                                     <div class="panel-body">
-                                        <div class="row">
+                                        <div class="form-group">
+                                            @*@Html.ButtonLinkIndex(text: "Novo Acompanhamento", action: "IncluirAnotacaoAnamnese", controller: "Paciente2", buttonClass: "primary")*@
+                                            <a href="@Url.Action("IncluirAnotacaoAnamnese", "Paciente2")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Abre a página de inclusão de anotações na anamnese" class="btn btn-sm btn-primary btn-loading8" id="emp" OnClick = "Fade()">Novo Acompanhamento</a>                
+                                            <span id="loadingIndicator8" style="display: none; margin-left: 10px; color: #007bff;">
+                                                <i class="fa fa-spinner fa-spin"></i> Processando...
+                                            </span>
+                                        </div>
+                                        <div class="row"> 
                                             <div class="col-lg-12">
                                                 <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Acompanhamento</h4>
                                                 @if (ViewBag.Acompanhamento != null &&(ViewBag.Acompanhamento as List<EntitiesServices.Model.PACIENTE_ANAMNESE_ANOTACAO>).Count > 0)
@@ -6216,9 +6223,9 @@
                                                                 <a href="" class="pull-left">
                                                                     <img src="@Url.Content(item.USUARIO.USUA_AQ_FOTO)" style="width: auto; height: auto; max-height: 110px; max-width: 90px;">
                                                                 </a>
-                                                                <span style="color: #337ab7; cursor:pointer;" alt="Excluir" class="tbl-link fa-lg fa fa-trash-o" onclick="ShowModalExcluirAcompanhamento('/Paciente2/ExcluirAnotacaoAnamnese/@item.PAAA_CD_ID')" title="Excluir Anotação"></span>
+                                                                <span style="color: #337ab7; cursor:pointer;" alt="Excluir" class="tbl-link fa-lg fa fa-trash-o btn-loading8" onclick="ShowModalExcluirAcompanhamento('/Paciente2/ExcluirAnotacaoAnamnese/@item.PAAA_CD_ID')" title="Excluir Anotação"></span>
                                                                 <div class="media-body">
-                                                                    <a href="@Url.Action("EditarAnotacaoAnamnese", "Paciente2", new { id = item.PAAA_CD_ID })" data-toggle="popover" data-trigger="hover" data-placement="left" data-content="Editar a anotação">
+                                                                    <a href="@Url.Action("EditarAnotacaoAnamnese", "Paciente2", new { id = item.PAAA_CD_ID })" class="btn-loading8" data-toggle="popover" data-trigger="hover" data-placement="left" data-content="Editar a anotação">
                                                                         @item.USUARIO.USUA_NM_NOME
                                                                     </a>
                                                                     <small class="text-muted">@item.PAAA_DT_ANOTACAO.Value.ToString("dd/MM/yyyy HH:mm")</small>
@@ -6233,10 +6240,6 @@
                                                     }
                                                 }
                                             </div>
-                                        </div>
-                                        <br />
-                                        <div class="form-group">
-                                            @Html.ButtonLinkIndex(text: "Novo Acompanhamento", action: "IncluirAnotacaoAnamnese", controller: "Paciente2", buttonClass: "primary")
                                         </div>
                                     </div>
                                 </div>
@@ -6245,7 +6248,14 @@
                             {
                                 <div id="tab-13" class="tab-pane">
                                     <div class="panel-body">
-                                        <div class="row">
+                                        <div class="form-group">
+                                            @*@Html.ButtonLinkIndex(text: "Novo Acompanhamento", action: "IncluirAnotacaoAnamnese", controller: "Paciente2", buttonClass: "primary")*@
+                                            <a href="@Url.Action("IncluirAnotacaoAnamnese", "Paciente2")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Abre a página de inclusão de anotações na anamnese" class="btn btn-sm btn-primary btn-loading8" id="emp" OnClick = "Fade()">Novo Acompanhamento</a>                
+                                            <span id="loadingIndicator8" style="display: none; margin-left: 10px; color: #007bff;">
+                                                <i class="fa fa-spinner fa-spin"></i> Processando...
+                                            </span>
+                                        </div>
+                                        <div class="row"> 
                                             <div class="col-lg-12">
                                                 <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Acompanhamento</h4>
                                                 @if (ViewBag.Acompanhamento != null &&(ViewBag.Acompanhamento as List<EntitiesServices.Model.PACIENTE_ANAMNESE_ANOTACAO>).Count > 0)
@@ -6257,9 +6267,9 @@
                                                                 <a href="" class="pull-left">
                                                                     <img src="@Url.Content(item.USUARIO.USUA_AQ_FOTO)" style="width: auto; height: auto; max-height: 110px; max-width: 90px;">
                                                                 </a>
-                                                                <span style="color: #337ab7; cursor:pointer;" alt="Excluir" class="tbl-link fa-lg fa fa-trash-o" onclick="ShowModalExcluirAcompanhamento('/Paciente2/ExcluirAnotacaoAnamnese/@item.PAAA_CD_ID')" title="Excluir Anotação"></span>
+                                                                <span style="color: #337ab7; cursor:pointer;" alt="Excluir" class="tbl-link fa-lg fa fa-trash-o btn-loading8" onclick="ShowModalExcluirAcompanhamento('/Paciente2/ExcluirAnotacaoAnamnese/@item.PAAA_CD_ID')" title="Excluir Anotação"></span>
                                                                 <div class="media-body">
-                                                                    <a href="@Url.Action("EditarAnotacaoAnamnese", "Paciente2", new { id = item.PAAA_CD_ID })" data-toggle="popover" data-trigger="hover" data-placement="left" data-content="Editar a anotação">
+                                                                    <a href="@Url.Action("EditarAnotacaoAnamnese", "Paciente2", new { id = item.PAAA_CD_ID })" class="btn-loading8" data-toggle="popover" data-trigger="hover" data-placement="left" data-content="Editar a anotação">
                                                                         @item.USUARIO.USUA_NM_NOME
                                                                     </a>
                                                                     <small class="text-muted">@item.PAAA_DT_ANOTACAO.Value.ToString("dd/MM/yyyy HH:mm")</small>
@@ -6274,10 +6284,6 @@
                                                     }
                                                 }
                                             </div>
-                                        </div>
-                                        <br />
-                                        <div class="form-group">
-                                            @Html.ButtonLinkIndex(text: "Novo Acompanhamento", action: "IncluirAnotacaoAnamneseBase", controller: "Paciente2", buttonClass: "primary")
                                         </div>
                                     </div>
                                 </div>
@@ -7445,6 +7451,24 @@
                 $(this).prop('disabled', true);
                 $(this).addClass('disabled');
                 $('#loadingIndicatorAnam').show();
+                var tagName = $(this).prop('tagName').toLowerCase();
+                if (tagName === 'a') {
+                    e.preventDefault(); 
+                    var targetUrl = $(this).attr('href');
+                    window.location.href = targetUrl;
+
+                } else if (tagName === 'button' || tagName === 'input') {
+                    $(this).closest('form').submit();
+                }
+            });
+        });
+    </script>
+    <script type="text/javascript">
+        $(document).ready(function () { 
+            $('.btn-loading8').on('click', function (e) {            
+                $(this).prop('disabled', true);
+                $(this).addClass('disabled');
+                $('#loadingIndicator8').show();
                 var tagName = $(this).prop('tagName').toLowerCase();
                 if (tagName === 'a') {
                     e.preventDefault(); 

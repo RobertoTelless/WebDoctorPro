@@ -4160,6 +4160,7 @@ namespace GEDSys_Presentation.Controllers
                 Session["TipoLocacao"] = 1;
                 Session["VoltaCliGrupo"] = 1;
                 Session["VoltaResposta"] = 1;
+                Session["VoltaImpAnamnese"] = 1;
 
                 Session["AjudaNivel"] = "../BaseAdmin/Ajuda/3/Ajuda3_2.pdf";
                 Session["AjudaNivelAt"] = "../BaseAdmin/Ajuda/3/Ajuda3_3.pdf";
@@ -33256,6 +33257,49 @@ namespace GEDSys_Presentation.Controllers
                     table.AddCell(cell);
                 }
 
+                cell = new PdfPCell(new Paragraph("Informações Gerais: ", meuFont1Bold))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph(anamnese.PAAM_TX_TEXTO_LIVRE, meuFont1))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+
+                // Custom
+                cell = new PdfPCell(new Paragraph(" ", meuFont3Bold))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 2;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph("***** Informações Customizadas *****", meuFont3Bold))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 2;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph(" ", meuFont3Bold))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 2;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+
                 if (anamnese.PAAM_IN_CAMPO_1 == 1)
                 {
                     cell = new PdfPCell(new Paragraph(anamnese.PAAM_NM_CAMPO_1 + ": ", meuFont1Bold))
@@ -33666,7 +33710,7 @@ namespace GEDSys_Presentation.Controllers
                     cell.Border = 0;
                     cell.Colspan = 4;
                     cell.VerticalAlignment = Element.ALIGN_MIDDLE;
-                    cell.HorizontalAlignment = Element.ALIGN_CENTER;
+                    cell.HorizontalAlignment = Element.ALIGN_LEFT;
                     table1.AddCell(cell);
                 }
 
@@ -33822,7 +33866,7 @@ namespace GEDSys_Presentation.Controllers
                 cell.Colspan = 1;
                 cell.BackgroundColor = BaseColor.WHITE;
                 table.AddCell(cell);
-                cell = new PdfPCell(new Paragraph(fisico.PAEF_DS_FICHA_AVALIACAO.ToString(), meuFont1))
+                cell = new PdfPCell(new Paragraph(fisico.PAEF_DS_FICHA_AVALIACAO, meuFont1))
                 {
                     VerticalAlignment = Element.ALIGN_MIDDLE,
                     HorizontalAlignment = Element.ALIGN_LEFT

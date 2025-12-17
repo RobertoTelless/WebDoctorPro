@@ -4074,6 +4074,7 @@ namespace GEDSys_Presentation.Controllers
 
                 // Prepara view
                 Session["NivelPaciente"] = 13;
+                Session["IdAnotacaoAnamnese"] = id;
                 PACIENTE_ANAMNESE_ANOTACAO item = baseApp.GetAnamneseAnotacaoById(id);
                 PacienteAnamneseAnotacaoViewModel vm = Mapper.Map<PACIENTE_ANAMNESE_ANOTACAO, PacienteAnamneseAnotacaoViewModel>(item);
 
@@ -4111,7 +4112,7 @@ namespace GEDSys_Presentation.Controllers
                 try
                 {
                     // Sanitização
-                    vm.PAAA_TX_ANOTACAO = CrossCutting.UtilitariosGeral.CleanStringDocto(vm.PAAA_TX_ANOTACAO);
+                    vm.PAAA_TX_ANOTACAO = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(vm.PAAA_TX_ANOTACAO);
 
                     // Executa a operação
                     USUARIO usuarioLogado = (USUARIO)Session["UserCredentials"];
@@ -4143,9 +4144,12 @@ namespace GEDSys_Presentation.Controllers
 
                     // Verifica retorno
                     Session["AnamneseAlterada"] = 1;
-                    Session["NivelPaciente"] = 1;
-                    //return RedirectToAction("VerAnotacaoAnamnese");
-                    return RedirectToAction("VoltarAnexoPaciente", "Paciente");
+                    Session["NivelPaciente"] = 13;
+                    if ((Int32)Session["VoltaAnotacaoAnamnese"] == 3)
+                    {
+                        return RedirectToAction("VoltarAnexoPaciente", "Paciente");
+                    }
+                    return RedirectToAction("EditarAnotacaoAnamnese", "Paciente2", new { id = (Int32)Session["IdAnotacaoAnamnese"] });
                 }
                 catch (Exception ex)
                 {
@@ -6380,6 +6384,15 @@ namespace GEDSys_Presentation.Controllers
             return RedirectToAction("VoltarAnexoPaciente", "Paciente");
         }
 
+        public ActionResult VoltarAnotacaoAnamnese()
+        {
+            if ((String)Session["Ativa"] == null)
+            {
+                return RedirectToAction("Logout", "ControleAcesso");
+            }
+            return RedirectToAction("EditarAnotacaoAnamnese", new { id = (Int32)Session["IdAnotacaoAnamnese"] });
+        }
+
         public void GerarPacientePlanilha()
         {
             try
@@ -8073,17 +8086,89 @@ namespace GEDSys_Presentation.Controllers
                     USUARIO usuario = (USUARIO)Session["UserCredentials"];
                     PACIENTE_ANAMNESE item = baseApp.GetAnamneseById(id);
                     String frase = String.Empty;
+                    frase += "************ ROTINA DO SONO ************" + "\r\n";
                     frase += "=== PRINCIPAL QUEIXA DO SONO ===" + "\r\n" + item.PAAM_DS_SONO_PRINCIPAL_QUEIXA + "\r\n";
-                    frase += "\r\n" + "=== POLISSONOGRAFIA ===" + "\r\n" + item.PAAM_DS_SONO_POLISONO + "\r\n";
                     frase += "\r\n" + "=== SINTOMAS ===" + "\r\n" + item.PAAM_DS_SONO_SINTOMAS + "\r\n";
                     frase += "\r\n" + "=== HORÁRIOS REGULARES ===" + "\r\n" + item.PAAM_DS_SONO_HORARIO_REGULAR_NOVO + "\r\n";
-                    frase += "\r\n" + "=== MEDICAMENTOS ===" + "\r\n" + item.PAAM_DS_SONO_MEDICAMENTOS + "\r\n";
-                    frase += "\r\n" + "=== MEDICAMENTOS EM USO ===" + "\r\n" + item.PAAM_NM_MEDICAMENTO + "\r\n";
-                    frase += "\r\n" + "=== HISTÓRIA PATOLÓGICA PROGRESSIVA ===" + "\r\n" + item.PAAM_DS_HISTORIA_PATOLOGICA_PROGRESSIVA + "\r\n";
-                    frase += "\r\n" + "=== AVALIAÇÃO CARDIOLÓGICA ===" + "\r\n" + item.PAAN_NM_AVALIACAO_CARDIOLOGICA_LONG + "\r\n";
-                    frase += "\r\n" + "=== AVALIAÇÃO RESPIRATÓRIA  ===" + "\r\n" + item.PAAN_NM_RESPIRATORIO_LONG + "\r\n";
-                    frase += "\r\n" + "=== AVALIAÇÃO DO ABDÔMEM ===" + "\r\n" + item.PAAN_NM_ABDOMEM + "\r\n";
-                    frase += "\r\n" + "=== AVALIAÇÃO DOS MEMBROS INFERIORES ===" + "\r\n" + item.PAAN_NM_MEMBROS_INFERIORES + "\r\n";
+                    frase += "\r\n" + "=== LATÊNCIA PARA INÍCIO DO SONO ===" + "\r\n" + item.PAAM_DS_SONO_LATENCIA_NOVO + "\r\n";
+                    frase += "\r\n" + "=== DURAÇÂO DO SONO ===" + "\r\n" + item.PAAM_DS_SONO_DURACAO + "\r\n";
+                    frase += "\r\n" + "=== MANUTENÇÃO DA ROTINA NOS FINS DE SEMANA ===" + "\r\n" + (item.PAAM_DS_SONO_ROTINA_FDS == 1 ? "Sim" : "Não") + "\r\n";
+                    frase += "\r\n" + "=== COCHILOS DIURNOS ===" + "\r\n" + (item.PAAM_DS_SONO_SONOLENCIA_DIURNA == 1 ? "Sim" : "Não") + "\r\n";
+                    frase += "\r\n" + "************ HIGIENE DO SONO ************" + "\r\n";
+                    frase += "\r\n" + "=== ASSISTE TV NA CAMA ===" + "\r\n" + (item.PAAM_DS_SONO_TVCAMA == 1 ? "Sim" : "Não") + "\r\n";
+                    frase += "\r\n" + "=== FICA DEITADO NA CAMA QUANDO ESTÁ SEM SONA ===" + "\r\n" + (item.PAAM_DS_SONO_DEITADO_PERDE_SONO == 1 ? "Sim" : "Não") + "\r\n";
+                    frase += "\r\n" + "=== LÊ NA CAMA ===" + "\r\n" + (item.PAAM_DS_SONO_LECAMA == 1 ? "Sim" : "Não") + "\r\n";
+                    frase += "\r\n" + "=== USA CELULAR NA CAMA ===" + "\r\n" + (item.PAAM_DS_SONO_CELULAR_CAMA == 1 ? "Sim" : "Não") + "\r\n";
+                    frase += "\r\n" + "=== FUMA À NOITE ===" + "\r\n" + (item.PAAM_DS_SONO_FUMA_NOITE == 1 ? "Sim" : "Não") + "\r\n";
+                    frase += "\r\n" + "=== ÚLTIMO HORÁRIO DE CONSUMO DE ÁLCOOL ===" + "\r\n" + item.PAAM_DS_SONO_ULTIMO_ALCOOL + "\r\n";
+                    frase += "\r\n" + "=== REFEIÇÕES PESADAS À NOITE ===" + "\r\n" + (item.PAAM_DS_SONO_REFEICAO_PESADA == 1 ? "Sim" : "Não") + "\r\n";
+                    frase += "\r\n" + "=== FAZ TODAS AS REFEIÇÕES ===" + "\r\n" + (item.PAAM_DS_SONO_TODAS_REFEICOES == 1 ? "Sim" : "Não") + "\r\n";
+                    frase += "\r\n" + "=== CAFÉ DA MANHÃ ===" + "\r\n" + (item.PAAM_DS_SONO_CAFE == 1 ? "Sim" : "Não") + "\r\n";
+                    frase += "\r\n" + "=== ALMOÇO ===" + "\r\n" + (item.PAAM_DS_SONO_ALMOCO == 1 ? "Sim" : "Não") + "\r\n";
+                    frase += "\r\n" + "=== LANCHE ===" + "\r\n" + (item.PAAM_DS_SONO_LANCHE == 1 ? "Sim" : "Não") + "\r\n";
+                    frase += "\r\n" + "=== JANTAR ===" + "\r\n" + (item.PAAM_DS_SONO_JANTAR == 1 ? "Sim" : "Não") + "\r\n";
+                    frase += "\r\n" + "=== FREQUENCIA SEMANAL DO EXERCÍCIO FÍSICO ===" + "\r\n" + item.PAAM_DS_SONO_EXERCICIO_FREQ + "\r\n";
+                    frase += "\r\n" + "************ FRAGMENTAÇÃO DO SONO ************" + "\r\n";
+                    frase += "\r\n" + "=== QUANTAS VEZES DESPERTA DURANTE O SONO ===" + "\r\n" + item.PAAM_DS_SONO_QUANTAS_DESPERTA + "\r\n";
+                    frase += "\r\n" + "=== QUAIS MOTIVOS ===" + "\r\n" + item.PAAM_DS_SONO_MOTIVOS_DESPERTA + "\r\n";
+                    frase += "\r\n" + "=== QUANTO TEMPO DEMORA PARA VOLTAR AO SONO ===" + "\r\n" + item.PAAM_DS_SONO_TEMPO_PEGAR_SONO + "\r\n";
+                    frase += "\r\n" + "=== FICA DEITADO NA CAMA QUANDO PERDE O SONO ===" + "\r\n" + (item.PAAM_DS_SONO_DEITADO_PERDE_SONO == 1 ? "Sim" : "Não") + "\r\n";
+                    frase += "\r\n" + "=== QUANTAS VEZES VAI AO BANHEIRO ===" + "\r\n" + item.PAAM_DS_SONO_URINA_NOITE + "\r\n";
+                    frase += "\r\n" + "************ AINDA DURANTE O SONO ************" + "\r\n";
+                    frase += "\r\n" + "=== PRESENÇA DE ENGASGOS OU SUFOCAMENTO ===" + "\r\n" + (item.PAAM_DS_SONO_ENGASGOS == 1 ? "Sim" : "Não") + "\r\n";
+                    frase += "\r\n" + "=== TOSSE ===" + "\r\n" + (item.PAAM_DS_SONO_TOSSE == 1 ? "Sim" : "Não") + "\r\n";
+                    frase += "\r\n" + "=== REFLUXO ===" + "\r\n" + (item.PAAM_DS_SONO_REFLUXO == 1 ? "Sim" : "Não") + "\r\n";
+                    frase += "\r\n" + "=== SUDORESE ===" + "\r\n" + (item.PAAM_DS_SONO_SUDORESE == 1 ? "Sim" : "Não") + "\r\n";
+                    frase += "\r\n" + "=== POSIÇÃO PREFERNCIAL PARA DORMIR ===" + "\r\n" + item.PAAM_DS_SONO_POSICAO_DORMIR + "\r\n";
+                    frase += "\r\n" + "=== RANGE OS DENTES ===" + "\r\n" + (item.PAAM_DS_SONO_RANGE == 1 ? "Sim" : "Não") + "\r\n";
+                    frase += "\r\n" + "=== TENSÃO OU RIGIDEZ NOS MÚSCULOS DA FACE ===" + "\r\n" + (item.PAAM_DS_SONO_RIGIDEZ_FACE == 1 ? "Sim" : "Não") + "\r\n";
+                    frase += "\r\n" + "=== APNÉIA ===" + "\r\n" + (item.PAAM_DS_SONO_APNEIA == 1 ? "Sim" : "Não") + "\r\n";
+                    frase += "\r\n" + "=== RONCO ALTO ===" + "\r\n" + (item.PAAM_DS_SONO_RONCO == 1 ? "Sim" : "Não") + "\r\n";
+                    frase += "\r\n" + "=== MOVIMENTOS AGRESSIVOS ===" + "\r\n" + (item.PAAM_DS_SONO_AGRESSIVO == 1 ? "Sim" : "Não") + "\r\n";
+                    frase += "\r\n" + "=== FALA DURANTE O SONO ===" + "\r\n" + (item.PAAM_DS_SONO_FALA == 1 ? "Sim" : "Não") + "\r\n";
+                    frase += "\r\n" + "=== PESADELOS ===" + "\r\n" + (item.PAAM_DS_SONO_PESADELO == 1 ? "Sim" : "Não") + "\r\n";
+                    frase += "\r\n" + "=== SONAMBULISMO ===" + "\r\n" + (item.PAAM_DS_SONO_SONANBULISMO == 1 ? "Sim" : "Não") + "\r\n";
+                    frase += "\r\n" + "=== ENCENAÇÂO DURANTE O SONO ===" + "\r\n" + (item.PAAM_DS_SONO_ENCENACAO == 1 ? "Sim" : "Não") + "\r\n";
+                    frase += "\r\n" + "=== MOVIMENTOS PERIÓDICOS DE MEMBROS ===" + "\r\n" + (item.PAAM_DS_SONO_MOVE_MEMBRO == 1 ? "Sim" : "Não") + "\r\n";
+                    frase += "\r\n" + "=== CÃIBRAS ===" + "\r\n" + (item.PAAM_DS_SONO_CAIBRAS == 1 ? "Sim" : "Não") + "\r\n";
+                    frase += "\r\n" + "************ SOBRE O AMBIENTE ************" + "\r\n";
+                    frase += "\r\n" + "=== QUARTO ACONCHEGANTE ===" + "\r\n" + (item.PAAM_DS_SONO_ACONCHEGANTE == 1 ? "Sim" : "Não") + "\r\n";
+                    frase += "\r\n" + "=== BARULHO ===" + "\r\n" + (item.PAAM_DS_SONO_BARULHO == 1 ? "Sim" : "Não") + "\r\n";
+                    frase += "\r\n" + "=== TEMPERATURA CONFORTÁVEL ===" + "\r\n" + (item.PAAM_DS_SONO_TEMPERATURA == 1 ? "Sim" : "Não") + "\r\n";
+                    frase += "\r\n" + "=== PRESENÇA DE OUTRAS PESSOAS ===" + "\r\n" + (item.PAAM_DS_SONO_PESSOAS == 1 ? "Sim" : "Não") + "\r\n";
+                    frase += "\r\n" + "=== PRESENÇA DE ANIMAIS ===" + "\r\n" + (item.PAAM_DS_SONO_ANIMAIS == 1 ? "Sim" : "Não") + "\r\n";
+                    frase += "\r\n" + "=== ATIVIDADES QUE REALIZA NO QUARTO ===" + "\r\n" + item.PAAM_DS_SONO_ATIVIDADES + "\r\n";
+                    frase += "\r\n" + "************ SOBRE AS CONDIÇÕES SÓCIO-ECONOMICAS ************" + "\r\n";
+                    frase += "\r\n" + "=== PROBLEMAS SOCIAIS E FINANCEIROS ===" + "\r\n" + (item.PAAM_DS_SONO_FINANCAS == 1 ? "Sim" : "Não") + "\r\n";
+                    frase += "\r\n" + "=== ACESSO A SERVIÇOS DE SAÚDE ===" + "\r\n" + (item.PAAM_DS_SONO_ACESSO_SAUDE == 1 ? "Sim" : "Não") + "\r\n";
+                    frase += "\r\n" + "************ SINTOMAS MATINAIS ************" + "\r\n";
+                    frase += "\r\n" + "=== SONO REPARADOR ===" + "\r\n" + (item.PAAM_DS_SONO_REPARADOR == 1 ? "Sim" : "Não") + "\r\n";
+                    frase += "\r\n" + "=== SONOLENCIA EXCESSIVA ===" + "\r\n" + (item.PAAM_DS_SONO_SONOLENCIA == 1 ? "Sim" : "Não") + "\r\n";
+                    frase += "\r\n" + "=== BOCA SECA ===" + "\r\n" + (item.PAAM_DS_SONO_BOCA_SECA == 1 ? "Sim" : "Não") + "\r\n";
+                    frase += "\r\n" + "=== DOR DE CABEÇA ===" + "\r\n" + (item.PAAM_DS_SONO_DOR_CABECA == 1 ? "Sim" : "Não") + "\r\n";
+                    frase += "\r\n" + "=== CONGESTÃO NASAL ===" + "\r\n" + (item.PAAM_DS_SONO_CONGESTAO == 1 ? "Sim" : "Não") + "\r\n";
+                    frase += "\r\n" + "=== REFLUXO OU AZIA ===" + "\r\n" + (item.PAAM_DS_SONO_AZIA == 1 ? "Sim" : "Não") + "\r\n";
+                    frase += "\r\n" + "************ FUNÇÕES DIURNAS ************" + "\r\n";
+                    frase += "\r\n" + "=== SONOLENCIA DIURNA ===" + "\r\n" + (item.PAAM_DS_SONO_SONOLENCIA_DIURNA == 1 ? "Sim" : "Não") + "\r\n";
+                    frase += "\r\n" + "=== CANSAÇO ===" + "\r\n" + (item.PAAM_DS_SONO_CANSACO == 1 ? "Sim" : "Não") + "\r\n";
+                    frase += "\r\n" + "=== FADIGA ===" + "\r\n" + (item.PAAM_DS_SONO_FADIGA == 1 ? "Sim" : "Não") + "\r\n";
+                    frase += "\r\n" + "=== IRRITABILIDADE ===" + "\r\n" + (item.PAAM_DS_SONO_IRRITA == 1 ? "Sim" : "Não") + "\r\n";
+                    frase += "\r\n" + "=== DÉFICIT DE CONCENTRAÇÃO ===" + "\r\n" + (item.PAAM_DS_SONO_DEFICIT_CONCENTRA == 1 ? "Sim" : "Não") + "\r\n";
+                    frase += "\r\n" + "=== DÉFICIT DE MEMÓRIA ===" + "\r\n" + (item.PAAM_DS_SONO_DEFICIT_MEMORIA == 1 ? "Sim" : "Não") + "\r\n";
+                    frase += "\r\n" + "=== DOR ===" + "\r\n" + (item.PAAM_DS_SONO_DOR == 1 ? "Sim" : "Não") + "\r\n";
+                    frase += "\r\n" + "************ OUTROS ************" + "\r\n";
+                    frase += "\r\n" + "=== TIPO DE RESPIRAÇÃO ===" + "\r\n" + (item.PAAM_DS_SONO_TIPO_RESPIRACAO == 1 ? "Nasal" : (item.PAAM_DS_SONO_TIPO_RESPIRACAO == 2 ? "Oronasal" : "Mista")) + "\r\n";
+                    frase += "\r\n" + "=== DISFUNÇÃO SEXUAL ===" + "\r\n" + (item.PAAM_DS_SONO_DISFUNCAO == 1 ? "Sim" : "Não") + "\r\n";
+                    frase += "\r\n" + "=== ALTERAÇÕES PONDERAIS ===" + "\r\n" + (item.PAAM_DS_SONO_PONDERAL == 1 ? "Sim" : "Não") + "\r\n";
+                    frase += "\r\n" + "=== MEDICAMENTOS EM USO ===" + "\r\n" + item.PAAM_DS_SONO_MEDICAMENTOS + "\r\n";
+                    frase += "\r\n" + "=== COMORBIDADES ===" + "\r\n" + item.PAAM_DS_SONO_COMORBIDADES + "\r\n";
+                    frase += "\r\n" + "=== CIRURGIAS PRÉVIAS ===" + "\r\n" + item.PAAM_DS_SONO_CIRURGIAS + "\r\n";
+                    frase += "\r\n" + "=== SENSAÇÃO DESAGRADÁVEL NAS PERNAS ===" + "\r\n" + (item.PAAM_DS_SONO_SENSACAO_PERNA == 1 ? "Sim" : "Não") + "\r\n";
+                    frase += "\r\n" + "=== TRABALHOU EM TURNO ===" + "\r\n" + (item.PAAM_DS_SONO_TURNO == 1 ? "Sim" : "Não") + "\r\n";
+                    frase += "\r\n" + "=== POLISSONOGRAFIA ===" + "\r\n" + item.PAAM_DS_SONO_POLISONO + "\r\n";
+                    frase += "\r\n" + "=== MALLAMPATI ===" + "\r\n" + item.PAAM_DS_SONO_MALLAMPATI + "\r\n";
+                    frase += "\r\n" + "=== OVERLAP ===" + "\r\n" + item.PAAM_DS_SONO_OVERLAP + "\r\n";
+                    frase += "\r\n" + "=== PATOLOGIAS ASSOCIADAS ===" + "\r\n" + item.PAAM_DS_SONO_PATOLOGIAS + "\r\n";
                     if (item.PAAM_IN_CAMPO_1 == 1)
                     {
                         frase += "\r\n" + "=== " + item.PAAM_NM_CAMPO_1 + " ===" + "\r\n" + item.PAAM_DS_CAMPO_1 + "\r\n";
@@ -8124,16 +8209,9 @@ namespace GEDSys_Presentation.Controllers
                     {
                         frase += "\r\n" + "=== " + item.PAAM_NM_CAMPO_10 + " ===" + "\r\n" + item.PAAM_DS_CAMPO_10 + "\r\n";
                     }
-                    frase += "\r\n" + "=== DIAGNÓSTICO ===" + "\r\n" + item.PAAM_DS_DIAGNOSTICO_1_LONG + "\r\n";
-                    frase += "\r\n" + "=== CONDUTA ADOTADA ===" + "\r\n" + item.PAAM_DS_CONDUTA + "\r\n";
                     item.PAAM_TX_COMPLETA = frase;
                     Int32 voltaAna = baseApp.ValidateEditAnamneseConfirma(item);
                 }
-
-
-
-
-
                 return 1;
             }
             catch (Exception ex)
@@ -15978,9 +16056,11 @@ namespace GEDSys_Presentation.Controllers
                 frase += "\r\n" + "=== CIRURGIAS PRÉVIAS ===" + "\r\n" + item.PAAM_DS_SONO_CIRURGIAS + "\r\n";
                 frase += "\r\n" + "=== SENSAÇÕES DESAGRADÁVEIS NAS PERNAS ===" + "\r\n" + item.PAAM_DS_SONO_SENSACAO_PERNA + "\r\n";
                 frase += "\r\n" + "=== TRABALHA OU TRABALHOU EM TURNO ===" + "\r\n" + (item.PAAM_DS_SONO_TURNO == 1 ? "Sim" : "Não") + "\r\n";
-                frase += "\r\n" + "=== DADOS DA POLISSONOGRAFIA - MALLAMPATI ===" + "\r\n" + item.PAAM_DS_SONO_MALLAMPATI + "\r\n";
-                frase += "\r\n" + "=== DADOS DA POLISSONOGRAFIA - OVERLAP ===" + "\r\n" + item.PAAM_DS_SONO_OVERLAP + "\r\n";
+                frase += "\r\n" + "=== POLISSONOGRAFIA ===" + "\r\n" + item.PAAM_DS_SONO_POLISONO + "\r\n";
+                frase += "\r\n" + "=== MALLAMPATI ===" + "\r\n" + item.PAAM_DS_SONO_MALLAMPATI + "\r\n";
+                frase += "\r\n" + "=== OVERLAP ===" + "\r\n" + item.PAAM_DS_SONO_OVERLAP + "\r\n";
                 frase += "\r\n" + "=== PATOLOGIAS ASSOCIADAS ===" + "\r\n" + item.PAAM_DS_SONO_PATOLOGIAS + "\r\n";
+                frase += "\r\n" + "=== INFORMAÇÕES GERAIS ===" + "\r\n" + item.PAAM_TX_TEXTO_LIVRE + "\r\n";
 
                 if (item.PAAM_IN_CAMPO_1 == 1)
                 {
@@ -16022,8 +16102,6 @@ namespace GEDSys_Presentation.Controllers
                 {
                     frase += "\r\n" + "=== " + item.PAAM_NM_CAMPO_10 + " ===" + "\r\n" + item.PAAM_DS_CAMPO_10 + "\r\n";
                 }
-                frase += "\r\n" + "=== DIAGNÓSTICO ===" + "\r\n" + item.PAAM_DS_DIAGNOSTICO_1_LONG + "\r\n";
-                frase += "\r\n" + "=== CONDUTA ADOTADA ===" + "\r\n" + item.PAAM_DS_CONDUTA + "\r\n";
 
                 item.PAAM_TX_COMPLETA = frase;
                 Int32 voltaAna = baseApp.ValidateEditAnamneseConfirma(item);
@@ -17978,6 +18056,23 @@ namespace GEDSys_Presentation.Controllers
                 cell.BackgroundColor = BaseColor.WHITE;
                 table.AddCell(cell);
                 cell = new PdfPCell(new Paragraph(anamnese.PAAM_DS_SONO_PATOLOGIAS, meuFont1))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+
+                cell = new PdfPCell(new Paragraph("Informações Gerais: ", meuFont1Bold))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph(anamnese.PAAM_TX_TEXTO_LIVRE, meuFont1))
                 {
                     VerticalAlignment = Element.ALIGN_MIDDLE,
                     HorizontalAlignment = Element.ALIGN_LEFT
