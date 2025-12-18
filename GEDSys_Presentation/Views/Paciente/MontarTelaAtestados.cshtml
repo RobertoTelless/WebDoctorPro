@@ -59,15 +59,15 @@
                             </div>
                             <div class="col-lg-4 col-md-4 col-xs-12">
                                 Nome do Paciente ou Fragmento do nome
-                                @Html.TextBoxFor(m => m.PAAT_AQ_ARQUIVO_HTML, new { @class = "form-control", autofocus = true })
+                                @Html.TextBoxFor(m => m.PAAT_AQ_ARQUIVO_HTML, new { @class = "form-control", autofocus = true, @id = "txtNomePaciente", data_toggle = "popover", data_content = "Selecione o paciente a pesquisar", data_trigger="hover", data_placement="top"  })
                             </div>
                             <div class="col-lg-2 col-md-2 col-xs-12">
                                 Data Inicial
-                                @Html.TextBoxFor(m => m.PAAT_DT_DATA, new { @class = "form-control date-picker", autofocus = true, @id = "dn" })
+                                @Html.TextBoxFor(m => m.PAAT_DT_DATA, new { @class = "form-control date-picker", autofocus = true, @id = "dn", data_toggle = "popover", data_content = "Informe a data inicial da faixa de datas a ser pesquisada", data_trigger="hover", data_placement="top" })
                             </div>
                             <div class="col-lg-2 col-md-2 col-xs-12">
                                 Data Final
-                                @Html.TextBoxFor(m => m.PAAT_DT_ENVIO, new { @class = "form-control date-picker", autofocus = true, @id = "dn1" })
+                                @Html.TextBoxFor(m => m.PAAT_DT_ENVIO, new { @class = "form-control date-picker", autofocus = true, @id = "dn1", data_toggle = "popover", data_content = "Informe a data final da faixa de datas a ser pesquisada", data_trigger="hover", data_placement="top" })
                             </div>
                         </div>
                         <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
@@ -76,30 +76,33 @@
                                 @Html.TextBoxFor(m => m.PAAT_NM_TITULO, new { @class = "form-control", autofocus = true })
                             </div>
                             <div class="col-lg-8 col-md-8 col-xs-12">
-                                Conteúdo     do Atestado
-                                @Html.TextBoxFor(m => m.PAAT_TX_TEXTO, new { @class = "form-control", autofocus = true })
+                                Conteúdo do Atestado
+                                @Html.TextBoxFor(m => m.PAAT_TX_TEXTO, new { @class = "form-control", autofocus = true, data_toggle = "popover", data_content = "Informe um fragmento do conteúdo do atestado", data_trigger="hover", data_placement="top" })
                             </div>
                         </div>
 
                         <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
                             <div class="col-lg-12 col-md-12 col-xs-12">
-                                @Html.ButtonActionSubmit(text: "Filtrar")
+                                @Html.ButtonActionSubmit(text: "Filtrar", htmlAttributes: new { @class = "btn-loading1" })
                                 @if (ViewBag.Classe == 0)
                                 {
-                                    @Html.ButtonLinkIndex(text: "Novo Atestado", controller: "Paciente", action: "IncluirAtestadoCompleta", buttonClass: "primary")
+                                    @Html.ButtonLinkIndex(text: "Novo Atestado", controller: "Paciente", action: "IncluirAtestadoCompleta", buttonClass: "primary", htmlAttributes: new { @class = "btn-loading" })
                                 }
-                                @Html.ButtonLinkIndex(text: "Atestados do Mês", controller: "Paciente", action: "VerAtestadosMes")
-                                @Html.ButtonLinkIndex(text: "Todos os Atestados", controller: "Paciente", action: "RetirarFiltroAtestados")
-                                @Html.ButtonLinkIndex(text: "Imprimir Lista de Atestados", controller: "Paciente", action: "GerarRelatorioAtestados")
+                                @Html.ButtonLinkIndex(text: "Atestados do Mês", controller: "Paciente", action: "VerAtestadosMes", htmlAttributes: new { @class = "btn-loading" })
+                                @Html.ButtonLinkIndex(text: "Todos os Atestados", controller: "Paciente", action: "RetirarFiltroAtestados", htmlAttributes: new { @class = "btn-loading" })
+                                @Html.ButtonLinkIndex(text: "Imprimir Atestados", controller: "Paciente", action: "GerarRelatorioAtestados")
                                 @if ((Int32)Session["VoltaListaConsulta"] == 1)
                                 {
-                                    @Html.ButtonLinkIndex(text: "Voltar", controller: "Paciente", action: "VerListaAtestadoConsulta")
+                                    @Html.ButtonLinkIndex(text: "Voltar", controller: "Paciente", action: "VerListaAtestadoConsulta", htmlAttributes: new { @class = "btn-loading" })
                                 }
                                 else
                                 {
-                                    @Html.ButtonLinkIndex(text: "Voltar", controller: "Paciente", action: "VoltarCentrais")
+                                    @Html.ButtonLinkIndex(text: "Voltar", controller: "Paciente", action: "VoltarCentrais", htmlAttributes: new { @class = "btn-loading" })
                                 }
                                 <a href="@Url.Action((String)Session["AjudaNivel"])"  class="btn btn-sm btn-danger" target="_blank">Ajuda</a>                
+                                <span id="loadingIndicator" style="display: none; margin-left: 10px; color: #007bff;">
+                                    <i class="fa fa-spinner fa-spin"></i> Processando...
+                                </span>
                             </div>
                         </div>
                     </div>
@@ -145,7 +148,6 @@
                                         <th style="width: auto">Último Envio</th>
                                         <th style="width: auto">Data da Consulta</th>
                                         <th class="td-one-action">Ações</th>
-                                        <th style="width: 0.01px"></th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -155,26 +157,26 @@
                                             <td style="width: auto">@cond.PAAT_DT_DATA.Value.ToShortDateString()</td>
                                             @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_ACESSO_PACIENTE == 1)
                                             {
-                                                <td style="width: auto"><a href="@Url.Action("EditarPacienteAtestado", "Paciente", new { id = cond.PACIENTE.PACI__CD_ID })" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página de edição de dados do paciente"/>@cond.PACIENTE.PACI_NM_NOME</td>
+                                                <td style="width: auto"><a href="@Url.Action("EditarPacienteAtestado", "Paciente", new { id = cond.PACIENTE.PACI__CD_ID })" class="btn-loading" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página de edição de dados do paciente"/>@cond.PACIENTE.PACI_NM_NOME</td>
                                             }
                                             else
                                             {
-                                                <td style="width: auto"><a href="@Url.Action("VerPacienteAtestado", "Paciente", new { id = cond.PACIENTE.PACI__CD_ID })" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página de visualização de dados do paciente" />@cond.PACIENTE.PACI_NM_NOME</td>
+                                                <td style="width: auto"><a href="@Url.Action("VerPacienteAtestado", "Paciente", new { id = cond.PACIENTE.PACI__CD_ID })" class="btn-loading" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página de visualização de dados do paciente" />@cond.PACIENTE.PACI_NM_NOME</td>
                                             }
                                             @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_ATESTADO_ALTERAR == 1)
                                             {
                                                 if (cond.PAAT__IN_ENVIADO == 0)
                                                 {
-                                                    <td style="width: auto"><a href="@Url.Action("EditarAtestadoCompleta", "Paciente", new { id = cond.PAAT_CD_ID })" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página de edição do atestado" />@cond.PAAT_GU_GUID</td>
+                                                    <td style="width: auto"><a href="@Url.Action("EditarAtestadoCompleta", "Paciente", new { id = cond.PAAT_CD_ID })"  class="btn-loading" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página de edição do atestado" />@cond.PAAT_GU_GUID</td>
                                                 }
                                                 else
                                                 {
-                                                    <td style="width: auto"><a href="@Url.Action("VerAtestadoCompleta", "Paciente", new { id = cond.PAAT_CD_ID })" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página de visualização do atestado"/>@cond.PAAT_GU_GUID</td>
+                                                    <td style="width: auto"><a href="@Url.Action("VerAtestadoCompleta", "Paciente", new { id = cond.PAAT_CD_ID })"  class="btn-loading" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página de visualização do atestado"/>@cond.PAAT_GU_GUID</td>
                                                 }
                                             }
                                             else
                                             {
-                                                <td style="width: auto"><a href="@Url.Action("VerAtestadoCompleta", "Paciente", new { id = cond.PAAT_CD_ID })" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página de visualização do atestado" />@cond.PAAT_GU_GUID</td>
+                                                <td style="width: auto"><a href="@Url.Action("VerAtestadoCompleta", "Paciente", new { id = cond.PAAT_CD_ID })"  class="btn-loading" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página de visualização do atestado" />@cond.PAAT_GU_GUID</td>
                                             }
                                             @if (cond.TIPO_ATESTADO != null)
                                             {
@@ -216,22 +218,22 @@
                                                 {
                                                     if (cond.PAAT__IN_ENVIADO == 0)
                                                     {
-                                                        @Html.TableLinkDetails(cond.PAAT_CD_ID, "EditarAtestadoCompleta", "fa-edit", "Editar Atestado")
+                                                        @Html.TableLinkDetails(cond.PAAT_CD_ID, "EditarAtestadoCompleta", "fa-edit btn-loading", "Editar Atestado")
                                                     }
                                                     else
                                                     {
-                                                        @Html.TableLinkDetails(cond.PAAT_CD_ID, "VerAtestadoCompleta", "fa-search", "Consultar Atestado")
+                                                        @Html.TableLinkDetails(cond.PAAT_CD_ID, "VerAtestadoCompleta", "fa-search btn-loading", "Consultar Atestado")
                                                     }
                                                 }
                                                 else
                                                 {
-                                                    @Html.TableLinkDetails(cond.PAAT_CD_ID, "VerAtestadoCompleta", "fa-search", "Consultar Atestado")
+                                                    @Html.TableLinkDetails(cond.PAAT_CD_ID, "VerAtestadoCompleta", "fa-search btn-loading", "Consultar Atestado")
                                                 }
                                                 @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_ATESTADO_ENVIAR == 1)
                                                 {
                                                     if (cond.PAAT_IN_ATIVO == 1 )
                                                     {
-                                                        @Html.TableLinkDetails(cond.PAAT_CD_ID, "EnviarAtestadoEMail", "fa-send-o", "Enviar Atestado para Paciente")
+                                                        @Html.TableLinkDetails(cond.PAAT_CD_ID, "EnviarAtestadoEMail", "fa-send-o btn-loading", "Enviar Atestado para Paciente")
                                                     }
 	                                            }
                                                 @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_ATESTADO_ENVIAR == 1)
@@ -247,12 +249,11 @@
                                                     {
                                                         if (cond.PAAT__IN_ENVIADO == 0)
                                                         {
-                                                            <span style="color: #337ab7; cursor:pointer;" alt="Desativar" class="tbl-link fa-lg fa fa-trash-o" onclick="ShowModalExcluirAtestado('/Paciente/ExcluirAtestado/@cond.PAAT_CD_ID')" title="Excluir Atestado"></span>
+                                                            <span style="color: #337ab7; cursor:pointer;" alt="Desativar" class="tbl-link fa-lg fa fa-trash-o btn-loading" onclick="ShowModalExcluirAtestado('/Paciente/ExcluirAtestado/@cond.PAAT_CD_ID')" title="Excluir Atestado"></span>
                                                         }
                                                     }
 	                                            }
                                             </td>
-                                            <td style="width: 0.01px"></td>
                                         </tr>
                                     }
                                 </tbody>
@@ -265,7 +266,7 @@
                                 </div>
                                 <div style="border: 5px solid #F6A54A; padding: 10px; border-radius: 8px 8px; " class="col-lg-10 col-md-10 col-xs-10">
                                     <h2 style="font-weight: bold">Sua pesquisa não retornou nenhum resultado ou nenhum atestado cadastrado no mês corrente</h2>
-                                    @Html.ButtonLinkIndex(text: "Retirar Filtro", controller: "Paciente", action: "RetirarFiltroAtestados")
+                                    @Html.ButtonLinkIndex(text: "Retirar Filtro", controller: "Paciente", action: "RetirarFiltroAtestados", htmlAttributes: new { @class = "btn-loading" })
                                 </div>
                                 <div class="col-lg-1 col-md-1 col-xs-2">
                                 </div>
@@ -322,6 +323,72 @@
         }; 
     </script>
 
+    <script type="text/javascript">
+        $(document).ready(function () { 
+            $('.btn-loading').on('click', function (e) {            
+                $(this).prop('disabled', true);
+                $(this).addClass('disabled');
+                $('#loadingIndicator').show();
+                var tagName = $(this).prop('tagName').toLowerCase();
+                if (tagName === 'a') {
+                    e.preventDefault(); 
+                    var targetUrl = $(this).attr('href');
+                    window.location.href = targetUrl;
+
+                } else if (tagName === 'button' || tagName === 'input') {
+                    $(this).closest('form').submit();
+                }
+            });
+        });
+    </script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('.btn-loading1').on('click', function (e) {
+            
+                var $this = $(this);
+                var tagName = $this.prop('tagName').toLowerCase();
+                $this.addClass('disabled'); 
+                $('#loadingIndicator').show();
+
+                if (tagName === 'a') {
+                    e.preventDefault();
+                
+                    var targetUrl = $this.attr('href');
+                    window.location.href = targetUrl;
+                
+                } else if (tagName === 'button' || tagName === 'input') {               
+                    $this.closest('form').submit();
+                    $this.prop('disabled', true);
+                }
+            });
+        });
+    </script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#txtNomePaciente').autocomplete({
+                minLength: 2, 
+                source: function (request, response) {
+                    $.ajax({
+                        url: '@Url.Action("GetPacienteNome", "Paciente2")', 
+                        type: 'POST',
+                        dataType: 'json',
+                        data: {
+                            term: request.term 
+                        },
+                        success: function (data) {
+                            response(data); 
+                        },
+                        error: function () {
+                            console.log("Erro ao buscar dados para autocomplete.");
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+
     <script type="text/javascript" language="javascript">
         $(function () {
             $('.date-picker').datepicker(
@@ -376,14 +443,14 @@
         }
 
         function ShowModalExcluirAtestado(url) {
-            $('#modal').find('.modal-footer').prepend('<a id="btnModal" alt="Desativar" class="btn btn-primary" href="' + url + '" target="_self" title="Desativar">Confirmar</a>');
+            $('#modal').find('.modal-footer').prepend('<a id="btnModal" alt="Desativar" class="btn btn-primary btn-loading" href="' + url + '" target="_self" title="Desativar">Confirmar</a>');
             $('#modal').find('.modal-body').html('Confirma exclusão de atestado?');
             $('#modal').find('.modal-header').prepend('<h5 id="modalTitle" class="modal-title">Confimar Exclusão</h5>');
             $('#modal').modal('show');
         }
 
         function ShowModalConfirmarEnvioAtestado(url) {
-            $('#modal').find('.modal-footer').prepend('<a id="btnModal" alt="Reativar" class="btn btn-primary" href="' + url + '" target="_self" title="Reativar">Confirmar</a>');
+            $('#modal').find('.modal-footer').prepend('<a id="btnModal" alt="Reativar" class="btn btn-primary btn-loading" href="' + url + '" target="_self" title="Reativar">Confirmar</a>');
             $('#modal').find('.modal-body').html('Confirma envio do atestado para o paciente?');
             $('#modal').find('.modal-header').prepend('<h5 id="modalTitle" class="modal-title">Confimar Envio</h5>');
             $('#modal').modal('show');
@@ -396,6 +463,24 @@
             $('.dataTables-example').DataTable({
                 pageLength: 25,
                 dom: '<"html5buttons"B>lTfgitp',
+                order: [[0, 'desc'],
+
+
+                columnDefs: [
+                                {
+                                    // Aplicar o tipo de ordenação de data na Coluna 0
+                                    "type": "datetime-moment", 
+                                    "targets": 0 
+                                },
+                                {
+                                    // As colunas de Ações, Tipo, Situação, etc., podem ter elementos HTML 
+                                    // que atrapalham a ordenação. Usamos "html-num" (ou customizado)
+                                    // ou simplesmente garantir que não tente ordenar o conteúdo do link da data.
+                                    "orderable": false, // Desabilita ordenação para a coluna Ações
+                                    "targets": 7 
+                                }
+                ],
+                // ---------------------------------     
                 buttons: [
                     { extend: 'excel', title: 'Atestado_Planilha' },
                     {

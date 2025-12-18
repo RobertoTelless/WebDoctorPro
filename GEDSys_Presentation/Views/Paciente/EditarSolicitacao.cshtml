@@ -19,7 +19,7 @@
                     <a href="@Url.Action("MontarTelaSolicitacoes", "Paciente")">Solicitações</a>
                 </li>
                 <li class="active">
-                    <strong>Solicitação - Edição</strong>
+                    <strong>Solicitação - Alteração</strong>
                 </li>
             </ol>
             <br />
@@ -39,7 +39,7 @@
                     <a href="@Url.Action("MontarTelaSolicitacoes", "Paciente")">Solicitações</a>
                 </li>
                 <li class="active">
-                    <strong>Solicitação - Edição</strong>
+                    <strong>Solicitação - Alteração</strong>
                 </li>
             </ol>
             <br />
@@ -56,10 +56,10 @@
                     <a href="@Url.Action("MontarTelaCentralPaciente", "Paciente")">Central de Pacientes</a>
                 </li>
                 <li>
-                    <a href="@Url.Action("EditarPaciente", "Paciente")">Paciente - Edição</a>
+                    <a href="@Url.Action("EditarPaciente", "Paciente")">Paciente - Alteração</a>
                 </li>
                 <li class="active">
-                    <strong>Solicitacão - Edição</strong>
+                    <strong>Solicitacão - Alteração</strong>
                 </li>
             </ol>
             <br />
@@ -70,7 +70,7 @@
             <div class="col-lg-12 col-md-12 col-xs-12 ibox float-e-margins">
                 <div class="ibox-title">
                     <div style="text-align: center;" class="col-lg-12 col-md-12 col-xs-12">
-                        <h5>Solicitação de Exame - Edição</h5>
+                        <h5>Solicitação de Exame - Alteração</h5>
                         <span style="color:green; font-weight: 500; font-size: 20px;">@Model.PACIENTE.PACI_NM_NOME</span>
                     </div>
                 </div>
@@ -87,10 +87,10 @@
                         }
                         <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">  
                             @Html.ButtonLinkIndex(text: "Imprimir Solicitação", action: "ImprimirSolicitacaoForm", controller: "Paciente")
-                            @Html.ButtonLinkIndex(text: "Enviar Solcitação por E-Mail", action: "EnviarSolicitacaoEMailForm", controller: "Paciente")
+                            @Html.ButtonLinkIndex(text: "Enviar Solicitação por E-Mail", action: "EnviarSolicitacaoEMailForm", controller: "Paciente", htmlAttributes: new { @class = "btn-loading" })
                             @if ((Int32)Session["VoltarPesquisa"] == 1)
                             {
-                                @Html.ButtonLinkIndex(text: "Voltar", action: "PesquisarTudo", controller: "BaseAdmin")
+                                @Html.ButtonLinkIndex(text: "Voltar", action: "PesquisarTudo", controller: "BaseAdmin", htmlAttributes: new { @class = "btn-loading" })
                             }
                             else
                             {
@@ -98,19 +98,22 @@
                                 {
                                     if ((Int32)Session["ModoConsulta"] == 1)
                                     {
-                                        @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarProcederConsulta", controller: "Paciente")
+                                        @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarProcederConsulta", controller: "Paciente", htmlAttributes: new { @class = "btn-loading" })
                                     }
                                     else
                                     {
-                                        @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarAnexoPaciente", controller: "Paciente")
+                                        @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarAnexoPaciente", controller: "Paciente", htmlAttributes: new { @class = "btn-loading" })
                                     }
                                 }
                                 else
                                 {
-                                    @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaSolicitacoes", controller: "Paciente")
+                                    @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaSolicitacoes", controller: "Paciente", htmlAttributes: new { @class = "btn-loading" })
                                 }
                             }
                             <a href="@Url.Action((String)Session["AjudaNivel"])"  class="btn btn-sm btn-danger" target="_blank">Ajuda</a>                
+                            <span id="loadingIndicator" style="display: none; margin-left: 10px; color: #007bff;">
+                                <i class="fa fa-spinner fa-spin"></i> Processando...
+                            </span>
                         </div>
                         <div class="row">
                             <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Paciente</h4>
@@ -149,7 +152,7 @@
                         <div class="row">
                             <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Solicitação de Exame</h4>
                             <div class="form-group" style=" margin-left: 5px; margin-right: 5px;">                
-                                @Html.ButtonActionSubmit(text: "Confirma Edição de Solicitação de Exame", htmlAttributes: new { id = "basictoast" })
+                                @Html.ButtonActionSubmit(text: "Confirma Alteração de Solicitação de Exame", htmlAttributes: new { id = "basictoast", @class = "btn-loading1" })
                             </div>
                             <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">                
                                 <div class="col-lg-2 col-md-2 col-xs-12">
@@ -350,6 +353,47 @@
     </script>
 
     <script type="text/javascript">
+        $(document).ready(function () { 
+            $('.btn-loading').on('click', function (e) {            
+                $(this).prop('disabled', true);
+                $(this).addClass('disabled');
+                $('#loadingIndicator').show();
+                var tagName = $(this).prop('tagName').toLowerCase();
+                if (tagName === 'a') {
+                    e.preventDefault(); 
+                    var targetUrl = $(this).attr('href');
+                    window.location.href = targetUrl;
+
+                } else if (tagName === 'button' || tagName === 'input') {
+                    $(this).closest('form').submit();
+                }
+            });
+        });
+    </script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('.btn-loading1').on('click', function (e) {
+            
+                var $this = $(this);
+                var tagName = $this.prop('tagName').toLowerCase();
+                $this.addClass('disabled'); 
+                $('#loadingIndicator').show();
+
+                if (tagName === 'a') {
+                    e.preventDefault();
+                
+                    var targetUrl = $this.attr('href');
+                    window.location.href = targetUrl;
+                
+                } else if (tagName === 'button' || tagName === 'input') {               
+                    $this.closest('form').submit();
+                    $this.prop('disabled', true);
+                }
+            });
+        });
+    </script>
+
+    <script type="text/javascript">
         $(document).ready(function () {
 
             var i = -1;
@@ -362,7 +406,7 @@
 
             $('#basictoast').click(function () {
                 // Display a success toast, with a title
-                toastr.success('Inclusão em andamento!')
+                toastr.success('Edição em andamento!')
             });
             $('#showtoast').click(function () {
                 var shortCutFunction = $("#toastTypeGroup input:radio:checked").val();

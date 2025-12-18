@@ -70,7 +70,7 @@
             <div class="col-lg-12 col-md-12 col-xs-12 ibox float-e-margins">
                 <div class="ibox-title">
                     <div style="text-align: center;" class="col-lg-12 col-md-12 col-xs-12">
-                        <h5>Atestado - Envio por E-Mail - Edição</h5>
+                        <h5>Atestado - Envio por E-Mail</h5>
                         <span style="color:green; font-weight: 500; font-size: 20px;">@ViewBag.NomePaciente</span>
                     </div>
                 </div>
@@ -133,7 +133,7 @@
                             </div>
                         </div>
                         <div class="row">
-                            <div class="form-group" style=" margin-left: 0px; margin-right: 0px;"> 
+                            <div class="form-group" style=" margin-left: -15px; margin-right: -15px;"> 
                                 <div class="col-lg-12 col-md-12 col-xs-12">
                                     Texto da Mensagem*
                                     @Html.TextAreaFor(m => m.MENS_TX_TEXTO, new { @class = "form-control", style = "width: 100%; height: 200px; overflow:auto;", autofocus = true, @id = "texto", data_toggle = "popover", data_content = "Texto a ser enviado na mensagem ao paciente. O atestado será anexado automaticamente a esta mensagem", data_trigger="hover", data_placement="top"  })
@@ -142,28 +142,31 @@
                             </div>
                         </div>
                         <div class="form-group">
-                            @Html.ButtonActionSubmit(text: "Confirma Envio do Atestado", htmlAttributes: new { id = "basictoast" })
+                            @Html.ButtonActionSubmit(text: "Confirma Envio do Atestado", htmlAttributes: new { id = "basictoast", @class = "btn-loading1" })
                             @if ((Int32)Session["VoltaMail"] == 1)
                             {
-                                @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarAnexoPaciente", controller: "Paciente")
+                                @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarAnexoPaciente", controller: "Paciente", htmlAttributes: new { @class = "btn-loading" })
                             }
                             else if ((Int32)Session["VoltaMail"] == 2)
                             {
-                                @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaAtestados", controller: "Paciente")
+                                @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaAtestados", controller: "Paciente", htmlAttributes: new { @class = "btn-loading" })
                             }
                             else if ((Int32)Session["VoltaMail"] == 3)
                             {
-                                @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarProcederConsulta", controller: "Paciente")
+                                @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarProcederConsulta", controller: "Paciente", htmlAttributes: new { @class = "btn-loading" })
                             }
                             else if ((Int32)Session["VoltaMail"] == 4)
                             {
-                                @Html.ButtonLinkIndex(text: "Voltar", action: "VerListaAtestadoConsulta", controller: "Paciente")
+                                @Html.ButtonLinkIndex(text: "Voltar", action: "VerListaAtestadoConsulta", controller: "Paciente", htmlAttributes: new { @class = "btn-loading" })
                             }
                             else if ((Int32)Session["VoltaMail"] == 5)
                             {
-                                @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaCentralPaciente", controller: "Paciente")
+                                @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaCentralPaciente", controller: "Paciente", htmlAttributes: new { @class = "btn-loading" })
                             }
                             <a href="@Url.Action((String)Session["AjudaNivel"])"  class="btn btn-sm btn-danger" target="_blank">Ajuda</a>                
+                            <span id="loadingIndicator" style="display: none; margin-left: 10px; color: #007bff;">
+                                <i class="fa fa-spinner fa-spin"></i> Processando...
+                            </span>
                         </div>
                     </div>
                 }
@@ -211,6 +214,47 @@
         {
             navigator.sendBeacon('../ControleAcesso/LogSessionTime');
         }; 
+    </script>
+
+    <script type="text/javascript">
+        $(document).ready(function () { 
+            $('.btn-loading').on('click', function (e) {            
+                $(this).prop('disabled', true);
+                $(this).addClass('disabled');
+                $('#loadingIndicator').show();
+                var tagName = $(this).prop('tagName').toLowerCase();
+                if (tagName === 'a') {
+                    e.preventDefault(); 
+                    var targetUrl = $(this).attr('href');
+                    window.location.href = targetUrl;
+
+                } else if (tagName === 'button' || tagName === 'input') {
+                    $(this).closest('form').submit();
+                }
+            });
+        });
+    </script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('.btn-loading1').on('click', function (e) {
+            
+                var $this = $(this);
+                var tagName = $this.prop('tagName').toLowerCase();
+                $this.addClass('disabled'); 
+                $('#loadingIndicator').show();
+
+                if (tagName === 'a') {
+                    e.preventDefault();
+                
+                    var targetUrl = $this.attr('href');
+                    window.location.href = targetUrl;
+                
+                } else if (tagName === 'button' || tagName === 'input') {               
+                    $this.closest('form').submit();
+                    $this.prop('disabled', true);
+                }
+            });
+        });
     </script>
 
     <script type="text/javascript">

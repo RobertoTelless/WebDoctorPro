@@ -14,27 +14,28 @@ namespace DataServices.Repositories
             IQueryable<PACIENTE_SOLICITACAO> query = Db.PACIENTE_SOLICITACAO;
             query = query.Where(p => p.PASO_CD_ID == id);
             query = query.Include(p => p.TIPO_EXAME);
+            query = query.Include(p => p.PACIENTE);
             return query.FirstOrDefault();
         }
 
         public List<PACIENTE_SOLICITACAO> GetAllItens(Int32 idAss)
         {
-            IQueryable<PACIENTE_SOLICITACAO> query = Db.PACIENTE_SOLICITACAO;
+            IQueryable<PACIENTE_SOLICITACAO> query = Db.PACIENTE_SOLICITACAO.Where(p => p.PASO_IN_ATIVO == 1);
             query = query.Where(p => p.ASSI_CD_ID == idAss);
-            return query.ToList();
+            return query.AsNoTracking().ToList();
         }
 
         public List<PACIENTE_SOLICITACAO> GetAll()
         {
             IQueryable<PACIENTE_SOLICITACAO> query = Db.PACIENTE_SOLICITACAO;
-            return query.ToList();
+            return query.AsNoTracking().ToList();
         }
 
         public List<PACIENTE_SOLICITACAO> GetByCPF(String cpf)
         {
             IQueryable<PACIENTE_SOLICITACAO> query = Db.PACIENTE_SOLICITACAO.Where(p => p.PASO_IN_ATIVO == 1);
             query = query.Where(p => p.PACIENTE.PACI_NR_CPF == cpf);
-            return query.ToList();
+            return query.AsNoTracking().ToList();
         }
 
         public List<PACIENTE_SOLICITACAO> ExecuteFilter(Int32? tipo, String nome, DateTime? dataInicio, DateTime? dataFim, String titulo, String descricao, Int32 idAss)
@@ -73,8 +74,8 @@ namespace DataServices.Repositories
             {
                 query = query.Where(p => p.ASSI_CD_ID == idAss);
                 query = query.Where(p => p.PASO_IN_ATIVO == 1);
-                query = query.OrderBy(a => a.PASO_DT_EMISSAO);
-                lista = query.ToList<PACIENTE_SOLICITACAO>();
+                query = query.OrderByDescending(a => a.PASO_DT_EMISSAO);
+                lista = query.AsNoTracking().ToList<PACIENTE_SOLICITACAO>();
             }
             return lista;
         }

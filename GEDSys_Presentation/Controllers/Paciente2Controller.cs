@@ -12648,7 +12648,7 @@ namespace GEDSys_Presentation.Controllers
                     PdfPTable headerTable = null;
                     PdfPCell cell = new PdfPCell();
                     Image image = null;
-                    if (conf.CONF_IN_EXIBE_LOGO == 1)
+                    if (conf.CONF_IN_LOGO_EMPRESA == 1)
                     {
                         headerTable = new PdfPTable(new float[] { 20f, 700f });
                         headerTable.WidthPercentage = 100;
@@ -13559,7 +13559,7 @@ namespace GEDSys_Presentation.Controllers
                     PdfPTable headerTable = null;
                     PdfPCell cell = new PdfPCell();
                     Image image = null;
-                    if (conf.CONF_IN_EXIBE_LOGO == 1)
+                    if (conf.CONF_IN_LOGO_EMPRESA == 1)
                     {
                         headerTable = new PdfPTable(new float[] { 20f, 700f });
                         headerTable.WidthPercentage = 100;
@@ -14025,7 +14025,7 @@ namespace GEDSys_Presentation.Controllers
                 try
                 {
                     // Sanitização
-                    vm.MENS_TX_TEXTO = CrossCutting.UtilitariosGeral.CleanStringTexto(vm.MENS_TX_TEXTO);
+                    vm.MENS_TX_TEXTO = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(vm.MENS_TX_TEXTO);
 
                     // Executa a operação
                     PACIENTE_SOLICITACAO solic = (PACIENTE_SOLICITACAO)Session["Solicitacao"];
@@ -14053,18 +14053,27 @@ namespace GEDSys_Presentation.Controllers
                     Session["ListaSolicitacoes"] = null;
                     Session["SolicitacoesAlterada"] = 1;
 
+                    // Configura serilização
+                    JsonSerializerSettings settings = new JsonSerializerSettings
+                    {
+                        ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+                        NullValueHandling = NullValueHandling.Ignore
+                    };
+
                     // Monta Log
+                    DTO_Paciente_Solicitacao dto = MontarPacienteSolicitacaoDTOObj(solicitacao);
+                    String json = JsonConvert.SerializeObject(dto, settings);
                     LOG log = new LOG
                     {
                         LOG_DT_DATA = DateTime.Now,
                         ASSI_CD_ID = usuarioLogado.ASSI_CD_ID,
                         USUA_CD_ID = usuarioLogado.USUA_CD_ID,
-                        LOG_NM_OPERACAO = "epsPACI",
+                        LOG_NM_OPERACAO = "Paciente - Solicitação - Envio",
                         LOG_IN_ATIVO = 1,
-                        LOG_TX_REGISTRO = "Solicitação : " + solicitacao.PASO_GU_GUID,
+                        LOG_TX_REGISTRO = json,
                         LOG_IN_SISTEMA = 6
                     };
-                    Int32 volta2 = logApp.ValidateCreate(log);
+                    Int32 volta3 = logApp.ValidateCreate(log);
 
                     // Grava historico
                     PACIENTE_HISTORICO hist = new PACIENTE_HISTORICO();
@@ -14094,7 +14103,7 @@ namespace GEDSys_Presentation.Controllers
                     Session["NivelPaciente"] = 12;
 
                     // Mensagem do CRUD
-                    Session["MsgCRUD"] = "A solicitação de exame" + solicitacao.PASO_GU_GUID + " do(a) paciente " + pac.PACI_NM_NOME.ToUpper() + " foi enviado por e-mail com sucesso.";
+                    Session["MsgCRUD"] = "A solicitação de exame" + solicitacao.PASO_GU_GUID + " do(a) paciente " + pac.PACI_NM_NOME.ToUpper() + " foi enviada por e-mail com sucesso.";
                     Session["MensPaciente"] = 61;
 
                     // Retorno
@@ -14136,6 +14145,56 @@ namespace GEDSys_Presentation.Controllers
             {
                 return View(vm);
             }
+        }
+
+        public DTO_Paciente_Solicitacao MontarPacienteSolicitacaoDTOObj(PACIENTE_SOLICITACAO l)
+        {
+            using (var context = new CRMSysDBEntities())
+            {
+                var mediDTO = new DTO_Paciente_Solicitacao()
+                {
+                    ASSI_CD_ID = l.ASSI_CD_ID,
+                    PASO_AQ_ARQUIVO_HTML = l.PASO_AQ_ARQUIVO_HTML,
+                    PASO_AQ_ARQUIVO_PDF = l.PASO_AQ_ARQUIVO_PDF,
+                    PASO_AQ_ARQUIVO_QRCODE = l.PASO_AQ_ARQUIVO_QRCODE,
+                    PASO_CD_ID = l.PASO_CD_ID,
+                    PASO_DS_INDICACAO_CLINICA = l.PASO_DS_INDICACAO_CLINICA,
+                    PASO_DT_DENUNCIA = l.PASO_DT_DENUNCIA,
+                    PASO_DT_DUMMY = l.PASO_DT_DUMMY,
+                    PASO_DT_EMISSAO = l.PASO_DT_EMISSAO,
+                    PASO_DT_EMISSAO_COMPLETA = l.PASO_DT_EMISSAO_COMPLETA,
+                    PASO_DT_ENVIO = l.PASO_DT_ENVIO,
+                    PASO_DT_GERACAO_PDF = l.PASO_DT_GERACAO_PDF,
+                    PASO_DT_VALIDACAO = l.PASO_DT_VALIDACAO,
+                    PASO_GU_GUID = l.PASO_GU_GUID,
+                    PASO_GU_GUID_ENVIO = l.PASO_GU_GUID_ENVIO,
+                    PASO_HT_TEXT_HTML = l.PASO_HT_TEXT_HTML,
+                    PASO_IN_ASSINADO_DIGITAL = l.PASO_IN_ASSINADO_DIGITAL,
+                    PASO_IN_ATIVO = l.PASO_IN_ATIVO,
+                    PASO_IN_DATA = l.PASO_IN_DATA,
+                    PASO_IN_DENUNCIA = l.PASO_IN_DENUNCIA,
+                    PASO_IN_ENVIADO = l.PASO_IN_ENVIADO,
+                    PASO_IN_PDF = l.PASO_IN_PDF,
+                    PASO_IN_QUANTIDADE = l.PASO_IN_QUANTIDADE,
+                    PASO_IN_VALIDACAO = l.PASO_IN_VALIDACAO,
+                    PASO_IP_DENUNCIA = l.PASO_IP_DENUNCIA,
+                    PASO_IP_VALIDACAO = l.PASO_IP_VALIDACAO,
+                    PASO_NM_TITULO = l.PASO_NM_TITULO,
+                    PASO_NR_DENUNCIA = l.PASO_NR_DENUNCIA,
+                    PASO_NR_ENVIOS = l.PASO_NR_ENVIOS,
+                    PASO_NR_VALIDACAO = l.PASO_NR_VALIDACAO,
+                    PASO_TK_TOKEN = l.PASO_TK_TOKEN,
+                    PASO_TX_DENUNCIA = l.PASO_TX_DENUNCIA,
+                    PACI_CD_ID = l.PACI_CD_ID,
+                    PACO_CD_ID = l.PACO_CD_ID,
+                    PASO_TX_TEXTO = l.PASO_TX_TEXTO,
+                    SOLI_CD_ID = l.USUA_CD_ID,
+                    TIEX_CD_ID = l.TIEX_CD_ID,
+                    USUA_CD_ID = l.USUA_CD_ID,
+                };
+                return mediDTO;
+            }
+
         }
 
         [ValidateInput(false)]
@@ -14236,7 +14295,7 @@ namespace GEDSys_Presentation.Controllers
             // Grava envio
             if (status == "Succeeded")
             {
-                vm.MENS_NM_NOME = "Paciente - " + paciente.PACI_NM_NOME + " - Solicitação de Exame";
+                vm.MENS_NM_NOME = "Paciente: " + paciente.PACI_NM_NOME + " - Solicitação de Exame";
                 vm.MENS_NM_CAMPANHA = paciente.PACI_NM_EMAIL;
                 vm.FORN_CD_ID = null;
                 vm.CLIE_CD_ID = null;
@@ -14262,17 +14321,29 @@ namespace GEDSys_Presentation.Controllers
             try
             {
                 // Recupera contatos
-#pragma warning disable CS0219 // A variável é atribuída, mas seu valor nunca é usado
                 String erro = null;
-#pragma warning restore CS0219 // A variável é atribuída, mas seu valor nunca é usado
                 Int32 idAss = (Int32)Session["IdAssinante"];
                 PACIENTE cont = baseApp.GetItemById(vm.PACI_CD_ID.Value);
 
                 // Prepara cabeçalho
                 String cab = "Prezado Sr(a). " + vm.NOME;
 
-                // Prepara rodape
-                String rod = usuario.USUA_NM_PREFIXO + " " + usuario.USUA_NM_NOME + " " + usuario.USUA_NM_SUFIXO;
+                // Prepara assinatura
+                String classe = String.Empty;
+                if (usuario.TIPO_CARTEIRA_CLASSE != null)
+                {
+                    classe = usuario.TIPO_CARTEIRA_CLASSE.TICL_NM_NOME + ": " + usuario.USUA_NR_CLASSE;
+                }
+                String rod = usuario.USUA_NM_NOME + ". ";
+                if (usuario.ESPECIALIDADE != null)
+                {
+                    rod += usuario.ESPECIALIDADE.ESPE_NM_NOME + "<br />";
+                }
+                else
+                {
+                    rod += usuario.USUA_NM_ESPECIALIDADE + "<br />";
+                }
+                rod += classe + ". CPF: " + usuario.USUA_NR_CPF;
 
                 // Carrega configuração
                 CONFIGURACAO conf = CarregaConfiguracaoGeral();
@@ -14314,10 +14385,6 @@ namespace GEDSys_Presentation.Controllers
 
                 // processa envio
                 String listaDest = "55" + Regex.Replace(vm.MODELO, "[^a-zA-Z0-9_.]+", "", RegexOptions.Compiled).ToString();
-                //var httpWebRequest = (HttpWebRequest)WebRequest.Create("https://api-v2.smsfire.com.br/sms/send/bulk");
-                //httpWebRequest.Headers["Authorization"] = auth;
-                //httpWebRequest.ContentType = "application/json";
-                //httpWebRequest.Method = "POST";
                 String customId = Cryptography.GenerateRandomPassword(8);
                 String data = String.Empty;
                 String json = String.Empty;
@@ -14375,7 +14442,7 @@ namespace GEDSys_Presentation.Controllers
                 env.MEEN_IN_ATIVO = 1;
                 env.MEEN_IN_ESCOPO = 2;
                 env.MEEN_SG_STATUS = "Succeeded";
-                env.MEEN_NM_ORIGEM = "Contato de paciente : " + cont.PACI_NM_NOME;
+                env.MEEN_NM_ORIGEM = "Paciente : " + cont.PACI_NM_NOME;
                 env.MEEN_GU_ID_MENSAGEM = Guid.NewGuid().ToString();
                 env.MEEN_ID_IDENTIFICADOR = Xid.NewXid().ToString();
                 env.MEEN_IN_SISTEMA = 6;

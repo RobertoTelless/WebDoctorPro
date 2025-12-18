@@ -7922,7 +7922,6 @@ namespace GEDSys_Presentation.Controllers
                     listaPac = listaPac.Where(p => p.USUA_CD_ID == usuario.USUA_CD_ID).ToList();
                 }
 
-                //ViewBag.Paciente = new SelectList(listaPac.Where(p => p.PACI_IN_COMPLETADO == 1).ToList(), "PACI__CD_ID", "PACI_NM_NOME");
                 ViewBag.Paciente = new SelectList(listaPac, "PACI__CD_ID", "PACI_NM_NOME");
                 ViewBag.TipoAtestado = new SelectList(CarregaTipoAtestado(), "TIAT_CD_ID", "TIAT_NM_NOME");
                 var trata = new List<SelectListItem>();
@@ -8025,9 +8024,9 @@ namespace GEDSys_Presentation.Controllers
                 try
                 {
                     // Sanitização
-                    vm.PAAT_NM_TITULO = CrossCutting.UtilitariosGeral.CleanStringDocto(vm.PAAT_NM_TITULO);
-                    vm.PAAT_NM_DESTINO = CrossCutting.UtilitariosGeral.CleanStringGeral(vm.PAAT_NM_DESTINO);
-                    vm.PAAT_TX_TEXTO = CrossCutting.UtilitariosGeral.CleanStringDocto(vm.PAAT_TX_TEXTO);
+                    vm.PAAT_NM_TITULO = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(vm.PAAT_NM_TITULO);
+                    vm.PAAT_NM_DESTINO = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(vm.PAAT_NM_DESTINO);
+                    vm.PAAT_TX_TEXTO = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(vm.PAAT_TX_TEXTO);
                     vm.PAAT__IN_ENVIADO = 0;
 
                     // Critica
@@ -8068,16 +8067,22 @@ namespace GEDSys_Presentation.Controllers
                     atestado.PAAT_AQ_ARQUIVO_QRCODE = "~" + caminhoQR + fileNameQR;
                     Int32 voltaP = baseApp.ValidateEditAtestado(atestado);
 
+                    // Configura serilização
+                    JsonSerializerSettings settings = new JsonSerializerSettings
+                    {
+                        ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+                        NullValueHandling = NullValueHandling.Ignore
+                    };
+
                     // Monta Log
-                    PACIENTE_ATESTADO atestado1 = baseApp.GetAtestadoById(atestado.PAAT_CD_ID);
-                    String json = JsonConvert.SerializeObject(vm);
-                    atestado1.TIPO_ATESTADO = null;
+                    DTO_Paciente_Atestado dto = MontarPacienteAtestadoDTOObj(item);
+                    String json = JsonConvert.SerializeObject(dto, settings);
                     LOG log = new LOG
                     {
                         LOG_DT_DATA = DateTime.Now,
                         ASSI_CD_ID = usuarioLogado.ASSI_CD_ID,
                         USUA_CD_ID = usuarioLogado.USUA_CD_ID,
-                        LOG_NM_OPERACAO = "iatPACI",
+                        LOG_NM_OPERACAO = "Paciente - Atestado - Criação",
                         LOG_IN_ATIVO = 1,
                         LOG_TX_REGISTRO = json,
                         LOG_IN_SISTEMA = 6
@@ -8086,19 +8091,19 @@ namespace GEDSys_Presentation.Controllers
 
                     // Grava historico
                     PACIENTE_HISTORICO hist = new PACIENTE_HISTORICO();
-                    PACIENTE pac1 = baseApp.GetItemById(item.PACI_CD_ID.Value);
+                    PACIENTE pac1 = baseApp.GetItemById(vm.PACI_CD_ID.Value);
                     hist.ASSI_CD_ID = usuarioLogado.ASSI_CD_ID;
                     hist.USUA_CD_ID = usuarioLogado.USUA_CD_ID;
                     hist.PACI_CD_ID = item.PACI_CD_ID;
                     hist.PAHI_DT_DATA = DateTime.Now;
                     hist.PAHI_IN_TIPO = 5;
                     hist.PAHI_IN_CHAVE = item.PAAT_CD_ID;
-                    hist.PAHI_NM_OPERACAO = "Paciente - Inclusão de Atestado";
-                    hist.PAHI_DS_DESCRICAO = "Paciente " + pac1.PACI_NM_NOME + " - Atestato incluído " + item.PAAT_GU_GUID;
+                    hist.PAHI_NM_OPERACAO = "Paciente - Criação de Atestado";
+                    hist.PAHI_DS_DESCRICAO = "Paciente " + pac1.PACI_NM_NOME + " - Atestato criado " + item.PAAT_GU_GUID;
                     Int32 voltaHist = baseApp.ValidateCreateHistorico(hist);
 
                     // Mensagem do CRUD
-                    Session["MsgCRUD"] = "O atestado " + item.PAAT_GU_GUID + " do(a) paciente " + pac1.PACI_NM_NOME.ToUpper() + " foi incluído com sucesso.";
+                    Session["MsgCRUD"] = "O atestado " + item.PAAT_GU_GUID + " do(a) paciente " + pac1.PACI_NM_NOME.ToUpper() + " foi criado com sucesso.";
                     Session["MensPaciente"] = 61;
 
                     // Retorno
@@ -8227,9 +8232,9 @@ namespace GEDSys_Presentation.Controllers
                 try
                 {
                     // Sanitização
-                    vm.PAAT_NM_TITULO = CrossCutting.UtilitariosGeral.CleanStringDocto(vm.PAAT_NM_TITULO);
-                    vm.PAAT_NM_DESTINO = CrossCutting.UtilitariosGeral.CleanStringDocto(vm.PAAT_NM_DESTINO);
-                    vm.PAAT_TX_TEXTO = CrossCutting.UtilitariosGeral.CleanStringDocto(vm.PAAT_TX_TEXTO);
+                    vm.PAAT_NM_TITULO = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(vm.PAAT_NM_TITULO);
+                    vm.PAAT_NM_DESTINO = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(vm.PAAT_NM_DESTINO);
+                    vm.PAAT_TX_TEXTO = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(vm.PAAT_TX_TEXTO);
                     vm.PAAT__IN_ENVIADO = 0;
 
                     // Critica
@@ -8251,18 +8256,27 @@ namespace GEDSys_Presentation.Controllers
                     Session["ListaAtestados"] = null;
                     Session["ListaAtestado"] = null;
 
+                    // Configura serilização
+                    JsonSerializerSettings settings = new JsonSerializerSettings
+                    {
+                        ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+                        NullValueHandling = NullValueHandling.Ignore
+                    };
 
                     // Monta Log
-                    PACIENTE_ATESTADO atestado1 = baseApp.GetAtestadoById(item.PAAT_CD_ID);
-                    String json = JsonConvert.SerializeObject(vm);
+                    DTO_Paciente_Atestado dto = MontarPacienteAtestadoDTOObj(item);
+                    String json = JsonConvert.SerializeObject(dto, settings);
+                    DTO_Paciente_Atestado dtoAntes = MontarPacienteAtestadoDTOObj((PACIENTE_ATESTADO)Session["Atestado"]);
+                    String jsonAntes = JsonConvert.SerializeObject(dtoAntes, settings);
                     LOG log = new LOG
                     {
                         LOG_DT_DATA = DateTime.Now,
                         ASSI_CD_ID = usuarioLogado.ASSI_CD_ID,
                         USUA_CD_ID = usuarioLogado.USUA_CD_ID,
-                        LOG_NM_OPERACAO = "eatPACI",
+                        LOG_NM_OPERACAO = "Paciente - Atestado - Alteração",
                         LOG_IN_ATIVO = 1,
                         LOG_TX_REGISTRO = json,
+                        LOG_TX_REGISTRO_ANTES = jsonAntes,
                         LOG_IN_SISTEMA = 6
                     };
                     Int32 volta1 = logApp.ValidateCreate(log);
@@ -8276,8 +8290,8 @@ namespace GEDSys_Presentation.Controllers
                     hist.PAHI_DT_DATA = DateTime.Now;
                     hist.PAHI_IN_TIPO = 5;
                     hist.PAHI_IN_CHAVE = item.PAAT_CD_ID;
-                    hist.PAHI_NM_OPERACAO = "Paciente - Edição de Atestado";
-                    hist.PAHI_DS_DESCRICAO = "Paciente " + pac.PACI_NM_NOME + " - Atestato editado " + item.PAAT_GU_GUID;
+                    hist.PAHI_NM_OPERACAO = "Paciente - Alteração de Atestado";
+                    hist.PAHI_DS_DESCRICAO = "Paciente " + pac.PACI_NM_NOME + " - Atestado alterado " + item.PAAT_GU_GUID;
                     Int32 voltaHist = baseApp.ValidateCreateHistorico(hist);
 
                     // Mensagem do CRUD
@@ -8363,17 +8377,24 @@ namespace GEDSys_Presentation.Controllers
                 Session["ListaAtestado"] = null;
                 Session["AtestadosAlterada"] = 1;
 
+                // Configura serilização
+                JsonSerializerSettings settings = new JsonSerializerSettings
+                {
+                    ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+                    NullValueHandling = NullValueHandling.Ignore
+                };
+
                 // Monta Log
-                PACIENTE cli = baseApp.GetItemById(item.PACI_CD_ID.Value);
+                DTO_Paciente_Atestado dto = MontarPacienteAtestadoDTOObj(item);
+                String json = JsonConvert.SerializeObject(dto, settings);
                 LOG log = new LOG
                 {
                     LOG_DT_DATA = DateTime.Now,
                     ASSI_CD_ID = usuarioLogado.ASSI_CD_ID,
                     USUA_CD_ID = usuarioLogado.USUA_CD_ID,
-                    LOG_NM_OPERACAO = "xatPACI",
+                    LOG_NM_OPERACAO = "Paciente - Atestado - Exclusão",
                     LOG_IN_ATIVO = 1,
-                    LOG_TX_REGISTRO = "Paciente: " + cli.PACI_NM_NOME + " | Data: " + item.PAAT_DT_DATA + " | Atestado: " + item.PAAT_NM_TITULO,
-                    //LOG_TX_REGISTRO = json,
+                    LOG_TX_REGISTRO = json,
                     LOG_IN_SISTEMA = 6
                 };
                 Int32 volta1 = logApp.ValidateCreate(log);
@@ -8653,9 +8674,9 @@ namespace GEDSys_Presentation.Controllers
                 try
                 {
                     // Sanitização
-                    vm.PASO_NM_TITULO = CrossCutting.UtilitariosGeral.CleanStringDocto(vm.PASO_NM_TITULO);
-                    vm.PASO_TX_TEXTO = CrossCutting.UtilitariosGeral.CleanStringDocto(vm.PASO_TX_TEXTO);
-                    vm.PASO_DS_INDICACAO_CLINICA = CrossCutting.UtilitariosGeral.CleanStringDocto(vm.PASO_DS_INDICACAO_CLINICA);
+                    vm.PASO_NM_TITULO = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(vm.PASO_NM_TITULO);
+                    vm.PASO_TX_TEXTO = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(vm.PASO_TX_TEXTO);
+                    vm.PASO_DS_INDICACAO_CLINICA = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(vm.PASO_DS_INDICACAO_CLINICA);
 
                     // Critica
                     if (vm.PACI_CD_ID == 0 || vm.PACI_CD_ID == null)
@@ -8699,14 +8720,22 @@ namespace GEDSys_Presentation.Controllers
                     solicitacao.PASO_AQ_ARQUIVO_QRCODE = "~" + caminhoQR + fileNameQR;
                     Int32 voltaP = baseApp.ValidateEditSolicitacao(solicitacao);
 
+                    // Configura serilização
+                    JsonSerializerSettings settings = new JsonSerializerSettings
+                    {
+                        ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+                        NullValueHandling = NullValueHandling.Ignore
+                    };
+
                     // Monta Log
-                    String json = JsonConvert.SerializeObject(vm);
+                    DTO_Paciente_Solicitacao dto = MontarPacienteSolicitacaoDTOObj(item);
+                    String json = JsonConvert.SerializeObject(dto, settings);
                     LOG log = new LOG
                     {
                         LOG_DT_DATA = DateTime.Now,
                         ASSI_CD_ID = usuarioLogado.ASSI_CD_ID,
                         USUA_CD_ID = usuarioLogado.USUA_CD_ID,
-                        LOG_NM_OPERACAO = "isoPACI",
+                        LOG_NM_OPERACAO = "Paciente - Solicitação - Criação",
                         LOG_IN_ATIVO = 1,
                         LOG_TX_REGISTRO = json,
                         LOG_IN_SISTEMA = 6
@@ -8722,8 +8751,8 @@ namespace GEDSys_Presentation.Controllers
                     hist.PAHI_DT_DATA = DateTime.Now;
                     hist.PAHI_IN_TIPO = 6;
                     hist.PAHI_IN_CHAVE = item.PASO_CD_ID;
-                    hist.PAHI_NM_OPERACAO = "Paciente - Inclusão de Solicitação";
-                    hist.PAHI_DS_DESCRICAO = "Paciente " + pac.PACI_NM_NOME + " - Solicitação incluída" + item.PASO_GU_GUID;
+                    hist.PAHI_NM_OPERACAO = "Paciente - Criação de Solicitação";
+                    hist.PAHI_DS_DESCRICAO = "Paciente " + pac.PACI_NM_NOME + " - Solicitação criada" + item.PASO_GU_GUID;
                     Int32 voltaHist = baseApp.ValidateCreateHistorico(hist);
 
                     // Cadastra modelo de solicitação
@@ -8741,7 +8770,7 @@ namespace GEDSys_Presentation.Controllers
                     }
 
                     // Mensagem do CRUD
-                    Session["MsgCRUD"] = "A solicitação de exame " + item.PASO_GU_GUID + " do(a) paciente " + pac.PACI_NM_NOME.ToUpper() + " foi gerada com sucesso.";
+                    Session["MsgCRUD"] = "A solicitação de exame " + item.PASO_GU_GUID + " do(a) paciente " + pac.PACI_NM_NOME.ToUpper() + " foi criada com sucesso.";
                     Session["MensPaciente"] = 61;
 
                     // Retorno
@@ -9092,9 +9121,9 @@ namespace GEDSys_Presentation.Controllers
                 try
                 {
                     // Sanitização
-                    vm.PASO_NM_TITULO = CrossCutting.UtilitariosGeral.CleanStringDocto(vm.PASO_NM_TITULO);
-                    vm.PASO_TX_TEXTO = CrossCutting.UtilitariosGeral.CleanStringDocto(vm.PASO_TX_TEXTO);
-                    vm.PASO_DS_INDICACAO_CLINICA = CrossCutting.UtilitariosGeral.CleanStringDocto(vm.PASO_DS_INDICACAO_CLINICA);
+                    vm.PASO_NM_TITULO = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(vm.PASO_NM_TITULO);
+                    vm.PASO_TX_TEXTO = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(vm.PASO_TX_TEXTO);
+                    vm.PASO_DS_INDICACAO_CLINICA = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(vm.PASO_DS_INDICACAO_CLINICA);
 
                     // Critica
                     if (vm.PASO_IN_DATA == null)
@@ -9115,17 +9144,27 @@ namespace GEDSys_Presentation.Controllers
                     Session["ListaSolicitacoes"] = null;
                     Session["ListaSolicitacao"] = null;
 
+                    // Configura serilização
+                    JsonSerializerSettings settings = new JsonSerializerSettings
+                    {
+                        ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+                        NullValueHandling = NullValueHandling.Ignore
+                    };
+
                     // Monta Log
-                    PACIENTE_SOLICITACAO solicitacao1 = baseApp.GetSolicitacaoById(item.PASO_CD_ID);
-                    String json = JsonConvert.SerializeObject(vm);
+                    DTO_Paciente_Solicitacao dto = MontarPacienteSolicitacaoDTOObj(item);
+                    String json = JsonConvert.SerializeObject(dto, settings);
+                    DTO_Paciente_Solicitacao dtoAntes = MontarPacienteSolicitacaoDTOObj((PACIENTE_SOLICITACAO)Session["Solicitacao"]);
+                    String jsonAntes = JsonConvert.SerializeObject(dtoAntes, settings);
                     LOG log = new LOG
                     {
                         LOG_DT_DATA = DateTime.Now,
                         ASSI_CD_ID = usuarioLogado.ASSI_CD_ID,
                         USUA_CD_ID = usuarioLogado.USUA_CD_ID,
-                        LOG_NM_OPERACAO = "esoPACI",
+                        LOG_NM_OPERACAO = "Paciente - Solicitação - Alteração",
                         LOG_IN_ATIVO = 1,
                         LOG_TX_REGISTRO = json,
+                        LOG_TX_REGISTRO_ANTES = jsonAntes,
                         LOG_IN_SISTEMA = 6
                     };
                     Int32 volta1 = logApp.ValidateCreate(log);
@@ -9139,8 +9178,8 @@ namespace GEDSys_Presentation.Controllers
                     hist.PAHI_DT_DATA = DateTime.Now;
                     hist.PAHI_IN_TIPO = 6;
                     hist.PAHI_IN_CHAVE = item.PASO_CD_ID;
-                    hist.PAHI_NM_OPERACAO = "Paciente - Edição de Solicitação";
-                    hist.PAHI_DS_DESCRICAO = "Paciente " + pac.PACI_NM_NOME + " - Solicitação editada" + item.PASO_GU_GUID;
+                    hist.PAHI_NM_OPERACAO = "Paciente - Alteração de Solicitação";
+                    hist.PAHI_DS_DESCRICAO = "Paciente: " + pac.PACI_NM_NOME + " - Solicitação alterada: " + item.PASO_GU_GUID;
                     Int32 voltaHist = baseApp.ValidateCreateHistorico(hist);
 
                     // Mensagem do CRUD
@@ -9225,16 +9264,24 @@ namespace GEDSys_Presentation.Controllers
                 Session["ListaSolicitacao"] = null;
                 Session["SolicitacoesAlterada"] = 1;
 
+                // Configura serilização
+                JsonSerializerSettings settings = new JsonSerializerSettings
+                {
+                    ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+                    NullValueHandling = NullValueHandling.Ignore
+                };
+
                 // Monta Log
-                PACIENTE cli = baseApp.GetItemById(item.PACI_CD_ID.Value);
+                DTO_Paciente_Solicitacao dto = MontarPacienteSolicitacaoDTOObj(item);
+                String json = JsonConvert.SerializeObject(dto, settings);
                 LOG log = new LOG
                 {
                     LOG_DT_DATA = DateTime.Now,
                     ASSI_CD_ID = usuarioLogado.ASSI_CD_ID,
                     USUA_CD_ID = usuarioLogado.USUA_CD_ID,
-                    LOG_NM_OPERACAO = "xsoPACI",
+                    LOG_NM_OPERACAO = "Paciente - Solicitação - Exclusão",
                     LOG_IN_ATIVO = 1,
-                    LOG_TX_REGISTRO = "Paciente: " + cli.PACI_NM_NOME + " | Data: " + item.PASO_DT_EMISSAO + " | Solicitação: " + item.PASO_NM_TITULO,
+                    LOG_TX_REGISTRO = json,
                     LOG_IN_SISTEMA = 6
                 };
                 Int32 volta1 = logApp.ValidateCreate(log);
@@ -9249,7 +9296,7 @@ namespace GEDSys_Presentation.Controllers
                 hist.PAHI_IN_TIPO = 6;
                 hist.PAHI_IN_CHAVE = item.PASO_CD_ID;
                 hist.PAHI_NM_OPERACAO = "Paciente - Exclusão de Solicitação";
-                hist.PAHI_DS_DESCRICAO = "Paciente " + pac.PACI_NM_NOME + " - Solicitação excluída" + item.PASO_GU_GUID;
+                hist.PAHI_DS_DESCRICAO = "Paciente: " + pac.PACI_NM_NOME + " - Solicitação excluída: " + item.PASO_GU_GUID;
                 Int32 voltaHist = baseApp.ValidateCreateHistorico(hist);
 
                 // Mensagem do CRUD
@@ -12205,7 +12252,7 @@ namespace GEDSys_Presentation.Controllers
                 try
                 {
                     // Sanitização
-                    vm.MENS_TX_TEXTO = CrossCutting.UtilitariosGeral.CleanStringTexto(vm.MENS_TX_TEXTO);
+                    vm.MENS_TX_TEXTO = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(vm.MENS_TX_TEXTO);
 
                     // Executa a operação
                     PACIENTE_ATESTADO atestado = (PACIENTE_ATESTADO)Session["Atestado"];
@@ -12231,18 +12278,27 @@ namespace GEDSys_Presentation.Controllers
                     solicitacao.PAAT_GU_GUID_ENVIO = idEnvio;
                     Int32 volta1 = baseApp.ValidateEditAtestado(solicitacao);
 
+                    // Configura serilização
+                    JsonSerializerSettings settings = new JsonSerializerSettings
+                    {
+                        ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+                        NullValueHandling = NullValueHandling.Ignore
+                    };
+
                     // Monta Log
+                    DTO_Paciente_Atestado dto = MontarPacienteAtestadoDTOObj(solicitacao);
+                    String json = JsonConvert.SerializeObject(dto, settings);
                     LOG log = new LOG
                     {
                         LOG_DT_DATA = DateTime.Now,
                         ASSI_CD_ID = usuarioLogado.ASSI_CD_ID,
                         USUA_CD_ID = usuarioLogado.USUA_CD_ID,
-                        LOG_NM_OPERACAO = "epaPACI",
+                        LOG_NM_OPERACAO = "Paciente - Atestado - Envio",
                         LOG_IN_ATIVO = 1,
-                        LOG_TX_REGISTRO = "Atestado : " + atestado.PAAT_GU_GUID,
+                        LOG_TX_REGISTRO = json,
                         LOG_IN_SISTEMA = 6
                     };
-                    Int32 volta2 = logApp.ValidateCreate(log);
+                    Int32 volta3 = logApp.ValidateCreate(log);
 
                     // Grava historico
                     PACIENTE_HISTORICO hist = new PACIENTE_HISTORICO();
@@ -12416,14 +12472,14 @@ namespace GEDSys_Presentation.Controllers
             // Grava envio
             if (status == "Succeeded")
             {
-                vm.MENS_NM_NOME = "Paciente - " + paciente.PACI_NM_NOME + " - Prescrição";
+                vm.MENS_NM_NOME = "Paciente: " + paciente.PACI_NM_NOME + " - Atestado";
                 vm.MENS_NM_CAMPANHA = paciente.PACI_NM_EMAIL;
                 vm.FORN_CD_ID = null;
                 vm.CLIE_CD_ID = null;
                 vm.PACI_CD_ID = paciente.PACI__CD_ID;
                 vm.MENS_IN_USUARIO = cont.USUA_CD_ID;
                 EnvioEMailGeralBase envio = new EnvioEMailGeralBase(usuApp, confApp, meApp);
-                Int32 voltaX = envio.GravarMensagemEnviada(vm, usuario, emailBody, status, iD, erro, "Paciente - Envio Atestado");
+                Int32 voltaX = envio.GravarMensagemEnviada(vm, usuario, emailBody, status, iD, erro, "Paciente - Envio de Atestado");
                 Session["MensPaciente"] = 990;
                 Session["IdMail"] = iD;
             }
@@ -12995,7 +13051,7 @@ namespace GEDSys_Presentation.Controllers
                     PdfPTable headerTable = null;
                     PdfPCell cell = new PdfPCell();
                     Image image = null;
-                    if (conf.CONF_IN_EXIBE_LOGO == 1)
+                    if (conf.CONF_IN_LOGO_EMPRESA == 1)
                     {
                         headerTable = new PdfPTable(new float[] { 20f, 700f });
                         headerTable.WidthPercentage = 100;
@@ -20165,9 +20221,9 @@ namespace GEDSys_Presentation.Controllers
                 }
 
                 // Sanitização
-                item.PASO_NM_TITULO = CrossCutting.UtilitariosGeral.CleanStringGeral(item.PASO_NM_TITULO);
-                item.PASO_TX_TEXTO = CrossCutting.UtilitariosGeral.CleanStringGeral(item.PASO_TX_TEXTO);
-                item.PASO_AQ_ARQUIVO_HTML = CrossCutting.UtilitariosGeral.CleanStringGeral(item.PASO_AQ_ARQUIVO_HTML);
+                item.PASO_NM_TITULO = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(item.PASO_NM_TITULO);
+                item.PASO_TX_TEXTO = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(item.PASO_TX_TEXTO);
+                item.PASO_AQ_ARQUIVO_HTML = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(item.PASO_AQ_ARQUIVO_HTML);
 
                 // Executa a operação
                 CONFIGURACAO conf = CarregaConfiguracaoGeral();
@@ -20264,33 +20320,49 @@ namespace GEDSys_Presentation.Controllers
                 headerTable.SpacingBefore = 1f;
                 headerTable.SpacingAfter = 1f;
 
-                PdfPCell cell = new PdfPCell();
-                cell.Border = 0;
-                cell.Colspan = 1;
-                Image image = null;
                 if (conf.CONF_IN_LOGO_EMPRESA == 1)
                 {
+                    PdfPCell cell1 = new PdfPCell();
+                    cell1.Border = 0;
+                    cell1.Colspan = 1;
+                    Image image = null;
                     EMPRESA empresa = empApp.GetItemByAssinante(idAss);
                     image = Image.GetInstance(Server.MapPath(empresa.EMPR_AQ_LOGO));
+                    image.ScaleAbsolute(50, 50);
+                    cell1.AddElement(image);
+                    cell1.Border = PdfPCell.BOTTOM_BORDER;
+                    headerTable.AddCell(cell1);
+
+                    cell1 = new PdfPCell(new Paragraph("Solicitações de Exames", meuFont2))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_CENTER
+                    };
+                    cell1.Border = 0;
+                    cell1.Colspan = 1;
+                    cell1.Border = PdfPCell.BOTTOM_BORDER;
+                    headerTable.AddCell(cell1);
                 }
                 else
                 {
-                    image = Image.GetInstance(Server.MapPath("~/Images/Prontuario_Icone_1.png"));
-                }
-                image.ScaleAbsolute(50, 50);
-                cell.AddElement(image);
-                cell.Border = PdfPCell.BOTTOM_BORDER;
-                headerTable.AddCell(cell);
+                    PdfPCell cell2 = new PdfPCell(new Paragraph("Solicitações de Exames", meuFont2))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_CENTER
+                    };
+                    cell2.Border = 0;
+                    cell2.Colspan = 2;
+                    headerTable.AddCell(cell2);
 
-                cell = new PdfPCell(new Paragraph("Solicitações de Exames", meuFont2))
-                {
-                    VerticalAlignment = Element.ALIGN_MIDDLE,
-                    HorizontalAlignment = Element.ALIGN_CENTER
-                };
-                cell.Border = 0;
-                cell.Colspan = 1;
-                cell.Border = PdfPCell.BOTTOM_BORDER;
-                headerTable.AddCell(cell);
+                    cell2 = new PdfPCell(new Paragraph(" ", meuFont))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    cell2.Colspan = 2;
+                    cell2.Border = PdfPCell.BOTTOM_BORDER;
+                    headerTable.AddCell(cell2);
+                }
 
                 // Rodape
                 PdfPTable footerTable = new PdfPTable(1);
@@ -20299,7 +20371,7 @@ namespace GEDSys_Presentation.Controllers
                 footerTable.SpacingBefore = 1f;
                 footerTable.SpacingAfter = 1f;
 
-                cell = new PdfPCell();
+                PdfPCell cell = new PdfPCell();
                 cell.Border = PdfPCell.TOP_BORDER;
                 cell = new PdfPCell(new Paragraph("Gerado por WebDoctor 1.0 em " + DateTime.Today.Date.ToLongDateString(), meuFont));
                 footerTable.AddCell(cell);
@@ -20792,9 +20864,9 @@ namespace GEDSys_Presentation.Controllers
                 }
 
                 // Sanitização
-                item.PAAT_NM_TITULO = CrossCutting.UtilitariosGeral.CleanStringGeral(item.PAAT_NM_TITULO);
-                item.PAAT_TX_TEXTO = CrossCutting.UtilitariosGeral.CleanStringGeral(item.PAAT_TX_TEXTO);
-                item.PAAT_AQ_ARQUIVO_HTML = CrossCutting.UtilitariosGeral.CleanStringGeral(item.PAAT_AQ_ARQUIVO_HTML);
+                item.PAAT_NM_TITULO = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(item.PAAT_NM_TITULO);
+                item.PAAT_TX_TEXTO = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(item.PAAT_TX_TEXTO);
+                item.PAAT_AQ_ARQUIVO_HTML = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(item.PAAT_AQ_ARQUIVO_HTML);
 
                 // Executa a operação
                 CONFIGURACAO conf = CarregaConfiguracaoGeral();
@@ -20891,33 +20963,49 @@ namespace GEDSys_Presentation.Controllers
                 headerTable.SpacingBefore = 1f;
                 headerTable.SpacingAfter = 1f;
 
-                PdfPCell cell = new PdfPCell();
-                cell.Border = 0;
-                cell.Colspan = 1;
-                Image image = null;
                 if (conf.CONF_IN_LOGO_EMPRESA == 1)
                 {
+                    PdfPCell cell1 = new PdfPCell();
+                    cell1.Border = 0;
+                    cell1.Colspan = 1;
+                    Image image = null;
                     EMPRESA empresa = empApp.GetItemByAssinante(idAss);
                     image = Image.GetInstance(Server.MapPath(empresa.EMPR_AQ_LOGO));
+                    image.ScaleAbsolute(50, 50);
+                    cell1.AddElement(image);
+                    cell1.Border = PdfPCell.BOTTOM_BORDER;
+                    headerTable.AddCell(cell1);
+
+                    cell1 = new PdfPCell(new Paragraph("Atestados", meuFont2))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_CENTER
+                    };
+                    cell1.Border = 0;
+                    cell1.Colspan = 1;
+                    cell1.Border = PdfPCell.BOTTOM_BORDER;
+                    headerTable.AddCell(cell1);
                 }
                 else
                 {
-                    image = Image.GetInstance(Server.MapPath("~/Images/Prontuario_Icone_1.png"));
-                }
-                image.ScaleAbsolute(50, 50);
-                cell.AddElement(image);
-                cell.Border = PdfPCell.BOTTOM_BORDER;
-                headerTable.AddCell(cell);
+                    PdfPCell cell2 = new PdfPCell(new Paragraph("Atestados", meuFont2))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_CENTER
+                    };
+                    cell2.Border = 0;
+                    cell2.Colspan = 2;
+                    headerTable.AddCell(cell2);
 
-                cell = new PdfPCell(new Paragraph("Atestados", meuFont2))
-                {
-                    VerticalAlignment = Element.ALIGN_MIDDLE,
-                    HorizontalAlignment = Element.ALIGN_CENTER
-                };
-                cell.Border = 0;
-                cell.Colspan = 1;
-                cell.Border = PdfPCell.BOTTOM_BORDER;
-                headerTable.AddCell(cell);
+                    cell2 = new PdfPCell(new Paragraph(" ", meuFont))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    cell2.Colspan = 2;
+                    cell2.Border = PdfPCell.BOTTOM_BORDER;
+                    headerTable.AddCell(cell2);
+                }
 
                 // Rodape
                 PdfPTable footerTable = new PdfPTable(1);
@@ -20926,7 +21014,7 @@ namespace GEDSys_Presentation.Controllers
                 footerTable.SpacingBefore = 1f;
                 footerTable.SpacingAfter = 1f;
 
-                cell = new PdfPCell();
+                PdfPCell cell = new PdfPCell();
                 cell.Border = PdfPCell.TOP_BORDER;
                 cell = new PdfPCell(new Paragraph("Gerado por WebDoctor 1.0 em " + DateTime.Today.Date.ToLongDateString(), meuFont));
                 footerTable.AddCell(cell);
@@ -24473,7 +24561,7 @@ namespace GEDSys_Presentation.Controllers
                 PdfPTable headerTable = null;
                 PdfPCell cell = new PdfPCell();
                 Image image = null;
-                if (conf.CONF_IN_EXIBE_LOGO == 1)
+                if (conf.CONF_IN_LOGO_EMPRESA == 1)
                 {
                     headerTable = new PdfPTable(new float[] { 20f, 700f });
                     headerTable.WidthPercentage = 100;
@@ -24900,7 +24988,7 @@ namespace GEDSys_Presentation.Controllers
                 PdfPTable headerTable = null;
                 PdfPCell cell = new PdfPCell();
                 Image image = null;
-                if (conf.CONF_IN_EXIBE_LOGO == 1)
+                if (conf.CONF_IN_LOGO_EMPRESA == 1)
                 {
                     headerTable = new PdfPTable(new float[] { 20f, 700f });
                     headerTable.WidthPercentage = 100;
@@ -25371,7 +25459,7 @@ namespace GEDSys_Presentation.Controllers
                     PdfPTable headerTable = null;
                     PdfPCell cell = new PdfPCell();
                     Image image = null;
-                    if (conf.CONF_IN_EXIBE_LOGO == 1)
+                    if (conf.CONF_IN_LOGO_EMPRESA == 1)
                     {
                         headerTable = new PdfPTable(new float[] { 20f, 700f });
                         headerTable.WidthPercentage = 100;
@@ -25819,7 +25907,7 @@ namespace GEDSys_Presentation.Controllers
                 PdfPTable headerTable = null;
                 PdfPCell cell = new PdfPCell();
                 Image image = null;
-                if (conf.CONF_IN_EXIBE_LOGO == 1)
+                if (conf.CONF_IN_LOGO_EMPRESA == 1)
                 {
                     headerTable = new PdfPTable(new float[] { 20f, 700f });
                     headerTable.WidthPercentage = 100;
@@ -26303,7 +26391,7 @@ namespace GEDSys_Presentation.Controllers
                     PdfPTable headerTable = null;
                     PdfPCell cell = new PdfPCell();
                     Image image = null;
-                    if (conf.CONF_IN_EXIBE_LOGO == 1)
+                    if (conf.CONF_IN_LOGO_EMPRESA == 1)
                     {
                         headerTable = new PdfPTable(new float[] { 20f, 700f });
                         headerTable.WidthPercentage = 100;
@@ -36099,17 +36187,29 @@ namespace GEDSys_Presentation.Controllers
             try
             {
                 // Recupera contatos
-#pragma warning disable CS0219 // A variável é atribuída, mas seu valor nunca é usado
                 String erro = null;
-#pragma warning restore CS0219 // A variável é atribuída, mas seu valor nunca é usado
                 Int32 idAss = (Int32)Session["IdAssinante"];
                 PACIENTE cont = baseApp.GetItemById(vm.PACI_CD_ID.Value);
 
                 // Prepara cabeçalho
                 String cab = "Prezado Sr(a). " + vm.NOME;
 
-                // Prepara rodape
-                String rod = usuario.USUA_NM_PREFIXO + " " + usuario.USUA_NM_NOME + " " + usuario.USUA_NM_SUFIXO;
+                // Prepara assinatura
+                String classe = String.Empty;
+                if (usuario.TIPO_CARTEIRA_CLASSE != null)
+                {
+                    classe = usuario.TIPO_CARTEIRA_CLASSE.TICL_NM_NOME + ": " + usuario.USUA_NR_CLASSE;
+                }
+                String rod = usuario.USUA_NM_NOME + ". ";
+                if (usuario.ESPECIALIDADE != null)
+                {
+                    rod += usuario.ESPECIALIDADE.ESPE_NM_NOME + "<br />";
+                }
+                else
+                {
+                    rod += usuario.USUA_NM_ESPECIALIDADE + "<br />";
+                }
+                rod += classe + ". CPF: " + usuario.USUA_NR_CPF;
 
                 // Carrega configuração
                 CONFIGURACAO conf = CarregaConfiguracaoGeral();
@@ -36151,10 +36251,6 @@ namespace GEDSys_Presentation.Controllers
 
                 // processa envio
                 String listaDest = "55" + Regex.Replace(vm.MODELO, "[^a-zA-Z0-9_.]+", "", RegexOptions.Compiled).ToString();
-                //var httpWebRequest = (HttpWebRequest)WebRequest.Create("https://api-v2.smsfire.com.br/sms/send/bulk");
-                //httpWebRequest.Headers["Authorization"] = auth;
-                //httpWebRequest.ContentType = "application/json";
-                //httpWebRequest.Method = "POST";
                 String customId = Cryptography.GenerateRandomPassword(8);
                 String data = String.Empty;
                 String json = String.Empty;
@@ -36205,14 +36301,14 @@ namespace GEDSys_Presentation.Controllers
                 env.EMPR_CD_ID = usuario.EMPR_CD_ID;
                 env.MEEN_DT_DATA_ENVIO = DateTime.Now;
                 env.MEEN_NR_CELULAR_DESTINO = cont.PACI_NR_CELULAR;
-                env.MEEN_NM_TITULO = "Mensagem SMS para Paciente - Aviso de Envio";
+                env.MEEN_NM_TITULO = "Mensagem SMS para Paciente - Aviso de Envio de Atestado";
                 env.MEEN_TX_CORPO = frase;
                 env.MEEN_TX_CORPO_COMPLETO = texto;
                 env.MEEN_IN_ANEXOS = 0;
                 env.MEEN_IN_ATIVO = 1;
                 env.MEEN_IN_ESCOPO = 2;
                 env.MEEN_SG_STATUS = "Succeeded";
-                env.MEEN_NM_ORIGEM = "Contato de paciente : " + cont.PACI_NM_NOME;
+                env.MEEN_NM_ORIGEM = "Paciente: " + cont.PACI_NM_NOME;
                 env.MEEN_GU_ID_MENSAGEM = Guid.NewGuid().ToString();
                 env.MEEN_ID_IDENTIFICADOR = Xid.NewXid().ToString();
                 env.MEEN_IN_SISTEMA = 6;
@@ -36995,6 +37091,104 @@ namespace GEDSys_Presentation.Controllers
                     PACI_CD_ID = l.PACI_CD_ID,
                     PAAX_IN_TIPO = l.PAAX_IN_TIPO,
                     PAAX_NM_TITULO = l.PAAX_NM_TITULO,
+                };
+                return mediDTO;
+            }
+
+        }
+
+        public DTO_Paciente_Atestado MontarPacienteAtestadoDTOObj(PACIENTE_ATESTADO l)
+        {
+            using (var context = new CRMSysDBEntities())
+            {
+                var mediDTO = new DTO_Paciente_Atestado()
+                {
+                    ASSI_CD_ID = l.ASSI_CD_ID,
+                    PAAT_AQ_ARQUIVO_HTML = l.PAAT_AQ_ARQUIVO_HTML,
+                    PAAT_DT_DENUNCIA = l.PAAT_DT_DENUNCIA,
+                    PAAT_DT_DATA = l.PAAT_DT_DATA,
+                    PAAT_CD_ID = l.PAAT_CD_ID,
+                    PAAT_AQ_ARQUIVO_QRCODE = l.PAAT_AQ_ARQUIVO_QRCODE,
+                    PAAT_AQ_ARQUIVO_PDF = l.PAAT_AQ_ARQUIVO_PDF,
+                    PAAT_DT_DUMMY = l.PAAT_DT_DUMMY,
+                    PAAT_DT_EMISSAO_COMPLETA = l.PAAT_DT_EMISSAO_COMPLETA,
+                    PAAT_DT_ENVIO = l.PAAT_DT_ENVIO,
+                    PAAT_DT_GERACAO_PDF = l.PAAT_DT_GERACAO_PDF,
+                    PAAT_DT_VALIDACAO = l.PAAT_DT_VALIDACAO,
+                    PAAT_GU_GUID = l.PAAT_GU_GUID,
+                    PAAT_GU_GUID_ENVIO = l.PAAT_GU_GUID_ENVIO,
+                    PAAT_HT_TEXTO_HTML = l.PAAT_HT_TEXTO_HTML,
+                    PAAT_IN_ASSINADO_DIGITAL = l.PAAT_IN_ASSINADO_DIGITAL,
+                    PAAT_IN_ATIVO = l.PAAT_IN_ATIVO,
+                    PAAT_IN_DATA = l.PAAT_IN_DATA,
+                    PAAT_IN_DENUNCIA = l.PAAT_IN_DENUNCIA,
+                    PAAT_IN_PDF = l.PAAT_IN_PDF,
+                    PAAT_IN_VALIDACAO = l.PAAT_IN_VALIDACAO,
+                    PAAT_IP_DENUNCIA = l.PAAT_IP_DENUNCIA,
+                    PAAT_IP_VALIDACAO = l.PAAT_IP_VALIDACAO,
+                    PAAT_NM_DESTINO = l.PAAT_NM_DESTINO,
+                    PAAT_NM_TITULO = l.PAAT_NM_TITULO,
+                    PAAT_NR_DENUNCIA = l.PAAT_NR_DENUNCIA,
+                    PAAT_NR_ENVIOS = l.PAAT_NR_ENVIOS,
+                    PAAT_NR_VALIDACAO = l.PAAT_NR_VALIDACAO,
+                    PAAT_TK_TOKEN = l.PAAT_TK_TOKEN,
+                    PAAT_TX_DENUNCIA = l.PAAT_TX_DENUNCIA,
+                    PAAT_TX_TEXTO = l.PAAT_TX_TEXTO,
+                    PAAT__IN_ENVIADO = l.PAAT__IN_ENVIADO,
+                    PACI_CD_ID = l.PACI_CD_ID,
+                    PACO_CD_ID = l.PACO_CD_ID,
+                    TIAT_CD_ID = l.TIAT_CD_ID,
+                    USUA_CD_ID = l.USUA_CD_ID,
+                };
+                return mediDTO;
+            }
+
+        }
+
+        public DTO_Paciente_Solicitacao MontarPacienteSolicitacaoDTOObj(PACIENTE_SOLICITACAO l)
+        {
+            using (var context = new CRMSysDBEntities())
+            {
+                var mediDTO = new DTO_Paciente_Solicitacao()
+                {
+                    ASSI_CD_ID = l.ASSI_CD_ID,
+                    PASO_AQ_ARQUIVO_HTML = l.PASO_AQ_ARQUIVO_HTML,
+                    PASO_AQ_ARQUIVO_PDF = l.PASO_AQ_ARQUIVO_PDF,
+                    PASO_AQ_ARQUIVO_QRCODE = l.PASO_AQ_ARQUIVO_QRCODE,
+                    PASO_CD_ID = l.PASO_CD_ID,
+                    PASO_DS_INDICACAO_CLINICA = l.PASO_DS_INDICACAO_CLINICA,
+                    PASO_DT_DENUNCIA = l.PASO_DT_DENUNCIA,
+                    PASO_DT_DUMMY = l.PASO_DT_DUMMY,
+                    PASO_DT_EMISSAO = l.PASO_DT_EMISSAO,
+                    PASO_DT_EMISSAO_COMPLETA = l.PASO_DT_EMISSAO_COMPLETA,
+                    PASO_DT_ENVIO = l.PASO_DT_ENVIO,
+                    PASO_DT_GERACAO_PDF = l.PASO_DT_GERACAO_PDF,
+                    PASO_DT_VALIDACAO = l.PASO_DT_VALIDACAO,
+                    PASO_GU_GUID = l.PASO_GU_GUID,
+                    PASO_GU_GUID_ENVIO = l.PASO_GU_GUID_ENVIO,
+                    PASO_HT_TEXT_HTML = l.PASO_HT_TEXT_HTML,
+                    PASO_IN_ASSINADO_DIGITAL = l.PASO_IN_ASSINADO_DIGITAL,
+                    PASO_IN_ATIVO = l.PASO_IN_ATIVO,
+                    PASO_IN_DATA = l.PASO_IN_DATA,
+                    PASO_IN_DENUNCIA = l.PASO_IN_DENUNCIA,
+                    PASO_IN_ENVIADO = l.PASO_IN_ENVIADO,
+                    PASO_IN_PDF = l.PASO_IN_PDF,
+                    PASO_IN_QUANTIDADE = l.PASO_IN_QUANTIDADE,
+                    PASO_IN_VALIDACAO = l.PASO_IN_VALIDACAO,
+                    PASO_IP_DENUNCIA = l.PASO_IP_DENUNCIA,
+                    PASO_IP_VALIDACAO = l.PASO_IP_VALIDACAO,
+                    PASO_NM_TITULO = l.PASO_NM_TITULO,
+                    PASO_NR_DENUNCIA = l.PASO_NR_DENUNCIA,
+                    PASO_NR_ENVIOS = l.PASO_NR_ENVIOS,
+                    PASO_NR_VALIDACAO = l.PASO_NR_VALIDACAO,
+                    PASO_TK_TOKEN = l.PASO_TK_TOKEN,
+                    PASO_TX_DENUNCIA = l.PASO_TX_DENUNCIA,
+                    PACI_CD_ID = l.PACI_CD_ID,
+                    PACO_CD_ID = l.PACO_CD_ID,
+                    PASO_TX_TEXTO = l.PASO_TX_TEXTO,
+                    SOLI_CD_ID = l.USUA_CD_ID,
+                    TIEX_CD_ID = l.TIEX_CD_ID,
+                    USUA_CD_ID = l.USUA_CD_ID,
                 };
                 return mediDTO;
             }

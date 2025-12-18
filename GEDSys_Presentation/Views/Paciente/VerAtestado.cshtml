@@ -90,13 +90,13 @@
                             @Html.ButtonLinkIndex(text: "Imprimir Atestado", action: "ImprimirAtestadoForm", controller: "Paciente")
                             @if ((Int32)Session["VoltarPesquisa"] == 99)
                             {
-                                @Html.ButtonLinkIndex(text: "Voltar", action: "PesquisarTudo", controller: "BaseAdmin")
+                                @Html.ButtonLinkIndex(text: "Voltar", action: "PesquisarTudo", controller: "BaseAdmin", htmlAttributes: new { @class = "btn-loading" })
                             }
                             else
                             {
                                 if ((Int32)Session["EditarVer"] == 1)
                                 {
-                                    @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarVerPaciente", controller: "Paciente")
+                                    @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarVerPaciente", controller: "Paciente", htmlAttributes: new { @class = "btn-loading" })
                                 }
                                 else
                                 {
@@ -104,24 +104,26 @@
                                     {
                                         if ((Int32)Session["ModoConsulta"] == 1)
                                         {
-                                            @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarProcederConsulta", controller: "Paciente")
+                                            @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarProcederConsulta", controller: "Paciente", htmlAttributes: new { @class = "btn-loading" })
                                         }
                                         else
                                         {
-                                            @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarAnexoPaciente", controller: "Paciente")
+                                            @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarAnexoPaciente", controller: "Paciente", htmlAttributes: new { @class = "btn-loading" })
                                         }
                                     }
                                     else if ((Int32)Session["TipoSolicitacao"] == 1)
                                     {
-                                        @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarAnexoPaciente", controller: "Paciente")
+                                        @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarAnexoPaciente", controller: "Paciente", htmlAttributes: new { @class = "btn-loading" })
                                     }
                                     else if ((Int32)Session["TipoSolicitacao"] == 3)
                                     {
-                                        @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaAtestados", controller: "Paciente")
+                                        @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaAtestados", controller: "Paciente", htmlAttributes: new { @class = "btn-loading" })
                                     }
                                 }
                             }
-
+                            <span id="loadingIndicator" style="display: none; margin-left: 10px; color: #007bff;">
+                                <i class="fa fa-spinner fa-spin"></i> Processando...
+                            </span>
                         </div>
                         <div class="row">
                             <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Paciente</h4>
@@ -288,63 +290,6 @@
                             }
                         </div>
 
-                        @*Validacao*@
-                        @if (Model.PAAT_IN_VALIDACAO == 1)
-                        {
-                            <div class="row">
-                                <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Validação</h4>
-                                <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">                
-                                    <div class="col-lg-2 col-md-2 col-xs-12">
-                                        Validado
-                                        @Html.TextBoxFor(m => m.Validado, new { @class = "form-control", @tabindex = "-1", @readonly = "readonly", @style = "color: brown; font-weight: bold" })
-                                    </div>
-                                    <div class="col-lg-2 col-md-2 col-xs-12">
-                                        Data da Validação
-                                        @Html.TextBoxFor(m => m.PAAT_DT_VALIDACAO, "{0:dd/MM/yyyy}", new { @class = "form-control", @tabindex = "-1", @readonly = "readonly" })
-                                    </div>
-                                    <div class="col-lg-3 col-md-3 col-xs-12">
-                                        Validado Por
-                                        @Html.TextBoxFor(m => m.PAAT_IP_VALIDACAO, new { @class = "form-control", @tabindex = "-1", @readonly = "readonly" })
-                                    </div>
-                                    <div class="col-lg-2 col-md-2 col-xs-12">
-                                        Num.Validações
-                                        @Html.TextBoxFor(m => m.PAAT_NR_VALIDACAO, new { @class = "form-control", @tabindex = "-1", @readonly = "readonly" })
-                                    </div>
-                                </div>
-                            </div>
-                        }
-
-                        @*Denuncia*@
-                        @if (Model.PAAT_IN_DENUNCIA == 1)
-                        {
-                            <div class="row">
-                                <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Denuncia</h4>
-                                <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">                
-                                    <div class="col-lg-2 col-md-2 col-xs-12">
-                                        Denunciado
-                                        @Html.TextBoxFor(m => m.Denuncia, new { @class = "form-control", @tabindex = "-1", @readonly = "readonly", @style = "color: brown; font-weight: bold" })
-                                    </div>
-                                    <div class="col-lg-2 col-md-2 col-xs-12">
-                                        Data da Denuncia
-                                        @Html.TextBoxFor(m => m.PAAT_DT_DENUNCIA, "{0:dd/MM/yyyy}", new { @class = "form-control", @tabindex = "-1", @readonly = "readonly" })
-                                    </div>
-                                    <div class="col-lg-3 col-md-3 col-xs-12">
-                                        Denunciado Por
-                                        @Html.TextBoxFor(m => m.PAAT_IP_DENUNCIA, new { @class = "form-control", @tabindex = "-1", @readonly = "readonly" })
-                                    </div>
-                                    <div class="col-lg-2 col-md-2 col-xs-12">
-                                        Num.Denuncias
-                                        @Html.TextBoxFor(m => m.PAAT_NR_DENUNCIA, new { @class = "form-control", @tabindex = "-1", @readonly = "readonly" })
-                                    </div>
-                                </div>                            
-                                <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">                
-                                    <div class="col-lg-12 col-md-12 col-xs-12">
-                                        Motivo da Denuncia
-                                        @Html.TextAreaFor(m => m.PAAT_TX_DENUNCIA, new { @class = "form-control", @tabindex = "-1", @readonly = "readonly", style = "width: 100%; height: 100px; overflow:auto;", data_toggle = "popover", data_content = "Motivos que levaram à denuncia deste atestado", data_trigger="hover", data_placement="top"  })
-                                    </div>
-                                </div>
-                            </div>
-                        }
                     </div>
                 }
             </div>
@@ -363,108 +308,6 @@
     @Scripts.Render("~/plugins/jasnyBootstrap")
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.maskedinput/1.4.1/jquery.maskedinput.js"></script>
    
-    <script type="text/javascript">
-        $(document).ready(function () {
-
-            var i = -1;
-            var toastCount = 0;
-            var $toastlast;
-            var getMessage = function () {
-                var msg = 'Hi, welcome to Inspinia. This is example of Toastr notification box.';
-                return msg;
-            };
-
-            $('#basictoast').click(function () {
-                // Display a success toast, with a title
-                toastr.success('Inclusão em andamento!')
-            });
-            $('#showtoast').click(function () {
-                var shortCutFunction = $("#toastTypeGroup input:radio:checked").val();
-                var msg = $('#message').val();
-                var title = $('#title').val() || '';
-                var $showDuration = $('#showDuration');
-                var $hideDuration = $('#hideDuration');
-                var $timeOut = $('#timeOut');
-                var $extendedTimeOut = $('#extendedTimeOut');
-                var $showEasing = $('#showEasing');
-                var $hideEasing = $('#hideEasing');
-                var $showMethod = $('#showMethod');
-                var $hideMethod = $('#hideMethod');
-                var toastIndex = toastCount++;
-                toastr.options = {
-                    closeButton: $('#closeButton').prop('checked'),
-                    debug: $('#debugInfo').prop('checked'),
-                    progressBar: $('#progressBar').prop('checked'),
-                    positionClass: $('#positionGroup input:radio:checked').val() || 'toast-top-right',
-                    onclick: null
-                };
-                if ($('#addBehaviorOnToastClick').prop('checked')) {
-                    toastr.options.onclick = function () {
-                        alert('You can perform some custom action after a toast goes away');
-                    };
-                }
-                if ($showDuration.val().length) {
-                    toastr.options.showDuration = $showDuration.val();
-                }
-                if ($hideDuration.val().length) {
-                    toastr.options.hideDuration = $hideDuration.val();
-                }
-                if ($timeOut.val().length) {
-                    toastr.options.timeOut = $timeOut.val();
-                }
-                if ($extendedTimeOut.val().length) {
-                    toastr.options.extendedTimeOut = $extendedTimeOut.val();
-                }
-                if ($showEasing.val().length) {
-                    toastr.options.showEasing = $showEasing.val();
-                }
-                if ($hideEasing.val().length) {
-                    toastr.options.hideEasing = $hideEasing.val();
-                }
-                if ($showMethod.val().length) {
-                    toastr.options.showMethod = $showMethod.val();
-                }
-                if ($hideMethod.val().length) {
-                    toastr.options.hideMethod = $hideMethod.val();
-                }
-                if (!msg) {
-                    msg = getMessage();
-                }
-                $("#toastrOptions").text("Command: toastr["
-                        + shortCutFunction
-                        + "](\""
-                        + msg
-                        + (title ? "\", \"" + title : '')
-                        + "\")\n\ntoastr.options = "
-                        + JSON.stringify(toastr.options, null, 2)
-                );
-                var $toast = toastr[shortCutFunction](msg, title); // Wire up an event handler to a button in the toast, if it exists
-                $toastlast = $toast;
-                if ($toast.find('#okBtn').length) {
-                    $toast.delegate('#okBtn', 'click', function () {
-                        alert('you clicked me. i was toast #' + toastIndex + '. goodbye!');
-                        $toast.remove();
-                    });
-                }
-                if ($toast.find('#surpriseBtn').length) {
-                    $toast.delegate('#surpriseBtn', 'click', function () {
-                        alert('Surprise! you clicked me. i was toast #' + toastIndex + '. You could perform an action here.');
-                    });
-                }
-            });
-            function getLastToast() {
-                return $toastlast;
-            }
-            $('#clearlasttoast').click(function () {
-                toastr.clear(getLastToast());
-            });
-            $('#cleartoasts').click(function () {
-                toastr.clear();
-            });
-
-        });
-    </script>
-
 
     @if (ViewBag.Message != null)
     {

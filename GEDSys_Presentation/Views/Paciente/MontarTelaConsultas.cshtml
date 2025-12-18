@@ -234,16 +234,16 @@
                                                     {
                                                         if (cond.PACO_DT_CONSULTA.Date >= DateTime.Today.Date & cond.PACO_IN_CONFIRMADA < 2)
                                                         {
-                                                            @Html.TableLinkDetails(cond.PACO_CD_ID, "EditarConsultaCompleta", "fa-edit", "Remarcar")
+                                                            @Html.TableLinkDetails(cond.PACO_CD_ID, "EditarConsultaCompleta", "fa-edit btn-loading", "Remarcar")
                                                         }
                                                         else
                                                         {
-                                                            @Html.TableLinkDetails(cond.PACO_CD_ID, "VerConsultaCompleta", "fa-search", "Ver")
+                                                            @Html.TableLinkDetails(cond.PACO_CD_ID, "VerConsultaCompleta", "fa-search btn-loading", "Ver")
                                                         }
                                                     }
                                                     else
                                                     {
-                                                        @Html.TableLinkDetails(cond.PACO_CD_ID, "VerConsultaCompleta", "fa-search", "Ver")
+                                                        @Html.TableLinkDetails(cond.PACO_CD_ID, "VerConsultaCompleta", "fa-search btn-loading", "Ver")
                                                     }
                                                     @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_PACIENTE_CONSULTA_EXCLUIR == 1)
                                                     {
@@ -261,11 +261,11 @@
                                                         {
                                                             if (cond.PACO_DT_CONSULTA.Date == DateTime.Today.Date)
                                                             {
-                                                                @Html.TableLinkDetails(cond.PACO_CD_ID, "ProcederConsulta", "fa-clock-o", "Proceder Consulta")
+                                                                @Html.TableLinkDetails(cond.PACO_CD_ID, "ProcederConsulta", "fa-clock-o btn-loading", "Proceder Consulta")
                                                             }
                                                             else if (cond.PACO_DT_CONSULTA.Date < DateTime.Today.Date)
                                                             {
-                                                                @Html.TableLinkDetails(cond.PACO_CD_ID, "ProcederConsulta", "fa-history", "Rever Consulta")
+                                                                @Html.TableLinkDetails(cond.PACO_CD_ID, "ProcederConsulta", "fa-history btn-loading", "Rever Consulta")
                                                             }
                                                         }
                                                     }
@@ -296,7 +296,6 @@
                                                         @cond.PACO_DT_CONSULTA.ToShortDateString()
                                                     </a>
                                                 </td>
-                                                @*<td style="width: auto"><a href="@Url.Action("VerConsultaCompleta", "Paciente", new { id = cond.PACO_CD_ID })" class="btn-loading" />@cond.PACO_DT_CONSULTA.ToShortDateString()</td>*@
                                                 <td style="width: auto">@cond.PACO_HR_INICIO.ToString()</td>
                                                 <td style="width: auto">@cond.PACO_HR_FINAL.ToString()</td>
                                                 <td style="width: auto">@cond.PACIENTE.PACI_NM_NOME</td>
@@ -328,18 +327,18 @@
 
                                                 <td style="width: auto; color: green; font-weight: bold">@cond.USUARIO.USUA_NM_NOME</td>
                                                 <td style="width: auto" class="td-one-action">
-                                                    @Html.TableLinkDetails(cond.PACO_CD_ID, "VerConsultaCompleta", "fa-search", "Ver")
+                                                    @Html.TableLinkDetails(cond.PACO_CD_ID, "VerConsultaCompleta", "fa-search btn-loading", "Ver")
                                                     @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_PACIENTE_CONSULTA_ALTERAR == 1)
                                                     {
                                                         if (cond.PACO_IN_ATIVO == 1 & (cond.PACO_IN_CONFIRMADA == 1 || cond.PACO_IN_CONFIRMADA == 3 || cond.PACO_IN_ENCERRADA == 1))
                                                         {
                                                             if (cond.PACO_DT_CONSULTA.Date == DateTime.Today.Date)
                                                             {
-                                                                @Html.TableLinkDetails(cond.PACO_CD_ID, "ProcederConsulta", "fa-clock-o", "Proceder Consulta")
+                                                                @Html.TableLinkDetails(cond.PACO_CD_ID, "ProcederConsulta", "fa-clock-o btn-loading", "Proceder Consulta")
                                                             }
                                                             else if (cond.PACO_DT_CONSULTA.Date < DateTime.Today.Date)
                                                             {
-                                                                @Html.TableLinkDetails(cond.PACO_CD_ID, "ProcederConsulta", "fa-history", "Rever Consulta")
+                                                                @Html.TableLinkDetails(cond.PACO_CD_ID, "ProcederConsulta", "fa-history btn-loading", "Rever Consulta")
                                                             }
                                                         }
                                                     }
@@ -422,16 +421,16 @@
                                                     {
                                                         if (cond.PACO_DT_CONSULTA.Date >= DateTime.Today.Date & cond.PACO_IN_CONFIRMADA < 2)
                                                         {
-                                                            @Html.TableLinkDetails(cond.PACO_CD_ID, "EditarConsultaCompleta", "fa-edit", "Remarcar")
+                                                            @Html.TableLinkDetails(cond.PACO_CD_ID, "EditarConsultaCompleta", "fa-edit btn-loading", "Remarcar")
                                                         }
                                                         else
                                                         {
-                                                            @Html.TableLinkDetails(cond.PACO_CD_ID, "VerConsultaCompleta", "fa-search", "Ver")
+                                                            @Html.TableLinkDetails(cond.PACO_CD_ID, "VerConsultaCompleta", "fa-search btn-loading", "Ver")
                                                         }
                                                     }
                                                     else
                                                     {
-                                                        @Html.TableLinkDetails(cond.PACO_CD_ID, "VerConsultaCompleta", "fa-search", "Ver")
+                                                        @Html.TableLinkDetails(cond.PACO_CD_ID, "VerConsultaCompleta", "fa-search btn-loading", "Ver")
                                                     }
                                                     @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_PACIENTE_CONSULTA_EXCLUIR == 1)
                                                     {
@@ -449,11 +448,11 @@
                                                         {
                                                             if (cond.PACO_DT_CONSULTA.Date == DateTime.Today.Date)
                                                             {
-                                                                @Html.TableLinkDetails(cond.PACO_CD_ID, "ProcederConsulta", "fa-clock-o", "Proceder Consulta")
+                                                                @Html.TableLinkDetails(cond.PACO_CD_ID, "ProcederConsulta", "fa-clock-o btn-loading", "Proceder Consulta")
                                                             }
                                                             else if (cond.PACO_DT_CONSULTA.Date < DateTime.Today.Date)
                                                             {
-                                                                @Html.TableLinkDetails(cond.PACO_CD_ID, "ProcederConsulta", "fa-history", "Rever Consulta")
+                                                                @Html.TableLinkDetails(cond.PACO_CD_ID, "ProcederConsulta", "fa-history btn-loading", "Rever Consulta")
                                                             }
                                                         }
                                                     }
@@ -709,7 +708,7 @@
         function ShowModalEnviar(url) {
             $('#modal').find('.modal-footer').prepend('<a id="btnModal" alt="Desativar" class="btn btn-primary" href="' + url + '" target="_self" title="Desativar">Confirmar</a>');
             $('#modal').find('.modal-body').html('Confirma Envio de mensagem de Confirmação?');
-            $('#modal').find('.modal-header').prepend('<h5 id="modalTitle" class="modal-title">Confimar Consulta</h5>');
+            $('#modal').find('.modal-header').prepend('<h5 id="modalTitle" class="modal-title">Confimar Envio</h5>');
             $('#modal').modal('show');
         }
     </script>

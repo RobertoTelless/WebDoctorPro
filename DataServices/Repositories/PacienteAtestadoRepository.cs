@@ -13,13 +13,12 @@ namespace DataServices.Repositories
         {
             IQueryable<PACIENTE_ATESTADO> query = Db.PACIENTE_ATESTADO;
             query = query.Where(p => p.PAAT_CD_ID == id);
-            query = query.Include(p => p.TIPO_ATESTADO);
             return query.FirstOrDefault();
         }
 
         public List<PACIENTE_ATESTADO> GetAllItens(Int32 idAss)
         {
-            IQueryable<PACIENTE_ATESTADO> query = Db.PACIENTE_ATESTADO;
+            IQueryable<PACIENTE_ATESTADO> query = Db.PACIENTE_ATESTADO.Where(p => p.PAAT_IN_ATIVO == 1);
             query = query.Where(p => p.ASSI_CD_ID == idAss);
             return query.AsNoTracking().ToList();
         }
@@ -73,7 +72,7 @@ namespace DataServices.Repositories
             {
                 query = query.Where(p => p.ASSI_CD_ID == idAss);
                 query = query.Where(p => p.PAAT_IN_ATIVO == 1);
-                query = query.OrderBy(a => a.PAAT_DT_DATA);
+                query = query.OrderByDescending(a => a.PAAT_DT_DATA);
                 lista = query.AsNoTracking().ToList<PACIENTE_ATESTADO>();
             }
             return lista;

@@ -3128,7 +3128,6 @@
                                                                     <th style="width: auto">Último Envio</th>
                                                                     <th style="width: auto">Data da Consulta</th>
                                                                     <th style="width: auto" class="td-one-action">Ações</th>
-                                                                    <th style="width: 0.01px"></th>
                                                                 </tr>
                                                             </thead>
                                                             <tbody>
@@ -3140,16 +3139,16 @@
                                                                         {
                                                                             if (cond.PAAT__IN_ENVIADO == 0)
                                                                             {
-                                                                                <td style="width: auto"><a href="@Url.Action("EditarAtestado", "Paciente", new { id = cond.PAAT_CD_ID })" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página de edição do atestado" />@cond.PAAT_GU_GUID</td>
+                                                                                <td style="width: auto"><a href="@Url.Action("EditarAtestado", "Paciente", new { id = cond.PAAT_CD_ID })" class="btn-loadingAt" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página de edição do atestado" />@cond.PAAT_GU_GUID</td>
                                                                             }
                                                                             else
                                                                             {
-                                                                                <td style="width: auto"><a href="@Url.Action("VerAtestado", "Paciente", new { id = cond.PAAT_CD_ID })" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página de visualiação do atestado"/>@cond.PAAT_GU_GUID</td>
+                                                                                <td style="width: auto"><a href="@Url.Action("VerAtestado", "Paciente", new { id = cond.PAAT_CD_ID })" class="btn-loadingAt" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página de visualiação do atestado"/>@cond.PAAT_GU_GUID</td>
                                                                             }
                                                                         }
                                                                         else
                                                                         {
-                                                                            <td style="width: auto"><a href="@Url.Action("VerAtestado", "Paciente", new { id = cond.PAAT_CD_ID })" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página de visualização do atestado"/>@cond.PAAT_GU_GUID</td>
+                                                                            <td style="width: auto"><a href="@Url.Action("VerAtestado", "Paciente", new { id = cond.PAAT_CD_ID })" class="btn-loadingAt" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página de visualização do atestado"/>@cond.PAAT_GU_GUID</td>
                                                                         }
                                                                         @if (cond.TIPO_ATESTADO != null)
                                                                         {
@@ -3192,22 +3191,22 @@
                                                                             {
                                                                                 if (cond.PAAT__IN_ENVIADO == 0)
                                                                                 {
-                                                                                    @Html.TableLinkDetails(cond.PAAT_CD_ID, "EditarAtestado", "fa-edit", "Editar Atestado")
+                                                                                    @Html.TableLinkDetails(cond.PAAT_CD_ID, "EditarAtestado", "fa-edit btn-loadingAt", "Editar Atestado")
                                                                                 }
                                                                                 else
                                                                                 {
-                                                                                    @Html.TableLinkDetails(cond.PAAT_CD_ID, "VerAtestado", "fa-search", "Consultar Atestado")
+                                                                                    @Html.TableLinkDetails(cond.PAAT_CD_ID, "VerAtestado", "fa-search btn-loadingAt", "Consultar Atestado")
                                                                                 }
                                                                             }
                                                                             else
                                                                             {
-                                                                                @Html.TableLinkDetails(cond.PAAT_CD_ID, "VerAtestado", "fa-search", "Consultar Atestado")
+                                                                                @Html.TableLinkDetails(cond.PAAT_CD_ID, "VerAtestado", "fa-search btn-loadingAt", "Consultar Atestado")
                                                                             }
                                                                             @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_ATESTADO_ENVIAR == 1)
                                                                             {
                                                                                 if (cond.PAAT_IN_ATIVO == 1)
                                                                                 {
-                                                                                    @Html.TableLinkDetails(cond.PAAT_CD_ID, "EnviarAtestadoEMail", "fa-send-o", "Enviar Atestado por E-Mail")
+                                                                                    @Html.TableLinkDetails(cond.PAAT_CD_ID, "EnviarAtestadoEMail", "fa-send-o btn-loadingAt", "Enviar Atestado por E-Mail")
                                                                                 }
                                                                             }
                                                                             @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_ATESTADO_ENVIAR == 1)
@@ -3223,7 +3222,7 @@
                                                                                 {
                                                                                     if (cond.PAAT__IN_ENVIADO == 0)
                                                                                     {
-                                                                                        <span style="color: #337ab7; cursor:pointer;" alt="Desativar" class="tbl-link fa-lg fa fa-trash-o" onclick="ShowModalExcluirAtestado('/Paciente/ExcluirAtestado/@cond.PAAT_CD_ID')" title="Excluir Atestado"></span>
+                                                                                        <span style="color: #337ab7; cursor:pointer;" alt="Desativar" class="tbl-link fa-lg fa fa-trash-o btn-loadingAt" onclick="ShowModalExcluirAtestado('/Paciente/ExcluirAtestado/@cond.PAAT_CD_ID')" title="Excluir Atestado"></span>
                                                                                     }
                                                                                 }
                                                                             }
@@ -3254,11 +3253,14 @@
                                         <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
                                             @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_ATESTADO_INCLUIR == 1)
                                             {
-                                                @Html.ButtonLinkIndex(text: "Novo Atestado", action: "IncluirAtestadoForm", controller: "Paciente", buttonClass: "primary")
+                                                @Html.ButtonLinkIndex(text: "Novo Atestado", action: "IncluirAtestadoForm", controller: "Paciente", buttonClass: "primary", htmlAttributes: new { @class = "btn-loadingAt" })
                                             }
-                                            @Html.ButtonLinkIndex(text: "Central de Atestados", action: "MontarTelaAtestados", controller: "Paciente")
+                                            @Html.ButtonLinkIndex(text: "Central de Atestados", action: "MontarTelaAtestados", controller: "Paciente", htmlAttributes: new { @class = "btn-loadingAt" })
                                             @Html.ButtonLinkIndex(text: "Imprimir Atestados", action: "GerarListagemAtestado", controller: "Paciente")
                                             <a href="@Url.Action((String)Session["AjudaNivelAt"])" class="btn btn-sm btn-danger" target="_blank">Ajuda</a>
+                                            <span id="loadingIndicatorAt" style="display: none; margin-left: 10px; color: #007bff;">
+                                                <i class="fa fa-spinner fa-spin"></i> Processando...
+                                            </span>
                                         </div>
                                     </div>
                                 </div>
@@ -3285,7 +3287,6 @@
                                                                     <th style="width: auto">Último Envio</th>
                                                                     <th style="width: auto">Data da Consulta</th>
                                                                     <th style="width: auto" class="td-one-action">Ações</th>
-                                                                    <th style="width: 0.01px"></th>
                                                                 </tr>
                                                             </thead>
                                                             <tbody>
@@ -3297,16 +3298,16 @@
                                                                         {
                                                                             if (cond.PAAT__IN_ENVIADO == 0)
                                                                             {
-                                                                                <td style="width: auto"><a href="@Url.Action("EditarAtestado", "Paciente", new { id = cond.PAAT_CD_ID })" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página de edição do atestado" />@cond.PAAT_GU_GUID</td>
+                                                                                <td style="width: auto"><a href="@Url.Action("EditarAtestado", "Paciente", new { id = cond.PAAT_CD_ID })" class="btn-loadingAt" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página de edição do atestado" />@cond.PAAT_GU_GUID</td>
                                                                             }
                                                                             else
                                                                             {
-                                                                                <td style="width: auto"><a href="@Url.Action("VerAtestado", "Paciente", new { id = cond.PAAT_CD_ID })" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página de visualiação do atestado"/>@cond.PAAT_GU_GUID</td>
+                                                                                <td style="width: auto"><a href="@Url.Action("VerAtestado", "Paciente", new { id = cond.PAAT_CD_ID })" class="btn-loadingAt" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página de visualiação do atestado"/>@cond.PAAT_GU_GUID</td>
                                                                             }
                                                                         }
                                                                         else
                                                                         {
-                                                                            <td style="width: auto"><a href="@Url.Action("VerAtestado", "Paciente", new { id = cond.PAAT_CD_ID })" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página de visualização do atestado"/>@cond.PAAT_GU_GUID</td>
+                                                                            <td style="width: auto"><a href="@Url.Action("VerAtestado", "Paciente", new { id = cond.PAAT_CD_ID })" class="btn-loadingAt" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página de visualização do atestado"/>@cond.PAAT_GU_GUID</td>
                                                                         }
                                                                         @if (cond.TIPO_ATESTADO != null)
                                                                         {
@@ -3349,22 +3350,22 @@
                                                                             {
                                                                                 if (cond.PAAT__IN_ENVIADO == 0)
                                                                                 {
-                                                                                    @Html.TableLinkDetails(cond.PAAT_CD_ID, "EditarAtestado", "fa-edit", "Editar Atestado")
+                                                                                    @Html.TableLinkDetails(cond.PAAT_CD_ID, "EditarAtestado", "fa-edit btn-loadingAt", "Editar Atestado")
                                                                                 }
                                                                                 else
                                                                                 {
-                                                                                    @Html.TableLinkDetails(cond.PAAT_CD_ID, "VerAtestado", "fa-search", "Consultar Atestado")
+                                                                                    @Html.TableLinkDetails(cond.PAAT_CD_ID, "VerAtestado", "fa-search btn-loadingAt", "Consultar Atestado")
                                                                                 }
                                                                             }
                                                                             else
                                                                             {
-                                                                                @Html.TableLinkDetails(cond.PAAT_CD_ID, "VerAtestado", "fa-search", "Consultar Atestado")
+                                                                                @Html.TableLinkDetails(cond.PAAT_CD_ID, "VerAtestado", "fa-search btn-loadingAt", "Consultar Atestado")
                                                                             }
                                                                             @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_ATESTADO_ENVIAR == 1)
                                                                             {
                                                                                 if (cond.PAAT_IN_ATIVO == 1)
                                                                                 {
-                                                                                    @Html.TableLinkDetails(cond.PAAT_CD_ID, "EnviarAtestadoEMail", "fa-send-o", "Enviar Atestado por E-Mail")
+                                                                                    @Html.TableLinkDetails(cond.PAAT_CD_ID, "EnviarAtestadoEMail", "fa-send-o btn-loadingAt", "Enviar Atestado por E-Mail")
                                                                                 }
                                                                             }
                                                                             @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_ATESTADO_ENVIAR == 1)
@@ -3380,7 +3381,7 @@
                                                                                 {
                                                                                     if (cond.PAAT__IN_ENVIADO == 0)
                                                                                     {
-                                                                                        <span style="color: #337ab7; cursor:pointer;" alt="Desativar" class="tbl-link fa-lg fa fa-trash-o" onclick="ShowModalExcluirAtestado('/Paciente/ExcluirAtestado/@cond.PAAT_CD_ID')" title="Excluir Atestado"></span>
+                                                                                        <span style="color: #337ab7; cursor:pointer;" alt="Desativar" class="tbl-link fa-lg fa fa-trash-o btn-loadingAt" onclick="ShowModalExcluirAtestado('/Paciente/ExcluirAtestado/@cond.PAAT_CD_ID')" title="Excluir Atestado"></span>
                                                                                     }
                                                                                 }
                                                                             }
@@ -3411,11 +3412,14 @@
                                         <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
                                             @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_ATESTADO_INCLUIR == 1)
                                             {
-                                                @Html.ButtonLinkIndex(text: "Novo Atestado", action: "IncluirAtestadoForm", controller: "Paciente", buttonClass: "primary")
+                                                @Html.ButtonLinkIndex(text: "Novo Atestado", action: "IncluirAtestadoForm", controller: "Paciente", buttonClass: "primary", htmlAttributes: new { @class = "btn-loadingAt" })
                                             }
-                                            @Html.ButtonLinkIndex(text: "Central de Atestados", action: "MontarTelaAtestados", controller: "Paciente")
+                                            @Html.ButtonLinkIndex(text: "Central de Atestados", action: "MontarTelaAtestados", controller: "Paciente", htmlAttributes: new { @class = "btn-loadingAt" })
                                             @Html.ButtonLinkIndex(text: "Imprimir Atestados", action: "GerarListagemAtestado", controller: "Paciente")
                                             <a href="@Url.Action((String)Session["AjudaNivelAt"])" class="btn btn-sm btn-danger" target="_blank">Ajuda</a>
+                                            <span id="loadingIndicatorAt" style="display: none; margin-left: 10px; color: #007bff;">
+                                                <i class="fa fa-spinner fa-spin"></i> Processando...
+                                            </span>
                                         </div>
                                     </div>
                                 </div>
@@ -7482,6 +7486,26 @@
         });
     </script>
     <script type="text/javascript">
+        $(document).ready(function () { 
+            $('.btn-loadingAt').on('click', function (e) {            
+                $(this).prop('disabled', true);
+                $(this).addClass('disabled');
+                $('#loadingIndicatorAt').show();
+                var tagName = $(this).prop('tagName').toLowerCase();
+                if (tagName === 'a') {
+                    e.preventDefault(); 
+                    var targetUrl = $(this).attr('href');
+                    window.location.href = targetUrl;
+
+                } else if (tagName === 'button' || tagName === 'input') {
+                    $(this).closest('form').submit();
+                }
+            });
+        });
+    </script>
+
+
+    <script type="text/javascript">
         var urlDeCancelamento; // Variável global para armazenar a URL de cancelamento
 
         // Função chamada no evento onclick do <span>
@@ -7898,6 +7922,24 @@
             $('.dataTables-atestado').DataTable({
                 pageLength: 10,
                 dom: '<"html5buttons"B>lTfgitp',
+                order: [[0, 'desc'],
+
+
+                columnDefs: [
+                                {
+                                    // Aplicar o tipo de ordenação de data na Coluna 0
+                                    "type": "datetime-moment", 
+                                    "targets": 0 
+                                },
+                                {
+                                    // As colunas de Ações, Tipo, Situação, etc., podem ter elementos HTML 
+                                    // que atrapalham a ordenação. Usamos "html-num" (ou customizado)
+                                    // ou simplesmente garantir que não tente ordenar o conteúdo do link da data.
+                                    "orderable": false, // Desabilita ordenação para a coluna Ações
+                                    "targets": 7 
+                                }
+                ],
+                // ---------------------------------     
                 buttons: [
                     { extend: 'excel', title: 'Atestado_Planilha' },
                     {

@@ -1101,10 +1101,15 @@ namespace ModelServices.EntitiesServices
             {
                 try
                 {
+                    Int32 pac = item.PACI_CD_ID.Value;
+                    Int32 tiat = item.TIAT_CD_ID.Value;
+
                     item.PACIENTE = null;
                     item.TIPO_ATESTADO = null;
                     PACIENTE_ATESTADO obj = _patRepository.GetById(item.PAAT_CD_ID);
                     _patRepository.Detach(obj);
+                    obj.PACI_CD_ID = pac;
+                    obj.TIAT_CD_ID = tiat;
                     _patRepository.Update(item);
                     transaction.Commit();
                     return 0;

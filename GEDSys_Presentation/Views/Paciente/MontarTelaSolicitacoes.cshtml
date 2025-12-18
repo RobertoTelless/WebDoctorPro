@@ -79,47 +79,50 @@
                             </div>
                             <div class="col-lg-4 col-md-4 col-xs-12">
                                 Nome do Paciente
-                                @Html.TextBoxFor(m => m.PASO_AQ_ARQUIVO_HTML, new { @class = "form-control", autofocus = true })
+                                @Html.TextBoxFor(m => m.PASO_AQ_ARQUIVO_HTML, new { @class = "form-control", autofocus = true, @id = "txtNomePaciente", data_toggle = "popover", data_content = "Selecione o paciente a pesquisar", data_trigger="hover", data_placement="top"  })
                             </div>
                             <div class="col-lg-2 col-md-2 col-xs-12">
                                 Data Inicial
-                                @Html.TextBoxFor(m => m.PASO_DT_EMISSAO, new { @class = "form-control date-picker", autofocus = true, @id = "dn" })
+                                @Html.TextBoxFor(m => m.PASO_DT_EMISSAO, new { @class = "form-control date-picker", autofocus = true, @id = "dn", data_toggle = "popover", data_content = "Informe a data inicial da faixa de datas a ser pesquisada", data_trigger="hover", data_placement="top" })
                             </div>
                             <div class="col-lg-2 col-md-2 col-xs-12">
                                 Data Final
-                                @Html.TextBoxFor(m => m.PASO_DT_ENVIO, new { @class = "form-control date-picker", autofocus = true, @id = "dn1" })
+                                @Html.TextBoxFor(m => m.PASO_DT_ENVIO, new { @class = "form-control date-picker", autofocus = true, @id = "dn1", data_toggle = "popover", data_content = "Informe a data final da faixa de datas a ser pesquisada", data_trigger="hover", data_placement="top" })
                             </div>
                         </div>
                         <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
                             <div class="col-lg-4 col-md-4 col-xs-12">
                                 Nome do Exame
-                                @Html.TextBoxFor(m => m.PASO_NM_TITULO, new { @class = "form-control", autofocus = true })
+                                @Html.TextBoxFor(m => m.PASO_NM_TITULO, new { @class = "form-control", autofocus = true, data_toggle = "popover", data_content = "Informe o nome, ou um fragmento, do exame a pesquisar", data_trigger="hover", data_placement="top"  })
                             </div>
                             <div class="col-lg-8 col-md-8 col-xs-12">
                                 Descrição
-                                @Html.TextBoxFor(m => m.PASO_TX_TEXTO, new { @class = "form-control", autofocus = true })
+                                @Html.TextBoxFor(m => m.PASO_TX_TEXTO, new { @class = "form-control", autofocus = true, data_toggle = "popover", data_content = "Informe um fragmento do texto da solicitação a pesquisar", data_trigger="hover", data_placement="top"  })
                             </div>
                         </div>
 
                         <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
                             <div class="col-lg-12 col-md-12 col-xs-12">
-                                @Html.ButtonActionSubmit(text: "Filtrar")
+                                @Html.ButtonActionSubmit(text: "Filtrar", htmlAttributes: new { @class = "btn-loading1" })
                                 @if (ViewBag.Classe == 0)
                                 {
-                                    @Html.ButtonLinkIndex(text: "Nova Solicitação de Exame", controller: "Paciente", action: "IncluirSolicitacaoCompleta", buttonClass: "primary")
+                                    @Html.ButtonLinkIndex(text: "Nova Solicitação de Exame", controller: "Paciente", action: "IncluirSolicitacaoCompleta", buttonClass: "primary", htmlAttributes: new { @class = "btn-loading" })
                                 }
-                                @Html.ButtonLinkIndex(text: "Solicitações do Mês", controller: "Paciente", action: "VerSolicitacoesMes")
-                                @Html.ButtonLinkIndex(text: "Todas as Solicitações", controller: "Paciente", action: "RetirarFiltroSolicitacoes")
+                                @Html.ButtonLinkIndex(text: "Solicitações do Mês", controller: "Paciente", action: "VerSolicitacoesMes", htmlAttributes: new { @class = "btn-loading" })
+                                @Html.ButtonLinkIndex(text: "Todas as Solicitações", controller: "Paciente", action: "RetirarFiltroSolicitacoes", htmlAttributes: new { @class = "btn-loading" })
                                 @Html.ButtonLinkIndex(text: "Imprimir Lista de Solicitações", controller: "Paciente", action: "GerarRelatorioSolicitacoes")
                                 @if ((Int32)Session["VoltaListaConsulta"] == 1)
                                 {
-                                    @Html.ButtonLinkIndex(text: "Voltar", controller: "Paciente", action: "VerListaSolicitacaoConsulta")
+                                    @Html.ButtonLinkIndex(text: "Voltar", controller: "Paciente", action: "VerListaSolicitacaoConsulta", htmlAttributes: new { @class = "btn-loading" })
                                 }
                                 else
                                 {
-                                    @Html.ButtonLinkIndex(text: "Voltar", controller: "Paciente", action: "VoltarCentrais")
+                                    @Html.ButtonLinkIndex(text: "Voltar", controller: "Paciente", action: "VoltarCentrais", htmlAttributes: new { @class = "btn-loading" })
                                 }
                                 <a href="@Url.Action((String)Session["AjudaNivel"])"  class="btn btn-sm btn-danger" target="_blank">Ajuda</a>                
+                                <span id="loadingIndicator" style="display: none; margin-left: 10px; color: #007bff;">
+                                    <i class="fa fa-spinner fa-spin"></i> Processando...
+                                </span>
                             </div>
                         </div>
                     </div>
@@ -165,7 +168,6 @@
                                         <th style="width: auto">Último Envio</th>
                                         <th style="width: auto">Data da Consulta</th>
                                         <th class="td-one-action">Ações</th>
-                                        <th style="width: 0.01px"></th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -175,26 +177,26 @@
                                             <td style="width: auto">@cond.PASO_DT_EMISSAO_COMPLETA.Value.ToShortDateString() @cond.PASO_DT_EMISSAO_COMPLETA.Value.ToShortTimeString()</td>
                                             @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_ACESSO_PACIENTE == 1)
                                             {
-                                                <td style="width: auto"><a href="@Url.Action("EditarPacienteSolicitacao", "Paciente", new { id = cond.PACIENTE.PACI__CD_ID })" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página de edição de dados do paciente" />@cond.PACIENTE.PACI_NM_NOME</td>
+                                                <td style="width: auto"><a href="@Url.Action("EditarPacienteSolicitacao", "Paciente", new { id = cond.PACIENTE.PACI__CD_ID })" class="btn-loading" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página de alteração de dados do paciente" />@cond.PACIENTE.PACI_NM_NOME</td>
                                             }
                                             else
                                             {
-                                                <td style="width: auto"><a href="@Url.Action("VerPacienteSolicitacao", "Paciente", new { id = cond.PACIENTE.PACI__CD_ID })" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página de visualização de dados do paciente"/>@cond.PACIENTE.PACI_NM_NOME</td>
+                                                <td style="width: auto"><a href="@Url.Action("VerPacienteSolicitacao", "Paciente", new { id = cond.PACIENTE.PACI__CD_ID })" class="btn-loading" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página de visualização de dados do paciente"/>@cond.PACIENTE.PACI_NM_NOME</td>
                                             }
                                             @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_SOLICITACAO_ALTERAR == 1)
                                             {
                                                 if (cond.PASO_IN_ENVIADO == 0)
                                                 {
-                                                    <td style="width: auto"><a href="@Url.Action("EditarSolicitacaoCompleta", "Paciente", new { id = cond.PASO_CD_ID })" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página de edição de dados da solicitação de exame"/>@cond.PASO_GU_GUID</td>
+                                                    <td style="width: auto"><a href="@Url.Action("EditarSolicitacaoCompleta", "Paciente", new { id = cond.PASO_CD_ID })" class="btn-loading" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página de alteração de dados da solicitação de exame"/>@cond.PASO_GU_GUID</td>
                                                 }
                                                 else
                                                 {
-                                                    <td style="width: auto"><a href="@Url.Action("VerSolicitacaoCompleta", "Paciente", new { id = cond.PASO_CD_ID })" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página de visualiação de dados da solicitação de exame" />@cond.PASO_GU_GUID</td>
+                                                    <td style="width: auto"><a href="@Url.Action("VerSolicitacaoCompleta", "Paciente", new { id = cond.PASO_CD_ID })" class="btn-loading" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página de visualiação de dados da solicitação de exame" />@cond.PASO_GU_GUID</td>
                                                 }
                                             }
                                             else
                                             {
-                                                <td style="width: auto"><a href="@Url.Action("VerSolicitacaoCompleta", "Paciente", new { id = cond.PASO_CD_ID })" />@cond.PASO_GU_GUID</td>
+                                                <td style="width: auto"><a href="@Url.Action("VerSolicitacaoCompleta", "Paciente", new { id = cond.PASO_CD_ID })" class="btn-loading" />@cond.PASO_GU_GUID</td>
                                             }
                                             <td style="width: auto">@cond.TIPO_EXAME.TIEX_NM_NOME</td>
                                             @if (cond.PASO_NM_TITULO.Length > 200)
@@ -236,22 +238,22 @@
                                                 {
                                                     if (cond.PASO_IN_ENVIADO == 0)
                                                     {
-                                                        @Html.TableLinkDetails(cond.PASO_CD_ID, "EditarSolicitacaoCompleta", "fa-edit", "Editar a Solicitação")
+                                                        @Html.TableLinkDetails(cond.PASO_CD_ID, "EditarSolicitacaoCompleta", "fa-edit btn-loading", "Alterar a Solicitação")
                                                     }
                                                     else
                                                     {
-                                                        @Html.TableLinkDetails(cond.PASO_CD_ID, "VerSolicitacaoCompleta", "fa-search", "Consultar a Solicitação")
+                                                        @Html.TableLinkDetails(cond.PASO_CD_ID, "VerSolicitacaoCompleta", "fa-search btn-loading", "Consultar a Solicitação")
                                                     }
                                                 }
                                                 else
                                                 {
-                                                    @Html.TableLinkDetails(cond.PASO_CD_ID, "VerSolicitacaoCompleta", "fa-search", "Consultar a Solicitação")
+                                                    @Html.TableLinkDetails(cond.PASO_CD_ID, "VerSolicitacaoCompleta", "fa-search btn-loading", "Consultar a Solicitação")
                                                 }
                                                 @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_SOLICITACAO_ENVIAR == 1)
                                                 {
                                                     if (cond.PASO_IN_ATIVO == 1 )
                                                     {
-                                                        @Html.TableLinkDetails(cond.PASO_CD_ID, "EnviarSolicitacaoEMailBase", "fa-send-o", "Enviar Solicitação ao Paciente")
+                                                        @Html.TableLinkDetails(cond.PASO_CD_ID, "EnviarSolicitacaoEMailBase", "fa-send-o btn-loading", "Enviar Solicitação ao Paciente")
                                                     }
 	                                            }
                                                 @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_SOLICITACAO_ENVIAR == 1)
@@ -267,12 +269,11 @@
                                                     {
                                                         if (cond.PASO_IN_ENVIADO == 0)
                                                         {
-                                                            <span style="color: #337ab7; cursor:pointer;" alt="Desativar" class="tbl-link fa-lg fa fa-trash-o" onclick="ShowModalExcluirSolicitacao('/Paciente/ExcluirSolicitacao/@cond.PASO_CD_ID')" title="Excluir Solicitação"></span>
+                                                            <span style="color: #337ab7; cursor:pointer;" alt="Desativar" class="tbl-link fa-lg fa fa-trash-o btn-loading" onclick="ShowModalExcluirSolicitacao('/Paciente/ExcluirSolicitacao/@cond.PASO_CD_ID')" title="Excluir Solicitação"></span>
                                                         }
                                                     }
 	                                            }
                                             </td>
-                                            <td style="width: 0.05px"></td>
                                         </tr>
                                     }
                                 </tbody>
@@ -285,7 +286,7 @@
                                 </div>
                                 <div style="border: 5px solid #F6A54A; padding: 10px; border-radius: 8px 8px; " class="col-lg-10 col-md-10 col-xs-8">
                                     <h2 style="font-weight: bold">Sua pesquisa não retornou nenhum resultado ou nenhuma solicitação de exame cadastrada no mês corrente</h2>
-                                    @Html.ButtonLinkIndex(text: "Retirar Filtro", controller: "Paciente", action: "RetirarFiltroSolicitacoes")
+                                    @Html.ButtonLinkIndex(text: "Retirar Filtro", controller: "Paciente", action: "RetirarFiltroSolicitacoes", htmlAttributes: new { @class = "btn-loading" })
                                 </div>
                                 <div class="col-lg-1 col-md-1 col-xs-2">
                                 </div>
@@ -347,6 +348,73 @@
             $('#modalDesc').modal('show');
         }
     </script>
+
+    <script type="text/javascript">
+        $(document).ready(function () { 
+            $('.btn-loading').on('click', function (e) {            
+                $(this).prop('disabled', true);
+                $(this).addClass('disabled');
+                $('#loadingIndicator').show();
+                var tagName = $(this).prop('tagName').toLowerCase();
+                if (tagName === 'a') {
+                    e.preventDefault(); 
+                    var targetUrl = $(this).attr('href');
+                    window.location.href = targetUrl;
+
+                } else if (tagName === 'button' || tagName === 'input') {
+                    $(this).closest('form').submit();
+                }
+            });
+        });
+    </script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('.btn-loading1').on('click', function (e) {
+            
+                var $this = $(this);
+                var tagName = $this.prop('tagName').toLowerCase();
+                $this.addClass('disabled'); 
+                $('#loadingIndicator').show();
+
+                if (tagName === 'a') {
+                    e.preventDefault();
+                
+                    var targetUrl = $this.attr('href');
+                    window.location.href = targetUrl;
+                
+                } else if (tagName === 'button' || tagName === 'input') {               
+                    $this.closest('form').submit();
+                    $this.prop('disabled', true);
+                }
+            });
+        });
+    </script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#txtNomePaciente').autocomplete({
+                minLength: 2, 
+                source: function (request, response) {
+                    $.ajax({
+                        url: '@Url.Action("GetPacienteNome", "Paciente2")', 
+                        type: 'POST',
+                        dataType: 'json',
+                        data: {
+                            term: request.term 
+                        },
+                        success: function (data) {
+                            response(data); 
+                        },
+                        error: function () {
+                            console.log("Erro ao buscar dados para autocomplete.");
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+
     <script type="text/javascript" language="javascript">
         $(function () {
             $('.date-picker').datepicker(
@@ -421,6 +489,24 @@
             $('.dataTables-example').DataTable({
                 pageLength: 25,
                 dom: '<"html5buttons"B>lTfgitp',
+                order: [[0, 'desc'],
+
+
+                columnDefs: [
+                                {
+                                    // Aplicar o tipo de ordenação de data na Coluna 0
+                                    "type": "datetime-moment", 
+                                    "targets": 0 
+                                },
+                                {
+                                    // As colunas de Ações, Tipo, Situação, etc., podem ter elementos HTML 
+                                    // que atrapalham a ordenação. Usamos "html-num" (ou customizado)
+                                    // ou simplesmente garantir que não tente ordenar o conteúdo do link da data.
+                                    "orderable": false, // Desabilita ordenação para a coluna Ações
+                                    "targets": 7 
+                                }
+                ],
+                // ---------------------------------     
                 buttons: [
                     { extend: 'excel', title: 'Solicitacoes_Planilha' },
                     {

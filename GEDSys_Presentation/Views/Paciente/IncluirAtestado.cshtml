@@ -19,7 +19,7 @@
                     <a href="@Url.Action("MontarTelaAtestados", "Paciente")">Atestados</a>
                 </li>
                 <li class="active">
-                    <strong>Atestados - Inclusão</strong>
+                    <strong>Atestados - Criação</strong>
                 </li>
             </ol>
             <br />
@@ -39,7 +39,7 @@
                     <a href="@Url.Action("MontarTelaAtestados", "Paciente")">Atestados</a>
                 </li>
                 <li class="active">
-                    <strong>Atestados - Inclusão</strong>
+                    <strong>Atestados - Criação</strong>
                 </li>
             </ol>
             <br />
@@ -59,7 +59,7 @@
                     <a href="@Url.Action("EditarPaciente", "Paciente")">Paciente - Edição</a>
                 </li>
                 <li class="active">
-                    <strong>Atestados - Inclusão</strong>
+                    <strong>Atestados - Criação</strong>
                 </li>
             </ol>
             <br />
@@ -175,30 +175,33 @@
                         <div class="row">
                             <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Atestado</h4>
                             <div class="form-group" style=" margin-left: 5px; margin-right: 5px;">                
-                                @Html.ButtonActionSubmit(text: "Confirma Criação de Atestado", htmlAttributes: new { id = "basictoast" })
+                                @Html.ButtonActionSubmit(text: "Confirma Criação de Atestado", htmlAttributes: new { id = "basictoast", @class = "btn-loading1" })
                                 @if ((Int32)Session["TipoSolicitacao"] == 1)
                                 {
                                     if ((Int32)Session["ModoConsulta"] == 1)
                                     {
-                                        @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarProcederConsulta", controller: "Paciente")
+                                        @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarProcederConsulta", controller: "Paciente", htmlAttributes: new { @class = "btn-loading" })
                                     }
                                     else
                                     {
                                         if ((Int32)Session["VoltarCentral"] == 2)
                                         {
-                                            @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaCentralPaciente", controller: "Paciente")
+                                            @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaCentralPaciente", controller: "Paciente", htmlAttributes: new { @class = "btn-loading" })
                                         }
                                         else
                                         {
-                                            @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarAnexoPaciente", controller: "Paciente")
+                                            @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarAnexoPaciente", controller: "Paciente", htmlAttributes: new { @class = "btn-loading" })
                                         }
                                     }
                                 }
                                 else
                                 {
-                                    @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaAtestados", controller: "Paciente")
+                                    @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaAtestados", controller: "Paciente", htmlAttributes: new { @class = "btn-loading" })
                                 }
                                 <a href="@Url.Action((String)Session["AjudaNivel"])"  class="btn btn-sm btn-danger" target="_blank">Ajuda</a>                
+                                <span id="loadingIndicator" style="display: none; margin-left: 10px; color: #007bff;">
+                                    <i class="fa fa-spinner fa-spin"></i> Processando...
+                                </span>
                             </div>
                             <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">                
                                 <div class="col-lg-2 col-md-2 col-xs-12">
@@ -210,7 +213,6 @@
                                     @Html.TextBoxFor(m => m.PAAT_TK_TOKEN, new { @class = "form-control", @tabindex = "-1", @readonly = "readonly", data_toggle = "popover", data_content = "Token de validação do atestado gerado pelo WebDoctor", data_trigger="hover", data_placement="top", @style = "color: brown; font-weight: bold"  })
                                 </div>
                                 <div class="col-lg-2 col-md-2 col-xs-12">
-                                    @Html.HiddenFor(m => m.PACI_CD_ID)
                                     @Html.HiddenFor(m => m.PAAT_IN_ATIVO)
                                     @Html.HiddenFor(m => m.PAAT_GU_GUID)
                                     @Html.HiddenFor(m => m.PAAT_DT_DATA)
@@ -314,6 +316,47 @@
         {
             navigator.sendBeacon('../ControleAcesso/LogSessionTime');
         }; 
+    </script>
+
+    <script type="text/javascript">
+        $(document).ready(function () { 
+            $('.btn-loading').on('click', function (e) {            
+                $(this).prop('disabled', true);
+                $(this).addClass('disabled');
+                $('#loadingIndicator').show();
+                var tagName = $(this).prop('tagName').toLowerCase();
+                if (tagName === 'a') {
+                    e.preventDefault(); 
+                    var targetUrl = $(this).attr('href');
+                    window.location.href = targetUrl;
+
+                } else if (tagName === 'button' || tagName === 'input') {
+                    $(this).closest('form').submit();
+                }
+            });
+        });
+    </script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('.btn-loading1').on('click', function (e) {
+            
+                var $this = $(this);
+                var tagName = $this.prop('tagName').toLowerCase();
+                $this.addClass('disabled'); 
+                $('#loadingIndicator').show();
+
+                if (tagName === 'a') {
+                    e.preventDefault();
+                
+                    var targetUrl = $this.attr('href');
+                    window.location.href = targetUrl;
+                
+                } else if (tagName === 'button' || tagName === 'input') {               
+                    $this.closest('form').submit();
+                    $this.prop('disabled', true);
+                }
+            });
+        });
     </script>
 
     <script>
