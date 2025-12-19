@@ -12190,7 +12190,7 @@ namespace GEDSys_Presentation.Controllers
                 PdfPTable headerTable = null;
                 PdfPCell cell = new PdfPCell();
                 Image image = null;
-                if (conf.CONF_IN_EXIBE_LOGO == 1)
+                if (conf.CONF_IN_LOGO_EMPRESA == 1)
                 {
                     headerTable = new PdfPTable(new float[] { 20f, 700f });
                     headerTable.WidthPercentage = 100;
@@ -13081,7 +13081,7 @@ namespace GEDSys_Presentation.Controllers
                 PdfPTable headerTable = null;
                 PdfPCell cell = new PdfPCell();
                 Image image = null;
-                if (conf.CONF_IN_EXIBE_LOGO == 1)
+                if (conf.CONF_IN_LOGO_EMPRESA == 1)
                 {
                     headerTable = new PdfPTable(new float[] { 20f, 700f });
                     headerTable.WidthPercentage = 100;
@@ -13973,6 +13973,7 @@ namespace GEDSys_Presentation.Controllers
                 Session["IdSolicitacao"] = id;
                 Session["AjudaNivel"] = "../BaseAdmin/Ajuda/7/Ajuda7_5.pdf";
                 ViewBag.NomePaciente = paciente.PACI_NM_NOME;
+                String texto = "Segue em anexo a solicitação de exames solicitada." + "\r\n" + "Atenciosamente.";
 
                 MensagemViewModel mens = new MensagemViewModel();
                 mens.NOME = paciente.PACI_NM_NOME;
@@ -13993,6 +13994,7 @@ namespace GEDSys_Presentation.Controllers
                 mens.TELEFONE = paciente.PACI_NR_TELEFONE;
                 mens.MENS_IN_TIPO_EMAIL = 1;
                 mens.TIPO_ENVIO = 1;
+                mens.MENS_TX_TEXTO = texto;
 
                 // Grava Acesso
                 ControleAcessoMetodo grava = new ControleAcessoMetodo(aceApp);
@@ -14103,7 +14105,7 @@ namespace GEDSys_Presentation.Controllers
                     Session["NivelPaciente"] = 12;
 
                     // Mensagem do CRUD
-                    Session["MsgCRUD"] = "A solicitação de exame" + solicitacao.PASO_GU_GUID + " do(a) paciente " + pac.PACI_NM_NOME.ToUpper() + " foi enviada por e-mail com sucesso.";
+                    Session["MsgCRUD"] = "A solicitação de exame " + solicitacao.PASO_GU_GUID + " do(a) paciente " + pac.PACI_NM_NOME.ToUpper() + " foi enviada por e-mail com sucesso.";
                     Session["MensPaciente"] = 61;
 
                     // Retorno

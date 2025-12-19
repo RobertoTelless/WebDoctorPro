@@ -22,7 +22,7 @@ namespace DataServices.Repositories
 
         public List<PACIENTE_EXAMES> GetAllItens(Int32 idAss)
         {
-            IQueryable<PACIENTE_EXAMES> query = Db.PACIENTE_EXAMES;
+            IQueryable<PACIENTE_EXAMES> query = Db.PACIENTE_EXAMES.Where(p => p.PAEX_IN_ATIVO == 1);
             query = query.Where(p => p.ASSI_CD_ID == idAss);
             return query.AsNoTracking().ToList();
         }
@@ -74,7 +74,7 @@ namespace DataServices.Repositories
             {
                 query = query.Where(p => p.ASSI_CD_ID == idAss);
                 query = query.Where(p => p.PAEX_IN_ATIVO == 1);
-                query = query.OrderBy(a => a.PAEX_DT_DATA);
+                query = query.OrderByDescending(a => a.PAEX_DT_DATA);
                 lista = query.AsNoTracking().ToList<PACIENTE_EXAMES>();
             }
             return lista;

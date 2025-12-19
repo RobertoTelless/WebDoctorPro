@@ -59,20 +59,20 @@
                             </div>
                             <div class="col-lg-4 col-md-4 col-xs-12">
                                 Nome do Paciente
-                                @Html.TextBoxFor(m => m.PAEX_DS_DIAGNOSTICO, new { @class = "form-control", autofocus = true })
+                                @Html.TextBoxFor(m => m.PAEX_DS_DIAGNOSTICO, new { @class = "form-control", autofocus = true, @id = "txtNomePaciente", data_toggle = "popover", data_content = "Selecione o paciente a pesquisar", data_trigger="hover", data_placement="top"  })
                             </div>
                             <div class="col-lg-2 col-md-2 col-xs-12">
                                 Data Inicial
-                                @Html.TextBoxFor(m => m.PAEX_DT_DATA, new { @class = "form-control date-picker", autofocus = true, @id = "dn" })
+                                @Html.TextBoxFor(m => m.PAEX_DT_DATA, new { @class = "form-control date-picker", autofocus = true, @id = "dn", data_toggle = "popover", data_content = "Informe a data inicial da faixa de datas a ser pesquisada", data_trigger="hover", data_placement="top" })
                             </div>
                             <div class="col-lg-2 col-md-2 col-xs-12">
                                 Data Final
-                                @Html.TextBoxFor(m => m.PAEX_DT_DUMMY, new { @class = "form-control date-picker", autofocus = true, @id = "dn1" })
+                                @Html.TextBoxFor(m => m.PAEX_DT_DUMMY, new { @class = "form-control date-picker", autofocus = true, @id = "dn1", data_toggle = "popover", data_content = "Informe a data final da faixa de datas a ser pesquisada", data_trigger="hover", data_placement="top" })
                             </div>
                         </div>
                         <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
                             <div class="col-lg-4 col-md-4 col-xs-12">
-                                Nome do Exame
+                                Nome do Exame  (Fragmento)
                                 @Html.TextBoxFor(m => m.PAEX_NM_NOME, new { @class = "form-control", autofocus = true })
                             </div>
                             <div class="col-lg-4 col-md-3 col-xs-12">
@@ -80,27 +80,30 @@
                                 @Html.DropDownListFor(m => m.LABS_CD_ID, (SelectList)ViewBag.Labs, "Selecionar", new { @class = "form-control", autofocus = true })
                             </div>
                             <div class="col-lg-4 col-md-4 col-xs-12">
-                                Resultados (Fragmentos)
+                                Resultados (Fragmento)
                                 @Html.TextBoxFor(m => m.PAEX_DS_COMENTARIOS, new { @class = "form-control", autofocus = true })
                             </div>
                         </div>
 
                         <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
                             <div class="col-lg-12 col-md-12 col-xs-12">
-                                @Html.ButtonActionSubmit(text: "Filtrar")
-                                @Html.ButtonLinkIndex(text: "Novo Resultado de Exame", controller: "Paciente", action: "IncluirExameCompleta", buttonClass: "primary")
-                                @Html.ButtonLinkIndex(text: "Exames do Mês Corrente", controller: "Paciente", action: "VerExamesMes")
-                                @Html.ButtonLinkIndex(text: "Todos os Exames", controller: "Paciente", action: "RetirarFiltroExames")
-                                @Html.ButtonLinkIndex(text: "Imprimir Resultados    ", controller: "Paciente", action: "GerarRelatorioExames")
+                                @Html.ButtonActionSubmit(text: "Filtrar", htmlAttributes: new { @class = "btn-loading1" })
+                                @Html.ButtonLinkIndex(text: "Novo Resultado de Exame", controller: "Paciente", action: "IncluirExameCompleta", buttonClass: "primary", htmlAttributes: new { @class = "btn-loading" })
+                                @Html.ButtonLinkIndex(text: "Exames do Mês Corrente", controller: "Paciente", action: "VerExamesMes", htmlAttributes: new { @class = "btn-loading" })
+                                @Html.ButtonLinkIndex(text: "Todos os Exames", controller: "Paciente", action: "RetirarFiltroExames", htmlAttributes: new { @class = "btn-loading" })
+                                @Html.ButtonLinkIndex(text: "Imprimir Resultados", controller: "Paciente", action: "GerarRelatorioExames")
                                 @if ((Int32)Session["VoltaListaConsulta"] == 1)
                                 {
-                                    @Html.ButtonLinkIndex(text: "Voltar", controller: "Paciente", action: "VerListaExameConsulta")
+                                    @Html.ButtonLinkIndex(text: "Voltar", controller: "Paciente", action: "VerListaExameConsulta", htmlAttributes: new { @class = "btn-loading" })
                                 }
                                 else
                                 {
-                                    @Html.ButtonLinkIndex(text: "Voltar", controller: "Paciente", action: "VoltarCentrais")
+                                    @Html.ButtonLinkIndex(text: "Voltar", controller: "Paciente", action: "VoltarCentrais", htmlAttributes: new { @class = "btn-loading" })
                                 }
                                 <a href="@Url.Action((String)Session["AjudaNivel"])"  class="btn btn-sm btn-danger" target="_blank">Ajuda</a>                
+                                <span id="loadingIndicator" style="display: none; margin-left: 10px; color: #007bff;">
+                                    <i class="fa fa-spinner fa-spin"></i> Processando...
+                                </span>
                             </div>
                         </div>
                     </div>
@@ -145,7 +148,6 @@
                                         <th style="width: auto">Anexos</th>
                                         <th style="width: auto">Data da Consulta</th>
                                         <th class="td-one-action">Ações</th>
-                                        <th style="width: 0.01px"></th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -155,24 +157,24 @@
                                             <td style="width: auto">@cond.PAEX_DT_DATA.Value.ToShortDateString()</td>
                                             @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_ACESSO_PACIENTE == 1)
                                             {
-                                                <td style="width: auto"><a href="@Url.Action("EditarPacienteExame", "Paciente", new { id = cond.PACIENTE.PACI__CD_ID })" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página de edição de dados do paciente" />@cond.PACIENTE.PACI_NM_NOME</td>
+                                                <td style="width: auto"><a href="@Url.Action("EditarPacienteExame", "Paciente", new { id = cond.PACIENTE.PACI__CD_ID })" class="btn-loading" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página de edição de dados do paciente" />@cond.PACIENTE.PACI_NM_NOME</td>
                                             }
                                             else
                                             {
-                                                <td style="width: auto"><a href="@Url.Action("VerPacienteExame", "Paciente", new { id = cond.PACIENTE.PACI__CD_ID })"  data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página de visualização de dados do paciente"/>@cond.PACIENTE.PACI_NM_NOME</td>
+                                                <td style="width: auto"><a href="@Url.Action("VerPacienteExame", "Paciente", new { id = cond.PACIENTE.PACI__CD_ID })" class="btn-loading"  data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página de visualização de dados do paciente"/>@cond.PACIENTE.PACI_NM_NOME</td>
                                             }
                                             @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_EXAME_ALTERAR == 1)
                                             {
-                                                <td style="width: auto"><a href="@Url.Action("EditarExameCompleta", "Paciente", new { id = cond.PAEX_CD_ID })" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página de edição de resultados do exame"/>@cond.PAEX_NM_NOME</td>
+                                                <td style="width: auto"><a href="@Url.Action("EditarExameCompleta", "Paciente", new { id = cond.PAEX_CD_ID })" class="btn-loading" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página de edição de resultados do exame"/>@cond.PAEX_NM_NOME</td>
                                             }
                                             else
                                             {
-                                                <td style="width: auto"><a href="@Url.Action("VerExameCompleta", "Paciente", new { id = cond.PAEX_CD_ID })" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página de visualização de resultados do exame" />@cond.PAEX_NM_NOME</td>
+                                                <td style="width: auto"><a href="@Url.Action("VerExameCompleta", "Paciente", new { id = cond.PAEX_CD_ID })" class="btn-loading" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página de visualização de resultados do exame" />@cond.PAEX_NM_NOME</td>
                                             }
                                             <td style="width: auto">@cond.TIPO_EXAME.TIEX_NM_NOME</td>
                                             @if (cond.LABS_CD_ID != null)
                                             {
-                                                <td style="width: auto"><a href="@Url.Action("AcessarLaboratorio", "Paciente", new { id = cond.LABS_CD_ID })" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar o site do laboratório" target="_blank" />@cond.LABORATORIO.LABS_NM_NOME</td>
+                                                <td style="width: auto"><a href="@Url.Action("AcessarLaboratorio", "Paciente", new { id = cond.LABS_CD_ID })" class="btn-loading" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar o site do laboratório" target="_blank" />@cond.LABORATORIO.LABS_NM_NOME</td>
                                             }
                                             else
                                             {
@@ -199,21 +201,20 @@
                                             <td style="width: auto" class="td-one-action">
                                                 @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_EXAME_ALTERAR == 1)
                                                 {
-                                                    @Html.TableLinkDetails(cond.PAEX_CD_ID, "EditarExameCompleta", "fa-edit", "Editar Exame")
+                                                    @Html.TableLinkDetails(cond.PAEX_CD_ID, "EditarExameCompleta", "fa-edit btn-loading", "Editar Exame")
                                                 }
                                                 else
                                                 {
-                                                    @Html.TableLinkDetails(cond.PAEX_CD_ID, "VerExameCompleta", "fa-search", "Consultar Exame")
+                                                    @Html.TableLinkDetails(cond.PAEX_CD_ID, "VerExameCompleta", "fa-search btn-loading", "Consultar Exame")
                                                 }
                                                 @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_EXAME_EXCLUIR == 1)
                                                 {
                                                     if (cond.PAEX_IN_ATIVO == 1)
                                                     {
-                                                        <span style="color: #337ab7; cursor:pointer;" alt="Desativar" class="tbl-link fa-lg fa fa-trash-o" onclick="ShowModalExcluirExame('/Paciente/ExcluirExame/@cond.PAEX_CD_ID')" title="Excluir Exame"></span>
+                                                        <span style="color: #337ab7; cursor:pointer;" alt="Desativar" class="tbl-link fa-lg fa fa-trash-o btn-loading" onclick="ShowModalExcluirExame('/Paciente/ExcluirExame/@cond.PAEX_CD_ID')" title="Excluir Exame"></span>
                                                     }
 	                                            }
                                             </td>
-                                            <td style="width: 0.05px"></td>
                                         </tr>
                                     }
                                 </tbody>
@@ -226,7 +227,7 @@
                                 </div>
                                 <div style="border: 5px solid #F6A54A; padding: 10px; border-radius: 8px 8px; " class="col-lg-10 col-md-10 col-xs-10">
                                     <h2 style="font-weight: bold">Sua pesquisa não retornou nenhum resultado ou nenhum resultado de exame cadastrado</h2>
-                                    @Html.ButtonLinkIndex(text: "Retirar Filtro", controller: "Paciente", action: "RetirarFiltroExames")
+                                    @Html.ButtonLinkIndex(text: "Retirar Filtro", controller: "Paciente", action: "RetirarFiltroExames", htmlAttributes: new { @class = "btn-loading" })
                                 </div>
                                 <div class="col-lg-1 col-md-1 col-xs-2">
                                 </div>
@@ -284,11 +285,71 @@
     </script>
 
     <script type="text/javascript">
+        $(document).ready(function () { 
+            $('.btn-loading').on('click', function (e) {            
+                $(this).prop('disabled', true);
+                $(this).addClass('disabled');
+                $('#loadingIndicator').show();
+                var tagName = $(this).prop('tagName').toLowerCase();
+                if (tagName === 'a') {
+                    e.preventDefault(); 
+                    var targetUrl = $(this).attr('href');
+                    window.location.href = targetUrl;
+
+                } else if (tagName === 'button' || tagName === 'input') {
+                    $(this).closest('form').submit();
+                }
+            });
+        });
+    </script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('.btn-loading1').on('click', function (e) {
+            
+                var $this = $(this);
+                var tagName = $this.prop('tagName').toLowerCase();
+                $this.addClass('disabled'); 
+                $('#loadingIndicator').show();
+
+                if (tagName === 'a') {
+                    e.preventDefault();
+                
+                    var targetUrl = $this.attr('href');
+                    window.location.href = targetUrl;
+                
+                } else if (tagName === 'button' || tagName === 'input') {               
+                    $this.closest('form').submit();
+                    $this.prop('disabled', true);
+                }
+            });
+        });
+    </script>
+
+    <script type="text/javascript">
         $(document).ready(function () {
 
             $('.dataTables-example').DataTable({
                 pageLength: 25,
                 dom: '<"html5buttons"B>lTfgitp',
+                order: [[0, 'desc'],
+
+
+                columnDefs: [
+                                {
+                                    // Aplicar o tipo de ordenação de data na Coluna 0
+                                    "type": "datetime-moment", 
+                                    "targets": 0 
+                                },
+                                {
+                                    // As colunas de Ações, Tipo, Situação, etc., podem ter elementos HTML 
+                                    // que atrapalham a ordenação. Usamos "html-num" (ou customizado)
+                                    // ou simplesmente garantir que não tente ordenar o conteúdo do link da data.
+                                    "orderable": false, // Desabilita ordenação para a coluna Ações
+                                    "targets": 7 
+                                }
+                ],
+                // ---------------------------------    
                 buttons: [
                     { extend: 'excel', title: 'Exames_Planilha' },
                     {
@@ -304,6 +365,30 @@
                     }
                 ]
             });         
+        });
+    </script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#txtNomePaciente').autocomplete({
+                minLength: 2, 
+                source: function (request, response) {
+                    $.ajax({
+                        url: '@Url.Action("GetPacienteNome", "Paciente2")', 
+                        type: 'POST',
+                        dataType: 'json',
+                        data: {
+                            term: request.term 
+                        },
+                        success: function (data) {
+                            response(data); 
+                        },
+                        error: function () {
+                            console.log("Erro ao buscar dados para autocomplete.");
+                        }
+                    });
+                }
+            });
         });
     </script>
    
@@ -361,7 +446,7 @@
         }
 
         function ShowModalExcluirExame(url) {
-            $('#modal').find('.modal-footer').prepend('<a id="btnModal" alt="Desativar" class="btn btn-primary" href="' + url + '" target="_self" title="Desativar">Confirmar</a>');
+            $('#modal').find('.modal-footer').prepend('<a id="btnModal" alt="Desativar" class="btn btn-primary btn-loading" href="' + url + '" target="_self" title="Desativar">Confirmar</a>');
             $('#modal').find('.modal-body').html('Confirma exclusão de Resultado de Exame?');
             $('#modal').find('.modal-header').prepend('<h5 id="modalTitle" class="modal-title">Confimar Exclusão</h5>');
             $('#modal').modal('show');

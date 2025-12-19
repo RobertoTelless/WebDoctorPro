@@ -19,7 +19,7 @@
                     <a href="@Url.Action("MontarTelaExames", "Paciente")">Exames</a>
                 </li>
                 <li class="active">
-                    <strong>Solicitação - Inclusão</strong>
+                    <strong>Exame - Inclusão</strong>
                 </li>
             </ol>
             <br />
@@ -56,7 +56,7 @@
                     <a href="@Url.Action("MontarTelaCentralPaciente", "Paciente")">Central de Pacientes</a>
                 </li>
                 <li>
-                    <a href="@Url.Action("EditarPaciente", "Paciente")">Paciente - Edição</a>
+                    <a href="@Url.Action("EditarPaciente", "Paciente")">Paciente - Alteração</a>
                 </li>
                 <li class="active">
                     <strong>Exame - Inclusão</strong>
@@ -152,29 +152,34 @@
                                 </div>
                             </div>
                         }
+
                         <div class="row">
                             <div class="col-lg-8 col-md-8 col-xs-12">
                                 <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Resultado de Exame</h4>
                                 <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
                                     @Html.ButtonActionSubmit(text: "BtnSubmit", htmlAttributes: new { id = "submit", style = "display: none;" })
-                                    <button style="margin-left: 15px;" class="btnSubmit btn btn-sm btn-success" id="basictoast" type="button">Confirmar inclusão de Resultado de Exame</button>
+                                    <button style="margin-left: 15px;" class="btnSubmit btn btn-sm btn-success btn-loading1" id="basictoast" type="button">Confirmar inclusão de Resultado de Exame</button>
                                     @if ((Int32)Session["TipoSolicitacao"] == 1)
                                     {
                                         if ((Int32)Session["ModoConsulta"] == 1)
                                         {
-                                            @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarProcederConsulta", controller: "Paciente")
+                                            @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarProcederConsulta", controller: "Paciente", htmlAttributes: new { @class = "btn-loading" })
                                         }
                                         else
                                         {
-                                            @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarAnexoPaciente", controller: "Paciente")
+                                            @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarAnexoPaciente", controller: "Paciente", htmlAttributes: new { @class = "btn-loading" })
                                         }
                                     }
                                     else
                                     {
-                                        @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaExames", controller: "Paciente")
+                                        @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaExames", controller: "Paciente", htmlAttributes: new { @class = "btn-loading" })
                                     }
                                     <a href="@Url.Action((String)Session["AjudaNivel"])" class="btn btn-sm btn-danger" target="_blank">Ajuda</a>
+                                    <span id="loadingIndicator" style="display: none; margin-left: 10px; color: #007bff;">
+                                        <i class="fa fa-spinner fa-spin"></i> Processando...
+                                    </span>
                                 </div>
+
                                 <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
                                     <div class="col-lg-4 col-md-4 col-xs-12">
                                         @Html.HiddenFor(m => m.ASSI_CD_ID)
@@ -281,6 +286,47 @@
         {
             navigator.sendBeacon('../ControleAcesso/LogSessionTime');
         }; 
+    </script>
+
+    <script type="text/javascript">
+        $(document).ready(function () { 
+            $('.btn-loading').on('click', function (e) {            
+                $(this).prop('disabled', true);
+                $(this).addClass('disabled');
+                $('#loadingIndicator').show();
+                var tagName = $(this).prop('tagName').toLowerCase();
+                if (tagName === 'a') {
+                    e.preventDefault(); 
+                    var targetUrl = $(this).attr('href');
+                    window.location.href = targetUrl;
+
+                } else if (tagName === 'button' || tagName === 'input') {
+                    $(this).closest('form').submit();
+                }
+            });
+        });
+    </script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('.btn-loading1').on('click', function (e) {
+            
+                var $this = $(this);
+                var tagName = $this.prop('tagName').toLowerCase();
+                $this.addClass('disabled'); 
+                $('#loadingIndicator').show();
+
+                if (tagName === 'a') {
+                    e.preventDefault();
+                
+                    var targetUrl = $this.attr('href');
+                    window.location.href = targetUrl;
+                
+                } else if (tagName === 'button' || tagName === 'input') {               
+                    $this.closest('form').submit();
+                    $this.prop('disabled', true);
+                }
+            });
+        });
     </script>
 
     <script>

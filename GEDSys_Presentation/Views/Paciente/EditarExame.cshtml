@@ -41,7 +41,7 @@
                     <a href="@Url.Action("MontarTelaExames", "Paciente")">Exames</a>
                 </li>
                 <li class="active">
-                    <strong>Exame - Edição</strong>
+                    <strong>Exame - Alteração</strong>
                 </li>
             </ol>
             <br />
@@ -61,7 +61,7 @@
                     <a href="@Url.Action("MontarTelaExames", "Paciente")">Exames</a>
                 </li>
                 <li class="active">
-                    <strong>Exame - Edição</strong>
+                    <strong>Exame - Alteração</strong>
                 </li>
             </ol>
             <br />
@@ -78,10 +78,10 @@
                     <a href="@Url.Action("MontarTelaCentralPaciente", "Paciente")">Central de Pacientes</a>
                 </li>
                 <li>
-                    <a href="@Url.Action("EditarPaciente", "Paciente")">Paciente - Edição</a>
+                    <a href="@Url.Action("EditarPaciente", "Paciente")">Paciente - Alteração</a>
                 </li>
                 <li class="active">
-                    <strong>Exame - Edição</strong>
+                    <strong>Exame - Alteração</strong>
                 </li>
             </ol>
             <br />
@@ -93,7 +93,7 @@
             <div class="col-lg-12 col-md-12 col-xs-12 ibox float-e-margins">
                 <div class="ibox-title">
                     <div style="text-align: center;" class="col-lg-12 col-md-12 col-xs-12">
-                        <h5>Resultados de Exames - Edição</h5>
+                        <h5>Resultados de Exames - Alteração</h5>
                         <span style="color:green; font-weight: 500; font-size: 20px;">@Model.PACIENTE.PACI_NM_NOME</span>
                     </div>
                 </div>
@@ -110,13 +110,13 @@
                         @Html.ButtonLinkIndex(text: "Imprimir Resultados", action: "GerarResultadoExamePDFNova", controller: "Paciente")
                         @if ((Int32)Session["VoltarPesquisa"] == 1)
                         {
-                            @Html.ButtonLinkIndex(text: "Voltar", action: "PesquisarTudo", controller: "BaseAdmin")
+                            @Html.ButtonLinkIndex(text: "Voltar", action: "PesquisarTudo", controller: "BaseAdmin", htmlAttributes: new { @class = "btn-loading" })
                         }
                         else
                         {
                             if (ViewBag.VoltaConsulta == 1)
                             {
-                                @Html.ButtonLinkIndex(text: "Voltar", action: "VerListaExameConsulta", controller: "Paciente")
+                                @Html.ButtonLinkIndex(text: "Voltar", action: "VerListaExameConsulta", controller: "Paciente", htmlAttributes: new { @class = "btn-loading" })
                             }
                             else
                             {
@@ -124,21 +124,24 @@
                                 {
                                     if ((Int32)Session["ModoConsulta"] == 1)
                                     {
-                                        @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarProcederConsulta", controller: "Paciente")
+                                        @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarProcederConsulta", controller: "Paciente", htmlAttributes: new { @class = "btn-loading" })
                                     }
                                     else
                                     {
-                                        @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarAnexoPaciente", controller: "Paciente")
+                                        @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarAnexoPaciente", controller: "Paciente", htmlAttributes: new { @class = "btn-loading" })
                                     }
                                 }
                                 else
                                 {
-                                    @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaExames", controller: "Paciente")
+                                    @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaExames", controller: "Paciente", htmlAttributes: new { @class = "btn-loading" })
                                 }
                             }
 
                         }
                         <a href="@Url.Action((String)Session["AjudaNivel"])"  class="btn btn-sm btn-danger" target="_blank">Ajuda</a>                
+                        <span id="loadingIndicator" style="display: none; margin-left: 10px; color: #007bff;">
+                            <i class="fa fa-spinner fa-spin"></i> Processando...
+                        </span>
                     </div>
                     <div class="tabs-container">
                         <ul class="nav nav-tabs">
@@ -161,6 +164,7 @@
                                 <li class="active"><a data-toggle="tab" href="#tab-3">Anotações</a></li>
                             }
                         </ul>
+
                         <div class="tab-content">
                             @*Dados Gerais*@
                             @if ((Int32)Session["NivelExame"] == 1)
@@ -207,7 +211,7 @@
                                             <div class="row" style="width: 100%;">
                                                 <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Resultado de Exame</h4>
                                                 <div class="form-group" style=" margin-left: 5px; margin-right: 5px;">                
-                                                    @Html.ButtonActionSubmit(text: "Confirma edição de Resultado de Exame", htmlAttributes: new { id = "basictoast"})
+                                                    @Html.ButtonActionSubmit(text: "Confirma alteração de Resultado de Exame", htmlAttributes: new { id = "basictoast", @class = "btn-loading1"})
                                                 </div>
                                                 <div class="col-lg-6 col-md-6 col-xs-12">
                                                     <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
@@ -244,7 +248,7 @@
                                                             </div>
                                                             <div class="col-lg-3 col-md-3 col-xs-12">
                                                                 <br />
-                                                                <button style="margin-left: -15px;" class="btn btn-sm btn-primary" id="buttonLab" type="button">Acessar Site do Laboratório</button>
+                                                                <button style="margin-left: -15px;" class="btn btn-sm btn-primary btn-loading" id="buttonLab" type="button">Acessar Site do Laboratório</button>
                                                             </div>
                                                         </div>
                                                     }
@@ -313,7 +317,7 @@
                                             <div class="row" style="width: 100%;">
                                                 <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Resultado de Exame</h4>
                                                 <div class="form-group" style=" margin-left: 5px; margin-right: 5px;">                
-                                                    @Html.ButtonActionSubmit(text: "Confirma edição de Resultado de Exame", htmlAttributes: new { id = "basictoast"})
+                                                    @Html.ButtonActionSubmit(text: "Confirma alteração de Resultado de Exame", htmlAttributes: new { id = "basictoast", @class = "btn-loading1"})
                                                 </div>
                                                 <div class="col-lg-6 col-md-6 col-xs-12">
                                                     <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
@@ -350,7 +354,7 @@
                                                             </div>
                                                             <div class="col-lg-3 col-md-3 col-xs-12">
                                                                 <br />
-                                                                <button style="margin-left: -15px;" class="btn btn-sm btn-primary" id="buttonLab" type="button">Acessar Site do Laboratório</button>
+                                                                <button style="margin-left: -15px;" class="btn btn-sm btn-primary btn-loading" id="buttonLab" type="button">Acessar Site do Laboratório</button>
                                                             </div>
                                                         </div>
                                                     }
@@ -452,18 +456,18 @@
                                                                                 <td class="td-one-action">
                                                                                     @if (cond.PAEO_IN_TIPO == 1 || cond.PAEO_IN_TIPO == 2)
                                                                                     {
-                                                                                        @Html.TableLinkDetails(cond.PAEO_CD_ID, "VerAnexoExamePaciente", "fa-camera", "Visualizar")
+                                                                                        @Html.TableLinkDetails(cond.PAEO_CD_ID, "VerAnexoExamePaciente", "fa-camera btn-loading", "Visualizar")
                                                                                     }
                                                                                     @if (cond.PAEO_IN_TIPO == 4)
 	                                                                                {
-                                                                                        @Html.TableLinkDetails(cond.PAEO_CD_ID, "VerAnexoExamePacienteAudio","fa-volume-up", "Visualizar")
+                                                                                        @Html.TableLinkDetails(cond.PAEO_CD_ID, "VerAnexoExamePacienteAudio","fa-volume-up btn-loading", "Visualizar")
 	                                                                                }
                                                                                     @if (cond.PAEO_IN_TIPO == 3)
                                                                                     {
                                                                                         <a title="Visualizar" class="fa fa-camera fa-lg" href="~/PdfViewer/web/viewer.html?file=@(cond.PAEO_AQ_ARQUIVO.Replace("~", ""))&ReturnUrl=@Request.Url.AbsolutePath" target="_blank"></a>
                                                                                     }
-                                                                                    <span style="color: #337ab7; cursor:pointer;" alt="Desativar" class="tbl-link fa-lg fa fa-trash-o" onclick="ShowModalExcluirAnexo('/Paciente/ExcluirAnexoExame/@cond.PAEO_CD_ID')" title="Excluir"></span>
-                                                                                    @Html.TableLinkDetails(cond.PAEO_CD_ID, "DownloadPacienteExame", "fa-download", "Descarga (Download)")
+                                                                                    <span style="color: #337ab7; cursor:pointer;" alt="Desativar" class="tbl-link fa-lg fa fa-trash-o btn-loading" onclick="ShowModalExcluirAnexo('/Paciente/ExcluirAnexoExame/@cond.PAEO_CD_ID')" title="Excluir"></span>
+                                                                                    @Html.TableLinkDetails(cond.PAEO_CD_ID, "DownloadPacienteExame", "fa-download btn-loading", "Descarga (Download)")
                                                                                 </td>
                                                                             </tr>
                                                                         }
@@ -473,7 +477,7 @@
                                                             <div class="form-group">
                                                                 <div class="col-lg-12 col-md-12 col-xs-12">
                                                                     <input style="float: left; margin-right: 5px;" type="file" name="file" id="file" class="btn btn-sm btn-warning" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="ATENÇÃO - Antes de anexar arquivos certifique-se de que eles estejam livres de vírus e outras ameaças.  " />
-                                                                    <input style="float: left; margin-right: 5px;" type="submit" value="Incluir Anexo" class="btn btn-sm btn-success" />
+                                                                    <input style="float: left; margin-right: 5px;" type="submit" value="Incluir Anexo" class="btn btn-sm btn-success btn-loading" />
                                                                 </div>
                                                             </div>
                                                     }
@@ -558,18 +562,18 @@
                                                                                 <td class="td-one-action">
                                                                                     @if (cond.PAEO_IN_TIPO == 1 || cond.PAEO_IN_TIPO == 2)
                                                                                     {
-                                                                                        @Html.TableLinkDetails(cond.PAEO_CD_ID, "VerAnexoExamePaciente", "fa-camera", "Visualizar")
+                                                                                        @Html.TableLinkDetails(cond.PAEO_CD_ID, "VerAnexoExamePaciente", "fa-camera btn-loading", "Visualizar")
                                                                                     }
                                                                                     @if (cond.PAEO_IN_TIPO == 4)
 	                                                                                {
-                                                                                        @Html.TableLinkDetails(cond.PAEO_CD_ID, "VerAnexoExamePacienteAudio","fa-volume-up", "Visualizar")
+                                                                                        @Html.TableLinkDetails(cond.PAEO_CD_ID, "VerAnexoExamePacienteAudio","fa-volume-up btn-loading", "Visualizar")
 	                                                                                }
                                                                                     @if (cond.PAEO_IN_TIPO == 3)
                                                                                     {
                                                                                         <a title="Visualizar" class="fa fa-camera fa-lg" href="~/PdfViewer/web/viewer.html?file=@(cond.PAEO_AQ_ARQUIVO.Replace("~", ""))&ReturnUrl=@Request.Url.AbsolutePath" target="_blank"></a>
                                                                                     }
-                                                                                    <span style="color: #337ab7; cursor:pointer;" alt="Desativar" class="tbl-link fa-lg fa fa-trash-o" onclick="ShowModalExcluirAnexo('/Paciente/ExcluirAnexoExame/@cond.PAEO_CD_ID')" title="Excluir Anexo"></span>
-                                                                                    @Html.TableLinkDetails(cond.PAEO_CD_ID, "DownloadPacienteExame", "fa-download", "Descarga (Download)")
+                                                                                    <span style="color: #337ab7; cursor:pointer;" alt="Desativar" class="tbl-link fa-lg fa fa-trash-o btn-loading" onclick="ShowModalExcluirAnexo('/Paciente/ExcluirAnexoExame/@cond.PAEO_CD_ID')" title="Excluir"></span>
+                                                                                    @Html.TableLinkDetails(cond.PAEO_CD_ID, "DownloadPacienteExame", "fa-download btn-loading", "Descarga (Download)")
                                                                                 </td>
                                                                             </tr>
                                                                         }
@@ -579,7 +583,7 @@
                                                             <div class="form-group">
                                                                 <div class="col-lg-12 col-md-12 col-xs-12">
                                                                     <input style="float: left; margin-right: 5px;" type="file" name="file" id="file" class="btn btn-sm btn-warning" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="ATENÇÃO - Antes de anexar arquivos certifique-se de que eles estejam livres de vírus e outras ameaças.  " />
-                                                                    <input style="float: left; margin-right: 5px;" type="submit" value="Incluir Anexo" class="btn btn-sm btn-success" />
+                                                                    <input style="float: left; margin-right: 5px;" type="submit" value="Incluir Anexo" class="btn btn-sm btn-success btn-loading" />
                                                                 </div>
                                                             </div>
                                                     }
@@ -607,9 +611,9 @@
                                                                 <a href="" class="pull-left">
                                                                     <img src="@Url.Content(item.USUARIO.USUA_AQ_FOTO)" style="width: auto; height: auto; max-height: 110px; max-width: 90px;">
                                                                 </a>
-                                                                <span style="color: #337ab7; cursor:pointer;" alt="Excluir" class="tbl-link fa-lg fa fa-trash-o" onclick="ShowModalExcluirAnotacao('/Paciente/ExcluirAnotacaoPacienteExame/@item.PAET_CD_ID')" title="Excluir Anotação"></span>
+                                                                <span style="color: #337ab7; cursor:pointer;" alt="Excluir" class="tbl-link fa-lg fa fa-trash-o btn-loading" onclick="ShowModalExcluirAnotacao('/Paciente/ExcluirAnotacaoPacienteExame/@item.PAET_CD_ID')" title="Excluir Anotação"></span>
                                                                 <div class="media-body">
-                                                                    <a href="@Url.Action("EditarAnotacaoPacienteExame", "Paciente", new { id = item.PAET_CD_ID })" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Abre a página de edição da anotação" >
+                                                                    <a href="@Url.Action("EditarAnotacaoPacienteExame", "Paciente", new { id = item.PAET_CD_ID })" class="btn-loading" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Abre a página de alteração da anotação" >
                                                                         @item.USUARIO.USUA_NM_NOME
                                                                     </a>
                                                                     <small class="text-muted">@item.PAET_DT_ANOTACAO.Value.ToString("dd/MM/yyyy HH:mm")</small>
@@ -617,7 +621,7 @@
                                                             </div>
                                                             <div class="social-body">
                                                                 <p>
-                                                                    @item.PAET_TX_ANOTACAO
+                                                                    <span style="white-space: pre-wrap;">@item.PAET_TX_ANOTACAO</span>
                                                                 </p>
                                                             </div>
                                                         </div>
@@ -627,7 +631,7 @@
                                         </div>
                                         <br />
                                         <div class="form-group">
-                                            @Html.ButtonLinkIndex(text: "Incluir Nova Anotação", action: "IncluirAnotacaoPacienteExame", controller: "Paciente")
+                                            @Html.ButtonLinkIndex(text: "Incluir Nova Anotação", action: "IncluirAnotacaoPacienteExame", controller: "Paciente", htmlAttributes: new { @class = "btn-loading" })
                                         </div>
                                     </div>
                                 </div>
@@ -648,9 +652,9 @@
                                                                 <a href="" class="pull-left">
                                                                     <img src="@Url.Content(item.USUARIO.USUA_AQ_FOTO)" style="width: auto; height: auto; max-height: 110px; max-width: 90px;">
                                                                 </a>
-                                                                <span style="color: #337ab7; cursor:pointer;" alt="Excluir" class="tbl-link fa-lg fa fa-trash-o" onclick="ShowModalExcluirAnotacao('/Paciente/ExcluirAnotacaoPacienteExame/@item.PAET_CD_ID')" title="Excluir Anotação"></span>
+                                                                <span style="color: #337ab7; cursor:pointer;" alt="Excluir" class="tbl-link fa-lg fa fa-trash-o btn-loading" onclick="ShowModalExcluirAnotacao('/Paciente/ExcluirAnotacaoPacienteExame/@item.PAET_CD_ID')" title="Excluir Anotação"></span>
                                                                 <div class="media-body">
-                                                                    <a href="@Url.Action("EditarAnotacaoPacienteExame", "Paciente", new { id = item.PAET_CD_ID })" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Abre a página de edição da anotação" >
+                                                                    <a href="@Url.Action("EditarAnotacaoPacienteExame", "Paciente", new { id = item.PAET_CD_ID })" class="btn-loading" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Abre a página de alteração da anotação" >
                                                                         @item.USUARIO.USUA_NM_NOME
                                                                     </a>
                                                                     <small class="text-muted">@item.PAET_DT_ANOTACAO.Value.ToString("dd/MM/yyyy HH:mm")</small>
@@ -658,7 +662,7 @@
                                                             </div>
                                                             <div class="social-body">
                                                                 <p>
-                                                                    @item.PAET_TX_ANOTACAO
+                                                                    <span style="white-space: pre-wrap;">@item.PAET_TX_ANOTACAO</span>
                                                                 </p>
                                                             </div>
                                                         </div>
@@ -668,7 +672,7 @@
                                         </div>
                                         <br />
                                         <div class="form-group">
-                                            @Html.ButtonLinkIndex(text: "Incluir Nova Anotação", action: "IncluirAnotacaoPacienteExame", controller: "Paciente")
+                                            @Html.ButtonLinkIndex(text: "Incluir Nova Anotação", action: "IncluirAnotacaoPacienteExame", controller: "Paciente", htmlAttributes: new { @class = "btn-loading" })
                                         </div>
                                     </div>
                                 </div>
@@ -724,6 +728,48 @@
             navigator.sendBeacon('../ControleAcesso/LogSessionTime');
         }; 
     </script>
+
+    <script type="text/javascript">
+        $(document).ready(function () { 
+            $('.btn-loading').on('click', function (e) {            
+                $(this).prop('disabled', true);
+                $(this).addClass('disabled');
+                $('#loadingIndicator').show();
+                var tagName = $(this).prop('tagName').toLowerCase();
+                if (tagName === 'a') {
+                    e.preventDefault(); 
+                    var targetUrl = $(this).attr('href');
+                    window.location.href = targetUrl;
+
+                } else if (tagName === 'button' || tagName === 'input') {
+                    $(this).closest('form').submit();
+                }
+            });
+        });
+    </script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('.btn-loading1').on('click', function (e) {
+            
+                var $this = $(this);
+                var tagName = $this.prop('tagName').toLowerCase();
+                $this.addClass('disabled'); 
+                $('#loadingIndicator').show();
+
+                if (tagName === 'a') {
+                    e.preventDefault();
+                
+                    var targetUrl = $this.attr('href');
+                    window.location.href = targetUrl;
+                
+                } else if (tagName === 'button' || tagName === 'input') {               
+                    $this.closest('form').submit();
+                    $this.prop('disabled', true);
+                }
+            });
+        });
+    </script>
+
     <script>
         $(function () {
             limpaModal();
@@ -735,13 +781,13 @@
         }
 
         function ShowModalExcluirAnotacao(url) {
-            $('#modal').find('.modal-footer').prepend('<a id="btnModal" alt="Desativar" class="btn btn-primary" href="' + url + '" target="_self" title="Desativar">Confirmar</a>');
+            $('#modal').find('.modal-footer').prepend('<a id="btnModal" alt="Desativar" class="btn btn-primary btn-loading" href="' + url + '" target="_self" title="Desativar">Confirmar</a>');
             $('#modal').find('.modal-body').html('Confirma exclusão da Anotação?');
             $('#modal').find('.modal-header').prepend('<h5 id="modalTitle" class="modal-title">Confimar Exclusão</h5>');
             $('#modal').modal('show');
         }
         function ShowModalExcluirAnexo(url) {
-            $('#modal').find('.modal-footer').prepend('<a id="btnModal" alt="Desativar" class="btn btn-primary" href="' + url + '" target="_self" title="Desativar">Confirmar</a>');
+            $('#modal').find('.modal-footer').prepend('<a id="btnModal" alt="Desativar" class="btn btn-primary btn-loading" href="' + url + '" target="_self" title="Desativar">Confirmar</a>');
             $('#modal').find('.modal-body').html('Confirma exclusão de Anexo?');
             $('#modal').find('.modal-header').prepend('<h5 id="modalTitle" class="modal-title">Confimar Exclusão</h5>');
             $('#modal').modal('show');

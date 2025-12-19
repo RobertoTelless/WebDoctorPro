@@ -13,8 +13,6 @@ namespace DataServices.Repositories
         {
             IQueryable<PACIENTE_SOLICITACAO> query = Db.PACIENTE_SOLICITACAO;
             query = query.Where(p => p.PASO_CD_ID == id);
-            query = query.Include(p => p.TIPO_EXAME);
-            query = query.Include(p => p.PACIENTE);
             return query.FirstOrDefault();
         }
 
