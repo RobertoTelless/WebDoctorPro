@@ -9312,6 +9312,10 @@ namespace GEDSys_Presentation.Controllers
                 {
                     contentType = "audio/mpeg";
                 }
+                else if (arquivo.Contains(".mp4"))
+                {
+                    contentType = "video/mp4";
+                }
                 Session["NivelPaciente"] = 2;
                 return File(arquivo, contentType, nomeDownload);
             }
@@ -10165,6 +10169,10 @@ namespace GEDSys_Presentation.Controllers
                 else if (arquivo.Contains(".mpeg"))
                 {
                     contentType = "audio/mpeg";
+                }
+                else if (arquivo.Contains(".mp4"))
+                {
+                    contentType = "video/mp4";
                 }
                 Session["NivelPaciente"] = 2;
                 return File(arquivo, contentType, nomeDownload);
@@ -19318,6 +19326,68 @@ namespace GEDSys_Presentation.Controllers
                 .Select(n => new { label = n, value = n })
                 .ToList();
             return Json(resultados, JsonRequestBehavior.AllowGet);
+        }
+
+        [HttpPost]
+        public JsonResult GetRemedioNome(String term)
+        {
+            List<PACIENTE_PRESCRICAO_ITEM> usu = CarregaItemPrescricoes();
+            List<String> nomes = usu.Select(p => p.PAPI_NM_REMEDIO).Distinct().ToList();
+            var resultados = nomes
+                .Where(n => n.ToLower().StartsWith(term.ToLower()))
+                .Select(n => new { label = n, value = n })
+                .ToList();
+            return Json(resultados, JsonRequestBehavior.AllowGet);
+        }
+
+        [HttpPost]
+        public JsonResult GetGenericoNome(String term)
+        {
+            List<PACIENTE_PRESCRICAO_ITEM> usu = CarregaItemPrescricoes();
+            List<String> nomes = usu.Select(p => p.PAPI_NM_GENERICO).Distinct().ToList();
+            var resultados = nomes
+                .Where(n => n.ToLower().StartsWith(term.ToLower()))
+                .Select(n => new { label = n, value = n })
+                .ToList();
+            return Json(resultados, JsonRequestBehavior.AllowGet);
+        }
+
+        public List<PACIENTE_PRESCRICAO_ITEM> CarregaItemPrescricoes()
+        {
+            try
+            {
+                Int32 idAss = (Int32)Session["IdAssinante"];
+                List<PACIENTE_PRESCRICAO_ITEM> conf = new List<PACIENTE_PRESCRICAO_ITEM>();
+                if (Session["ItensPrescricoes"] == null)
+                {
+                    conf = baseApp.GetAllPrescricaoItem(idAss);
+                }
+                else
+                {
+                    if ((Int32)Session["ItensPrescricoesAlterada"] == 1)
+                    {
+                        conf = baseApp.GetAllPrescricaoItem(idAss);
+                    }
+                    else
+                    {
+                        conf = (List<PACIENTE_PRESCRICAO_ITEM>)Session["ItensPrescricoes"];
+                    }
+                }
+                Session["ItensPrescricoes"] = conf;
+                Session["ItensPrescricoesAlterada"] = 0;
+                return conf;
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Paciente";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Paciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return null;
+            }
         }
 
         public DTO_Paciente_Acompanhamento MontarPacienteAcompanhamentoDTOObj(PACIENTE_ANAMNESE_ANOTACAO l)

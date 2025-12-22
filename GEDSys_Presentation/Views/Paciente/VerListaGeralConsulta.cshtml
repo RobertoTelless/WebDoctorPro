@@ -66,8 +66,11 @@
                         <div class="row">
                             <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
                                 <div class="col-lg-12 col-md-12 col-xs-12">
-                                    @Html.ButtonLinkIndex(text: "Voltar", controller: "Paciente", action: "VoltarProcederConsulta")
+                                    @Html.ButtonLinkIndex(text: "Voltar", controller: "Paciente", action: "VoltarProcederConsulta", htmlAttributes: new { @class = "btn-loading" })
                                     <a href="@Url.Action((String)Session["AjudaNivel"])"  class="btn btn-sm btn-danger" target="_blank">Ajuda</a>                
+                                    <span id="loadingIndicator" style="display: none; margin-left: 10px; color: #007bff;">
+                                        <i class="fa fa-spinner fa-spin"></i> Processando...
+                                    </span>
                                 </div>
                             </div>
                         </div>
@@ -146,21 +149,20 @@
                                         <table class="table table-striped table-bordered table-hover dataTables-atestado">
                                             <thead style="background-color:lightsteelblue">
                                                 <tr>
-                                                    <th style="width: auto">Identificador</th>
                                                     <th style="width: auto">Data da Emissão</th>
+                                                    <th style="width: auto">Identificador</th>
                                                     <th style="width: auto">Tipo de Atestado</th>
                                                     <th style="width: auto">Finalidade</th>
                                                     <th style="width: auto">Enviado</th>
                                                     <th style="width: auto">Data de Envio</th>
-                                                    <th style="width: 0.01px"></th>
                                                 </tr>
                                             </thead>
                                             <tbody>
                                                 @foreach (var cond in (Model.PACIENTE_ATESTADO.Where(p => p.PAAT_IN_ATIVO == 1).OrderByDescending(p => p.PAAT_DT_DATA)))
                                                 {
                                                     <tr>
-                                                        <td style="width: auto">@cond.PAAT_GU_GUID</td>
                                                         <td style="width: auto">@cond.PAAT_DT_DATA.Value.ToShortDateString()</td>
+                                                        <td style="width: auto">@cond.PAAT_GU_GUID</td>
                                                         <td style="width: auto">@cond.TIPO_ATESTADO.TIAT_NM_NOME</td>
                                                         <td style="width: auto">@cond.PAAT_NM_TITULO</td>
                                                         @if (cond.PAAT__IN_ENVIADO == 1)
@@ -214,8 +216,8 @@
                                         <table class="table table-striped table-bordered table-hover dataTables-atestado">
                                             <thead style="background-color:lightsteelblue">
                                                 <tr>
-                                                    <th style="width: auto">Identificador</th>
                                                     <th style="width: auto">Data da Emissão</th>
+                                                    <th style="width: auto">Identificador</th>
                                                     <th style="width: auto">Tipo de Exame</th>
                                                     <th style="width: auto">Nome do Exame</th>
                                                     <th style="width: auto">Enviado</th>
@@ -227,8 +229,8 @@
                                                 @foreach (var cond in (Model.PACIENTE_SOLICITACAO.Where(p => p.PASO_IN_ATIVO == 1).OrderByDescending(p => p.PASO_DT_EMISSAO)))
                                                 {
                                                     <tr>
-                                                        <td style="width: auto">@cond.PASO_GU_GUID</td>
                                                         <td style="width: auto">@cond.PASO_DT_EMISSAO.Value.ToShortDateString() @cond.PASO_DT_EMISSAO.Value.ToShortTimeString()</td>
+                                                        <td style="width: auto">@cond.PASO_GU_GUID</td>
                                                         <td style="width: auto">@cond.TIPO_EXAME.TIEX_NM_NOME</td>
                                                         <td style="width: auto">@cond.PASO_NM_TITULO</td>
                                                         @if (cond.PASO_IN_ENVIADO == 1)
@@ -419,22 +421,14 @@
 @section Styles {
     <link href="~/Content/themes/base/jquery-ui.min.css" rel="stylesheet" />
     <link href="~/Content/themes/base/all.css" rel="stylesheet" />
-    <link href="~/Content/jquery.datetimepicker.css" rel="stylesheet" />
     @Styles.Render("~/Content/plugins/dataTables/dataTablesStyles")
     @Styles.Render("~/plugins/jasnyBootstrapStyles")
-    @Styles.Render("~/plugins/toastrStyles")
-    @Styles.Render("~/Content/plugins/iCheck/iCheckStyles")
-    @Styles.Render("~/plugins/touchSpinStyles")
-    @Styles.Render("~/plugins/sweetAlertStyles")
     @Styles.Render("~/plugins/toastrStyles")
 
 }
 @section Scripts {
-    <script src="~/Scripts/jquery.datetimepicker.full.min.js"></script>
     <script type="text/javascript" src="~/Scripts/moment.min.js"></script>
     <script type="text/javascript" src="~/Scripts/bootstrap.min.js"></script>
-    <script type="text/javascript" src="~/Scripts/jquery.datetimepicker"></script>
-
     @Scripts.Render("~/plugins/toastr")
     <script src="~/Scripts/jquery-ui-1.12.1.min.js"></script>
     @Scripts.Render("~/plugins/dataTables")
@@ -442,90 +436,26 @@
     @Scripts.Render("~/plugins/jasnyBootstrap")
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.maskedinput/1.4.1/jquery.maskedinput.js"></script>
     <script src="~/Scripts/uploadAnexo.js"></script>
-    <script src="~/Scripts/jquery-ui-1.12.1.min.js"></script>
-    @Scripts.Render("~/plugins/toastr")
-    @Scripts.Render("~/plugins/dataTables")
-    @Scripts.Render("~/bundles/inputmask")
-    @Scripts.Render("~/plugins/jasnyBootstrap")
-    @Scripts.Render("~/plugins/sparkline")
-    @Scripts.Render("~/plugins/switchery")
-    @Scripts.Render("~/plugins/touchSpin")
-    @Scripts.Render("~/plugins/iCheck")
-    @Scripts.Render("~/plugins/sweetAlert")
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.maskedinput/1.4.1/jquery.maskedinput.js"></script>
-    <script src="~/Scripts/uploadAnexo.js"></script> 
    
-    <script>
-        $(function () {
-            limpaModal();
-        });
+    <script type="text/javascript">
+        $(document).ready(function () { 
+            $('.btn-loading').on('click', function (e) {            
+                $(this).prop('disabled', true);
+                $(this).addClass('disabled');
+                $('#loadingIndicator').show();
+                var tagName = $(this).prop('tagName').toLowerCase();
+                if (tagName === 'a') {
+                    e.preventDefault(); 
+                    var targetUrl = $(this).attr('href');
+                    window.location.href = targetUrl;
 
-        function limpaModal() {
-            $('#btnModal').remove();
-            $('#modalTitle').remove();
-        }
-
-        function ShowModalExcluirAtestado(url) {
-            $('#modal').find('.modal-footer').prepend('<a id="btnModal" alt="Desativar" class="btn btn-primary" href="' + url + '" target="_self" title="Desativar">Confirmar</a>');
-            $('#modal').find('.modal-body').html('Confirma exclusão de Atestado?');
-            $('#modal').find('.modal-header').prepend('<h5 id="modalTitle" class="modal-title">Confimar Exclusão</h5>');
-            $('#modal').modal('show');
-        }
-
-        function ShowModalConfirmarEnvioAtestado(url) {
-            $('#modal').find('.modal-footer').prepend('<a id="btnModal" alt="Reativar" class="btn btn-primary" href="' + url + '" target="_self" title="Reativar">Confirmar</a>');
-            $('#modal').find('.modal-body').html('Confirma envio da Atestado?');
-            $('#modal').find('.modal-header').prepend('<h5 id="modalTitle" class="modal-title">Confimar Envio</h5>');
-            $('#modal').modal('show');
-        }
-    </script>
-    <script type="text/javascript" language="javascript">
-        $(function () {
-            $('.date-picker').datepicker(
-                {
-                    dateFormat: 'dd/mm/yy',
-                    dayNames: ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'],
-                    dayNamesMin: ['D', 'S', 'T', 'Q', 'Q', 'S', 'S', 'D'],
-                    dayNamesShort: ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'],
-                    monthNames: ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'],
-                    monthNamesShort: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'],
-                    nextText: 'Proximo',
-                    prevText: 'Anterior',
-                    showOn: "focus"
+                } else if (tagName === 'button' || tagName === 'input') {
+                    $(this).closest('form').submit();
                 }
-            )
-                .css("display", "normal")
-                .next("button").button({
-                    icons: { primary: "ui-icon-calendar" },
-                    label: "Selecione uma data",
-                    text: false
-                });
-        });
-    </script>
-    <script type="text/javascript">
-        $(function () {
-            $("#dn").mask("99/99/9999");
-        });
-    </script>
-    <script type="text/javascript">
-        $(function () {
-            $('.time-picker').datetimepicker({
-                datepicker: false,
-                format: 'H:i'
-            });
-            $('.time-picker1').datetimepicker({
-                datepicker: false,
-                format: 'H:i'
             });
         });
     </script>
-    <script type="text/javascript">
-        $(function () {
-            $('#datetimepicker3').click(function () {
-                $('.time-picker').datetimepicker('show');
-            });
-        });
-    </script>
+
     <script type="text/javascript">
         $(document).ready(function () {
 

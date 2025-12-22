@@ -4918,6 +4918,10 @@ namespace GEDSys_Presentation.Controllers
                 {
                     contentType = "audio/mpeg";
                 }
+                else if (arquivo.Contains(".mp4"))
+                {
+                    contentType = "video/mp4";
+                }
                 Session["NivelPaciente"] = 2;
                 return File(arquivo, contentType, nomeDownload);
             }
@@ -6984,14 +6988,22 @@ namespace GEDSys_Presentation.Controllers
                     Session["ListaPrescricao"] = null;
                     Session["IdPaciente"] = item.PACI_CD_ID;
 
+                    // Configura serilização
+                    JsonSerializerSettings settings = new JsonSerializerSettings
+                    {
+                        ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+                        NullValueHandling = NullValueHandling.Ignore
+                    };
+
                     // Monta Log
-                    String json = JsonConvert.SerializeObject(vm);
+                    DTO_Paciente_Prescricao dto = MontarPrescricaoDTOObj(item);
+                    String json = JsonConvert.SerializeObject(dto, settings);
                     LOG log = new LOG
                     {
                         LOG_DT_DATA = DateTime.Now,
                         ASSI_CD_ID = usuarioLogado.ASSI_CD_ID,
                         USUA_CD_ID = usuarioLogado.USUA_CD_ID,
-                        LOG_NM_OPERACAO = "iprPACI",
+                        LOG_NM_OPERACAO = "Paciente - Prescrição - Criação",
                         LOG_IN_ATIVO = 1,
                         LOG_TX_REGISTRO = json,
                         LOG_IN_SISTEMA = 6
@@ -7007,8 +7019,8 @@ namespace GEDSys_Presentation.Controllers
                     hist.PAHI_DT_DATA = DateTime.Now;
                     hist.PAHI_IN_TIPO = 3;
                     hist.PAHI_IN_CHAVE = item.PAPR_CD_ID;
-                    hist.PAHI_NM_OPERACAO = "Paciente - Inclusão de Prescrição";
-                    hist.PAHI_DS_DESCRICAO = "Paciente " + pac.PACI_NM_NOME + " - Prescrição incluída " + item.PAPR_GU_GUID;
+                    hist.PAHI_NM_OPERACAO = "Paciente - Criação de Prescrição";
+                    hist.PAHI_DS_DESCRICAO = "Paciente " + pac.PACI_NM_NOME + " - Prescrição criada " + item.PAPR_GU_GUID;
                     Int32 voltaHist = baseApp.ValidateCreateHistorico(hist);
 
                     return RedirectToAction("EditarPrescricaoNova", new { id = (Int32)Session["IdPrescricao"] });
@@ -7050,7 +7062,7 @@ namespace GEDSys_Presentation.Controllers
                     if (usuario.PERFIL.PERF_IN_PRESCRICAO_ALTERAR == 0)
                     {
                         Session["MensPermissao"] = 2;
-                        Session["ModuloPermissao"] = "Paciente - Precrição - Edição";
+                        Session["ModuloPermissao"] = "Paciente - Prescrição - Edição";
                         return RedirectToAction("VoltarAnexoPaciente");
                     }
                 }
@@ -7124,12 +7136,12 @@ namespace GEDSys_Presentation.Controllers
                 try
                 {
                     // Sanitização
-                    vm.PAPI_NM_REMEDIO = CrossCutting.UtilitariosGeral.CleanStringDocto(vm.PAPI_NM_REMEDIO);
-                    vm.PAPI_DS_POSOLOGIA = CrossCutting.UtilitariosGeral.CleanStringDocto(vm.PAPI_DS_POSOLOGIA);
-                    vm.PAPI_NM_GENERICO = CrossCutting.UtilitariosGeral.CleanStringDocto(vm.PAPI_NM_GENERICO);
+                    vm.PAPI_NM_REMEDIO = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(vm.PAPI_NM_REMEDIO);
+                    vm.PAPI_DS_POSOLOGIA = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(vm.PAPI_DS_POSOLOGIA);
+                    vm.PAPI_NM_GENERICO = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(vm.PAPI_NM_GENERICO);
                     vm.PACIENTE_PRESCRICAO.PAPR_NM_REMEDIO = "-";
                     vm.PAPI_NM_LABORATORIO = (String)Session["Laboratorio"];
-                    vm.PAPI_NR_QUANTIDADE = CrossCutting.UtilitariosGeral.CleanStringDocto(vm.PAPI_NR_QUANTIDADE);
+                    vm.PAPI_NR_QUANTIDADE = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(vm.PAPI_NR_QUANTIDADE);
 
                     // Critica
                     if (vm.PACIENTE_PRESCRICAO.TICO_CD_ID == 2)
@@ -7151,14 +7163,22 @@ namespace GEDSys_Presentation.Controllers
                     Session["NivelPaciente"] = 8;
                     Session["ListaMedicamentos"] = null;
 
+                    // Configura serilização
+                    JsonSerializerSettings settings = new JsonSerializerSettings
+                    {
+                        ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+                        NullValueHandling = NullValueHandling.Ignore
+                    };
+
                     // Monta Log
-                    String json = JsonConvert.SerializeObject(vm);
+                    DTO_Paciente_ItemPrescricao dto = MontarItemPrescricaoDTOObj(item);
+                    String json = JsonConvert.SerializeObject(dto, settings);
                     LOG log = new LOG
                     {
                         LOG_DT_DATA = DateTime.Now,
                         ASSI_CD_ID = usuarioLogado.ASSI_CD_ID,
                         USUA_CD_ID = usuarioLogado.USUA_CD_ID,
-                        LOG_NM_OPERACAO = "ipiPACI",
+                        LOG_NM_OPERACAO = "Paciente - Item de Prescrição - Inclusão",
                         LOG_IN_ATIVO = 1,
                         LOG_TX_REGISTRO = json,
                         LOG_IN_SISTEMA = 6
@@ -7181,7 +7201,7 @@ namespace GEDSys_Presentation.Controllers
                     hist.PAHI_IN_TIPO = 4;
                     hist.PAHI_IN_CHAVE = item.PAPI_CD_ID;
                     hist.PAHI_NM_OPERACAO = "Paciente - Inclusão de Item de Prescrição";
-                    hist.PAHI_DS_DESCRICAO = "Paciente " + pac.PACI_NM_NOME + " - Prescrição " + pres.PAPR_GU_GUID + " Item incluído " + item.PAPI_NM_REMEDIO;
+                    hist.PAHI_DS_DESCRICAO = "Paciente: " + pac.PACI_NM_NOME + " - Prescrição: " + pres.PAPR_GU_GUID + " Item incluído: " + item.PAPI_NM_REMEDIO;
                     Int32 voltaHist = baseApp.ValidateCreateHistorico(hist);
 
                     // Cadastra medicamento
@@ -7277,7 +7297,7 @@ namespace GEDSys_Presentation.Controllers
                     if (usuario.PERFIL.PERF_IN_PRESCRICAO_ALTERAR == 0)
                     {
                         Session["MensPermissao"] = 2;
-                        Session["ModuloPermissao"] = "Paciente - Precrição - Edição";
+                        Session["ModuloPermissao"] = "Paciente - Prescrição - Edição";
                         return RedirectToAction("VoltarAnexoPaciente");
                     }
                 }
@@ -7304,6 +7324,7 @@ namespace GEDSys_Presentation.Controllers
                 Session["AjudaNivel"] = "../BaseAdmin/Ajuda/9/Ajuda9_4.pdf";
                 PACIENTE_PRESCRICAO_ITEM item = baseApp.GetPrescricaoItemById(id);
                 PacientePrescricaoItemViewModel vm = Mapper.Map<PACIENTE_PRESCRICAO_ITEM, PacientePrescricaoItemViewModel>(item);
+                Session["ItemPrescricao"] = item;
 
                 // Grava Acesso
                 ControleAcessoMetodo grava = new ControleAcessoMetodo(aceApp);
@@ -7340,9 +7361,9 @@ namespace GEDSys_Presentation.Controllers
                 try
                 {
                     // Sanitização
-                    vm.PAPI_NM_REMEDIO = CrossCutting.UtilitariosGeral.CleanStringDocto(vm.PAPI_NM_REMEDIO);
-                    vm.PAPI_DS_POSOLOGIA = CrossCutting.UtilitariosGeral.CleanStringDocto(vm.PAPI_DS_POSOLOGIA);
-                    vm.PAPI_NM_GENERICO = CrossCutting.UtilitariosGeral.CleanStringDocto(vm.PAPI_NM_GENERICO);
+                    vm.PAPI_NM_REMEDIO = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(vm.PAPI_NM_REMEDIO);
+                    vm.PAPI_DS_POSOLOGIA = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(vm.PAPI_DS_POSOLOGIA);
+                    vm.PAPI_NM_GENERICO = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(vm.PAPI_NM_GENERICO);
 
                     // Executa a operação
                     PACIENTE_PRESCRICAO_ITEM item = Mapper.Map<PacientePrescricaoItemViewModel, PACIENTE_PRESCRICAO_ITEM>(vm);
@@ -7354,16 +7375,27 @@ namespace GEDSys_Presentation.Controllers
                     Session["NivelPaciente"] = 8;
                     Session["ListaMedicamentos"] = null;
 
+                    // Configura serilização
+                    JsonSerializerSettings settings = new JsonSerializerSettings
+                    {
+                        ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+                        NullValueHandling = NullValueHandling.Ignore
+                    };
+
                     // Monta Log
-                    String json = JsonConvert.SerializeObject(vm);
+                    DTO_Paciente_ItemPrescricao dto = MontarItemPrescricaoDTOObj(item);
+                    String json = JsonConvert.SerializeObject(dto, settings);
+                    DTO_Paciente_ItemPrescricao dtoAntes = MontarItemPrescricaoDTOObj((PACIENTE_PRESCRICAO_ITEM)Session["ItemPrescricao"]);
+                    String jsonAntes = JsonConvert.SerializeObject(dtoAntes, settings);
                     LOG log = new LOG
                     {
                         LOG_DT_DATA = DateTime.Now,
                         ASSI_CD_ID = usuario.ASSI_CD_ID,
                         USUA_CD_ID = usuario.USUA_CD_ID,
-                        LOG_NM_OPERACAO = "epiPACI",
+                        LOG_NM_OPERACAO = "Paciente - Item de Prescrição - Alteração",
                         LOG_IN_ATIVO = 1,
                         LOG_TX_REGISTRO = json,
+                        LOG_TX_REGISTRO_ANTES = jsonAntes,
                         LOG_IN_SISTEMA = 6
                     };
                     Int32 volta1 = logApp.ValidateCreate(log);
@@ -7378,8 +7410,8 @@ namespace GEDSys_Presentation.Controllers
                     hist.PAHI_DT_DATA = DateTime.Now;
                     hist.PAHI_IN_TIPO = 4;
                     hist.PAHI_IN_CHAVE = item.PAPI_CD_ID;
-                    hist.PAHI_NM_OPERACAO = "Paciente - Edição de Item de Prescrição";
-                    hist.PAHI_DS_DESCRICAO = "Paciente " + pac.PACI_NM_NOME + " - Prescrição " + pres.PAPR_GU_GUID + " Item editado " + item.PAPI_NM_REMEDIO;
+                    hist.PAHI_NM_OPERACAO = "Paciente - Alteração de Item de Prescrição";
+                    hist.PAHI_DS_DESCRICAO = "Paciente: " + pac.PACI_NM_NOME + " - Prescrição: " + pres.PAPR_GU_GUID + " Item alterado: " + item.PAPI_NM_REMEDIO;
                     Int32 voltaHist = baseApp.ValidateCreateHistorico(hist);
 
                     if ((Int32)Session["IncluirItem"] == 1)
@@ -7426,19 +7458,27 @@ namespace GEDSys_Presentation.Controllers
                 item.PAPI_IN_ATIVO = 0;
                 Int32 volta = baseApp.ValidateEditPrescricaoItem(item);
 
+                // Configura serilização
+                JsonSerializerSettings settings = new JsonSerializerSettings
+                {
+                    ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+                    NullValueHandling = NullValueHandling.Ignore
+                };
+
                 // Monta Log
-                PACIENTE cli = baseApp.GetItemById(item.PACI_CD_ID);
+                DTO_Paciente_ItemPrescricao dto = MontarItemPrescricaoDTOObj(item);
+                String json = JsonConvert.SerializeObject(dto, settings);
                 LOG log = new LOG
                 {
                     LOG_DT_DATA = DateTime.Now,
                     ASSI_CD_ID = usuario.ASSI_CD_ID,
                     USUA_CD_ID = usuario.USUA_CD_ID,
-                    LOG_NM_OPERACAO = "xpiCRPI",
+                    LOG_NM_OPERACAO = "Paciente - Item de Prescrição - Exclusão",
                     LOG_IN_ATIVO = 1,
-                    LOG_TX_REGISTRO = "Paciente: " + cli.PACI_NM_NOME + " | Medicamento: " + item.PAPI_NM_REMEDIO,
+                    LOG_TX_REGISTRO = json,
                     LOG_IN_SISTEMA = 6
                 };
-                Int32 volta4 = logApp.ValidateCreate(log);
+                Int32 volta1 = logApp.ValidateCreate(log);
 
                 // Verifica retorno
                 Session["IdPrescricao"] = item.PAPR_CD_ID;
@@ -7456,7 +7496,7 @@ namespace GEDSys_Presentation.Controllers
                 hist.PAHI_IN_TIPO = 4;
                 hist.PAHI_IN_CHAVE = item.PAPI_CD_ID;
                 hist.PAHI_NM_OPERACAO = "Paciente - Exclusão de Item de Prescrição";
-                hist.PAHI_DS_DESCRICAO = "Paciente " + pac.PACI_NM_NOME + " - Prescrição " + pres.PAPR_GU_GUID + " Item excluído " + item.PAPI_NM_REMEDIO;
+                hist.PAHI_DS_DESCRICAO = "Paciente: " + pac.PACI_NM_NOME + " - Prescrição: " + pres.PAPR_GU_GUID + " Item excluído: " + item.PAPI_NM_REMEDIO;
                 Int32 voltaHist = baseApp.ValidateCreateHistorico(hist);
 
                 if ((Int32)Session["VoltaPrescricao"] == 0)
@@ -7604,16 +7644,27 @@ namespace GEDSys_Presentation.Controllers
                     PACIENTE paciente = baseApp.GetItemById((Int32)Session["IdPaciente"]);
                     Session["IdPrescricao"] = prescricao.PAPR_CD_ID;
 
+                    // Configura serilização
+                    JsonSerializerSettings settings = new JsonSerializerSettings
+                    {
+                        ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+                        NullValueHandling = NullValueHandling.Ignore
+                    };
+
                     // Monta Log
-                    String json = JsonConvert.SerializeObject(vm);
+                    DTO_Paciente_Prescricao dto = MontarPrescricaoDTOObj(item);
+                    String json = JsonConvert.SerializeObject(dto, settings);
+                    DTO_Paciente_Prescricao dtoAntes = MontarPrescricaoDTOObj((PACIENTE_PRESCRICAO)Session["Prescricao"]);
+                    String jsonAntes = JsonConvert.SerializeObject(dtoAntes, settings);
                     LOG log = new LOG
                     {
                         LOG_DT_DATA = DateTime.Now,
                         ASSI_CD_ID = usuarioLogado.ASSI_CD_ID,
                         USUA_CD_ID = usuarioLogado.USUA_CD_ID,
-                        LOG_NM_OPERACAO = "eprPACI",
+                        LOG_NM_OPERACAO = "Paciente - Prescrição - Alteração",
                         LOG_IN_ATIVO = 1,
                         LOG_TX_REGISTRO = json,
+                        LOG_TX_REGISTRO_ANTES = jsonAntes,
                         LOG_IN_SISTEMA = 6
                     };
                     Int32 volta1 = logApp.ValidateCreate(log);
@@ -7627,12 +7678,12 @@ namespace GEDSys_Presentation.Controllers
                     hist.PAHI_DT_DATA = DateTime.Now;
                     hist.PAHI_IN_TIPO = 3;
                     hist.PAHI_IN_CHAVE = item.PAPR_CD_ID;
-                    hist.PAHI_NM_OPERACAO = "Paciente - Edição de Prescrição";
-                    hist.PAHI_DS_DESCRICAO = "Paciente " + pac.PACI_NM_NOME + " - Prescrição editada " + item.PAPR_GU_GUID;
+                    hist.PAHI_NM_OPERACAO = "Paciente - Alteração de Prescrição";
+                    hist.PAHI_DS_DESCRICAO = "Paciente " + pac.PACI_NM_NOME + " - Prescrição alterada " + item.PAPR_GU_GUID;
                     Int32 voltaHist = baseApp.ValidateCreateHistorico(hist);
 
                     // Mensagem do CRUD
-                    Session["MsgCRUD"] = "A prescrição" + item.PAPR_GU_GUID + " do(a) paciente " + pac.PACI_NM_NOME.ToUpper() + " foi incluída com sucesso.";
+                    Session["MsgCRUD"] = "A prescrição" + item.PAPR_GU_GUID + " do(a) paciente " + pac.PACI_NM_NOME.ToUpper() + " foi alterada com sucesso.";
                     Session["MensPaciente"] = 61;
 
                     // Retorno
@@ -7711,7 +7762,6 @@ namespace GEDSys_Presentation.Controllers
 
                 USUARIO usuarioLogado = (USUARIO)Session["UserCredentials"];
                 PACIENTE_PRESCRICAO item = baseApp.GetPrescricaoById(id);
-                objetoAntes = (PACIENTE)Session["Paciente"];
                 item.PAPR_IN_ATIVO = 0;
                 Int32 volta = baseApp.ValidateEditPrescricao(item);
 
@@ -7742,16 +7792,24 @@ namespace GEDSys_Presentation.Controllers
                 Session["ListaPrescricao"] = null;
                 Session["PrescricoesAlterada"] = 1;
 
+                // Configura serilização
+                JsonSerializerSettings settings = new JsonSerializerSettings
+                {
+                    ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+                    NullValueHandling = NullValueHandling.Ignore
+                };
+
                 // Monta Log
-                PACIENTE cli = baseApp.GetItemById(item.PACI_CD_ID);
+                DTO_Paciente_Prescricao dto = MontarPrescricaoDTOObj(item);
+                String json = JsonConvert.SerializeObject(dto, settings);
                 LOG log = new LOG
                 {
                     LOG_DT_DATA = DateTime.Now,
                     ASSI_CD_ID = usuarioLogado.ASSI_CD_ID,
                     USUA_CD_ID = usuarioLogado.USUA_CD_ID,
-                    LOG_NM_OPERACAO = "xprPACI",
+                    LOG_NM_OPERACAO = "Paciente - Prescrição - Exclusão",
                     LOG_IN_ATIVO = 1,
-                    LOG_TX_REGISTRO = "Paciente: " + cli.PACI_NM_NOME + " | Data: " + item.PAPR_DT_DATA + " | Medicamento: " + item.PAPR_NM_REMEDIO,
+                    LOG_TX_REGISTRO = json,
                     LOG_IN_SISTEMA = 6
                 };
                 Int32 volta1 = logApp.ValidateCreate(log);
@@ -7766,7 +7824,7 @@ namespace GEDSys_Presentation.Controllers
                 hist.PAHI_IN_TIPO = 3;
                 hist.PAHI_IN_CHAVE = item.PAPR_CD_ID;
                 hist.PAHI_NM_OPERACAO = "Paciente - Exclusão de Prescrição";
-                hist.PAHI_DS_DESCRICAO = "Paciente " + pac.PACI_NM_NOME + " - Prescrição excluída " + item.PAPR_GU_GUID;
+                hist.PAHI_DS_DESCRICAO = "Paciente: " + pac.PACI_NM_NOME + " - Prescrição excluída: " + item.PAPR_GU_GUID;
                 Int32 voltaHist = baseApp.ValidateCreateHistorico(hist);
 
                 // Retorno
@@ -7816,7 +7874,7 @@ namespace GEDSys_Presentation.Controllers
                     if (usuario.PERFIL.PERF_IN_PRESCRICAO_ACESSO == 0)
                     {
                         Session["MensPermissao"] = 2;
-                        Session["ModuloPermissao"] = "Paciente - Precrição - Consulta";
+                        Session["ModuloPermissao"] = "Paciente - Prescrição - Consulta";
                         return RedirectToAction("VoltarAnexoPaciente");
                     }
                 }
@@ -10677,6 +10735,10 @@ namespace GEDSys_Presentation.Controllers
                 {
                     contentType = "audio/mpeg";
                 }
+                else if (arquivo.Contains(".mp4")) 
+                {
+                    contentType = "video/mp4";
+                }
                 Session["NivelPaciente"] = 7;
                 Session["NivelExame"] = 2;
                 return File(arquivo, contentType, nomeDownload);
@@ -11373,7 +11435,7 @@ namespace GEDSys_Presentation.Controllers
                 mens.MENS_DT_CRIACAO = DateTime.Today.Date;
                 mens.MENS_IN_TIPO = 1;
                 mens.MENS_NM_CAMPANHA = paciente.PACI_NM_EMAIL;
-                mens.MENS_NM_NOME = "Envio de Prescrição para Paciente: " + paciente.PACI_NM_NOME;
+                mens.MENS_NM_NOME = "Envio de Prescrição para Paciente: " + paciente.PACI_NM_NOME.ToUpper();
                 mens.MENS_GU_GUID = prescricao.PAPR_GU_GUID;
                 mens.MENS_DT_AGENDAMENTO = prescricao.PAPR_DT_DATA;
                 mens.MENS_DT_ENVIO = prescricao.PAPR_DT_ENVIO;
@@ -11417,7 +11479,7 @@ namespace GEDSys_Presentation.Controllers
                 try
                 {
                     // Sanitização
-                    vm.MENS_TX_TEXTO = CrossCutting.UtilitariosGeral.CleanStringTexto(vm.MENS_TX_TEXTO);
+                    vm.MENS_TX_TEXTO = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(vm.MENS_TX_TEXTO);
 
                     // Executa a operação
                     PACIENTE_PRESCRICAO prescricao = (PACIENTE_PRESCRICAO)Session["Prescricao"];
@@ -11445,7 +11507,7 @@ namespace GEDSys_Presentation.Controllers
 
                         }
                         {
-                            //Int32 rel = GerarPrescricaoPDF_EspecialNovaTesteAssina();
+                            Int32 rel = GerarPrescricaoPDF_EspecialNovaTesteAssina();
 
                         }
                     }
@@ -11462,19 +11524,6 @@ namespace GEDSys_Presentation.Controllers
                     solicitacao.PAPR_GU_GUID_ENVIO = idEnvio;
                     Int32 volta1 = baseApp.ValidateEditPrescricao(solicitacao);
                     Session["ListaPrescricoes"] = null;
-
-                    // Monta Log
-                    LOG log = new LOG
-                    {
-                        LOG_DT_DATA = DateTime.Now,
-                        ASSI_CD_ID = usuarioLogado.ASSI_CD_ID,
-                        USUA_CD_ID = usuarioLogado.USUA_CD_ID,
-                        LOG_NM_OPERACAO = "eppPACI",
-                        LOG_IN_ATIVO = 1,
-                        LOG_TX_REGISTRO = "Prescrição : " + solicitacao.PAPR_GU_GUID,
-                        LOG_IN_SISTEMA = 6
-                    };
-                    Int32 volta2 = logApp.ValidateCreate(log);
 
                     // Grava historico
                     PACIENTE_HISTORICO hist = new PACIENTE_HISTORICO();
@@ -11610,7 +11659,7 @@ namespace GEDSys_Presentation.Controllers
             // Monta e-mail
             NetworkCredential net = new NetworkCredential(conf.CONF_NM_SENDGRID_LOGIN, conf.CONF_NM_SENDGRID_PWD);
             EmailAzure mensagem = new EmailAzure();
-            mensagem.ASSUNTO = "Paciente - " + paciente.PACI_NM_NOME + " - Prescrição";
+            mensagem.ASSUNTO = "Paciente - " + paciente.PACI_NM_NOME.ToUpper() + " - Prescrição";
             mensagem.CORPO = emailBody;
             mensagem.DEFAULT_CREDENTIALS = false;
             mensagem.EMAIL_TO_DESTINO = paciente.PACI_NM_EMAIL;
@@ -11645,7 +11694,7 @@ namespace GEDSys_Presentation.Controllers
             // Grava envio
             if (status == "Succeeded")
             {
-                vm.MENS_NM_NOME = "Paciente - " + paciente.PACI_NM_NOME + " - Prescrição";
+                vm.MENS_NM_NOME = "Paciente: " + paciente.PACI_NM_NOME.ToUpper() + " - Prescrição";
                 vm.MENS_NM_CAMPANHA = paciente.PACI_NM_EMAIL;
                 vm.FORN_CD_ID = null;
                 vm.CLIE_CD_ID = null;
@@ -19452,7 +19501,7 @@ namespace GEDSys_Presentation.Controllers
                 }
                 ViewBag.Classe = classe;
 
-                // Recupera precricoes da consulta
+                // Recupera prescricoes da consulta
                 PACIENTE_CONSULTA consulta = baseApp.GetConsultaById((Int32)Session["IdConsulta"]);
                 PacienteConsultaViewModel vm = Mapper.Map<PACIENTE_CONSULTA, PacienteConsultaViewModel>(consulta);
                 List<PACIENTE_PRESCRICAO> prescricoes = consulta.PACIENTE_PRESCRICAO.ToList();
@@ -22126,6 +22175,7 @@ namespace GEDSys_Presentation.Controllers
 
                 // Carrega view
                 objetoPrescricao = new PACIENTE_PRESCRICAO();
+
                 // Grava Acesso
                 ControleAcessoMetodo grava = new ControleAcessoMetodo(aceApp);
                 Int32 voltaX = grava.GravaAcesso(usuario.USUA_CD_ID, usuario.ASSI_CD_ID, "PACIENTE_PRESCRICOES", "Paciente", "MontarTelaPrescricoes");
@@ -22155,9 +22205,9 @@ namespace GEDSys_Presentation.Controllers
                 }
 
                 // Sanitização
-                item.PAPR_NM_POSOLOGIA = CrossCutting.UtilitariosGeral.CleanStringGeral(item.PAPR_NM_POSOLOGIA);
-                item.PAPR_NM_REMEDIO = CrossCutting.UtilitariosGeral.CleanStringGeral(item.PAPR_NM_REMEDIO);
-                item.PAPR_NM_DOSAGEM = CrossCutting.UtilitariosGeral.CleanStringGeral(item.PAPR_NM_DOSAGEM);
+                item.PAPR_NM_POSOLOGIA = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(item.PAPR_NM_POSOLOGIA);
+                item.PAPR_NM_REMEDIO = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(item.PAPR_NM_REMEDIO);
+                item.PAPR_NM_DOSAGEM = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(item.PAPR_NM_DOSAGEM);
 
                 // Executa a operação
                 CONFIGURACAO conf = CarregaConfiguracaoGeral();
@@ -22319,33 +22369,49 @@ namespace GEDSys_Presentation.Controllers
                 headerTable.SpacingBefore = 1f;
                 headerTable.SpacingAfter = 1f;
 
-                PdfPCell cell = new PdfPCell();
-                cell.Border = 0;
-                cell.Colspan = 1;
-                Image image = null;
                 if (conf.CONF_IN_LOGO_EMPRESA == 1)
                 {
+                    PdfPCell cell1 = new PdfPCell();
+                    cell1.Border = 0;
+                    cell1.Colspan = 1;
+                    Image image = null;
                     EMPRESA empresa = empApp.GetItemByAssinante(idAss);
                     image = Image.GetInstance(Server.MapPath(empresa.EMPR_AQ_LOGO));
+                    image.ScaleAbsolute(50, 50);
+                    cell1.AddElement(image);
+                    cell1.Border = PdfPCell.BOTTOM_BORDER;
+                    headerTable.AddCell(cell1);
+
+                    cell1 = new PdfPCell(new Paragraph("Atestados", meuFont2))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_CENTER
+                    };
+                    cell1.Border = 0;
+                    cell1.Colspan = 1;
+                    cell1.Border = PdfPCell.BOTTOM_BORDER;
+                    headerTable.AddCell(cell1);
                 }
                 else
                 {
-                    image = Image.GetInstance(Server.MapPath("~/Images/Prontuario_Icone_1.png"));
-                }
-                image.ScaleAbsolute(50, 50);
-                cell.AddElement(image);
-                cell.Border = PdfPCell.BOTTOM_BORDER;
-                headerTable.AddCell(cell);
+                    PdfPCell cell2 = new PdfPCell(new Paragraph("Atestados", meuFont2))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_CENTER
+                    };
+                    cell2.Border = 0;
+                    cell2.Colspan = 2;
+                    headerTable.AddCell(cell2);
 
-                cell = new PdfPCell(new Paragraph("Prescrições", meuFont2))
-                {
-                    VerticalAlignment = Element.ALIGN_MIDDLE,
-                    HorizontalAlignment = Element.ALIGN_CENTER
-                };
-                cell.Border = 0;
-                cell.Colspan = 1;
-                cell.Border = PdfPCell.BOTTOM_BORDER;
-                headerTable.AddCell(cell);
+                    cell2 = new PdfPCell(new Paragraph(" ", meuFont))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    cell2.Colspan = 2;
+                    cell2.Border = PdfPCell.BOTTOM_BORDER;
+                    headerTable.AddCell(cell2);
+                }
 
                 // Rodape
                 PdfPTable footerTable = new PdfPTable(1);
@@ -22354,7 +22420,7 @@ namespace GEDSys_Presentation.Controllers
                 footerTable.SpacingBefore = 1f;
                 footerTable.SpacingAfter = 1f;
 
-                cell = new PdfPCell();
+                PdfPCell cell = new PdfPCell();
                 cell.Border = PdfPCell.TOP_BORDER;
                 cell = new PdfPCell(new Paragraph("Gerado por WebDoctor 1.0 em " + DateTime.Today.Date.ToLongDateString(), meuFont));
                 footerTable.AddCell(cell);
@@ -22605,24 +22671,47 @@ namespace GEDSys_Presentation.Controllers
                 Session["ItensPrescricoes"] = null;
                 if (Session["ListaMedicamentos"] == null)
                 {
+                    //if (usuario.PERFIL.PERF_IN_VISAO_GERAL == 1 || usuario.PERFIL.PERF_SG_SIGLA == "ADM")
+                    //{
+                    //    listaMasterItem = CarregaItemPrescricoes().Where(p => p.PAPI_IN_ATIVO == 1).ToList();
+                    //}
+                    //else
+                    //{
+                    //    listaMasterItem = CarregaItemPrescricoes().Where(p => p.PAPI_IN_ATIVO == 1 & p.USUA_CD_ID == usuario.USUA_CD_ID).ToList();
+                    //}
+                    //List<String> remedios = listaMasterItem.Select(p => p.PAPI_NM_REMEDIO).Distinct().ToList();
+                    //List<MedicamentoViewModel> meds = new List<MedicamentoViewModel>();
+                    //foreach (String item in remedios)
+                    //{
+                    //    Int32 num = listaMasterItem.Where(p => p.PAPI_NM_REMEDIO == item).ToList().Count;
+                    //    MedicamentoViewModel med = new MedicamentoViewModel();
+                    //    med.Nome = item;
+                    //    med.Prescricoes = num;
+                    //    meds.Add(med);
+                    //}
+                    //listaMasterRemedio = meds;
+                    //Session["ListaMedicamentos"] = meds;
+
+                    List<PACIENTE_PRESCRICAO_ITEM> listaMasterItem;
+                    var todosItens = CarregaItemPrescricoes().Where(p => p.PAPI_IN_ATIVO == 1);
                     if (usuario.PERFIL.PERF_IN_VISAO_GERAL == 1 || usuario.PERFIL.PERF_SG_SIGLA == "ADM")
                     {
-                        listaMasterItem = CarregaItemPrescricoes().Where(p => p.PAPI_IN_ATIVO == 1).ToList();
+                        listaMasterItem = todosItens.ToList();
                     }
                     else
                     {
-                        listaMasterItem = CarregaItemPrescricoes().Where(p => p.PAPI_IN_ATIVO == 1 & p.USUA_CD_ID == usuario.USUA_CD_ID).ToList();
+                        listaMasterItem = todosItens.Where(p => p.USUA_CD_ID == usuario.USUA_CD_ID).ToList();
                     }
-                    List<String> remedios = listaMasterItem.Select(p => p.PAPI_NM_REMEDIO).Distinct().ToList();
-                    List<MedicamentoViewModel> meds = new List<MedicamentoViewModel>();
-                    foreach (String item in remedios)
-                    {
-                        Int32 num = listaMasterItem.Where(p => p.PAPI_NM_REMEDIO == item).ToList().Count;
-                        MedicamentoViewModel med = new MedicamentoViewModel();
-                        med.Nome = item;
-                        med.Prescricoes = num;
-                        meds.Add(med);
-                    }
+                    List<MedicamentoViewModel> meds = listaMasterItem
+                        .GroupBy(item => item.PAPI_NM_REMEDIO) 
+                        .Select(g => new MedicamentoViewModel   
+                        {
+                            Nome = g.Key,                     
+                            Prescricoes = g.Count()           
+                        })
+                        .OrderByDescending(m => m.Prescricoes) 
+                        .ToList();
+
                     listaMasterRemedio = meds;
                     Session["ListaMedicamentos"] = meds;
                 }
@@ -22652,6 +22741,7 @@ namespace GEDSys_Presentation.Controllers
 
                 // Carrega view
                 objetoRemedio = new MedicamentoViewModel();
+
                 // Grava Acesso
                 ControleAcessoMetodo grava = new ControleAcessoMetodo(aceApp);
                 Int32 voltaX = grava.GravaAcesso(usuario.USUA_CD_ID, usuario.ASSI_CD_ID, "PACIENTE_MEDICAMENTOS", "Paciente", "VerMedicamentos");
@@ -22807,6 +22897,7 @@ namespace GEDSys_Presentation.Controllers
                 // Carrega view
                 objetoItem = new PACIENTE_PRESCRICAO_ITEM();
                 objetoItem.PAPI_NM_REMEDIO = nome;
+
                 // Grava Acesso
                 ControleAcessoMetodo grava = new ControleAcessoMetodo(aceApp);
                 Int32 voltaX = grava.GravaAcesso(usuario.USUA_CD_ID, usuario.ASSI_CD_ID, "PACIENTE_MEDICAMENTOS_LISTA", "Paciente", "VerMedicamentosPaciente");
@@ -26937,7 +27028,7 @@ namespace GEDSys_Presentation.Controllers
                 PdfPTable headerTable = null;
                 PdfPCell cell = new PdfPCell();
                 Image image = null;
-                if (conf.CONF_IN_EXIBE_LOGO == 1)
+                if (conf.CONF_IN_LOGO_EMPRESA == 1)
                 {
                     headerTable = new PdfPTable(new float[] { 20f, 700f });
                     headerTable.WidthPercentage = 100;
@@ -27384,7 +27475,7 @@ namespace GEDSys_Presentation.Controllers
                 PdfPTable headerTable = null;
                 PdfPCell cell = new PdfPCell();
                 Image image = null;
-                if (conf.CONF_IN_EXIBE_LOGO == 1)
+                if (conf.CONF_IN_LOGO_EMPRESA == 1)
                 {
                     headerTable = new PdfPTable(new float[] { 20f, 700f });
                     headerTable.WidthPercentage = 100;
@@ -27845,7 +27936,7 @@ namespace GEDSys_Presentation.Controllers
                 PdfPTable headerTable = null;
                 PdfPCell cell = new PdfPCell();
                 Image image = null;
-                if (conf.CONF_IN_EXIBE_LOGO == 1)
+                if (conf.CONF_IN_LOGO_EMPRESA == 1)
                 {
                     headerTable = new PdfPTable(new float[] { 20f, 700f });
                     headerTable.WidthPercentage = 100;
@@ -28747,7 +28838,7 @@ namespace GEDSys_Presentation.Controllers
                 PdfPTable headerTable = null;
                 PdfPCell cell = new PdfPCell();
                 Image image = null;
-                if (conf.CONF_IN_EXIBE_LOGO == 1)
+                if (conf.CONF_IN_LOGO_EMPRESA == 1)
                 {
                     headerTable = new PdfPTable(new float[] { 20f, 700f });
                     headerTable.WidthPercentage = 100;
@@ -29680,7 +29771,7 @@ namespace GEDSys_Presentation.Controllers
                     PdfPTable headerTable = null;
                     PdfPCell cell = new PdfPCell();
                     Image image = null;
-                    if (conf.CONF_IN_EXIBE_LOGO == 1)
+                    if (conf.CONF_IN_LOGO_EMPRESA == 1)
                     {
                         headerTable = new PdfPTable(new float[] { 20f, 700f });
                         headerTable.WidthPercentage = 100;
@@ -30147,7 +30238,7 @@ namespace GEDSys_Presentation.Controllers
                     PdfPTable headerTable = null;
                     PdfPCell cell = new PdfPCell();
                     Image image = null;
-                    if (conf.CONF_IN_EXIBE_LOGO == 1)
+                    if (conf.CONF_IN_LOGO_EMPRESA == 1)
                     {
                         headerTable = new PdfPTable(new float[] { 20f, 700f });
                         headerTable.WidthPercentage = 100;
@@ -30630,7 +30721,7 @@ namespace GEDSys_Presentation.Controllers
                     PdfPTable headerTable = null;
                     PdfPCell cell = new PdfPCell();
                     Image image = null;
-                    if (conf.CONF_IN_EXIBE_LOGO == 1)
+                    if (conf.CONF_IN_LOGO_EMPRESA == 1)
                     {
                         headerTable = new PdfPTable(new float[] { 20f, 700f });
                         headerTable.WidthPercentage = 100;
@@ -31557,7 +31648,7 @@ namespace GEDSys_Presentation.Controllers
                     PdfPTable headerTable = null;
                     PdfPCell cell = new PdfPCell();
                     Image image = null;
-                    if (conf.CONF_IN_EXIBE_LOGO == 1)
+                    if (conf.CONF_IN_LOGO_EMPRESA == 1)
                     {
                         headerTable = new PdfPTable(new float[] { 20f, 700f });
                         headerTable.WidthPercentage = 100;
@@ -37251,6 +37342,84 @@ namespace GEDSys_Presentation.Controllers
                     TIEX_CD_ID = l.TIEX_CD_ID,
                     USUA_CD_ID = l.USUA_CD_ID,
                     PACI_CD_ID = l.PACI_CD_ID,
+                };
+                return mediDTO;
+            }
+
+        }
+
+        public DTO_Paciente_ItemPrescricao MontarItemPrescricaoDTOObj(PACIENTE_PRESCRICAO_ITEM l)
+        {
+            using (var context = new CRMSysDBEntities())
+            {
+                var mediDTO = new DTO_Paciente_ItemPrescricao()
+                {
+                    ASSI_CD_ID = l.ASSI_CD_ID,
+                    USUA_CD_ID = l.USUA_CD_ID,
+                    PACI_CD_ID = l.PACI_CD_ID,
+                    PAPI_CD_ID = l.PAPI_CD_ID,
+                    PAPI_DS_POSOLOGIA = l.PAPI_DS_POSOLOGIA,
+                    PAPI_DT_DATA_1 = l.PAPI_DT_DATA_1,
+                    PAPI_DT_DATA_2 = l.PAPI_DT_DATA_2,
+                    PAPI_IN_ATIVO = l.PAPI_IN_ATIVO,
+                    PAPI_NM_APRESENTACAO = l.PAPI_NM_APRESENTACAO,
+                    PAPI_NM_GENERICO = l.PAPI_NM_GENERICO,
+                    PAPI_NM_LABORATORIO = l.PAPI_NM_LABORATORIO,
+                    PAPI_NM_REMEDIO = l.PAPI_NM_REMEDIO,
+                    PAPI_NR_QUANTIDADE = l.PAPI_NR_QUANTIDADE,
+                    PAPR_CD_ID = l.PAPR_CD_ID,
+                    TIFO_CD_ID = l.TIFO_CD_ID,
+                };
+                return mediDTO;
+            }
+
+        }
+
+        public DTO_Paciente_Prescricao MontarPrescricaoDTOObj(PACIENTE_PRESCRICAO l)
+        {
+            using (var context = new CRMSysDBEntities())
+            {
+                var mediDTO = new DTO_Paciente_Prescricao()
+                {
+                    ASSI_CD_ID = l.ASSI_CD_ID,
+                    PACO_CD_ID = l.PACO_CD_ID,
+                    USUA_CD_ID = l.USUA_CD_ID,
+                    PACI_CD_ID = l.PACI_CD_ID,
+                    PAPR_AQ_ARQUIVO_HTML = l.PAPR_AQ_ARQUIVO_HTML,
+                    PAPR_AQ_ARQUIVO_QRCODE = l.PAPR_AQ_ARQUIVO_QRCODE,
+                    PAPR_AQ_ARQUIVO_PDF = l.PAPR_AQ_ARQUIVO_PDF,
+                    PAPR_CD_ID = l.PAPR_CD_ID,
+                    PAPR_DS_TEXTO = l.PAPR_DS_TEXTO,
+                    PAPR_DT_DATA = l.PAPR_DT_DATA,
+                    PAPR_DT_DENUNCIA = l.PAPR_DT_DENUNCIA,
+                    PAPR_DT_EMISSAO = l.PAPR_DT_EMISSAO,
+                    PAPR_DT_EMISSAO_COMPLETA = l.PAPR_DT_EMISSAO_COMPLETA,
+                    PAPR_DT_ENVIO = l.PAPR_DT_ENVIO,
+                    PAPR_DT_GERACAO_PDF = l.PAPR_DT_GERACAO_PDF,
+                    PAPR_DT_VALIDACAO = l.PAPR_DT_VALIDACAO,
+                    PAPR_GU_GUID = l.PAPR_GU_GUID,
+                    PAPR_GU_GUID_ENVIO = l.PAPR_GU_GUID_ENVIO,
+                    PAPR_HT_TEXTO_HTML = l.PAPR_HT_TEXTO_HTML,
+                    PAPR_IN_ASSINADO_DIGITAL = l.PAPR_IN_ASSINADO_DIGITAL,
+                    PAPR_IN_ASSINANDO = l.PAPR_IN_ASSINANDO,
+                    PAPR_IN_ATIVO = l.PAPR_IN_ATIVO,
+                    PAPR_IN_DATA = l.PAPR_IN_DATA,
+                    PAPR_IN_DENUNCIA = l.PAPR_IN_DENUNCIA,
+                    PAPR_IN_ENVIADO = l.PAPR_IN_ENVIADO,
+                    PAPR_IN_PDF = l.PAPR_IN_PDF,
+                    PAPR_IN_VALIDACAO = l.PAPR_IN_VALIDACAO,
+                    PAPR_IP_DENUNCIA = l.PAPR_IP_DENUNCIA,
+                    PAPR_IP_VALIDACAO = l.PAPR_IP_VALIDACAO,
+                    PAPR_NM_DOSAGEM = l.PAPR_NM_DOSAGEM,
+                    PAPR_NM_FORMA = l.PAPR_NM_FORMA,
+                    PAPR_NM_POSOLOGIA = l.PAPR_NM_POSOLOGIA,
+                    PAPR_NM_REMEDIO = l.PAPR_NM_REMEDIO,
+                    PAPR_NR_DENUNCIA = l.PAPR_NR_DENUNCIA,
+                    PAPR_NR_ENVIOS = l.PAPR_NR_ENVIOS,
+                    PAPR_NR_VALIDACAO = l.PAPR_NR_VALIDACAO,
+                    PAPR_TK_TOKEN = l.PAPR_TK_TOKEN,
+                    PAPR_TX_DENUNCIA = l.PAPR_TX_DENUNCIA,
+                    TICO_CD_ID = l.TICO_CD_ID,
                 };
                 return mediDTO;
             }

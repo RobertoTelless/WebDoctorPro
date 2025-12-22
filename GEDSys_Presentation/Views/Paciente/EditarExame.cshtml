@@ -248,7 +248,7 @@
                                                             </div>
                                                             <div class="col-lg-3 col-md-3 col-xs-12">
                                                                 <br />
-                                                                <button style="margin-left: -15px;" class="btn btn-sm btn-primary btn-loading" id="buttonLab" type="button">Acessar Site do Laboratório</button>
+                                                                <button style="margin-left: -15px;" class="btn btn-sm btn-primary" id="buttonLab" type="button">Acessar Site do Laboratório</button>
                                                             </div>
                                                         </div>
                                                     }
@@ -354,7 +354,7 @@
                                                             </div>
                                                             <div class="col-lg-3 col-md-3 col-xs-12">
                                                                 <br />
-                                                                <button style="margin-left: -15px;" class="btn btn-sm btn-primary btn-loading" id="buttonLab" type="button">Acessar Site do Laboratório</button>
+                                                                <button style="margin-left: -15px;" class="btn btn-sm btn-primary" id="buttonLab" type="button">Acessar Site do Laboratório</button>
                                                             </div>
                                                         </div>
                                                     }
@@ -467,7 +467,7 @@
                                                                                         <a title="Visualizar" class="fa fa-camera fa-lg" href="~/PdfViewer/web/viewer.html?file=@(cond.PAEO_AQ_ARQUIVO.Replace("~", ""))&ReturnUrl=@Request.Url.AbsolutePath" target="_blank"></a>
                                                                                     }
                                                                                     <span style="color: #337ab7; cursor:pointer;" alt="Desativar" class="tbl-link fa-lg fa fa-trash-o btn-loading" onclick="ShowModalExcluirAnexo('/Paciente/ExcluirAnexoExame/@cond.PAEO_CD_ID')" title="Excluir"></span>
-                                                                                    @Html.TableLinkDetails(cond.PAEO_CD_ID, "DownloadPacienteExame", "fa-download btn-loading", "Descarga (Download)")
+                                                                                    @Html.TableLinkDetails(cond.PAEO_CD_ID, "DownloadPacienteExame", "fa-download", "Descarga (Download)")
                                                                                 </td>
                                                                             </tr>
                                                                         }
@@ -477,7 +477,7 @@
                                                             <div class="form-group">
                                                                 <div class="col-lg-12 col-md-12 col-xs-12">
                                                                     <input style="float: left; margin-right: 5px;" type="file" name="file" id="file" class="btn btn-sm btn-warning" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="ATENÇÃO - Antes de anexar arquivos certifique-se de que eles estejam livres de vírus e outras ameaças.  " />
-                                                                    <input style="float: left; margin-right: 5px;" type="submit" value="Incluir Anexo" class="btn btn-sm btn-success btn-loading" />
+                                                                    <input style="float: left; margin-right: 5px;" type="submit" value="Incluir Anexo" class="btn btn-sm btn-success" />
                                                                 </div>
                                                             </div>
                                                     }
@@ -573,7 +573,7 @@
                                                                                         <a title="Visualizar" class="fa fa-camera fa-lg" href="~/PdfViewer/web/viewer.html?file=@(cond.PAEO_AQ_ARQUIVO.Replace("~", ""))&ReturnUrl=@Request.Url.AbsolutePath" target="_blank"></a>
                                                                                     }
                                                                                     <span style="color: #337ab7; cursor:pointer;" alt="Desativar" class="tbl-link fa-lg fa fa-trash-o btn-loading" onclick="ShowModalExcluirAnexo('/Paciente/ExcluirAnexoExame/@cond.PAEO_CD_ID')" title="Excluir"></span>
-                                                                                    @Html.TableLinkDetails(cond.PAEO_CD_ID, "DownloadPacienteExame", "fa-download btn-loading", "Descarga (Download)")
+                                                                                    @Html.TableLinkDetails(cond.PAEO_CD_ID, "DownloadPacienteExame", "fa-download", "Descarga (Download)")
                                                                                 </td>
                                                                             </tr>
                                                                         }
@@ -583,7 +583,7 @@
                                                             <div class="form-group">
                                                                 <div class="col-lg-12 col-md-12 col-xs-12">
                                                                     <input style="float: left; margin-right: 5px;" type="file" name="file" id="file" class="btn btn-sm btn-warning" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="ATENÇÃO - Antes de anexar arquivos certifique-se de que eles estejam livres de vírus e outras ameaças.  " />
-                                                                    <input style="float: left; margin-right: 5px;" type="submit" value="Incluir Anexo" class="btn btn-sm btn-success btn-loading" />
+                                                                    <input style="float: left; margin-right: 5px;" type="submit" value="Incluir Anexo" class="btn btn-sm btn-success" />
                                                                 </div>
                                                             </div>
                                                     }

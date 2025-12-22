@@ -36,10 +36,10 @@
                 <a href="@Url.Action("MontarTelaCentralPaciente", "Paciente")">Central de Pacientes</a>
             </li>
             <li>
-                <a href="@Url.Action("EditarPaciente", "Paciente")">Pacientes - Edição</a>
+                <a href="@Url.Action("VoltarAnexoPaciente", "Paciente")">Pacientes - Alteração</a>
             </li>
             <li>
-                <a href="@Url.Action("EditarPrescricaoNova", "Paciente")">Prescrição - Edição</a>
+                <a href="@Url.Action("VoltarEditarPrescricao", "Paciente")">Prescrição - Alteração</a>
             </li>
             <li class="active">
                 <strong>Inclusão de Itens</strong>
@@ -128,10 +128,13 @@
                                 </div>
                                 <div class="col-lg-5 col-md-5 col-xs-12">
                                     <br />
-                                    <a href="@Url.Action("VoltarEditarPrescricaoItem", "Paciente")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Confirma todas as inclusões de itens na prescrição" class="btn btn-sm btn-success" id="emp" OnClick = "Fade()">Encerrar Inclusão de Itens da Prescrição</a>                
-                                    <a href="@Url.Action("IncluirMedicamento", "Medicamento")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessa a página de inclusão de medicamentos no cadastro" class="btn btn-sm btn-primary" id="emp" OnClick = "Fade()">Incluir Novo Medicamento no Cadastro</a>                
-                                    <a href="@Url.Action("VoltarAnexoPrescricao", "Paciente")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Voltando sem Encerrar, as alreações/inclusões da prescrição NÃO serão gravadas" class="btn btn-sm btn-warning" id="emp" OnClick = "Fade()">Voltar</a>                
+                                    <a href="@Url.Action("VoltarEditarPrescricaoItem", "Paciente")" class="btn-loading" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Confirma todas as inclusões de itens na prescrição" class="btn btn-sm btn-success" id="emp" OnClick = "Fade()">Encerrar Inclusão de Itens da Prescrição</a>                
+                                    <a href="@Url.Action("IncluirMedicamento", "Medicamento")" class="btn-loading" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessa a página de inclusão de medicamentos no cadastro" class="btn btn-sm btn-primary" id="emp" OnClick = "Fade()">Incluir Novo Medicamento no Cadastro</a>                
+                                    <a href="@Url.Action("VoltarAnexoPrescricao", "Paciente")" class="btn-loading" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Voltando sem Encerrar, as alreações/inclusões da prescrição NÃO serão gravadas" class="btn btn-sm btn-warning" id="emp" OnClick = "Fade()">Voltar</a>                
                                     <a href="@Url.Action((String)Session["AjudaNivel"])"  class="btn btn-sm btn-danger" target="_blank">Ajuda</a>                
+                                    <span id="loadingIndicator" style="display: none; margin-left: 10px; color: #007bff;">
+                                        <i class="fa fa-spinner fa-spin"></i> Processando...
+                                    </span>
                                 </div>
                             </div>
                         </div>
@@ -190,7 +193,7 @@
                                     </div>
                                 </div>
                                 <div class="form-group">
-                                    @Html.ButtonActionSubmit(text: "Confirma a inclusão deste item e prossegue com inclusões", htmlAttributes: new { id = "basictoast" })
+                                    @Html.ButtonActionSubmit(text: "Confirma a inclusão deste item e prossegue com inclusões", htmlAttributes: new { id = "basictoast", @class = "btn-loading1" })
                                 </div>
                             </div>
 
@@ -223,7 +226,7 @@
                                                                     @Html.TableLinkDetails(cond.PAPI_CD_ID, "EditarItemPrescricao", "fa-edit", "Editar")
                                                                     @if (cond.PAPI_IN_ATIVO == 1)
                                                                     {
-                                                                        <span style="color: #337ab7; cursor:pointer;" alt="Desativar" class="tbl-link fa-lg fa fa-trash-o" onclick="ShowModalExcluirItemPrescricao('/Paciente/ExcluirItemPrescricao/@cond.PAPI_CD_ID')" title="Excluir"></span>
+                                                                        <span style="color: #337ab7; cursor:pointer;" alt="Desativar" class="tbl-link fa-lg fa fa-trash-o btn-loading" onclick="ShowModalExcluirItemPrescricao('/Paciente/ExcluirItemPrescricao/@cond.PAPI_CD_ID')" title="Excluir"></span>
 	                                                                }
                                                                 </td>
                                                             </tr>
@@ -298,6 +301,48 @@
             navigator.sendBeacon('../ControleAcesso/LogSessionTime');
         }; 
     </script>
+
+    <script type="text/javascript">
+        $(document).ready(function () { 
+            $('.btn-loading').on('click', function (e) {            
+                $(this).prop('disabled', true);
+                $(this).addClass('disabled');
+                $('#loadingIndicator').show();
+                var tagName = $(this).prop('tagName').toLowerCase();
+                if (tagName === 'a') {
+                    e.preventDefault(); 
+                    var targetUrl = $(this).attr('href');
+                    window.location.href = targetUrl;
+
+                } else if (tagName === 'button' || tagName === 'input') {
+                    $(this).closest('form').submit();
+                }
+            });
+        });
+    </script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('.btn-loading1').on('click', function (e) {
+            
+                var $this = $(this);
+                var tagName = $this.prop('tagName').toLowerCase();
+                $this.addClass('disabled'); 
+                $('#loadingIndicator').show();
+
+                if (tagName === 'a') {
+                    e.preventDefault();
+                
+                    var targetUrl = $this.attr('href');
+                    window.location.href = targetUrl;
+                
+                } else if (tagName === 'button' || tagName === 'input') {               
+                    $this.closest('form').submit();
+                    $this.prop('disabled', true);
+                }
+            });
+        });
+    </script>
+
     <script>
         $(function () {
             limpaModal();
@@ -309,7 +354,7 @@
         }
 
         function ShowModalExcluirItemPrescricao(url) {
-            $('#modal').find('.modal-footer').prepend('<a id="btnModal" alt="Desativar" class="btn btn-primary" href="' + url + '" target="_self" title="Desativar">Confirmar</a>');
+            $('#modal').find('.modal-footer').prepend('<a id="btnModal" alt="Desativar" class="btn btn-primary btn-loading" href="' + url + '" target="_self" title="Desativar">Confirmar</a>');
             $('#modal').find('.modal-body').html('Confirma exclusão de Item?');
             $('#modal').find('.modal-header').prepend('<h5 id="modalTitle" class="modal-title">Confimar Exclusão</h5>');
             $('#modal').modal('show');

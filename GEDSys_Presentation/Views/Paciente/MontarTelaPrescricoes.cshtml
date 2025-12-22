@@ -59,52 +59,55 @@
                             </div>
                             <div class="col-lg-4 col-md-4 col-xs-12">
                                 Nome do Paciente
-                                @Html.TextBoxFor(m => m.PAPR_NM_POSOLOGIA, new { @class = "form-control", autofocus = true })
+                                @Html.TextBoxFor(m => m.PAPR_NM_POSOLOGIA, new { @class = "form-control", autofocus = true, @id = "txtNomePaciente", data_toggle = "popover", data_content = "Selecione o paciente a pesquisar", data_trigger="hover", data_placement="top"  })
                             </div>
                             <div class="col-lg-2 col-md-2 col-xs-12">
                                 Data Inicial
-                                @Html.TextBoxFor(m => m.PAPR_DT_EMISSAO, new { @class = "form-control date-picker", autofocus = true, @id = "dn" })
+                                @Html.TextBoxFor(m => m.PAPR_DT_EMISSAO, new { @class = "form-control date-picker", autofocus = true, @id = "dn", data_toggle = "popover", data_content = "Informe a data inicial da faixa de datas a ser pesquisada", data_trigger="hover", data_placement="top" })
                             </div>
                             <div class="col-lg-2 col-md-2 col-xs-12">
                                 Data Final
-                                @Html.TextBoxFor(m => m.PAPR_DT_ENVIO, new { @class = "form-control date-picker", autofocus = true, @id = "dn1" })
+                                @Html.TextBoxFor(m => m.PAPR_DT_ENVIO, new { @class = "form-control date-picker", autofocus = true, @id = "dn1", data_toggle = "popover", data_content = "Informe a data final da faixa de datas a ser pesquisada", data_trigger="hover", data_placement="top" })
                             </div>
                         </div>
                         <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
                             <div class="col-lg-4 col-md-4 col-xs-12">
                                 Nome do Medicamento
-                                @Html.TextBoxFor(m => m.PAPR_NM_REMEDIO, new { @class = "form-control", autofocus = true })
+                                @Html.TextBoxFor(m => m.PAPR_NM_REMEDIO, new { @class = "form-control", autofocus = true, @id = "txtNomeRemedio", data_toggle = "popover", data_content = "Selecione o medicamento a pesquisar", data_trigger="hover", data_placement="top"  })
                             </div>
                             <div class="col-lg-8 col-md-8 col-xs-12">
                                 Nome Genérico
-                                @Html.TextBoxFor(m => m.PAPR_NM_DOSAGEM, new { @class = "form-control", autofocus = true })
+                                @Html.TextBoxFor(m => m.PAPR_NM_DOSAGEM, new { @class = "form-control", autofocus = true, @id = "txtNomeGenerico", data_toggle = "popover", data_content = "Selecione o nome genérico do medicamento a pesquisar", data_trigger="hover", data_placement="top"  })
                             </div>
                         </div>
 
                         <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
                             <div class="col-lg-12 col-md-12 col-xs-12">
-                                @Html.ButtonActionSubmit(text: "Filtrar")
+                                @Html.ButtonActionSubmit(text: "Filtrar", htmlAttributes: new { @class = "btn-loading1" })
                                 @if (ViewBag.Classe == 0)
                                 {
-                                    @Html.ButtonLinkIndex(text: "Nova Prescrição", controller: "Paciente", action: "IncluirPrescricaoCompleta", buttonClass: "primary")
+                                    @Html.ButtonLinkIndex(text: "Nova Prescrição", controller: "Paciente", action: "IncluirPrescricaoCompleta", buttonClass: "primary", htmlAttributes: new { @class = "btn-loading" })
                                 }
                                 @if (ViewBag.ClasseLK == 0)
                                 {
                                     <button style="margin-left: 0px;" class="btn btn-sm btn-primary" id="buttonLab" type="button" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acesso à Página de Prescrições de seu órgão de classe">Nova Prescrição - Classe</button>
                                 }
-                                @Html.ButtonLinkIndex(text: "Prescrições do Mês", controller: "Paciente", action: "VerPrescricoesMes")
-                                @Html.ButtonLinkIndex(text: "Todas as Prescrições", controller: "Paciente", action: "RetirarFiltroPrescricoes")
-                                <a href="@Url.Action("VerMedicamentos", "Paciente")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Ver lista dos medicamentos de todas as prescrições" class="btn btn-sm btn-warning" id="emp" OnClick = "Fade()">Medicamentos Prescritos</a>                
+                                @Html.ButtonLinkIndex(text: "Prescrições do Mês", controller: "Paciente", action: "VerPrescricoesMes", htmlAttributes: new { @class = "btn-loading" })
+                                @Html.ButtonLinkIndex(text: "Todas as Prescrições", controller: "Paciente", action: "RetirarFiltroPrescricoes", htmlAttributes: new { @class = "btn-loading" })
+                                <a href="@Url.Action("VerMedicamentos", "Paciente")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Ver lista dos medicamentos de todas as prescrições" class="btn btn-sm btn-warning btn-loading" id="emp" OnClick = "Fade()">Medicamentos Prescritos</a>                
                                 @Html.ButtonLinkIndex(text: "Imprimir Lista de Prescrições", controller: "Paciente", action: "GerarRelatorioPrescricoesNova")
                                 @if ((Int32)Session["VoltaListaConsulta"] == 1)
                                 {
-                                    @Html.ButtonLinkIndex(text: "Voltar", controller: "Paciente", action: "VerListaPrescricaoConsulta")
+                                    @Html.ButtonLinkIndex(text: "Voltar", controller: "Paciente", action: "VerListaPrescricaoConsulta", htmlAttributes: new { @class = "btn-loading" })
                                 }
                                 else
                                 {
                                     @Html.ButtonLinkIndex(text: "Voltar", controller: "Paciente", action: "VoltarCentrais")
                                 }
                                 <a href="@Url.Action((String)Session["AjudaNivel"])"  class="btn btn-sm btn-danger" target="_blank">Ajuda</a>                
+                                <span id="loadingIndicator" style="display: none; margin-left: 10px; color: #007bff;">
+                                    <i class="fa fa-spinner fa-spin"></i> Processando...
+                                </span>
                             </div>
                         </div>
                     </div>
@@ -150,7 +153,6 @@
                                         <th style="width: auto">Num. Itens</th>
                                         <th style="width: auto">Data da Consulta</th>
                                         <th class="td-one-action">Ações</th>
-                                        <th style="width: 0.01px"></th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -168,26 +170,26 @@
                                             }
                                             @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_ACESSO_PACIENTE == 1)
                                             {
-                                                <td style="width: auto"><a href="@Url.Action("EditarPacientePrescricao", "Paciente", new { id = cond.PACIENTE.PACI__CD_ID })"  data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página de edição de dados do paciente"/>@cond.PACIENTE.PACI_NM_NOME</td>
+                                                <td style="width: auto"><a href="@Url.Action("EditarPacientePrescricao", "Paciente", new { id = cond.PACIENTE.PACI__CD_ID })"  class="btn-loading" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página de edição de dados do paciente"/>@cond.PACIENTE.PACI_NM_NOME</td>
                                             }
                                             else
                                             {
-                                                <td style="width: auto"><a href="@Url.Action("VerPacientePrescricao", "Paciente", new { id = cond.PACIENTE.PACI__CD_ID })" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página de visualização de dados do paciente"/>@cond.PACIENTE.PACI_NM_NOME</td>
+                                                <td style="width: auto"><a href="@Url.Action("VerPacientePrescricao", "Paciente", new { id = cond.PACIENTE.PACI__CD_ID })" class="btn-loading" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página de visualização de dados do paciente"/>@cond.PACIENTE.PACI_NM_NOME</td>
                                             }                                       
                                             @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_PRESCRICAO_ALTERAR == 1)
                                             {
                                                 if (cond.PAPR_IN_ENVIADO == 0)
                                                 {                                                                              
-                                                    <td style="width: auto"><a href="@Url.Action("EditarPrescricaoCompleta", "Paciente", new { id = cond.PAPR_CD_ID })" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página de edição de prescrição"/>@cond.PAPR_GU_GUID</td>
+                                                    <td style="width: auto"><a href="@Url.Action("EditarPrescricaoCompleta", "Paciente", new { id = cond.PAPR_CD_ID })" class="btn-loading" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página de edição de prescrição"/>@cond.PAPR_GU_GUID</td>
                                                 }
                                                 else
                                                 {
-                                                    <td style="width: auto"><a href="@Url.Action("VerPrescricaoCompleta", "Paciente", new { id = cond.PAPR_CD_ID })" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página de visualização de prescrição"/>@cond.PAPR_GU_GUID</td>
+                                                    <td style="width: auto"><a href="@Url.Action("VerPrescricaoCompleta", "Paciente", new { id = cond.PAPR_CD_ID })" class="btn-loading" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página de visualização de prescrição"/>@cond.PAPR_GU_GUID</td>
                                                 }
                                             }
                                             else
                                             {
-                                                <td style="width: auto"><a href="@Url.Action("VerPrescricaoCompleta", "Paciente", new { id = cond.PAPR_CD_ID })" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página de visualização de prescrição"/>@cond.PAPR_GU_GUID</td>
+                                                <td style="width: auto"><a href="@Url.Action("VerPrescricaoCompleta", "Paciente", new { id = cond.PAPR_CD_ID })" class="btn-loading" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página de visualização de prescrição"/>@cond.PAPR_GU_GUID</td>
                                             }
                                             @if (cond.PAPR_IN_ENVIADO == 1)
                                             {
@@ -221,16 +223,16 @@
                                                 {
                                                     if (cond.PAPR_IN_ENVIADO == 0)
                                                     {
-                                                        @Html.TableLinkDetails(cond.PAPR_CD_ID, "EditarPrescricaoCompleta", "fa-edit", "Editar Prescrição")
+                                                        @Html.TableLinkDetails(cond.PAPR_CD_ID, "EditarPrescricaoCompleta", "fa-edit btn-loading", "Editar Prescrição")
                                                     }
                                                     else
                                                     {
-                                                        @Html.TableLinkDetails(cond.PAPR_CD_ID, "VerPrescricaoCompleta", "fa-search", "Consultar Prescrição")
+                                                        @Html.TableLinkDetails(cond.PAPR_CD_ID, "VerPrescricaoCompleta", "fa-search btn-loading", "Consultar Prescrição")
                                                     }
                                                 }
                                                 else
                                                 {
-                                                    @Html.TableLinkDetails(cond.PAPR_CD_ID, "VerPrescricaoCompleta", "fa-search", "Consultar Prescrição")
+                                                    @Html.TableLinkDetails(cond.PAPR_CD_ID, "VerPrescricaoCompleta", "fa-search btn-loading", "Consultar Prescrição")
                                                 }
 
                                                 @if (cond.TICO_CD_ID < 3)
@@ -239,7 +241,7 @@
                                                     {
                                                         if (cond.PAPR_IN_ATIVO == 1 )
                                                         {
-                                                            @Html.TableLinkDetails(cond.PAPR_CD_ID, "EnviarPrescricaoEMail", "fa-send-o", "Enviar Prescrição")
+                                                            @Html.TableLinkDetails(cond.PAPR_CD_ID, "EnviarPrescricaoEMail btn-loading", "fa-send-o", "Enviar Prescrição")
                                                         }
 	                                                }
                                                 }
@@ -261,12 +263,11 @@
                                                     {
                                                         if (cond.PAPR_IN_ATIVO == 1)
                                                         {
-                                                            <span style="color: #337ab7; cursor:pointer;" alt="Desativar" class="tbl-link fa-lg fa fa-trash-o" onclick="ShowModalExcluirPrescricao('/Paciente/ExcluirPrescricao/@cond.PAPR_CD_ID')" title="Excluir Prescrição"></span>
+                                                            <span style="color: #337ab7; cursor:pointer;" alt="Desativar" class="tbl-link fa-lg fa fa-trash-o btn-loading" onclick="ShowModalExcluirPrescricao('/Paciente/ExcluirPrescricao/@cond.PAPR_CD_ID')" title="Excluir Prescrição"></span>
                                                         }
                                                     }
 	                                            }
                                             </td>
-                                            <td style="width: 0.05px"></td>
                                         </tr>
                                     }
                                 </tbody>
@@ -279,7 +280,7 @@
                                 </div>
                                 <div style="border: 5px solid #F6A54A; padding: 10px; border-radius: 8px 8px; " class="col-lg-8 col-md-8 col-xs-8">
                                     <h2 style="font-weight: bold">Sua pesquisa não retornou nenhum resultado ou nenhuma prescrição cadastrada</h2>
-                                    @Html.ButtonLinkIndex(text: "Retirar Filtro", controller: "Paciente", action: "RetirarFiltroPrescricoes")
+                                    @Html.ButtonLinkIndex(text: "Retirar Filtro", controller: "Paciente", action: "RetirarFiltroPrescricoes", htmlAttributes: new { @class = "btn-loading" })
                                 </div>
                                 <div class="col-lg-2 col-md-2 col-xs-2">
                                 </div>
@@ -334,6 +335,120 @@
         {
             navigator.sendBeacon('../ControleAcesso/LogSessionTime');
         }; 
+    </script>
+
+    <script type="text/javascript">
+        $(document).ready(function () { 
+            $('.btn-loading').on('click', function (e) {            
+                $(this).prop('disabled', true);
+                $(this).addClass('disabled');
+                $('#loadingIndicator').show();
+                var tagName = $(this).prop('tagName').toLowerCase();
+                if (tagName === 'a') {
+                    e.preventDefault(); 
+                    var targetUrl = $(this).attr('href');
+                    window.location.href = targetUrl;
+
+                } else if (tagName === 'button' || tagName === 'input') {
+                    $(this).closest('form').submit();
+                }
+            });
+        });
+    </script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('.btn-loading1').on('click', function (e) {
+            
+                var $this = $(this);
+                var tagName = $this.prop('tagName').toLowerCase();
+                $this.addClass('disabled'); 
+                $('#loadingIndicator').show();
+
+                if (tagName === 'a') {
+                    e.preventDefault();
+                
+                    var targetUrl = $this.attr('href');
+                    window.location.href = targetUrl;
+                
+                } else if (tagName === 'button' || tagName === 'input') {               
+                    $this.closest('form').submit();
+                    $this.prop('disabled', true);
+                }
+            });
+        });
+    </script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#txtNomePaciente').autocomplete({
+                minLength: 2, 
+                source: function (request, response) {
+                    $.ajax({
+                        url: '@Url.Action("GetPacienteNome", "Paciente2")', 
+                        type: 'POST',
+                        dataType: 'json',
+                        data: {
+                            term: request.term 
+                        },
+                        success: function (data) {
+                            response(data); 
+                        },
+                        error: function () {
+                            console.log("Erro ao buscar dados para autocomplete.");
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#txtNomeRemedio').autocomplete({
+                minLength: 2, 
+                source: function (request, response) {
+                    $.ajax({
+                        url: '@Url.Action("GetRemedioNome", "Paciente2")', 
+                        type: 'POST',
+                        dataType: 'json',
+                        data: {
+                            term: request.term 
+                        },
+                        success: function (data) {
+                            response(data); 
+                        },
+                        error: function () {
+                            console.log("Erro ao buscar dados para autocomplete.");
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#txtNomeGenerico').autocomplete({
+                minLength: 2, 
+                source: function (request, response) {
+                    $.ajax({
+                        url: '@Url.Action("GetGenericoNome", "Paciente2")', 
+                        type: 'POST',
+                        dataType: 'json',
+                        data: {
+                            term: request.term 
+                        },
+                        success: function (data) {
+                            response(data); 
+                        },
+                        error: function () {
+                            console.log("Erro ao buscar dados para autocomplete.");
+                        }
+                    });
+                }
+            });
+        });
     </script>
 
     <script type="text/javascript" language="javascript">
@@ -413,14 +528,14 @@
         }
 
         function ShowModalExcluirPrescricao(url) {
-            $('#modal').find('.modal-footer').prepend('<a id="btnModal" alt="Desativar" class="btn btn-primary" href="' + url + '" target="_self" title="Desativar">Confirmar</a>');
+            $('#modal').find('.modal-footer').prepend('<a id="btnModal" alt="Desativar" class="btn btn-primary btn-loading" href="' + url + '" target="_self" title="Desativar">Confirmar</a>');
             $('#modal').find('.modal-body').html('Confirma exclusão de Prescrição?');
             $('#modal').find('.modal-header').prepend('<h5 id="modalTitle" class="modal-title">Confimar Exclusão</h5>');
             $('#modal').modal('show');
         }
 
         function ShowModalConfirmarEnvio(url) {
-            $('#modal').find('.modal-footer').prepend('<a id="btnModal" alt="Reativar" class="btn btn-primary" href="' + url + '" target="_self" title="Reativar">Confirmar</a>');
+            $('#modal').find('.modal-footer').prepend('<a id="btnModal" alt="Reativar" class="btn btn-primary btn-loading" href="' + url + '" target="_self" title="Reativar">Confirmar</a>');
             $('#modal').find('.modal-body').html('Confirma envio da Prescrição?');
             $('#modal').find('.modal-header').prepend('<h5 id="modalTitle" class="modal-title">Confimar Envio</h5>');
             $('#modal').modal('show');
@@ -433,6 +548,22 @@
             $('.dataTables-example').DataTable({
                 pageLength: 25,
                 dom: '<"html5buttons"B>lTfgitp',
+                order: [[0, 'desc'],
+                columnDefs: [
+                                {
+                                    // Aplicar o tipo de ordenação de data na Coluna 0
+                                    "type": "datetime-moment", 
+                                    "targets": 0 
+                                },
+                                {
+                                    // As colunas de Ações, Tipo, Situação, etc., podem ter elementos HTML 
+                                    // que atrapalham a ordenação. Usamos "html-num" (ou customizado)
+                                    // ou simplesmente garantir que não tente ordenar o conteúdo do link da data.
+                                    "orderable": false, // Desabilita ordenação para a coluna Ações
+                                    "targets": 7 
+                                }
+                ],
+                // ---------------------------------     
                 buttons: [
                     { extend: 'excel', title: 'Prescricoes_Planilha' },
                     {

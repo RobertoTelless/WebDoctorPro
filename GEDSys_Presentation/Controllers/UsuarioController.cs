@@ -527,6 +527,10 @@ namespace ERP_Condominios_Solution.Controllers
                 {
                     contentType = "audio/mpeg";
                 }
+                else if (arquivo.Contains(".mp4"))
+                {
+                    contentType = "video/mp4";
+                }
                 return File(arquivo, contentType, nomeDownload);
             }
             catch (Exception ex)

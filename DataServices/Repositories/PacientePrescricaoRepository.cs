@@ -19,7 +19,7 @@ namespace DataServices.Repositories
 
         public List<PACIENTE_PRESCRICAO> GetAllItens(Int32 idAss)
         {
-            IQueryable<PACIENTE_PRESCRICAO> query = Db.PACIENTE_PRESCRICAO;
+            IQueryable<PACIENTE_PRESCRICAO> query = Db.PACIENTE_PRESCRICAO.Where(p => p.PAPR_IN_ATIVO == 1);
             query = query.Where(p => p.ASSI_CD_ID == idAss);
             query = query.Include(p => p.PACIENTE_PRESCRICAO_ITEM);
             return query.AsNoTracking().ToList();
@@ -67,7 +67,7 @@ namespace DataServices.Repositories
             {
                 query = query.Where(p => p.ASSI_CD_ID == idAss);
                 query = query.Where(p => p.PAPR_IN_ATIVO == 1);
-                query = query.OrderBy(a => a.PAPR_DT_EMISSAO);
+                query = query.OrderByDescending(a => a.PAPR_DT_EMISSAO);
                 lista = query.AsNoTracking().ToList<PACIENTE_PRESCRICAO>();
             }
             return lista;

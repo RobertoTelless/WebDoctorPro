@@ -1750,6 +1750,10 @@ namespace GEDSys_Presentation.Controllers
                 {
                     contentType = "audio/mpeg";
                 }
+                else if (arquivo.Contains(".mp4"))
+                {
+                    contentType = "video/mp4";
+                }
                 Session["NivelEnvio"] = 2;
                 return File(arquivo, contentType, nomeDownload);
             }
