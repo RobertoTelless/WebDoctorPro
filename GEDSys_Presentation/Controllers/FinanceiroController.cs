@@ -7754,6 +7754,7 @@ namespace GEDSys_Presentation.Controllers
                 {
                     if ((Int32)Session["PermFinanceiro"] == 1)
                     {
+                        PACIENTE_CONSULTA item1 = baseApp.GetConsultaById(id);
                         List<CONSULTA_RECEBIMENTO> pagMes = CarregaRecebimento().Where(p => p.CORE_IN_ATIVO == 1 & p.USUA_CD_ID == usuario.USUA_CD_ID).ToList();
                         Int32 num = pagMes.Where(p => p.CORE_DT_RECEBIMENTO.Value.Month == DateTime.Today.Date.Month & p.CORE_DT_RECEBIMENTO.Value.Year == DateTime.Today.Date.Year).ToList().Count;
                         if ((Int32)Session["NumRecebimentos"] >= num)
@@ -7770,9 +7771,9 @@ namespace GEDSys_Presentation.Controllers
                                 rec.CORE_IN_CONFERIDO = 0;
                                 rec.CORE_NM_RECEBIMENTO = nome;
                                 rec.PACI_CD_ID = pac.PACI__CD_ID;
-                                rec.PACO_CD_ID = item.PACO_CD_ID;
-                                rec.VACO_CD_ID = item.VACO_CD_ID;
-                                rec.CORE_VL_VALOR = item.VALOR_CONSULTA.VACO_NR_VALOR;
+                                rec.PACO_CD_ID = item1.PACO_CD_ID;
+                                rec.VACO_CD_ID = item1.VACO_CD_ID;
+                                rec.CORE_VL_VALOR = item1.VALOR_CONSULTA.VACO_NR_VALOR;
                                 rec.FORE_CD_ID = fr.FORE_CD_ID;
                                 recApp.ValidateCreate(rec, usuario);
 

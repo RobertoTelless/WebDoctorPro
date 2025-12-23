@@ -35,7 +35,7 @@
                 <a href="@Url.Action("MontarTelaPaciente", "Paciente")">Dashboard</a>
             </li>
             <li>
-                <a href="@Url.Action("ProcederConsulta", "Paciente")">Consultas - Proceder</a>
+                <a href="@Url.Action("VoltarProcederConsulta", "Paciente")">Consultas - Proceder</a>
             </li>
             <li class="active">
                 <strong>Consultas - Prévias</strong>
@@ -48,7 +48,10 @@
         <div class="col-lg-12 col-md-12 col-xs-12">
             <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
                 <div class="col-lg-12 col-md-12 col-xs-12">
-                    @Html.ButtonLinkIndex(text: "Voltar", controller: "Paciente", action: "ProcederConsulta")
+                    @Html.ButtonLinkIndex(text: "Voltar", controller: "Paciente", action: "VoltarProcederConsulta", htmlAttributes: new { @class = "btn-loading" })
+                    <span id="loadingIndicator" style="display: none; margin-left: 10px; color: #007bff;">
+                        <i class="fa fa-spinner fa-spin"></i> Processando...
+                    </span>
                 </div>
             </div>
             <div class="col-lg-12 col-md-12 col-xs-12 ibox float-e-margins">
@@ -67,38 +70,40 @@
                         </div>
                     }
                     <div class="row">
-                        @if (ViewBag.Listas != null &&(ViewBag.Listas as List<EntitiesServices.Model.AVISO_LEMBRETE>).Count > 0)
+                        @if (ViewBag.Listas != null &&(ViewBag.Listas as List<EntitiesServices.Model.RESPOSTA_CONSULTA>).Count > 0)
                         {
                             <table class="table table-striped table-bordered table-hover dataTables-example">
                                 <thead style="background-color:lightsteelblue">
                                     <tr>
-                                        <th style="width: auto">Data de Aviso</th>
-                                        <th style="width: auto">Título</th>
-                                        <th style="width: auto">Data de Criação</th>
-                                        <th style="width: auto">Paciente</th>
+                                        <th style="width: auto">Data</th>
+                                        <th style="width: auto">E-Mail</th>
+                                        <th style="width: auto">Celular</th>
+                                        <th style="width: auto">CPF</th>
+                                        <th style="width: auto">Visto</th>
                                         <th class="td-one-action">Ações</th>
-                                        <th style="width: 0.01px"></th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach (var cond in (ViewBag.Listas as List<EntitiesServices.Model.AVISO_LEMBRETE>).OrderByDescending(p => p.AVIS_DT_AVISO.Value.Date).ThenBy(p => p.AVIS_NM_TITULO))
+                                    @foreach (var cond in (ViewBag.Listas as List<EntitiesServices.Model.RESPOSTA_CONSULTA>).OrderByDescending(p => p.RECO_DT_DATA.Value.Date))
                                     {   
                                         <tr>
-                                            <td style="width: auto">@cond.AVIS_DT_AVISO.Value.ToShortDateString()</td>                                                
-                                            <td style="width: auto"><a href="@Url.Action("VerAvisoPrevia", "Paciente2", new { id = cond.AVIS_CD_ID })"  data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página de visualização do aviso"/>@cond.AVIS_NM_TITULO</td>
-                                            <td style="width: auto">@cond.AVIS_DT_CRIACAO.Value.ToShortDateString()</td>                                                
-                                            @if (cond.PACIENTE != null)
+                                            <td style="width: auto"><a href="@Url.Action("VerAvisoPrevia", "Paciente2", new { id = cond.RECO_CD_ID })" class="btn-loading" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página de visualização das  informações"/>@cond.RECO_DT_DATA.Value.ToShortDateString()</td>
+                                            <td style="width: auto">@cond.RECO_EM_EMAIL</td>       
+                                            <td style="width: auto">@cond.RECO_NR_CELULAR</td>       
+                                            <td style="width: auto">@cond.RECO_NR_CPF</td>       
+                                            @if (cond.RECO_IN_VISTO == 1)
                                             {
-                                                <td style="width: auto">@cond.PACIENTE.PACI_NM_NOME</td>
+                                                <td style="width: auto"><span class="badge badge-primary">Sim</span></td>
+
                                             }
                                             else
                                             {
-                                                <td style="width: auto">-</td>
+                                                <td style="width: auto"><span class="badge badge-warning">Não</span></td>
+
                                             }
                                             <td style="width: auto" class="td-one-action">
-                                                @Html.TableLinkDetails(cond.AVIS_CD_ID, "VerAvisoPrevia", "fa-search", "Ver Aviso")
+                                                @Html.TableLinkDetails(cond.RECO_CD_ID, "VerAvisoPrevia", "fa-search btn-loading", "Ver Informação")
                                             </td>
-                                            <td style="width: 0.05px"></td>
                                         </tr>
                                     }
                                 </tbody>
@@ -110,7 +115,7 @@
                                 <div class="col-lg-3 col-md-3 col-xs-2">
                                 </div>
                                 <div style="border: 5px solid #F6A54A; padding: 10px; border-radius: 8px 8px; " class="col-lg-6 col-md-6 col-xs-12">
-                                    <h2 style="font-weight: bold">´Nenhum aviso para esse paciente</h2>
+                                    <h2 style="font-weight: bold">Nenhuma informação prévia para esse paciente</h2>
                                 </div>
                                 <div class="col-lg-3 col-md-3 col-xs-2">
                                 </div>
@@ -167,13 +172,50 @@
     </script>
 
     <script type="text/javascript">
+        $(document).ready(function () { 
+            $('.btn-loading').on('click', function (e) {            
+                $(this).prop('disabled', true);
+                $(this).addClass('disabled');
+                $('#loadingIndicator').show();
+                var tagName = $(this).prop('tagName').toLowerCase();
+                if (tagName === 'a') {
+                    e.preventDefault(); 
+                    var targetUrl = $(this).attr('href');
+                    window.location.href = targetUrl;
+
+                } else if (tagName === 'button' || tagName === 'input') {
+                    $(this).closest('form').submit();
+                }
+            });
+        });
+    </script>
+
+    <script type="text/javascript">
         $(document).ready(function () {
 
             $('.dataTables-example').DataTable({
                 pageLength: 25,
                 dom: '<"html5buttons"B>lTfgitp',
+                order: [[0, 'desc'],
+
+
+                columnDefs: [
+                                {
+                                    // Aplicar o tipo de ordenação de data na Coluna 0
+                                    "type": "datetime-moment", 
+                                    "targets": 0 
+                                },
+                                {
+                                    // As colunas de Ações, Tipo, Situação, etc., podem ter elementos HTML 
+                                    // que atrapalham a ordenação. Usamos "html-num" (ou customizado)
+                                    // ou simplesmente garantir que não tente ordenar o conteúdo do link da data.
+                                    "orderable": false, // Desabilita ordenação para a coluna Ações
+                                    "targets": 7 
+                                }
+                ],
+                // ---------------------------------     
                 buttons: [
-                    { extend: 'excel', title: 'Aviso_Planilha' },
+                    { extend: 'excel', title: 'Informacoes_Planilha' },
                     {
                         extend: 'print',
                         customize: function (win) {

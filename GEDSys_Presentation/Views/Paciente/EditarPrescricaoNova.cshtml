@@ -132,26 +132,26 @@
                             {
                                 if ((Int32)Session["ModoConsulta"] == 1)
                                 {
-                                    <a href="@Url.Action("VoltarProcederConsulta", "Paciente")" class="btn-loading" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Voltando sem Confirmar, as alreações/inclusões da prescrição NÃO serão gravadas" class="btn btn-sm btn-warning" id="emp" OnClick = "Fade()">Voltar</a>                
+                                    <a href="@Url.Action("VoltarProcederConsulta", "Paciente")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Voltando sem Confirmar, as alreações/inclusões da prescrição NÃO serão gravadas" class="btn btn-sm btn-warning btn-loading" id="emp" OnClick = "Fade()">Voltar</a>                
                                 }
                                 else
                                 {
-                                    <a href="@Url.Action("VoltarAnexoPaciente", "Paciente")" class="btn-loading" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Voltando sem Confirmar, as alreações/inclusões da prescrição NÃO serão gravadas" class="btn btn-sm btn-warning" id="emp" OnClick = "Fade()">Voltar</a>                
+                                    <a href="@Url.Action("VoltarAnexoPaciente", "Paciente")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Voltando sem Confirmar, as alreações/inclusões da prescrição NÃO serão gravadas" class="btn btn-sm btn-warning btn-loading" id="emp" OnClick = "Fade()">Voltar</a>                
                                 }
                             }
                             else if ((Int32)Session["TipoSolicitacao"] == 8)
                             {
-                                <a href="@Url.Action("VerMedicamentosPacienteForm", "Paciente")" class="btn-loading" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Voltando sem Confirmar, as alreações/inclusões da prescrição NÃO serão gravadas" class="btn btn-sm btn-warning" id="emp" OnClick = "Fade()">Voltar</a>                
+                                <a href="@Url.Action("VerMedicamentosPacienteForm", "Paciente")"  data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Voltando sem Confirmar, as alreações/inclusões da prescrição NÃO serão gravadas" class="btn btn-sm btn-warning btn-loading" id="emp" OnClick = "Fade()">Voltar</a>                
                             }
                             else
                             {
                                 if ((Int32)Session["ModoConsulta"] == 1)
                                 {
-                                    <a href="@Url.Action("VerListaPrescricaoConsulta", "Paciente")" class="btn-loading" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Voltando sem Confirmar, as alreações/inclusões da prescrição NÃO serão gravadas" class="btn btn-sm btn-warning" id="emp" OnClick = "Fade()">Voltar</a>                
+                                    <a href="@Url.Action("VerListaPrescricaoConsulta", "Paciente")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Voltando sem Confirmar, as alreações/inclusões da prescrição NÃO serão gravadas" class="btn btn-sm btn-warning btn-loading" id="emp" OnClick = "Fade()">Voltar</a>                
                                 }
                                 else
                                 {
-                                    <a href="@Url.Action("MontarTelaPrescricoes", "Paciente")" class="btn-loading" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Voltando sem Confirmar, as alreações/inclusões da prescrição NÃO serão gravadas" class="btn btn-sm btn-warning" id="emp" OnClick = "Fade()">Voltar</a>                
+                                    <a href="@Url.Action("MontarTelaPrescricoes", "Paciente")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Voltando sem Confirmar, as alreações/inclusões da prescrição NÃO serão gravadas" class="btn btn-sm btn-warning btn-loading" id="emp" OnClick = "Fade()">Voltar</a>                
                                 }
                             }
                             <a href="@Url.Action((String)Session["AjudaNivel"])"  class="btn btn-sm btn-danger" target="_blank">Ajuda</a>                

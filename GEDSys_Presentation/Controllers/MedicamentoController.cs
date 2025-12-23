@@ -362,11 +362,11 @@ namespace GEDSys_Presentation.Controllers
                 try
                 {
                     // Sanitização
-                    vm.MEDI_NM_MEDICAMENTO = CrossCutting.UtilitariosGeral.CleanStringTexto(vm.MEDI_NM_MEDICAMENTO);
-                    vm.MEDI_NM_GENERICO = CrossCutting.UtilitariosGeral.CleanStringTexto(vm.MEDI_NM_GENERICO);
-                    vm.MEDI_NM_LABORATORIO = CrossCutting.UtilitariosGeral.CleanStringDocto(vm.MEDI_NM_LABORATORIO);
-                    vm.MEDI_NM_APRESENTACAO = CrossCutting.UtilitariosGeral.CleanStringTexto(vm.MEDI_NM_APRESENTACAO);
-                    vm.MEDI_DS_POSOLOGIA = CrossCutting.UtilitariosGeral.CleanStringTexto(vm.MEDI_DS_POSOLOGIA);
+                    vm.MEDI_NM_MEDICAMENTO = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(vm.MEDI_NM_MEDICAMENTO);
+                    vm.MEDI_NM_GENERICO = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(vm.MEDI_NM_GENERICO);
+                    vm.MEDI_NM_LABORATORIO = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(vm.MEDI_NM_LABORATORIO);
+                    vm.MEDI_NM_APRESENTACAO = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(vm.MEDI_NM_APRESENTACAO);
+                    vm.MEDI_DS_POSOLOGIA = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(vm.MEDI_DS_POSOLOGIA);
 
                     // Preparação
                     MEDICAMENTO item = Mapper.Map<MedicamentoBaseViewModel, MEDICAMENTO>(vm);
@@ -387,6 +387,8 @@ namespace GEDSys_Presentation.Controllers
                     listaMaster = new List<MEDICAMENTO>();
                     Session["ListaMedicamentoBase"] = null;
                     Session["IdMedicamento"] = item.MEDI_CD_ID;
+                    Session["MedicamentoAlterada"] = 1;
+                    Session["Medicamentos"] = null;
                     Session["MedicamentoAlterada"] = 1;
 
                     // Mensagem do CRUD

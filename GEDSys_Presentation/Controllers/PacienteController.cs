@@ -6973,6 +6973,7 @@ namespace GEDSys_Presentation.Controllers
                         vm.TICO_CD_ID = 1;
                     }
 
+
                     // Executa a operação
                     CONFIGURACAO conf = CarregaConfiguracaoGeral();
                     vm.PAPR_IN_ASSINADO_DIGITAL = conf.CONF_IN_ASSINA_DIGITAL_PRESCRICAO;
@@ -6987,6 +6988,7 @@ namespace GEDSys_Presentation.Controllers
                     Session["ListaPrescricoes"] = null;
                     Session["ListaPrescricao"] = null;
                     Session["IdPaciente"] = item.PACI_CD_ID;
+                    Session["Prescricoes"] = null;
 
                     // Configura serilização
                     JsonSerializerSettings settings = new JsonSerializerSettings
@@ -7625,6 +7627,7 @@ namespace GEDSys_Presentation.Controllers
                     Session["IdPaciente"] = item.PACI_CD_ID;
                     Session["ListaPrescricoes"] = null;
                     Session["ListaPrescricao"] = null;
+                    Session["Prescricoes"] = null;
 
                     // Gerar e gravar QRCode
                     String fileNameQR = "Prescricao_QRCode_" + item.PAPR_GU_GUID + ".png";
@@ -14703,9 +14706,6 @@ namespace GEDSys_Presentation.Controllers
                 Session["IdAnamnese"] = item.PAAM_CD_ID;
                 Session["VoltaAnotacaoAnamnese"] = 2;
 
-                // Recupera consulta
-                //PACIENTE_CONSULTA cons = baseApp.GetConsultaById(item.PACO_CD_ID.Value);
-
                 // Prepara a view
                 PacienteAnamneseViewModel vm = Mapper.Map<PACIENTE_ANAMNESE, PacienteAnamneseViewModel>(item);
                 vm.PAAM_DT_DATA = item.PAAM_DT_DATA;
@@ -14807,30 +14807,30 @@ namespace GEDSys_Presentation.Controllers
                 try
                 {
                     // Sanitização
-                    vm.PAAM_DS_MOTIVO_CONSULTA = CrossCutting.UtilitariosGeral.CleanStringRegistro(vm.PAAM_DS_MOTIVO_CONSULTA);
-                    vm.PAAM_DS_HISTORIA_FAMILIAR = CrossCutting.UtilitariosGeral.CleanStringRegistro(vm.PAAM_DS_HISTORIA_FAMILIAR);
-                    vm.PAAM_DS_HISTORIA_SOCIAL = CrossCutting.UtilitariosGeral.CleanStringRegistro(vm.PAAM_DS_HISTORIA_SOCIAL);
-                    vm.PAAN_NM_AVALIACAO_CARDIOLOGICA = CrossCutting.UtilitariosGeral.CleanStringRegistro(vm.PAAN_NM_AVALIACAO_CARDIOLOGICA);
-                    vm.PAAN_NM_RESPIRATORIO = CrossCutting.UtilitariosGeral.CleanStringRegistro(vm.PAAN_NM_RESPIRATORIO);
-                    vm.PAAN_NM_ABDOMEM = CrossCutting.UtilitariosGeral.CleanStringRegistro(vm.PAAN_NM_ABDOMEM);
-                    vm.PAAM_NM_MEDICAMENTO = CrossCutting.UtilitariosGeral.CleanStringRegistro(vm.PAAM_NM_MEDICAMENTO);
-                    vm.PAAN_NM_MEMBROS_INFERIORES = CrossCutting.UtilitariosGeral.CleanStringRegistro(vm.PAAN_NM_MEMBROS_INFERIORES);
-                    vm.PAAM_DS_QUEIXA_PRINCIPAL = CrossCutting.UtilitariosGeral.CleanStringRegistro(vm.PAAM_DS_QUEIXA_PRINCIPAL);
-                    vm.PAAM_DS_HISTORIA_DOENCA_ATUAL = CrossCutting.UtilitariosGeral.CleanStringRegistro(vm.PAAM_DS_HISTORIA_DOENCA_ATUAL);
-                    vm.PAAM_DS_HISTORIA_PATOLOGICA_PROGRESSIVA = CrossCutting.UtilitariosGeral.CleanStringRegistro(vm.PAAM_DS_HISTORIA_PATOLOGICA_PROGRESSIVA);
-                    vm.PAAM_DS_DIAGNOSTICO_1 = CrossCutting.UtilitariosGeral.CleanStringRegistro(vm.PAAM_DS_DIAGNOSTICO_1);
-                    vm.PAAM_DS_CONDUTA = CrossCutting.UtilitariosGeral.CleanStringRegistro(vm.PAAM_DS_CONDUTA);
-                    vm.PAAM_TX_OBSERVACOES = CrossCutting.UtilitariosGeral.CleanStringRegistro(vm.PAAM_TX_OBSERVACOES);
-                    vm.PAAM_DS_CAMPO_1 = CrossCutting.UtilitariosGeral.CleanStringRegistro(vm.PAAM_DS_CAMPO_1);
-                    vm.PAAM_DS_CAMPO_2 = CrossCutting.UtilitariosGeral.CleanStringRegistro(vm.PAAM_DS_CAMPO_2);
-                    vm.PAAM_DS_CAMPO_3 = CrossCutting.UtilitariosGeral.CleanStringRegistro(vm.PAAM_DS_CAMPO_3);
-                    vm.PAAM_DS_CAMPO_4 = CrossCutting.UtilitariosGeral.CleanStringRegistro(vm.PAAM_DS_CAMPO_4);
-                    vm.PAAM_DS_CAMPO_5 = CrossCutting.UtilitariosGeral.CleanStringRegistro(vm.PAAM_DS_CAMPO_5);
-                    vm.PAAM_DS_CAMPO_6 = CrossCutting.UtilitariosGeral.CleanStringRegistro(vm.PAAM_DS_CAMPO_6);
-                    vm.PAAM_DS_CAMPO_7 = CrossCutting.UtilitariosGeral.CleanStringRegistro(vm.PAAM_DS_CAMPO_7);
-                    vm.PAAM_DS_CAMPO_8 = CrossCutting.UtilitariosGeral.CleanStringRegistro(vm.PAAM_DS_CAMPO_8);
-                    vm.PAAM_DS_CAMPO_9 = CrossCutting.UtilitariosGeral.CleanStringRegistro(vm.PAAM_DS_CAMPO_9);
-                    vm.PAAM_DS_CAMPO_10 = CrossCutting.UtilitariosGeral.CleanStringRegistro(vm.PAAM_DS_CAMPO_10);
+                    vm.PAAM_DS_MOTIVO_CONSULTA = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(vm.PAAM_DS_MOTIVO_CONSULTA);
+                    vm.PAAM_DS_HISTORIA_FAMILIAR = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(vm.PAAM_DS_HISTORIA_FAMILIAR);
+                    vm.PAAM_DS_HISTORIA_SOCIAL = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(vm.PAAM_DS_HISTORIA_SOCIAL);
+                    vm.PAAN_NM_AVALIACAO_CARDIOLOGICA = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(vm.PAAN_NM_AVALIACAO_CARDIOLOGICA);
+                    vm.PAAN_NM_RESPIRATORIO = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(vm.PAAN_NM_RESPIRATORIO);
+                    vm.PAAN_NM_ABDOMEM = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(vm.PAAN_NM_ABDOMEM);
+                    vm.PAAM_NM_MEDICAMENTO = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(vm.PAAM_NM_MEDICAMENTO);
+                    vm.PAAN_NM_MEMBROS_INFERIORES = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(vm.PAAN_NM_MEMBROS_INFERIORES);
+                    vm.PAAM_DS_QUEIXA_PRINCIPAL = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(vm.PAAM_DS_QUEIXA_PRINCIPAL);
+                    vm.PAAM_DS_HISTORIA_DOENCA_ATUAL = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(vm.PAAM_DS_HISTORIA_DOENCA_ATUAL);
+                    vm.PAAM_DS_HISTORIA_PATOLOGICA_PROGRESSIVA = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(vm.PAAM_DS_HISTORIA_PATOLOGICA_PROGRESSIVA);
+                    vm.PAAM_DS_DIAGNOSTICO_1 = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(vm.PAAM_DS_DIAGNOSTICO_1);
+                    vm.PAAM_DS_CONDUTA = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(vm.PAAM_DS_CONDUTA);
+                    vm.PAAM_TX_OBSERVACOES = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(vm.PAAM_TX_OBSERVACOES);
+                    vm.PAAM_DS_CAMPO_1 = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(vm.PAAM_DS_CAMPO_1);
+                    vm.PAAM_DS_CAMPO_2 = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(vm.PAAM_DS_CAMPO_2);
+                    vm.PAAM_DS_CAMPO_3 = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(vm.PAAM_DS_CAMPO_3);
+                    vm.PAAM_DS_CAMPO_4 = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(vm.PAAM_DS_CAMPO_4);
+                    vm.PAAM_DS_CAMPO_5 = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(vm.PAAM_DS_CAMPO_5);
+                    vm.PAAM_DS_CAMPO_6 = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(vm.PAAM_DS_CAMPO_6);
+                    vm.PAAM_DS_CAMPO_7 = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(vm.PAAM_DS_CAMPO_7);
+                    vm.PAAM_DS_CAMPO_8 = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(vm.PAAM_DS_CAMPO_8);
+                    vm.PAAM_DS_CAMPO_9 = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(vm.PAAM_DS_CAMPO_9);
+                    vm.PAAM_DS_CAMPO_10 = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(vm.PAAM_DS_CAMPO_10);
                     vm.PAAM_IN_FLAG__HISTORIA_FAMILIAR = 1;
 
                     // Prepara data
@@ -15383,6 +15383,7 @@ namespace GEDSys_Presentation.Controllers
 
                     // Serializa anamnese
                     String json = JsonConvert.SerializeObject(vm);
+                    String jsonAntes = JsonConvert.SerializeObject((PACIENTE_ANAMNESE)Session["Anamnese"]);
 
                     // Executa a operação
                     PACIENTE_ANAMNESE item = Mapper.Map<PacienteAnamneseViewModel, PACIENTE_ANAMNESE>(vm);
@@ -15405,9 +15406,10 @@ namespace GEDSys_Presentation.Controllers
                         LOG_DT_DATA = DateTime.Now,
                         ASSI_CD_ID = usuarioLogado.ASSI_CD_ID,
                         USUA_CD_ID = usuarioLogado.USUA_CD_ID,
-                        LOG_NM_OPERACAO = "eanPACI",
+                        LOG_NM_OPERACAO = "Paciente - Anamnese - Alteração",
                         LOG_IN_ATIVO = 1,
                         LOG_TX_REGISTRO = json,
+                        LOG_TX_REGISTRO_ANTES = jsonAntes,
                         LOG_IN_SISTEMA = 6
                     };
                     Int32 volta1 = logApp.ValidateCreate(log);
@@ -15421,8 +15423,8 @@ namespace GEDSys_Presentation.Controllers
                     hist.PAHI_DT_DATA = DateTime.Now;
                     hist.PAHI_IN_TIPO = 8;
                     hist.PAHI_IN_CHAVE = item.PAAM_CD_ID;
-                    hist.PAHI_NM_OPERACAO = "Paciente - Edição de Anamnese";
-                    hist.PAHI_DS_DESCRICAO = "Paciente " + pac.PACI_NM_NOME + " - Anamnese editada " + item.PAAM_DT_DATA.ToShortDateString();
+                    hist.PAHI_NM_OPERACAO = "Paciente - Alteração de Anamnese";
+                    hist.PAHI_DS_DESCRICAO = "Paciente: " + pac.PACI_NM_NOME.ToUpper() + " - Anamnese editada: " + item.PAAM_DT_DATA.ToShortDateString();
                     Int32 voltaHist = baseApp.ValidateCreateHistorico(hist);
 
                     if ((Int32)Session["VoltarPesquisa"] == 1)
@@ -16241,6 +16243,7 @@ namespace GEDSys_Presentation.Controllers
 
                     // Serializa exame fisico
                     String json = JsonConvert.SerializeObject(vm);
+                    String jsonAntes = JsonConvert.SerializeObject((PACIENTE_EXAME_FISICOS)Session["ExameFisico"]);
 
                     // Executa a operação
                     PACIENTE_EXAME_FISICOS item = Mapper.Map<PacienteExameFisicoViewModel, PACIENTE_EXAME_FISICOS>(vm);
@@ -16355,9 +16358,10 @@ namespace GEDSys_Presentation.Controllers
                         LOG_DT_DATA = DateTime.Now,
                         ASSI_CD_ID = usuarioLogado.ASSI_CD_ID,
                         USUA_CD_ID = usuarioLogado.USUA_CD_ID,
-                        LOG_NM_OPERACAO = "eefPACI",
+                        LOG_NM_OPERACAO = "Paciente - Exame Físico - Alteração",
                         LOG_IN_ATIVO = 1,
                         LOG_TX_REGISTRO = json,
+                        LOG_TX_REGISTRO_ANTES = jsonAntes,
                         LOG_IN_SISTEMA = 6
                     };
                     Int32 volta1 = logApp.ValidateCreate(log);
@@ -16374,8 +16378,8 @@ namespace GEDSys_Presentation.Controllers
                         hist.PAHI_DT_DATA = DateTime.Now;
                         hist.PAHI_IN_TIPO = 9;
                         hist.PAHI_IN_CHAVE = item.PAEF_CD_ID;
-                        hist.PAHI_NM_OPERACAO = "Paciente - Edição de Exame Físico";
-                        hist.PAHI_DS_DESCRICAO = "Paciente " + pac.PACI_NM_NOME + " - Exame Físico editado " + item.PAEF_DT_DATA.Value.ToShortDateString();
+                        hist.PAHI_NM_OPERACAO = "Paciente - Alteração de Exame Físico";
+                        hist.PAHI_DS_DESCRICAO = "Paciente: " + pac.PACI_NM_NOME.ToUpper() + " - Exame Físico alterado: " + item.PAEF_DT_DATA.Value.ToShortDateString();
                         Int32 voltaHist = baseApp.ValidateCreateHistorico(hist);
                     }
 
@@ -22382,7 +22386,7 @@ namespace GEDSys_Presentation.Controllers
                     cell1.Border = PdfPCell.BOTTOM_BORDER;
                     headerTable.AddCell(cell1);
 
-                    cell1 = new PdfPCell(new Paragraph("Atestados", meuFont2))
+                    cell1 = new PdfPCell(new Paragraph("Prescrições", meuFont2))
                     {
                         VerticalAlignment = Element.ALIGN_MIDDLE,
                         HorizontalAlignment = Element.ALIGN_CENTER
@@ -22394,7 +22398,7 @@ namespace GEDSys_Presentation.Controllers
                 }
                 else
                 {
-                    PdfPCell cell2 = new PdfPCell(new Paragraph("Atestados", meuFont2))
+                    PdfPCell cell2 = new PdfPCell(new Paragraph("Prescrições", meuFont2))
                     {
                         VerticalAlignment = Element.ALIGN_MIDDLE,
                         HorizontalAlignment = Element.ALIGN_CENTER
@@ -26994,7 +26998,7 @@ namespace GEDSys_Presentation.Controllers
 
                 // Recupera informações
                 PACIENTE_PRESCRICAO solic = baseApp.GetPrescricaoById((Int32)Session["IdPrescricao"]);
-                List<PACIENTE_PRESCRICAO_ITEM> itens = solic.PACIENTE_PRESCRICAO_ITEM.ToList();
+                List<PACIENTE_PRESCRICAO_ITEM> itens = solic.PACIENTE_PRESCRICAO_ITEM.Where(p => p.PAPI_IN_ATIVO == 1).ToList();
                 PACIENTE paciente = baseApp.GetItemById(solic.PACI_CD_ID);
                 String nomeRel = "Prescricao_" + paciente.PACI_NM_NOME + "_" + solic.PAPR_GU_GUID + "_" + data + ".pdf";
                 String classe = String.Empty;
@@ -27441,7 +27445,7 @@ namespace GEDSys_Presentation.Controllers
 
                 // Recupera informações
                 PACIENTE_PRESCRICAO solic = baseApp.GetPrescricaoById((Int32)Session["IdPrescricao"]);
-                List<PACIENTE_PRESCRICAO_ITEM> itens = solic.PACIENTE_PRESCRICAO_ITEM.ToList();
+                List<PACIENTE_PRESCRICAO_ITEM> itens = solic.PACIENTE_PRESCRICAO_ITEM.Where(p => p.PAPI_IN_ATIVO == 1).ToList();
                 PACIENTE paciente = baseApp.GetItemById(solic.PACI_CD_ID);
                 String nomeRel = "Prescricao_" + paciente.PACI_NM_NOME + "_" + solic.PAPR_GU_GUID + "_" + data + ".pdf";
                 String classe = String.Empty;
@@ -29711,7 +29715,7 @@ namespace GEDSys_Presentation.Controllers
 
                 // Recupera informações
                 PACIENTE_PRESCRICAO solic = baseApp.GetPrescricaoById((Int32)Session["IdPrescricao"]);
-                List<PACIENTE_PRESCRICAO_ITEM> itens = solic.PACIENTE_PRESCRICAO_ITEM.ToList();
+                List<PACIENTE_PRESCRICAO_ITEM> itens = solic.PACIENTE_PRESCRICAO_ITEM.Where(p => p.PAPI_IN_ATIVO == 1).ToList();
                 PACIENTE paciente = baseApp.GetItemById(solic.PACI_CD_ID);
                 String nomeRel = "Prescricao_" + paciente.PACI_NM_NOME + "_" + solic.PAPR_GU_GUID + ".pdf";
                 String classe = String.Empty;
@@ -30178,7 +30182,7 @@ namespace GEDSys_Presentation.Controllers
 
                 // Recupera informações
                 PACIENTE_PRESCRICAO solic = baseApp.GetPrescricaoById((Int32)Session["IdPrescricao"]);
-                List<PACIENTE_PRESCRICAO_ITEM> itens = solic.PACIENTE_PRESCRICAO_ITEM.ToList();
+                List<PACIENTE_PRESCRICAO_ITEM> itens = solic.PACIENTE_PRESCRICAO_ITEM.Where(p => p.PAPI_IN_ATIVO == 1).ToList();
                 PACIENTE paciente = baseApp.GetItemById(solic.PACI_CD_ID);
                 String nomeRel = "Prescricao_" + paciente.PACI_NM_NOME + "_" + solic.PAPR_GU_GUID + ".pdf";
                 String classe = String.Empty;

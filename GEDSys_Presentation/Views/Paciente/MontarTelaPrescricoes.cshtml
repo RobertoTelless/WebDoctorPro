@@ -209,7 +209,7 @@
                                             {
                                                 <td style="width: auto">-</td>
                                             }
-                                            <td style="width: auto">@cond.PACIENTE_PRESCRICAO_ITEM.Count()</td>
+                                            <td style="width: auto">@cond.PACIENTE_PRESCRICAO_ITEM.Where(p => p.PAPI_IN_ATIVO == 1).Count()</td>
                                             @if (cond.PACIENTE_CONSULTA != null)
                                             {
                                                 <td style="width: auto">@cond.PACIENTE_CONSULTA.PACO_DT_CONSULTA.ToShortDateString()</td>
@@ -241,7 +241,7 @@
                                                     {
                                                         if (cond.PAPR_IN_ATIVO == 1 )
                                                         {
-                                                            @Html.TableLinkDetails(cond.PAPR_CD_ID, "EnviarPrescricaoEMail btn-loading", "fa-send-o", "Enviar Prescrição")
+                                                            @Html.TableLinkDetails(cond.PAPR_CD_ID, "EnviarPrescricaoEMail", "fa-send-o btn-loading", "Enviar Prescrição")
                                                         }
 	                                                }
                                                 }

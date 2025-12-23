@@ -14,7 +14,7 @@
                 <a href="@Url.Action("MontarTelaPaciente", "BaseAdmin")">Dashboard</a>
             </li>
             <li>
-                <a href="@Url.Action("EditarPaciente", "Paciente")">Pacientes - Edição</a>
+                <a href="@Url.Action("VoltarAnexoPaciente", "Paciente")">Pacientes - Alteração</a>
             </li>
             <li class="active">
                 <strong>Pacientes - Fichas</strong>
@@ -27,7 +27,7 @@
             <div class="col-lg-12 col-md-12 col-xs-12 ibox float-e-margins">
                 <div class="ibox-title">
                     <div style="text-align: center;" class="col-lg-12 col-md-12 col-xs-12">
-                       <h5>Paciente - Ficha</h5>
+                       <h5>Paciente - Fichas</h5>
                         <span style="color:green; font-weight: 500; font-size: 20px;">@ViewBag.NomePaciente</span>
                     </div>
                 </div>
@@ -37,14 +37,17 @@
                         <div class="form-group">
                             @if ((Int32)Session["VoltaAnexo"] == 1)
                             {
-                                @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarAnexoPaciente", controller: "Paciente")
+                                @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarAnexoPaciente", controller: "Paciente", htmlAttributes: new { @class = "btn-loading" })
                             }
                             else
                             {
-                                @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarVerAnexoPaciente", controller: "Paciente")
+                                @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarVerAnexoPaciente", controller: "Paciente", htmlAttributes: new { @class = "btn-loading" })
                             }
+                            <span id="loadingIndicator" style="display: none; margin-left: 10px; color: #007bff;">
+                                <i class="fa fa-spinner fa-spin"></i> Processando...
+                            </span>
                         </div>
-                        <div class="row">
+                        <div class="row">   
                             <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
                                 <div class="col-lg-6 col-md-6 col-xs-12">
                                     Nome da Ficha
@@ -99,6 +102,26 @@
             $('body').hasClass('fullscreen-video') ? $('body').removeClass('fullscreen-video') : $('body').addClass('fullscreen-video')
         });
     </script>
+
+    <script type="text/javascript">
+        $(document).ready(function () { 
+            $('.btn-loading').on('click', function (e) {            
+                $(this).prop('disabled', true);
+                $(this).addClass('disabled');
+                $('#loadingIndicator').show();
+                var tagName = $(this).prop('tagName').toLowerCase();
+                if (tagName === 'a') {
+                    e.preventDefault(); 
+                    var targetUrl = $(this).attr('href');
+                    window.location.href = targetUrl;
+
+                } else if (tagName === 'button' || tagName === 'input') {
+                    $(this).closest('form').submit();
+                }
+            });
+        });
+    </script>
+
 
     @if (ViewBag.Message != null)
     {

@@ -36,7 +36,7 @@ namespace ApplicationServices.Services
                     LOG_DT_DATA = DateTime.Now,
                     USUA_CD_ID = usuario.USUA_CD_ID,
                     ASSI_CD_ID = usuario.ASSI_CD_ID,
-                    LOG_NM_OPERACAO = "EdtCOAN",
+                    LOG_NM_OPERACAO = "Configuração - Anamnese - Alteração",
                     LOG_TX_REGISTRO = Serialization.SerializeJSON<CONFIGURACAO_ANAMNESE>(item),
                     LOG_TX_REGISTRO_ANTES = Serialization.SerializeJSON<CONFIGURACAO_ANAMNESE>(itemAntes),
                     LOG_IN_ATIVO = 1,

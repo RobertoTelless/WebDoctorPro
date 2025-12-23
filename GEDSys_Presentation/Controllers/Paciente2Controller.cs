@@ -104,6 +104,7 @@ namespace GEDSys_Presentation.Controllers
         private List<PACIENTE_CONSULTA> listaMasterCalendarioMarcacao = new List<PACIENTE_CONSULTA>();
         private List<AVISO_LEMBRETE> listaMasterAviso = new List<AVISO_LEMBRETE>();
         private AVISO_LEMBRETE objetoAviso = new AVISO_LEMBRETE();
+        private List<RESPOSTA_CONSULTA> listaMasterResposta = new List<RESPOSTA_CONSULTA>();
         private String extensao;
 
         public Paciente2Controller(IPacienteAppService baseApps, ILogAppService logApps, ITipoPessoaAppService tpApps, IUsuarioAppService usuApps, IConfiguracaoAppService confApps, IGrupoAppService gruApps, IMensagemEnviadaSistemaAppService meApps, IEmpresaAppService empApps, IAssinanteAppService assApps, IControleMensagemAppService cmApps, IRecursividadeAppService recuApps, IMensagemAppService mensApps, ITipoPacienteAppService tpaApps, ITemplateEMailAppService temApps, IConfiguracaoCalendarioAppService calApps, IConfiguracaoAnamneseAppService anaApps, ITemplateSMSAppService smsApps, IRecebimentoAppService recApps, IAcessoMetodoAppService aceApps, ITipoAtestadoAppService taApps, ITipoExameAppService teApps, IValorConsultaAppService vcApps, IAvisoLembreteAppService aviApps)
@@ -6603,7 +6604,7 @@ namespace GEDSys_Presentation.Controllers
                     {
                         if (conf.CONF_IN_GERA_RECEBIMENTO == 1 & fr != null & item != null)
                         {
-                            String nome = "Recebimento de consulta de " + pac.PACI_NM_NOME + " em " + item.PACO_DT_CONSULTA.ToLongDateString();
+                            String nome = "Recebimento de consulta de " + pac.PACI_NM_NOME.ToUpper() + " em " + item.PACO_DT_CONSULTA.ToLongDateString();
                             CONSULTA_RECEBIMENTO rec = new CONSULTA_RECEBIMENTO();
                             rec.CORE_IN_ATIVO = 1;
                             rec.CORE_DT_RECEBIMENTO = DateTime.Today.Date;
@@ -6656,7 +6657,7 @@ namespace GEDSys_Presentation.Controllers
                     LOG_DT_DATA = DateTime.Now,
                     ASSI_CD_ID = usuario.ASSI_CD_ID,
                     USUA_CD_ID = usuario.USUA_CD_ID,
-                    LOG_NM_OPERACAO = "encPACO",
+                    LOG_NM_OPERACAO = "Paciente - Consulta - Encerramento",
                     LOG_IN_ATIVO = 1,
                     LOG_TX_REGISTRO = crud,
                     LOG_IN_SISTEMA = 6
@@ -6672,7 +6673,7 @@ namespace GEDSys_Presentation.Controllers
                 hist.PAHI_IN_TIPO = 10;
                 hist.PAHI_IN_CHAVE = item.PACO_CD_ID;
                 hist.PAHI_NM_OPERACAO = "Paciente - Encerramento de Consulta";
-                hist.PAHI_DS_DESCRICAO = "Paciente " + pac.PACI_NM_NOME + " - Consulta encerrada " + item.PACO_DT_CONSULTA.ToShortDateString();
+                hist.PAHI_DS_DESCRICAO = "Paciente: " + pac.PACI_NM_NOME.ToUpper() + " - Consulta encerrada: " + item.PACO_DT_CONSULTA.ToShortDateString();
                 Int32 voltaHist = baseApp.ValidateCreateHistorico(hist);
 
                 // Retorno
@@ -8744,7 +8745,7 @@ namespace GEDSys_Presentation.Controllers
                 try
                 {
                     // Sanitização
-                    vm.PAAM_TX_TEXTO = CrossCutting.UtilitariosGeral.CleanStringRegistro(vm.PAAM_TX_TEXTO);
+                    vm.PAAM_TX_TEXTO = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(vm.PAAM_TX_TEXTO);
 
                     // Prepara data
                     String dataHoje = DateTime.Today.Date.ToLongDateString();
@@ -8794,6 +8795,7 @@ namespace GEDSys_Presentation.Controllers
 
                     // Serializa anamnese
                     String json = JsonConvert.SerializeObject(vm);
+                    String jsonAntes = JsonConvert.SerializeObject((PACIENTE_ANAMNESE)Session["Anamnese"]);
 
                     // Executa a operação
                     PACIENTE_ANAMNESE item = Mapper.Map<PacienteAnamneseViewModel, PACIENTE_ANAMNESE>(vm);
@@ -8806,15 +8808,15 @@ namespace GEDSys_Presentation.Controllers
                     Session["NivelPaciente"] = 4;
 
                     // Monta Log
-                    String frase = item.PACI_CD_ID + "|" + item.PACO_CD_ID + "|" + item.USUA_CD_ID + "|" + item.PAAM_CD_ID + "|" + "Edição de anamnese";
                     LOG log = new LOG
                     {
                         LOG_DT_DATA = DateTime.Now,
                         ASSI_CD_ID = usuarioLogado.ASSI_CD_ID,
                         USUA_CD_ID = usuarioLogado.USUA_CD_ID,
-                        LOG_NM_OPERACAO = "eanPACI",
+                        LOG_NM_OPERACAO = "Paciente - Anamnese - Alteração",
                         LOG_IN_ATIVO = 1,
                         LOG_TX_REGISTRO = json,
+                        LOG_TX_REGISTRO_ANTES = jsonAntes,
                         LOG_IN_SISTEMA = 6
                     };
                     Int32 volta1 = logApp.ValidateCreate(log);
@@ -8828,8 +8830,8 @@ namespace GEDSys_Presentation.Controllers
                     hist.PAHI_DT_DATA = DateTime.Now;
                     hist.PAHI_IN_TIPO = 8;
                     hist.PAHI_IN_CHAVE = item.PAAM_CD_ID;
-                    hist.PAHI_NM_OPERACAO = "Paciente - Edição de Anamnese";
-                    hist.PAHI_DS_DESCRICAO = "Paciente " + pac1.PACI_NM_NOME + " - Anamnese editada " + item.PAAM_DT_DATA.ToShortDateString();
+                    hist.PAHI_NM_OPERACAO = "Paciente - Alteração de Anamnese";
+                    hist.PAHI_DS_DESCRICAO = "Paciente: " + pac1.PACI_NM_NOME.ToUpper() + " - Anamnese alterada: " + item.PAAM_DT_DATA.ToShortDateString();
                     Int32 voltaHist = baseApp.ValidateCreateHistorico(hist);
 
                     if ((Int32)Session["VoltarPesquisa"] == 1)
@@ -10094,7 +10096,7 @@ namespace GEDSys_Presentation.Controllers
                 hist.PAHI_IN_TIPO = 1;
                 hist.PAHI_IN_CHAVE = item.PACIENTE.PACI__CD_ID;
                 hist.PAHI_NM_OPERACAO = "Paciente - Exclusão de Ficha";
-                hist.PAHI_DS_DESCRICAO = "Ficha excluída " + item.PAFC_NM_TITULO;
+                hist.PAHI_DS_DESCRICAO = "Ficha excluída: " + item.PAFC_NM_TITULO;
                 Int32 voltaHist = baseApp.ValidateCreateHistorico(hist);
 
                 if ((Int32)Session["VoltaAnexo"] == 1)
@@ -10347,8 +10349,8 @@ namespace GEDSys_Presentation.Controllers
                 Session["ModuloAtual"] = "Avisos";
 
                 // Carrega listas
-                listaMasterAviso = CarregarAviso().Where(p => p.AVIS_IN_ATIVO == 1 & p.USUA_CD_ID == usuario.USUA_CD_ID & p.PACI_CD_ID == id).ToList();
-                ViewBag.Listas = listaMasterAviso;
+                listaMasterResposta = baseApp.GetAllResposta(idAss).Where(p => p.RECO_IN_ATIVO == 1 & p.PACI_CD_ID == id).ToList();
+                ViewBag.Listas = listaMasterResposta;
                 ViewBag.Perfil = usuario.PERFIL.PERF_SG_SIGLA;
                 Session["Aviso"] = null;
                 Session["ListaLog"] = null;
@@ -15963,6 +15965,7 @@ namespace GEDSys_Presentation.Controllers
 
                     // Serializa anamnese
                     String json = JsonConvert.SerializeObject(vm);
+                    String jsonAntes = JsonConvert.SerializeObject((PACIENTE_ANAMNESE)Session["Anamnese"]);
 
                     // Executa a operação
                     PACIENTE_ANAMNESE item = Mapper.Map<PacienteAnamneseViewModel, PACIENTE_ANAMNESE>(vm);
@@ -15985,9 +15988,10 @@ namespace GEDSys_Presentation.Controllers
                         LOG_DT_DATA = DateTime.Now,
                         ASSI_CD_ID = usuarioLogado.ASSI_CD_ID,
                         USUA_CD_ID = usuarioLogado.USUA_CD_ID,
-                        LOG_NM_OPERACAO = "eanPACI",
+                        LOG_NM_OPERACAO = "Paciente - Anamnese - Alteração",
                         LOG_IN_ATIVO = 1,
                         LOG_TX_REGISTRO = json,
+                        LOG_TX_REGISTRO_ANTES = jsonAntes,
                         LOG_IN_SISTEMA = 6
                     };
                     Int32 volta1 = logApp.ValidateCreate(log);
@@ -16001,8 +16005,8 @@ namespace GEDSys_Presentation.Controllers
                     hist.PAHI_DT_DATA = DateTime.Now;
                     hist.PAHI_IN_TIPO = 8;
                     hist.PAHI_IN_CHAVE = item.PAAM_CD_ID;
-                    hist.PAHI_NM_OPERACAO = "Paciente - Edição de Anamnese";
-                    hist.PAHI_DS_DESCRICAO = "Paciente " + pac.PACI_NM_NOME + " - Anamnese editada " + item.PAAM_DT_DATA.ToShortDateString();
+                    hist.PAHI_NM_OPERACAO = "Paciente - Alteração de Anamnese";
+                    hist.PAHI_DS_DESCRICAO = "Paciente: " + pac.PACI_NM_NOME.ToUpper() + " - Anamnese editada: " + item.PAAM_DT_DATA.ToShortDateString();
                     Int32 voltaHist = baseApp.ValidateCreateHistorico(hist);
 
                     if ((Int32)Session["VoltarPesquisa"] == 1)
