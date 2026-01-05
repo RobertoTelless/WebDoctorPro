@@ -95,7 +95,7 @@
                                     <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">                
                                         <div class="col-lg-4 col-md-4 col-xs-12">
                                             Nome do Paciente
-                                            @Html.TextBoxFor(m => m.PACIENTE.PACI_NM_NOME, new { @class = "form-control", @readonly = "readonly", @style = "color: blue; font-weight: bold" })
+                                            @Html.TextBoxFor(m => m.PACIENTE.PACI_NM_NOME, new { @class = "form-control", @readonly = "readonly", @style = "color: green; font-weight: bold" })
                                         </div>
                                         <div class="col-lg-2 col-md-2 col-xs-12">
                                             Data Nascimento
@@ -182,14 +182,16 @@
                                             if ((Int32)Session["Pisca"] == 0)
                                             {
                                                 <div class="col-lg-2 col-md-2 col-xs-12">
+                                                    <br />
                                                     <button type="button" class="btn btn-sm btn-success" onclick="if (confirm('Confirma o encerramento dessa consulta?')) { window.location.href='@Url.Action("EncerrarConsulta", "Paciente2")'; }">
-                                                        Encerrar Consulta
+                                                            Encerrar Consulta
                                                     </button>  
                                                 </div>
                                             }
                                             else
                                             {
                                                 <div class="col-lg-2 col-md-2 col-xs-12">
+                                                    <br />
                                                     <button type="button" class="btn btn-sm btn-success pisca" onclick="if (confirm('Confirma o encerramento dessa consulta?')) { window.location.href='@Url.Action("EncerrarConsulta", "Paciente2")'; }">
                                                         Encerrar Consulta
                                                     </button>  
@@ -212,8 +214,8 @@
                                             <div class="form-group" style=" margin-left: 0px; margin-right: 0px;">    
                                                 <a href="@Url.Action("EditarAnamneseCompletaFormProcesso", "Paciente")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Preencher/Revisar a anamnese do paciente" class="btn btn-sm btn-primary btn-loading" OnClick = "Fade()">Preencher/Revisar</a>                
                                                 <a href="@Url.Action("VerAnamneseCompletaChamada", "Paciente2")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Visualizar a anamnese do paciente" class="btn btn-sm btn-warning btn-loading" OnClick = "Fade()">Visualizar</a>                
-                                                <a href="@Url.Action("VerAnexoPacienteConsulta", "Paciente2")"  data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Gerenciar/Visualiazar os anexos desta consulta" class="btn btn-sm btn-warning btn-loading" OnClick = "Fade()">Anexos</a>                
-                                                <a href="@Url.Action("VerInformacaoPreviaPacienteBase", "Paciente2")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Visualizar os avisos de informações prévias do paciente" class="btn btn-sm btn-warning btn-loading" OnClick = "Fade()">Avisos</a>                
+                                                <a href="@Url.Action("VerAnexoPacienteConsulta", "Paciente2")"  data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Gerenciar/Visualizar os anexos desta consulta" class="btn btn-sm btn-warning btn-loading" OnClick = "Fade()">Anexos</a>                
+                                                <a href="@Url.Action("VerInformacaoPreviaPacienteBase", "Paciente2")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Visualizar os avisos de informações prévias do paciente" class="btn btn-sm btn-warning btn-loading" OnClick = "Fade()">Prévias</a>                
                                                 @if (ViewBag.TemFicha == 1)
                                                 {
                                                     <a href="@Url.Action("VerFichaPacienteConsulta", "Paciente2")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Consultar as fichas digitalizadas do paciente" class="btn btn-sm btn-warning btn-loading" OnClick = "Fade()">Fichas</a>                
@@ -268,15 +270,15 @@
                                         <h4 style="margin-left: -15px; color:green; background-color: beige; font-weight:bold">Anamnese Atualizada</h4>
                                         <div class="row">
                                             <div class="form-group" style=" margin-left: 0px; margin-right: 0px;">    
-                                                <a href="@Url.Action("EditarAnamneseCompletaFormContinua", "Paciente2")"  data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Preencher/Revisar a anamnese do paciente" class="btn btn-sm btn-warning btn-loading" OnClick = "Fade()">Preencher/Revisar</a>                
-                                                <a href="@Url.Action("VerAnexoPacienteConsulta", "Paciente2")"  data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Gerenciar/Visualiazar os anexos desta consulta" class="btn btn-sm btn-warning btn-loading" OnClick = "Fade()">Anexos</a>                
-                                                <a href="@Url.Action("VerInformacaoPreviaPacienteBase", "Paciente2")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Visualizar os avisos de informações prévias do paciente" class="btn btn-sm btn-warning btn-loading" OnClick = "Fade()">Avisos</a>                
+                                                <a href="@Url.Action("EditarAnamneseCompletaFormContinua", "Paciente2")"  data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Preencher/Revisar a anamnese do paciente" class="btn btn-sm btn-primary btn-loading" OnClick = "Fade()">Preencher/Revisar</a>                
+                                                <a href="@Url.Action("VerAnexoPacienteConsulta", "Paciente2")"  data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Gerenciar/Visualizar os anexos desta consulta" class="btn btn-sm btn-warning btn-loading" OnClick = "Fade()">Anexos</a>                
+                                                <a href="@Url.Action("VerInformacaoPreviaPacienteBase", "Paciente2")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Visualizar os avisos de informações prévias do paciente" class="btn btn-sm btn-warning btn-loading" OnClick = "Fade()">Prévias</a>                
                                                 @if (ViewBag.TemFicha == 1)
                                                 {
                                                     <a href="@Url.Action("VerFichaPacienteConsulta", "Paciente2")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Consultar as fichas digitalizadas do paciente" class="btn btn-sm btn-warning btn-loading" OnClick = "Fade()">Fichas</a>                
                                                 }
                                                 <a href="@Url.Action("VerAnotacaoAnamneseBase", "Paciente2")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Gerenciar/Visualiazar as anotações desta consulta" class="btn btn-sm btn-warning btn-loading" OnClick = "Fade()">Acompanhamento</a>                
-                                                <a href="@Url.Action("GerarAnamnesePDFNova", "Paciente")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Imprimir a anamnese completa" class="btn btn-sm btn-warning" OnClick = "Fade()">Imprimir</a>                
+                                                <a href="@Url.Action("GerarAnamnesePDFNovaContinua", "Paciente2")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Imprimir a anamnese completa" class="btn btn-sm btn-warning" OnClick = "Fade()">Imprimir</a>                
                                             </div>
                                         </div>
                                         <div class="row">
@@ -298,8 +300,8 @@
                                         <div class="form-group" style=" margin-left: 0px; margin-right: 0px;">    
                                             <a href="@Url.Action("EditarAnamneseCompletaFormProcessoSono", "Paciente2")"  data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Preencher/Revisar a anamnese do paciente" class="btn btn-sm btn-primary btn-loading" OnClick = "Fade()">Preencher/Revisar</a>                
                                             <a href="@Url.Action("VerAnamneseCompletaChamadaSono", "Paciente2")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Visualizar a anamnese do paciente" class="btn btn-sm btn-warning btn-loading" OnClick = "Fade()">Visualizar</a>                
-                                            <a href="@Url.Action("VerAnexoPacienteConsulta", "Paciente2")"  data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Gerenciar/Visualiazar os anexos desta consulta" class="btn btn-sm btn-warning btn-loading" OnClick = "Fade()">Anexos</a>                
-                                            <a href="@Url.Action("VerInformacaoPreviaPacienteBase", "Paciente2")"  data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Visualizar os avisos de informações prévias do paciente" class="btn btn-sm btn-warning btn-loading" OnClick = "Fade()">Avisos</a>                
+                                            <a href="@Url.Action("VerAnexoPacienteConsulta", "Paciente2")"  data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Gerenciar/Visualizar os anexos desta consulta" class="btn btn-sm btn-warning btn-loading" OnClick = "Fade()">Anexos</a>                
+                                            <a href="@Url.Action("VerInformacaoPreviaPacienteBase", "Paciente2")"  data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Visualizar os avisos de informações prévias do paciente" class="btn btn-sm btn-warning btn-loading" OnClick = "Fade()">Prévias</a>                
                                             @if (ViewBag.TemFicha == 1)
                                             {
                                                 <a href="@Url.Action("VerFichaPacienteConsulta", "Paciente2")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Consultar as fichas digitalizadas do paciente" class="btn btn-sm btn-warning btn-loading" OnClick = "Fade()">Fichas</a>                

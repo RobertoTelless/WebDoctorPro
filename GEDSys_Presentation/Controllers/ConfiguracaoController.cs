@@ -1469,7 +1469,7 @@ namespace ERP_Condominios_Solution.Controllers
                     CONFIGURACAO_ANAMNESE item = Mapper.Map<ConfiguracaoAnamneseViewModel, CONFIGURACAO_ANAMNESE>(vm);
 
                     // Grava alteracoes
-                    Int32 volta = anaApp.ValidateEdit(item, item, usuarioLogado);
+                        Int32 volta = anaApp.ValidateEdit(item, item, usuarioLogado);
 
                     // Sucesso
                     objetoAna = new CONFIGURACAO_ANAMNESE();

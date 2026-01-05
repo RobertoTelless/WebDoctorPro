@@ -1589,9 +1589,12 @@
     <Compile Include="WorkClasses\DTO_ModeloEMail.cs" />
     <Compile Include="WorkClasses\DTO_ModeloSMS.cs" />
     <Compile Include="WorkClasses\DTO_ContratoLocacao.cs" />
+    <Compile Include="WorkClasses\DTO_Paciente_ExameFisico.cs" />
+    <Compile Include="WorkClasses\DTO_Paciente_Fisico.cs" />
     <Compile Include="WorkClasses\DTO_Paciente .cs" />
     <Compile Include="WorkClasses\DTO_Paciente_Acompanhamento.cs" />
     <Compile Include="WorkClasses\DTO_Grupo.cs" />
+    <Compile Include="WorkClasses\DTO_Paciente_Anamnese.cs" />
     <Compile Include="WorkClasses\DTO_Paciente_ItemPrescricao.cs" />
     <Compile Include="WorkClasses\DTO_Paciente_Prescricao.cs" />
     <Compile Include="WorkClasses\DTO_Paciente_Exame_Anotacao.cs" />

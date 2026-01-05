@@ -93,6 +93,7 @@ namespace ModelServices.Interfaces.EntitiesServices
         PACIENTE_ANAMNESE_ANOTACAO GetAnamneseAnotacaoById(Int32 id);
         Int32 EditAnamneseAnotacao(PACIENTE_ANAMNESE_ANOTACAO item);
         Int32 CreateAnamneseAnotacao(PACIENTE_ANAMNESE_ANOTACAO item);
+        Int32 EditAnamnesePrevia(PACIENTE_ANAMNESE item);
 
         PACIENTE_EXAMES GetExameById(Int32 id);
         Int32 EditExame(PACIENTE_EXAMES item);

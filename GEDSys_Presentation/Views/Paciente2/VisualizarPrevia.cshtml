@@ -48,6 +48,10 @@
                             {
                                 @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarAnexoPaciente", controller: "Paciente")
                             }
+                            else if ((Int32)Session["VoltaResposta"] == 3)
+                            {
+                                @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarProcederConsulta", controller: "Paciente")
+                            }
                             else
                             {
                                 @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaPaciente", controller: "Paciente")
@@ -109,6 +113,9 @@
                                     @Html.HiddenFor(m => m.RECO_NM_NOME)
                                     @Html.HiddenFor(m => m.RECO_NR_CPF)
                                     @Html.HiddenFor(m => m.RECO_TX_MOTIVO)
+                                    @Html.HiddenFor(m => m.RECO_DT_DATA)
+                                    @Html.HiddenFor(m => m.PACO_CD_ID)
+                                    @Html.HiddenFor(m => m.RECO_IN_ANAMNESE)
                                     Data da Consulta
                                     @Html.TextBoxFor(m => m.PACIENTE_CONSULTA.PACO_DT_CONSULTA, "{0:dd/MM/yyyy}", new { @class = "form-control", @readonly = "readonly", @tabindex = "-1" })
                                 </div>

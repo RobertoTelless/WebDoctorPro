@@ -663,26 +663,32 @@ namespace ModelServices.EntitiesServices
             return _panRepository.GetAllItens(idAss);
         }
 
-        //public Int32 EditAnamnese(PACIENTE_ANAMNESE item)
-        //{
-        //    using (DbContextTransaction transaction = Db.Database.BeginTransaction(IsolationLevel.ReadCommitted))
-        //    {
-        //        try
-        //        {
-        //            item.PACIENTE = null;
-        //            PACIENTE_ANAMNESE obj = _panRepository.GetById(item.PAAM_CD_ID);
-        //            _panRepository.Detach(obj);
-        //            _panRepository.Update(item);
-        //            transaction.Commit();
-        //            return 0;
-        //        }
-        //        catch (Exception ex)
-        //        {
-        //            transaction.Rollback();
-        //            throw ex;
-        //        }
-        //    }
-        //}
+        public int EditAnamnesePrevia(PACIENTE_ANAMNESE item)
+        {
+            using (var transaction = Db.Database.BeginTransaction(IsolationLevel.ReadCommitted))
+            {
+                try
+                {
+                    var entidade = new PACIENTE_ANAMNESE
+                    {
+                        PAAM_CD_ID = item.PAAM_CD_ID,
+                        PAAM_TX_TEXTO_LIVRE = item.PAAM_TX_TEXTO_LIVRE
+                    };
+
+                    Db.PACIENTE_ANAMNESE.Attach(entidade);
+                    Db.Entry(entidade).State = EntityState.Modified;
+
+                    Db.SaveChanges();
+                    transaction.Commit();
+                    return 0;
+                }
+                catch
+                {
+                    transaction.Rollback();
+                    throw;
+                }
+            }
+        }
 
         public Int32 EditAnamnese(PACIENTE_ANAMNESE item)
         {
@@ -690,13 +696,9 @@ namespace ModelServices.EntitiesServices
             {
                 try
                 {
-                    // Oculta a propriedade de navegação para garantir que não seja rastreada
                     item.PACIENTE = null;
-                    item.PACIENTE_CONSULTA = null; // Garanta que a navegação para PACIENTE_CONSULTA também seja nula.
-
-                    // Anexa a entidade ao contexto e a marca como modificada
+                    item.PACIENTE_CONSULTA = null;
                     Db.Entry(item).State = EntityState.Modified;
-
                     Db.SaveChanges();
                     transaction.Commit();
                     return 0;
@@ -1520,6 +1522,7 @@ namespace ModelServices.EntitiesServices
                 {
                     item.PACIENTE = null;
                     item.USUARIO = null;
+                    item.PACIENTE_CONSULTA = null;
                     RESPOSTA_CONSULTA obj = _respRepository.GetById(item.RECO_CD_ID);
                     _respRepository.Detach(obj);
                     _respRepository.Update(item);

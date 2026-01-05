@@ -86,6 +86,7 @@ namespace ApplicationServices.Interfaces
         PACIENTE_ANAMNESE_ANOTACAO GetAnamneseAnotacaoById(Int32 id);
         Int32 ValidateEditAnamneseAnotacao(PACIENTE_ANAMNESE_ANOTACAO item);
         Int32 ValidateCreateAnamneseAnotacao(PACIENTE_ANAMNESE_ANOTACAO item);
+        Int32 ValidateEditAnamnesePrevia(PACIENTE_ANAMNESE item);
 
         PACIENTE_EXAMES GetExameById(Int32 id);
         Int32 ValidateEditExame(PACIENTE_EXAMES item);

@@ -14735,6 +14735,7 @@ namespace GEDSys_Presentation.Controllers
                 vm.PAAN_NM_RESPIRATORIO_OLD = item.PAAN_NM_RESPIRATORIO;
                 vm.PAAN_NM_ABDOMEM_OLD = item.PAAN_NM_ABDOMEM;
                 vm.PAAM_NM_MEDICAMENTO_OLD = item.PAAM_NM_MEDICAMENTO;
+                vm.PAAM_TX_TEXTO_LIVRE = item.PAAM_TX_TEXTO_LIVRE;
 
                 vm.PAAM_DS_CAMPO_1 = String.Empty;
                 vm.PAAM_DS_CAMPO_2 = String.Empty;
@@ -14761,6 +14762,7 @@ namespace GEDSys_Presentation.Controllers
                 vm.PAAN_NM_RESPIRATORIO = String.Empty;
                 vm.PAAN_NM_ABDOMEM = String.Empty;
                 vm.PAAM_NM_MEDICAMENTO = String.Empty;
+                vm.PAAM_TX_TEXTO_LIVRE = String.Empty;
 
                 ViewBag.Campo1 = item.PAAM_NM_CAMPO_1;
                 ViewBag.Campo2 = item.PAAM_NM_CAMPO_2;
@@ -14832,6 +14834,7 @@ namespace GEDSys_Presentation.Controllers
                     vm.PAAM_DS_CAMPO_9 = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(vm.PAAM_DS_CAMPO_9);
                     vm.PAAM_DS_CAMPO_10 = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(vm.PAAM_DS_CAMPO_10);
                     vm.PAAM_IN_FLAG__HISTORIA_FAMILIAR = 1;
+                    vm.PAAM_TX_TEXTO_LIVRE = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(vm.PAAM_TX_TEXTO_LIVRE);
 
                     // Prepara data
                     String dataHoje = DateTime.Today.Date.ToLongDateString();
@@ -15381,9 +15384,29 @@ namespace GEDSys_Presentation.Controllers
                         vm.PAAM_DS_CONDUTA = velho;
                     }
 
-                    // Serializa anamnese
-                    String json = JsonConvert.SerializeObject(vm);
-                    String jsonAntes = JsonConvert.SerializeObject((PACIENTE_ANAMNESE)Session["Anamnese"]);
+                    if (vm.PAAM_TX_TEXTO_LIVRE != null)
+                    {
+                        velho = vm.PAAM_TX_TEXTO_LIVRE_OLD;
+                        novo = vm.PAAM_TX_TEXTO_LIVRE;
+                        if (velho == null & novo != String.Empty)
+                        {
+                            vm.PAAM_TX_TEXTO_LIVRE = dataHoje + "\r\n" + novo;
+                        }
+                        if (velho != null & novo != String.Empty)
+                        {
+                            tripa = velho.Substring(velho.Length - 4, 4);
+                            if (tripa == "\r\n")
+                            {
+                                velho = velho.Substring(0, velho.Length - 4);
+                            }
+                            vm.PAAM_TX_TEXTO_LIVRE = velho + "\r\n\r\n" + dataHoje + "\r\n" + novo;
+                        }
+                    }
+                    else
+                    {
+                        velho = vm.PAAM_TX_TEXTO_LIVRE_OLD;
+                        vm.PAAM_TX_TEXTO_LIVRE = velho;
+                    }
 
                     // Executa a operação
                     PACIENTE_ANAMNESE item = Mapper.Map<PacienteAnamneseViewModel, PACIENTE_ANAMNESE>(vm);
@@ -15400,7 +15423,18 @@ namespace GEDSys_Presentation.Controllers
                     Session["NivelPaciente"] = 4;
                     Session["VoltaAnotacaoAnamnese"] = 2;
 
+                    // Configura serilização
+                    JsonSerializerSettings settings = new JsonSerializerSettings
+                    {
+                        ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+                        NullValueHandling = NullValueHandling.Ignore
+                    };
+
                     // Monta Log
+                    DTO_Paciente_Anamnese dto = MontarPacienteAnamneseDTOObj(item);
+                    String json = JsonConvert.SerializeObject(dto, settings);
+                    DTO_Paciente_Anamnese dtoAntes = MontarPacienteAnamneseDTOObj((PACIENTE_ANAMNESE)Session["Anamnese"]);
+                    String jsonAntes = JsonConvert.SerializeObject(dtoAntes, settings);
                     LOG log = new LOG
                     {
                         LOG_DT_DATA = DateTime.Now,
@@ -16241,10 +16275,6 @@ namespace GEDSys_Presentation.Controllers
                         vm.PAEF_TX_RESULTADOS = velho;
                     }
 
-                    // Serializa exame fisico
-                    String json = JsonConvert.SerializeObject(vm);
-                    String jsonAntes = JsonConvert.SerializeObject((PACIENTE_EXAME_FISICOS)Session["ExameFisico"]);
-
                     // Executa a operação
                     PACIENTE_EXAME_FISICOS item = Mapper.Map<PacienteExameFisicoViewModel, PACIENTE_EXAME_FISICOS>(vm);
                     Int32 volta = baseApp.ValidateEditExameFisico(item);
@@ -16352,13 +16382,24 @@ namespace GEDSys_Presentation.Controllers
                     Session["PacienteAlterada"] = 1;
                     Session["NivelPaciente"] = 6;
 
+                    // Configura serilização
+                    JsonSerializerSettings settings = new JsonSerializerSettings
+                    {
+                        ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+                        NullValueHandling = NullValueHandling.Ignore
+                    };
+
                     // Monta Log
+                    DTO_Paciente_Anamnese dto = MontarPacienteAnamneseDTOObj(item);
+                    String json = JsonConvert.SerializeObject(dto, settings);
+                    DTO_Paciente_Anamnese dtoAntes = MontarPacienteAnamneseDTOObj((PACIENTE_ANAMNESE)Session["Anamnese"]);
+                    String jsonAntes = JsonConvert.SerializeObject(dtoAntes, settings);
                     LOG log = new LOG
                     {
                         LOG_DT_DATA = DateTime.Now,
                         ASSI_CD_ID = usuarioLogado.ASSI_CD_ID,
                         USUA_CD_ID = usuarioLogado.USUA_CD_ID,
-                        LOG_NM_OPERACAO = "Paciente - Exame Físico - Alteração",
+                        LOG_NM_OPERACAO = "Paciente - Anamnese - Alteração",
                         LOG_IN_ATIVO = 1,
                         LOG_TX_REGISTRO = json,
                         LOG_TX_REGISTRO_ANTES = jsonAntes,
@@ -16411,6 +16452,79 @@ namespace GEDSys_Presentation.Controllers
                 return View(vm);
             }
         }
+
+        public DTO_Paciente_Fisico MontarPacienteFisicoDTOObj(PACIENTE_EXAME_FISICOS l)
+        {
+            using (var context = new CRMSysDBEntities())
+            {
+                var mediDTO = new DTO_Paciente_Fisico()
+                {
+                    PAAN_CD_ID = l.PAAN_CD_ID,
+                    PAAN_DT_ANOTACAO = l.PAAN_DT_ANOTACAO,
+                    PAAN_IN_ATIVO = l.PAAN_IN_ATIVO,
+                    PAAN_TX_ANOTACAO = l.PAAN_TX_ANOTACAO,
+                    PACI_CD_ID = l.PACI_CD_ID,
+                    PAAN_CD_ID = l.PAAN_CD_ID,
+                    PAAN_DT_ANOTACAO = l.PAAN_DT_ANOTACAO,
+                    PAAN_IN_ATIVO = l.PAAN_IN_ATIVO,
+                    PAAN_TX_ANOTACAO = l.PAAN_TX_ANOTACAO,
+                    PACI_CD_ID = l.PACI_CD_ID,
+                    PAAN_CD_ID = l.PAAN_CD_ID,
+                    PAAN_DT_ANOTACAO = l.PAAN_DT_ANOTACAO,
+                    PAAN_IN_ATIVO = l.PAAN_IN_ATIVO,
+                    PAAN_TX_ANOTACAO = l.PAAN_TX_ANOTACAO,
+                    PACI_CD_ID = l.PACI_CD_ID,
+                    PAAN_CD_ID = l.PAAN_CD_ID,
+                    PAAN_DT_ANOTACAO = l.PAAN_DT_ANOTACAO,
+                    PAAN_IN_ATIVO = l.PAAN_IN_ATIVO,
+                    PAAN_TX_ANOTACAO = l.PAAN_TX_ANOTACAO,
+                    PACI_CD_ID = l.PACI_CD_ID,
+                    PAAN_CD_ID = l.PAAN_CD_ID,
+                    PAAN_DT_ANOTACAO = l.PAAN_DT_ANOTACAO,
+                    PAAN_IN_ATIVO = l.PAAN_IN_ATIVO,
+                    PAAN_TX_ANOTACAO = l.PAAN_TX_ANOTACAO,
+                    PACI_CD_ID = l.PACI_CD_ID,
+                    PAAN_CD_ID = l.PAAN_CD_ID,
+                    PAAN_DT_ANOTACAO = l.PAAN_DT_ANOTACAO,
+                    PAAN_IN_ATIVO = l.PAAN_IN_ATIVO,
+                    PAAN_TX_ANOTACAO = l.PAAN_TX_ANOTACAO,
+                    PACI_CD_ID = l.PACI_CD_ID,
+                    PAAN_CD_ID = l.PAAN_CD_ID,
+                    PAAN_DT_ANOTACAO = l.PAAN_DT_ANOTACAO,
+                    PAAN_IN_ATIVO = l.PAAN_IN_ATIVO,
+                    PAAN_TX_ANOTACAO = l.PAAN_TX_ANOTACAO,
+                    PACI_CD_ID = l.PACI_CD_ID,
+                    PAAN_CD_ID = l.PAAN_CD_ID,
+                    PAAN_DT_ANOTACAO = l.PAAN_DT_ANOTACAO,
+                    PAAN_IN_ATIVO = l.PAAN_IN_ATIVO,
+                    PAAN_TX_ANOTACAO = l.PAAN_TX_ANOTACAO,
+                    PACI_CD_ID = l.PACI_CD_ID,
+                    PAAN_CD_ID = l.PAAN_CD_ID,
+                    PAAN_DT_ANOTACAO = l.PAAN_DT_ANOTACAO,
+                    PAAN_IN_ATIVO = l.PAAN_IN_ATIVO,
+                    PAAN_TX_ANOTACAO = l.PAAN_TX_ANOTACAO,
+                    PACI_CD_ID = l.PACI_CD_ID,
+                    PAAN_CD_ID = l.PAAN_CD_ID,
+                    PAAN_DT_ANOTACAO = l.PAAN_DT_ANOTACAO,
+                    PAAN_IN_ATIVO = l.PAAN_IN_ATIVO,
+                    PAAN_TX_ANOTACAO = l.PAAN_TX_ANOTACAO,
+                    PACI_CD_ID = l.PACI_CD_ID,
+                    PAAN_CD_ID = l.PAAN_CD_ID,
+                    PAAN_DT_ANOTACAO = l.PAAN_DT_ANOTACAO,
+                    PAAN_IN_ATIVO = l.PAAN_IN_ATIVO,
+                    PAAN_TX_ANOTACAO = l.PAAN_TX_ANOTACAO,
+                    PACI_CD_ID = l.PACI_CD_ID,
+                    PAAN_CD_ID = l.PAAN_CD_ID,
+                    PAAN_DT_ANOTACAO = l.PAAN_DT_ANOTACAO,
+                    PAAN_IN_ATIVO = l.PAAN_IN_ATIVO,
+                    PAAN_TX_ANOTACAO = l.PAAN_TX_ANOTACAO,
+                    PACI_CD_ID = l.PACI_CD_ID,
+                };
+                return mediDTO;
+            }
+
+        }
+
 
         [HttpGet]
         public ActionResult VerExameFisico(Int32 id)
@@ -19709,6 +19823,7 @@ namespace GEDSys_Presentation.Controllers
                 Session["VoltaMedico"] = 2;
                 Session["TipoMedicoEnvio"] = 2;
                 Session["ListaAvisoAtivo"] = null;
+                Session["VoltaResposta"] = 3;
 
                 // Carrega exame físico
                 PACIENTE_EXAME_FISICOS fisico = paciente.PACIENTE_EXAME_FISICOS.Where(p => p.PAEF_IN_ATIVO == 1).ToList().FirstOrDefault();
@@ -37544,6 +37659,142 @@ namespace GEDSys_Presentation.Controllers
                     PACO_NR_CELULAR = l.PACO_NR_CELULAR,
                     PACO_NR_TELEFONE = l.PACO_NR_TELEFONE,
                     USUA_CD_ID = l.USUA_CD_ID,
+                };
+                return mediDTO;
+            }
+
+        }
+
+        public DTO_Paciente_Anamnese MontarPacienteAnamneseDTOObj(PACIENTE_ANAMNESE l)
+        {
+            using (var context = new CRMSysDBEntities())
+            {
+                var mediDTO = new DTO_Paciente_Anamnese()
+                {
+                    ASSI_CD_ID = l.ASSI_CD_ID,
+                    PACO_CD_ID = l.PACO_CD_ID,
+                    PACI_CD_ID = l.PACI_CD_ID,
+                    USUA_CD_ID = l.USUA_CD_ID,
+                    PAAM_CD_ID = l.PAAM_CD_ID,
+                    PAAM_DS_CAMPO_1 = l.PAAM_DS_CAMPO_1,
+                    PAAM_DS_CAMPO_10 = l.PAAM_DS_CAMPO_10,
+                    PAAM_DS_CAMPO_2 = l.PAAM_DS_CAMPO_2,
+                    PAAM_DS_CAMPO_3 = l.PAAM_DS_CAMPO_3,
+                    PAAM_DS_CAMPO_4 = l.PAAM_DS_CAMPO_4,
+                    PAAM_DS_CAMPO_5 = l.PAAM_DS_CAMPO_5,
+                    PAAM_DS_CAMPO_6 = l.PAAM_DS_CAMPO_6,
+                    PAAM_DS_CAMPO_7 = l.PAAM_DS_CAMPO_7,
+                    PAAM_DS_CAMPO_8 = l.PAAM_DS_CAMPO_8,
+                    PAAM_DS_CAMPO_9 = l.PAAM_DS_CAMPO_9,
+                    PAAM_DS_CONDUTA = l.PAAM_DS_CONDUTA,
+                    PAAM_DS_DIAGNOSTICO_1 = l.PAAM_DS_DIAGNOSTICO_1,
+                    PAAM_DS_HISTORIA_DOENCA_ATUAL = l.PAAM_DS_HISTORIA_DOENCA_ATUAL,
+                    PAAM_DS_HISTORIA_FAMILIAR = l.PAAM_DS_HISTORIA_FAMILIAR,
+                    PAAM_DS_HISTORIA_PATOLOGICA_PROGRESSIVA = l.PAAM_DS_HISTORIA_PATOLOGICA_PROGRESSIVA,
+                    PAAM_DS_HISTORIA_SOCIAL = l.PAAM_DS_HISTORIA_SOCIAL,
+                    PAAM_DS_MOTIVO_CONSULTA = l.PAAM_DS_MOTIVO_CONSULTA,
+                    PAAM_DS_QUEIXA_PRINCIPAL = l.PAAM_DS_QUEIXA_PRINCIPAL,
+                    PAAM_DS_SONO_ACESSO_SAUDE = l.PAAM_DS_SONO_ACESSO_SAUDE,
+                    PAAM_DS_SONO_ACONCHEGANTE = l.PAAM_DS_SONO_ACONCHEGANTE,
+                    PAAM_DS_SONO_AGRESSIVO = l.PAAM_DS_SONO_AGRESSIVO,
+                    PAAM_DS_SONO_ALMOCO = l.PAAM_DS_SONO_ALMOCO,
+                    PAAM_DS_SONO_ANIMAIS = l.PAAM_DS_SONO_ANIMAIS,
+                    PAAM_DS_SONO_APNEIA = l.PAAM_DS_SONO_APNEIA,
+                    PAAM_DS_SONO_ATIVIDADES = l.PAAM_DS_SONO_ATIVIDADES,
+                    PAAM_DS_SONO_AZIA = l.PAAM_DS_SONO_AZIA,
+                    PAAM_DS_SONO_BARULHO = l.PAAM_DS_SONO_BARULHO,
+                    PAAM_DS_SONO_BOCA_SECA = l.PAAM_DS_SONO_BOCA_SECA,
+                    PAAM_DS_SONO_CAFE = l.PAAM_DS_SONO_CAFE,
+                    PAAM_DS_SONO_CAIBRAS = l.PAAM_DS_SONO_CAIBRAS,
+                    PAAM_DS_SONO_CANSACO = l.PAAM_DS_SONO_CANSACO,
+                    PAAM_DS_SONO_CELULAR_CAMA = l.PAAM_DS_SONO_CELULAR_CAMA,
+                    PAAM_DS_SONO_CIRURGIAS = l.PAAM_DS_SONO_CIRURGIAS,
+                    PAAM_DS_SONO_COCHILOS = l.PAAM_DS_SONO_COCHILOS,
+                    PAAM_DS_SONO_COMORBIDADES = l.PAAM_DS_SONO_COMORBIDADES,
+                    PAAM_DS_SONO_CONGESTAO = l.PAAM_DS_SONO_CONGESTAO,
+                    PAAM_DS_SONO_DEFICIT = l.PAAM_DS_SONO_DEFICIT,
+                    PAAM_DS_SONO_DEFICIT_CONCENTRA = l.PAAM_DS_SONO_DEFICIT_CONCENTRA,
+                    PAAM_DS_SONO_DEFICIT_MEMO = l.PAAM_DS_SONO_DEFICIT_MEMO,
+                    PAAM_DS_SONO_DEFICIT_MEMORIA = l.PAAM_DS_SONO_DEFICIT_MEMORIA,
+                    PAAM_DS_SONO_DEITADO_PERDE_SONO = l.PAAM_DS_SONO_DEITADO_PERDE_SONO,
+                    PAAM_DS_SONO_DEITADO_SONO = l.PAAM_DS_SONO_DEITADO_SONO,
+                    PAAM_DS_SONO_DISFUNCAO = l.PAAM_DS_SONO_DISFUNCAO,
+                    PAAM_DS_SONO_DOR = l.PAAM_DS_SONO_DOR,
+                    PAAM_DS_SONO_DOR_CABECA = l.PAAM_DS_SONO_DOR_CABECA,
+                    PAAM_DS_SONO_DURACAO = l.PAAM_DS_SONO_DURACAO,
+                    PAAM_DS_SONO_ENCENACAO = l.PAAM_DS_SONO_ENCENACAO,
+                    PAAM_DS_SONO_ENGASGOS = l.PAAM_DS_SONO_ENGASGOS,
+                    PAAM_DS_SONO_EXERCICIO = l.PAAM_DS_SONO_EXERCICIO,
+                    PAAM_DS_SONO_EXERCICIO_FREQ = l.PAAM_DS_SONO_EXERCICIO_FREQ,
+                    PAAM_DS_SONO_EXERCICIO_HORARIO = l.PAAM_DS_SONO_EXERCICIO_HORARIO,
+                    PAAM_DS_SONO_FADIGA = l.PAAM_DS_SONO_FADIGA,
+                    PAAM_DS_SONO_FALA = l.PAAM_DS_SONO_FALA,
+                    PAAM_DS_SONO_FINANCAS = l.PAAM_DS_SONO_FINANCAS,
+                    PAAM_DS_SONO_FUMA_NOITE = l.PAAM_DS_SONO_FUMA_NOITE,
+                    PAAM_DS_SONO_HORARIO_REGULAR = l.PAAM_DS_SONO_HORARIO_REGULAR,
+                    PAAM_DS_SONO_HORARIO_REGULAR_NOVO = l.PAAM_DS_SONO_HORARIO_REGULAR_NOVO,
+                    PAAM_DS_SONO_IRRITA = l.PAAM_DS_SONO_IRRITA,
+                    PAAM_DS_SONO_JANTAR = l.PAAM_DS_SONO_JANTAR,
+                    PAAM_DS_SONO_LANCHE = l.PAAM_DS_SONO_LANCHE,
+                    PAAM_DS_SONO_LATENCIA = l.PAAM_DS_SONO_LATENCIA,
+                    PAAM_DS_SONO_LECAMA = l.PAAM_DS_SONO_LECAMA,
+                    PAAM_DS_SONO_MALLAMPATI = l.PAAM_DS_SONO_MALLAMPATI,
+                    PAAM_DS_SONO_MEDICAMENTOS = l.PAAM_DS_SONO_MEDICAMENTOS,
+                    PAAM_DS_SONO_MOTIVOS_DESPERTA = l.PAAM_DS_SONO_MOTIVOS_DESPERTA,
+                    PAAM_DS_SONO_MOVE_MEMBRO = l.PAAM_DS_SONO_MOVE_MEMBRO,
+                    PAAM_DS_SONO_OVERLAP = l.PAAM_DS_SONO_OVERLAP,
+                    PAAM_DS_SONO_PATOLOGIAS = l.PAAM_DS_SONO_PATOLOGIAS,
+                    PAAM_DS_SONO_PESADELO = l.PAAM_DS_SONO_PESADELO,
+                    PAAM_DS_SONO_PESSOAS = l.PAAM_DS_SONO_PESSOAS,
+                    PAAM_DS_SONO_POLISONO = l.PAAM_DS_SONO_POLISONO,
+                    PAAM_DS_SONO_PONDERAL = l.PAAM_DS_SONO_PONDERAL,
+                    PAAM_DS_SONO_POSICAO_DORMIR = l.PAAM_DS_SONO_POSICAO_DORMIR,
+                    PAAM_DS_SONO_PRINCIPAL_QUEIXA = l.PAAM_DS_SONO_PRINCIPAL_QUEIXA,
+                    PAAM_DS_SONO_QUANTAS_DESPERTA = l.PAAM_DS_SONO_QUANTAS_DESPERTA,
+                    PAAM_DS_SONO_RANGE = l.PAAM_DS_SONO_RANGE,
+                    PAAM_DS_SONO_REFEICAO_PESADA = l.PAAM_DS_SONO_REFEICAO_PESADA,
+                    PAAM_DS_SONO_REFLUXO = l.PAAM_DS_SONO_REFLUXO,
+                    PAAM_DS_SONO_REPARADOR = l.PAAM_DS_SONO_REPARADOR,
+                    PAAM_DS_SONO_RIGIDEZ_FACE = l.PAAM_DS_SONO_RIGIDEZ_FACE,
+                    PAAM_DS_SONO_RIGIDEZ_FACE_OUTROS = l.PAAM_DS_SONO_RIGIDEZ_FACE_OUTROS,
+                    PAAM_DS_SONO_RONCO = l.PAAM_DS_SONO_RONCO,
+                    PAAM_DS_SONO_ROTINA_FDS = l.PAAM_DS_SONO_ROTINA_FDS,
+                    PAAM_DS_SONO_SENSACAO_PERNA = l.PAAM_DS_SONO_SENSACAO_PERNA,
+                    PAAM_DS_SONO_SINTOMAS = l.PAAM_DS_SONO_SINTOMAS,
+                    PAAM_DS_SONO_SONANBULISMO = l.PAAM_DS_SONO_SONANBULISMO,
+                    PAAM_DS_SONO_SONOLENCIA = l.PAAM_DS_SONO_SONOLENCIA,
+                    PAAM_DS_SONO_SONOLENCIA_DIURNA = l.PAAM_DS_SONO_SONOLENCIA_DIURNA,
+                    PAAM_DS_SONO_SUDORESE = l.PAAM_DS_SONO_SUDORESE,
+                    PAAM_DS_SONO_TEMPERATURA = l.PAAM_DS_SONO_TEMPERATURA,
+                    PAAM_DS_SONO_TEMPO_PEGAR_SONO = l.PAAM_DS_SONO_TEMPO_PEGAR_SONO,
+                    PAAM_DS_SONO_TIPO_RESPIRACAO = l.PAAM_DS_SONO_TIPO_RESPIRACAO,
+                    PAAM_DS_SONO_TODAS_REFEICOES = l.PAAM_DS_SONO_TODAS_REFEICOES,
+                    PAAM_DS_SONO_TOSSE = l.PAAM_DS_SONO_TOSSE,
+                    PAAM_DS_SONO_TURNO = l.PAAM_DS_SONO_TURNO,
+                    PAAM_DS_SONO_TVCAMA = l.PAAM_DS_SONO_TVCAMA,
+                    PAAM_DS_SONO_ULTIMO_ALCOOL = l.PAAM_DS_SONO_ULTIMO_ALCOOL,
+                    PAAM_DS_SONO_URINA_NOITE = l.PAAM_DS_SONO_URINA_NOITE,
+                    PAAM_DT_DATA = l.PAAM_DT_DATA,
+                    PAAM_DT_ORIGINAL = l.PAAM_DT_ORIGINAL,
+                    PAAM_IN_ATIVO = l.PAAM_IN_ATIVO,
+                    PAAM_NM_CAMPO_1 = l.PAAM_NM_CAMPO_1,
+                    PAAM_NM_CAMPO_10 = l.PAAM_NM_CAMPO_10,
+                    PAAM_NM_CAMPO_2 = l.PAAM_NM_CAMPO_2,
+                    PAAM_NM_CAMPO_3 = l.PAAM_NM_CAMPO_3,
+                    PAAM_NM_CAMPO_4 = l.PAAM_NM_CAMPO_4,
+                    PAAM_NM_CAMPO_5 = l.PAAM_NM_CAMPO_5,
+                    PAAM_NM_CAMPO_6 = l.PAAM_NM_CAMPO_6,
+                    PAAM_NM_CAMPO_7 = l.PAAM_NM_CAMPO_7,
+                    PAAM_NM_CAMPO_8 = l.PAAM_NM_CAMPO_8,
+                    PAAM_NM_CAMPO_9 = l.PAAM_NM_CAMPO_9,
+                    PAAM_NM_MEDICAMENTO = l.PAAM_NM_MEDICAMENTO,
+                    PAAM_TX_COMPLETA = l.PAAM_TX_COMPLETA,
+                    PAAM_TX_OBSERVACOES = l.PAAM_TX_OBSERVACOES,
+                    PAAM_TX_TEXTO_LIVRE = l.PAAM_TX_TEXTO_LIVRE,
+                    PAAN_NM_ABDOMEM = l.PAAN_NM_ABDOMEM,
+                    PAAN_NM_AVALIACAO_CARDIOLOGICA = l.PAAN_NM_AVALIACAO_CARDIOLOGICA,
+                    PAAN_NM_MEMBROS_INFERIORES = l.PAAN_NM_MEMBROS_INFERIORES,
+                    PAAN_NM_RESPIRATORIO = l.PAAN_NM_RESPIRATORIO,
                 };
                 return mediDTO;
             }

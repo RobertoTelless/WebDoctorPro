@@ -638,6 +638,19 @@ namespace ApplicationServices.Services
             }
         }
 
+        public Int32 ValidateEditAnamnesePrevia(PACIENTE_ANAMNESE item)
+        {
+            try
+            {
+                // Persiste
+                return _baseService.EditAnamnese(item);
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
         public Int32 ValidateEditAnamneseConfirma(PACIENTE_ANAMNESE item)
         {
             try

@@ -53,6 +53,7 @@
                         <i class="fa fa-spinner fa-spin"></i> Processando...
                     </span>
                 </div>
+                <br />
             </div>
             <div class="col-lg-12 col-md-12 col-xs-12 ibox float-e-margins">
                 <div class="ibox-title">
@@ -87,7 +88,7 @@
                                     @foreach (var cond in (ViewBag.Listas as List<EntitiesServices.Model.RESPOSTA_CONSULTA>).OrderByDescending(p => p.RECO_DT_DATA.Value.Date))
                                     {   
                                         <tr>
-                                            <td style="width: auto"><a href="@Url.Action("VerAvisoPrevia", "Paciente2", new { id = cond.RECO_CD_ID })" class="btn-loading" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página de visualização das  informações"/>@cond.RECO_DT_DATA.Value.ToShortDateString()</td>
+                                            <td style="width: auto"><a href="@Url.Action("VisualizarPrevia", "Paciente2", new { id = cond.RECO_CD_ID })" class="btn-loading" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página de visualização das  informações"/>@cond.RECO_DT_DATA.Value.ToShortDateString()</td>
                                             <td style="width: auto">@cond.RECO_EM_EMAIL</td>       
                                             <td style="width: auto">@cond.RECO_NR_CELULAR</td>       
                                             <td style="width: auto">@cond.RECO_NR_CPF</td>       
@@ -102,7 +103,7 @@
 
                                             }
                                             <td style="width: auto" class="td-one-action">
-                                                @Html.TableLinkDetails(cond.RECO_CD_ID, "VerAvisoPrevia", "fa-search btn-loading", "Ver Informação")
+                                                @Html.TableLinkDetails(cond.RECO_CD_ID, "VisualizarPrevia", "fa-search btn-loading", "Ver Informação")
                                             </td>
                                         </tr>
                                     }
