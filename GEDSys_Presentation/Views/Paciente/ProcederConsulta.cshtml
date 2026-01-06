@@ -209,11 +209,11 @@
                                 if (ViewBag.FlagEdt == 1)
                                 {
                                     <div class="col-lg-6 col-md-6 col-xs-12">
-                                        <h4 style="margin-left: -15px; color:green; background-color: beige; font-weight:bold">Anamnese Atualizada</h4>
+                                        <h4 style="margin-left: -15px; color:green; background-color: beige; font-weight:bold">Anamnese/Prontuário Atualizado</h4>
                                         <div class="row">
                                             <div class="form-group" style=" margin-left: 0px; margin-right: 0px;">    
-                                                <a href="@Url.Action("EditarAnamneseCompletaFormProcesso", "Paciente")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Preencher/Revisar a anamnese do paciente" class="btn btn-sm btn-primary btn-loading" OnClick = "Fade()">Preencher/Revisar</a>                
-                                                <a href="@Url.Action("VerAnamneseCompletaChamada", "Paciente2")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Visualizar a anamnese do paciente" class="btn btn-sm btn-warning btn-loading" OnClick = "Fade()">Visualizar</a>                
+                                                <a href="@Url.Action("EditarAnamneseCompletaFormProcesso", "Paciente")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Preencher/Revisar a anamnese/prontuário do paciente" class="btn btn-sm btn-primary btn-loading" OnClick = "Fade()">Preencher/Revisar</a>                
+                                                <a href="@Url.Action("VerAnamneseCompletaChamada", "Paciente2")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Visualizar a anamnese/prontuário do paciente" class="btn btn-sm btn-warning btn-loading" OnClick = "Fade()">Visualizar</a>                
                                                 <a href="@Url.Action("VerAnexoPacienteConsulta", "Paciente2")"  data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Gerenciar/Visualizar os anexos desta consulta" class="btn btn-sm btn-warning btn-loading" OnClick = "Fade()">Anexos</a>                
                                                 <a href="@Url.Action("VerInformacaoPreviaPacienteBase", "Paciente2")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Visualizar os avisos de informações prévias do paciente" class="btn btn-sm btn-warning btn-loading" OnClick = "Fade()">Prévias</a>                
                                                 @if (ViewBag.TemFicha == 1)
@@ -221,10 +221,17 @@
                                                     <a href="@Url.Action("VerFichaPacienteConsulta", "Paciente2")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Consultar as fichas digitalizadas do paciente" class="btn btn-sm btn-warning btn-loading" OnClick = "Fade()">Fichas</a>                
                                                 }
                                                 <a href="@Url.Action("VerAnotacaoAnamneseBase", "Paciente2")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Gerenciar/Visualiazar as anotações desta consulta" class="btn btn-sm btn-warning btn-loading" OnClick = "Fade()">Acompanhamento</a>                
-                                                <a href="@Url.Action("GerarAnamnesePDFNova", "Paciente")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Imprimir a anamnese completa" class="btn btn-sm btn-warning" OnClick = "Fade()">Imprimir</a>                
+                                                <a href="@Url.Action("GerarAnamnesePDFNova", "Paciente")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Imprimir a anamnese/prontuário completa" class="btn btn-sm btn-warning" OnClick = "Fade()">Imprimir</a>                
                                             </div>
                                         </div>
+                                        <h5 style="margin-left: -15px; color:brown; background-color: beige; font-weight:bold">São exibidas apenas algumas informações da anamnese/prontuário. Para ver tudo selecione Preencher/Revisar</h5>
                                         <div class="row">
+                                            <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                                <div class="col-lg-12 col-md-12 col-xs-12">
+                                                    Prontuário
+                                                    @Html.TextAreaFor(m => m.PAAM_TX_TEXTO_LIVRE, new { @class = "form-control", style = "width: 98%; height: 300px; overflow:auto", @readonly="readonly", id="prontuario"  })
+                                                </div>
+                                            </div>
                                             <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
                                                 <div class="col-lg-12 col-md-12 col-xs-12">
                                                     Motivo da Consulta
@@ -252,7 +259,7 @@
                                             <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
                                                 <div class="col-lg-12 col-md-12 col-xs-12">
                                                     Diagnóstico
-                                                    @Html.TextAreaFor(m => m.PAAM_DS_DIAGNOSTICO_1_LONG, new { @class = "form-control", style = "width: 98%; height: 200px; overflow:auto", @readonly="readonly"  })
+                                                    @Html.TextAreaFor(m => m.PAAN_DS_DIAGNOSTICO_1, new { @class = "form-control", style = "width: 98%; height: 200px; overflow:auto", @readonly="readonly"  })
                                                 </div>
                                             </div>
                                             <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
@@ -267,10 +274,10 @@
                                 else
                                 {
                                     <div class="col-lg-6 col-md-6 col-xs-12">
-                                        <h4 style="margin-left: -15px; color:green; background-color: beige; font-weight:bold">Anamnese Atualizada</h4>
+                                        <h4 style="margin-left: -15px; color:green; background-color: beige; font-weight:bold">Anamnese/Pontuário Atualizado</h4>
                                         <div class="row">
                                             <div class="form-group" style=" margin-left: 0px; margin-right: 0px;">    
-                                                <a href="@Url.Action("EditarAnamneseCompletaFormContinua", "Paciente2")"  data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Preencher/Revisar a anamnese do paciente" class="btn btn-sm btn-primary btn-loading" OnClick = "Fade()">Preencher/Revisar</a>                
+                                                <a href="@Url.Action("EditarAnamneseCompletaFormContinua", "Paciente2")"  data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Preencher/Revisar a anamnese/prontuário do paciente" class="btn btn-sm btn-primary btn-loading" OnClick = "Fade()">Preencher/Revisar</a>                
                                                 <a href="@Url.Action("VerAnexoPacienteConsulta", "Paciente2")"  data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Gerenciar/Visualizar os anexos desta consulta" class="btn btn-sm btn-warning btn-loading" OnClick = "Fade()">Anexos</a>                
                                                 <a href="@Url.Action("VerInformacaoPreviaPacienteBase", "Paciente2")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Visualizar os avisos de informações prévias do paciente" class="btn btn-sm btn-warning btn-loading" OnClick = "Fade()">Prévias</a>                
                                                 @if (ViewBag.TemFicha == 1)
@@ -278,14 +285,14 @@
                                                     <a href="@Url.Action("VerFichaPacienteConsulta", "Paciente2")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Consultar as fichas digitalizadas do paciente" class="btn btn-sm btn-warning btn-loading" OnClick = "Fade()">Fichas</a>                
                                                 }
                                                 <a href="@Url.Action("VerAnotacaoAnamneseBase", "Paciente2")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Gerenciar/Visualiazar as anotações desta consulta" class="btn btn-sm btn-warning btn-loading" OnClick = "Fade()">Acompanhamento</a>                
-                                                <a href="@Url.Action("GerarAnamnesePDFNovaContinua", "Paciente2")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Imprimir a anamnese completa" class="btn btn-sm btn-warning" OnClick = "Fade()">Imprimir</a>                
+                                                <a href="@Url.Action("GerarAnamnesePDFNovaContinua", "Paciente2")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Imprimir a anamnese/prontuário completa" class="btn btn-sm btn-warning" OnClick = "Fade()">Imprimir</a>                
                                             </div>
                                         </div>
                                         <div class="row">
                                             <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
                                                 <div class="col-lg-12 col-md-12 col-xs-12">
-                                                    Anamnese do Paciente
-                                                    @Html.TextAreaFor(m => m.PAAN_TX_COMPLETA, new { @class = "form-control", style = "width: 98%; height: 770px; overflow:auto", @readonly="readonly"  })
+                                                    Anamnese/Prontuário do Paciente
+                                                    @Html.TextAreaFor(m => m.PAAM_TX_TEXTO_LIVRE, new { @class = "form-control", style = "width: 98%; height: 770px; overflow:auto", @readonly="readonly"  })
                                                 </div>
                                             </div>
                                         </div>
@@ -295,11 +302,11 @@
                             else
                             {
                                 <div class="col-lg-6 col-md-6 col-xs-12">
-                                    <h4 style="margin-left: -15px; color:green; background-color: beige; font-weight:bold">Anamnese Atualizada</h4>
+                                    <h4 style="margin-left: -15px; color:green; background-color: beige; font-weight:bold">Anamnese/Prontuário Atualizado</h4>
                                     <div class="row">
                                         <div class="form-group" style=" margin-left: 0px; margin-right: 0px;">    
-                                            <a href="@Url.Action("EditarAnamneseCompletaFormProcessoSono", "Paciente2")"  data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Preencher/Revisar a anamnese do paciente" class="btn btn-sm btn-primary btn-loading" OnClick = "Fade()">Preencher/Revisar</a>                
-                                            <a href="@Url.Action("VerAnamneseCompletaChamadaSono", "Paciente2")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Visualizar a anamnese do paciente" class="btn btn-sm btn-warning btn-loading" OnClick = "Fade()">Visualizar</a>                
+                                            <a href="@Url.Action("EditarAnamneseCompletaFormProcessoSono", "Paciente2")"  data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Preencher/Revisar a anamnese/prontuário do paciente" class="btn btn-sm btn-primary btn-loading" OnClick = "Fade()">Preencher/Revisar</a>                
+                                            <a href="@Url.Action("VerAnamneseCompletaChamadaSono", "Paciente2")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Visualizar a anamnese/prontuário do paciente" class="btn btn-sm btn-warning btn-loading" OnClick = "Fade()">Visualizar</a>                
                                             <a href="@Url.Action("VerAnexoPacienteConsulta", "Paciente2")"  data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Gerenciar/Visualizar os anexos desta consulta" class="btn btn-sm btn-warning btn-loading" OnClick = "Fade()">Anexos</a>                
                                             <a href="@Url.Action("VerInformacaoPreviaPacienteBase", "Paciente2")"  data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Visualizar os avisos de informações prévias do paciente" class="btn btn-sm btn-warning btn-loading" OnClick = "Fade()">Prévias</a>                
                                             @if (ViewBag.TemFicha == 1)
@@ -307,10 +314,10 @@
                                                 <a href="@Url.Action("VerFichaPacienteConsulta", "Paciente2")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Consultar as fichas digitalizadas do paciente" class="btn btn-sm btn-warning btn-loading" OnClick = "Fade()">Fichas</a>                
                                             }
                                             <a href="@Url.Action("VerAnotacaoAnamneseBase", "Paciente2")"  data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Gerenciar/Visualiazar as anotações desta consulta" class="btn btn-sm btn-warning btn-loading" OnClick = "Fade()">Acompanhamento</a>                
-                                            <a href="@Url.Action("GerarAnamnesePDFNovaSono", "Paciente2")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Imprimir a anamnese completa" class="btn btn-sm btn-warning" OnClick = "Fade()">Imprimir</a>                
+                                            <a href="@Url.Action("GerarAnamnesePDFNovaSono", "Paciente2")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Imprimir a anamnese/prontuário completa" class="btn btn-sm btn-warning" OnClick = "Fade()">Imprimir</a>                
                                         </div>
                                     </div>
-                                    <h5 style="margin-left: 0px; color:brown; background-color: beige; font-weight:bold">São exibidas apenas algumas informações da anamnese. Para ver completa selecione a opção de editar/revisar ou a visualização</h5>
+                                    <h5 style="margin-left: -15px; color:brown; background-color: beige; font-weight:bold">São exibidas apenas algumas informações da anamnese/prontuário. Para ver tudo selecione Preencher/Revisar</h5>
                                     <div class="row">
                                         <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
                                             <div class="col-lg-12 col-md-12 col-xs-12">
@@ -355,7 +362,7 @@
                                         <a href="@Url.Action("GerarExameFisicoPDFNova", "Paciente")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Imprimir as informações do exame físico do paciente" class="btn btn-sm btn-warning" OnClick = "Fade()">Imprimir</a>                
                                     </div>
                                 </div>
-
+                                <h5 style="margin-left: -15px; color:brown; background-color: beige; font-weight:bold">São exibidas apenas algumas informações do exame físico. Para ver tudo selecione Preencher/Revisar</h5>
                                 <div class="row">
                                     <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
                                         <div class="col-lg-12 col-md-12 col-xs-12">
@@ -484,6 +491,15 @@
     @Scripts.Render("~/plugins/sweetAlert")
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.maskedinput/1.4.1/jquery.maskedinput.js"></script>
     <script src="~/Scripts/uploadAnexo.js"></script> 
+
+    <script type="text/javascript">
+        document.addEventListener('DOMContentLoaded', function() {
+            var textarea = document.getElementById('prontuario');
+            if (textarea) {
+                textarea.scrollTop = textarea.scrollHeight;
+            }
+        });
+    </script>
 
     <script type="text/javascript">
         $(document).ready(function () { 

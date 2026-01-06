@@ -46,7 +46,7 @@
                             @Html.ButtonActionSubmit(text: "Confirma Edição do Exame Físico", htmlAttributes: new { id = "basictoast",  @class = "btn-loading1" })
                             @Html.ButtonLinkIndex(text: "Resultados de Exames", action: "VerListaExameConsulta", controller: "Paciente", htmlAttributes: new { @class = "btn-loading" })
                             @Html.ButtonLinkIndex(text: "Acompanhamento", action: "VerAnotacaoAnamneseBase", controller: "Paciente2", htmlAttributes: new { @class = "btn-loading" })
-                            @Html.ButtonLinkIndex(text: "Anamnese", action: "VerAnamneseBase", controller: "Paciente2", htmlAttributes: new { @class = "btn-loading" })
+                            @Html.ButtonLinkIndex(text: "Anamnese/Prontuário", action: "VerAnamneseBase", controller: "Paciente2", htmlAttributes: new { @class = "btn-loading" })
                             @Html.ButtonLinkIndex(text: "Imprimir Exame Físico", action: "GerarExameFisicoPDFNova", controller: "Paciente")
                             @if ((Int32)Session["VoltaFisico"] == 1)
                             {
@@ -126,13 +126,6 @@
                         <div class="row">
                             <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Exame Físico</h4>
                                 <div class="col-lg-6 col-md-6 col-xs-12">
-                                    <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
-                                        <div class="col-lg-12 col-md-12 col-xs-12">
-                                            Ficha de Avaliacao
-                                            @Html.TextAreaFor(m => m.PAEF_DS_FICHA_AVALIACAO, new { @class = "form-control", style = "width: 100%; height: 80px; overflow:auto;", autofocus = true })
-                                            @Html.ValidationMessageFor(m => m.PAEF_DS_FICHA_AVALIACAO, "", new { @style = "color:red" })
-                                        </div>
-                                    </div>
                                     <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
                                         <div class="col-lg-3 col-md-3 col-xs-12">
                                             Pressão Diastólica (mmHg)
@@ -320,8 +313,9 @@
                                 <div class="col-lg-6 col-md-6 col-xs-12">
                                     <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
                                         <div class="col-lg-12 col-md-12 col-xs-12">
-                                            Resultados de Exames - Histórico
-                                            @Html.TextAreaFor(m => m.PAEF_TX_RESULTADOS_OLD, new { @class = "form-control", style = "width: 100%; height: 400px; overflow:auto;", tabindex = "-1", @readonly = "readonly" })
+                                            Ficha de Avaliacao
+                                            @Html.TextAreaFor(m => m.PAEF_DS_FICHA_AVALIACAO, new { @class = "form-control", style = "width: 100%; height: 200px; overflow:auto;", autofocus = true, id="ficha"})
+                                            @Html.ValidationMessageFor(m => m.PAEF_DS_FICHA_AVALIACAO, "", new { @style = "color:red" })
                                         </div>
                                     </div>
                                     <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
@@ -329,6 +323,12 @@
                                             Resultados de Exames - Atualização
                                             @Html.TextAreaFor(m => m.PAEF_TX_RESULTADOS, new { @class = "form-control", style = "width: 100%; height: 200px; overflow:auto;", autofocus = true })
                                             @Html.ValidationMessageFor(m => m.PAEF_TX_RESULTADOS, "", new { @style = "color:red" })
+                                        </div>
+                                    </div>
+                                    <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                        <div class="col-lg-12 col-md-12 col-xs-12">
+                                            Resultados de Exames - Histórico
+                                            @Html.TextAreaFor(m => m.PAEF_TX_RESULTADOS_OLD, new { @class = "form-control", style = "width: 100%; height: 400px; overflow:auto;", tabindex = "-1", @readonly = "readonly", id="resultado" })
                                         </div>
                                     </div>
                                     <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">                
@@ -364,7 +364,23 @@
     <script type="text/javascript" src="~/Scripts/bootstrap.min.js"></script>
     <script src="~/Scripts/jquery-ui-1.12.1.min.js"></script>
     <script src="~/Scripts/uploadAnexo.js"></script>  
-    
+   
+    <script type="text/javascript">
+        document.addEventListener('DOMContentLoaded', function() {
+            var textarea = document.getElementById('resultado');
+            if (textarea) {
+                textarea.scrollTop = textarea.scrollHeight;
+            }
+        });
+    </script>
+    <script type="text/javascript">
+        document.addEventListener('DOMContentLoaded', function() {
+            var textarea = document.getElementById('ficha');
+            if (textarea) {
+                textarea.scrollTop = textarea.scrollHeight;
+            }
+        });
+    </script>
     <script type="text/javascript">
         $(document).ready(function () { 
             $('.btn-loading').on('click', function (e) {            

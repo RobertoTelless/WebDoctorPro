@@ -16,7 +16,7 @@
                 <a href="@Url.Action("VoltarProcederConsulta", "Paciente")">Consulta - Proceder</a>
             </li>
             <li class="active">
-                <strong>Pacientes - Anamneses</strong>
+                <strong>Pacientes - Anamneses/Prontuário</strong>
             </li>
         </ol>
         <br />
@@ -27,7 +27,7 @@
             <div class="col-lg-12 col-md-12 col-xs-12 ibox float-e-margins">
                 <div class="ibox-title">
                     <div style="text-align: center;" class="col-lg-12 col-md-12 col-xs-12">
-                        <h5>Anamnese - Alteração</h5>
+                        <h5>Anamnese/Prontuário - Alteração</h5>
                         <span style="color:green; font-weight: 500; font-size: 20px;">@Model.PACIENTE.PACI_NM_NOME.ToUpper()</span>
                     </div>
                 </div>
@@ -43,12 +43,11 @@
                             </div>
                         }
                         <div class="form-group">
-                            @Html.ButtonActionSubmit(text: "Confirma Edição da Anamnese", htmlAttributes: new { id = "basictoast",  @class = "btn-loading1"  })
-                            @Html.ButtonLinkIndex(text: "Ver Anamnese Completa", action: "VerAnamneseCompletaChamada", controller: "Paciente2", htmlAttributes: new { @class = "btn-loading" })
+                            @Html.ButtonActionSubmit(text: "Confirma Edição da Anamnese/Prontuário", htmlAttributes: new { id = "basictoast",  @class = "btn-loading1"  })
+                            @Html.ButtonLinkIndex(text: "Ver Anamnese/Prontuário Completa", action: "VerAnamneseCompletaChamada", controller: "Paciente2", htmlAttributes: new { @class = "btn-loading" })
                             @Html.ButtonLinkIndex(text: "Acompanhamento", action: "VerAnotacaoAnamneseBase", controller: "Paciente2", htmlAttributes: new { @class = "btn-loading" })
                             @Html.ButtonLinkIndex(text: "Exame Físico", action: "VerExameFisicoBase", controller: "Paciente2", htmlAttributes: new { @class = "btn-loading" })
-                            @Html.ButtonLinkIndex(text: "Imprimir Anamnese", action: "GerarAnamnesePDFNova", controller: "Paciente")
-                            @Html.ButtonLinkIndex(text: "Acerto", action: "AcertoCampo", controller: "Paciente2", htmlAttributes: new { @class = "btn-loading" })
+                            @Html.ButtonLinkIndex(text: "Imprimir Anamnese/Prontuário", action: "GerarAnamnesePDFNova", controller: "Paciente")
                             @if ((Int32)Session["VoltarPesquisa"] == 44)
                             {
                                 @Html.ButtonLinkIndex(text: "Voltar", action: "PesquisarTudo", controller: "BaseAdmin", htmlAttributes: new { @class = "btn-loading" })
@@ -155,7 +154,7 @@
                         </div>
 
                         <div class="row">
-                            <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Anamnese</h4>
+                            <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Anamnese/Prontuário</h4>
                             <div class="col-lg-6 col-md-6 col-xs-12">
                                 <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
                                     <div class="col-lg-12 col-md-12 col-xs-12">
@@ -352,9 +351,6 @@
                                         </div>
                                     </div>
                                 }
-                            </div>
-                            <div class="col-lg-6 col-md-6 col-xs-12">
-                                <h4 style="margin-left: 0px; color:white; background-color: darkseagreen; font-weight:bold">Diagnósticos e Informações Customizadas</h4>
                                 <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">                
                                     <div class="col-lg-12 col-md-12 col-xs-12">
                                         Diagnóstico - Histórico
@@ -364,8 +360,8 @@
                                 <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">                
                                     <div class="col-lg-12 col-md-12 col-xs-12">
                                         Diagnóstico - Consulta Atual/Revisão
-                                        @Html.TextAreaFor(m => m.PAAM_DS_DIAGNOSTICO_1_LONG, new { @class = "form-control", style = "width: 100%; height: 100px; overflow:auto;", autofocus = true })
-                                        @Html.ValidationMessageFor(m => m.PAAM_DS_DIAGNOSTICO_1_LONG, "", new { @style = "color:red" })
+                                        @Html.TextAreaFor(m => m.PAAM_DS_DIAGNOSTICO_1, new { @class = "form-control", style = "width: 100%; height: 100px; overflow:auto;", autofocus = true })
+                                        @Html.ValidationMessageFor(m => m.PAAM_DS_DIAGNOSTICO_1, "", new { @style = "color:red" })
                                     </div>
                                 </div>
                                 <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">                
@@ -379,20 +375,6 @@
                                         Conduta Adotada - Consulta Atual/Revisão
                                         @Html.TextAreaFor(m => m.PAAM_DS_CONDUTA, new { @class = "form-control", style = "width: 100%; height: 100px; overflow:auto;", autofocus = true })
                                         @Html.ValidationMessageFor(m => m.PAAM_DS_CONDUTA, "", new { @style = "color:red" })
-                                    </div>
-                                </div>
-
-                                <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">                
-                                    <div class="col-lg-12 col-md-12 col-xs-12">
-                                        Anotações Livres - Histórico
-                                        @Html.TextAreaFor(m => m.PAAM_TX_TEXTO_LIVRE_OLD, new { @class = "form-control", tabindex = "-1", style = "width: 100%; height: 500px; overflow:auto;", @readonly = "readonly"})
-                                    </div>
-                                </div>
-                                <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">                
-                                    <div class="col-lg-12 col-md-12 col-xs-12">
-                                        Anotações Livres - Consulta Atual/Revisão
-                                        @Html.TextAreaFor(m => m.PAAM_TX_TEXTO_LIVRE, new { @class = "form-control", style = "width: 100%; height: 100px; overflow:auto;", autofocus = true })
-                                        @Html.ValidationMessageFor(m => m.PAAM_TX_TEXTO_LIVRE, "", new { @style = "color:red" })
                                     </div>
                                 </div>
                                 @if (Model.PAAM_IN_CAMPO_1 == 1)
@@ -556,9 +538,24 @@
                                     </div>
                                 }
                             </div>
+                            <div class="col-lg-6 col-md-6 col-xs-12">
+                                <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">                
+                                    <div class="col-lg-12 col-md-12 col-xs-12">
+                                        Prontuário - Consulta Atual/Revisão
+                                        @Html.TextAreaFor(m => m.PAAM_TX_TEXTO_LIVRE, new { @class = "form-control", style = "width: 100%; height: 200px; overflow:auto;", autofocus = true })
+                                        @Html.ValidationMessageFor(m => m.PAAM_TX_TEXTO_LIVRE, "", new { @style = "color:red" })
+                                    </div>
+                                </div>
+                                <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">                
+                                    <div class="col-lg-12 col-md-12 col-xs-12">
+                                        Prontuário - Histórico
+                                        @Html.TextAreaFor(m => m.PAAM_TX_TEXTO_LIVRE_OLD, new { @class = "form-control", tabindex = "-1", style = "width: 100%; height: 1000px; overflow:auto;", @readonly = "readonly", id = "historicoProntuario"})
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                         <div class="form-group">
-                            @Html.ButtonActionSubmit(text: "Confirma Edição da Anamnese", htmlAttributes: new { id = "basictoast", @class = "btn-loading1" })
+                            @Html.ButtonActionSubmit(text: "Confirma Edição da Anamnese/Prontuário", htmlAttributes: new { id = "basictoast", @class = "btn-loading1" })
                         </div>
                     </div>
                 }
@@ -578,6 +575,15 @@
     @Scripts.Render("~/plugins/jasnyBootstrap")
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.maskedinput/1.4.1/jquery.maskedinput.js"></script>
    
+    <script type="text/javascript">
+        document.addEventListener('DOMContentLoaded', function() {
+            var textarea = document.getElementById('historicoProntuario');
+            if (textarea) {
+                textarea.scrollTop = textarea.scrollHeight;
+            }
+        });
+    </script>
+
     <script type="text/javascript">
         $(document).ready(function () { 
             $('.btn-loading').on('click', function (e) {            

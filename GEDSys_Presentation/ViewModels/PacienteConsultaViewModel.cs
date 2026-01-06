@@ -50,6 +50,7 @@ namespace ERP_Condominios_Solution.ViewModels
         public string PAAN_DS_CONDUTA { get; set; }
         public string PAAN_TX_OBSERVACOES { get; set; }
         public string PAAN_TX_COMPLETA { get; set; }
+        public string PAAM_TX_TEXTO_LIVRE { get; set; }
         public Nullable<System.DateTime> PAAN_DT_COPIA { get; set; }
         public string PAAN_NM_AVALIACAO_CARDIOLOGICA_LONG { get; set; }
         public string PAAN_NM_RESPIRATORIO_LONG { get; set; }

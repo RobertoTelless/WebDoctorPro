@@ -17,7 +17,7 @@
                 <a href="@Url.Action("VoltarProcederConsulta", "Paciente")">Consulta - Proceder</a>
             </li>
             <li class="active">
-                <strong>Pacientes - Anamneses</strong>
+                <strong>Pacientes - Anamneses/Prontuário</strong>
             </li>
         </ol>
         <br />
@@ -28,7 +28,7 @@
             <div class="col-lg-12 col-md-12 col-xs-12 ibox float-e-margins">
                 <div class="ibox-title">
                     <div style="text-align: center;" class="col-lg-12 col-md-12 col-xs-12">
-                        <h5>Anamnese - Alteração</h5>
+                        <h5>Anamnese/Prontuário - Alteração</h5>
                         <span style="color:green; font-weight: 500; font-size: 20px;">@Model.PACIENTE.PACI_NM_NOME.ToUpper()</span>
                     </div>
                 </div>
@@ -44,10 +44,10 @@
                             </div>
                         }
                         <div class="form-group">
-                            @Html.ButtonActionSubmit(text: "Confirma Edição da Anamnese", htmlAttributes: new { id = "basictoast",  @class = "btn-loading1" })
+                            @Html.ButtonActionSubmit(text: "Confirma Edição da Anamnese/Prontuário", htmlAttributes: new { id = "basictoast",  @class = "btn-loading1" })
                             @Html.ButtonLinkIndex(text: "Acompanhamento", action: "VerAnotacaoAnamneseBase", controller: "Paciente2", htmlAttributes: new { @class = "btn-loading" })
                             @Html.ButtonLinkIndex(text: "Exame Físico", action: "VerExameFisicoBase", controller: "Paciente2", htmlAttributes: new { @class = "btn-loading" })
-                            @Html.ButtonLinkIndex(text: "Imprimir Anamnese", action: "GerarAnamnesePDFNovaContinua", controller: "Paciente")
+                            @Html.ButtonLinkIndex(text: "Imprimir Anamnese/Prontuário", action: "GerarAnamnesePDFNovaContinua", controller: "Paciente")
                             @if ((Int32)Session["VoltarPesquisa"] == 1)
                             {
                                 @Html.ButtonLinkIndex(text: "Voltar", action: "PesquisarTudo", controller: "BaseAdmin", htmlAttributes: new { @class = "btn-loading" })
@@ -166,22 +166,22 @@
                         </div>
 
                         <div class="row">
-                            <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Anamnese</h4>
+                            <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Anamnese/Prontuário</h4>
                             @if ((Int32)Session["PadraoContinua"] == 1)
                             {
                                 <div class="col-lg-6 col-md-6 col-xs-12">
                                     <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
                                         <div class="col-lg-12 col-md-12 col-xs-12">
-                                            Anamnese - Histórico
-                                            @Html.TextAreaFor(m => m.PAAN_TX_COMPLETA_OLD, new { @class = "form-control", style = "width: 100%; height: 700px; overflow:auto;", tabindex = "-1", @readonly = "readonly" })
+                                            Anamnese/Prontuário - Histórico
+                                            @Html.TextAreaFor(m => m.PAAM_TX_TEXTO_LIVRE_OLD, new { @class = "form-control", style = "width: 100%; height: 1200px; overflow:auto;", tabindex = "-1", @readonly = "readonly", id = "historicoProntuario" })
                                         </div>
                                     </div>
                                 </div>
                                 <div class="col-lg-6 col-md-6 col-xs-12">
                                     <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
                                         <div class="col-lg-12 col-md-12 col-xs-12">
-                                            Anamnese da Consulta
-                                            @Html.TextAreaFor(m => m.PAAM_TX_TEXTO, new { @class = "form-control", style = "width: 100%; height: 700px; overflow:auto;", autofocus = true})
+                                            Anamnese/Prontuário da Consulta
+                                            @Html.TextAreaFor(m => m.PAAM_TX_TEXTO, new { @class = "form-control", style = "width: 100%; height: 1200px; overflow:auto;", autofocus = true})
                                             @Html.ValidationMessageFor(m => m.PAAM_TX_TEXTO, "", new { @style = "color:red" })
                                         </div>
                                     </div>
@@ -192,9 +192,9 @@
                                 <div class="col-lg-6 col-md-6 col-xs-12">
                                     <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
                                         <div class="col-lg-12 col-md-12 col-xs-12">
-                                            Anamnese da Consulta
-                                            @Html.TextAreaFor(m => m.PAAM_TX_COMPLETA, new { @class = "form-control", style = "width: 100%; height: 700px; overflow:auto;"})
-                                            @Html.ValidationMessageFor(m => m.PAAM_TX_COMPLETA, "", new { @style = "color:red" })
+                                            Anamnese/Prontuário da Consulta
+                                            @Html.TextAreaFor(m => m.PAAM_TX_TEXTO_LIVRE, new { @class = "form-control", style = "width: 100%; height: 1200px; overflow:auto;", id = "historicoLivre"})
+                                            @Html.ValidationMessageFor(m => m.PAAM_TX_TEXTO_LIVRE, "", new { @style = "color:red" })
                                         </div>
                                     </div>
                                 </div>
@@ -218,6 +218,24 @@
     @Scripts.Render("~/plugins/jasnyBootstrap")
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.maskedinput/1.4.1/jquery.maskedinput.js"></script>
    
+    <script type="text/javascript">
+        document.addEventListener('DOMContentLoaded', function() {
+            var textarea = document.getElementById('historicoProntuario');
+            if (textarea) {
+                textarea.scrollTop = textarea.scrollHeight;
+            }
+        });
+    </script>
+
+    <script type="text/javascript">
+        document.addEventListener('DOMContentLoaded', function() {
+            var textarea = document.getElementById('historicoLivre');
+            if (textarea) {
+                textarea.scrollTop = textarea.scrollHeight;
+            }
+        });
+    </script>
+
     <script type="text/javascript">
         $(document).ready(function () { 
             $('.btn-loading').on('click', function (e) {            

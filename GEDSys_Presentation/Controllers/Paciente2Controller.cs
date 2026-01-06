@@ -3170,30 +3170,40 @@ namespace GEDSys_Presentation.Controllers
                 ViewBag.Listas = listaMasterUsuario;
                 ViewBag.Perfil = usuario.PERFIL.PERF_SG_SIGLA;
 
-                // Acerta estado    
-                Session["MensPaciente"] = null;
-                Session["VoltaPaciente"] = 1;
-                Session["NivelPaciente"] = 1;
-                Session["VoltaMsg"] = 0;
-                Session["TipoSolicitacao"] = 6;
-                Session["VoltarConsulta"] = 4;
-                Session["VoltarPesquisa"] = 0;
-                Session["AjudaNivel"] = "../BaseAdmin/Ajuda/5/Ajuda5_5.pdf";
-                Session["ModoConsulta"] = 0;
-                Session["VoltaCalendario"] = 0;
-                Session["VoltaConfCalendario"] = 1;
-                Session["VoltaUsu"] = 4;
-                Session["VoltaConfCalendario"] = 5;
-                Session["ListaConsultaGeral"] = null;
-                Session["ListaLog"] = null;
+                if (usuario.PERFIL.PERF_SG_SIGLA == "SEC")
+                {
+                    // Acerta estado    
+                    Session["MensPaciente"] = null;
+                    Session["VoltaPaciente"] = 1;
+                    Session["NivelPaciente"] = 1;
+                    Session["VoltaMsg"] = 0;
+                    Session["TipoSolicitacao"] = 6;
+                    Session["VoltarConsulta"] = 4;
+                    Session["VoltarPesquisa"] = 0;
+                    Session["AjudaNivel"] = "../BaseAdmin/Ajuda/5/Ajuda5_5.pdf";
+                    Session["ModoConsulta"] = 0;
+                    Session["VoltaCalendario"] = 0;
+                    Session["VoltaConfCalendario"] = 1;
+                    Session["VoltaUsu"] = 4;
+                    Session["VoltaConfCalendario"] = 5;
+                    Session["ListaConsultaGeral"] = null;
+                    Session["ListaLog"] = null;
 
-                // Carrega view
-                objetoUsuario = new USUARIO();
+                    // Carrega view
+                    objetoUsuario = new USUARIO();
 
-                // Grava Acesso
-                ControleAcessoMetodo grava = new ControleAcessoMetodo(aceApp);
-                Int32 voltaX = grava.GravaAcesso(usuario.USUA_CD_ID, usuario.ASSI_CD_ID, "PACIENTE_CONSULTA_MARCACAO", "Paciente2", "MontarTelaMarcacaoConsulta");
-                return View(objetoUsuario);
+                    // Grava Acesso
+                    ControleAcessoMetodo grava = new ControleAcessoMetodo(aceApp);
+                    Int32 voltaX = grava.GravaAcesso(usuario.USUA_CD_ID, usuario.ASSI_CD_ID, "PACIENTE_CONSULTA_MARCACAO", "Paciente2", "MontarTelaMarcacaoConsulta");
+                    return View(objetoUsuario);
+                }
+                else
+                {
+                    // Grava Acesso
+                    ControleAcessoMetodo grava = new ControleAcessoMetodo(aceApp);
+                    Int32 voltaX = grava.GravaAcesso(usuario.USUA_CD_ID, usuario.ASSI_CD_ID, "PACIENTE_CONSULTA_MARCACAO", "Paciente", "MontarTelaMarcacaoConsulta");
+                    return RedirectToAction("IncluirConsultaGeral", "Paciente");
+                }
             }
             catch (Exception ex)
             {
@@ -8029,7 +8039,8 @@ namespace GEDSys_Presentation.Controllers
                     USUARIO usuario = (USUARIO)Session["UserCredentials"];
                     PACIENTE_ANAMNESE item = baseApp.GetAnamneseById(id);
                     String frase = String.Empty;
-                    frase += "=== MOTIVO DA CONSULTA ===" + "\r\n" + item.PAAM_DS_MOTIVO_CONSULTA + "\r\n";
+                    frase += "=== PRONTUÁRIO ===" + "\r\n" + item.PAAM_TX_TEXTO_LIVRE + "\r\n";
+                    frase += "\r\n" + "=== MOTIVO DA CONSULTA ===" + "\r\n" + item.PAAM_DS_MOTIVO_CONSULTA + "\r\n";
                     frase += "\r\n" + "=== QUEIXA PRINCIPAL ===" + "\r\n" + item.PAAM_DS_QUEIXA_PRINCIPAL + "\r\n";
                     frase += "\r\n" + "=== HISTÓRICO FAMILIAR ===" + "\r\n" + item.PAAM_DS_HISTORIA_FAMILIAR + "\r\n";
                     frase += "\r\n" + "=== HISTÓRIA SOCIAL ===" + "\r\n" + item.PAAM_DS_HISTORIA_SOCIAL + "\r\n";
@@ -8091,6 +8102,8 @@ namespace GEDSys_Presentation.Controllers
                     USUARIO usuario = (USUARIO)Session["UserCredentials"];
                     PACIENTE_ANAMNESE item = baseApp.GetAnamneseById(id);
                     String frase = String.Empty;
+                    frase += "************ GERAL ************" + "\r\n";
+                    frase += "=== INFORMAÇÕES LIVRES ===" + "\r\n" + item.PAAM_TX_TEXTO_LIVRE + "\r\n";
                     frase += "************ ROTINA DO SONO ************" + "\r\n";
                     frase += "=== PRINCIPAL QUEIXA DO SONO ===" + "\r\n" + item.PAAM_DS_SONO_PRINCIPAL_QUEIXA + "\r\n";
                     frase += "\r\n" + "=== SINTOMAS ===" + "\r\n" + item.PAAM_DS_SONO_SINTOMAS + "\r\n";
@@ -8528,12 +8541,6 @@ namespace GEDSys_Presentation.Controllers
                 cell.VerticalAlignment = Element.ALIGN_MIDDLE;
                 cell.HorizontalAlignment = Element.ALIGN_LEFT;
                 table1.AddCell(cell);
-                cell = new PdfPCell(new Paragraph("Documento assinado digitalmente", meuFont));
-                cell.Border = 0;
-                cell.Colspan = 4;
-                cell.VerticalAlignment = Element.ALIGN_MIDDLE;
-                cell.HorizontalAlignment = Element.ALIGN_LEFT;
-                table1.AddCell(cell);
 
                 cell = new PdfPCell(new Paragraph("  ", meuFont));
                 cell.Border = 0;
@@ -8556,7 +8563,7 @@ namespace GEDSys_Presentation.Controllers
                 Paragraph line1 = new Paragraph("  ");
                 pdfDoc.Add(line1);
 
-                Chunk chunk3 = new Chunk("A N A M N E S E", FontFactory.GetFont("Arial", 16, Font.NORMAL, BaseColor.BLACK));
+                Chunk chunk3 = new Chunk("A N A M N E S E / P R O N T U Á R I O", FontFactory.GetFont("Arial", 16, Font.NORMAL, BaseColor.BLACK));
                 Paragraph paragraph = new Paragraph(chunk3);
                 paragraph.Alignment = Element.ALIGN_CENTER;
                 pdfDoc.Add(paragraph);
@@ -8621,7 +8628,7 @@ namespace GEDSys_Presentation.Controllers
                 table.SpacingAfter = 1f;
 
                 // Dados da anamnese
-                cell = new PdfPCell(new Paragraph(anamnese.PAAM_TX_COMPLETA, meuFont1))
+                cell = new PdfPCell(new Paragraph(anamnese.PAAM_TX_TEXTO_LIVRE, meuFont1))
                 {
                     VerticalAlignment = Element.ALIGN_MIDDLE,
                     HorizontalAlignment = Element.ALIGN_LEFT
@@ -8713,7 +8720,7 @@ namespace GEDSys_Presentation.Controllers
                 // Prepara a view
                 PacienteAnamneseViewModel vm = Mapper.Map<PACIENTE_ANAMNESE, PacienteAnamneseViewModel>(item);
                 vm.PACO_DT_CONSULTA = cons.PACO_DT_CONSULTA;
-                vm.PAAN_TX_COMPLETA_OLD = item.PAAM_TX_COMPLETA;
+                vm.PAAM_TX_TEXTO_LIVRE_OLD = item.PAAM_TX_TEXTO_LIVRE;
                 vm.PAAM_TX_TEXTO = String.Empty;
 
                 // Grava Acesso
@@ -8774,11 +8781,11 @@ namespace GEDSys_Presentation.Controllers
                     {
                         if (vm.PAAM_TX_TEXTO != null)
                         {
-                            velho = vm.PAAN_TX_COMPLETA_OLD;
+                            velho = vm.PAAM_TX_TEXTO_LIVRE_OLD;
                             novo = vm.PAAM_TX_TEXTO;
                             if (velho == null & novo != String.Empty)
                             {
-                                vm.PAAM_TX_COMPLETA = dataHoje + "\r\n" + novo;
+                                vm.PAAM_TX_TEXTO_LIVRE = dataHoje + "\r\n" + novo;
                             }
                             if (velho != null & novo != String.Empty)
                             {
@@ -8787,13 +8794,13 @@ namespace GEDSys_Presentation.Controllers
                                 {
                                     velho = velho.Substring(0, velho.Length - 4);
                                 }
-                                vm.PAAM_TX_COMPLETA = velho + "\r\n\r\n" + dataHoje + "\r\n" + novo;
+                                vm.PAAM_TX_TEXTO_LIVRE = velho + "\r\n\r\n" + dataHoje + "\r\n" + novo;
                             }
                         }
                         else
                         {
-                            velho = vm.PAAN_TX_COMPLETA_OLD;
-                            vm.PAAM_TX_COMPLETA = velho;
+                            velho = vm.PAAM_TX_TEXTO_LIVRE_OLD;
+                            vm.PAAM_TX_TEXTO_LIVRE = velho;
                         }
                     }
 
@@ -8824,7 +8831,7 @@ namespace GEDSys_Presentation.Controllers
                         LOG_DT_DATA = DateTime.Now,
                         ASSI_CD_ID = usuarioLogado.ASSI_CD_ID,
                         USUA_CD_ID = usuarioLogado.USUA_CD_ID,
-                        LOG_NM_OPERACAO = "Paciente - Anamnese - Alteração",
+                        LOG_NM_OPERACAO = "Paciente - Anamnese/Prontuário - Alteração",
                         LOG_IN_ATIVO = 1,
                         LOG_TX_REGISTRO = json,
                         LOG_TX_REGISTRO_ANTES = jsonAntes,
@@ -8841,8 +8848,8 @@ namespace GEDSys_Presentation.Controllers
                     hist.PAHI_DT_DATA = DateTime.Now;
                     hist.PAHI_IN_TIPO = 8;
                     hist.PAHI_IN_CHAVE = item.PAAM_CD_ID;
-                    hist.PAHI_NM_OPERACAO = "Paciente - Alteração de Anamnese";
-                    hist.PAHI_DS_DESCRICAO = "Paciente: " + pac1.PACI_NM_NOME.ToUpper() + " - Anamnese alterada: " + item.PAAM_DT_DATA.ToShortDateString();
+                    hist.PAHI_NM_OPERACAO = "Paciente - Alteração de Anamnese/Prontuário";
+                    hist.PAHI_DS_DESCRICAO = "Paciente: " + pac1.PACI_NM_NOME.ToUpper() + " - Anamnese/Prontuário alterada: " + item.PAAM_DT_DATA.ToShortDateString();
                     Int32 voltaHist = baseApp.ValidateCreateHistorico(hist);
 
                     if ((Int32)Session["VoltarPesquisa"] == 1)
@@ -16006,7 +16013,7 @@ namespace GEDSys_Presentation.Controllers
                         LOG_DT_DATA = DateTime.Now,
                         ASSI_CD_ID = usuarioLogado.ASSI_CD_ID,
                         USUA_CD_ID = usuarioLogado.USUA_CD_ID,
-                        LOG_NM_OPERACAO = "Paciente - Anamnese - Alteração",
+                        LOG_NM_OPERACAO = "Paciente - Anamnese/Prontuário - Alteração",
                         LOG_IN_ATIVO = 1,
                         LOG_TX_REGISTRO = json,
                         LOG_TX_REGISTRO_ANTES = jsonAntes,
@@ -16023,8 +16030,8 @@ namespace GEDSys_Presentation.Controllers
                     hist.PAHI_DT_DATA = DateTime.Now;
                     hist.PAHI_IN_TIPO = 8;
                     hist.PAHI_IN_CHAVE = item.PAAM_CD_ID;
-                    hist.PAHI_NM_OPERACAO = "Paciente - Alteração de Anamnese";
-                    hist.PAHI_DS_DESCRICAO = "Paciente: " + pac.PACI_NM_NOME.ToUpper() + " - Anamnese editada: " + item.PAAM_DT_DATA.ToShortDateString();
+                    hist.PAHI_NM_OPERACAO = "Paciente - Alteração de Anamnese/Prontuário";
+                    hist.PAHI_DS_DESCRICAO = "Paciente: " + pac.PACI_NM_NOME.ToUpper() + " - Anamnese/Prontuário alterada: " + item.PAAM_DT_DATA.ToShortDateString();
                     Int32 voltaHist = baseApp.ValidateCreateHistorico(hist);
 
                     if ((Int32)Session["VoltarPesquisa"] == 1)
@@ -16838,7 +16845,7 @@ namespace GEDSys_Presentation.Controllers
                 Paragraph line1 = new Paragraph("  ");
                 pdfDoc.Add(line1);
 
-                Chunk chunk3 = new Chunk("A N A M N E S E", FontFactory.GetFont("Arial", 16, Font.NORMAL, BaseColor.BLACK));
+                Chunk chunk3 = new Chunk("A N A M N E S E / P R O N T U Á R I O", FontFactory.GetFont("Arial", 16, Font.NORMAL, BaseColor.BLACK));
                 Paragraph paragraph = new Paragraph(chunk3);
                 paragraph.Alignment = Element.ALIGN_CENTER;
                 pdfDoc.Add(paragraph);

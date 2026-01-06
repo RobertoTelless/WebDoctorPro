@@ -4160,8 +4160,8 @@ namespace GEDSys_Presentation.Controllers
                 Session["TipoLocacao"] = 1;
                 Session["VoltaCliGrupo"] = 1;
                 Session["VoltaResposta"] = 1;
-                Session["VoltaImpAnamnese"] = 1;
-
+                Session["VoltaImpAnamnese"] = 2;
+                Session["VoltarProceder"] = 1;
                 Session["AjudaNivel"] = "../BaseAdmin/Ajuda/3/Ajuda3_2.pdf";
                 Session["AjudaNivelAt"] = "../BaseAdmin/Ajuda/3/Ajuda3_3.pdf";
                 Session["AjudaNivelCon"] = "../BaseAdmin/Ajuda/3/Ajuda3_10.pdf";
@@ -14735,7 +14735,7 @@ namespace GEDSys_Presentation.Controllers
                 vm.PAAN_NM_RESPIRATORIO_OLD = item.PAAN_NM_RESPIRATORIO;
                 vm.PAAN_NM_ABDOMEM_OLD = item.PAAN_NM_ABDOMEM;
                 vm.PAAM_NM_MEDICAMENTO_OLD = item.PAAM_NM_MEDICAMENTO;
-                vm.PAAM_TX_TEXTO_LIVRE = item.PAAM_TX_TEXTO_LIVRE;
+                vm.PAAM_TX_TEXTO_LIVRE_OLD = item.PAAM_TX_TEXTO_LIVRE;
 
                 vm.PAAM_DS_CAMPO_1 = String.Empty;
                 vm.PAAM_DS_CAMPO_2 = String.Empty;
@@ -15440,7 +15440,7 @@ namespace GEDSys_Presentation.Controllers
                         LOG_DT_DATA = DateTime.Now,
                         ASSI_CD_ID = usuarioLogado.ASSI_CD_ID,
                         USUA_CD_ID = usuarioLogado.USUA_CD_ID,
-                        LOG_NM_OPERACAO = "Paciente - Anamnese - Alteração",
+                        LOG_NM_OPERACAO = "Paciente - Anamnese/Prontuário - Alteração",
                         LOG_IN_ATIVO = 1,
                         LOG_TX_REGISTRO = json,
                         LOG_TX_REGISTRO_ANTES = jsonAntes,
@@ -15457,8 +15457,8 @@ namespace GEDSys_Presentation.Controllers
                     hist.PAHI_DT_DATA = DateTime.Now;
                     hist.PAHI_IN_TIPO = 8;
                     hist.PAHI_IN_CHAVE = item.PAAM_CD_ID;
-                    hist.PAHI_NM_OPERACAO = "Paciente - Alteração de Anamnese";
-                    hist.PAHI_DS_DESCRICAO = "Paciente: " + pac.PACI_NM_NOME.ToUpper() + " - Anamnese editada: " + item.PAAM_DT_DATA.ToShortDateString();
+                    hist.PAHI_NM_OPERACAO = "Paciente - Alteração de Anamnese/Prontuário";
+                    hist.PAHI_DS_DESCRICAO = "Paciente: " + pac.PACI_NM_NOME.ToUpper() + " - Anamnese/Prontuário editada: " + item.PAAM_DT_DATA.ToShortDateString();
                     Int32 voltaHist = baseApp.ValidateCreateHistorico(hist);
 
                     if ((Int32)Session["VoltarPesquisa"] == 1)
@@ -16390,16 +16390,16 @@ namespace GEDSys_Presentation.Controllers
                     };
 
                     // Monta Log
-                    DTO_Paciente_Anamnese dto = MontarPacienteAnamneseDTOObj(item);
+                    DTO_Paciente_Fisico dto = MontarPacienteFisicoDTOObj(item);
                     String json = JsonConvert.SerializeObject(dto, settings);
-                    DTO_Paciente_Anamnese dtoAntes = MontarPacienteAnamneseDTOObj((PACIENTE_ANAMNESE)Session["Anamnese"]);
+                    DTO_Paciente_Fisico dtoAntes = MontarPacienteFisicoDTOObj((PACIENTE_EXAME_FISICOS)Session["ExameFisico"]);
                     String jsonAntes = JsonConvert.SerializeObject(dtoAntes, settings);
                     LOG log = new LOG
                     {
                         LOG_DT_DATA = DateTime.Now,
                         ASSI_CD_ID = usuarioLogado.ASSI_CD_ID,
                         USUA_CD_ID = usuarioLogado.USUA_CD_ID,
-                        LOG_NM_OPERACAO = "Paciente - Anamnese - Alteração",
+                        LOG_NM_OPERACAO = "Paciente - Exame Físico - Alteração",
                         LOG_IN_ATIVO = 1,
                         LOG_TX_REGISTRO = json,
                         LOG_TX_REGISTRO_ANTES = jsonAntes,
@@ -16459,72 +16459,52 @@ namespace GEDSys_Presentation.Controllers
             {
                 var mediDTO = new DTO_Paciente_Fisico()
                 {
-                    PAAN_CD_ID = l.PAAN_CD_ID,
-                    PAAN_DT_ANOTACAO = l.PAAN_DT_ANOTACAO,
-                    PAAN_IN_ATIVO = l.PAAN_IN_ATIVO,
-                    PAAN_TX_ANOTACAO = l.PAAN_TX_ANOTACAO,
+                    ASSI_CD_ID = l.ASSI_CD_ID,
+                    PACO_CD_ID = l.PACO_CD_ID,
+                    PAEF_CD_ID = l.PAEF_CD_ID,
+                    USUA_CD_ID = l.USUA_CD_ID,
+                    PAEF_DS_ALCOOLISMO = l.PAEF_DS_ALCOOLISMO,
+                    PAEF_DS_ALERGICO = l.PAEF_DS_ALERGICO,
+                    PAEF_DS_ANTICONCEPCIONAL = l.PAEF_DS_ANTICONCEPCIONAL,
+                    PAEF_DS_EXAME_FISICO = l.PAEF_DS_EXAME_FISICO,
+                    PAEF_DS_EXERCICIO_FISICO = l.PAEF_DS_EXERCICIO_FISICO,
+                    PAEF_DS_FICHA_AVALIACAO = l.PAEF_DS_FICHA_AVALIACAO,
+                    PAEF_DS_MARCAPASSO = l.PAEF_DS_MARCAPASSO,
+                    PAEF_DS_ONCOLOGICO = l.PAEF_DS_ONCOLOGICO,
+                    PAEF_DS_TABAGISMO = l.PAEF_DS_TABAGISMO,
+                    PAEF_DT_DATA = l.PAEF_DT_DATA,
                     PACI_CD_ID = l.PACI_CD_ID,
-                    PAAN_CD_ID = l.PAAN_CD_ID,
-                    PAAN_DT_ANOTACAO = l.PAAN_DT_ANOTACAO,
-                    PAAN_IN_ATIVO = l.PAAN_IN_ATIVO,
-                    PAAN_TX_ANOTACAO = l.PAAN_TX_ANOTACAO,
-                    PACI_CD_ID = l.PACI_CD_ID,
-                    PAAN_CD_ID = l.PAAN_CD_ID,
-                    PAAN_DT_ANOTACAO = l.PAAN_DT_ANOTACAO,
-                    PAAN_IN_ATIVO = l.PAAN_IN_ATIVO,
-                    PAAN_TX_ANOTACAO = l.PAAN_TX_ANOTACAO,
-                    PACI_CD_ID = l.PACI_CD_ID,
-                    PAAN_CD_ID = l.PAAN_CD_ID,
-                    PAAN_DT_ANOTACAO = l.PAAN_DT_ANOTACAO,
-                    PAAN_IN_ATIVO = l.PAAN_IN_ATIVO,
-                    PAAN_TX_ANOTACAO = l.PAAN_TX_ANOTACAO,
-                    PACI_CD_ID = l.PACI_CD_ID,
-                    PAAN_CD_ID = l.PAAN_CD_ID,
-                    PAAN_DT_ANOTACAO = l.PAAN_DT_ANOTACAO,
-                    PAAN_IN_ATIVO = l.PAAN_IN_ATIVO,
-                    PAAN_TX_ANOTACAO = l.PAAN_TX_ANOTACAO,
-                    PACI_CD_ID = l.PACI_CD_ID,
-                    PAAN_CD_ID = l.PAAN_CD_ID,
-                    PAAN_DT_ANOTACAO = l.PAAN_DT_ANOTACAO,
-                    PAAN_IN_ATIVO = l.PAAN_IN_ATIVO,
-                    PAAN_TX_ANOTACAO = l.PAAN_TX_ANOTACAO,
-                    PACI_CD_ID = l.PACI_CD_ID,
-                    PAAN_CD_ID = l.PAAN_CD_ID,
-                    PAAN_DT_ANOTACAO = l.PAAN_DT_ANOTACAO,
-                    PAAN_IN_ATIVO = l.PAAN_IN_ATIVO,
-                    PAAN_TX_ANOTACAO = l.PAAN_TX_ANOTACAO,
-                    PACI_CD_ID = l.PACI_CD_ID,
-                    PAAN_CD_ID = l.PAAN_CD_ID,
-                    PAAN_DT_ANOTACAO = l.PAAN_DT_ANOTACAO,
-                    PAAN_IN_ATIVO = l.PAAN_IN_ATIVO,
-                    PAAN_TX_ANOTACAO = l.PAAN_TX_ANOTACAO,
-                    PACI_CD_ID = l.PACI_CD_ID,
-                    PAAN_CD_ID = l.PAAN_CD_ID,
-                    PAAN_DT_ANOTACAO = l.PAAN_DT_ANOTACAO,
-                    PAAN_IN_ATIVO = l.PAAN_IN_ATIVO,
-                    PAAN_TX_ANOTACAO = l.PAAN_TX_ANOTACAO,
-                    PACI_CD_ID = l.PACI_CD_ID,
-                    PAAN_CD_ID = l.PAAN_CD_ID,
-                    PAAN_DT_ANOTACAO = l.PAAN_DT_ANOTACAO,
-                    PAAN_IN_ATIVO = l.PAAN_IN_ATIVO,
-                    PAAN_TX_ANOTACAO = l.PAAN_TX_ANOTACAO,
-                    PACI_CD_ID = l.PACI_CD_ID,
-                    PAAN_CD_ID = l.PAAN_CD_ID,
-                    PAAN_DT_ANOTACAO = l.PAAN_DT_ANOTACAO,
-                    PAAN_IN_ATIVO = l.PAAN_IN_ATIVO,
-                    PAAN_TX_ANOTACAO = l.PAAN_TX_ANOTACAO,
-                    PACI_CD_ID = l.PACI_CD_ID,
-                    PAAN_CD_ID = l.PAAN_CD_ID,
-                    PAAN_DT_ANOTACAO = l.PAAN_DT_ANOTACAO,
-                    PAAN_IN_ATIVO = l.PAAN_IN_ATIVO,
-                    PAAN_TX_ANOTACAO = l.PAAN_TX_ANOTACAO,
-                    PACI_CD_ID = l.PACI_CD_ID,
+                    PAEF_IN_ALCOOLISMO = l.PAEF_IN_ALCOOLISMO,
+                    PAEF_IN_ALCOOLISMO_FREQUENCIA = l.PAEF_IN_ALCOOLISMO_FREQUENCIA,
+                    PAEF_IN_ANTE_ALERGICO = l.PAEF_IN_ANTE_ALERGICO,
+                    PAEF_IN_ANTE_ONCOLOGICO = l.PAEF_IN_ANTE_ONCOLOGICO,
+                    PAEF_IN_ANTICONCEPCIONAL = l.PAEF_IN_ANTICONCEPCIONAL,
+                    PAEF_IN_ATIVO = l.PAEF_IN_ATIVO,
+                    PAEF_IN_CIRURGIAS = l.PAEF_IN_CIRURGIAS,
+                    PAEF_IN_DIABETE = l.PAEF_IN_DIABETE,
+                    PAEF_IN_EPILEPSIA = l.PAEF_IN_EPILEPSIA,
+                    PAEF_IN_EXERCICIO_FISICO = l.PAEF_IN_EXERCICIO_FISICO,
+                    PAEF_IN_EXERCICIO_FISICO_FREQUENCIA = l.PAEF_IN_EXERCICIO_FISICO_FREQUENCIA,
+                    PAEF_IN_GESTANTE = l.PAEF_IN_GESTANTE,
+                    PAEF_IN_HIPERTENSAO = l.PAEF_IN_HIPERTENSAO,
+                    PAEF_IN_HIPOTENSAO = l.PAEF_IN_HIPOTENSAO,
+                    PAEF_IN_MARCAPASSO = l.PAEF_IN_MARCAPASSO,
+                    PAEF_IN_TABAGISMO = l.PAEF_IN_TABAGISMO,
+                    PAEF_IN_VARIZES = l.PAEF_IN_VARIZES,
+                    PAEF_NR_ALTURA = l.PAEF_NR_ALTURA,
+                    PAEF_NR_FREQUENCIA_CARDIACA = l.PAEF_NR_FREQUENCIA_CARDIACA,
+                    PAEF_NR_MES_GESTANTE = l.PAEF_NR_MES_GESTANTE,
+                    PAEF_NR_PA_ALTA = l.PAEF_NR_PA_ALTA,
+                    PAEF_NR_PA_BAIXA = l.PAEF_NR_PA_BAIXA,
+                    PAEF_NR_PESO = l.PAEF_NR_PESO,
+                    PAEF_NR_TEMPERATURA = l.PAEF_NR_TEMPERATURA,
+                    PAEF_TX_CIRURGIAS = l.PAEF_TX_CIRURGIAS,
+                    PAEF_TX_RESULTADOS = l.PAEF_TX_RESULTADOS,
+                    PAEF_VL_IMC = l.PAEF_VL_IMC,
                 };
                 return mediDTO;
             }
-
         }
-
 
         [HttpGet]
         public ActionResult VerExameFisico(Int32 id)
@@ -17304,7 +17284,7 @@ namespace GEDSys_Presentation.Controllers
                         Session["MsgCRUD"] = "A consulta do(a) paciente " + pac.PACI_NM_NOME.ToUpper() + " foi marcada com sucesso para " + item.PACO_DT_CONSULTA.ToLongDateString();
                         Session["MensPaciente"] = 888;
                         Session["ConsultaMarcada"] = 1;
-                        Session["ConsultaFrase"] = item.PACO_DT_CONSULTA.ToShortDateString() + " de " + item.PACO_HR_INICIO.ToString() + " até " + item.PACO_HR_FINAL.ToString();
+                        Session["ConsultaFrase"] = "A consulta do(a) paciente " + pac.PACI_NM_NOME.ToUpper() + " foi marcada com sucesso para " + item.PACO_DT_CONSULTA.ToShortDateString() + " de " + item.PACO_HR_INICIO.ToString() + " até " + item.PACO_HR_FINAL.ToString();
                     }
 
                     // Criação de consultas recursivas
@@ -19784,7 +19764,7 @@ namespace GEDSys_Presentation.Controllers
                 vm.PAAN_DS_HISTORIA_DOENCA_ATUAL = anamnese.PAAM_DS_HISTORIA_DOENCA_ATUAL;
                 vm.PAAN_DS_DIAGNOSTICO_1 = anamnese.PAAM_DS_DIAGNOSTICO_1;
                 vm.PAAN_DS_CONDUTA = anamnese.PAAM_DS_CONDUTA;
-                vm.PAAN_TX_COMPLETA = anamnese.PAAM_TX_COMPLETA;
+                vm.PAAM_TX_TEXTO_LIVRE = anamnese.PAAM_TX_TEXTO_LIVRE;
                 if (anamnese.PAAM_DT_COPIA != null)
                 {
                     vm.PAAN_DT_COPIA = anamnese.PAAM_DT_COPIA.Value;
@@ -19824,6 +19804,8 @@ namespace GEDSys_Presentation.Controllers
                 Session["TipoMedicoEnvio"] = 2;
                 Session["ListaAvisoAtivo"] = null;
                 Session["VoltaResposta"] = 3;
+                Session["VoltarProceder"] = 1;
+                Session["VoltaImpAnamnese"] = 2;
 
                 // Carrega exame físico
                 PACIENTE_EXAME_FISICOS fisico = paciente.PACIENTE_EXAME_FISICOS.Where(p => p.PAEF_IN_ATIVO == 1).ToList().FirstOrDefault();
@@ -20015,8 +19997,8 @@ namespace GEDSys_Presentation.Controllers
                     // Mensagem
                     if ((Int32)Session["MensPaciente"] == 61)
                     {
-                        String msg = (String)Session["MsgCRUD"];
-                        ModelState.AddModelError("", msg);
+                        TempData["MensagemAcerto"] = (String)Session["MsgCRUD"];
+                        TempData["TemMensagem"] = 1;
                     }
                 }
 
@@ -23817,6 +23799,17 @@ namespace GEDSys_Presentation.Controllers
                 return RedirectToAction("Logout", "ControleAcesso");
             }
             Session["TipoSolicitacao"] = 6;
+            Session["IdConsultaCria"] = 0;
+            return RedirectToAction("IncluirConsulta");
+        }
+
+        public ActionResult IncluirConsultaGeral()
+        {
+            if ((String)Session["Ativa"] == null)
+            {
+                return RedirectToAction("Logout", "ControleAcesso");
+            }
+            Session["TipoSolicitacao"] = 9;
             Session["IdConsultaCria"] = 0;
             return RedirectToAction("IncluirConsulta");
         }
@@ -33377,7 +33370,7 @@ namespace GEDSys_Presentation.Controllers
                 Paragraph line1 = new Paragraph("  ");
                 pdfDoc.Add(line1);
 
-                Chunk chunk3 = new Chunk("A N A M N E S E", FontFactory.GetFont("Arial", 16, Font.NORMAL, BaseColor.BLACK));
+                Chunk chunk3 = new Chunk("A N A M N E S E / P R O N T U Á R I O", FontFactory.GetFont("Arial", 16, Font.NORMAL, BaseColor.BLACK));
                 Paragraph paragraph = new Paragraph(chunk3);
                 paragraph.Alignment = Element.ALIGN_CENTER;
                 pdfDoc.Add(paragraph);
@@ -33440,6 +33433,24 @@ namespace GEDSys_Presentation.Controllers
                 table.HorizontalAlignment = 0;
                 table.SpacingBefore = 1f;
                 table.SpacingAfter = 1f;
+
+                // Prontuario
+                cell = new PdfPCell(new Paragraph("Prontuário: ", meuFont1Bold))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph(anamnese.PAAM_TX_TEXTO_LIVRE, meuFont1))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
 
                 // Dados da anamnese
                 cell = new PdfPCell(new Paragraph("Motivo da Consulta: ", meuFont1Bold))
@@ -33648,7 +33659,7 @@ namespace GEDSys_Presentation.Controllers
                     table.AddCell(cell);
                 }
 
-                cell = new PdfPCell(new Paragraph("Informações Gerais: ", meuFont1Bold))
+                cell = new PdfPCell(new Paragraph("Diagnóstico: ", meuFont1Bold))
                 {
                     VerticalAlignment = Element.ALIGN_MIDDLE,
                     HorizontalAlignment = Element.ALIGN_LEFT
@@ -33656,7 +33667,24 @@ namespace GEDSys_Presentation.Controllers
                 cell.Colspan = 1;
                 cell.BackgroundColor = BaseColor.WHITE;
                 table.AddCell(cell);
-                cell = new PdfPCell(new Paragraph(anamnese.PAAM_TX_TEXTO_LIVRE, meuFont1))
+                cell = new PdfPCell(new Paragraph(anamnese.PAAM_DS_DIAGNOSTICO_1_LONG, meuFont1))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+
+                cell = new PdfPCell(new Paragraph("Conduta Adotada: ", meuFont1Bold))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph(anamnese.PAAM_DS_CONDUTA, meuFont1))
                 {
                     VerticalAlignment = Element.ALIGN_MIDDLE,
                     HorizontalAlignment = Element.ALIGN_LEFT
@@ -33890,40 +33918,6 @@ namespace GEDSys_Presentation.Controllers
                     cell.BackgroundColor = BaseColor.WHITE;
                     table.AddCell(cell);
                 }
-
-                cell = new PdfPCell(new Paragraph("Diagnóstico: ", meuFont1Bold))
-                {
-                    VerticalAlignment = Element.ALIGN_MIDDLE,
-                    HorizontalAlignment = Element.ALIGN_LEFT
-                };
-                cell.Colspan = 1;
-                cell.BackgroundColor = BaseColor.WHITE;
-                table.AddCell(cell);
-                cell = new PdfPCell(new Paragraph(anamnese.PAAM_DS_DIAGNOSTICO_1_LONG, meuFont1))
-                {
-                    VerticalAlignment = Element.ALIGN_MIDDLE,
-                    HorizontalAlignment = Element.ALIGN_LEFT
-                };
-                cell.Colspan = 1;
-                cell.BackgroundColor = BaseColor.WHITE;
-                table.AddCell(cell);
-
-                cell = new PdfPCell(new Paragraph("Conduta Adotada: ", meuFont1Bold))
-                {
-                    VerticalAlignment = Element.ALIGN_MIDDLE,
-                    HorizontalAlignment = Element.ALIGN_LEFT
-                };
-                cell.Colspan = 1;
-                cell.BackgroundColor = BaseColor.WHITE;
-                table.AddCell(cell);
-                cell = new PdfPCell(new Paragraph(anamnese.PAAM_DS_CONDUTA, meuFont1))
-                {
-                    VerticalAlignment = Element.ALIGN_MIDDLE,
-                    HorizontalAlignment = Element.ALIGN_LEFT
-                };
-                cell.Colspan = 1;
-                cell.BackgroundColor = BaseColor.WHITE;
-                table.AddCell(cell);
                 pdfDoc.Add(table);
 
                 // Finaliza
@@ -36324,29 +36318,40 @@ namespace GEDSys_Presentation.Controllers
                 ViewBag.Listas = listaMasterUsuario;
                 ViewBag.Perfil = usuario.PERFIL.PERF_SG_SIGLA;
 
-                // Acerta estado    
-                Session["MensPaciente"] = null;
-                Session["VoltaPaciente"] = 1;
-                Session["NivelPaciente"] = 1;
-                Session["VoltaMsg"] = 0;
-                Session["TipoSolicitacao"] = 6;
-                Session["VoltarConsulta"] = 4;
-                Session["VoltarPesquisa"] = 0;
-                Session["AjudaNivel"] = "../BaseAdmin/Ajuda/5/Ajuda5.pdf";
-                Session["ModoConsulta"] = 0;
-                Session["VoltaCalendario"] = 0;
-                Session["VoltaConfCalendario"] = 1;
-                Session["VoltaUsu"] = 4;
-                Session["VoltaConfCalendario"] = 5;
-                Session["ListaLog"] = null;
+                // Confere perfil
+                if (usuario.PERFIL.PERF_SG_SIGLA == "SEC" || usuario.PERFIL.PERF_SG_SIGLA == "ADN")
+                {
+                    // Acerta estado    
+                    Session["MensPaciente"] = null;
+                    Session["VoltaPaciente"] = 1;
+                    Session["NivelPaciente"] = 1;
+                    Session["VoltaMsg"] = 0;
+                    Session["TipoSolicitacao"] = 6;
+                    Session["VoltarConsulta"] = 4;
+                    Session["VoltarPesquisa"] = 0;
+                    Session["AjudaNivel"] = "../BaseAdmin/Ajuda/5/Ajuda5.pdf";
+                    Session["ModoConsulta"] = 0;
+                    Session["VoltaCalendario"] = 0;
+                    Session["VoltaConfCalendario"] = 1;
+                    Session["VoltaUsu"] = 4;
+                    Session["VoltaConfCalendario"] = 5;
+                    Session["ListaLog"] = null;
 
-                // Carrega view
-                objetoUsuario = new USUARIO();
+                    // Carrega view
+                    objetoUsuario = new USUARIO();
 
-                // Grava Acesso
-                ControleAcessoMetodo grava = new ControleAcessoMetodo(aceApp);
-                Int32 voltaX = grava.GravaAcesso(usuario.USUA_CD_ID, usuario.ASSI_CD_ID, "PACIENTE_CONSULTA_MARCACAO", "Paciente", "MontarTelaMarcacaoConsulta");
-                return View(objetoUsuario);
+                    // Grava Acesso
+                    ControleAcessoMetodo grava = new ControleAcessoMetodo(aceApp);
+                    Int32 voltaX = grava.GravaAcesso(usuario.USUA_CD_ID, usuario.ASSI_CD_ID, "PACIENTE_CONSULTA_MARCACAO", "Paciente", "MontarTelaMarcacaoConsulta");
+                    return View(objetoUsuario);
+                }
+                else
+                {
+                    // Grava Acesso
+                    ControleAcessoMetodo grava = new ControleAcessoMetodo(aceApp);
+                    Int32 voltaX = grava.GravaAcesso(usuario.USUA_CD_ID, usuario.ASSI_CD_ID, "PACIENTE_CONSULTA_MARCACAO", "Paciente", "MontarTelaMarcacaoConsulta");
+                    return RedirectToAction("IncluirConsultaGeral", "Paciente");
+                }
             }
             catch (Exception ex)
             {

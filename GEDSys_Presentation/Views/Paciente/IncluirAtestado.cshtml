@@ -229,6 +229,10 @@
                                     @Html.HiddenFor(m => m.PAAT_IN_VALIDACAO)
                                     @Html.HiddenFor(m => m.PAAT_NR_DENUNCIA)
                                     @Html.HiddenFor(m => m.PAAT_IN_DENUNCIA)
+                                    @if ((Int32)Session["TipoSolicitacao"] == 1)
+                                    {
+                                        @Html.HiddenFor(m => m.PACI_CD_ID)
+                                    }
                                     Data/Hora de Emissão
                                     @Html.TextBoxFor(m => m.PAAT_DT_EMISSAO_COMPLETA, new { @class = "form-control", @readonly = "readonly", @tabindex = "-1" })
                                 </div>
