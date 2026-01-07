@@ -13498,6 +13498,10 @@ namespace GEDSys_Presentation.Controllers
                 }
                 Session["ListaSolicitacoes"] = null;
                 Session["SolicitacaoAlterada"] = 1;
+                if ((Int32)Session["ModoConsulta"] == 1)
+                {
+                    return RedirectToAction("VerListaSolicitacaoConsulta");
+                }
                 return RedirectToAction("MontarTelaSolicitacoes");
             }
             catch (Exception ex)

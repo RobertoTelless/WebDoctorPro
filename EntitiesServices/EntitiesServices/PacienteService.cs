@@ -1108,6 +1108,7 @@ namespace ModelServices.EntitiesServices
 
                     item.PACIENTE = null;
                     item.TIPO_ATESTADO = null;
+                    item.PACIENTE_CONSULTA = null;
                     PACIENTE_ATESTADO obj = _patRepository.GetById(item.PAAT_CD_ID);
                     _patRepository.Detach(obj);
                     obj.PACI_CD_ID = pac;

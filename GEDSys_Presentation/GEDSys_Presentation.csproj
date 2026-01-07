@@ -2758,6 +2758,11 @@
     <Content Include="Images\Prontuario\WD_Mensagens.jpg" />
     <Content Include="Images\Prontuario\WD_Paciente.jpg" />
     <Content Include="Images\Prontuario\WebDoctor_Base_1.jpg" />
+    <Content Include="Images\Prontuario\WebDoctor_Cadastro_Info_1.png" />
+    <Content Include="Images\Prontuario\WebDoctor_Consulta_Info_1.png" />
+    <Content Include="Images\Prontuario\WebDoctor_Info_1.png" />
+    <Content Include="Images\Prontuario\WebDoctor_Paciente_Info_1.png" />
+    <Content Include="Images\Prontuario\WebDoctor_Procede_Info_1.png" />
     <Content Include="Images\Prontuario\WebDoctor_Tela_3.jpg" />
     <Content Include="Images\Prontuario_Icone_1.png" />
     <Content Include="Images\p_big1.jpg" />

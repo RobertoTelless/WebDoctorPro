@@ -34,7 +34,7 @@
                 <a href="@Url.Action("MontarTelaPaciente", "Paciente")">Dashboard Inicial</a>
             </li>
             <li>
-                <a href="@Url.Action("ProcederConsulta", "Paciente")">Consulta</a>
+                <a href="@Url.Action("VoltarProcederConsulta", "Paciente")">Consulta</a>
             </li>
             <li class="active">
                 <strong>Solicitações de Exames</strong>
@@ -63,6 +63,13 @@
                                 @Html.ValidationSummary(false, "Erros Encontrados:", new { @class = "text-danger" })
                             </div>
                         }
+                        @if (TempData["TemMensagem"] != null)
+                        {
+                            <div class="alert alert-success">
+                                <button type="button" class="close" data-dismiss="alert">Fechar</button>
+                                <span>@TempData["MensagemAcerto"]</span>
+                            </div>
+                        }                    
                         <div class="row">
                             <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
                                 <div class="col-lg-12 col-md-12 col-xs-12">
@@ -79,7 +86,6 @@
                                 </div>
                             </div>
                         </div>
-                        <br />
                         <div class="row">
                             <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Paciente</h4>
                             <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">                
@@ -167,7 +173,7 @@
                                                 @foreach (var cond in (Model.PACIENTE_SOLICITACAO.Where(p => p.PASO_IN_ATIVO == 1).OrderByDescending(p => p.PASO_DT_EMISSAO)))
                                                 {
                                                     <tr>
-                                                        <td style="width: auto">@cond.PASO_DT_EMISSAO.Value.ToShortDateString() @cond.PASO_DT_EMISSAO.Value.ToShortTimeString()</td>
+                                                        <td style="width: auto">@cond.PASO_DT_EMISSAO_COMPLETA.Value.ToShortDateString() @cond.PASO_DT_EMISSAO_COMPLETA.Value.ToShortTimeString()</td>
                                                         @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_SOLICITACAO_ALTERAR == 1)
                                                         {
                                                             if (cond.PASO_IN_ENVIADO == 0)
@@ -232,6 +238,16 @@
                                                                 if (cond.PASO_IN_ATIVO == 1 )
                                                                 {
                                                                     @Html.TableLinkDetails(cond.PASO_CD_ID, "ImprimirSolicitacao", "fa-print", "Imprimir")
+                                                                }
+	                                                        }
+                                                            @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_SOLICITACAO_EXCLUIR == 1)
+                                                            {
+                                                                if (cond.PASO_IN_ATIVO == 1)
+                                                                {
+                                                                    if (cond.PASO_NR_ENVIOS == 0)
+                                                                    {
+                                                                        <span style="color: #337ab7; cursor:pointer;" alt="Desativar" class="tbl-link fa-lg fa fa-trash-o btn-loading" onclick="ShowModalExcluirSolicitacao('/Paciente/ExcluirSolicitacao/@cond.PASO_CD_ID')" title="Excluir"></span>
+                                                                    }
                                                                 }
 	                                                        }
                                                         </td>
