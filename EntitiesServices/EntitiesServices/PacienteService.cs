@@ -766,12 +766,16 @@ namespace ModelServices.EntitiesServices
             {
                 try
                 {
+                    Int32 pac = item.PACO_CD_ID.Value;
+
                     item.PACIENTE = null;
                     item.TIPO_EXAME = null;
                     item.PACIENTE_CONSULTA = null;
                     item.LABORATORIO = null;
                     PACIENTE_EXAMES obj = _pexRepository.GetItemById(item.PAEX_CD_ID);
+                    obj.PACO_CD_ID = pac;
                     _pexRepository.Detach(obj);
+                    item.PACO_CD_ID = pac;
                     _pexRepository.Update(item);
                     transaction.Commit();
                     return 0;

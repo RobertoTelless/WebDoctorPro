@@ -7228,10 +7228,12 @@ namespace GEDSys_Presentation.Controllers
                     }
 
                     // Atualiza anamnese
-                    if (Session["IdAnamneseConsulta"] != null)
+                    PACIENTE paci = baseApp.GetItemById(item.PACI_CD_ID);
+                    PACIENTE_ANAMNESE anaBase = paci.PACIENTE_ANAMNESE.FirstOrDefault();
+                    PACIENTE_ANAMNESE ana = RemontarAnamnese(anaBase);
+
+                    if (ana != null)
                     {
-                        Int32 id = (Int32)Session["IdAnamneseConsulta"];
-                        PACIENTE_ANAMNESE ana = baseApp.GetAnamneseById(id);
                         String velho = ana.PAAM_NM_MEDICAMENTO;
                         String dataHoje = DateTime.Today.Date.ToLongDateString();
                         dataHoje = "*** Revisão de Consulta em [" + dataHoje + "] ***";
@@ -7692,7 +7694,7 @@ namespace GEDSys_Presentation.Controllers
                     // Retorno
                     if ((Int32)Session["ModoConsulta"] == 1)
                     {
-                        return RedirectToAction("VoltarProcederConsulta");
+                        return RedirectToAction("VerListaPrescricaoConsulta");
                     }
                     if ((Int32)Session["ModoConsulta"] == 2)
                     {
@@ -9536,14 +9538,6 @@ namespace GEDSys_Presentation.Controllers
                 vm.USUA_CD_ID = usuario.USUA_CD_ID;
                 vm.TIEX_CD_ID = 0;
                 vm.PASO_CD_ID = null;
-                if ((Int32)Session["IdConsultaCria"] == 0)
-                {
-                    vm.PACO_CD_ID = null;
-                }
-                else
-                {
-                    vm.PACO_CD_ID = (Int32)Session["IdConsulta"];
-                }
                 if ((Int32)Session["TipoSolicitacao"] == 1)
                 {
                     PACIENTE pac = baseApp.GetItemById((Int32)Session["IdPaciente"]);
@@ -9553,9 +9547,18 @@ namespace GEDSys_Presentation.Controllers
                 }
                 else
                 {
+                    vm.PACO_CD_ID = null;
                     vm.PACI_CD_ID = 0;
                     vm.PACIENTE = null;
                     ViewBag.NomePaciente = String.Empty;
+                }
+                if ((Int32)Session["IdConsultaCria"] == 0)
+                {
+                    vm.PACO_CD_ID = null;
+                }
+                else
+                {
+                    vm.PACO_CD_ID = (Int32)Session["IdConsulta"];
                 }
                 if ((Int32)Session["ModoConsulta"] != 0)
                 {
@@ -9626,7 +9629,8 @@ namespace GEDSys_Presentation.Controllers
                         Session["IdConsulta"] = consulta.PACO_CD_ID;
 
                         // Recupera exame fisico da consulta
-                        PACIENTE_EXAME_FISICOS fisico = consulta.PACIENTE_EXAME_FISICOS.FirstOrDefault();
+                        PACIENTE paci = baseApp.GetItemById(consulta.PACI_CD_ID);
+                        PACIENTE_EXAME_FISICOS fisico = paci.PACIENTE_EXAME_FISICOS.FirstOrDefault();
 
                         // Grava fisico
                         PACIENTE_EXAME_FISICOS fisicoG = baseApp.GetExameFisicoById(fisico.PAEF_CD_ID);
@@ -9692,12 +9696,12 @@ namespace GEDSys_Presentation.Controllers
                     }
 
                     // Acerta exame
-                    if ((Int32)Session["ModoConsulta"] != 0)
-                    {
-                        PACIENTE_EXAMES exame = baseApp.GetExameById((Int32)Session["IdExame"]);
-                        exame.PACO_CD_ID = (Int32)Session["IdConsulta"];
-                        Int32 x = baseApp.ValidateEditExame(exame);
-                    }
+                    //if ((Int32)Session["ModoConsulta"] != 0)
+                    //{
+                    //    PACIENTE_EXAMES exame = baseApp.GetExameById((Int32)Session["IdExame"]);
+                    //    exame.PACO_CD_ID = (Int32)Session["IdConsulta"];
+                    //    Int32 x = baseApp.ValidateEditExame(exame);
+                    //}
 
                     // Grava historico
                     PACIENTE_HISTORICO hist = new PACIENTE_HISTORICO();
@@ -9719,7 +9723,7 @@ namespace GEDSys_Presentation.Controllers
                     // Retorno
                     if ((Int32)Session["ModoConsulta"] == 1)
                     {
-                        return RedirectToAction("VoltarProcederConsulta");
+                        return RedirectToAction("VerlistaExameConsulta");
                     }
                     if ((Int32)Session["ModoConsulta"] == 2)
                     {
@@ -10021,7 +10025,8 @@ namespace GEDSys_Presentation.Controllers
                         Session["IdConsulta"] = consulta.PACO_CD_ID;
 
                         // Recupera exame fisico da consulta
-                        PACIENTE_EXAME_FISICOS fisico = consulta.PACIENTE_EXAME_FISICOS.FirstOrDefault();
+                        PACIENTE paci = baseApp.GetItemById(consulta.PACI_CD_ID);
+                        PACIENTE_EXAME_FISICOS fisico = paci.PACIENTE_EXAME_FISICOS.FirstOrDefault();
 
                         // Grava fisico
                         PACIENTE_EXAME_FISICOS fisicoG = baseApp.GetExameFisicoById(fisico.PAEF_CD_ID);
@@ -10098,7 +10103,7 @@ namespace GEDSys_Presentation.Controllers
                     }
                     if ((Int32)Session["ModoConsulta"] == 1)
                     {
-                        return RedirectToAction("VoltarProcederConsulta");
+                        return RedirectToAction("VerListaExameConsulta");
                     }
                     if ((Int32)Session["VoltarExameConsulta"] == 1)
                     {
@@ -10219,7 +10224,7 @@ namespace GEDSys_Presentation.Controllers
                 // Retorno
                 if ((Int32)Session["ModoConsulta"] == 1)
                 {
-                    return RedirectToAction("VoltarProcederConsulta");
+                    return RedirectToAction("VerListaExameConsulta");
                 }
                 if ((Int32)Session["TipoSolicitacao"] == 1)
                 {
@@ -20505,6 +20510,20 @@ namespace GEDSys_Presentation.Controllers
                         classe = 1;
                     }
                 }
+                // Checa classe
+                Int32 classeLK = 0;
+                if (usuario.TICL_CD_ID == null || usuario.USUA_NR_CLASSE == null)
+                {
+                    classe = 1;
+                }
+                if (usuario.TIPO_CARTEIRA_CLASSE != null)
+                {
+                    if (usuario.TIPO_CARTEIRA_CLASSE.TICL_LK_ORGAO == null)
+                    {
+                        classeLK = 1;
+                    }
+                }
+                ViewBag.ClasseLK = classeLK;
                 ViewBag.Classe = classe;
 
                 // Recupera prescricoes da consulta
@@ -20515,6 +20534,17 @@ namespace GEDSys_Presentation.Controllers
                 PACIENTE pac = baseApp.GetItemById(consulta.PACI_CD_ID);
                 ViewBag.NomePaciente = pac.PACI_NM_NOME;
 
+                // Mensagem
+                if (Session["MensPaciente"] != null)
+                {
+                    // Mensagem
+                    if ((Int32)Session["MensPaciente"] == 61)
+                    {
+                        TempData["MensagemAcerto"] = (String)Session["MsgCRUD"];
+                        TempData["TemMensagem"] = 1;
+                    }
+                }
+
                 // Prepara view
                 Session["NivelPaciente"] = 3;
                 Session["ModoConsulta"] = 2;
@@ -20522,6 +20552,7 @@ namespace GEDSys_Presentation.Controllers
                 Session["TipoSolicitacao"] = 1;
                 Session["VoltaClasse"] = 1;
                 Session["AjudaNivel"] = "../BaseAdmin/Ajuda/9/Ajuda9_7.pdf";
+                Session["MensPaciente"] = null;
 
                 // Grava Acesso
                 ControleAcessoMetodo grava = new ControleAcessoMetodo(aceApp);
@@ -21215,16 +21246,28 @@ namespace GEDSys_Presentation.Controllers
                 PACIENTE pac = baseApp.GetItemById(consulta.PACI_CD_ID);
                 ViewBag.NomePaciente = pac.PACI_NM_NOME;
 
+                // Mensagem
+                if (Session["MensPaciente"] != null)
+                {
+                    // Mensagem
+                    if ((Int32)Session["MensPaciente"] == 61)
+                    {
+                        TempData["MensagemAcerto"] = (String)Session["MsgCRUD"];
+                        TempData["TemMensagem"] = 1;
+                    }
+                }
+
                 // Prepara view
                 Session["NivelPaciente"] = 3;
                 Session["NivelPaciente"] = 3;
-                Session["ModoConsulta"] = 2;
+                Session["ModoConsulta"] = 1;
                 Session["IdConsultaCria"] = 0;
                 Session["VoltaListaConsulta"] = 1;
                 Session["TipoSolicitacao"] = 1;
                 Session["IdConsultaCria"] = 1;
                 Session["VoltarPesquisa"] = 0;
                 Session["VoltarExameConsulta"] = 1;
+                Session["MensPaciente"] = null;
 
                 Session["AjudaNivel"] = "../BaseAdmin/Ajuda/6/Ajuda6_4.pdf";
                 // Grava Acesso
@@ -23143,7 +23186,7 @@ namespace GEDSys_Presentation.Controllers
                 {
                     if (usuario.TIPO_CARTEIRA_CLASSE.TICL_LK_ORGAO == null)
                     {
-                        classe = 1;
+                        classeLK = 1;
                     }
                 }
                 ViewBag.Classe = classe;
@@ -29413,7 +29456,7 @@ namespace GEDSys_Presentation.Controllers
                     table1.SpacingBefore = 1f;
                     table1.SpacingAfter = 1f;
 
-                    cell = new PdfPCell(new Paragraph("IDENTIFICAÇÃO DO EMITENTE A", meuFont3Bold));
+                    cell = new PdfPCell(new Paragraph("IDENTIFICAÇÃO DO EMITENTE", meuFont3Bold));
                     cell.Border = 0;
                     cell.Colspan = 2;
                     cell.VerticalAlignment = Element.ALIGN_MIDDLE;
@@ -30327,7 +30370,7 @@ namespace GEDSys_Presentation.Controllers
                     table1.SpacingBefore = 1f;
                     table1.SpacingAfter = 1f;
 
-                    cell = new PdfPCell(new Paragraph("IDENTIFICAÇÃO DO EMITENTE A", meuFont3Bold));
+                    cell = new PdfPCell(new Paragraph("IDENTIFICAÇÃO DO EMITENTE", meuFont3Bold));
                     cell.Border = 0;
                     cell.Colspan = 2;
                     cell.VerticalAlignment = Element.ALIGN_MIDDLE;
@@ -32198,7 +32241,7 @@ namespace GEDSys_Presentation.Controllers
                         table1.SpacingBefore = 1f;
                         table1.SpacingAfter = 1f;
 
-                        cell = new PdfPCell(new Paragraph("IDENTIFICAÇÃO DO EMITENTE A", meuFont3Bold));
+                        cell = new PdfPCell(new Paragraph("IDENTIFICAÇÃO DO EMITENTE", meuFont3Bold));
                         cell.Border = 0;
                         cell.Colspan = 2;
                         cell.VerticalAlignment = Element.ALIGN_MIDDLE;
@@ -33138,7 +33181,7 @@ namespace GEDSys_Presentation.Controllers
                         table1.SpacingBefore = 1f;
                         table1.SpacingAfter = 1f;
 
-                        cell = new PdfPCell(new Paragraph("IDENTIFICAÇÃO DO EMITENTE A", meuFont3Bold));
+                        cell = new PdfPCell(new Paragraph("IDENTIFICAÇÃO DO EMITENTE", meuFont3Bold));
                         cell.Border = 0;
                         cell.Colspan = 2;
                         cell.VerticalAlignment = Element.ALIGN_MIDDLE;
