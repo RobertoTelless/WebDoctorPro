@@ -73,14 +73,18 @@
                             <div class="col-lg-12 col-md-12 col-xs-12">
                                 @if (ViewBag.Classe == 0)
                                 {
-                                    @Html.ButtonLinkIndex(text: "Nova Prescrição", controller: "Paciente", action: "IncluirPrescricaoNova", buttonClass: "primary", htmlAttributes: new { @class = "btn-loading" })
+                                    @*@Html.ButtonLinkIndex(text: "Nova Prescrição", controller: "Paciente", action: "IncluirPrescricaoNova", buttonClass: "primary", htmlAttributes: new { @class = "btn-loading" })*@
+                                    <a href="@Url.Action("IncluirPrescricaoNova", "Paciente")"  data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Cria nova prescrição para o paciente" class="btn btn-sm btn-primary btn-loading" OnClick = "Fade()">Nova Prescrição</a>                
+
                                 }
                                 @if (ViewBag.ClasseLK == 0)
                                 {
                                     <button style="margin-left: 0px;" class="btn btn-sm btn-primary" id="buttonLab" type="button" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acesso à Página de Prescrições de seu órgão de classe">Nova Prescrição - Classe</button>
                                 }
-                                @Html.ButtonLinkIndex(text: "Ver Todas Prescrições", controller: "Paciente", action: "MontarTelaPrescricoes", htmlAttributes: new { @class = "btn-loading" })
-                                @Html.ButtonLinkIndex(text: "Voltar", controller: "Paciente", action: "VoltarProcederConsulta", htmlAttributes: new { @class = "btn-loading" })
+                                @*@Html.ButtonLinkIndex(text: "Ver Todas Prescrições", controller: "Paciente", action: "MontarTelaPrescricoes", htmlAttributes: new { @class = "btn-loading" })*@
+                                <a href="@Url.Action("MontarTelaPrescricoes", "Paciente")"  data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Visualizar todas as prescrições cadastradas" class="btn btn-sm btn-warning btn-loading" OnClick = "Fade()">Ver Todas Prescrições</a>                
+                                <a href="@Url.Action("VerMedicamentosBase", "Paciente")"  data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Visualizar os medicamentos prescritos para este paciente" class="btn btn-sm btn-warning btn-loading" OnClick = "Fade()">Ver Medicamentos</a>                
+                                @Html.ButtonLinkIndex(text: "Voltar", controller: "Paciente", action: "VoltarProcederConsulta", htmlAttributes: new { @class = "btn-loading" }) 
                                 <a href="@Url.Action((String)Session["AjudaNivel"])"  class="btn btn-sm btn-danger" target="_blank">Ajuda</a>                
                                 <span id="loadingIndicator" style="display: none; margin-left: 10px; color: #007bff;">
                                     <i class="fa fa-spinner fa-spin"></i> Processando...
@@ -219,7 +223,7 @@
                                                 <td style="width: auto">-</td>
                                             }
                                             <td style="width: auto">@cond.PAPR_NR_ENVIOS</td>
-                                            <td style="width: auto">@cond.PACIENTE_PRESCRICAO_ITEM.Count()</td>
+                                            <td style="width: auto">@cond.PACIENTE_PRESCRICAO_ITEM.Where(p => p.PAPI_IN_ATIVO == 1).Count()</td>
 
                                             <td style="width: auto" class="td-one-action">                                                                            
                                                 @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_PRESCRICAO_ALTERAR == 1)

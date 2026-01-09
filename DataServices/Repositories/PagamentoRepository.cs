@@ -24,7 +24,7 @@ namespace DataServices.Repositories
             query = query.Where(p => p.ASSI_CD_ID == idAss);
             query = query.Include(p => p.TIPO_PAGAMENTO);
             query = query.Include(p => p.USUARIO);
-            return query.ToList();
+            return query.AsNoTracking().ToList();
         }
 
         public List<CONSULTA_PAGAMENTO> ExecuteFilter(Int32? tipo, String nome, String favorecido, DateTime? dataInicio, DateTime? dataFim, Int32? quitado, Int32 idAss)
@@ -64,7 +64,7 @@ namespace DataServices.Repositories
                 query = query.Where(p => p.ASSI_CD_ID == idAss);
                 query = query.Where(p => p.COPA_IN_ATIVO == 1);
                 query = query.OrderBy(a => a.COPA_DT_VENCIMENTO);
-                lista = query.ToList<CONSULTA_PAGAMENTO>();
+                lista = query.AsNoTracking().ToList<CONSULTA_PAGAMENTO>();
             }
             return lista;
         }

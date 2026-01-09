@@ -47,11 +47,15 @@
                             <div class="col-lg-8 col-md-8 col-xs-12">
                                 <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Pagamento</h4>
                                 <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
-                                    @Html.ButtonActionSubmit(text: "BtnSubmit", htmlAttributes: new { id = "submit", style = "display: none;" })
-                                    <button style="margin-left: 15px;" class="btnSubmit btn btn-sm btn-success" id="basictoast" type="button">Confirmar inclusão de Pagamento</button>
-                                    @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaPagamento", controller: "Financeiro")
+                                    @Html.ButtonActionSubmit(text: "BtnSubmit", htmlAttributes: new { id = "submit", style = "display: none;", @class = "btn-loading1" })
+                                    <button style="margin-left: 15px;" class="btnSubmit btn btn-sm btn-success" id="basictoast" type="button">Confirmar inclusão do Pagamento</button>
+                                    @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaPagamento", controller: "Financeiro", htmlAttributes: new { @class = "btn-loading" })
                                     <a href="@Url.Action((String)Session["AjudaNivel"])" class="btn btn-sm btn-danger" target="_blank">Ajuda</a>
+                                    <span id="loadingIndicator" style="display: none; margin-left: 10px; color: #007bff;">
+                                        <i class="fa fa-spinner fa-spin"></i> Processando...
+                                    </span>
                                 </div>
+
                                 <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
                                     <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Identificação do Pagamento</h4>
                                     <div class="col-lg-3 col-md-3 col-xs-12">
@@ -222,6 +226,48 @@
             navigator.sendBeacon('../ControleAcesso/LogSessionTime');
         }; 
     </script>
+
+    <script type="text/javascript">
+        $(document).ready(function () { 
+            $('.btn-loading').on('click', function (e) {            
+                $(this).prop('disabled', true);
+                $(this).addClass('disabled');
+                $('#loadingIndicator').show();
+                var tagName = $(this).prop('tagName').toLowerCase();
+                if (tagName === 'a') {
+                    e.preventDefault(); 
+                    var targetUrl = $(this).attr('href');
+                    window.location.href = targetUrl;
+
+                } else if (tagName === 'button' || tagName === 'input') {
+                    $(this).closest('form').submit();
+                }
+            });
+        });
+    </script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('.btn-loading1').on('click', function (e) {
+            
+                var $this = $(this);
+                var tagName = $this.prop('tagName').toLowerCase();
+                $this.addClass('disabled'); 
+                $('#loadingIndicator').show();
+
+                if (tagName === 'a') {
+                    e.preventDefault();
+                
+                    var targetUrl = $this.attr('href');
+                    window.location.href = targetUrl;
+                
+                } else if (tagName === 'button' || tagName === 'input') {               
+                    $this.closest('form').submit();
+                    $this.prop('disabled', true);
+                }
+            });
+        });
+    </script>
+
     <script>
         function GetPagamento(id) {
             var data = {
@@ -239,54 +285,6 @@
         }
     </script>
 
-    @*<script>
-        $(document).ready(function() {
-            // Intercepta o evento de submit do formulário
-            $('#pwd-container1').submit(function(e) {
-                // Previne o envio tradicional do formulário (que causa a recarga da página)
-                e.preventDefault();
-
-                var form = $(this);
-
-                // Dispara a requisição AJAX
-                $.ajax({
-                    url: form.attr('action'),
-                    type: form.attr('method'),
-                    data: form.serialize(), // Pega os dados do formulário
-                    success: function(response) {
-                        // Lógica para sucesso
-                        console.log("Formulário enviado com sucesso!");
-                    },
-                    error: function(jqxhr, status, thrownError) {
-                        // O erro agora é capturado aqui, dentro do escopo do $.ajax
-                        if (jqxhr.status === 500) {
-                            // Executa a lógica de captura de tela
-                            html2canvas(document.body).then(function(canvas) {
-                                var imageData = canvas.toDataURL('image/png');
-
-                                $.ajax({
-                                    url: '/BaseAdmin/TrataExcecaoCompleta',
-                                    type: 'POST',
-                                    contentType: 'application/json',
-                                    data: JSON.stringify({
-                                        imagemBase64: imageData,
-                                        urlErro: window.location.href,
-                                        mensagemErro: thrownError
-                                    }),
-                                    success: function() {
-                                        console.log("Imagem de erro enviada com sucesso.");
-                                    },
-                                    error: function() {
-                                        console.error("Falha ao enviar a imagem de erro.");
-                                    }
-                                });
-                            });
-                        }
-                    }
-                });
-            });
-        });
-    </script>*@
     <script type="text/javascript" language="javascript">
         $(function () {
             $('.date-picker').datepicker(
@@ -310,6 +308,7 @@
                 });
         });
     </script>
+
     <script>
         function CalculaTotal() {
             var valor = $('#valor').val() == "" ? 0 : $('#valor').val();

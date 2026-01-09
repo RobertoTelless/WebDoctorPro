@@ -466,7 +466,6 @@ namespace GEDSys_Presentation.Controllers
                 Int32 voltaX = grava.GravaAcesso(usuario.USUA_CD_ID, usuario.ASSI_CD_ID, "MEDICO_EDITAR", "Medico", "EditarMedico");
 
                 Session["MensMedico"] = null;
-                Session["VoltaMedico"] = 1;
                 Session["TipoMedicoEnvio"] = 1;
                 objetoAntes = item;
                 Session["IdMedico"] = id;

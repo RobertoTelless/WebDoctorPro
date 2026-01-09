@@ -31,7 +31,7 @@
     <div class="col-lg-12 col-md-12 col-sm-12">
         @*Atalhos*@
         <div class="row">
-            <h3 style="color:olivedrab; font-weight:bold">WebDoctor - Dashboard Financeiro</h3>
+            <h3 style="color:olivedrab; font-weight:bold">Dashboard Financeiro</h3>
         </div>
 
         @*Widgets*@
@@ -97,30 +97,21 @@
                     </div>
                 </div>
             </div>
-            <div class="col-lg-2">
-                <div style="display: none; z-index:1000" class="dotContainer">
-                    <div class="spiner-example">
-                        <div class="sk-spinner sk-spinner-three-bounce">
-                            <div class="sk-bounce1"></div>
-                            <div class="sk-bounce2"></div>
-                            <div class="sk-bounce3"></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
         </div>
 
         @*Atalhos*@
         <div class="row">
             <div class="form-group">
                 <div class="col-lg-12 col-md-12 col-xs-12">
-                    @Html.ButtonLinkIndex(text: "Central de Pagamentos", action: "MontarTelaPagamento", controller: "Financeiro", buttonClass: "success", htmlAttributes: new { @id = "emp", OnClick = "Fade()" })
-                    @Html.ButtonLinkIndex(text: "Central de Recebimentos", action: "MontarTelaRecebimento", controller: "Financeiro", buttonClass: "success", htmlAttributes: new { @id = "emp", OnClick = "Fade()" })
-                    @Html.ButtonLinkIndex(text: "Consultas - Valores", controller: "Financeiro", action: "MontarTelaValorConsulta", htmlAttributes: new { @id = "emp", OnClick = "Fade()" })
-                    @Html.ButtonLinkIndex(text: "Relatórios", controller: "Financeiro", action: "MontarTelaRelatorios", htmlAttributes: new { @id = "emp", OnClick = "Fade()" })
-                    @Html.ButtonLinkIndex(text: "Envio para Contador", action: "CarregarDesenvolvimento", controller: "BaseAdmin", buttonClass: "primary", htmlAttributes: new { @id = "emp", OnClick = "Fade()" })
+                    <a href="@Url.Action("MontarTelaPagamento", "Financeiro")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acesso à Central de Pagamentos" class="btn btn-sm btn-success btn-loading" id="emp" OnClick = "Fade()">Central de Pagamentos</a>                
+                    <a href="@Url.Action("MontarTelaRecebimento", "Financeiro")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acesso à Central de Recebimentos" class="btn btn-sm btn-success btn-loading" id="emp" OnClick = "Fade()">Central de Recebimentos</a>                
+                    <a href="@Url.Action("MontarTelaValorConsulta", "Financeiro")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acesso à Consultas - Valores" class="btn btn-sm btn-warning btn-loading" id="emp" OnClick = "Fade()">Consultas - Valores</a>                
+                    <a href="@Url.Action("MontarTelaRelatorios", "Financeiro")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acesso à Relatórios Financeiros" class="btn btn-sm btn-warning btn-loading" id="emp" OnClick = "Fade()">Relatórios</a>                
                     @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaPaciente", controller: "Paciente", htmlAttributes: new { @id = "emp", OnClick = "Fade()" })
                     <a href="@Url.Action((String)Session["AjudaNivel"])"  class="btn btn-sm btn-danger" target="_blank">Ajuda</a>                
+                    <span id="loadingIndicator" style="display: none; margin-left: 10px; color: #007bff;">
+                        <i class="fa fa-spinner fa-spin"></i> Processando...
+                    </span>
                 </div>
                 <br /><br />
             </div>
@@ -579,16 +570,6 @@
     @Styles.Render("~/Content/plugins/dataTables/dataTablesStyles")
     @Styles.Render("~/plugins/jasnyBootstrapStyles")
     @Styles.Render("~/plugins/toastrStyles")
-    <link href="~/Content/themes/base/jquery-ui.min.css" rel="stylesheet" />
-    <link href="~/Content/themes/base/all.css" rel="stylesheet" />
-    <link href="~/Content/jquery.datetimepicker.css" rel="stylesheet" />
-    @Styles.Render("~/Content/plugins/dataTables/dataTablesStyles")
-    @Styles.Render("~/plugins/jasnyBootstrapStyles")
-    @Styles.Render("~/plugins/toastrStyles")
-    @Styles.Render("~/Content/plugins/iCheck/iCheckStyles")
-    @Styles.Render("~/plugins/touchSpinStyles")
-    @Styles.Render("~/plugins/sweetAlertStyles")
-    @Styles.Render("~/plugins/toastrStyles")
     @Scripts.Render("~/plugins/wow")
     @Scripts.Render("~/bundles/inspinia")
     @Styles.Render("~/Content/css")
@@ -597,11 +578,8 @@
 
 @section Scripts {
 
-    <script src="~/Scripts/jquery.datetimepicker.full.min.js"></script>
     <script type="text/javascript" src="~/Scripts/moment.min.js"></script>
     <script type="text/javascript" src="~/Scripts/bootstrap.min.js"></script>
-    <script type="text/javascript" src="~/Scripts/jquery.datetimepicker"></script>
-
     @Scripts.Render("~/plugins/toastr")
     <script src="~/Scripts/jquery-ui-1.12.1.min.js"></script>
     @Scripts.Render("~/plugins/dataTables")
@@ -609,21 +587,7 @@
     @Scripts.Render("~/plugins/jasnyBootstrap")
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.maskedinput/1.4.1/jquery.maskedinput.js"></script>
     <script src="~/Scripts/uploadAnexo.js"></script>
-    <script src="~/Scripts/jquery-ui-1.12.1.min.js"></script>
-    @Scripts.Render("~/plugins/toastr")
-    @Scripts.Render("~/plugins/dataTables")
-    @Scripts.Render("~/bundles/inputmask")
-    @Scripts.Render("~/plugins/jasnyBootstrap")
-    @Scripts.Render("~/plugins/sparkline")
-    @Scripts.Render("~/plugins/switchery")
-    @Scripts.Render("~/plugins/touchSpin")
-    @Scripts.Render("~/plugins/iCheck")
-    @Scripts.Render("~/plugins/sweetAlert")
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.maskedinput/1.4.1/jquery.maskedinput.js"></script>
-    <script src="~/Scripts/uploadAnexo.js"></script> 
-    @Scripts.Render("~/plugins/switchery")
     @Scripts.Render("~/plugins/chartjs")
-    @Scripts.Render("~/plugins/sparkline")
         <script>
         function Fade() {
             $('.dotContainer').fadeIn("fast");
@@ -646,6 +610,39 @@
         }; 
     </script>
 
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('[data-toggle="popover"]').popover();
+        });
+    </script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-toggle="popover"]'));
+            var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
+                return new bootstrap.Popover(popoverTriggerEl);
+            });
+        });
+    </script>
+
+    <script type="text/javascript">
+        $(document).ready(function () { 
+            $('.btn-loading').on('click', function (e) {            
+                $(this).prop('disabled', true);
+                $(this).addClass('disabled');
+                $('#loadingIndicator').show();
+                var tagName = $(this).prop('tagName').toLowerCase();
+                if (tagName === 'a') {
+                    e.preventDefault(); 
+                    var targetUrl = $(this).attr('href');
+                    window.location.href = targetUrl;
+
+                } else if (tagName === 'button' || tagName === 'input') {
+                    $(this).closest('form').submit();
+                }
+            });
+        });
+    </script>
     <script type="text/javascript">
         $(document).ready(function () {
 

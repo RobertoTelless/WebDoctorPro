@@ -1602,9 +1602,8 @@
     <Content Include="Imagens\1\Usuario\58\Anexos\498718617_3880028902309983_3572876331276330212_n %281%29.jpg" />
     <Content Include="Imagens\1\Usuario\58\Anexos\coroa1.jpg" />
     <Content Include="Imagens\1\Usuario\58\Fotos\tranquilo.jpg" />
-    <Content Include="Imagens\1\Videos\12\Anexos\Video_Teste.mp4" />
-    <Content Include="Imagens\1\Videos\14\Anexos\Video_Teste.mp4" />
-    <Content Include="Imagens\1\Videos\9\Anexos\Video_Teste.mp4" />
+    <Content Include="Imagens\1\Videos\16\Anexos\Video_Teste.mp4" />
+    <Content Include="Imagens\1\Videos\17\Anexos\WhatsApp Video 2025-12-11 at 13.02.43.mp4" />
     <Content Include="Imagens\35\Empresa\18\Logo\Logo_RTI.png" />
     <Content Include="Imagens\35\Pacientes\46\Fotos\louca.jpg" />
     <Content Include="Imagens\35\Pacientes\46\QRCode\Prescricao_QRCode_cv8ushsn0004fj205l1g.png" />
@@ -1640,7 +1639,7 @@
     <Content Include="Imagens\35\Usuario\58\Anexos\498718617_3880028902309983_3572876331276330212_n %281%29.jpg" />
     <Content Include="Imagens\35\Usuario\58\Anexos\coroa1.jpg" />
     <Content Include="Imagens\35\Usuario\58\Fotos\tranquilo.jpg" />
-    <Content Include="Imagens\35\Videos\8\Anexos\Video_Teste.mp4" />
+    <Content Include="Imagens\35\Videos\18\Anexos\Video_Teste.mp4" />
     <Content Include="Imagens\36\Empresa\19\Anexos\bz.jpg" />
     <Content Include="Imagens\36\Empresa\19\Logo\Logo_RTI.png" />
     <Content Include="Imagens\36\Usuario\53\Anexos\03 - Maxwells Silver Hammer.mp3" />
@@ -2761,8 +2760,10 @@
     <Content Include="Images\Prontuario\WebDoctor_Cadastro_Info_1.png" />
     <Content Include="Images\Prontuario\WebDoctor_Consulta_Info_1.png" />
     <Content Include="Images\Prontuario\WebDoctor_Documento_Info_1.png" />
+    <Content Include="Images\Prontuario\WebDoctor_Estoque_Info_1.png" />
     <Content Include="Images\Prontuario\WebDoctor_Financeiro_Info_1.png" />
     <Content Include="Images\Prontuario\WebDoctor_Info_1.png" />
+    <Content Include="Images\Prontuario\WebDoctor_Locacao_Info_1.png" />
     <Content Include="Images\Prontuario\WebDoctor_Mensagem_Info_1.png" />
     <Content Include="Images\Prontuario\WebDoctor_Paciente_Info_1.png" />
     <Content Include="Images\Prontuario\WebDoctor_Procede_Info_1.png" />
@@ -5257,6 +5258,7 @@
     <Content Include="Views\Medico\EditarTextoEnvio.cshtml" />
     <Content Include="Views\Paciente\IncluirConsulta.cshtml" />
     <Content Include="Views\Paciente2\VisualizarPrevia.cshtml" />
+    <Content Include="Views\Paciente\VerMedicamentosBase.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

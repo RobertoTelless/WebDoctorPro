@@ -7889,6 +7889,16 @@ namespace GEDSys_Presentation.Controllers
             return RedirectToAction("VerAnexoPacienteProceder", new { id = (Int32)Session["IdPaciente"] });
         }
 
+        public ActionResult ExibirVideo()
+        {
+            if ((String)Session["Ativa"] == null)
+            {
+                return RedirectToAction("Logout", "ControleAcesso");
+            }
+            Session["VoltarVideo"] = 3;
+            return RedirectToAction("MontarTelaVideo", "Video");
+        }
+
         public ActionResult VerAnotacaoAnamneseBase()
         {
             if ((String)Session["Ativa"] == null)

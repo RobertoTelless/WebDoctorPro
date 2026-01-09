@@ -2942,7 +2942,8 @@ namespace GEDSys_Presentation.Controllers
                     }
                     if ((Int32)Session["MensPaciente"] == 61)
                     {
-                        ModelState.AddModelError("", (String)Session["MsgCRUD"]);
+                        TempData["MensagemAcerto"] = (String)Session["MsgCRUD"];
+                        TempData["TemMensagem"] = 1;
                     }
                     if ((Int32)Session["MensPaciente"] == 5)
                     {
@@ -3078,7 +3079,7 @@ namespace GEDSys_Presentation.Controllers
                 }
 
                 // Sanitização
-                item.COPA_NM_NOME = CrossCutting.UtilitariosGeral.CleanStringGeral(item.COPA_NM_NOME);
+                item.COPA_NM_NOME = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(item.COPA_NM_NOME);
 
                 // Executa a operação
                 CONFIGURACAO conf = CarregaConfiguracaoGeral();
@@ -3281,6 +3282,18 @@ namespace GEDSys_Presentation.Controllers
             }
         }
 
+        [HttpPost]
+        public JsonResult GetFavorecidoNome(String term)
+        {
+            List<CONSULTA_PAGAMENTO> usu = CarregaPagamento();
+            List<String> nomes = usu.Select(p => p.COPA_NM_FAVORECIDO).Distinct().ToList();
+            var resultados = nomes
+                .Where(n => n.ToLower().StartsWith(term.ToLower()))
+                .Select(n => new { label = n, value = n })
+                .ToList();
+            return Json(resultados, JsonRequestBehavior.AllowGet);
+        }
+
         public ActionResult VerRecebimentoMes()
         {
             try
@@ -3432,8 +3445,8 @@ namespace GEDSys_Presentation.Controllers
                 try
                 {
                     // Sanitização
-                    vm.COPA_NM_NOME = CrossCutting.UtilitariosGeral.CleanStringDocto(vm.COPA_NM_NOME);
-                    vm.COPA_NM_FAVORECIDO = CrossCutting.UtilitariosGeral.CleanStringDocto(vm.COPA_NM_FAVORECIDO);
+                    vm.COPA_NM_NOME = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(vm.COPA_NM_NOME);
+                    vm.COPA_NM_FAVORECIDO = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(vm.COPA_NM_FAVORECIDO);
                     vm.COPA_IN_CONFERIDO = 0;
                     vm.COPA_DT_CADASTRO = DateTime.Today.Date;
 
@@ -3551,23 +3564,31 @@ namespace GEDSys_Presentation.Controllers
                             Session["FileQueuePagamento"] = null;
                         }
 
+                        // Configura serialização
+                        JsonSerializerSettings settings = new JsonSerializerSettings
+                        {
+                            ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+                            NullValueHandling = NullValueHandling.Ignore
+                        };
+
                         // Monta Log
+                        DTO_Pagamento dto = MontarPagamentoDTOObj(item);
+                        String json = JsonConvert.SerializeObject(dto, settings);
                         CONSULTA_PAGAMENTO pag = pagApp.GetItemById(item.COPA_CD_ID);
-                        String frase = pag.COPA_CD_ID.ToString() + "|" + pag.TIPA_CD_ID.ToString() + "|" + pag.USUA_CD_ID.ToString() + "|" + pag.COPA_DT_PAGAMENTO.ToString() + "|" + pag.COPA_GU_GUID + "|" + pag.COPA_VL_VALOR.ToString();
                         LOG log = new LOG
                         {
                             LOG_DT_DATA = DateTime.Now,
                             ASSI_CD_ID = usuarioLogado.ASSI_CD_ID,
                             USUA_CD_ID = usuarioLogado.USUA_CD_ID,
-                            LOG_NM_OPERACAO = "addPAG",
+                            LOG_NM_OPERACAO = "Pagamento - Inclusão",
                             LOG_IN_ATIVO = 1,
-                            LOG_TX_REGISTRO = frase,
+                            LOG_TX_REGISTRO = json,
                             LOG_IN_SISTEMA = 6
                         };
                         Int32 volta1 = logApp.ValidateCreate(log);
 
                         // Mensagem do CRUD
-                        Session["MsgCRUD"] = "O pagamento " + item.COPA_GU_GUID + " de " + pag.TIPO_PAGAMENTO.TIPA_NM_PAGAMENTO + " para " + pag.COPA_NM_FAVORECIDO + " foi cadastrado com sucesso.";
+                        Session["MsgCRUD"] = "O pagamento " + item.COPA_GU_GUID + " de " + pag.TIPO_PAGAMENTO.TIPA_NM_PAGAMENTO.ToUpper() + " para " + pag.COPA_NM_FAVORECIDO.ToUpper() + " foi cadastrado com sucesso.";
                         Session["MensPaciente"] = 61;
 
                     }
@@ -3580,6 +3601,7 @@ namespace GEDSys_Presentation.Controllers
                         Int32 dia = 0;
                         Int32 vezes = 1;
                         DateTime data = vm.COPA_DT_VENCIMENTO.Value;
+                        String fav = vm.COPA_NM_FAVORECIDO;
                         while (num > 0)
                         {
                             CONSULTA_PAGAMENTO pag = new CONSULTA_PAGAMENTO();
@@ -3631,16 +3653,25 @@ namespace GEDSys_Presentation.Controllers
                             map = Server.MapPath(caminho);
                             Directory.CreateDirectory(Server.MapPath(caminho));
 
+                            // Configura serialização
+                            JsonSerializerSettings settings = new JsonSerializerSettings
+                            {
+                                ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+                                NullValueHandling = NullValueHandling.Ignore
+                            };
+
                             // Monta Log
-                            String frase = pagto.COPA_CD_ID.ToString() + "|" + pagto.TIPA_CD_ID.ToString() + "|" + pagto.USUA_CD_ID.ToString() + "|" + pagto.COPA_DT_PAGAMENTO.ToString() + "|" + pagto.COPA_GU_GUID + "|" + pagto.COPA_VL_VALOR.ToString();
+                            DTO_Pagamento dto = MontarPagamentoDTOObj(pag);
+                            String json = JsonConvert.SerializeObject(dto, settings);
+                            CONSULTA_PAGAMENTO paga = pagApp.GetItemById(pag.COPA_CD_ID);
                             LOG log = new LOG
                             {
                                 LOG_DT_DATA = DateTime.Now,
                                 ASSI_CD_ID = usuarioLogado.ASSI_CD_ID,
                                 USUA_CD_ID = usuarioLogado.USUA_CD_ID,
-                                LOG_NM_OPERACAO = "addPAG",
+                                LOG_NM_OPERACAO = "Pagamento Recursivo - Inclusão",
                                 LOG_IN_ATIVO = 1,
-                                LOG_TX_REGISTRO = frase,
+                                LOG_TX_REGISTRO = json,
                                 LOG_IN_SISTEMA = 6
                             };
                             Int32 volta1 = logApp.ValidateCreate(log);
@@ -3687,6 +3718,11 @@ namespace GEDSys_Presentation.Controllers
                                 }
                             }
                         }
+
+                        // Mensagem do CRUD
+                        Session["MsgCRUD"] = "Foram cadastrados " + vm.NUMERO_VEZES.ToString() + " pagamentos recursivos para " + fav.ToUpper();
+                        Session["MensPaciente"] = 61;
+
                     }
 
                     // Retorno
@@ -3711,6 +3747,37 @@ namespace GEDSys_Presentation.Controllers
             {
                 return View(vm);
             }
+        }
+
+        public DTO_Pagamento MontarPagamentoDTOObj(CONSULTA_PAGAMENTO l)
+        {
+            using (var context = new CRMSysDBEntities())
+            {
+                var mediDTO = new DTO_Pagamento()
+                {
+                    ASSI_CD_ID = l.ASSI_CD_ID,
+                    COPA_CD_ID = l.COPA_CD_ID,
+                    TIPA_CD_ID = l.TIPA_CD_ID,
+                    USUA_CD_ID = l.USUA_CD_ID,
+                    COPA_DT_CADASTRO = l.COPA_DT_CADASTRO,
+                    COPA_DT_PAGAMENTO = l.COPA_DT_PAGAMENTO,
+                    COPA_DT_VENCIMENTO = l.COPA_DT_VENCIMENTO,
+                    COPA_GU_GUID = l.COPA_GU_GUID,
+                    COPA_IN_ATIVO = l.COPA_IN_ATIVO,
+                    COPA_IN_CONFERIDO = l.COPA_IN_CONFERIDO,
+                    COPA_IN_PAGO = l.COPA_IN_PAGO,
+                    COPA_NM_FAVORECIDO = l.COPA_NM_FAVORECIDO,
+                    COPA_NM_NOME = l.COPA_NM_NOME,
+                    COPA_NR_ATRASO = l.COPA_NR_ATRASO,
+                    COPA_VL_DESCONTO = l.COPA_VL_DESCONTO,
+                    COPA_VL_MULTA = l.COPA_VL_MULTA,
+                    COPA_VL_PAGO = l.COPA_VL_PAGO,
+                    COPA_VL_VALOR = l.COPA_VL_VALOR,
+                    COPA_XM_NOTA_FISCAL = l.COPA_XM_NOTA_FISCAL,
+                };
+                return mediDTO;
+            }
+
         }
 
         [HttpGet]
@@ -7834,7 +7901,7 @@ namespace GEDSys_Presentation.Controllers
                 hist.PAHI_IN_TIPO = 10;
                 hist.PAHI_IN_CHAVE = item.PACO_CD_ID;
                 hist.PAHI_NM_OPERACAO = "Paciente - Encerramento de Consulta";
-                hist.PAHI_DS_DESCRICAO = "Paciente " + pac.PACI_NM_NOME.ToUpper() + " - Consulta encerrada " + item.PACO_DT_CONSULTA.ToShortDateString();
+                hist.PAHI_DS_DESCRICAO = "Paciente: " + pac.PACI_NM_NOME.ToUpper() + " - Consulta encerrada: " + item.PACO_DT_CONSULTA.ToShortDateString();
                 Int32 voltaHist = baseApp.ValidateCreateHistorico(hist);
 
                 // Retorno

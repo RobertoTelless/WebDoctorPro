@@ -1087,13 +1087,25 @@
                                                         @Html.HiddenFor(m => m.PACI_IN_NUMERO_ENVIO)
                                                         @Html.HiddenFor(m => m.PACI_IN_FIM_ENVIO)
                                                         @Html.HiddenFor(m => m.PACI_DT_ULTIMO_ENVIO)
-                                                        @if (!String.IsNullOrEmpty(Model.PACI_AQ_FOTO))
+                                                        @*@if (!String.IsNullOrEmpty(Model.PACI_AQ_FOTO))
                                                         {
                                                             <img src="@Url.Content(Model.PACI_AQ_FOTO)" style="width: auto; height: auto; max-height: 240px; max-width: 230px;" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Clique Ctrl+Ctrl para ampliar a fotografia">
                                                         }
                                                         else
                                                         {
                                                             <img src="~/Images/icon_morador.png" style="width: auto; height: auto; max-height: 240px; max-width: 230px;" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Clique Ctrl+Ctrl para ampliar a fotografia">
+                                                        }*@
+                                                        @if (!String.IsNullOrEmpty(Model.PACI_AQ_FOTO))
+                                                        {
+                                                            <img src="@Url.Content(Model.PACI_AQ_FOTO)" 
+                                                                    class="img-responsive thumbnail" 
+                                                                    style="max-height: 270px; margin: 0 auto;">
+                                                        }
+                                                        else
+                                                        {
+                                                            <img src="~/Images/icon_morador.png" 
+                                                                    class="img-responsive thumbnail" 
+                                                                    style="max-height: 230px; margin: 0 auto;">
                                                         }
                                                         <br />
                                                         <br />
@@ -1469,13 +1481,25 @@
                                                         @Html.HiddenFor(m => m.PACI_IN_NUMERO_ENVIO)
                                                         @Html.HiddenFor(m => m.PACI_IN_FIM_ENVIO)
                                                         @Html.HiddenFor(m => m.PACI_DT_ULTIMO_ENVIO)
-                                                        @if (!String.IsNullOrEmpty(Model.PACI_AQ_FOTO))
+                                                        @*@if (!String.IsNullOrEmpty(Model.PACI_AQ_FOTO))
                                                         {
                                                             <img src="@Url.Content(Model.PACI_AQ_FOTO)" style="width: auto; height: auto; max-height: 240px; max-width: 230px;" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Clique Ctrl+Ctrl para ampliar a fotografia">
                                                         }
                                                         else
                                                         {
                                                             <img src="~/Images/icon_morador.png" style="width: auto; height: auto; max-height: 240px; max-width: 230px;" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Clique Ctrl+Ctrl para ampliar a fotografia">
+                                                        }*@
+                                                        @if (!String.IsNullOrEmpty(Model.PACI_AQ_FOTO))
+                                                        {
+                                                            <img src="@Url.Content(Model.PACI_AQ_FOTO)" 
+                                                                    class="img-responsive thumbnail" 
+                                                                    style="max-height: 270px; margin: 0 auto;">
+                                                        }
+                                                        else
+                                                        {
+                                                            <img src="~/Images/icon_morador.png" 
+                                                                    class="img-responsive thumbnail" 
+                                                                    style="max-height: 230px; margin: 0 auto;">
                                                         }
                                                         <br />
                                                         <br />

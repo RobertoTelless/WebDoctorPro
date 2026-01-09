@@ -584,6 +584,7 @@ namespace GEDSys_Presentation.Controllers
                 Session["VoltaContratoLocacao"] = 1;
                 Session["VoltaResposta"] = 0;
                 Session["VoltarProceder"] = 0;
+                Session["VoltaMedico"] = 1;
                 if (confAna.COAN_IN_BLOCO_COMUM == 0 || confAna.COAN_IN_BLOCO_COMUM == null)
                 {
                     Session["BlocoAnamnese"] = 1;
@@ -10390,7 +10391,6 @@ namespace GEDSys_Presentation.Controllers
                 {
                     await file.InputStream.CopyToAsync(stream);
                 }
-                //file.SaveAs(path);
 
                 // Gravar registro
                 PACIENTE_ANEXO foto = new PACIENTE_ANEXO();
@@ -11591,7 +11591,7 @@ namespace GEDSys_Presentation.Controllers
                     }
                     else if ((Int32)Session["VoltaMail"] == 3)
                     {
-                        return RedirectToAction("VoltarProcederConsulta");
+                        return RedirectToAction("VerListaPrescricaoConsulta");
                     }
                     else if ((Int32)Session["VoltaMail"] == 4)
                     {
@@ -20642,6 +20642,7 @@ namespace GEDSys_Presentation.Controllers
                 Int32 idAss = (Int32)Session["IdAssinante"];
                 CONFIGURACAO conf = CarregaConfiguracaoGeral();
                 Session["Pisca"] = conf.CONF_IN_PISCA;
+                Session["SRF"] = conf.CONF_IN_RECIBO_SRF;
 
                 // Checa classe
                 Int32 classe = 0;
@@ -23738,27 +23739,6 @@ namespace GEDSys_Presentation.Controllers
                 Session["ItensPrescricoes"] = null;
                 if (Session["ListaMedicamentos"] == null)
                 {
-                    //if (usuario.PERFIL.PERF_IN_VISAO_GERAL == 1 || usuario.PERFIL.PERF_SG_SIGLA == "ADM")
-                    //{
-                    //    listaMasterItem = CarregaItemPrescricoes().Where(p => p.PAPI_IN_ATIVO == 1).ToList();
-                    //}
-                    //else
-                    //{
-                    //    listaMasterItem = CarregaItemPrescricoes().Where(p => p.PAPI_IN_ATIVO == 1 & p.USUA_CD_ID == usuario.USUA_CD_ID).ToList();
-                    //}
-                    //List<String> remedios = listaMasterItem.Select(p => p.PAPI_NM_REMEDIO).Distinct().ToList();
-                    //List<MedicamentoViewModel> meds = new List<MedicamentoViewModel>();
-                    //foreach (String item in remedios)
-                    //{
-                    //    Int32 num = listaMasterItem.Where(p => p.PAPI_NM_REMEDIO == item).ToList().Count;
-                    //    MedicamentoViewModel med = new MedicamentoViewModel();
-                    //    med.Nome = item;
-                    //    med.Prescricoes = num;
-                    //    meds.Add(med);
-                    //}
-                    //listaMasterRemedio = meds;
-                    //Session["ListaMedicamentos"] = meds;
-
                     List<PACIENTE_PRESCRICAO_ITEM> listaMasterItem;
                     var todosItens = CarregaItemPrescricoes().Where(p => p.PAPI_IN_ATIVO == 1);
                     if (usuario.PERFIL.PERF_IN_VISAO_GERAL == 1 || usuario.PERFIL.PERF_SG_SIGLA == "ADM")
@@ -23786,6 +23766,103 @@ namespace GEDSys_Presentation.Controllers
                 // Monta demais listas
                 ViewBag.Listas = (List<MedicamentoViewModel>)Session["ListaMedicamentos"];
                 ViewBag.Perfil = usuario.PERFIL.PERF_SG_SIGLA;
+                Session["AjudaNivel"] = "../BaseAdmin/Ajuda/9/Ajuda9_5.pdf";
+                Session["ModuloAtual"] = "Medicamentos";
+                Session["ListaMedicamentosPaciente"] = null;
+
+                // Mensagem
+                if (Session["MensPaciente"] != null)
+                {
+                    if ((Int32)Session["MensPaciente"] == 1)
+                    {
+                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0016", CultureInfo.CurrentCulture));
+                    }
+                }
+
+                // Acerta estado
+                Session["MensPaciente"] = null;
+                Session["VoltaPaciente"] = 1;
+                Session["NivelPaciente"] = 1;
+                Session["VoltaMsg"] = 0;
+                Session["TipoSolicitacao"] = 7;
+
+                // Carrega view
+                objetoRemedio = new MedicamentoViewModel();
+
+                // Grava Acesso
+                ControleAcessoMetodo grava = new ControleAcessoMetodo(aceApp);
+                Int32 voltaX = grava.GravaAcesso(usuario.USUA_CD_ID, usuario.ASSI_CD_ID, "PACIENTE_MEDICAMENTOS", "Paciente", "VerMedicamentos");
+                return View(objetoRemedio);
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Paciente";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Paciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return RedirectToAction("TrataExcecao", "BaseAdmin");
+            }
+        }
+
+        [HttpGet]
+        public ActionResult VerMedicamentosBase()
+        {
+            try
+            {
+                // Verifica se tem usuario logado
+                USUARIO usuario = new USUARIO();
+                if ((String)Session["Ativa"] == null)
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+                if ((USUARIO)Session["UserCredentials"] != null)
+                {
+                    usuario = (USUARIO)Session["UserCredentials"];
+
+                    // Verfifica permissão
+                    if (usuario.PERFIL.PERF_IN_PRESCRICAO_ACESSO == 0)
+                    {
+                        Session["MensPermissao"] = 2;
+                        Session["ModuloPermissao"] = "Paciente";
+                        return RedirectToAction("MontarTelaPaciente", "Paciente");
+                    }
+                }
+                else
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+                Int32 idAss = (Int32)Session["IdAssinante"];
+
+                // Carrega listas
+                PACIENTE pac = baseApp.GetItemById((Int32)Session["IdPaciente"]);
+                CONFIGURACAO conf = CarregaConfiguracaoGeral();
+                Session["ItensPrescricoes"] = null;
+                if (Session["ListaMedicamentos"] == null)
+                {
+                    List<PACIENTE_PRESCRICAO_ITEM> listaMasterItem;
+                    var todosItens = CarregaItemPrescricoes().Where(p => p.PAPI_IN_ATIVO == 1);
+                    todosItens = todosItens.Where(p => p.PACI_CD_ID == (Int32)Session["IdPaciente"]);
+                    listaMasterItem = todosItens.ToList();
+                    List<MedicamentoViewModel> meds = listaMasterItem
+                        .GroupBy(item => item.PAPI_NM_REMEDIO)
+                        .Select(g => new MedicamentoViewModel
+                        {
+                            Nome = g.Key,
+                            Prescricoes = g.Count()
+                        })
+                        .OrderByDescending(m => m.Prescricoes)
+                        .ToList();
+                    listaMasterRemedio = meds;
+                    Session["ListaMedicamentos"] = meds;
+                }
+
+                // Monta demais listas
+                ViewBag.Listas = (List<MedicamentoViewModel>)Session["ListaMedicamentos"];
+                ViewBag.Perfil = usuario.PERFIL.PERF_SG_SIGLA;
+                ViewBag.NomePaciente = pac.PACI_NM_NOME;
                 Session["AjudaNivel"] = "../BaseAdmin/Ajuda/9/Ajuda9_5.pdf";
                 Session["ModuloAtual"] = "Medicamentos";
                 Session["ListaMedicamentosPaciente"] = null;

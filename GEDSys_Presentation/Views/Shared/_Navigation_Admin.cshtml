@@ -115,7 +115,7 @@
             </li>
 
             @*Importação*@
-            <li>
+            @*<li>
                 <a href="@Url.Action("MontarTelaPaciente", "BaseAdmin")"><i class="fa fa-th-large"></i> <span class="nav-label" data-i18n="nav.dashboard">Importação</span> <span class="fa arrow"></span></a>
                 <ul class="nav nav-second-level collapse @Html.IsSelected(controller: "Cadastros", cssClass: "in")">
                     @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_INCLUIR_PACIENTE == 1)
@@ -123,7 +123,7 @@
                         <li class="@Html.IsSelected(action: "ImportarFichas")"><a href="@Url.Action("ImportarFichas", "Paciente2")"  data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acesso à funcionalidade de importação de fichas digitalizadas de pacientes">Importação de Fichas</a></li>
                     }
                 </ul>
-            </li>
+            </li>*@
 
             @if ((Int32)Session["PermFinanceiro"] == 1)
             {

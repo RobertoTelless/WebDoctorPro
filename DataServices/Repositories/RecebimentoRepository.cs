@@ -30,7 +30,7 @@ namespace DataServices.Repositories
         {
             IQueryable<CONSULTA_RECEBIMENTO> query = Db.CONSULTA_RECEBIMENTO.Where(p => p.CORE_IN_ATIVO == 1);
             query = query.Where(p => p.ASSI_CD_ID == idAss);
-            return query.ToList();
+            return query.AsNoTracking().ToList();
         }
 
         public List<CONSULTA_RECEBIMENTO> ExecuteFilter(Int32? tipo, Int32? paciente, Int32? consulta, Int32? forma, String nome, DateTime? dataInicio, DateTime? dataFim, Int32? conferido, Int32 idAss)
@@ -78,7 +78,7 @@ namespace DataServices.Repositories
                 query = query.Where(p => p.ASSI_CD_ID == idAss);
                 query = query.Where(p => p.CORE_IN_ATIVO == 1);
                 query = query.OrderBy(a => a.CORE_DT_RECEBIMENTO);
-                lista = query.ToList<CONSULTA_RECEBIMENTO>();
+                lista = query.AsNoTracking().ToList<CONSULTA_RECEBIMENTO>();
             }
             return lista;
         }

@@ -6,7 +6,10 @@
     ViewBag.MetaDescription = "WebDoctor - Paciente - Consulta - Proceder à consulta do paciente ";
     ViewBag.MetaKeywords = "WebDoctor, paciente, consulta, procedimento";
 }
-
+@{
+    // Define a URL da Receita Federal
+    string urlReceita = "https://cav.receita.fazenda.gov.br/autenticacao/login";
+}
 <div class="wrapper wrapper-content animated fadeInRight">
     <div class="page-title">
         <ol class="breadcrumb">
@@ -76,7 +79,7 @@
                             </div>
                         </div>
                         <div class="row" style="width: 100%;">
-                            <div class="col-lg-2 col-md-2 col-xs-12">
+                            @*<div class="col-lg-2 col-md-2 col-xs-12">
                                 @if (!String.IsNullOrEmpty(Model.PACIENTE.PACI_AQ_FOTO))
                                 {
                                     <img src="@Url.Content(Model.PACIENTE.PACI_AQ_FOTO)" style="width: auto; height: auto; max-height: 270px; max-width: 230px;">
@@ -87,8 +90,22 @@
                                 }
                                 <br />
                                 <br />
-                            </div>
+                            </div>*@
 
+                            <div class="col-lg-2 col-md-3 col-sm-4 col-xs-12">
+                                @if (!String.IsNullOrEmpty(Model.PACIENTE.PACI_AQ_FOTO))
+                                {
+                                    <img src="@Url.Content(Model.PACIENTE.PACI_AQ_FOTO)" 
+                                         class="img-responsive thumbnail" 
+                                         style="max-height: 270px; margin: 0 auto;">
+                                }
+                                else
+                                {
+                                    <img src="~/Images/icon_morador.png" 
+                                         class="img-responsive thumbnail" 
+                                         style="max-height: 230px; margin: 0 auto;">
+                                }
+                            </div>
                             <div class="col-lg-10 col-md-10 col-xs-12">
                                 <div class="row">
                                     <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Paciente</h4>
@@ -137,10 +154,10 @@
                                 <div class="row">
                                     <h4 style="margin-left: 0px; color: green; background-color: beige; font-weight:bold">Informações da Consulta</h4>
                                     <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">                
-                                        <div class="col-lg-2 col-md-2 col-xs-12">
+                                        @*<div class="col-lg-2 col-md-2 col-xs-12">
                                             Tipo de Consulta
                                             @Html.TextBoxFor(m => m.VALOR_CONSULTA.VACO_NM_NOME, new { @class = "form-control", @readonly = "readonly"})
-                                        </div>
+                                        </div>*@
                                         <div class="col-lg-2 col-md-2 col-xs-12">
                                             @Html.HiddenFor(m => m.PACI_CD_ID)
                                             @Html.HiddenFor(m => m.PACO_IN_ATIVO)
@@ -194,6 +211,18 @@
                                                     <br />
                                                     <button type="button" class="btn btn-sm btn-success pisca" onclick="if (confirm('Confirma o encerramento dessa consulta?')) { window.location.href='@Url.Action("EncerrarConsulta", "Paciente2")'; }">
                                                         Encerrar Consulta
+                                                    </button>  
+                                                </div>
+                                            }
+                                            if ((Int32)Session["SRF"] == 1)
+                                            {
+                                                <div class="col-lg-2 col-md-2 col-xs-12">
+                                                    <br />
+                                                    <button type="button" 
+                                                            onclick="window.open('@urlReceita', '_blank')" 
+                                                            class="btn btn-sm btn-primary" 
+                                                            title="Abrir Portal e-CAC (Receita Federal)">
+                                                            Abrir e-CAC
                                                     </button>  
                                                 </div>
                                             }
@@ -359,6 +388,7 @@
                                     <div class="form-group" style=" margin-left: 0px; margin-right: 0px;">                
                                         <a href="@Url.Action("EditarFisicoCompletoFormProcesso", "Paciente")"  data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Preencher/Revisar as informações do exame físico do paciente" class="btn btn-sm btn-primary btn-loading" OnClick = "Fade()">Preencher/Revisar</a>                
                                         <a href="@Url.Action("VerEvolucaoDadosBasicos", "Paciente2")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Visualizar a evolução do exame físico" class="btn btn-sm btn-warning btn-loading" OnClick = "Fade()">Evolução do Exame Físico</a>                
+                                        <a href="@Url.Action("ExibirVideo", "Paciente2")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Seleciona para exibição um vídeo cadastrado" class="btn btn-sm btn-warning btn-loading" OnClick = "Fade()">Vídeos</a>                
                                         <a href="@Url.Action("GerarExameFisicoPDFNova", "Paciente")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Imprimir as informações do exame físico do paciente" class="btn btn-sm btn-warning" OnClick = "Fade()">Imprimir</a>                
                                     </div>
                                 </div>
