@@ -124,21 +124,9 @@ namespace ApplicationServices.Services
                 // Completa objeto
                 item.COPA_IN_ATIVO = 1;
 
-                // Monta Log
-                LOG log = new LOG
-                {
-                    LOG_DT_DATA = DateTime.Now,
-                    ASSI_CD_ID = usuario.ASSI_CD_ID,
-                    USUA_CD_ID = usuario.USUA_CD_ID,
-                    LOG_NM_OPERACAO = "AddCOPA",
-                    LOG_IN_ATIVO = 1,
-                    LOG_TX_REGISTRO = Serialization.SerializeJSON<CONSULTA_PAGAMENTO>(item),
-                    LOG_IN_SISTEMA = 6
-                };
-
                 // Persiste
-                Int32 volta = _baseService.Create(item, log);
-                return log.LOG_CD_ID;
+                Int32 volta = _baseService.Create(item);
+                return 0;
             }
             catch (Exception ex)
             {
@@ -150,22 +138,9 @@ namespace ApplicationServices.Services
         {
             try
             {
-                // Monta Log
-                String linha = "Id:" + item.COPA_CD_ID + "|Nome:" + item.COPA_NM_NOME + "|Data:" + item.COPA_DT_PAGAMENTO.ToString() + "|Valor:" + item.COPA_VL_VALOR.ToString();
-                LOG log = new LOG
-                {
-                    LOG_DT_DATA = DateTime.Now,
-                    ASSI_CD_ID = usuario.ASSI_CD_ID,
-                    USUA_CD_ID = usuario.USUA_CD_ID,
-                    LOG_NM_OPERACAO = "EdtCOPA",
-                    LOG_IN_ATIVO = 1,
-                    LOG_TX_REGISTRO = linha,
-                    LOG_IN_SISTEMA = 6
-                };
-
                 // Persiste
-                Int32 volta = _baseService.Edit(item, log);
-                return log.LOG_CD_ID;
+                Int32 volta = _baseService.Edit(item);
+                return 0;
             }
             catch (Exception ex)
             {
@@ -222,22 +197,9 @@ namespace ApplicationServices.Services
                 // Acerta campos
                 item.COPA_IN_ATIVO = 0;
 
-                // Monta Log
-                String linha = "Id:" + item.COPA_CD_ID + "|Nome:" + item.COPA_NM_NOME + "|Data:" + item.COPA_DT_PAGAMENTO.ToString() + "|Valor:" + item.COPA_VL_VALOR.ToString();
-                LOG log = new LOG
-                {
-                    LOG_DT_DATA = DateTime.Now,
-                    ASSI_CD_ID = usuario.ASSI_CD_ID,
-                    USUA_CD_ID = usuario.USUA_CD_ID,
-                    LOG_IN_ATIVO = 1,
-                    LOG_NM_OPERACAO = "DelCOPA",
-                    LOG_TX_REGISTRO = linha,
-                    LOG_IN_SISTEMA = 6
-                };
-
                 // Persiste
-                Int32 volta = _baseService.Edit(item, log);
-                return log.LOG_CD_ID;
+                Int32 volta = _baseService.Edit(item);
+                return 0;
             }
             catch (Exception ex)
             {

@@ -3000,8 +3000,8 @@ namespace GEDSys_Presentation.Controllers
                 confere.Add(new SelectListItem() { Text = "Sim", Value = "1" });
                 ViewBag.Confere = new SelectList(confere, "Value", "Text");
                 var quitacao = new List<SelectListItem>();
-                quitacao.Add(new SelectListItem() { Text = "Somente a Pagar", Value = "0" });
-                quitacao.Add(new SelectListItem() { Text = "Exibe Todos", Value = "1" });
+                quitacao.Add(new SelectListItem() { Text = "Em Aberto", Value = "0" });
+                quitacao.Add(new SelectListItem() { Text = "Quitados", Value = "1" });
                 ViewBag.Quitacao = new SelectList(quitacao, "Value", "Text");
                 ViewBag.Perfil = usuario.PERFIL.PERF_SG_SIGLA;
 
@@ -3610,6 +3610,7 @@ namespace GEDSys_Presentation.Controllers
                             pag.COPA_GU_GUID = Xid.NewXid().ToString();
                             pag.COPA_IN_ATIVO = 1;
                             pag.COPA_IN_CONFERIDO = 0;
+                            pag.COPA_DT_CADASTRO = DateTime.Today.Date;
                             if (num == 1)
                             {
                                 if (vm.QUITA_PAGAMENTO == 1)
@@ -3780,6 +3781,25 @@ namespace GEDSys_Presentation.Controllers
 
         }
 
+        public DTO_Pagamento_Anotacao MontarPagamentoAnotacaoDTOObj(PAGAMENTO_ANOTACAO l)
+        {
+            using (var context = new CRMSysDBEntities())
+            {
+                var mediDTO = new DTO_Pagamento_Anotacao()
+                {
+                    ASSI_CD_ID = l.ASSI_CD_ID,
+                    COPA_CD_ID = l.COPA_CD_ID,
+                    PGAN_CD_ID = l.PGAN_CD_ID,
+                    USUA_CD_ID = l.USUA_CD_ID,
+                    PGAN_DT_ANOTACAO = l.PGAN_DT_ANOTACAO,
+                    PGAN_IN_ATIVO = l.PGAN_IN_ATIVO,
+                    PGAN_TX_ANOTACAO = l.PGAN_TX_ANOTACAO,
+                };
+                return mediDTO;
+            }
+
+        }
+
         [HttpGet]
         public ActionResult EditarPagamento(Int32 id)
         {
@@ -3841,6 +3861,11 @@ namespace GEDSys_Presentation.Controllers
                         String frase = CRMSys_Base.ResourceManager.GetString("M0603", CultureInfo.CurrentCulture);
                         ModelState.AddModelError("", frase);
                     }
+                    if ((Int32)Session["MensPaciente"] == 61)
+                    {
+                        TempData["MensagemAcerto"] = (String)Session["MsgCRUD"];
+                        TempData["TemMensagem"] = 1;
+                    }
                 }
 
 
@@ -3893,14 +3918,14 @@ namespace GEDSys_Presentation.Controllers
                 try
                 {
                     // Sanitização
-                    vm.COPA_NM_NOME = CrossCutting.UtilitariosGeral.CleanStringDocto(vm.COPA_NM_NOME);
-                    vm.COPA_NM_FAVORECIDO = CrossCutting.UtilitariosGeral.CleanStringDocto(vm.COPA_NM_FAVORECIDO);
+                    vm.COPA_NM_NOME = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(vm.COPA_NM_NOME);
+                    vm.COPA_NM_FAVORECIDO = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(vm.COPA_NM_FAVORECIDO);
                     vm.TIPA_CD_ID = (Int32)Session["TipoPagamentoId"];
 
                     // Critica
                     if (vm.COPA_NM_NOME == null)
                     {
-                        String nome = "Pagamento de " + vm.TIPO_PAGAMENTO.TIPA_NM_PAGAMENTO + " em " + vm.COPA_DT_PAGAMENTO.Value.ToLongDateString();
+                        String nome = "Pagamento de " + vm.TIPO_PAGAMENTO.TIPA_NM_PAGAMENTO.ToUpper() + " em " + vm.COPA_DT_PAGAMENTO.Value.ToLongDateString();
                         vm.COPA_NM_NOME = nome;
                     }
                     if (vm.COPA_IN_CONFERIDO == null)
@@ -3942,23 +3967,34 @@ namespace GEDSys_Presentation.Controllers
                     Session["ListaPagamento"] = null;
                     Session["NivelPagamento"] = 1;
 
+                    // Configura serilização
+                    JsonSerializerSettings settings = new JsonSerializerSettings
+                    {
+                        ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+                        NullValueHandling = NullValueHandling.Ignore
+                    };
+
                     // Monta Log
                     CONSULTA_PAGAMENTO pag = pagApp.GetItemById(item.COPA_CD_ID);
-                    String frase = pag.COPA_CD_ID.ToString() + "|" + pag.TIPA_CD_ID.ToString() + "|" + pag.USUA_CD_ID.ToString() + "|" + pag.COPA_DT_PAGAMENTO.ToString() + "|" + pag.COPA_GU_GUID + "|" + pag.COPA_VL_VALOR.ToString();
+                    DTO_Pagamento dto = MontarPagamentoDTOObj(item);
+                    String json = JsonConvert.SerializeObject(dto, settings);
+                    DTO_Pagamento dtoAntes = MontarPagamentoDTOObj((CONSULTA_PAGAMENTO)Session["Pagamento"]);
+                    String jsonAntes = JsonConvert.SerializeObject(dtoAntes, settings);
                     LOG log = new LOG
                     {
                         LOG_DT_DATA = DateTime.Now,
                         ASSI_CD_ID = usuarioLogado.ASSI_CD_ID,
                         USUA_CD_ID = usuarioLogado.USUA_CD_ID,
-                        LOG_NM_OPERACAO = "edtPAG",
+                        LOG_NM_OPERACAO = "Pagamento - Alteração",
                         LOG_IN_ATIVO = 1,
-                        LOG_TX_REGISTRO = frase,
+                        LOG_TX_REGISTRO = json,
+                        LOG_TX_REGISTRO_ANTES = jsonAntes,
                         LOG_IN_SISTEMA = 6
                     };
                     Int32 volta1 = logApp.ValidateCreate(log);
 
                     // Mensagem do CRUD
-                    Session["MsgCRUD"] = "O pagamento " + item.COPA_GU_GUID + " de " + pag.TIPO_PAGAMENTO.TIPA_NM_PAGAMENTO + " foi alterado com sucesso.";
+                    Session["MsgCRUD"] = "O pagamento " + item.COPA_GU_GUID + " de " + pag.TIPO_PAGAMENTO.TIPA_NM_PAGAMENTO.ToUpper() + " foi alterado com sucesso.";
                     Session["MensPaciente"] = 61;
 
                     // Retorno
@@ -4020,23 +4056,31 @@ namespace GEDSys_Presentation.Controllers
                 Session["NivelPaciente"] = 1;
                 Session["ListaPagamento"] = null;
 
+                // Configura serialização
+                JsonSerializerSettings settings = new JsonSerializerSettings
+                {
+                    ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+                    NullValueHandling = NullValueHandling.Ignore
+                };
+
                 // Monta Log
+                DTO_Pagamento dto = MontarPagamentoDTOObj(item);
+                String json = JsonConvert.SerializeObject(dto, settings);
                 CONSULTA_PAGAMENTO pag = pagApp.GetItemById(item.COPA_CD_ID);
-                String frase = pag.COPA_CD_ID.ToString() + "|" + pag.TIPA_CD_ID.ToString() + "|" + pag.USUA_CD_ID.ToString() + "|" + pag.COPA_DT_PAGAMENTO.ToString() + "|" + pag.COPA_GU_GUID + "|" + pag.COPA_VL_VALOR.ToString();
                 LOG log = new LOG
                 {
                     LOG_DT_DATA = DateTime.Now,
                     ASSI_CD_ID = usuarioLogado.ASSI_CD_ID,
                     USUA_CD_ID = usuarioLogado.USUA_CD_ID,
-                    LOG_NM_OPERACAO = "delPAG",
+                    LOG_NM_OPERACAO = "Pagamento - Exclusão",
                     LOG_IN_ATIVO = 1,
-                    LOG_TX_REGISTRO = frase,
+                    LOG_TX_REGISTRO = json,
                     LOG_IN_SISTEMA = 6
                 };
                 Int32 volta1 = logApp.ValidateCreate(log);
 
                 // Mensagem do CRUD
-                Session["MsgCRUD"] = "O pagamento " + item.COPA_GU_GUID + " de " + pag.TIPO_PAGAMENTO.TIPA_NM_PAGAMENTO + " foi excluído com sucesso.";
+                Session["MsgCRUD"] = "O pagamento " + item.COPA_GU_GUID + " de " + pag.TIPO_PAGAMENTO.TIPA_NM_PAGAMENTO.ToUpper() + " para " + pag.COPA_NM_FAVORECIDO.ToUpper() + " foi excluído com sucesso.";
                 Session["MensPaciente"] = 61;
 
                 // Retorno
@@ -4249,6 +4293,19 @@ namespace GEDSys_Presentation.Controllers
                 copa.PAGAMENTO_ANEXO.Add(foto);
                 objetoAntesPag = copa;
                 Int32 volta = pagApp.ValidateEdit(copa, objetoAntesPag);
+
+                // Monta Log
+                LOG log = new LOG
+                {
+                    LOG_DT_DATA = DateTime.Now,
+                    ASSI_CD_ID = usu.ASSI_CD_ID,
+                    USUA_CD_ID = usu.USUA_CD_ID,
+                    LOG_NM_OPERACAO = "Pagamento - Anexo - Inclusão",
+                    LOG_IN_ATIVO = 1,
+                    LOG_TX_REGISTRO = "Pagamento: " + copa.COPA_NM_NOME.ToUpper() + " | Anexo: " + fileName + " | Data: " + DateTime.Today.Date,
+                    LOG_IN_SISTEMA = 6
+                };
+                Int32 volta1 = logApp.ValidateCreate(log);
                 return 0;
             }
             catch (Exception ex)
@@ -4357,7 +4414,7 @@ namespace GEDSys_Presentation.Controllers
                 // Gravar registro
                 PAGAMENTO_ANEXO foto = new PAGAMENTO_ANEXO();
                 foto.PAAN_AQ_ARQUIVO = "~" + caminho + fileName;
-                foto.PAAN_DT_ANEXO = DateTime.Today;
+                foto.PAAN_DT_ANEXO = DateTime.Today.Date;
                 foto.PAAN_IN_ATIVO = 1;
                 Int32 tipo = 3;
                 if (extensao.ToUpper() == ".JPG" || extensao.ToUpper() == ".GIF" || extensao.ToUpper() == ".PNG" || extensao.ToUpper() == ".JPEG")
@@ -4401,9 +4458,9 @@ namespace GEDSys_Presentation.Controllers
                     LOG_DT_DATA = DateTime.Now,
                     ASSI_CD_ID = usu.ASSI_CD_ID,
                     USUA_CD_ID = usu.USUA_CD_ID,
-                    LOG_NM_OPERACAO = "iapCOPA",
+                    LOG_NM_OPERACAO = "Pagamento - Anexo - Inclusão",
                     LOG_IN_ATIVO = 1,
-                    LOG_TX_REGISTRO = "Pagamento: " + item.COPA_NM_NOME + " | Anexo: " + fileName,
+                    LOG_TX_REGISTRO = "Pagamento: " + item.COPA_NM_NOME.ToUpper() + " | Anexo: " + fileName + " | Data: " + DateTime.Today.Date,
                     LOG_IN_SISTEMA = 6
                 };
                 Int32 volta1 = logApp.ValidateCreate(log);
@@ -4520,9 +4577,9 @@ namespace GEDSys_Presentation.Controllers
                     LOG_DT_DATA = DateTime.Now,
                     ASSI_CD_ID = usu.ASSI_CD_ID,
                     USUA_CD_ID = usu.USUA_CD_ID,
-                    LOG_NM_OPERACAO = "infCOPA",
+                    LOG_NM_OPERACAO = "Pagamento - Nota Fiscal - Inclusão",
                     LOG_IN_ATIVO = 1,
-                    LOG_TX_REGISTRO = "Pagamento: " + item.COPA_NM_NOME + " | Nota: " + numero + " | Nome: " + nome + " | Emitente: " + emitente + " | Valor: " + valorTotalParsed.ToString(),
+                    LOG_TX_REGISTRO = "Pagamento: " + item.COPA_NM_NOME.ToUpper() + " | Nota: " + numero + " | Nome: " + nome.ToUpper() + " | Emitente: " + emitente.ToUpper() + " | Valor: " + valorTotalParsed.ToString(),
                     LOG_IN_SISTEMA = 6
                 };
                 Int32 volta1 = logApp.ValidateCreate(log);
@@ -4934,19 +4991,6 @@ namespace GEDSys_Presentation.Controllers
                 PAGAMENTO_ANEXO item = pagApp.GetAnexoById(id);
                 CONSULTA_PAGAMENTO pac = pagApp.GetItemById(item.COPA_CD_ID);
 
-                // Exclusão fisica
-                //String caminho = "/Imagens/" + usuarioLogado.ASSI_CD_ID.ToString() + "/Pagamento/" + pac.COPA_CD_ID.ToString() + "/Anexos/";
-                //String filePath = Path.Combine(Server.MapPath(caminho), item.PAAN_NM_TITULO);
-                //if (System.IO.File.Exists(filePath))
-                //{
-                //    System.IO.File.Delete(filePath);
-                //    Session["MensPaciente"] = 69;
-                //}
-                //else
-                //{
-                //    Session["MensPaciente"] = 70;
-                //}
-
                 item.PAAN_IN_ATIVO = 0;
                 Int32 volta = pagApp.ValidateEditAnexo(item);
 
@@ -4956,9 +5000,9 @@ namespace GEDSys_Presentation.Controllers
                     LOG_DT_DATA = DateTime.Now,
                     ASSI_CD_ID = usuarioLogado.ASSI_CD_ID,
                     USUA_CD_ID = usuarioLogado.USUA_CD_ID,
-                    LOG_NM_OPERACAO = "xapCOPA",
+                    LOG_NM_OPERACAO = "Pagamento - Anexo - Exclusão",
                     LOG_IN_ATIVO = 1,
-                    LOG_TX_REGISTRO = "Pagamento: " + item.PAAN_NM_TITULO+ " | Anexo: " + item.PAAN_NM_TITULO + " | Data: " + item.PAAN_DT_ANEXO.Value.ToShortDateString(),
+                    LOG_TX_REGISTRO = "Pagamento: " + item.PAAN_NM_TITULO.ToUpper() + " | Anexo: " + item.PAAN_NM_TITULO.ToUpper() + " | Data: " + item.PAAN_DT_ANEXO.Value.ToShortDateString(),
                     LOG_IN_SISTEMA = 6
                 };
                 Int32 volta1 = logApp.ValidateCreate(log);
@@ -5004,9 +5048,9 @@ namespace GEDSys_Presentation.Controllers
                     LOG_DT_DATA = DateTime.Now,
                     ASSI_CD_ID = usuarioLogado.ASSI_CD_ID,
                     USUA_CD_ID = usuarioLogado.USUA_CD_ID,
-                    LOG_NM_OPERACAO = "xnfCOPA",
+                    LOG_NM_OPERACAO = "Pagamento - Nota Fiscal - Exclusão",
                     LOG_IN_ATIVO = 1,
-                    LOG_TX_REGISTRO = "Nota: " + item.PANF_NR_NUMERO + " | Emitente: " + item.PANF_NM_EMITENTE + " | Data: " + item.PANF_DT_EMISSAO.Value.ToShortDateString(),
+                    LOG_TX_REGISTRO = "Pagamento: " + pac.COPA_NM_NOME.ToUpper() + "Nota: " + item.PANF_NR_NUMERO + " | Emitente: " + item.PANF_NM_EMITENTE.ToUpper() + " | Data: " + item.PANF_DT_EMISSAO.Value.ToShortDateString() + " | Valor: " + item.PANF_VL_VALOR.ToString(),
                     LOG_IN_SISTEMA = 6
                 };
                 Int32 volta1 = logApp.ValidateCreate(log);
@@ -5147,7 +5191,7 @@ namespace GEDSys_Presentation.Controllers
                 try
                 {
                     // Sanitização
-                    vm.PGAN_TX_ANOTACAO = CrossCutting.UtilitariosGeral.CleanStringDocto(vm.PGAN_TX_ANOTACAO);
+                    vm.PGAN_TX_ANOTACAO = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(vm.PGAN_TX_ANOTACAO);
 
                     // Executa a operação
                     PAGAMENTO_ANOTACAO item = Mapper.Map<PagamentoAnotacaoViewModel, PAGAMENTO_ANOTACAO>(vm);
@@ -5158,15 +5202,24 @@ namespace GEDSys_Presentation.Controllers
                     not.PAGAMENTO_ANOTACAO.Add(item);
                     Int32 volta = pagApp.ValidateEdit(not, not, usuarioLogado);
 
+                    // Configura serilização
+                    JsonSerializerSettings settings = new JsonSerializerSettings
+                    {
+                        ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+                        NullValueHandling = NullValueHandling.Ignore
+                    };
+
                     // Monta Log
+                    DTO_Pagamento_Anotacao dto = MontarPagamentoAnotacaoDTOObj(item);
+                    String json = JsonConvert.SerializeObject(dto, settings);
                     LOG log = new LOG
                     {
                         LOG_DT_DATA = DateTime.Now,
                         ASSI_CD_ID = usuarioLogado.ASSI_CD_ID,
                         USUA_CD_ID = usuarioLogado.USUA_CD_ID,
-                        LOG_NM_OPERACAO = "iaeCOPA",
+                        LOG_NM_OPERACAO = "Pagamento - Anotação - Inclusão",
                         LOG_IN_ATIVO = 1,
-                        LOG_TX_REGISTRO = "Pagamento: " + item.CONSULTA_PAGAMENTO.COPA_NM_NOME + " | Data: " + item.PGAN_DT_ANOTACAO.ToString() + " | Anotação: " + item.PGAN_TX_ANOTACAO,
+                        LOG_TX_REGISTRO = json,
                         LOG_IN_SISTEMA = 6
                     };
                     Int32 volta1 = logApp.ValidateCreate(log);
@@ -5267,7 +5320,7 @@ namespace GEDSys_Presentation.Controllers
                 try
                 {
                     // Sanitização
-                    vm.PGAN_TX_ANOTACAO = CrossCutting.UtilitariosGeral.CleanStringDocto(vm.PGAN_TX_ANOTACAO);
+                    vm.PGAN_TX_ANOTACAO = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(vm.PGAN_TX_ANOTACAO);
 
                     // Executa a operação
                     USUARIO usuarioLogado = (USUARIO)Session["UserCredentials"];
@@ -5275,23 +5328,27 @@ namespace GEDSys_Presentation.Controllers
                     CONSULTA_PAGAMENTO copa = pagApp.GetItemById(item.COPA_CD_ID);
                     Int32 volta = pagApp.ValidateEditAnotacao(item);
 
+                    // Configura serilização
+                    JsonSerializerSettings settings = new JsonSerializerSettings
+                    {
+                        ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+                        NullValueHandling = NullValueHandling.Ignore
+                    };
+
                     // Monta Log
+                    DTO_Pagamento_Anotacao dto = MontarPagamentoAnotacaoDTOObj(item);
+                    String json = JsonConvert.SerializeObject(dto, settings);
                     LOG log = new LOG
                     {
                         LOG_DT_DATA = DateTime.Now,
                         ASSI_CD_ID = usuarioLogado.ASSI_CD_ID,
                         USUA_CD_ID = usuarioLogado.USUA_CD_ID,
-                        LOG_NM_OPERACAO = "eaeCOPA",
+                        LOG_NM_OPERACAO = "Pagamento - Anotação - Alteração",
                         LOG_IN_ATIVO = 1,
-                        LOG_TX_REGISTRO = "Pagamento: " + copa.COPA_NM_NOME + " | Data: " + item.PGAN_DT_ANOTACAO.ToString() + " | Anotação: " + item.PGAN_TX_ANOTACAO,
+                        LOG_TX_REGISTRO = json,
                         LOG_IN_SISTEMA = 6
                     };
                     Int32 volta1 = logApp.ValidateCreate(log);
-
-                    // Acerta pagamento
-                    //CONSULTA_PAGAMENTO pag = pagApp.GetItemById((Int32)Session["IdPagamento"]);
-                    //pag.TIPA_CD_ID = (Int32)Session["TipoPagamentoId"];
-                    //Int32 voltaP = pagApp.ValidateEdit(pag, pag, usuarioLogado);
 
                     // Verifica retorno
                     Session["PagamentoAlterada"] = 1;
@@ -5354,16 +5411,25 @@ namespace GEDSys_Presentation.Controllers
                 Session["NivelPaciente"] = 1;
                 Session["NivelPagamento"] = 3;
 
+                // Configura serilização
+                JsonSerializerSettings settings = new JsonSerializerSettings
+                {
+                    ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+                    NullValueHandling = NullValueHandling.Ignore
+                };
+
                 // Monta Log
+                DTO_Pagamento_Anotacao dto = MontarPagamentoAnotacaoDTOObj(item);
+                String json = JsonConvert.SerializeObject(dto, settings);
                 LOG log = new LOG
                 {
                     LOG_DT_DATA = DateTime.Now,
                     ASSI_CD_ID = usuarioLogado.ASSI_CD_ID,
                     USUA_CD_ID = usuarioLogado.USUA_CD_ID,
-                    LOG_NM_OPERACAO = "xaeCOPA",
+                    LOG_NM_OPERACAO = "Pagamento - Anotação - Exclusão",
                     LOG_IN_ATIVO = 1,
-                    LOG_TX_REGISTRO = "Pagamento: " + item.CONSULTA_PAGAMENTO.COPA_NM_NOME + " | Data: " + item.PGAN_DT_ANOTACAO.ToString() + " | Anotação: " + item.PGAN_TX_ANOTACAO,
-                    LOG_IN_SISTEMA = 2
+                    LOG_TX_REGISTRO = json,
+                    LOG_IN_SISTEMA = 6
                 };
                 Int32 volta1 = logApp.ValidateCreate(log);
 
@@ -5664,33 +5730,49 @@ namespace GEDSys_Presentation.Controllers
                 headerTable.SpacingBefore = 1f;
                 headerTable.SpacingAfter = 1f;
 
-                PdfPCell cell = new PdfPCell();
-                cell.Border = 0;
-                cell.Colspan = 1;
-                Image image = null;
                 if (conf.CONF_IN_LOGO_EMPRESA == 1)
                 {
+                    PdfPCell cell1 = new PdfPCell();
+                    cell1.Border = 0;
+                    cell1.Colspan = 1;
+                    Image image = null;
                     EMPRESA empresa = empApp.GetItemByAssinante(idAss);
                     image = Image.GetInstance(Server.MapPath(empresa.EMPR_AQ_LOGO));
+                    image.ScaleAbsolute(50, 50);
+                    cell1.AddElement(image);
+                    cell1.Border = PdfPCell.BOTTOM_BORDER;
+                    headerTable.AddCell(cell1);
+
+                    cell1 = new PdfPCell(new Paragraph("Pagamentos", meuFont2))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_CENTER
+                    };
+                    cell1.Border = 0;
+                    cell1.Colspan = 1;
+                    cell1.Border = PdfPCell.BOTTOM_BORDER;
+                    headerTable.AddCell(cell1);
                 }
                 else
                 {
-                    image = Image.GetInstance(Server.MapPath("~/Images/Prontuario_Icone_1.png"));
-                }
-                image.ScaleAbsolute(50, 50);
-                cell.AddElement(image);
-                cell.Border = PdfPCell.BOTTOM_BORDER;
-                headerTable.AddCell(cell);
+                    PdfPCell cell2 = new PdfPCell(new Paragraph("Pagamentos", meuFont2))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_CENTER
+                    };
+                    cell2.Border = 0;
+                    cell2.Colspan = 2;
+                    headerTable.AddCell(cell2);
 
-                cell = new PdfPCell(new Paragraph("Pagamentos", meuFont2))
-                {
-                    VerticalAlignment = Element.ALIGN_MIDDLE,
-                    HorizontalAlignment = Element.ALIGN_CENTER
-                };
-                cell.Border = 0;
-                cell.Colspan = 1;
-                cell.Border = PdfPCell.BOTTOM_BORDER;
-                headerTable.AddCell(cell);
+                    cell2 = new PdfPCell(new Paragraph(" ", meuFont))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    cell2.Colspan = 2;
+                    cell2.Border = PdfPCell.BOTTOM_BORDER;
+                    headerTable.AddCell(cell2);
+                }
 
                 // Rodape
                 PdfPTable footerTable = new PdfPTable(1);
@@ -5699,7 +5781,7 @@ namespace GEDSys_Presentation.Controllers
                 footerTable.SpacingBefore = 1f;
                 footerTable.SpacingAfter = 1f;
 
-                cell = new PdfPCell();
+                PdfPCell cell = new PdfPCell();
                 cell.Border = PdfPCell.TOP_BORDER;
                 cell = new PdfPCell(new Paragraph("Gerado por WebDoctor 1.0 em " + DateTime.Today.Date.ToLongDateString(), meuFont));
                 footerTable.AddCell(cell);
@@ -5896,10 +5978,6 @@ namespace GEDSys_Presentation.Controllers
                 }
                 pdfDoc.Add(table);
 
-                // Linha Horizontal
-                Paragraph line2 = new Paragraph(new Chunk(new iTextSharp.text.pdf.draw.LineSeparator(0.0F, 100.0F, BaseColor.BLUE, Element.ALIGN_LEFT, 1)));
-                pdfDoc.Add(line2);
-
                 // Finaliza
                 pdfWriter.CloseStream = false;
                 pdfDoc.Close();
@@ -5955,33 +6033,49 @@ namespace GEDSys_Presentation.Controllers
                 headerTable.SpacingBefore = 1f;
                 headerTable.SpacingAfter = 1f;
 
-                PdfPCell cell = new PdfPCell();
-                cell.Border = 0;
-                cell.Colspan = 1;
-                Image image = null;
                 if (conf.CONF_IN_LOGO_EMPRESA == 1)
                 {
+                    PdfPCell cell1 = new PdfPCell();
+                    cell1.Border = 0;
+                    cell1.Colspan = 1;
+                    Image image = null;
                     EMPRESA empresa = empApp.GetItemByAssinante(idAss);
                     image = Image.GetInstance(Server.MapPath(empresa.EMPR_AQ_LOGO));
+                    image.ScaleAbsolute(50, 50);
+                    cell1.AddElement(image);
+                    cell1.Border = PdfPCell.BOTTOM_BORDER;
+                    headerTable.AddCell(cell1);
+
+                    cell1 = new PdfPCell(new Paragraph("Pagamentos - Vencimento em " + DateTime.Today.Date.ToLongDateString(), meuFont2))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_CENTER
+                    };
+                    cell1.Border = 0;
+                    cell1.Colspan = 1;
+                    cell1.Border = PdfPCell.BOTTOM_BORDER;
+                    headerTable.AddCell(cell1);
                 }
                 else
                 {
-                    image = Image.GetInstance(Server.MapPath("~/Images/Prontuario_Icone_1.png"));
-                }
-                image.ScaleAbsolute(50, 50);
-                cell.AddElement(image);
-                cell.Border = PdfPCell.BOTTOM_BORDER;
-                headerTable.AddCell(cell);
+                    PdfPCell cell2 = new PdfPCell(new Paragraph("Pagamentos - Vencimento em " + DateTime.Today.Date.ToLongDateString(), meuFont2))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_CENTER
+                    };
+                    cell2.Border = 0;
+                    cell2.Colspan = 2;
+                    headerTable.AddCell(cell2);
 
-                cell = new PdfPCell(new Paragraph("Pagamentos - Vencimento em " + DateTime.Today.Date.ToLongDateString(), meuFont2))
-                {
-                    VerticalAlignment = Element.ALIGN_MIDDLE,
-                    HorizontalAlignment = Element.ALIGN_CENTER
-                };
-                cell.Border = 0;
-                cell.Colspan = 1;
-                cell.Border = PdfPCell.BOTTOM_BORDER;
-                headerTable.AddCell(cell);
+                    cell2 = new PdfPCell(new Paragraph(" ", meuFont))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    cell2.Colspan = 2;
+                    cell2.Border = PdfPCell.BOTTOM_BORDER;
+                    headerTable.AddCell(cell2);
+                }
 
                 // Rodape
                 PdfPTable footerTable = new PdfPTable(1);
@@ -5990,7 +6084,7 @@ namespace GEDSys_Presentation.Controllers
                 footerTable.SpacingBefore = 1f;
                 footerTable.SpacingAfter = 1f;
 
-                cell = new PdfPCell();
+                PdfPCell cell = new PdfPCell();
                 cell.Border = PdfPCell.TOP_BORDER;
                 cell = new PdfPCell(new Paragraph("Gerado por WebDoctor 1.0 em " + DateTime.Today.Date.ToLongDateString(), meuFont));
                 footerTable.AddCell(cell);
@@ -6248,33 +6342,49 @@ namespace GEDSys_Presentation.Controllers
                 headerTable.SpacingBefore = 1f;
                 headerTable.SpacingAfter = 1f;
 
-                PdfPCell cell = new PdfPCell();
-                cell.Border = 0;
-                cell.Colspan = 1;
-                Image image = null;
                 if (conf.CONF_IN_LOGO_EMPRESA == 1)
                 {
+                    PdfPCell cell1 = new PdfPCell();
+                    cell1.Border = 0;
+                    cell1.Colspan = 1;
+                    Image image = null;
                     EMPRESA empresa = empApp.GetItemByAssinante(idAss);
                     image = Image.GetInstance(Server.MapPath(empresa.EMPR_AQ_LOGO));
+                    image.ScaleAbsolute(50, 50);
+                    cell1.AddElement(image);
+                    cell1.Border = PdfPCell.BOTTOM_BORDER;
+                    headerTable.AddCell(cell1);
+
+                    cell1 = new PdfPCell(new Paragraph("Pagamentos - Vencimento em " + mes, meuFont2))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_CENTER
+                    };
+                    cell1.Border = 0;
+                    cell1.Colspan = 1;
+                    cell1.Border = PdfPCell.BOTTOM_BORDER;
+                    headerTable.AddCell(cell1);
                 }
                 else
                 {
-                    image = Image.GetInstance(Server.MapPath("~/Images/Prontuario_Icone_1.png"));
-                }
-                image.ScaleAbsolute(50, 50);
-                cell.AddElement(image);
-                cell.Border = PdfPCell.BOTTOM_BORDER;
-                headerTable.AddCell(cell);
+                    PdfPCell cell2 = new PdfPCell(new Paragraph("Pagamentos - Vencimento em " + mes, meuFont2))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_CENTER
+                    };
+                    cell2.Border = 0;
+                    cell2.Colspan = 2;
+                    headerTable.AddCell(cell2);
 
-                cell = new PdfPCell(new Paragraph("Pagamentos - Vencimento em " + mes, meuFont2))
-                {
-                    VerticalAlignment = Element.ALIGN_MIDDLE,
-                    HorizontalAlignment = Element.ALIGN_CENTER
-                };
-                cell.Border = 0;
-                cell.Colspan = 1;
-                cell.Border = PdfPCell.BOTTOM_BORDER;
-                headerTable.AddCell(cell);
+                    cell2 = new PdfPCell(new Paragraph(" ", meuFont))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    cell2.Colspan = 2;
+                    cell2.Border = PdfPCell.BOTTOM_BORDER;
+                    headerTable.AddCell(cell2);
+                }
 
                 // Rodape
                 PdfPTable footerTable = new PdfPTable(1);
@@ -6283,7 +6393,7 @@ namespace GEDSys_Presentation.Controllers
                 footerTable.SpacingBefore = 1f;
                 footerTable.SpacingAfter = 1f;
 
-                cell = new PdfPCell();
+                PdfPCell cell = new PdfPCell();
                 cell.Border = PdfPCell.TOP_BORDER;
                 cell = new PdfPCell(new Paragraph("Gerado por WebDoctor 1.0 em " + DateTime.Today.Date.ToLongDateString(), meuFont));
                 footerTable.AddCell(cell);
@@ -6799,8 +6909,9 @@ namespace GEDSys_Presentation.Controllers
                 DateTime limite = DateTime.Today.Date.AddMonths(-12);
 
                 // Carrega widgets
-                List<CONSULTA_PAGAMENTO> pagtosMes = pagtos.Where(p => p.COPA_DT_PAGAMENTO.Value.Month == DateTime.Today.Date.Month & p.COPA_DT_PAGAMENTO.Value.Year == DateTime.Today.Date.Year & p.COPA_IN_PAGO == 1).ToList();
-                List<CONSULTA_PAGAMENTO> pagtosAno = pagtos.Where(p => p.COPA_DT_PAGAMENTO.Value.Year == DateTime.Today.Date.Year & p.COPA_IN_PAGO == 1).ToList();
+                List<CONSULTA_PAGAMENTO> jaPagtos = pagtos.Where(p => p.COPA_DT_PAGAMENTO != null).ToList();
+                List<CONSULTA_PAGAMENTO> pagtosMes = jaPagtos.Where(p => p.COPA_DT_PAGAMENTO.Value.Month == DateTime.Today.Date.Month & p.COPA_DT_PAGAMENTO.Value.Year == DateTime.Today.Date.Year & p.COPA_IN_PAGO == 1).ToList();
+                List<CONSULTA_PAGAMENTO> pagtosAno = jaPagtos.Where(p => p.COPA_DT_PAGAMENTO.Value.Year == DateTime.Today.Date.Year & p.COPA_IN_PAGO == 1).ToList();
                 List<CONSULTA_PAGAMENTO> vencHoje = pagtos.Where(p => p.COPA_DT_VENCIMENTO == DateTime.Today.Date & p.COPA_IN_PAGO == 0).ToList();
                 Decimal? pagMes = pagtosMes.Sum(p => p.COPA_VL_PAGO);
                 Decimal? pagAno = pagtosAno.Sum(p => p.COPA_VL_PAGO);
@@ -6809,8 +6920,9 @@ namespace GEDSys_Presentation.Controllers
                 ViewBag.PagtosAno = pagAno;
                 ViewBag.VencimentoHoje = vencDia;
 
-                List<CONSULTA_RECEBIMENTO> rectosMes = rectos.Where(p => p.CORE_DT_RECEBIMENTO.Value.Month == DateTime.Today.Date.Month & p.CORE_DT_RECEBIMENTO.Value.Year == DateTime.Today.Date.Year).ToList();
-                List<CONSULTA_RECEBIMENTO> rectosAno = rectos.Where(p => p.CORE_DT_RECEBIMENTO.Value.Year == DateTime.Today.Date.Year).ToList();
+                List<CONSULTA_RECEBIMENTO> jaRectos = rectos.Where(p => p.CORE_DT_RECEBIMENTO != null).ToList();
+                List<CONSULTA_RECEBIMENTO> rectosMes = jaRectos.Where(p => p.CORE_DT_RECEBIMENTO.Value.Month == DateTime.Today.Date.Month & p.CORE_DT_RECEBIMENTO.Value.Year == DateTime.Today.Date.Year).ToList();
+                List<CONSULTA_RECEBIMENTO> rectosAno = jaRectos.Where(p => p.CORE_DT_RECEBIMENTO.Value.Year == DateTime.Today.Date.Year).ToList();
                 Decimal? recMes = rectosMes.Sum(p => p.CORE_VL_VALOR);
                 Decimal? recAno = rectosAno.Sum(p => p.CORE_VL_VALOR);
                 ViewBag.RectosMes = recMes;
@@ -6821,15 +6933,15 @@ namespace GEDSys_Presentation.Controllers
                 ViewBag.RecebimentosMes = rectosMes;
 
                 // Médias diaria por mes - Pagamentos
-                List<DateTime> datas = pagtos.Where(p => p.COPA_DT_PAGAMENTO.Value.Month == DateTime.Today.Month & p.COPA_DT_PAGAMENTO.Value.Year == DateTime.Today.Year).Select(p => p.COPA_DT_PAGAMENTO.Value.Date).Distinct().ToList();
+                List<DateTime> datas = jaPagtos.Where(p => p.COPA_DT_PAGAMENTO.Value.Month == DateTime.Today.Month & p.COPA_DT_PAGAMENTO.Value.Year == DateTime.Today.Year).Select(p => p.COPA_DT_PAGAMENTO.Value.Date).Distinct().ToList();
                 if ((Int32)Session["PagamentoAlterada"] == 1 || Session["ListaPagtoMes"] == null)
                 {
                     datas.Sort((i, j) => i.Date.CompareTo(j.Date));
                     List<ModeloViewModel> lista = new List<ModeloViewModel>();
                     foreach (DateTime item in datas)
                     {
-                        Int32 conta = pagtos.Where(p => p.COPA_DT_PAGAMENTO.Value.Date == item.Date & p.COPA_IN_PAGO == 1).Count();
-                        Decimal? soma = pagtos.Where(p => p.COPA_DT_PAGAMENTO.Value.Date == item.Date  & p.COPA_IN_PAGO == 1).Sum(p => p.COPA_VL_PAGO);
+                        Int32 conta = jaPagtos.Where(p => p.COPA_DT_PAGAMENTO.Value.Date == item.Date & p.COPA_IN_PAGO == 1).Count();
+                        Decimal? soma = jaPagtos.Where(p => p.COPA_DT_PAGAMENTO.Value.Date == item.Date  & p.COPA_IN_PAGO == 1).Sum(p => p.COPA_VL_PAGO);
                         Decimal? media = 0;
                         if (conta > 0)
                         {
@@ -6850,15 +6962,15 @@ namespace GEDSys_Presentation.Controllers
                 }
 
                 // Médias diaria por mes - Recebimentos
-                datas = rectos.Where(p => p.CORE_DT_RECEBIMENTO.Value.Month == DateTime.Today.Month & p.CORE_DT_RECEBIMENTO.Value.Year == DateTime.Today.Year).Select(p => p.CORE_DT_RECEBIMENTO.Value.Date).Distinct().ToList();
+                datas = jaRectos.Where(p => p.CORE_DT_RECEBIMENTO.Value.Month == DateTime.Today.Month & p.CORE_DT_RECEBIMENTO.Value.Year == DateTime.Today.Year).Select(p => p.CORE_DT_RECEBIMENTO.Value.Date).Distinct().ToList();
                 if ((Int32)Session["RecebimentoAlterada"] == 1 || Session["ListaRectoMes"] == null)
                 {
                     datas.Sort((i, j) => i.Date.CompareTo(j.Date));
                     List<ModeloViewModel> lista = new List<ModeloViewModel>();
                     foreach (DateTime item in datas)
                     {
-                        Int32 conta = rectos.Where(p => p.CORE_DT_RECEBIMENTO.Value.Date == item.Date).Count();
-                        Decimal? soma = rectos.Where(p => p.CORE_DT_RECEBIMENTO.Value.Date == item.Date).Sum(p => p.CORE_VL_VALOR);
+                        Int32 conta = jaRectos.Where(p => p.CORE_DT_RECEBIMENTO.Value.Date == item.Date).Count();
+                        Decimal? soma = jaRectos.Where(p => p.CORE_DT_RECEBIMENTO.Value.Date == item.Date).Sum(p => p.CORE_VL_VALOR);
                         Decimal? media = 0;
                         if (conta > 0)
                         {
@@ -6881,15 +6993,15 @@ namespace GEDSys_Presentation.Controllers
                 // Pagamentos por dia - Mes corrente
                 List<ModeloViewModel> listaPagRec = new List<ModeloViewModel>();
                 List<ModeloViewModel> listaPagRecMes = new List<ModeloViewModel>();
-                datas = pagtos.Where(p => p.COPA_DT_PAGAMENTO.Value.Month == DateTime.Today.Month & p.COPA_DT_PAGAMENTO.Value.Year == DateTime.Today.Year).Select(p => p.COPA_DT_PAGAMENTO.Value.Date).Distinct().ToList();
+                datas = jaPagtos.Where(p => p.COPA_DT_PAGAMENTO.Value.Month == DateTime.Today.Month & p.COPA_DT_PAGAMENTO.Value.Year == DateTime.Today.Year).Select(p => p.COPA_DT_PAGAMENTO.Value.Date).Distinct().ToList();
                 if ((Int32)Session["PagamentoAlterada"] == 1 || Session["ListaPagtoMes"] == null)
                 {
                     datas.Sort((i, j) => i.Date.CompareTo(j.Date));
                     List<ModeloViewModel> lista = new List<ModeloViewModel>();
                     foreach (DateTime item in datas)
                     {
-                        Int32 conta = pagtos.Where(p => p.COPA_DT_PAGAMENTO.Value.Date == item.Date & p.COPA_IN_PAGO == 1).Count();
-                        Decimal? soma = pagtos.Where(p => p.COPA_DT_PAGAMENTO.Value.Date == item.Date & p.COPA_IN_PAGO == 1).Sum(p => p.COPA_VL_PAGO);
+                        Int32 conta = jaPagtos.Where(p => p.COPA_DT_PAGAMENTO.Value.Date == item.Date & p.COPA_IN_PAGO == 1).Count();
+                        Decimal? soma = jaPagtos.Where(p => p.COPA_DT_PAGAMENTO.Value.Date == item.Date & p.COPA_IN_PAGO == 1).Sum(p => p.COPA_VL_PAGO);
                         ModeloViewModel mod = new ModeloViewModel();
                         mod.DataEmissao = item;
                         mod.Valor = conta;
@@ -6911,15 +7023,15 @@ namespace GEDSys_Presentation.Controllers
                 }
 
                 // Recebimentos por dia - Mes corrente
-                datas = rectos.Where(p => p.CORE_DT_RECEBIMENTO.Value.Month == DateTime.Today.Month & p.CORE_DT_RECEBIMENTO.Value.Year == DateTime.Today.Year).Select(p => p.CORE_DT_RECEBIMENTO.Value.Date).Distinct().ToList();
+                datas = jaRectos.Where(p => p.CORE_DT_RECEBIMENTO.Value.Month == DateTime.Today.Month & p.CORE_DT_RECEBIMENTO.Value.Year == DateTime.Today.Year).Select(p => p.CORE_DT_RECEBIMENTO.Value.Date).Distinct().ToList();
                 if ((Int32)Session["RecebimentoAlterada"] == 1 || Session["ListaRectoMes"] == null)
                 {
                     datas.Sort((i, j) => i.Date.CompareTo(j.Date));
                     List<ModeloViewModel> lista = new List<ModeloViewModel>();
                     foreach (DateTime item in datas)
                     {
-                        Int32 conta = rectos.Where(p => p.CORE_DT_RECEBIMENTO.Value.Date == item.Date).Count();
-                        Decimal? soma = rectos.Where(p => p.CORE_DT_RECEBIMENTO.Value.Date == item.Date).Sum(p => p.CORE_VL_VALOR);
+                        Int32 conta = jaRectos.Where(p => p.CORE_DT_RECEBIMENTO.Value.Date == item.Date).Count();
+                        Decimal? soma = jaRectos.Where(p => p.CORE_DT_RECEBIMENTO.Value.Date == item.Date).Sum(p => p.CORE_VL_VALOR);
                         ModeloViewModel mod = new ModeloViewModel();
                         mod.DataEmissao = item;
                         mod.Valor = conta;
@@ -6941,7 +7053,7 @@ namespace GEDSys_Presentation.Controllers
                 }
 
                 // Resumo Mensal Pagamentos
-                List<DateTime> datasPagto = pagtos.Where(p => p.COPA_DT_PAGAMENTO != null).Select(p => p.COPA_DT_PAGAMENTO.Value.Date).Distinct().ToList();
+                List<DateTime> datasPagto = jaPagtos.Where(p => p.COPA_DT_PAGAMENTO != null).Select(p => p.COPA_DT_PAGAMENTO.Value.Date).Distinct().ToList();
                 datasPagto.Sort((i, j) => i.Date.CompareTo(j.Date));
                 if ((Int32)Session["PagamentoAlterada"] == 1 || Session["ListaPagtosMes"] == null)
                 {
@@ -6955,7 +7067,7 @@ namespace GEDSys_Presentation.Controllers
                             mes2 = item.Month.ToString() + "/" + item.Year.ToString();
                             if (mes2 != mesFeito2)
                             {
-                                Decimal conta = pagtos.Where(p => p.COPA_DT_PAGAMENTO.Value.Date.Month == item.Month & p.COPA_DT_PAGAMENTO.Value.Date.Year == item.Year & p.COPA_DT_PAGAMENTO > limite & p.COPA_IN_PAGO == 1).Sum(p => p.COPA_VL_PAGO.Value);
+                                Decimal conta = jaPagtos.Where(p => p.COPA_DT_PAGAMENTO.Value.Date.Month == item.Month & p.COPA_DT_PAGAMENTO.Value.Date.Year == item.Year & p.COPA_DT_PAGAMENTO > limite & p.COPA_IN_PAGO == 1).Sum(p => p.COPA_VL_PAGO.Value);
                                 ModeloViewModel mod = new ModeloViewModel();
                                 mod.Nome = mes2;
                                 mod.ValorDec1 = conta;
@@ -6983,7 +7095,7 @@ namespace GEDSys_Presentation.Controllers
                 }
 
                 // Resumo Mensal Recebimentos
-                List<DateTime> datasRecto = rectos.Where(p => p.CORE_DT_RECEBIMENTO != null).Select(p => p.CORE_DT_RECEBIMENTO.Value.Date).Distinct().ToList();
+                List<DateTime> datasRecto = jaRectos.Where(p => p.CORE_DT_RECEBIMENTO != null).Select(p => p.CORE_DT_RECEBIMENTO.Value.Date).Distinct().ToList();
                 datasRecto.Sort((i, j) => i.Date.CompareTo(j.Date));
                 if ((Int32)Session["RecebimentoAlterada"] == 1 || Session["ListaRectosMes"] == null)
                 {
@@ -6997,7 +7109,7 @@ namespace GEDSys_Presentation.Controllers
                             mes2 = item.Month.ToString() + "/" + item.Year.ToString();
                             if (mes2 != mesFeito2)
                             {
-                                Decimal conta = rectos.Where(p => p.CORE_DT_RECEBIMENTO.Value.Date.Month == item.Month & p.CORE_DT_RECEBIMENTO.Value.Date.Year == item.Year & p.CORE_DT_RECEBIMENTO > limite).Sum(p => p.CORE_VL_VALOR.Value);
+                                Decimal conta = jaRectos.Where(p => p.CORE_DT_RECEBIMENTO.Value.Date.Month == item.Month & p.CORE_DT_RECEBIMENTO.Value.Date.Year == item.Year & p.CORE_DT_RECEBIMENTO > limite).Sum(p => p.CORE_VL_VALOR.Value);
                                 ModeloViewModel mod = new ModeloViewModel();
                                 mod.Nome = mes2;
                                 mod.ValorDec1 = conta;
@@ -7074,15 +7186,15 @@ namespace GEDSys_Presentation.Controllers
                 Session["ListaRectoForma"] = lista4;
 
                 // Resumo pagamento/média x dia
-                datas = pagtos.Where(p => p.COPA_DT_PAGAMENTO.Value.Month == DateTime.Today.Month & p.COPA_DT_PAGAMENTO.Value.Year == DateTime.Today.Year).Select(p => p.COPA_DT_PAGAMENTO.Value.Date).Distinct().ToList();
+                datas = jaPagtos.Where(p => p.COPA_DT_PAGAMENTO.Value.Month == DateTime.Today.Month & p.COPA_DT_PAGAMENTO.Value.Year == DateTime.Today.Year).Select(p => p.COPA_DT_PAGAMENTO.Value.Date).Distinct().ToList();
                 if ((Int32)Session["PagamentoAlterada"] == 1 || Session["ListaPagtoMedia"] == null)
                 {
                     datas.Sort((i, j) => i.Date.CompareTo(j.Date));
                     List<ModeloViewModel> lista = new List<ModeloViewModel>();
                     foreach (DateTime item in datas)
                     {
-                        Int32 conta = pagtos.Where(p => p.COPA_DT_PAGAMENTO.Value.Date == item.Date & p.COPA_IN_PAGO == 1).Count();
-                        Decimal? soma = pagtos.Where(p => p.COPA_DT_PAGAMENTO.Value.Date == item.Date & p.COPA_IN_PAGO == 1).Sum(p => p.COPA_VL_PAGO);
+                        Int32 conta = jaPagtos.Where(p => p.COPA_DT_PAGAMENTO.Value.Date == item.Date & p.COPA_IN_PAGO == 1).Count();
+                        Decimal? soma = jaPagtos.Where(p => p.COPA_DT_PAGAMENTO.Value.Date == item.Date & p.COPA_IN_PAGO == 1).Sum(p => p.COPA_VL_PAGO);
                         Decimal? media = 0;
                         if (conta > 0)
                         {
@@ -8261,15 +8373,16 @@ namespace GEDSys_Presentation.Controllers
                 Font meuFont2 = FontFactory.GetFont("Arial", 14, iTextSharp.text.Font.NORMAL, BaseColor.BLACK);
 
                 // Carrega dados
-                List<CONSULTA_PAGAMENTO> pagtos = (List<CONSULTA_PAGAMENTO>)Session["ListaPagamento"];
-                //List<DateTime> datas = pagtos.Where(p => p.COPA_DT_PAGAMENTO.Value.Month == DateTime.Today.Month & p.COPA_DT_PAGAMENTO.Value.Year == DateTime.Today.Year).Select(p => p.COPA_DT_PAGAMENTO.Value.Date).Distinct().ToList();
+                List<CONSULTA_PAGAMENTO> pagtos1 = (List<CONSULTA_PAGAMENTO>)Session["ListaPagamento"];
+                List<CONSULTA_PAGAMENTO> pagtos = pagtos1.Where(p => p.COPA_DT_PAGAMENTO != null).ToList();
                 List<DateTime> datas = pagtos.Select(p => p.COPA_DT_PAGAMENTO.Value.Date).Distinct().ToList();
+
                 datas.Sort((i, j) => i.Date.CompareTo(j.Date));
                 List<ModeloViewModel> lista = new List<ModeloViewModel>();
                 foreach (DateTime item in datas)
                 {
                     Int32 conta = pagtos.Where(p => p.COPA_DT_PAGAMENTO.Value.Date == item.Date).Count();
-                    Decimal? soma = pagtos.Where(p => p.COPA_DT_PAGAMENTO.Value.Date == item.Date).Sum(p => p.COPA_VL_VALOR);
+                    Decimal? soma = pagtos.Where(p => p.COPA_DT_PAGAMENTO.Value.Date == item.Date).Sum(p => p.COPA_VL_PAGO);
                     Decimal? media = 0;
                     if (conta > 0)
                     {
@@ -8290,33 +8403,49 @@ namespace GEDSys_Presentation.Controllers
                 headerTable.SpacingBefore = 1f;
                 headerTable.SpacingAfter = 1f;
 
-                PdfPCell cell = new PdfPCell();
-                cell.Border = 0;
-                cell.Colspan = 1;
-                Image image = null;
                 if (conf.CONF_IN_LOGO_EMPRESA == 1)
                 {
+                    PdfPCell cell1 = new PdfPCell();
+                    cell1.Border = 0;
+                    cell1.Colspan = 1;
+                    Image image = null;
                     EMPRESA empresa = empApp.GetItemByAssinante(idAss);
                     image = Image.GetInstance(Server.MapPath(empresa.EMPR_AQ_LOGO));
+                    image.ScaleAbsolute(50, 50);
+                    cell1.AddElement(image);
+                    cell1.Border = PdfPCell.BOTTOM_BORDER;
+                    headerTable.AddCell(cell1);
+
+                    cell1 = new PdfPCell(new Paragraph("Pagamentos - Total e Média por Data", meuFont2))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_CENTER
+                    };
+                    cell1.Border = 0;
+                    cell1.Colspan = 1;
+                    cell1.Border = PdfPCell.BOTTOM_BORDER;
+                    headerTable.AddCell(cell1);
                 }
                 else
                 {
-                    image = Image.GetInstance(Server.MapPath("~/Images/Prontuario_Icone_1.png"));
-                }
-                image.ScaleAbsolute(50, 50);
-                cell.AddElement(image);
-                cell.Border = PdfPCell.BOTTOM_BORDER;
-                headerTable.AddCell(cell);
+                    PdfPCell cell2 = new PdfPCell(new Paragraph("Pagamentos - Total e Média por Data", meuFont2))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_CENTER
+                    };
+                    cell2.Border = 0;
+                    cell2.Colspan = 2;
+                    headerTable.AddCell(cell2);
 
-                cell = new PdfPCell(new Paragraph("Pagamentos - Total e Média por Data", meuFont2))
-                {
-                    VerticalAlignment = Element.ALIGN_MIDDLE,
-                    HorizontalAlignment = Element.ALIGN_CENTER
-                };
-                cell.Border = 0;
-                cell.Colspan = 1;
-                cell.Border = PdfPCell.BOTTOM_BORDER;
-                headerTable.AddCell(cell);
+                    cell2 = new PdfPCell(new Paragraph(" ", meuFont))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    cell2.Colspan = 2;
+                    cell2.Border = PdfPCell.BOTTOM_BORDER;
+                    headerTable.AddCell(cell2);
+                }
 
                 // Rodape
                 PdfPTable footerTable = new PdfPTable(1);
@@ -8325,7 +8454,7 @@ namespace GEDSys_Presentation.Controllers
                 footerTable.SpacingBefore = 1f;
                 footerTable.SpacingAfter = 1f;
 
-                cell = new PdfPCell();
+                PdfPCell cell = new PdfPCell();
                 cell.Border = PdfPCell.TOP_BORDER;
                 cell = new PdfPCell(new Paragraph("Gerado por WebDoctor 1.0 em " + DateTime.Today.Date.ToLongDateString(), meuFont));
                 footerTable.AddCell(cell);
@@ -8478,7 +8607,7 @@ namespace GEDSys_Presentation.Controllers
                 foreach (String item in favs)
                 {
                     Int32 conta = pagtos.Where(p => p.COPA_NM_FAVORECIDO == item).Count();
-                    Decimal? soma = pagtos.Where(p => p.COPA_NM_FAVORECIDO == item).Sum(p => p.COPA_VL_VALOR);
+                    Decimal? soma = pagtos.Where(p => p.COPA_NM_FAVORECIDO == item).Sum(p => p.COPA_VL_PAGO);
                     Decimal? media = 0;
                     if (conta > 0)
                     {
@@ -8499,33 +8628,49 @@ namespace GEDSys_Presentation.Controllers
                 headerTable.SpacingBefore = 1f;
                 headerTable.SpacingAfter = 1f;
 
-                PdfPCell cell = new PdfPCell();
-                cell.Border = 0;
-                cell.Colspan = 1;
-                Image image = null;
                 if (conf.CONF_IN_LOGO_EMPRESA == 1)
                 {
+                    PdfPCell cell1 = new PdfPCell();
+                    cell1.Border = 0;
+                    cell1.Colspan = 1;
+                    Image image = null;
                     EMPRESA empresa = empApp.GetItemByAssinante(idAss);
                     image = Image.GetInstance(Server.MapPath(empresa.EMPR_AQ_LOGO));
+                    image.ScaleAbsolute(50, 50);
+                    cell1.AddElement(image);
+                    cell1.Border = PdfPCell.BOTTOM_BORDER;
+                    headerTable.AddCell(cell1);
+
+                    cell1 = new PdfPCell(new Paragraph("Pagamentos - Total e Média por Favorecido", meuFont2))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_CENTER
+                    };
+                    cell1.Border = 0;
+                    cell1.Colspan = 1;
+                    cell1.Border = PdfPCell.BOTTOM_BORDER;
+                    headerTable.AddCell(cell1);
                 }
                 else
                 {
-                    image = Image.GetInstance(Server.MapPath("~/Images/Prontuario_Icone_1.png"));
-                }
-                image.ScaleAbsolute(50, 50);
-                cell.AddElement(image);
-                cell.Border = PdfPCell.BOTTOM_BORDER;
-                headerTable.AddCell(cell);
+                    PdfPCell cell2 = new PdfPCell(new Paragraph("Pagamentos - Total e Média por Favorecido", meuFont2))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_CENTER
+                    };
+                    cell2.Border = 0;
+                    cell2.Colspan = 2;
+                    headerTable.AddCell(cell2);
 
-                cell = new PdfPCell(new Paragraph("Pagamentos - Total e Média por Favorecido", meuFont2))
-                {
-                    VerticalAlignment = Element.ALIGN_MIDDLE,
-                    HorizontalAlignment = Element.ALIGN_CENTER
-                };
-                cell.Border = 0;
-                cell.Colspan = 1;
-                cell.Border = PdfPCell.BOTTOM_BORDER;
-                headerTable.AddCell(cell);
+                    cell2 = new PdfPCell(new Paragraph(" ", meuFont))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    cell2.Colspan = 2;
+                    cell2.Border = PdfPCell.BOTTOM_BORDER;
+                    headerTable.AddCell(cell2);
+                }
 
                 // Rodape
                 PdfPTable footerTable = new PdfPTable(1);
@@ -8534,7 +8679,7 @@ namespace GEDSys_Presentation.Controllers
                 footerTable.SpacingBefore = 1f;
                 footerTable.SpacingAfter = 1f;
 
-                cell = new PdfPCell();
+                PdfPCell cell = new PdfPCell();
                 cell.Border = PdfPCell.TOP_BORDER;
                 cell = new PdfPCell(new Paragraph("Gerado por WebDoctor 1.0 em " + DateTime.Today.Date.ToLongDateString(), meuFont));
                 footerTable.AddCell(cell);
@@ -8681,7 +8826,8 @@ namespace GEDSys_Presentation.Controllers
                 Font meuFont2 = FontFactory.GetFont("Arial", 14, iTextSharp.text.Font.NORMAL, BaseColor.BLACK);
 
                 // Carrega dados
-                List<CONSULTA_PAGAMENTO> pagtos = (List<CONSULTA_PAGAMENTO>)Session["ListaPagamento"];
+                List<CONSULTA_PAGAMENTO> pagtos1 = (List<CONSULTA_PAGAMENTO>)Session["ListaPagamento"];
+                List<CONSULTA_PAGAMENTO> pagtos = pagtos1.Where(p => p.COPA_DT_PAGAMENTO != null).ToList();
                 List<DateTime> datasPagto = pagtos.Where(p => p.COPA_DT_PAGAMENTO != null).Select(p => p.COPA_DT_PAGAMENTO.Value.Date).Distinct().ToList();
                 datasPagto.Sort((i, j) => i.Date.CompareTo(j.Date));
                 List<ModeloViewModel> listaMes = new List<ModeloViewModel>();
@@ -8694,7 +8840,7 @@ namespace GEDSys_Presentation.Controllers
                         mes2 = item.Month.ToString() + "/" + item.Year.ToString();
                         if (mes2 != mesFeito2)
                         {
-                            Decimal conta = pagtos.Where(p => p.COPA_DT_PAGAMENTO.Value.Date.Month == item.Month & p.COPA_DT_PAGAMENTO.Value.Date.Year == item.Year & p.COPA_DT_PAGAMENTO > limite).Sum(p => p.COPA_VL_VALOR.Value);
+                            Decimal conta = pagtos.Where(p => p.COPA_DT_PAGAMENTO.Value.Date.Month == item.Month & p.COPA_DT_PAGAMENTO.Value.Date.Year == item.Year & p.COPA_DT_PAGAMENTO > limite).Sum(p => p.COPA_VL_PAGO.Value);
                             Int32 num = pagtos.Where(p => p.COPA_DT_PAGAMENTO.Value.Date.Month == item.Month & p.COPA_DT_PAGAMENTO.Value.Date.Year == item.Year & p.COPA_DT_PAGAMENTO > limite).Count();
                             ModeloViewModel mod = new ModeloViewModel();
                             mod.Nome = mes2;
@@ -8713,33 +8859,49 @@ namespace GEDSys_Presentation.Controllers
                 headerTable.SpacingBefore = 1f;
                 headerTable.SpacingAfter = 1f;
 
-                PdfPCell cell = new PdfPCell();
-                cell.Border = 0;
-                cell.Colspan = 1;
-                Image image = null;
                 if (conf.CONF_IN_LOGO_EMPRESA == 1)
                 {
+                    PdfPCell cell1 = new PdfPCell();
+                    cell1.Border = 0;
+                    cell1.Colspan = 1;
+                    Image image = null;
                     EMPRESA empresa = empApp.GetItemByAssinante(idAss);
                     image = Image.GetInstance(Server.MapPath(empresa.EMPR_AQ_LOGO));
+                    image.ScaleAbsolute(50, 50);
+                    cell1.AddElement(image);
+                    cell1.Border = PdfPCell.BOTTOM_BORDER;
+                    headerTable.AddCell(cell1);
+
+                    cell1 = new PdfPCell(new Paragraph("Pagamentos - Total por Mès", meuFont2))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_CENTER
+                    };
+                    cell1.Border = 0;
+                    cell1.Colspan = 1;
+                    cell1.Border = PdfPCell.BOTTOM_BORDER;
+                    headerTable.AddCell(cell1);
                 }
                 else
                 {
-                    image = Image.GetInstance(Server.MapPath("~/Images/Prontuario_Icone_1.png"));
-                }
-                image.ScaleAbsolute(50, 50);
-                cell.AddElement(image);
-                cell.Border = PdfPCell.BOTTOM_BORDER;
-                headerTable.AddCell(cell);
+                    PdfPCell cell2 = new PdfPCell(new Paragraph("Pagamentos - Total por Mês", meuFont2))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_CENTER
+                    };
+                    cell2.Border = 0;
+                    cell2.Colspan = 2;
+                    headerTable.AddCell(cell2);
 
-                cell = new PdfPCell(new Paragraph("Pagamentos - Total por Mês", meuFont2))
-                {
-                    VerticalAlignment = Element.ALIGN_MIDDLE,
-                    HorizontalAlignment = Element.ALIGN_CENTER
-                };
-                cell.Border = 0;
-                cell.Colspan = 1;
-                cell.Border = PdfPCell.BOTTOM_BORDER;
-                headerTable.AddCell(cell);
+                    cell2 = new PdfPCell(new Paragraph(" ", meuFont))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    cell2.Colspan = 2;
+                    cell2.Border = PdfPCell.BOTTOM_BORDER;
+                    headerTable.AddCell(cell2);
+                }
 
                 // Rodape
                 PdfPTable footerTable = new PdfPTable(1);
@@ -8748,7 +8910,7 @@ namespace GEDSys_Presentation.Controllers
                 footerTable.SpacingBefore = 1f;
                 footerTable.SpacingAfter = 1f;
 
-                cell = new PdfPCell();
+                PdfPCell cell = new PdfPCell();
                 cell.Border = PdfPCell.TOP_BORDER;
                 cell = new PdfPCell(new Paragraph("Gerado por WebDoctor 1.0 em " + DateTime.Today.Date.ToLongDateString(), meuFont));
                 footerTable.AddCell(cell);
@@ -9900,16 +10062,25 @@ namespace GEDSys_Presentation.Controllers
                 item.TIPA_CD_ID = obj.TIPA_CD_ID;
                 Int32 volta = pagApp.ValidateEdit(item, item);
 
+                // Configura serilização
+                JsonSerializerSettings settings = new JsonSerializerSettings
+                {
+                    ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+                    NullValueHandling = NullValueHandling.Ignore
+                };
+
                 // Monta Log
-                String frase = item.COPA_CD_ID.ToString() + "|" + item.TIPA_CD_ID.ToString() + "|" + item.USUA_CD_ID.ToString() + "|" + item.COPA_DT_PAGAMENTO.ToString() + "|" + item.COPA_GU_GUID + "|" + item.COPA_VL_VALOR.ToString();
+                CONSULTA_PAGAMENTO pag = pagApp.GetItemById(item.COPA_CD_ID);
+                DTO_Pagamento dto = MontarPagamentoDTOObj(item);
+                String json = JsonConvert.SerializeObject(dto, settings);
                 LOG log = new LOG
                 {
                     LOG_DT_DATA = DateTime.Now,
                     ASSI_CD_ID = usuario.ASSI_CD_ID,
                     USUA_CD_ID = usuario.USUA_CD_ID,
-                    LOG_NM_OPERACAO = "epgCOPA",
+                    LOG_NM_OPERACAO = "Pagamento - Alteração",
                     LOG_IN_ATIVO = 1,
-                    LOG_TX_REGISTRO = frase,
+                    LOG_TX_REGISTRO = json,
                     LOG_IN_SISTEMA = 6
                 };
                 Int32 volta1 = logApp.ValidateCreate(log);
@@ -9972,33 +10143,49 @@ namespace GEDSys_Presentation.Controllers
                 headerTable.SpacingBefore = 1f;
                 headerTable.SpacingAfter = 1f;
 
-                PdfPCell cell = new PdfPCell();
-                cell.Border = 0;
-                cell.Colspan = 1;
-                Image image = null;
                 if (conf.CONF_IN_LOGO_EMPRESA == 1)
                 {
+                    PdfPCell cell1 = new PdfPCell();
+                    cell1.Border = 0;
+                    cell1.Colspan = 1;
+                    Image image = null;
                     EMPRESA empresa = empApp.GetItemByAssinante(idAss);
                     image = Image.GetInstance(Server.MapPath(empresa.EMPR_AQ_LOGO));
+                    image.ScaleAbsolute(50, 50);
+                    cell1.AddElement(image);
+                    cell1.Border = PdfPCell.BOTTOM_BORDER;
+                    headerTable.AddCell(cell1);
+
+                    cell1 = new PdfPCell(new Paragraph("Pagamentos - Quitados em " + DateTime.Today.Date.ToLongDateString(), meuFont2))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_CENTER
+                    };
+                    cell1.Border = 0;
+                    cell1.Colspan = 1;
+                    cell1.Border = PdfPCell.BOTTOM_BORDER;
+                    headerTable.AddCell(cell1);
                 }
                 else
                 {
-                    image = Image.GetInstance(Server.MapPath("~/Images/Prontuario_Icone_1.png"));
-                }
-                image.ScaleAbsolute(50, 50);
-                cell.AddElement(image);
-                cell.Border = PdfPCell.BOTTOM_BORDER;
-                headerTable.AddCell(cell);
+                    PdfPCell cell2 = new PdfPCell(new Paragraph("Pagamentos - Quitados em " + DateTime.Today.Date.ToLongDateString(), meuFont2))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_CENTER
+                    };
+                    cell2.Border = 0;
+                    cell2.Colspan = 2;
+                    headerTable.AddCell(cell2);
 
-                cell = new PdfPCell(new Paragraph("Pagamentos - Quitados em " + DateTime.Today.Date.ToLongDateString(), meuFont2))
-                {
-                    VerticalAlignment = Element.ALIGN_MIDDLE,
-                    HorizontalAlignment = Element.ALIGN_CENTER
-                };
-                cell.Border = 0;
-                cell.Colspan = 1;
-                cell.Border = PdfPCell.BOTTOM_BORDER;
-                headerTable.AddCell(cell);
+                    cell2 = new PdfPCell(new Paragraph(" ", meuFont))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    cell2.Colspan = 2;
+                    cell2.Border = PdfPCell.BOTTOM_BORDER;
+                    headerTable.AddCell(cell2);
+                }
 
                 // Rodape
                 PdfPTable footerTable = new PdfPTable(1);
@@ -10007,7 +10194,7 @@ namespace GEDSys_Presentation.Controllers
                 footerTable.SpacingBefore = 1f;
                 footerTable.SpacingAfter = 1f;
 
-                cell = new PdfPCell();
+                PdfPCell cell = new PdfPCell();
                 cell.Border = PdfPCell.TOP_BORDER;
                 cell = new PdfPCell(new Paragraph("Gerado por WebDoctor 1.0 em " + DateTime.Today.Date.ToLongDateString(), meuFont));
                 footerTable.AddCell(cell);
@@ -10266,33 +10453,49 @@ namespace GEDSys_Presentation.Controllers
                 headerTable.SpacingBefore = 1f;
                 headerTable.SpacingAfter = 1f;
 
-                PdfPCell cell = new PdfPCell();
-                cell.Border = 0;
-                cell.Colspan = 1;
-                Image image = null;
                 if (conf.CONF_IN_LOGO_EMPRESA == 1)
                 {
+                    PdfPCell cell1 = new PdfPCell();
+                    cell1.Border = 0;
+                    cell1.Colspan = 1;
+                    Image image = null;
                     EMPRESA empresa = empApp.GetItemByAssinante(idAss);
                     image = Image.GetInstance(Server.MapPath(empresa.EMPR_AQ_LOGO));
+                    image.ScaleAbsolute(50, 50);
+                    cell1.AddElement(image);
+                    cell1.Border = PdfPCell.BOTTOM_BORDER;
+                    headerTable.AddCell(cell1);
+
+                    cell1 = new PdfPCell(new Paragraph("Pagamentos - Quitados em " + mes, meuFont2))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_CENTER
+                    };
+                    cell1.Border = 0;
+                    cell1.Colspan = 1;
+                    cell1.Border = PdfPCell.BOTTOM_BORDER;
+                    headerTable.AddCell(cell1);
                 }
                 else
                 {
-                    image = Image.GetInstance(Server.MapPath("~/Images/Prontuario_Icone_1.png"));
-                }
-                image.ScaleAbsolute(50, 50);
-                cell.AddElement(image);
-                cell.Border = PdfPCell.BOTTOM_BORDER;
-                headerTable.AddCell(cell);
+                    PdfPCell cell2 = new PdfPCell(new Paragraph("Pagamentos - Quitados em " + mes, meuFont2))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_CENTER
+                    };
+                    cell2.Border = 0;
+                    cell2.Colspan = 2;
+                    headerTable.AddCell(cell2);
 
-                cell = new PdfPCell(new Paragraph("Pagamentos - Quitados em " + mes, meuFont2))
-                {
-                    VerticalAlignment = Element.ALIGN_MIDDLE,
-                    HorizontalAlignment = Element.ALIGN_CENTER
-                };
-                cell.Border = 0;
-                cell.Colspan = 1;
-                cell.Border = PdfPCell.BOTTOM_BORDER;
-                headerTable.AddCell(cell);
+                    cell2 = new PdfPCell(new Paragraph(" ", meuFont))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    cell2.Colspan = 2;
+                    cell2.Border = PdfPCell.BOTTOM_BORDER;
+                    headerTable.AddCell(cell2);
+                }
 
                 // Rodape
                 PdfPTable footerTable = new PdfPTable(1);
@@ -10301,7 +10504,7 @@ namespace GEDSys_Presentation.Controllers
                 footerTable.SpacingBefore = 1f;
                 footerTable.SpacingAfter = 1f;
 
-                cell = new PdfPCell();
+                PdfPCell cell = new PdfPCell();
                 cell.Border = PdfPCell.TOP_BORDER;
                 cell = new PdfPCell(new Paragraph("Gerado por WebDoctor 1.0 em " + DateTime.Today.Date.ToLongDateString(), meuFont));
                 footerTable.AddCell(cell);

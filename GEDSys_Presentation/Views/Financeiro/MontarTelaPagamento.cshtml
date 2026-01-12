@@ -198,11 +198,11 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach (var cond in (ViewBag.Listas as List<EntitiesServices.Model.CONSULTA_PAGAMENTO>).OrderByDescending(p => p.COPA_DT_VENCIMENTO.Value.Date))
+                                    @foreach (var cond in (ViewBag.Listas as List<EntitiesServices.Model.CONSULTA_PAGAMENTO>).OrderBy(p => p.COPA_DT_VENCIMENTO.Value.Date))
                                     {
                                         if (cond.COPA_DT_VENCIMENTO == DateTime.Today.Date & cond.COPA_IN_PAGO == 0)
                                         {
-                                            <tr style="background-color: palegoldenrod">
+                                            <tr style="background-color: beige">
                                                 <td style="width: auto">@cond.COPA_DT_VENCIMENTO.Value.ToShortDateString()</td>
                                                 @if (cond.COPA_DT_PAGAMENTO != null)
                                                 {
@@ -253,7 +253,7 @@
                                                     {
                                                         if (cond.COPA_IN_ATIVO == 1)
                                                         {
-                                                            <span style="color: #337ab7; cursor:pointer;" alt="Desativar" class="tbl-link fa-lg fa fa-trash-o" onclick="ShowModalExcluir('/Financeiro/ExcluirPagamento/@cond.COPA_CD_ID')" title="Excluir"></span>
+                                                            <span style="color: #337ab7; cursor:pointer;" alt="Desativar" class="tbl-link fa-lg fa fa-trash-o btn-loading" onclick="ShowModalExcluir('/Financeiro/ExcluirPagamento/@cond.COPA_CD_ID')" title="Excluir"></span>
                                                         }
 	                                                }
                                                 </td>
@@ -261,7 +261,7 @@
                                         }
                                         else if (cond.COPA_DT_VENCIMENTO < DateTime.Today.Date & cond.COPA_IN_PAGO == 0)
                                         {
-                                            <tr style="background-color: navajowhite">
+                                            <tr style="background-color: bisque">
                                                 <td style="width: auto">@cond.COPA_DT_VENCIMENTO.Value.ToShortDateString()</td>
                                                 @if (cond.COPA_DT_PAGAMENTO != null)
                                                 {
@@ -312,7 +312,7 @@
                                                     {
                                                         if (cond.COPA_IN_ATIVO == 1)
                                                         {
-                                                            <span style="color: #337ab7; cursor:pointer;" alt="Desativar" class="tbl-link fa-lg fa fa-trash-o" onclick="ShowModalExcluir('/Financeiro/ExcluirPagamento/@cond.COPA_CD_ID')" title="Excluir"></span>
+                                                            <span style="color: #337ab7; cursor:pointer;" alt="Desativar" class="tbl-link fa-lg fa fa-trash-o btn-loading" onclick="ShowModalExcluir('/Financeiro/ExcluirPagamento/@cond.COPA_CD_ID')" title="Excluir"></span>
                                                         }
 	                                                }
                                                 </td>
@@ -371,7 +371,7 @@
                                                     {
                                                         if (cond.COPA_IN_ATIVO == 1)
                                                         {
-                                                            <span style="color: #337ab7; cursor:pointer;" alt="Desativar" class="tbl-link fa-lg fa fa-trash-o" onclick="ShowModalExcluir('/Financeiro/ExcluirPagamento/@cond.COPA_CD_ID')" title="Excluir"></span>
+                                                            <span style="color: #337ab7; cursor:pointer;" alt="Desativar" class="tbl-link fa-lg fa fa-trash-o btn-loading" onclick="ShowModalExcluir('/Financeiro/ExcluirPagamento/@cond.COPA_CD_ID')" title="Excluir"></span>
                                                         }
 	                                                }
                                                 </td>
@@ -437,7 +437,7 @@
                                                     {
                                                         if (cond.COPA_IN_ATIVO == 1)
                                                         {
-                                                            <span style="color: #337ab7; cursor:pointer;" alt="Desativar" class="tbl-link fa-lg fa fa-trash-o" onclick="ShowModalExcluir('/Financeiro/ExcluirPagamento/@cond.COPA_CD_ID')" title="Excluir"></span>
+                                                            <span style="color: #337ab7; cursor:pointer;" alt="Desativar" class="tbl-link fa-lg fa fa-trash-o btn-loading" onclick="ShowModalExcluir('/Financeiro/ExcluirPagamento/@cond.COPA_CD_ID')" title="Excluir"></span>
                                                         }
 	                                                }
                                                 </td>

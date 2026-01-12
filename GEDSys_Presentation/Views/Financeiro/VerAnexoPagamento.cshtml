@@ -20,7 +20,7 @@
                 <a href="@Url.Action("MontarTelaPagamento", "Financeiro")">Pagamentos</a>
             </li>
             <li>
-                <a href="@Url.Action("EditarPagamento", "Financeiro")">Pagamentos - Edição</a>
+                <a href="@Url.Action("EditarPagamento", "Financeiro")">Pagamentos - Alteração</a>
             </li>
             <li class="active">
                 <strong>Pagamentos - Anexos</strong>
@@ -38,7 +38,10 @@
                 {
                     <div class="ibox-content">
                         <div class="form-group">
-                            @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarAnexoPagamento", controller: "Financeiro")
+                            @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarAnexoPagamento", controller: "Financeiro", htmlAttributes: new { @class = "btn-loading" })
+                            <span id="loadingIndicator" style="display: none; margin-left: 10px; color: #007bff;">
+                                <i class="fa fa-spinner fa-spin"></i> Processando...
+                            </span>
                         </div>
                         <div class="row">
                             <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
@@ -92,6 +95,25 @@
     <script type="text/javascript">
         $(document).on('webkitfullscreenchange mozfullscreenchange fullscreenchange', function (e) {
             $('body').hasClass('fullscreen-video') ? $('body').removeClass('fullscreen-video') : $('body').addClass('fullscreen-video')
+        });
+    </script>
+
+    <script type="text/javascript">
+        $(document).ready(function () { 
+            $('.btn-loading').on('click', function (e) {            
+                $(this).prop('disabled', true);
+                $(this).addClass('disabled');
+                $('#loadingIndicator').show();
+                var tagName = $(this).prop('tagName').toLowerCase();
+                if (tagName === 'a') {
+                    e.preventDefault(); 
+                    var targetUrl = $(this).attr('href');
+                    window.location.href = targetUrl;
+
+                } else if (tagName === 'button' || tagName === 'input') {
+                    $(this).closest('form').submit();
+                }
+            });
         });
     </script>
 

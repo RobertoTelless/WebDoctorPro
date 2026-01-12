@@ -5116,7 +5116,6 @@
     <Content Include="Views\Financeiro\EditarAnotacaoRecebimento.cshtml" />
     <Content Include="Views\Financeiro\MontarTelaFinanceiro.cshtml" />
     <Content Include="Views\Financeiro\MontarTelaEncerrarConsulta.cshtml" />
-    <Content Include="Views\Financeiro\MontarTelaRelatorios.cshtml" />
     <Content Include="Views\Paciente2\MontarTelaAusencias.cshtml" />
     <Content Include="Views\Paciente2\MontarTelaAvisosRTi.cshtml" />
     <Content Include="Views\Paciente2\ImportarPlanilhaPaciente.cshtml" />

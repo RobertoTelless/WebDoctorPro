@@ -45,10 +45,10 @@
                         }
                         <div class="row">
                             <div class="col-lg-8 col-md-8 col-xs-12">
-                                <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Pagamento</h4>
+                                <h4 style="margin-left: -15px; color:green; background-color: beige; font-weight:bold">Pagamento</h4>
                                 <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
-                                    @Html.ButtonActionSubmit(text: "BtnSubmit", htmlAttributes: new { id = "submit", style = "display: none;", @class = "btn-loading1" })
-                                    <button style="margin-left: 15px;" class="btnSubmit btn btn-sm btn-success" id="basictoast" type="button">Confirmar inclusão do Pagamento</button>
+                                    @Html.ButtonActionSubmit(text: "BtnSubmit", htmlAttributes: new { id = "submit", style = "display: none;"})
+                                    <button style="margin-left: 15px;" class="btnSubmit btn btn-sm btn-success btn-loading1" id="basictoast" type="button">Confirmar inclusão do Pagamento</button>
                                     @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaPagamento", controller: "Financeiro", htmlAttributes: new { @class = "btn-loading" })
                                     <a href="@Url.Action((String)Session["AjudaNivel"])" class="btn btn-sm btn-danger" target="_blank">Ajuda</a>
                                     <span id="loadingIndicator" style="display: none; margin-left: 10px; color: #007bff;">
@@ -57,7 +57,7 @@
                                 </div>
 
                                 <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
-                                    <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Identificação do Pagamento</h4>
+                                    <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold; margin-right: 15px;">Identificação do Pagamento</h4>
                                     <div class="col-lg-3 col-md-3 col-xs-12">
                                         Identificador
                                         @Html.TextBoxFor(m => m.COPA_GU_GUID, new { @class = "form-control", @readonly = "readonly", @style = "color: brown; font-weight: bold"  })
@@ -86,7 +86,7 @@
                                     </div>
                                 </div>
                                 <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
-                                    <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Favorecido</h4>
+                                    <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold; margin-right: 15px;">Favorecido</h4>
                                     <div class="col-lg-6 col-md-6 col-xs-12">
                                         Nome do Pagamento
                                         @Html.TextBoxFor(m => m.COPA_NM_NOME, new { @class = "form-control", autofocus = true, id = "nomePag", data_toggle = "popover", data_content = "O WebDoctor gera um nome para o pagamento baseado nas informações fornecidas. Esse nome poderá ser alterado se necessário", data_trigger="hover", data_placement="top" })
@@ -99,8 +99,8 @@
                                     </div>
                                 </div>
                                 <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
-                                    <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Quitação</h4>
-                                    <h5 style="margin-left: 0px; color:darkblue; background-color: beige; font-weight:bold">Na criação de pagamento recursivo a informação de quitação será aplicada apenas na primeira ocorrência</h5>
+                                    <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold; margin-right: 15px;">Quitação</h4>
+                                    <h5 style="margin-left: 0px; color:darkblue; background-color: beige; font-weight:bold; margin-right: 15px;">Na criação de pagamento recursivo a informação de quitação será aplicada apenas na primeira ocorrência</h5>
                                     <div class="col-lg-2 col-md-2 col-xs-12">
                                         Pagamento já Quitado*
                                         @Html.DropDownListFor(m => m.QUITA_PAGAMENTO, (SelectList)ViewBag.Quitar, "Selecionar", new { @class = "form-control", autofocus = true })
@@ -127,8 +127,8 @@
                                     </div>
                                 </div>
                                 <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
-                                    <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Pagamento Recursivo</h4>
-                                    <h5 style="margin-left: 0px; color:darkblue; background-color: beige; font-weight:bold">Na criação de pagamento recursivo NÃO serão considerados os arquivos anexados</h5>
+                                    <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold; margin-right: 15px;">Pagamento Recursivo</h4>
+                                    <h5 style="margin-left: 0px; color:darkblue; background-color: beige; font-weight:bold; margin-right: 15px;">Na criação de pagamento recursivo NÃO serão considerados os arquivos anexados</h5>
                                     <div class="col-lg-2 col-md-2 col-xs-12">
                                         Pagamento Recursivo?*
                                         @Html.DropDownListFor(m => m.RECURSIVO, (SelectList)ViewBag.Recursivo, "Selecionar", new { @class = "form-control", autofocus = true })
@@ -158,7 +158,7 @@
                             </div>
 
                             <div class="col-lg-4 col-md-4 col-xs-12">
-                                <h4 style="margin-left: -15px; color:green; background-color: beige; font-weight:bold">Anexos</h4>
+                                <h4 style="margin-left: -15px; color:green; background-color: beige; font-weight:bold; margin-right: -15px;">Anexos</h4>
                                 <input class="btn btn-sm btn-warning" style="margin-left: -15px;" id="inputFile" type="file" multiple data-toggle="popover" data-trigger="hover" data-placement="top" data-content="ATENÇÃO - Antes de anexar arquivos certifique-se de que eles estejam livres de vírus e outras ameaças. Anexe aqui os arquivos referentes a este pagamento. As notas fiscais NF-e em formato XML da SRF devem ser anexadas em local próprio na página de edição de pagamentos"/>
                                 <br />
                                 <div class="form-group" style="margin-left: -15px;">
