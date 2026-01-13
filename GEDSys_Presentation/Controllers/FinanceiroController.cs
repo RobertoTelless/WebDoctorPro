@@ -2513,6 +2513,10 @@ namespace GEDSys_Presentation.Controllers
                 {
                     contentType = "audio/mpeg";
                 }
+                else if (arquivo.Contains(".mp4"))
+                {
+                    contentType = "video/mp4";
+                }
                 Session["NivelPaciente"] = 1;
                 Session["NivelPagamento"] = 2;
                 return File(arquivo, contentType, nomeDownload);
@@ -3875,6 +3879,7 @@ namespace GEDSys_Presentation.Controllers
                 PagamentoViewModel vm = Mapper.Map<CONSULTA_PAGAMENTO, PagamentoViewModel>(item);
                 Session["Pagamento"] = item;
                 Session["TipoPagamentoId"] = item.TIPA_CD_ID;
+                Session["PagamentoVer"] = 0;
 
                 // Grava Acesso
                 ControleAcessoMetodo grava = new ControleAcessoMetodo(aceApp);
@@ -4015,6 +4020,76 @@ namespace GEDSys_Presentation.Controllers
             else
             {
                 return View(vm);
+            }
+        }
+
+        [HttpGet]
+        public ActionResult VerPagamento(Int32 id)
+        {
+            try
+            {
+                // Verifica se tem usuario logado
+                USUARIO usuario = new USUARIO();
+                if ((String)Session["Ativa"] == null)
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+                if ((USUARIO)Session["UserCredentials"] != null)
+                {
+                    usuario = (USUARIO)Session["UserCredentials"];
+
+                    // Verfifica permissão
+                    if (usuario.PERFIL.PERF_IN_FINANCEIRO_PAG_ALTERAR == 0)
+                    {
+                        Session["MensPermissao"] = 2;
+                        Session["ModuloPermissao"] = "Pagamento - Edição";
+                        return RedirectToAction("MontarTelaPagamento");
+                    }
+                }
+                else
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+                Int32 idAss = (Int32)Session["IdAssinante"];
+
+                // Prepara view
+                Session["NivelPaciente"] = 1;
+                Session["ModuloAtual"] = "Financeiro - Pagamentos - Ver";
+                Session["AjudaNivel"] = "../BaseAdmin/Ajuda/20/Ajuda20_3.pdf";
+                Int32 s = (Int32)Session["VoltarPesquisa"];
+
+                if (Session["MensPaciente"] != null)
+                {
+                    if ((Int32)Session["MensPaciente"] == 61)
+                    {
+                        TempData["MensagemAcerto"] = (String)Session["MsgCRUD"];
+                        TempData["TemMensagem"] = 1;
+                    }
+                }
+
+                // Prepara registro
+                CONSULTA_PAGAMENTO item = pagApp.GetItemById(id);
+                Session["IdPagamento"] = item.COPA_CD_ID;
+                PagamentoViewModel vm = Mapper.Map<CONSULTA_PAGAMENTO, PagamentoViewModel>(item);
+                Session["Pagamento"] = item;
+                Session["TipoPagamentoId"] = item.TIPA_CD_ID;
+                Session["PagamentoVer"] = 1;
+
+                // Grava Acesso
+                ControleAcessoMetodo grava = new ControleAcessoMetodo(aceApp);
+                Int32 voltaX = grava.GravaAcesso(usuario.USUA_CD_ID, usuario.ASSI_CD_ID, "PAGAMENTO_VER", "Financeiro", "VerPagamento");
+                return View(vm);
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Paciente";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Paciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return RedirectToAction("TrataExcecao", "BaseAdmin");
             }
         }
 
@@ -4329,6 +4404,16 @@ namespace GEDSys_Presentation.Controllers
             }
             Session["VoltaTela"] = 1;
             return RedirectToAction("EditarPagamento", new { id = (Int32)Session["IdPagamento"] });
+        }
+
+        public ActionResult VoltarAnexoPagamentoVer()
+        {
+            if ((String)Session["Ativa"] == null)
+            {
+                return RedirectToAction("Logout", "ControleAcesso");
+            }
+            Session["VoltaTela"] = 1;
+            return RedirectToAction("VerPagamento", new { id = (Int32)Session["IdPagamento"] });
         }
 
         [HttpPost]
@@ -4836,6 +4921,14 @@ namespace GEDSys_Presentation.Controllers
                 {
                     contentType = "audio/mpeg";
                 }
+                else if (arquivo.Contains(".mpeg"))
+                {
+                    contentType = "audio/mpeg";
+                }
+                else if (arquivo.Contains(".mp4"))
+                {
+                    contentType = "video/mp4";
+                }
                 Session["NivelPaciente"] = 1;
                 Session["NivelPagamento"] = 2;
                 return File(arquivo, contentType, nomeDownload);
@@ -4898,6 +4991,10 @@ namespace GEDSys_Presentation.Controllers
                 {
                     contentType = "application/xml";
                 }
+                else if (arquivo.Contains(".mp4"))
+                {
+                    contentType = "video/mp4";
+                }
                 Session["NivelPaciente"] = 1;
                 Session["NivelPagamento"] = 4;
                 return File(arquivo, contentType, nomeDownload);
@@ -4959,6 +5056,10 @@ namespace GEDSys_Presentation.Controllers
                 else if (arquivo.Contains(".xml"))
                 {
                     contentType = "application/xml";
+                }
+                else if (arquivo.Contains(".mp4"))
+                {
+                    contentType = "video/mp4";
                 }
                 Session["NivelPaciente"] = 1;
                 Session["NivelRecebimento"] = 4;
@@ -6025,6 +6126,9 @@ namespace GEDSys_Presentation.Controllers
                 Font meuFont = FontFactory.GetFont("Arial", 8, iTextSharp.text.Font.NORMAL, BaseColor.BLACK);
                 Font meuFont1 = FontFactory.GetFont("Arial", 9, iTextSharp.text.Font.NORMAL, BaseColor.BLACK);
                 Font meuFont2 = FontFactory.GetFont("Arial", 14, iTextSharp.text.Font.NORMAL, BaseColor.BLACK);
+                Font meuFont3 = FontFactory.GetFont("Arial", 8, iTextSharp.text.Font.BOLD, BaseColor.BLUE);
+                Decimal? total = 0;
+                Decimal? totalPago = 0;
 
                 // Cabeçalho
                 PdfPTable headerTable = new PdfPTable(new float[] { 20f, 700f });
@@ -6278,12 +6382,64 @@ namespace GEDSys_Presentation.Controllers
                         };
                         table.AddCell(cell);
                     }
+
+                    total += item.COPA_VL_VALOR;
+                    totalPago += item.COPA_VL_PAGO;
                 }
                 pdfDoc.Add(table);
 
-                // Linha Horizontal
-                Paragraph line2 = new Paragraph(new Chunk(new iTextSharp.text.pdf.draw.LineSeparator(0.0F, 100.0F, BaseColor.BLUE, Element.ALIGN_LEFT, 1)));
-                pdfDoc.Add(line2);
+                // Grid - TOTAIS
+                PdfPTable table1 = new PdfPTable(new float[] { 60f, 60f, 80f, 100f, 200f, 100f, 60f, 60f, 50f });
+                table1.WidthPercentage = 100;
+                table1.HorizontalAlignment = 0;
+                table1.SpacingBefore = 1f;
+                table1.SpacingAfter = 1f;
+
+                cell = new PdfPCell(new Paragraph(" ", meuFont))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                cell.Colspan = 5;
+                table1.AddCell(cell);
+
+                cell = new PdfPCell(new Paragraph("TOTAIS", meuFont))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_RIGHT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                table1.AddCell(cell);
+
+                cell = new PdfPCell(new Paragraph(CrossCutting.Formatters.DecimalFormatter(total.Value), meuFont3))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_RIGHT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                table1.AddCell(cell);
+
+                cell = new PdfPCell(new Paragraph(CrossCutting.Formatters.DecimalFormatter(totalPago.Value), meuFont3))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_RIGHT
+                };
+                cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                cell.Colspan = 1;
+                table1.AddCell(cell);
+
+                cell = new PdfPCell(new Paragraph("  ", meuFont))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_RIGHT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                table1.AddCell(cell);
+                pdfDoc.Add(table1);
 
                 // Finaliza
                 pdfWriter.CloseStream = false;
@@ -6334,6 +6490,9 @@ namespace GEDSys_Presentation.Controllers
                 Font meuFont = FontFactory.GetFont("Arial", 8, iTextSharp.text.Font.NORMAL, BaseColor.BLACK);
                 Font meuFont1 = FontFactory.GetFont("Arial", 9, iTextSharp.text.Font.NORMAL, BaseColor.BLACK);
                 Font meuFont2 = FontFactory.GetFont("Arial", 14, iTextSharp.text.Font.NORMAL, BaseColor.BLACK);
+                Font meuFont3 = FontFactory.GetFont("Arial", 8, iTextSharp.text.Font.BOLD, BaseColor.BLUE);
+                Decimal? total = 0;
+                Decimal? totalPago = 0;
 
                 // Cabeçalho
                 PdfPTable headerTable = new PdfPTable(new float[] { 20f, 700f });
@@ -6587,12 +6746,64 @@ namespace GEDSys_Presentation.Controllers
                         };
                         table.AddCell(cell);
                     }
+
+                    total += item.COPA_VL_VALOR;
+                    totalPago += item.COPA_VL_PAGO;
                 }
                 pdfDoc.Add(table);
 
-                // Linha Horizontal
-                Paragraph line2 = new Paragraph(new Chunk(new iTextSharp.text.pdf.draw.LineSeparator(0.0F, 100.0F, BaseColor.BLUE, Element.ALIGN_LEFT, 1)));
-                pdfDoc.Add(line2);
+                // Grid - TOTAIS
+                PdfPTable table1 = new PdfPTable(new float[] { 60f, 60f, 80f, 100f, 200f, 100f, 60f, 60f, 50f });
+                table1.WidthPercentage = 100;
+                table1.HorizontalAlignment = 0;
+                table1.SpacingBefore = 1f;
+                table1.SpacingAfter = 1f;
+
+                cell = new PdfPCell(new Paragraph(" ", meuFont))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                cell.Colspan = 5;
+                table1.AddCell(cell);
+
+                cell = new PdfPCell(new Paragraph("TOTAIS", meuFont))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_RIGHT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                table1.AddCell(cell);
+
+                cell = new PdfPCell(new Paragraph(CrossCutting.Formatters.DecimalFormatter(total.Value), meuFont3))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_RIGHT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                table1.AddCell(cell);
+
+                cell = new PdfPCell(new Paragraph(CrossCutting.Formatters.DecimalFormatter(totalPago.Value), meuFont3))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_RIGHT
+                };
+                cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                cell.Colspan = 1;
+                table1.AddCell(cell);
+
+                cell = new PdfPCell(new Paragraph("  ", meuFont))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_RIGHT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                table1.AddCell(cell);
+                pdfDoc.Add(table1);
 
                 // Finaliza
                 pdfWriter.CloseStream = false;
@@ -6641,6 +6852,7 @@ namespace GEDSys_Presentation.Controllers
                 Font meuFont = FontFactory.GetFont("Arial", 8, iTextSharp.text.Font.NORMAL, BaseColor.BLACK);
                 Font meuFont1 = FontFactory.GetFont("Arial", 9, iTextSharp.text.Font.NORMAL, BaseColor.BLACK);
                 Font meuFont2 = FontFactory.GetFont("Arial", 14, iTextSharp.text.Font.NORMAL, BaseColor.BLACK);
+                Font meuFont3 = FontFactory.GetFont("Arial", 8, iTextSharp.text.Font.BOLD, BaseColor.BLUE);
 
                 // Cabeçalho
                 PdfPTable headerTable = new PdfPTable(new float[] { 20f, 700f });
@@ -8371,6 +8583,11 @@ namespace GEDSys_Presentation.Controllers
                 Font meuFont = FontFactory.GetFont("Arial", 8, iTextSharp.text.Font.NORMAL, BaseColor.BLACK);
                 Font meuFont1 = FontFactory.GetFont("Arial", 9, iTextSharp.text.Font.NORMAL, BaseColor.BLACK);
                 Font meuFont2 = FontFactory.GetFont("Arial", 14, iTextSharp.text.Font.NORMAL, BaseColor.BLACK);
+                Font meuFont3 = FontFactory.GetFont("Arial", 8, iTextSharp.text.Font.BOLD, BaseColor.BLUE);
+                Decimal? num = 0;
+                Decimal? total = 0;
+                Decimal? mediaFinal = 0;
+                Decimal? itens = 0;
 
                 // Carrega dados
                 List<CONSULTA_PAGAMENTO> pagtos1 = (List<CONSULTA_PAGAMENTO>)Session["ListaPagamento"];
@@ -8546,12 +8763,60 @@ namespace GEDSys_Presentation.Controllers
                         HorizontalAlignment = Element.ALIGN_RIGHT
                     };
                     table.AddCell(cell);
+
+                    num += item.Valor;
+                    total += item.ValorDec;
+                    itens++;
                 }
                 pdfDoc.Add(table);
 
-                // Linha Horizontal
-                Paragraph line2 = new Paragraph(new Chunk(new iTextSharp.text.pdf.draw.LineSeparator(0.0F, 100.0F, BaseColor.BLUE, Element.ALIGN_LEFT, 1)));
-                pdfDoc.Add(line2);
+                // Calcula media final
+                Decimal? mediaTotal = total / itens;
+
+                // Grid - TOTAIS
+                PdfPTable table1 = new PdfPTable(new float[] { 60f, 80f, 80f, 80f });
+                table1.WidthPercentage = 100;
+                table1.HorizontalAlignment = 0;
+                table1.SpacingBefore = 1f;
+                table1.SpacingAfter = 1f;
+
+                cell = new PdfPCell(new Paragraph(" ", meuFont))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                cell.Colspan = 1;
+                table1.AddCell(cell);
+
+                cell = new PdfPCell(new Paragraph("TOTAIS", meuFont))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_RIGHT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                table1.AddCell(cell);
+
+                cell = new PdfPCell(new Paragraph(CrossCutting.Formatters.DecimalFormatter(total.Value), meuFont3))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_RIGHT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                table1.AddCell(cell);
+
+                cell = new PdfPCell(new Paragraph(CrossCutting.Formatters.DecimalFormatter(mediaTotal.Value), meuFont3))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_RIGHT
+                };
+                cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                cell.Colspan = 1;
+                table1.AddCell(cell);
+                pdfDoc.Add(table1);
+
 
                 // Finaliza
                 pdfWriter.CloseStream = false;
@@ -8598,6 +8863,11 @@ namespace GEDSys_Presentation.Controllers
                 Font meuFont = FontFactory.GetFont("Arial", 8, iTextSharp.text.Font.NORMAL, BaseColor.BLACK);
                 Font meuFont1 = FontFactory.GetFont("Arial", 9, iTextSharp.text.Font.NORMAL, BaseColor.BLACK);
                 Font meuFont2 = FontFactory.GetFont("Arial", 14, iTextSharp.text.Font.NORMAL, BaseColor.BLACK);
+                Font meuFont3 = FontFactory.GetFont("Arial", 8, iTextSharp.text.Font.BOLD, BaseColor.BLUE);
+                Decimal? num = 0;
+                Decimal? total = 0;
+                Decimal? mediaFinal = 0;
+                Decimal? itens = 0;
 
                 // Carrega dados
                 List<CONSULTA_PAGAMENTO> pagtos = (List<CONSULTA_PAGAMENTO>)Session["ListaPagamento"];
@@ -8724,7 +8994,7 @@ namespace GEDSys_Presentation.Controllers
                 cell.Colspan = 1;
                 cell.BackgroundColor = BaseColor.LIGHT_GRAY;
                 table.AddCell(cell);
-                cell = new PdfPCell(new Paragraph("Média Diária de Pagamentos (R$)", meuFont))
+                cell = new PdfPCell(new Paragraph("Média de Pagamentos (R$)", meuFont))
                 {
                     VerticalAlignment = Element.ALIGN_MIDDLE,
                     HorizontalAlignment = Element.ALIGN_RIGHT
@@ -8771,12 +9041,59 @@ namespace GEDSys_Presentation.Controllers
                         HorizontalAlignment = Element.ALIGN_RIGHT
                     };
                     table.AddCell(cell);
+
+                    num += item.Valor;
+                    total += item.ValorDec;
+                    itens++;
                 }
                 pdfDoc.Add(table);
 
-                // Linha Horizontal
-                Paragraph line2 = new Paragraph(new Chunk(new iTextSharp.text.pdf.draw.LineSeparator(0.0F, 100.0F, BaseColor.BLUE, Element.ALIGN_LEFT, 1)));
-                pdfDoc.Add(line2);
+                // Calcula media final
+                Decimal? mediaTotal = total / itens;
+
+                // Grid - TOTAIS
+                PdfPTable table1 = new PdfPTable(new float[] { 60f, 80f, 80f, 80f });
+                table1.WidthPercentage = 100;
+                table1.HorizontalAlignment = 0;
+                table1.SpacingBefore = 1f;
+                table1.SpacingAfter = 1f;
+
+                cell = new PdfPCell(new Paragraph(" ", meuFont))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                cell.Colspan = 1;
+                table1.AddCell(cell);
+
+                cell = new PdfPCell(new Paragraph("TOTAIS", meuFont))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_RIGHT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                table1.AddCell(cell);
+
+                cell = new PdfPCell(new Paragraph(CrossCutting.Formatters.DecimalFormatter(total.Value), meuFont3))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_RIGHT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                table1.AddCell(cell);
+                cell = new PdfPCell(new Paragraph(" ", meuFont))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                cell.Colspan = 1;
+                table1.AddCell(cell);
+
+                pdfDoc.Add(table1);
 
                 // Finaliza
                 pdfWriter.CloseStream = false;
@@ -8824,6 +9141,11 @@ namespace GEDSys_Presentation.Controllers
                 Font meuFont = FontFactory.GetFont("Arial", 8, iTextSharp.text.Font.NORMAL, BaseColor.BLACK);
                 Font meuFont1 = FontFactory.GetFont("Arial", 9, iTextSharp.text.Font.NORMAL, BaseColor.BLACK);
                 Font meuFont2 = FontFactory.GetFont("Arial", 14, iTextSharp.text.Font.NORMAL, BaseColor.BLACK);
+                Font meuFont3 = FontFactory.GetFont("Arial", 8, iTextSharp.text.Font.BOLD, BaseColor.BLUE);
+                Decimal? numX = 0;
+                Decimal? total = 0;
+                Decimal? mediaFinal = 0;
+                Decimal? itens = 0;
 
                 // Carrega dados
                 List<CONSULTA_PAGAMENTO> pagtos1 = (List<CONSULTA_PAGAMENTO>)Session["ListaPagamento"];
@@ -8988,12 +9310,44 @@ namespace GEDSys_Presentation.Controllers
                         HorizontalAlignment = Element.ALIGN_RIGHT
                     };
                     table.AddCell(cell);
+
+                    total += item.ValorDec1;
                 }
                 pdfDoc.Add(table);
 
-                // Linha Horizontal
-                Paragraph line2 = new Paragraph(new Chunk(new iTextSharp.text.pdf.draw.LineSeparator(0.0F, 100.0F, BaseColor.BLUE, Element.ALIGN_LEFT, 1)));
-                pdfDoc.Add(line2);
+                // Grid - TOTAIS
+                PdfPTable table1 = new PdfPTable(new float[] { 60f, 80f, 80f});
+                table1.WidthPercentage = 100;
+                table1.HorizontalAlignment = 0;
+                table1.SpacingBefore = 1f;
+                table1.SpacingAfter = 1f;
+
+                cell = new PdfPCell(new Paragraph("  ", meuFont))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_RIGHT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                table1.AddCell(cell);
+                cell = new PdfPCell(new Paragraph("TOTAIS", meuFont))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_RIGHT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                table1.AddCell(cell);
+
+                cell = new PdfPCell(new Paragraph(CrossCutting.Formatters.DecimalFormatter(total.Value), meuFont3))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_RIGHT
+                };
+                cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                cell.Colspan = 1;
+                table1.AddCell(cell);
+                pdfDoc.Add(table1);
 
                 // Finaliza
                 pdfWriter.CloseStream = false;
@@ -10135,6 +10489,9 @@ namespace GEDSys_Presentation.Controllers
                 Font meuFont = FontFactory.GetFont("Arial", 8, iTextSharp.text.Font.NORMAL, BaseColor.BLACK);
                 Font meuFont1 = FontFactory.GetFont("Arial", 9, iTextSharp.text.Font.NORMAL, BaseColor.BLACK);
                 Font meuFont2 = FontFactory.GetFont("Arial", 14, iTextSharp.text.Font.NORMAL, BaseColor.BLACK);
+                Font meuFont3 = FontFactory.GetFont("Arial", 8, iTextSharp.text.Font.BOLD, BaseColor.BLUE);
+                Decimal? total = 0;
+                Decimal? totalPago = 0;
 
                 // Cabeçalho
                 PdfPTable headerTable = new PdfPTable(new float[] { 20f, 700f });
@@ -10388,12 +10745,64 @@ namespace GEDSys_Presentation.Controllers
                         };
                         table.AddCell(cell);
                     }
+
+                    total += item.COPA_VL_VALOR;
+                    totalPago += item.COPA_VL_PAGO;
                 }
                 pdfDoc.Add(table);
 
-                // Linha Horizontal
-                Paragraph line2 = new Paragraph(new Chunk(new iTextSharp.text.pdf.draw.LineSeparator(0.0F, 100.0F, BaseColor.BLUE, Element.ALIGN_LEFT, 1)));
-                pdfDoc.Add(line2);
+                // Grid - TOTAIS
+                PdfPTable table1 = new PdfPTable(new float[] { 60f, 60f, 80f, 100f, 200f, 100f, 60f, 60f, 50f });
+                table1.WidthPercentage = 100;
+                table1.HorizontalAlignment = 0;
+                table1.SpacingBefore = 1f;
+                table1.SpacingAfter = 1f;
+
+                cell = new PdfPCell(new Paragraph(" ", meuFont))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                cell.Colspan = 5;
+                table1.AddCell(cell);
+
+                cell = new PdfPCell(new Paragraph("TOTAIS", meuFont))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_RIGHT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                table1.AddCell(cell);
+
+                cell = new PdfPCell(new Paragraph(CrossCutting.Formatters.DecimalFormatter(total.Value), meuFont3))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_RIGHT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                table1.AddCell(cell);
+
+                cell = new PdfPCell(new Paragraph(CrossCutting.Formatters.DecimalFormatter(totalPago.Value), meuFont3))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_RIGHT
+                };
+                cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                cell.Colspan = 1;
+                table1.AddCell(cell);
+
+                cell = new PdfPCell(new Paragraph("  ", meuFont))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_RIGHT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                table1.AddCell(cell);
+                pdfDoc.Add(table1);
 
                 // Finaliza
                 pdfWriter.CloseStream = false;
@@ -10445,6 +10854,9 @@ namespace GEDSys_Presentation.Controllers
                 Font meuFont = FontFactory.GetFont("Arial", 8, iTextSharp.text.Font.NORMAL, BaseColor.BLACK);
                 Font meuFont1 = FontFactory.GetFont("Arial", 9, iTextSharp.text.Font.NORMAL, BaseColor.BLACK);
                 Font meuFont2 = FontFactory.GetFont("Arial", 14, iTextSharp.text.Font.NORMAL, BaseColor.BLACK);
+                Font meuFont3 = FontFactory.GetFont("Arial", 8, iTextSharp.text.Font.BOLD, BaseColor.BLUE);
+                Decimal? total = 0;
+                Decimal? totalPago = 0;
 
                 // Cabeçalho
                 PdfPTable headerTable = new PdfPTable(new float[] { 20f, 700f });
@@ -10698,12 +11110,63 @@ namespace GEDSys_Presentation.Controllers
                         };
                         table.AddCell(cell);
                     }
+                    total += item.COPA_VL_VALOR;
+                    totalPago += item.COPA_VL_PAGO;
                 }
                 pdfDoc.Add(table);
 
-                // Linha Horizontal
-                Paragraph line2 = new Paragraph(new Chunk(new iTextSharp.text.pdf.draw.LineSeparator(0.0F, 100.0F, BaseColor.BLUE, Element.ALIGN_LEFT, 1)));
-                pdfDoc.Add(line2);
+                // Grid - TOTAIS
+                PdfPTable table1 = new PdfPTable(new float[] { 60f, 60f, 80f, 100f, 200f, 100f, 60f, 60f, 50f });
+                table1.WidthPercentage = 100;
+                table1.HorizontalAlignment = 0;
+                table1.SpacingBefore = 1f;
+                table1.SpacingAfter = 1f;
+
+                cell = new PdfPCell(new Paragraph(" ", meuFont))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                cell.Colspan = 5;
+                table1.AddCell(cell);
+
+                cell = new PdfPCell(new Paragraph("TOTAIS", meuFont))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_RIGHT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                table1.AddCell(cell);
+
+                cell = new PdfPCell(new Paragraph(CrossCutting.Formatters.DecimalFormatter(total.Value), meuFont3))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_RIGHT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                table1.AddCell(cell);
+
+                cell = new PdfPCell(new Paragraph(CrossCutting.Formatters.DecimalFormatter(totalPago.Value), meuFont3))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_RIGHT
+                };
+                cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                cell.Colspan = 1;
+                table1.AddCell(cell);
+
+                cell = new PdfPCell(new Paragraph("  ", meuFont))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_RIGHT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                table1.AddCell(cell);
+                pdfDoc.Add(table1);
 
                 // Finaliza
                 pdfWriter.CloseStream = false;

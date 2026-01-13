@@ -585,6 +585,7 @@ namespace GEDSys_Presentation.Controllers
                 Session["VoltaResposta"] = 0;
                 Session["VoltarProceder"] = 0;
                 Session["VoltaMedico"] = 1;
+                Session["ListaHistoricoGeral"] = null;
                 if (confAna.COAN_IN_BLOCO_COMUM == 0 || confAna.COAN_IN_BLOCO_COMUM == null)
                 {
                     Session["BlocoAnamnese"] = 1;
@@ -9509,6 +9510,7 @@ namespace GEDSys_Presentation.Controllers
                 }
                 Int32 idAss = (Int32)Session["IdAssinante"];
                 Session["ModuloAtual"] = "Exames - Inclusão";
+                Session["Solicitacoes"] = null;
 
                 // Prepara listas
                 List<PACIENTE> listaPac = CarregaPaciente();
@@ -9524,8 +9526,8 @@ namespace GEDSys_Presentation.Controllers
                 ViewBag.TipoExame = new SelectList(CarregaTipoExame(), "TIEX_CD_ID", "TIEX_NM_NOME");
                 ViewBag.Perfil = usuario.PERFIL.PERF_SG_SIGLA;
                 ViewBag.Labs = new SelectList(CarregaLaboratorio(), "LABS_CD_ID", "LABS_NM_NOME");
-                ViewBag.SolicsTudo = new SelectList(CarregaSolicitacoes(), "PASO_CD_ID", "PASO_NM_TITULO");
-                ViewBag.Solics = new SelectList(CarregaSolicitacoes().Where(p => p.PACI_CD_ID == (Int32)Session["IdPaciente"]), "PASO_CD_ID", "PASO_NM_TITULO");
+                //ViewBag.SolicsTudo = new SelectList(CarregaSolicitacoes(), "PASO_CD_ID", "PASO_NM_TITULO");
+                //ViewBag.Solics = new SelectList(CarregaSolicitacoes().Where(p => p.PACI_CD_ID == (Int32)Session["IdPaciente"]), "PASO_CD_ID", "PASO_NM_TITULO");
 
                 // Prepara objeto
                 Session["NivelPaciente"] = 7;
@@ -9599,8 +9601,8 @@ namespace GEDSys_Presentation.Controllers
             ViewBag.TipoExame = new SelectList(CarregaTipoExame(), "TIEX_CD_ID", "TIEX_NM_NOME");
             ViewBag.Paciente = new SelectList(CarregaPaciente(), "PACI__CD_ID", "PACI_NM_NOME");
             ViewBag.Labs = new SelectList(CarregaLaboratorio(), "LABS_CD_ID", "LABS_NM_NOME");
-            ViewBag.SolicsTudo = new SelectList(CarregaSolicitacoes(), "PASO_CD_ID", "PASO_NM_TITULO");
-            ViewBag.Solics = new SelectList(CarregaSolicitacoes().Where(p => p.PACI_CD_ID == (Int32)Session["IdPaciente"]), "PASO_CD_ID", "PASO_NM_TITULO");
+            //ViewBag.SolicsTudo = new SelectList(CarregaSolicitacoes(), "PASO_CD_ID", "PASO_NM_TITULO");
+            //ViewBag.Solics = new SelectList(CarregaSolicitacoes().Where(p => p.PACI_CD_ID == (Int32)Session["IdPaciente"]), "PASO_CD_ID", "PASO_NM_TITULO");
             if (ModelState.IsValid)
             {
                 try
@@ -21327,6 +21329,7 @@ namespace GEDSys_Presentation.Controllers
                 }
                 Int32 idAss = (Int32)Session["IdAssinante"];
                 Session["ModuloAtual"] = "Solicitacoes";
+                Session["Solicitacoes"] = null;
 
                 // Carrega listas
                 CONFIGURACAO conf = CarregaConfiguracaoGeral();
@@ -25635,14 +25638,6 @@ namespace GEDSys_Presentation.Controllers
                 if (Session["ListaHistoricoGeral"] == null)
                 {
                     listaMasterHistorico = CarregaHistorico().ToList();
-                    if (usuario.PERFIL.PERF_IN_VISAO_GERAL == 1 || usuario.PERFIL.PERF_SG_SIGLA == "ADM")
-                    {
-                        listaMasterHistorico = CarregaHistorico().ToList();
-                    }
-                    else
-                    {
-                        listaMasterHistorico = CarregaHistorico().Where(p => p.USUA_CD_ID == usuario.USUA_CD_ID).ToList();
-                    }
                     Session["ListaHistoricoGeral"] = listaMasterHistorico;
                 }
                 ViewBag.Listas = (List<PACIENTE_HISTORICO>)Session["ListaHistoricoGeral"];

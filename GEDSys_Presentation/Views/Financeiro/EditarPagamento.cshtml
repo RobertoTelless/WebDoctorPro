@@ -465,7 +465,7 @@
                                                                                     <a title="Visualizar Anexo" class="fa fa-camera fa-lg" href="~/PdfViewer/web/viewer.html?file=@(cond.PAAN_AQ_ARQUIVO.Replace("~", ""))&ReturnUrl=@Request.Url.AbsolutePath" target="_blank"></a>
                                                                                 }
                                                                                 <span style="color: #337ab7; cursor:pointer;" alt="Desativar" class="tbl-link fa-lg fa fa-trash-o btn-loading" onclick="ShowModalExcluirAnexo('/Financeiro/ExcluirAnexoPagamento/@cond.PAAN_CD_ID')" title="Excluir Anexo"></span>
-                                                                                @Html.TableLinkDetails(cond.PAAN_CD_ID, "DownloadPagamento", "fa-download btn-loading", "Download")
+                                                                                @Html.TableLinkDetails(cond.PAAN_CD_ID, "DownloadPagamento", "fa-download", "Download")
                                                                             </td>
                                                                         </tr>
                                                                     }
@@ -475,7 +475,7 @@
                                                         <div class="form-group">
                                                             <div class="col-lg-12 col-md-12 col-xs-12">
                                                                 <input style="float: left; margin-right: 5px;" type="file" name="file" id="file" class="btn btn-sm btn-warning" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="ATENÇÃO - Antes de anexar arquivos certifique-se de que eles estejam livres de vírus e outras ameaças.  "/>
-                                                                <input style="float: left; margin-right: 5px;" type="submit" value="Incluir Anexo" class="btn btn-sm btn-success btn-loading" />
+                                                                <input style="float: left; margin-right: 5px;" type="submit" value="Incluir Anexo" class="btn btn-sm btn-success" />
                                                             </div>
                                                         </div>
                                                     }
@@ -571,7 +571,7 @@
                                                                                     <a title="Visualizar Anexo" class="fa fa-camera fa-lg" href="~/PdfViewer/web/viewer.html?file=@(cond.PAAN_AQ_ARQUIVO.Replace("~", ""))&ReturnUrl=@Request.Url.AbsolutePath" target="_blank"></a>
                                                                                 }
                                                                                 <span style="color: #337ab7; cursor:pointer;" alt="Desativar" class="tbl-link fa-lg fa fa-trash-o btn-loading" onclick="ShowModalExcluirAnexo('/Financeiro/ExcluirAnexoPagamento/@cond.PAAN_CD_ID')" title="Excluir Anexo"></span>
-                                                                                @Html.TableLinkDetails(cond.PAAN_CD_ID, "DownloadPagamento", "fa-download btn-loading", "Download")
+                                                                                @Html.TableLinkDetails(cond.PAAN_CD_ID, "DownloadPagamento", "fa-download", "Download")
                                                                             </td>
                                                                         </tr>
                                                                     }
@@ -581,7 +581,7 @@
                                                         <div class="form-group">
                                                             <div class="col-lg-12 col-md-12 col-xs-12">
                                                                 <input style="float: left; margin-right: 5px;" type="file" name="file" id="file" class="btn btn-sm btn-warning" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="ATENÇÃO - Antes de anexar arquivos certifique-se de que eles estejam livres de vírus e outras ameaças.  "/>
-                                                                <input style="float: left; margin-right: 5px;" type="submit" value="Incluir Anexo" class="btn btn-sm btn-success btn-loading" />
+                                                                <input style="float: left; margin-right: 5px;" type="submit" value="Incluir Anexo" class="btn btn-sm btn-success" />
                                                             </div>
                                                         </div>
                                                     }
@@ -715,7 +715,7 @@
                                                                             <td style="width: auto">@CrossCutting.Formatters.DecimalFormatter(cond.PANF_VL_VALOR.Value)</td>
                                                                             <td class="td-one-action">
                                                                                 <span style="color: #337ab7; cursor:pointer;" alt="Desativar" class="tbl-link fa-lg fa fa-trash-o btn-loading" onclick="ShowModalExcluirNota('/Financeiro/ExcluirNotaFiscalPagamento/@cond.PANF_CD_ID')" title="Excluir Nota Fiscal"></span>
-                                                                                @Html.TableLinkDetails(cond.PANF_CD_ID, "DownloadNotaFiscal", "fa-download btn-loading", "Download")
+                                                                                @Html.TableLinkDetails(cond.PANF_CD_ID, "DownloadNotaFiscal", "fa-download", "Download")
                                                                             </td>
                                                                         </tr>
                                                                     }
@@ -727,7 +727,7 @@
                                                             <div class="form-group">
                                                                 <div class="col-lg-12 col-md-12 col-xs-12">
                                                                     <input style="float: left; margin-right: 5px;" type="file" name="file" id="file" accept=".xml" class="btn btn-sm btn-warning" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="ATENÇÃO - Antes de anexar nota fiscal certifique-se de que esteja livre de vírus e outras ameaças.  "/>
-                                                                    <input style="float: left; margin-right: 5px;" type="submit" value="Incluir Nota Fiscal" class="btn btn-sm btn-success btn-loading" />
+                                                                    <input style="float: left; margin-right: 5px;" type="submit" value="Incluir Nota Fiscal" class="btn btn-sm btn-success" />
                                                                 </div>
                                                             </div>
                                                         }
@@ -776,7 +776,7 @@
                                                                             <td style="width: auto">@CrossCutting.Formatters.DecimalFormatter(cond.PANF_VL_VALOR.Value)</td>
                                                                             <td class="td-one-action">
                                                                                 <span style="color: #337ab7; cursor:pointer;" alt="Desativar" class="tbl-link fa-lg fa fa-trash-o btn-loading" onclick="ShowModalExcluirNota('/Financeiro/ExcluirNotaFiscalPagamento/@cond.PANF_CD_ID')" title="Excluir Nota Fiscal"></span>
-                                                                                @Html.TableLinkDetails(cond.PANF_CD_ID, "DownloadNotaFiscal", "fa-download btn-loading", "Download")
+                                                                                @Html.TableLinkDetails(cond.PANF_CD_ID, "DownloadNotaFiscal", "fa-download", "Download")
                                                                             </td>
                                                                         </tr>
                                                                     }
@@ -788,7 +788,7 @@
                                                             <div class="form-group">
                                                                 <div class="col-lg-12 col-md-12 col-xs-12">
                                                                     <input style="float: left; margin-right: 5px;" type="file" name="file" id="file" accept=".xml" class="btn btn-sm btn-warning" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="ATENÇÃO - Antes de anexar nota fiscal certifique-se de que esteja livre de vírus e outras ameaças.  "/>
-                                                                    <input style="float: left; margin-right: 5px;" type="submit" value="Incluir Nota Fiscal" class="btn btn-sm btn-success btn-loading" />
+                                                                    <input style="float: left; margin-right: 5px;" type="submit" value="Incluir Nota Fiscal" class="btn btn-sm btn-success" />
                                                                 </div>
                                                             </div>
                                                         }

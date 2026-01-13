@@ -218,6 +218,7 @@ namespace ModelServices.EntitiesServices
             {
                 try
                 {
+                    item.TIPO_PAGAMENTO = null;
                     CONSULTA_PAGAMENTO obj = _baseRepository.GetById(item.COPA_CD_ID);
                     _baseRepository.Detach(obj);
                     _baseRepository.Update(item);

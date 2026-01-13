@@ -20,6 +20,7 @@ namespace DataServices.Repositories
         {
             IQueryable<PACIENTE_HISTORICO> query = Db.PACIENTE_HISTORICO;
             query = query.Where(p => p.ASSI_CD_ID == idAss);
+            query = query.Include(p => p.PACIENTE);
             return query.AsNoTracking().ToList();
         }
 

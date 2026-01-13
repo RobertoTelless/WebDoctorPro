@@ -1,0 +1,682 @@
+﻿@using Presentation.Extensions
+@using EntitiesServices.Model
+@model ERP_Condominios_Solution.ViewModels.PagamentoViewModel
+@{
+    Layout = "~/Views/Shared/_Layout_Admin.cshtml";
+    ViewBag.Title = "WebDoctor - Financeiro - Pagamentos - Edição";
+    ViewBag.MetaDescription = "WebDoctor - Financeiro - Pagamentos - Edição de Pagamentos";
+    ViewBag.MetaKeywords = "WebDoctor, Financeiro, Pagamento";
+}
+
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="modalContainer">
+        <div id="modal" class="modal" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        @*titulo gerado dinamicamente*@
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        @*Gerado dinamicamente*@
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="page-title">
+        <ol class="breadcrumb">
+            <li>
+                <a href="@Url.Action("MontarTelaPaciente", "Paciente")">Dashboard</a>
+            </li>
+            <li>
+                <a href="@Url.Action("MontarTelaFinanceiro", "Financeiro")">Dashboard Financeiro</a>
+            </li>
+            <li>
+                <a href="@Url.Action("MontarTelaPagamento", "Financeiro")">Pagamentos</a>
+            </li>
+            <li class="active">
+                <strong>Pagamentos - Consulta</strong>
+            </li>
+        </ol>
+        <br />
+    </div>
+    <div class="row">
+        <div class="col-lg-12 col-md-12 col-xs-12">
+            <div class="col-lg-12 col-md-12 col-xs-12 ibox float-e-margins">
+                <div class="ibox-title">
+                    <div class="row">
+                        <div style="text-align: center;" class="col-lg-12 col-md-12 col-xs-12">
+                            <h5>Pagamento - Consulta</h5>
+                            <span style="color:green; font-weight: 500; font-size: 20px;">@Model.COPA_NM_NOME</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="ibox-content">
+                    @Html.AntiForgeryToken()
+                    @if (!ViewData.ModelState.IsValid)
+                    {
+                        <div class="alert alert-danger">
+                            <button type="button" class="close" data-dismiss="alert">Fechar</button>
+                            @Html.ValidationSummary(false, "", new { @class = "text-danger" })
+                        </div>
+                    }
+                    <div class="form-group" style=" margin-left: 5px; margin-right: 5px;">
+                        @if ((Int32)Session["VoltarPesquisa"] == 11)
+                        {
+                            @Html.ButtonLinkIndex(text: "Voltar", action: "PesquisarTudo", controller: "BaseAdmin", htmlAttributes: new { @class = "btn-loading" })
+                        }
+                        else
+                        {
+                            @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaPagamento", controller: "Financeiro", htmlAttributes: new { @class = "btn-loading" })
+                        }
+                        <a href="@Url.Action((String)Session["AjudaNivel"])" class="btn btn-sm btn-danger" target="_blank">Ajuda</a>
+                        <span id="loadingIndicator" style="display: none; margin-left: 10px; color: #007bff;">
+                            <i class="fa fa-spinner fa-spin"></i> Processando...
+                        </span>
+                    </div>
+
+                    <div class="tabs-container">
+                        <ul class="nav nav-tabs">
+                            <li class="active"><a data-toggle="tab" href="#tab-1">Pagamento</a></li>
+                            <li class=""><a data-toggle="tab" href="#tab-2">Anexos</a></li>
+                            <li class=""><a data-toggle="tab" href="#tab-3">Anotações</a></li>
+                            <li class=""><a data-toggle="tab" href="#tab-4">Notas Fiscais</a></li>
+                        </ul>
+                        <div class="tab-content">
+                            @*Dados Gerais*@
+                            <div id="tab-1" class="tab-pane active">
+                                <div class="panel-body">
+                                    @using (Html.BeginForm("VerPagamento", "Financeiro", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal", @id = "pwd-container1" }))
+                                    {
+                                        @Html.AntiForgeryToken()
+                                        <div class="row" style="width: 100%;">
+                                            <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Identificação do Pagamento</h4>
+                                            <div class="col-lg-12 col-md-12 col-xs-12">
+                                                <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                                    <div class="col-lg-3 col-md-3 col-xs-12">
+                                                        Identificador
+                                                        @Html.TextBoxFor(m => m.COPA_GU_GUID, new { @class = "form-control", @readonly = "readonly", @style = "color: brown; font-weight: bold" })
+                                                    </div>
+                                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                                        @Html.HiddenFor(m => m.ASSI_CD_ID)
+                                                        @Html.HiddenFor(m => m.USUA_CD_ID)
+                                                        @Html.HiddenFor(m => m.COPA_IN_ATIVO)
+                                                        @Html.HiddenFor(m => m.COPA_GU_GUID)
+                                                        @Html.HiddenFor(m => m.COPA_CD_ID)
+                                                        @Html.HiddenFor(m => m.TIPA_CD_ID)
+                                                        @Html.HiddenFor(m => m.COPA_VL_VALOR)
+                                                        @Html.HiddenFor(m => m.COPA_DT_CADASTRO)
+                                                        Data do Vencimento
+                                                        @Html.TextBoxFor(m => m.COPA_DT_VENCIMENTO, "{0:dd/MM/yyyy}", new { @class = "form-control", @readonly = "readonly", @style = "color: green; font-weight: bold" })
+                                                    </div>
+                                                    <div class="col-lg-3 col-md-3 col-xs-12">
+                                                        Tipo de Pagamento
+                                                        @Html.TextBoxFor(m => m.TIPO_PAGAMENTO.TIPA_NM_PAGAMENTO, new { @class = "form-control", @readonly = "readonly"})
+                                                    </div>
+                                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                                        Quitado
+                                                        @if (Model.COPA_IN_PAGO == 1)
+                                                        {
+                                                            @Html.TextBoxFor(m => m.Quitado, new { @class = "form-control", @readonly = "readonly" , @style = "color: green; font-weight: bold" })
+                                                        }
+                                                        else
+                                                        {
+                                                            @Html.TextBoxFor(m => m.Quitado, new { @class = "form-control", @readonly = "readonly", @style = "color: brown; font-weight: bold" })
+                                                        }
+                                                    </div>
+                                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                                        Data de Cadastro
+                                                        @Html.TextBoxFor(m => m.COPA_DT_CADASTRO, "{0:dd/MM/yyyy}", new { @class = "form-control", @readonly = "readonly", @style = "color: palegold; font-weight: bold" })
+                                                    </div>
+                                                </div>
+                                                <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                                    <div class="col-lg-6 col-md-6 col-xs-12">
+                                                        Nome do Pagamento
+                                                        @Html.TextBoxFor(m => m.COPA_NM_NOME, new { @class = "form-control", @readonly = "readonly"  })
+                                                    </div>
+                                                    <div class="col-lg-6 col-md-6 col-xs-12">
+                                                        Nome do Favorecido
+                                                        @Html.TextBoxFor(m => m.COPA_NM_FAVORECIDO, new { @class = "form-control", @readonly = "readonly" })
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        if (Model.COPA_IN_PAGO == 1)
+                                        {
+                                            <div class="row" style="width: 100%;">
+                                                <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Quitação do Pagamento</h4>
+                                                <div class="col-lg-12 col-md-12 col-xs-12">
+                                                    <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                                        <div class="col-lg-2 col-md-2 col-xs-12">
+                                                            Data do Pagamento
+                                                            @Html.TextBoxFor(m => m.COPA_DT_PAGAMENTO, new { @class = "form-control", @readonly = "readonly" })
+                                                        </div>
+                                                        <div class="col-lg-2 col-md-2 col-xs-12">
+                                                            Valor Original (R$)
+                                                            @Html.TextBoxFor(m => m.COPA_VL_VALOR, "{0:n2}", new { @class = "form-control", @readonly = "readonly", @style = "color: green; font-weight: bold" })
+                                                        </div>
+                                                        <div class="col-lg-2 col-md-2 col-xs-12">
+                                                            Descontos(-) (R$)
+                                                            @Html.TextBoxFor(m => m.COPA_VL_DESCONTO, "{0:n2}", new { @class = "form-control", @readonly = "readonly" })
+                                                        </div>
+                                                        <div class="col-lg-2 col-md-2 col-xs-12">
+                                                            Multas(+) (R$)
+                                                            @Html.TextBoxFor(m => m.COPA_VL_MULTA, "{0:n2}", new { @class = "form-control", @readonly = "readonly" })
+                                                        </div>
+                                                        <div class="col-lg-2 col-md-2  col-xs-12" style="color:brown; font-weight:bold">
+                                                            Valor Pago (R$)
+                                                            @Html.TextBoxFor(m => m.COPA_VL_PAGO, "{0:n2}", new { @class = "form-control", @readonly="readonly" })
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        }
+                                    }
+                                </div>
+                            </div>
+
+                            @*Anexos*@
+                            <div id="tab-2" class="tab-pane">
+                                <div class="panel-body">
+                                    <div class="row">
+                                        <div class="col-lg-12 col-md-12 col-xs-12">
+                                            <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Anexos</h4>
+                                            <br />
+                                            <div class="form-group">
+                                                @using (Html.BeginForm("UploadFilePagamento", "Financeiro", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { enctype = "multipart/form-data", @id = "pwd-container2" }))
+                                                {
+                                                    if (Model.PAGAMENTO_ANEXO.Count > 0)
+                                                    {
+                                                        <table class="table table-striped table-bordered table-hover dataTables-example">
+                                                            <thead style="background-color:lightsteelblue">
+                                                                <tr>
+                                                                    <th>Título do Anexo</th>
+                                                                    <th>Data do Anexo</th>
+                                                                    <th>Tipo de Arquivo</th>
+                                                                    <th class="td-one-action">Ações</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                @foreach (var cond in (Model.PAGAMENTO_ANEXO.Where(p => p.PAAN_IN_ATIVO == 1).ToList()))
+                                                                {
+                                                                    <tr>
+                                                                        @if (cond.PAAN_IN_TIPO == 1 || cond.PAAN_IN_TIPO == 2)
+                                                                        {
+                                                                            <td style="width: auto"><a href="@Url.Action("VerAnexoPagamento", "Financeiro", new { id = cond.PAAN_CD_ID })" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página de visualiação do anexo"/>@cond.PAAN_NM_TITULO</td>
+                                                                        }
+                                                                        else if (cond.PAAN_IN_TIPO == 4)
+                                                                        {
+                                                                            <td style="width: auto"><a href="@Url.Action("VerAnexoPagamentoAudio", "Financeiro", new { id = cond.PAAN_CD_ID })" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página de visualização do anexo"/>@cond.PAAN_NM_TITULO</td>
+                                                                        }
+                                                                        else if (cond.PAAN_IN_TIPO == 3)
+                                                                        {
+                                                                            <td style="width: auto"><a href="~/PdfViewer/web/viewer.html?file=@(cond.PAAN_AQ_ARQUIVO.Replace("~", ""))&ReturnUrl=@Request.Url.AbsolutePath" target="_blank" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a visualização do documento"/>@cond.PAAN_NM_TITULO</td>
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            <td style="width: auto">@cond.PAAN_NM_TITULO</td>
+                                                                        }
+
+                                                                        <td>@cond.PAAN_DT_ANEXO.Value.ToShortDateString()</td>
+                                                                        @if (cond.PAAN_IN_TIPO == 1)
+                                                                        {
+                                                                            <td>Imagem</td>
+                                                                        }
+                                                                        else if (cond.PAAN_IN_TIPO == 2)
+                                                                        {
+                                                                            <td>Vídeo</td>
+                                                                        }
+                                                                        else if (cond.PAAN_IN_TIPO == 3)
+                                                                        {
+                                                                            <td>PDF</td>
+                                                                        }
+                                                                        else if (cond.PAAN_IN_TIPO == 4)
+                                                                        {
+                                                                            <td>Audio</td>
+                                                                        }
+                                                                        else if (cond.PAAN_IN_TIPO == 5)
+                                                                        {
+                                                                            <td>Documento/Word</td>
+                                                                        }
+                                                                        else if (cond.PAAN_IN_TIPO == 6)
+                                                                        {
+                                                                            <td>Planilha/Excel</td>
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            <td>Outros</td>
+                                                                        }
+                                                                        <td class="td-one-action">
+                                                                            @if (cond.PAAN_IN_TIPO == 1 || cond.PAAN_IN_TIPO == 2)
+                                                                            {
+                                                                                @Html.TableLinkDetails(cond.PAAN_CD_ID, "VerAnexoPagamento", "fa-camera btn-loading", "Visualizar Anexo")
+                                                                            }
+                                                                            @if (cond.PAAN_IN_TIPO == 4)
+                                                                            {
+                                                                                @Html.TableLinkDetails(cond.PAAN_CD_ID, "VerAnexoPagamentoAudio", "fa-volume-up btn-loading", "Visualizar Anexo")
+                                                                            }
+                                                                            @if (cond.PAAN_IN_TIPO == 3)
+                                                                            {
+                                                                                <a title="Visualizar Anexo" class="fa fa-camera fa-lg" href="~/PdfViewer/web/viewer.html?file=@(cond.PAAN_AQ_ARQUIVO.Replace("~", ""))&ReturnUrl=@Request.Url.AbsolutePath" target="_blank"></a>
+                                                                            }
+                                                                            @Html.TableLinkDetails(cond.PAAN_CD_ID, "DownloadPagamento", "fa-download btn-loading", "Download")
+                                                                        </td>
+                                                                    </tr>
+                                                                }
+                                                            </tbody>
+                                                        </table>
+                                                    }
+                                                }
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            @*Anotações*@
+                            <div id="tab-3" class="tab-pane">
+                                <div class="panel-body">
+                                    <div class="row">
+                                        <div class="col-lg-12">
+                                            <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Anotações</h4>
+                                            @if (Model.PAGAMENTO_ANOTACAO.Where(p => p.PGAN_IN_ATIVO == 1).ToList().Count > 0)
+                                            {
+                                                foreach (var item in (Model.PAGAMENTO_ANOTACAO.Where(p => p.PGAN_IN_ATIVO == 1)).OrderByDescending(a => a.PGAN_DT_ANOTACAO))
+                                                {
+                                                    <div class="social-feed-box">
+                                                        <div class="social-avatar">
+                                                            <a href="" class="pull-left">
+                                                                <img src="@Url.Content(item.USUARIO.USUA_AQ_FOTO)" style="width: auto; height: auto; max-height: 110px; max-width: 90px;">
+                                                            </a>
+                                                            <div class="media-body">
+                                                                @item.USUARIO.USUA_NM_NOME
+                                                                <small class="text-muted">@item.PGAN_DT_ANOTACAO.Value.ToString("dd/MM/yyyy HH:mm")</small>
+                                                            </div>
+                                                        </div>
+                                                        <div class="social-body">
+                                                            <p>
+                                                                <span style="white-space: pre-wrap;">@item.PGAN_TX_ANOTACAO</span>
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                }
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            @*Notas Fiscais*@
+                            <div id="tab-4" class="tab-pane">
+                                <div class="panel-body">
+                                    <div class="row">
+                                        <div class="col-lg-12 col-md-12 col-xs-12">
+                                            <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Notas Fiscais</h4>
+                                            <h5 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Somente para importação de arquivos de nota fiscal NF-e no formato XML da Receita Federal</h5>
+                                            <br />
+                                            <div class="form-group">
+                                                @using (Html.BeginForm("UploadFileNotaFiscal", "Financeiro", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { enctype = "multipart/form-data", @id = "pwd-container2" }))
+                                                {
+                                                    if (Model.PAGAMENTO_NOTA_FISCAL.Where(p => p.PANF_IN_ATIVO == 1).ToList().Count > 0)
+                                                    {
+                                                        <table class="table table-striped table-bordered table-hover dataTables-example">
+                                                            <thead style="background-color:lightsteelblue">
+                                                                <tr>
+                                                                    <th>Número</th>
+                                                                    <th>Série</th>
+                                                                    <th>Data de Emissão</th>
+                                                                    <th>Nome da Nota Fiscal</th>
+                                                                    <th>Nome do Emitente</th>
+                                                                    <th>Valor (R$)</th>
+                                                                    <th class="td-one-action">Ações</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                @foreach (var cond in (Model.PAGAMENTO_NOTA_FISCAL.Where(p => p.PANF_IN_ATIVO == 1).ToList()))
+                                                                {
+                                                                    <tr>
+                                                                        <td style="width: auto">@cond.PANF_NR_NUMERO</td>
+                                                                        <td>@cond.PANF_NR_SERIE</td>
+                                                                        <td>@cond.PANF_DT_EMISSAO.Value.ToShortDateString()</td>
+                                                                        <td>@cond.PANF_NM_NOME</td>
+                                                                        <td>@cond.PANF_NM_EMITENTE</td>
+                                                                        <td style="width: auto">@CrossCutting.Formatters.DecimalFormatter(cond.PANF_VL_VALOR.Value)</td>
+                                                                        <td class="td-one-action">
+                                                                            @Html.TableLinkDetails(cond.PANF_CD_ID, "DownloadNotaFiscal", "fa-download btn-loading", "Download")
+                                                                        </td>
+                                                                    </tr>
+                                                                }
+                                                            </tbody>
+                                                        </table>
+                                                    }
+                                                }
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <link href="~/Content/themes/base/jquery-ui.min.css" rel="stylesheet" />
+    <link href="~/Content/themes/base/all.css" rel="stylesheet" />
+    @Styles.Render("~/Content/plugins/dataTables/dataTablesStyles")
+    @Styles.Render("~/plugins/jasnyBootstrapStyles")
+    @Styles.Render("~/plugins/toastrStyles")
+
+}
+@section Scripts {
+    @Scripts.Render("~/plugins/toastr")
+    <script src="~/Scripts/jquery-ui-1.12.1.min.js"></script>
+    @Scripts.Render("~/plugins/dataTables")
+    @Scripts.Render("~/bundles/inputmask")
+    @Scripts.Render("~/plugins/jasnyBootstrap")
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.maskedinput/1.4.1/jquery.maskedinput.js"></script>
+    <script src="~/Scripts/uploadAnexo.js"></script>
+
+    <script type="text/javascript" src="~/Scripts/moment.min.js"></script>
+    <script type="text/javascript" src="~/Scripts/bootstrap.min.js"></script>
+   
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('[data-toggle="popover"]').popover();
+        });
+    </script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-toggle="popover"]'));
+            var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
+                return new bootstrap.Popover(popoverTriggerEl);
+            });
+        });
+    </script>
+
+    <!-- Handler de fechamento do browser -->
+    <script type="text/javascript">
+        window.onbeforeunload = function ()
+        {
+            navigator.sendBeacon('../ControleAcesso/LogSessionTime');
+        }; 
+    </script>
+
+    <script type="text/javascript">
+        $(document).ready(function () { 
+            $('.btn-loading').on('click', function (e) {            
+                $(this).prop('disabled', true);
+                $(this).addClass('disabled');
+                $('#loadingIndicator').show();
+                var tagName = $(this).prop('tagName').toLowerCase();
+                if (tagName === 'a') {
+                    e.preventDefault(); 
+                    var targetUrl = $(this).attr('href');
+                    window.location.href = targetUrl;
+
+                } else if (tagName === 'button' || tagName === 'input') {
+                    $(this).closest('form').submit();
+                }
+            });
+        });
+    </script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('.btn-loading1').on('click', function (e) {
+            
+                var $this = $(this);
+                var tagName = $this.prop('tagName').toLowerCase();
+                $this.addClass('disabled'); 
+                $('#loadingIndicator').show();
+
+                if (tagName === 'a') {
+                    e.preventDefault();
+                
+                    var targetUrl = $this.attr('href');
+                    window.location.href = targetUrl;
+                
+                } else if (tagName === 'button' || tagName === 'input') {               
+                    $this.closest('form').submit();
+                    $this.prop('disabled', true);
+                }
+            });
+        });
+    </script>
+
+    <script>
+        $(function () {
+            limpaModal();
+        });
+
+        function limpaModal() {
+            $('#btnModal').remove();
+            $('#modalTitle').remove();
+        }
+
+        function ShowModalExcluirAnotacao(url) {
+            $('#modal').find('.modal-footer').prepend('<a id="btnModal" alt="Desativar" class="btn btn-primary" href="' + url + '" target="_self" title="Desativar">Confirmar</a>');
+            $('#modal').find('.modal-body').html('Confirma exclusão da Anotação?');
+            $('#modal').find('.modal-header').prepend('<h5 id="modalTitle" class="modal-title">Confimar Exclusão</h5>');
+            $('#modal').modal('show');
+        }
+        function ShowModalExcluirAnexo(url) {
+            $('#modal').find('.modal-footer').prepend('<a id="btnModal" alt="Desativar" class="btn btn-primary" href="' + url + '" target="_self" title="Desativar">Confirmar</a>');
+            $('#modal').find('.modal-body').html('Confirma exclusão de Anexo?');
+            $('#modal').find('.modal-header').prepend('<h5 id="modalTitle" class="modal-title">Confimar Exclusão</h5>');
+            $('#modal').modal('show');
+        }
+        function ShowModalExcluirNota(url) {
+            $('#modal').find('.modal-footer').prepend('<a id="btnModal" alt="Desativar" class="btn btn-primary" href="' + url + '" target="_self" title="Desativar">Confirmar</a>');
+            $('#modal').find('.modal-body').html('Confirma exclusão de Nota Fiscal?');
+            $('#modal').find('.modal-header').prepend('<h5 id="modalTitle" class="modal-title">Confimar Exclusão</h5>');
+            $('#modal').modal('show');
+        }
+    </script>
+
+    <script type="text/javascript" language="javascript">
+        $(function () {
+            $('.date-picker').datepicker(
+                {
+                    dateFormat: 'dd/mm/yy',
+                    dayNames: ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'],
+                    dayNamesMin: ['D', 'S', 'T', 'Q', 'Q', 'S', 'S', 'D'],
+                    dayNamesShort: ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'],
+                    monthNames: ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'],
+                    monthNamesShort: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'],
+                    nextText: 'Proximo',
+                    prevText: 'Anterior',
+                    showOn: "focus"
+                }
+            )
+                .css("display", "normal")
+                .next("button").button({
+                    icons: { primary: "ui-icon-calendar" },
+                    label: "Selecione uma data",
+                    text: false
+                });
+        });
+    </script>
+
+    <script type="text/javascript">
+        $(function () {
+            $('#dn').mask("99/99/9999");
+            $('#dn1').mask("99/99/9999");
+        });
+    </script>
+
+    <script>
+        function CalculaTotal() {
+            var valor = $('#valor').val() == "" ? 0 : $('#valor').val();
+            var desc = $('#desc').val() == "" ? 0 : $('#desc').val();
+            var multa = $('#multa').val() == "" ? 0 : $('#multa').val();
+            valor = (parseFloat(valor.replace(',', '.')));
+            desc = (parseFloat(desc.replace(',', '.')));
+            multa = (parseFloat(multa.replace(',', '.')));
+            var tot = 0;
+            if (valor != "")
+            {
+                tot = tot + valor;
+            }
+            if (desc != "")
+            {
+                tot = tot - desc;
+            }
+            if (multa != "")
+            {
+                tot = tot + multa;
+            }
+            $('#total').val(parseFloat(tot).toFixed(2).replace('.', ','));
+        }
+    </script>
+
+    <script>
+        function CalculaTotal1() {
+            var valor = $('#valor1').val() == "" ? 0 : $('#valor1').val();
+            var desc = $('#desc1').val() == "" ? 0 : $('#desc1').val();
+            var multa = $('#multa1').val() == "" ? 0 : $('#multa1').val();
+            valor = (parseFloat(valor.replace(',', '.')));
+            desc = (parseFloat(desc.replace(',', '.')));
+            multa = (parseFloat(multa.replace(',', '.')));
+            var tot = 0;
+            if (valor != "")
+            {
+                tot = tot + valor;
+            }
+            if (desc != "")
+            {
+                tot = tot - desc;
+            }
+            if (multa != "")
+            {
+                tot = tot + multa;
+            }
+            $('#total1').val(parseFloat(tot).toFixed(2).replace('.', ','));
+        }
+    </script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            var i = -1;
+            var toastCount = 0;
+            var $toastlast;
+            var getMessage = function () {
+                var msg = 'Hi, welcome to Inspinia. This is example of Toastr notification box.';
+                return msg;
+            };
+
+            $('#basictoast').click(function () {
+                // Display a success toast, with a title
+                toastr.success('Edição am andamento!')
+            });
+            $('#showtoast').click(function () {
+                var shortCutFunction = $("#toastTypeGroup input:radio:checked").val();
+                var msg = $('#message').val();
+                var title = $('#title').val() || '';
+                var $showDuration = $('#showDuration');
+                var $hideDuration = $('#hideDuration');
+                var $timeOut = $('#timeOut');
+                var $extendedTimeOut = $('#extendedTimeOut');
+                var $showEasing = $('#showEasing');
+                var $hideEasing = $('#hideEasing');
+                var $showMethod = $('#showMethod');
+                var $hideMethod = $('#hideMethod');
+                var toastIndex = toastCount++;
+                toastr.options = {
+                    closeButton: $('#closeButton').prop('checked'),
+                    debug: $('#debugInfo').prop('checked'),
+                    progressBar: $('#progressBar').prop('checked'),
+                    positionClass: $('#positionGroup input:radio:checked').val() || 'toast-top-right',
+                    onclick: null
+                };
+                if ($('#addBehaviorOnToastClick').prop('checked')) {
+                    toastr.options.onclick = function () {
+                        alert('You can perform some custom action after a toast goes away');
+                    };
+                }
+                if ($showDuration.val().length) {
+                    toastr.options.showDuration = $showDuration.val();
+                }
+                if ($hideDuration.val().length) {
+                    toastr.options.hideDuration = $hideDuration.val();
+                }
+                if ($timeOut.val().length) {
+                    toastr.options.timeOut = $timeOut.val();
+                }
+                if ($extendedTimeOut.val().length) {
+                    toastr.options.extendedTimeOut = $extendedTimeOut.val();
+                }
+                if ($showEasing.val().length) {
+                    toastr.options.showEasing = $showEasing.val();
+                }
+                if ($hideEasing.val().length) {
+                    toastr.options.hideEasing = $hideEasing.val();
+                }
+                if ($showMethod.val().length) {
+                    toastr.options.showMethod = $showMethod.val();
+                }
+                if ($hideMethod.val().length) {
+                    toastr.options.hideMethod = $hideMethod.val();
+                }
+                if (!msg) {
+                    msg = getMessage();
+                }
+                $("#toastrOptions").text("Command: toastr["
+                    + shortCutFunction
+                    + "](\""
+                    + msg
+                    + (title ? "\", \"" + title : '')
+                    + "\")\n\ntoastr.options = "
+                    + JSON.stringify(toastr.options, null, 2)
+                );
+                var $toast = toastr[shortCutFunction](msg, title); // Wire up an event handler to a button in the toast, if it exists
+                $toastlast = $toast;
+                if ($toast.find('#okBtn').length) {
+                    $toast.delegate('#okBtn', 'click', function () {
+                        alert('you clicked me. i was toast #' + toastIndex + '. goodbye!');
+                        $toast.remove();
+                    });
+                }
+                if ($toast.find('#surpriseBtn').length) {
+                    $toast.delegate('#surpriseBtn', 'click', function () {
+                        alert('Surprise! you clicked me. i was toast #' + toastIndex + '. You could perform an action here.');
+                    });
+                }
+            });
+            function getLastToast() {
+                return $toastlast;
+            }
+            $('#clearlasttoast').click(function () {
+                toastr.clear(getLastToast());
+            });
+            $('#cleartoasts').click(function () {
+                toastr.clear();
+            });
+
+        });
+    </script>
+
+
+    @if (ViewBag.Message != null)
+    {
+        <script type="text/javascript">
+            window.onload = function () {
+                  alert("@ViewBag.Message");
+            };
+        </script>
+    }
+}
+
