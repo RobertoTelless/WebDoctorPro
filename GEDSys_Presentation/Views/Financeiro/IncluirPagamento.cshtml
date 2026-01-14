@@ -88,12 +88,12 @@
                                 <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
                                     <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold; margin-right: 15px;">Favorecido</h4>
                                     <div class="col-lg-6 col-md-6 col-xs-12">
-                                        Nome do Pagamento
+                                        Nome do Pagamento*
                                         @Html.TextBoxFor(m => m.COPA_NM_NOME, new { @class = "form-control", autofocus = true, id = "nomePag", data_toggle = "popover", data_content = "O WebDoctor gera um nome para o pagamento baseado nas informações fornecidas. Esse nome poderá ser alterado se necessário", data_trigger="hover", data_placement="top" })
                                         @Html.ValidationMessageFor(m => m.COPA_NM_NOME, "", new { @style = "color:red" })
                                     </div>
                                     <div class="col-lg-6 col-md-6 col-xs-12">
-                                        Nome do Favorecido
+                                        Nome do Favorecido*
                                         @Html.TextBoxFor(m => m.COPA_NM_FAVORECIDO, new { @class = "form-control", autofocus = true, id = "nomeFav", data_toggle = "popover", data_content = "Nome do favorecido deste pagamento", data_trigger="hover", data_placement="top" })
                                         @Html.ValidationMessageFor(m => m.COPA_NM_FAVORECIDO, "", new { @style = "color:red" })
                                     </div>

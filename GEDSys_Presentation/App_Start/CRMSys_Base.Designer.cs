@@ -6296,5 +6296,41 @@ namespace GEDSys_Presentation.App_Start {
                 return ResourceManager.GetString("M0714", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Consulta uma cadeia de caracteres localizada semelhante a Valor do pagamento deve ser informado.
+        /// </summary>
+        internal static string M0715 {
+            get {
+                return ResourceManager.GetString("M0715", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Consulta uma cadeia de caracteres localizada semelhante a Valor do recebimento deve ser informado.
+        /// </summary>
+        internal static string M0716 {
+            get {
+                return ResourceManager.GetString("M0716", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Consulta uma cadeia de caracteres localizada semelhante a A data de vencimento não pode ser anterior a data corrente.
+        /// </summary>
+        internal static string M0717 {
+            get {
+                return ResourceManager.GetString("M0717", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Consulta uma cadeia de caracteres localizada semelhante a O favorecido deve ser informado.
+        /// </summary>
+        internal static string M0718 {
+            get {
+                return ResourceManager.GetString("M0718", resourceCulture);
+            }
+        }
     }
 }

@@ -198,12 +198,17 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach (var cond in (ViewBag.Listas as List<EntitiesServices.Model.CONSULTA_PAGAMENTO>).OrderBy(p => p.COPA_DT_VENCIMENTO.Value.Date))
+                                    @foreach (var cond in (ViewBag.Listas as List<EntitiesServices.Model.CONSULTA_PAGAMENTO>).OrderByDescending(p => p.COPA_DT_VENCIMENTO.Value.Date))
                                     {
                                         if (cond.COPA_DT_VENCIMENTO == DateTime.Today.Date & cond.COPA_IN_PAGO == 0)
                                         {
                                             <tr style="background-color: beige">
-                                                <td style="width: auto">@cond.COPA_DT_VENCIMENTO.Value.ToShortDateString()</td>
+                                                @*<td style="width: auto">@cond.COPA_DT_VENCIMENTO.Value.ToShortDateString()</td>*@
+                                                <td>
+                                                    <span style="display:none">@cond.COPA_DT_VENCIMENTO.Value.ToString("yyyyMMdd")</span>
+                                                    @cond.COPA_DT_VENCIMENTO.Value.ToString("dd/MM/yyyy")
+                                                </td>
+
                                                 @if (cond.COPA_DT_PAGAMENTO != null)
                                                 {
                                                     <td style="width: auto">@cond.COPA_DT_PAGAMENTO.Value.ToShortDateString()</td>
@@ -218,16 +223,16 @@
                                                 {
                                                     if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_FINANCEIRO_PAG_ALTERAR == 1)
                                                     {
-                                                        <td style="width: auto"><a href="@Url.Action("EditarPagamento", "Financeiro", new { id = cond.COPA_CD_ID })" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página de edição/quitação do pagamento"/>@cond.COPA_GU_GUID</td>
+                                                        <td style="width: auto"><a href="@Url.Action("EditarPagamento", "Financeiro", new { id = cond.COPA_CD_ID })" class="btn-loading" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página de edição/quitação do pagamento"/>@cond.COPA_GU_GUID</td>
                                                     }
                                                     else
                                                     {
-                                                        <td style="width: auto"><a href="@Url.Action("VerPagamento", "Financeiro", new { id = cond.COPA_CD_ID })" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página de consulta do pagamento"/>@cond.COPA_GU_GUID</td>
+                                                        <td style="width: auto"><a href="@Url.Action("VerPagamento", "Financeiro", new { id = cond.COPA_CD_ID })" class="btn-loading" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página de consulta do pagamento"/>@cond.COPA_GU_GUID</td>
                                                     }
                                                 }
                                                 else
                                                 {
-                                                    <td style="width: auto"><a href="@Url.Action("VerPagamento", "Financeiro", new { id = cond.COPA_CD_ID })" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página de consulta do pagamento"/>@cond.COPA_GU_GUID</td>
+                                                    <td style="width: auto"><a href="@Url.Action("VerPagamento", "Financeiro", new { id = cond.COPA_CD_ID })" class="btn-loading" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página de consulta do pagamento"/>@cond.COPA_GU_GUID</td>
                                                 }
 
                                                 <td style="width: auto">@cond.COPA_NM_NOME</td>
@@ -258,23 +263,12 @@
                                                     {
                                                         if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_FINANCEIRO_PAG_ALTERAR == 1)
                                                         {
-                                                                @Html.TableLinkDetails(cond.COPA_CD_ID, "EditarPagamento", "fa-edit", "Alterar/Quitar")
+                                                                @Html.TableLinkDetails(cond.COPA_CD_ID, "EditarPagamento", "fa-edit btn-loading", "Alterar/Quitar")
                                                         }
                                                     }
                                                     else
                                                     {
-                                                        @Html.TableLinkDetails(cond.COPA_CD_ID, "VerPagamento", "fa-search", "Ver")
-                                                    }
-                                                    @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_FINANCEIRO_PAG_ALTERAR == 1)
-                                                    {
-                                                        if (cond.COPA_IN_PAGO == 0)
-                                                        {
-                                                            @Html.TableLinkDetails(cond.COPA_CD_ID, "EditarPagamento", "fa-edit", "Alterar/Quitar")
-                                                        }
-                                                        else
-                                                        {
-                                                            @Html.TableLinkDetails(cond.COPA_CD_ID, "VerPagamento", "fa-search", "Ver")
-                                                        }
+                                                        @Html.TableLinkDetails(cond.COPA_CD_ID, "VerPagamento", "fa-search btn-loading", "Ver")
                                                     }
                                                     @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_FINANCEIRO_PAG_EXCLUIR == 1)
                                                     {
@@ -289,7 +283,11 @@
                                         else if (cond.COPA_DT_VENCIMENTO < DateTime.Today.Date & cond.COPA_IN_PAGO == 0)
                                         {
                                             <tr style="background-color: bisque">
-                                                <td style="width: auto">@cond.COPA_DT_VENCIMENTO.Value.ToShortDateString()</td>
+                                                @*<td style="width: auto">@cond.COPA_DT_VENCIMENTO.Value.ToShortDateString()</td>*@
+                                                <td>
+                                                    <span style="display:none">@cond.COPA_DT_VENCIMENTO.Value.ToString("yyyyMMdd")</span>
+                                                    @cond.COPA_DT_VENCIMENTO.Value.ToString("dd/MM/yyyy")
+                                                </td>
                                                 @if (cond.COPA_DT_PAGAMENTO != null)
                                                 {
                                                     <td style="width: auto">@cond.COPA_DT_PAGAMENTO.Value.ToShortDateString()</td>
@@ -303,16 +301,16 @@
                                                 {
                                                     if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_FINANCEIRO_PAG_ALTERAR == 1)
                                                     {
-                                                        <td style="width: auto"><a href="@Url.Action("EditarPagamento", "Financeiro", new { id = cond.COPA_CD_ID })" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página de edição/quitação do pagamento"/>@cond.COPA_GU_GUID</td>
+                                                        <td style="width: auto"><a href="@Url.Action("EditarPagamento", "Financeiro", new { id = cond.COPA_CD_ID })" class="btn-loading" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página de edição/quitação do pagamento"/>@cond.COPA_GU_GUID</td>
                                                     }
                                                     else
                                                     {
-                                                        <td style="width: auto"><a href="@Url.Action("VerPagamento", "Financeiro", new { id = cond.COPA_CD_ID })" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página de consulta do pagamento"/>@cond.COPA_GU_GUID</td>
+                                                        <td style="width: auto"><a href="@Url.Action("VerPagamento", "Financeiro", new { id = cond.COPA_CD_ID })" class="btn-loading" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página de consulta do pagamento"/>@cond.COPA_GU_GUID</td>
                                                     }
                                                 }
                                                 else
                                                 {
-                                                    <td style="width: auto"><a href="@Url.Action("VerPagamento", "Financeiro", new { id = cond.COPA_CD_ID })" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página de consulta do pagamento"/>@cond.COPA_GU_GUID</td>
+                                                    <td style="width: auto"><a href="@Url.Action("VerPagamento", "Financeiro", new { id = cond.COPA_CD_ID })" class="btn-loading" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página de consulta do pagamento"/>@cond.COPA_GU_GUID</td>
                                                 }
                                                 <td style="width: auto">@cond.COPA_NM_NOME</td>
                                                 <td style="width: auto">@cond.COPA_NM_FAVORECIDO</td>
@@ -342,12 +340,12 @@
                                                     {
                                                         if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_FINANCEIRO_PAG_ALTERAR == 1)
                                                         {
-                                                                @Html.TableLinkDetails(cond.COPA_CD_ID, "EditarPagamento", "fa-edit", "Alterar/Quitar")
+                                                                @Html.TableLinkDetails(cond.COPA_CD_ID, "EditarPagamento", "fa-edit btn-loading", "Alterar/Quitar")
                                                         }
                                                     }
                                                     else
                                                     {
-                                                        @Html.TableLinkDetails(cond.COPA_CD_ID, "VerPagamento", "fa-search", "Ver")
+                                                        @Html.TableLinkDetails(cond.COPA_CD_ID, "VerPagamento", "fa-search btn-loading", "Ver")
                                                     }
                                                     @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_FINANCEIRO_PAG_EXCLUIR == 1)
                                                     {
@@ -362,7 +360,11 @@
                                         else if (cond.COPA_DT_VENCIMENTO < DateTime.Today.Date & cond.COPA_IN_PAGO == 1)
                                         {
                                             <tr style="background-color: aliceblue">
-                                                <td style="width: auto">@cond.COPA_DT_VENCIMENTO.Value.ToShortDateString()</td>
+                                                @*<td style="width: auto">@cond.COPA_DT_VENCIMENTO.Value.ToShortDateString()</td>*@
+                                                <td>
+                                                    <span style="display:none">@cond.COPA_DT_VENCIMENTO.Value.ToString("yyyyMMdd")</span>
+                                                    @cond.COPA_DT_VENCIMENTO.Value.ToString("dd/MM/yyyy")
+                                                </td>
                                                 @if (cond.COPA_DT_PAGAMENTO != null)
                                                 {
                                                     <td style="width: auto">@cond.COPA_DT_PAGAMENTO.Value.ToShortDateString()</td>
@@ -376,16 +378,16 @@
                                                 {
                                                     if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_FINANCEIRO_PAG_ALTERAR == 1)
                                                     {
-                                                        <td style="width: auto"><a href="@Url.Action("EditarPagamento", "Financeiro", new { id = cond.COPA_CD_ID })" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página de edição/quitação do pagamento"/>@cond.COPA_GU_GUID</td>
+                                                        <td style="width: auto"><a href="@Url.Action("EditarPagamento", "Financeiro", new { id = cond.COPA_CD_ID })" class="btn-loading" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página de edição/quitação do pagamento"/>@cond.COPA_GU_GUID</td>
                                                     }
                                                     else
                                                     {
-                                                        <td style="width: auto"><a href="@Url.Action("VerPagamento", "Financeiro", new { id = cond.COPA_CD_ID })" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página de consulta do pagamento"/>@cond.COPA_GU_GUID</td>
+                                                        <td style="width: auto"><a href="@Url.Action("VerPagamento", "Financeiro", new { id = cond.COPA_CD_ID })" class="btn-loading" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página de consulta do pagamento"/>@cond.COPA_GU_GUID</td>
                                                     }
                                                 }
                                                 else
                                                 {
-                                                    <td style="width: auto"><a href="@Url.Action("VerPagamento", "Financeiro", new { id = cond.COPA_CD_ID })" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página de consulta do pagamento"/>@cond.COPA_GU_GUID</td>
+                                                    <td style="width: auto"><a href="@Url.Action("VerPagamento", "Financeiro", new { id = cond.COPA_CD_ID })" class="btn-loading" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página de consulta do pagamento"/>@cond.COPA_GU_GUID</td>
                                                 }
                                                 <td style="width: auto">@cond.COPA_NM_NOME</td>
                                                 <td style="width: auto">@cond.COPA_NM_FAVORECIDO</td>
@@ -415,12 +417,12 @@
                                                     {
                                                         if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_FINANCEIRO_PAG_ALTERAR == 1)
                                                         {
-                                                            @Html.TableLinkDetails(cond.COPA_CD_ID, "EditarPagamento", "fa-edit", "Alterar/Quitar")
+                                                            @Html.TableLinkDetails(cond.COPA_CD_ID, "EditarPagamento", "fa-edit btn-loading", "Alterar/Quitar")
                                                         }
                                                     }
                                                     else
                                                     {
-                                                        @Html.TableLinkDetails(cond.COPA_CD_ID, "VerPagamento", "fa-search", "Ver")
+                                                        @Html.TableLinkDetails(cond.COPA_CD_ID, "VerPagamento", "fa-search btn-loading", "Ver")
                                                     }
                                                     @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_FINANCEIRO_PAG_EXCLUIR == 1)
                                                     {
@@ -435,7 +437,11 @@
                                         else
                                         {
                                             <tr>
-                                                <td style="width: auto">@cond.COPA_DT_VENCIMENTO.Value.ToShortDateString()</td>
+                                                @*<td style="width: auto">@cond.COPA_DT_VENCIMENTO.Value.ToShortDateString()</td>*@
+                                                <td>
+                                                    <span style="display:none">@cond.COPA_DT_VENCIMENTO.Value.ToString("yyyyMMdd")</span>
+                                                    @cond.COPA_DT_VENCIMENTO.Value.ToString("dd/MM/yyyy")
+                                                </td>
                                                 @if (cond.COPA_DT_PAGAMENTO != null)
                                                 {
                                                     <td style="width: auto">@cond.COPA_DT_PAGAMENTO.Value.ToShortDateString()</td>
@@ -449,16 +455,16 @@
                                                 {
                                                     if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_FINANCEIRO_PAG_ALTERAR == 1)
                                                     {
-                                                        <td style="width: auto"><a href="@Url.Action("EditarPagamento", "Financeiro", new { id = cond.COPA_CD_ID })" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página de edição/quitação do pagamento"/>@cond.COPA_GU_GUID</td>
+                                                        <td style="width: auto"><a href="@Url.Action("EditarPagamento", "Financeiro", new { id = cond.COPA_CD_ID })" class="btn-loading" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página de edição/quitação do pagamento"/>@cond.COPA_GU_GUID</td>
                                                     }
                                                     else
                                                     {
-                                                        <td style="width: auto"><a href="@Url.Action("VerPagamento", "Financeiro", new { id = cond.COPA_CD_ID })" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página de consulta do pagamento"/>@cond.COPA_GU_GUID</td>
+                                                        <td style="width: auto"><a href="@Url.Action("VerPagamento", "Financeiro", new { id = cond.COPA_CD_ID })" class="btn-loading" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página de consulta do pagamento"/>@cond.COPA_GU_GUID</td>
                                                     }
                                                 }
                                                 else
                                                 {
-                                                    <td style="width: auto"><a href="@Url.Action("VerPagamento", "Financeiro", new { id = cond.COPA_CD_ID })" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página de consulta do pagamento"/>@cond.COPA_GU_GUID</td>
+                                                    <td style="width: auto"><a href="@Url.Action("VerPagamento", "Financeiro", new { id = cond.COPA_CD_ID })" class="btn-loading" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página de consulta do pagamento"/>@cond.COPA_GU_GUID</td>
                                                 }
                                                 <td style="width: auto">@cond.COPA_NM_NOME</td>
                                                 <td style="width: auto">@cond.COPA_NM_FAVORECIDO</td>
@@ -495,12 +501,12 @@
                                                     {
                                                         if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_FINANCEIRO_PAG_ALTERAR == 1)
                                                         {
-                                                            @Html.TableLinkDetails(cond.COPA_CD_ID, "EditarPagamento", "fa-edit", "Alterar/Quitar")
+                                                            @Html.TableLinkDetails(cond.COPA_CD_ID, "EditarPagamento", "fa-edit btn-loading", "Alterar/Quitar")
                                                         }
                                                     }
                                                     else
                                                     {
-                                                        @Html.TableLinkDetails(cond.COPA_CD_ID, "VerPagamento", "fa-search", "Ver")
+                                                        @Html.TableLinkDetails(cond.COPA_CD_ID, "VerPagamento", "fa-search btn-loading", "Ver")
                                                     }
                                                     @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_FINANCEIRO_PAG_EXCLUIR == 1)
                                                     {
@@ -701,13 +707,13 @@
         }
 
         function ShowModalExcluir(url) {
-            $('#modal').find('.modal-footer').prepend('<a id="btnModal" alt="Desativar" class="btn btn-primary" href="' + url + '" target="_self" title="Desativar">Confirmar</a>');
+            $('#modal').find('.modal-footer').prepend('<a id="btnModal" alt="Desativar" class="btn btn-primary btn-loading" href="' + url + '" target="_self" title="Desativar">Confirmar</a>');
             $('#modal').find('.modal-body').html('Confirma exclusão de Pagamento?');
             $('#modal').find('.modal-header').prepend('<h5 id="modalTitle" class="modal-title">Confimar Exclusão</h5>');
             $('#modal').modal('show');
         }
         function ShowModalConsolidar(url) {
-            $('#modal').find('.modal-footer').prepend('<a id="btnModal" alt="Desativar" class="btn btn-primary" href="' + url + '" target="_self" title="Desativar">Confirmar</a>');
+            $('#modal').find('.modal-footer').prepend('<a id="btnModal" alt="Desativar" class="btn btn-primary btn-loading" href="' + url + '" target="_self" title="Desativar">Confirmar</a>');
             $('#modal').find('.modal-body').html('Confirma consolidação de Pagamento?');
             $('#modal').find('.modal-header').prepend('<h5 id="modalTitle" class="modal-title">Confimar Consolidação</h5>');
             $('#modal').modal('show');
@@ -720,24 +726,17 @@
             $('.dataTables-example').DataTable({
                 pageLength: 25,
                 dom: '<"html5buttons"B>lTfgitp',
-                order: [[0, 'desc'],
-
-
+                // --- NOVO BLOCO DE CONFIGURAÇÃO ---
                 columnDefs: [
-                                {
-                                    // Aplicar o tipo de ordenação de data na Coluna 0
-                                    "type": "datetime-moment", 
-                                    "targets": 0 
-                                },
-                                {
-                                    // As colunas de Ações, Tipo, Situação, etc., podem ter elementos HTML 
-                                    // que atrapalham a ordenação. Usamos "html-num" (ou customizado)
-                                    // ou simplesmente garantir que não tente ordenar o conteúdo do link da data.
-                                    "orderable": false, // Desabilita ordenação para a coluna Ações
-                                    "targets": 7 
-                                }
+                    {
+                        // Altera o tipo de ordenação para a primeira coluna (índice 0)
+                        //"type": "datetime-moment", // Se você incluiu o momento.js
+                        // OU
+                         "type": "date-eu", // Para o formato DD/MM/AAAA
+                        "targets": 0 // Aplica à coluna "Data da Transação"
+                    }
                 ],
-                // ---------------------------------     
+                // ---------------------------------       
                 buttons: [
                     { extend: 'excel', title: 'Pagamento_Planilha' },
                     {

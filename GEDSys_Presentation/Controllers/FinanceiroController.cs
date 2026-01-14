@@ -1496,7 +1496,8 @@ namespace GEDSys_Presentation.Controllers
                     }
                     if ((Int32)Session["MensPaciente"] == 61)
                     {
-                        ModelState.AddModelError("", (String)Session["MsgCRUD"]);
+                        TempData["MensagemAcerto"] = (String)Session["MsgCRUD"];
+                        TempData["TemMensagem"] = 1;
                     }
                     if ((Int32)Session["MensPaciente"] == 5)
                     {
@@ -1628,7 +1629,7 @@ namespace GEDSys_Presentation.Controllers
                 }
 
                 // Sanitização
-                item.CORE_NM_RECEBIMENTO = CrossCutting.UtilitariosGeral.CleanStringGeral(item.CORE_NM_RECEBIMENTO);
+                item.CORE_NM_RECEBIMENTO = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(item.CORE_NM_RECEBIMENTO);
 
                 // Executa a operação
                 CONFIGURACAO conf = CarregaConfiguracaoGeral();
@@ -1811,7 +1812,7 @@ namespace GEDSys_Presentation.Controllers
                 try
                 {
                     // Sanitização
-                    vm.CORE_NM_RECEBIMENTO = CrossCutting.UtilitariosGeral.CleanStringDocto(vm.CORE_NM_RECEBIMENTO);
+                    vm.CORE_NM_RECEBIMENTO = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(vm.CORE_NM_RECEBIMENTO);
                     vm.CORE_IN_CONFERIDO = 0;
 
                     // Carrega paciente
@@ -1822,6 +1823,11 @@ namespace GEDSys_Presentation.Controllers
                     {
                         String nome = "Recebimento de consulta de " + pac.PACI_NM_NOME + " em " + vm.CORE_DT_RECEBIMENTO.Value.ToLongDateString();
                         vm.CORE_NM_RECEBIMENTO = nome;
+                    }
+                    if (vm.CORE_VL_VALOR == 0 || vm.CORE_VL_VALOR == null)
+                    {
+                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0716", CultureInfo.CurrentCulture));
+                        return View(vm);
                     }
 
                     // Executa a operação
@@ -1858,23 +1864,31 @@ namespace GEDSys_Presentation.Controllers
                         Session["FileQueueRecebimento"] = null;
                     }
 
+                    // Configura serialização
+                    JsonSerializerSettings settings = new JsonSerializerSettings
+                    {
+                        ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+                        NullValueHandling = NullValueHandling.Ignore
+                    };
+
                     // Monta Log
+                    DTO_Recebimento dto = MontarRecebimentoDTOObj(item);
+                    String json = JsonConvert.SerializeObject(dto, settings);
                     CONSULTA_RECEBIMENTO pag = recApp.GetItemById(item.CORE_CD_ID);
-                    String frase = pag.CORE_CD_ID.ToString() + "|" + pag.VACO_CD_ID.ToString() + "|" + pag.USUA_CD_ID.ToString() + "|" + pag.CORE_DT_RECEBIMENTO.ToString() + "|" + pag.CORE_GU_GUID + "|" + pag.CORE_VL_VALOR.ToString();
                     LOG log = new LOG
                     {
                         LOG_DT_DATA = DateTime.Now,
                         ASSI_CD_ID = usuarioLogado.ASSI_CD_ID,
                         USUA_CD_ID = usuarioLogado.USUA_CD_ID,
-                        LOG_NM_OPERACAO = "addREC",
+                        LOG_NM_OPERACAO = "Recebimento - Inclusão",
                         LOG_IN_ATIVO = 1,
-                        LOG_TX_REGISTRO = frase,
+                        LOG_TX_REGISTRO = json,
                         LOG_IN_SISTEMA = 6
                     };
                     Int32 volta1 = logApp.ValidateCreate(log);
 
                     // Mensagem do CRUD
-                    Session["MsgCRUD"] = "O recebimento " + item.CORE_GU_GUID + " de " + pac.PACI_NM_NOME + " foi incluído com sucesso.";
+                    Session["MsgCRUD"] = "O recebimento " + item.CORE_GU_GUID + " de " + pac.PACI_NM_NOME.ToUpper() + " foi incluído com sucesso.";
                     Session["MensPaciente"] = 61;
 
                     // Retorno
@@ -1955,6 +1969,11 @@ namespace GEDSys_Presentation.Controllers
                         String frase = CRMSys_Base.ResourceManager.GetString("M0606", CultureInfo.CurrentCulture);
                         ModelState.AddModelError("", frase);
                     }
+                    if ((Int32)Session["MensPaciente"] == 61)
+                    {
+                        TempData["MensagemAcerto"] = (String)Session["MsgCRUD"];
+                        TempData["TemMensagem"] = 1;
+                    }
                 }
 
                 // Prepara registro
@@ -2000,7 +2019,7 @@ namespace GEDSys_Presentation.Controllers
                 try
                 {
                     // Sanitização
-                    vm.CORE_NM_RECEBIMENTO = CrossCutting.UtilitariosGeral.CleanStringDocto(vm.CORE_NM_RECEBIMENTO);
+                    vm.CORE_NM_RECEBIMENTO = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(vm.CORE_NM_RECEBIMENTO);
 
                     // Carrega paciente
                     PACIENTE pac = pacApp.GetItemById(vm.PACI_CD_ID.Value);
@@ -2027,23 +2046,34 @@ namespace GEDSys_Presentation.Controllers
                     Session["ListaRecebimento"] = null;
                     Session["NivelRecebimento"] = 1;
 
+                    // Configura serilização
+                    JsonSerializerSettings settings = new JsonSerializerSettings
+                    {
+                        ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+                        NullValueHandling = NullValueHandling.Ignore
+                    };
+
                     // Monta Log
                     CONSULTA_RECEBIMENTO pag = recApp.GetItemById(item.CORE_CD_ID);
-                    String frase = pag.CORE_CD_ID.ToString() + "|" + pac.PACI_NM_NOME.ToString() + "|" + pag.USUA_CD_ID.ToString() + "|" + pag.CORE_DT_RECEBIMENTO.ToString() + "|" + pag.CORE_GU_GUID + "|" + pag.CORE_VL_VALOR.ToString();
+                    DTO_Recebimento dto = MontarRecebimentoDTOObj(item);
+                    String json = JsonConvert.SerializeObject(dto, settings);
+                    DTO_Recebimento dtoAntes = MontarRecebimentoDTOObj((CONSULTA_RECEBIMENTO)Session["Recebimento"]);
+                    String jsonAntes = JsonConvert.SerializeObject(dtoAntes, settings);
                     LOG log = new LOG
                     {
                         LOG_DT_DATA = DateTime.Now,
                         ASSI_CD_ID = usuarioLogado.ASSI_CD_ID,
                         USUA_CD_ID = usuarioLogado.USUA_CD_ID,
-                        LOG_NM_OPERACAO = "edtREC",
+                        LOG_NM_OPERACAO = "Recebimento - Alteração",
                         LOG_IN_ATIVO = 1,
-                        LOG_TX_REGISTRO = frase,
+                        LOG_TX_REGISTRO = json,
+                        LOG_TX_REGISTRO_ANTES = jsonAntes,
                         LOG_IN_SISTEMA = 6
                     };
                     Int32 volta1 = logApp.ValidateCreate(log);
 
                     // Mensagem do CRUD
-                    Session["MsgCRUD"] = "O Recebimento " + item.CORE_GU_GUID + " de " + pac.PACI_NM_NOME + " foi alterado com sucesso.";
+                    Session["MsgCRUD"] = "O Recebimento " + item.CORE_GU_GUID + " de " + pac.PACI_NM_NOME.ToUpper() + " foi alterado com sucesso.";
                     Session["MensPaciente"] = 61;
 
                     // Retorno
@@ -2106,23 +2136,31 @@ namespace GEDSys_Presentation.Controllers
                 Session["NivelPaciente"] = 1;
                 Session["ListaRecebimento"] = null;
 
+                // Configura serialização
+                JsonSerializerSettings settings = new JsonSerializerSettings
+                {
+                    ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+                    NullValueHandling = NullValueHandling.Ignore
+                };
+
                 // Monta Log
+                DTO_Recebimento dto = MontarRecebimentoDTOObj(item);
+                String json = JsonConvert.SerializeObject(dto, settings);
                 CONSULTA_RECEBIMENTO pag = recApp.GetItemById(item.CORE_CD_ID);
-                String frase = pag.CORE_CD_ID.ToString() + "|" + pac.PACI_NM_NOME + "|" + pag.USUA_CD_ID.ToString() + "|" + pag.CORE_DT_RECEBIMENTO.ToString() + "|" + pag.CORE_GU_GUID + "|" + pag.CORE_VL_VALOR.ToString();
                 LOG log = new LOG
                 {
                     LOG_DT_DATA = DateTime.Now,
                     ASSI_CD_ID = usuarioLogado.ASSI_CD_ID,
                     USUA_CD_ID = usuarioLogado.USUA_CD_ID,
-                    LOG_NM_OPERACAO = "delREC",
+                    LOG_NM_OPERACAO = "Recebimento - Exclusão",
                     LOG_IN_ATIVO = 1,
-                    LOG_TX_REGISTRO = frase,
+                    LOG_TX_REGISTRO = json,
                     LOG_IN_SISTEMA = 6
                 };
                 Int32 volta1 = logApp.ValidateCreate(log);
 
                 // Mensagem do CRUD
-                Session["MsgCRUD"] = "O recebimento " + item.CORE_GU_GUID + " de " + pac.PACI_NM_NOME + " foi excluído com sucesso.";
+                Session["MsgCRUD"] = "O recebimento " + item.CORE_GU_GUID + " de " + pac.PACI_NM_NOME.ToUpper() + " foi excluído com sucesso.";
                 Session["MensPaciente"] = 61;
 
                 // Retorno
@@ -2230,6 +2268,19 @@ namespace GEDSys_Presentation.Controllers
                 copa.RECEBIMENTO_ANEXO.Add(foto);
                 objetoAntesREc = copa;
                 Int32 volta = recApp.ValidateEdit(copa, objetoAntesREc);
+
+                // Monta Log
+                LOG log = new LOG
+                {
+                    LOG_DT_DATA = DateTime.Now,
+                    ASSI_CD_ID = usu.ASSI_CD_ID,
+                    USUA_CD_ID = usu.USUA_CD_ID,
+                    LOG_NM_OPERACAO = "Recebimento - Anexo - Inclusão",
+                    LOG_IN_ATIVO = 1,
+                    LOG_TX_REGISTRO = "Recebimento: " + copa.CORE_NM_RECEBIMENTO.ToUpper() + " | Anexo: " + fileName + " | Data: " + DateTime.Today.Date,
+                    LOG_IN_SISTEMA = 6
+                };
+                Int32 volta1 = logApp.ValidateCreate(log);
                 return 0;
             }
             catch (Exception ex)
@@ -2282,7 +2333,7 @@ namespace GEDSys_Presentation.Controllers
         }
 
         [HttpPost]
-        public ActionResult UploadFileRecebimento(HttpPostedFileBase file)
+        public async Task<ActionResult> UploadFileRecebimento(HttpPostedFileBase file)
         {
             try
             {
@@ -2334,10 +2385,15 @@ namespace GEDSys_Presentation.Controllers
                 String caminho = "/Imagens/" + idAss.ToString() + "/Recebimento/" + item.CORE_CD_ID.ToString() + "/Anexos/";
                 String path = Path.Combine(Server.MapPath(caminho), fileName);
                 file.SaveAs(path);
+                using (var stream = new FileStream(path, FileMode.Create))
+                {
+                    await file.InputStream.CopyToAsync(stream);
+                }
 
 
                 // Gravar registro
                 RECEBIMENTO_ANEXO foto = new RECEBIMENTO_ANEXO();
+                foto.ASSI_CD_ID = idAss;
                 foto.REAN_AQ_ARQUIVO = "~" + caminho + fileName;
                 foto.REAN_DT_ANEXO = DateTime.Today;
                 foto.REAN_IN_ATIVO = 1;
@@ -2547,20 +2603,6 @@ namespace GEDSys_Presentation.Controllers
                 USUARIO usuarioLogado = (USUARIO)Session["UserCredentials"];
                 RECEBIMENTO_ANEXO item = recApp.GetAnexoById(id);
                 CONSULTA_RECEBIMENTO pac = recApp.GetItemById(item.CORE_CD_ID.Value);
-
-                // Exclusão fisica
-                //String caminho = "/Imagens/" + usuarioLogado.ASSI_CD_ID.ToString() + "/Recebimento/" + pac.CORE_CD_ID.ToString() + "/Anexos/";
-                //String filePath = Path.Combine(Server.MapPath(caminho), item.REAN_NM_TITULO);
-                //if (System.IO.File.Exists(filePath))
-                //{
-                //    System.IO.File.Delete(filePath);
-                //    Session["MensPaciente"] = 69;
-                //}
-                //else
-                //{
-                //    Session["MensPaciente"] = 70;
-                //}
-
                 item.REAN_IN_ATIVO = 0;
                 Int32 volta = recApp.ValidateEditAnexo(item);
 
@@ -2570,9 +2612,9 @@ namespace GEDSys_Presentation.Controllers
                     LOG_DT_DATA = DateTime.Now,
                     ASSI_CD_ID = usuarioLogado.ASSI_CD_ID,
                     USUA_CD_ID = usuarioLogado.USUA_CD_ID,
-                    LOG_NM_OPERACAO = "xarCORE",
+                    LOG_NM_OPERACAO = "Recebimento - Anexo - Exclusão",
                     LOG_IN_ATIVO = 1,
-                    LOG_TX_REGISTRO = "Recebimento: " + pac.CORE_NM_RECEBIMENTO+ " | Anexo: " + item.REAN_NM_TITULO + " | Data: " + item.REAN_DT_ANEXO.Value.ToShortDateString(),
+                    LOG_TX_REGISTRO = "Recebimento: " + pac.CORE_NM_RECEBIMENTO.ToUpper() + " | Anexo: " + item.REAN_NM_TITULO + " | Data: " + item.REAN_DT_ANEXO.Value.ToShortDateString(),
                     LOG_IN_SISTEMA = 6
                 };
                 Int32 volta1 = logApp.ValidateCreate(log);
@@ -2665,7 +2707,7 @@ namespace GEDSys_Presentation.Controllers
                 try
                 {
                     // Sanitização
-                    vm.REAT_TX_ANOTACAO = CrossCutting.UtilitariosGeral.CleanStringDocto(vm.REAT_TX_ANOTACAO);
+                    vm.REAT_TX_ANOTACAO = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(vm.REAT_TX_ANOTACAO);
 
                     // Executa a operação
                     RECEBIMENTO_ANOTACAO item = Mapper.Map<RecebimentoAnotacaoViewModel, RECEBIMENTO_ANOTACAO>(vm);
@@ -2676,15 +2718,24 @@ namespace GEDSys_Presentation.Controllers
                     not.RECEBIMENTO_ANOTACAO.Add(item);
                     Int32 volta = recApp.ValidateEdit(not, not);
 
+                    // Configura serilização
+                    JsonSerializerSettings settings = new JsonSerializerSettings
+                    {
+                        ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+                        NullValueHandling = NullValueHandling.Ignore
+                    };
+
                     // Monta Log
+                    DTO_Recebimento_Anotacao dto = MontarRecebimentoAnotacaoDTOObj(item);
+                    String json = JsonConvert.SerializeObject(dto, settings);
                     LOG log = new LOG
                     {
                         LOG_DT_DATA = DateTime.Now,
                         ASSI_CD_ID = usuarioLogado.ASSI_CD_ID,
                         USUA_CD_ID = usuarioLogado.USUA_CD_ID,
-                        LOG_NM_OPERACAO = "iaeCORE",
+                        LOG_NM_OPERACAO = "Recebimento - Anotação - Inclusão",
                         LOG_IN_ATIVO = 1,
-                        LOG_TX_REGISTRO = "Recebimento: " + item.CONSULTA_RECEBIMENTO.CORE_NM_RECEBIMENTO + " | Data: " + item.REAT_DT_ANOTACAO.ToString() + " | Anotação: " + item.REAT_TX_ANOTACAO,
+                        LOG_TX_REGISTRO = json,
                         LOG_IN_SISTEMA = 6
                     };
                     Int32 volta1 = logApp.ValidateCreate(log);
@@ -2780,7 +2831,7 @@ namespace GEDSys_Presentation.Controllers
                 try
                 {
                     // Sanitização
-                    vm.REAT_TX_ANOTACAO = CrossCutting.UtilitariosGeral.CleanStringDocto(vm.REAT_TX_ANOTACAO);
+                    vm.REAT_TX_ANOTACAO = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(vm.REAT_TX_ANOTACAO);
 
                     // Executa a operação
                     USUARIO usuarioLogado = (USUARIO)Session["UserCredentials"];
@@ -2794,9 +2845,9 @@ namespace GEDSys_Presentation.Controllers
                         LOG_DT_DATA = DateTime.Now,
                         ASSI_CD_ID = usuarioLogado.ASSI_CD_ID,
                         USUA_CD_ID = usuarioLogado.USUA_CD_ID,
-                        LOG_NM_OPERACAO = "eaeCORE",
+                        LOG_NM_OPERACAO = "Recebimento - Anotação - Alteração",
                         LOG_IN_ATIVO = 1,
-                        LOG_TX_REGISTRO = "Recebimento: " + copa.CORE_NM_RECEBIMENTO + " | Data: " + item.REAT_DT_ANOTACAO.ToString() + " | Anotação: " + item.REAT_TX_ANOTACAO,
+                        LOG_TX_REGISTRO = "Recebimento: " + copa.CORE_NM_RECEBIMENTO.ToUpper() + " | Data: " + item.REAT_DT_ANOTACAO.ToString() + " | Anotação: " + item.REAT_TX_ANOTACAO,
                         LOG_IN_SISTEMA = 6
                     };
                     Int32 volta1 = logApp.ValidateCreate(log);
@@ -2868,9 +2919,9 @@ namespace GEDSys_Presentation.Controllers
                     LOG_DT_DATA = DateTime.Now,
                     ASSI_CD_ID = usuarioLogado.ASSI_CD_ID,
                     USUA_CD_ID = usuarioLogado.USUA_CD_ID,
-                    LOG_NM_OPERACAO = "xaeCORE",
+                    LOG_NM_OPERACAO = "Recebimento - Anotação - Exclusão",
                     LOG_IN_ATIVO = 1,
-                    LOG_TX_REGISTRO = "Recebimento: " + item.CONSULTA_RECEBIMENTO.CORE_NM_RECEBIMENTO + " | Data: " + item.REAT_DT_ANOTACAO.ToString() + " | Anotação: " + item.REAT_TX_ANOTACAO,
+                    LOG_TX_REGISTRO = "Recebimento: " + item.CONSULTA_RECEBIMENTO.CORE_NM_RECEBIMENTO.ToUpper() + " | Data: " + item.REAT_DT_ANOTACAO.ToString() + " | Anotação: " + item.REAT_TX_ANOTACAO,
                     LOG_IN_SISTEMA = 6
                 };
                 Int32 volta1 = logApp.ValidateCreate(log);
@@ -3157,11 +3208,11 @@ namespace GEDSys_Presentation.Controllers
 
                 if (usuario.PERFIL.PERF_IN_VISAO_GERAL == 1 || usuario.PERFIL.PERF_SG_SIGLA == "ADM")
                 {
-                    listaMasterPag = CarregaPagamento().Where(p => p.COPA_IN_ATIVO == 1).OrderBy(p => p.COPA_DT_VENCIMENTO).ToList();
+                    listaMasterPag = CarregaPagamento().Where(p => p.COPA_IN_ATIVO == 1).ToList();
                 }
                 else
                 {
-                    listaMasterPag = CarregaPagamento().Where(p => p.COPA_IN_ATIVO == 1 & p.USUA_CD_ID == usuario.USUA_CD_ID).OrderBy(p => p.COPA_DT_VENCIMENTO).ToList();
+                    listaMasterPag = CarregaPagamento().Where(p => p.COPA_IN_ATIVO == 1 & p.USUA_CD_ID == usuario.USUA_CD_ID).ToList();
                 }
                 Session["TipoExibicaoPagamento"] = 5;
                 Session["ListaPagamento"] = listaMasterPag;
@@ -3192,11 +3243,11 @@ namespace GEDSys_Presentation.Controllers
 
                 if (usuario.PERFIL.PERF_IN_VISAO_GERAL == 1 || usuario.PERFIL.PERF_SG_SIGLA == "ADM")
                 {
-                    listaMasterPag = CarregaPagamento().Where(p => p.COPA_IN_ATIVO == 1 & p.COPA_IN_PAGO == 0 & p.COPA_DT_VENCIMENTO.Value.Month == DateTime.Today.Date.Month & p.COPA_DT_VENCIMENTO.Value.Year == DateTime.Today.Date.Year).OrderBy(p => p.COPA_DT_VENCIMENTO).ToList();
+                    listaMasterPag = CarregaPagamento().Where(p => p.COPA_IN_ATIVO == 1 & p.COPA_IN_PAGO == 0 & p.COPA_DT_VENCIMENTO.Value.Month == DateTime.Today.Date.Month & p.COPA_DT_VENCIMENTO.Value.Year == DateTime.Today.Date.Year).ToList();
                 }
                 else
                 {
-                    listaMasterPag = CarregaPagamento().Where(p => p.COPA_IN_ATIVO == 1 & p.COPA_IN_PAGO == 0 & p.USUA_CD_ID == usuario.USUA_CD_ID & p.COPA_DT_VENCIMENTO.Value.Month == DateTime.Today.Date.Month & p.COPA_DT_VENCIMENTO.Value.Year == DateTime.Today.Date.Year).OrderBy(p => p.COPA_DT_VENCIMENTO).ToList();
+                    listaMasterPag = CarregaPagamento().Where(p => p.COPA_IN_ATIVO == 1 & p.COPA_IN_PAGO == 0 & p.USUA_CD_ID == usuario.USUA_CD_ID & p.COPA_DT_VENCIMENTO.Value.Month == DateTime.Today.Date.Month & p.COPA_DT_VENCIMENTO.Value.Year == DateTime.Today.Date.Year).ToList();
                 }
                 Session["ListaPagamento"] = listaMasterPag;
                 Session["TipoExibicaoPagamento"] = 2;
@@ -3227,11 +3278,11 @@ namespace GEDSys_Presentation.Controllers
 
                 if (usuario.PERFIL.PERF_IN_VISAO_GERAL == 1 || usuario.PERFIL.PERF_SG_SIGLA == "ADM")
                 {
-                    listaMasterPag = CarregaPagamento().Where(p => p.COPA_IN_ATIVO == 1 & p.COPA_IN_PAGO == 1 & p.COPA_DT_PAGAMENTO == DateTime.Today.Date).OrderBy(p => p.COPA_DT_PAGAMENTO).ToList();
+                    listaMasterPag = CarregaPagamento().Where(p => p.COPA_IN_ATIVO == 1 & p.COPA_IN_PAGO == 1 & p.COPA_DT_PAGAMENTO == DateTime.Today.Date).ToList();
                 }
                 else
                 {
-                    listaMasterPag = CarregaPagamento().Where(p => p.COPA_IN_ATIVO == 1 & p.COPA_IN_PAGO == 1 & p.USUA_CD_ID == usuario.USUA_CD_ID & p.COPA_DT_PAGAMENTO == DateTime.Today.Date).OrderBy(p => p.COPA_DT_PAGAMENTO).ToList();
+                    listaMasterPag = CarregaPagamento().Where(p => p.COPA_IN_ATIVO == 1 & p.COPA_IN_PAGO == 1 & p.USUA_CD_ID == usuario.USUA_CD_ID & p.COPA_DT_PAGAMENTO == DateTime.Today.Date).ToList();
                 }
                 Session["ListaPagamento"] = listaMasterPag;
                 Session["TipoExibicaoPagamento"] = 3;
@@ -3268,7 +3319,7 @@ namespace GEDSys_Presentation.Controllers
                 {
                     listaMasterPag = CarregaPagamento().Where(p => p.COPA_IN_ATIVO == 1 & p.COPA_IN_PAGO == 1 & p.USUA_CD_ID == usuario.USUA_CD_ID & p.COPA_DT_PAGAMENTO != null).ToList();
                 }
-                listaMasterPag = listaMasterPag.Where(p => p.COPA_DT_PAGAMENTO.Value.Month == DateTime.Today.Date.Month & p.COPA_DT_PAGAMENTO.Value.Year == DateTime.Today.Date.Year).OrderBy(p => p.COPA_DT_PAGAMENTO).ToList();
+                listaMasterPag = listaMasterPag.Where(p => p.COPA_DT_PAGAMENTO.Value.Month == DateTime.Today.Date.Month & p.COPA_DT_PAGAMENTO.Value.Year == DateTime.Today.Date.Year).ToList();
                 Session["ListaPagamento"] = listaMasterPag;
                 Session["TipoExibicaoPagamento"] = 4;
                 return RedirectToAction("MontarTelaPagamento");
@@ -3453,6 +3504,7 @@ namespace GEDSys_Presentation.Controllers
                     vm.COPA_NM_FAVORECIDO = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(vm.COPA_NM_FAVORECIDO);
                     vm.COPA_IN_CONFERIDO = 0;
                     vm.COPA_DT_CADASTRO = DateTime.Today.Date;
+                    Int32? tipo = vm.TIPA_CD_ID;
 
                     // Critica
                     if (vm.COPA_NM_NOME == null)
@@ -3461,9 +3513,28 @@ namespace GEDSys_Presentation.Controllers
                         String nome = "Pagamento de " + tp.TIPA_NM_PAGAMENTO + " em " + vm.COPA_DT_PAGAMENTO.Value.ToLongDateString();
                         vm.COPA_NM_NOME = nome;
                     }
+                    if (vm.COPA_NM_FAVORECIDO == null)
+                    {
+                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0718", CultureInfo.CurrentCulture));
+                        return View(vm);
+                    }
                     if (vm.RECURSIVO == null)
                     {
                         vm.RECURSIVO = 0;
+                    }
+                    if (vm.COPA_VL_VALOR == 0 || vm.COPA_VL_VALOR == null)
+                    {
+                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0715", CultureInfo.CurrentCulture));
+                        return View(vm);
+                    }
+                    if (vm.COPA_DT_VENCIMENTO == null)
+                    {
+                        vm.COPA_DT_VENCIMENTO = DateTime.Today.Date;
+                    }
+                    if (vm.COPA_DT_VENCIMENTO.Value.Date < DateTime.Today.Date)
+                    {
+                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0717", CultureInfo.CurrentCulture));
+                        return View(vm);
                     }
 
                     // Critica de quitacao
@@ -3546,6 +3617,11 @@ namespace GEDSys_Presentation.Controllers
                         map = Server.MapPath(caminho);
                         Directory.CreateDirectory(Server.MapPath(caminho));
 
+                        // Acerta pagamento
+                        CONSULTA_PAGAMENTO pagX = pagApp.GetItemById(item.COPA_CD_ID);
+                        pagX.TIPA_CD_ID = tipo;
+                        Int32 voltaA = pagApp.ValidateEdit(pagX, pagX);
+
                         // Acerta estado
                         Session["IdPagamento"] = item.COPA_CD_ID;
                         Session["PagamentoAlterada"] = 1;
@@ -3578,7 +3654,6 @@ namespace GEDSys_Presentation.Controllers
                         // Monta Log
                         DTO_Pagamento dto = MontarPagamentoDTOObj(item);
                         String json = JsonConvert.SerializeObject(dto, settings);
-                        CONSULTA_PAGAMENTO pag = pagApp.GetItemById(item.COPA_CD_ID);
                         LOG log = new LOG
                         {
                             LOG_DT_DATA = DateTime.Now,
@@ -3592,12 +3667,13 @@ namespace GEDSys_Presentation.Controllers
                         Int32 volta1 = logApp.ValidateCreate(log);
 
                         // Mensagem do CRUD
-                        Session["MsgCRUD"] = "O pagamento " + item.COPA_GU_GUID + " de " + pag.TIPO_PAGAMENTO.TIPA_NM_PAGAMENTO.ToUpper() + " para " + pag.COPA_NM_FAVORECIDO.ToUpper() + " foi cadastrado com sucesso.";
+                        Session["MsgCRUD"] = "O pagamento " + item.COPA_GU_GUID + " de " + pagX.TIPO_PAGAMENTO.TIPA_NM_PAGAMENTO.ToUpper() + " para " + pagX.COPA_NM_FAVORECIDO.ToUpper() + " foi cadastrado com sucesso.";
                         Session["MensPaciente"] = 61;
 
                     }
                     else
                     {
+
                         // Processa recursividade
                         PERIODICIDADE_TAREFA peta = perApp.GetItemById(vm.PETA_CD_ID.Value);
                         Int32 dias = peta.PETA_NR_DIAS;
@@ -3649,6 +3725,8 @@ namespace GEDSys_Presentation.Controllers
                             pag.USUA_CD_ID = vm.USUA_CD_ID;
                             Int32 volta = pagApp.ValidateCreate(pag, usuarioLogado);
                             CONSULTA_PAGAMENTO pagto = pagApp.GetItemById(pag.COPA_CD_ID);
+                            pagto.TIPA_CD_ID = tipo;
+                            Int32 voltaA = pagApp.ValidateEdit(pagto, pagto);
 
                             // Cria pastas
                             String caminho = "/Imagens/" + idAss.ToString() + "/Pagamento/" + pagto.COPA_CD_ID.ToString() + "/Anexos/";
@@ -3785,6 +3863,35 @@ namespace GEDSys_Presentation.Controllers
 
         }
 
+        public DTO_Recebimento MontarRecebimentoDTOObj(CONSULTA_RECEBIMENTO l)
+        {
+            using (var context = new CRMSysDBEntities())
+            {
+                var mediDTO = new DTO_Recebimento()
+                {
+                    ASSI_CD_ID = l.ASSI_CD_ID,
+                    CORE_CD_ID = l.CORE_CD_ID,
+                    FORE_CD_ID = l.FORE_CD_ID,
+                    PACI_CD_ID = l.PACI_CD_ID,
+                    PACO_CD_ID = l.PACO_CD_ID,
+                    SERV_CD_ID = l.SERV_CD_ID,
+                    USUA_CD_ID = l.USUA_CD_ID,
+                    VACO_CD_ID = l.VACO_CD_ID,
+                    VACV_CD_ID = l.VACV_CD_ID,
+                    VASE_CD_ID = l.VASE_CD_ID,
+                    CORE_DT_RECEBIMENTO = l.CORE_DT_RECEBIMENTO,
+                    CORE_GU_GUID = l.CORE_GU_GUID,
+                    CORE_IN_ATIVO = l.CORE_IN_ATIVO,
+                    CORE_IN_CONFERIDO = l.CORE_IN_CONFERIDO,
+                    CORE_NM_RECEBIMENTO = l.CORE_NM_RECEBIMENTO,
+                    CORE_VL_CONVENIO = l.CORE_VL_CONVENIO,
+                    CORE_VL_SERVICO = l.CORE_VL_SERVICO,
+                    CORE_VL_VALOR = l.CORE_VL_VALOR,
+                };
+                return mediDTO;
+            }
+        }
+
         public DTO_Pagamento_Anotacao MontarPagamentoAnotacaoDTOObj(PAGAMENTO_ANOTACAO l)
         {
             using (var context = new CRMSysDBEntities())
@@ -3802,6 +3909,24 @@ namespace GEDSys_Presentation.Controllers
                 return mediDTO;
             }
 
+        }
+
+        public DTO_Recebimento_Anotacao MontarRecebimentoAnotacaoDTOObj(RECEBIMENTO_ANOTACAO l)
+        {
+            using (var context = new CRMSysDBEntities())
+            {
+                var mediDTO = new DTO_Recebimento_Anotacao()
+                {
+                    ASSI_CD_ID = l.ASSI_CD_ID,
+                    CORE_CD_ID = l.CORE_CD_ID,
+                    REAT_CD_ID = l.REAT_CD_ID,
+                    USUA_CD_ID = l.USUA_CD_ID,
+                    REAT_DT_ANOTACAO = l.REAT_DT_ANOTACAO,
+                    REAT_IN_ATIVO = l.REAT_IN_ATIVO,
+                    REAT_TX_ANOTACAO = l.REAT_TX_ANOTACAO,
+                };
+                return mediDTO;
+            }
         }
 
         [HttpGet]
@@ -3871,7 +3996,6 @@ namespace GEDSys_Presentation.Controllers
                         TempData["TemMensagem"] = 1;
                     }
                 }
-
 
                 // Prepara registro
                 CONSULTA_PAGAMENTO item = pagApp.GetItemById(id);
@@ -4443,7 +4567,7 @@ namespace GEDSys_Presentation.Controllers
         }
 
         [HttpPost]
-        public ActionResult UploadFilePagamento(HttpPostedFileBase file)
+        public async Task<ActionResult> UploadFilePagamento(HttpPostedFileBase file)
         {
             try
             {
@@ -4494,10 +4618,15 @@ namespace GEDSys_Presentation.Controllers
                 // Copia arquivo
                 String caminho = "/Imagens/" + idAss.ToString() + "/Pagamento/" + item.COPA_CD_ID.ToString() + "/Anexos/";
                 String path = Path.Combine(Server.MapPath(caminho), fileName);
-                file.SaveAs(path);
+                //file.SaveAs(path);
+                using (var stream = new FileStream(path, FileMode.Create))
+                {
+                    await file.InputStream.CopyToAsync(stream);
+                }
 
                 // Gravar registro
                 PAGAMENTO_ANEXO foto = new PAGAMENTO_ANEXO();
+                foto.ASSI_CD_ID = idAss;
                 foto.PAAN_AQ_ARQUIVO = "~" + caminho + fileName;
                 foto.PAAN_DT_ANEXO = DateTime.Today.Date;
                 foto.PAAN_IN_ATIVO = 1;
@@ -4568,7 +4697,7 @@ namespace GEDSys_Presentation.Controllers
         }
 
         [HttpPost]
-        public ActionResult UploadFileNotaFiscal(HttpPostedFileBase file)
+        public async Task<ActionResult> UploadFileNotaFiscal(HttpPostedFileBase file)
         {
             try
             {
@@ -4640,7 +4769,11 @@ namespace GEDSys_Presentation.Controllers
                 // Copia arquivo
                 String caminho = "/Imagens/" + idAss.ToString() + "/Pagamento/" + item.COPA_CD_ID.ToString() + "/NF/";
                 String path = Path.Combine(Server.MapPath(caminho), fileName);
-                file.SaveAs(path);
+                //file.SaveAs(path);
+                using (var stream = new FileStream(path, FileMode.Create))
+                {
+                    await file.InputStream.CopyToAsync(stream);
+                }
 
                 // Gravar registro
                 PAGAMENTO_NOTA_FISCAL foto = new PAGAMENTO_NOTA_FISCAL();
@@ -4687,7 +4820,7 @@ namespace GEDSys_Presentation.Controllers
         }
 
         [HttpPost]
-        public ActionResult UploadFileRecibo(HttpPostedFileBase file)
+        public async Task<ActionResult> UploadFileRecibo(HttpPostedFileBase file)
         {
             try
             {
@@ -4764,7 +4897,10 @@ namespace GEDSys_Presentation.Controllers
                 // Copia arquivo
                 String caminho = "/Imagens/" + idAss.ToString() + "/Recebimento/" + item.CORE_CD_ID.ToString() + "/Recibo/";
                 String path = Path.Combine(Server.MapPath(caminho), fileName);
-                file.SaveAs(path);
+                using (var stream = new FileStream(path, FileMode.Create))
+                {
+                    await file.InputStream.CopyToAsync(stream);
+                }
 
                 // Gravar registro
                 RECEBIMENTO_RECIBO foto = new RECEBIMENTO_RECIBO();
@@ -4789,9 +4925,9 @@ namespace GEDSys_Presentation.Controllers
                     LOG_DT_DATA = DateTime.Now,
                     ASSI_CD_ID = usu.ASSI_CD_ID,
                     USUA_CD_ID = usu.USUA_CD_ID,
-                    LOG_NM_OPERACAO = "ircCORE",
+                    LOG_NM_OPERACAO = "Recebimento - Recibo - Inclusão",
                     LOG_IN_ATIVO = 1,
-                    LOG_TX_REGISTRO = "Recebimento: " + item.CORE_NM_RECEBIMENTO + " | Recibo: " + numeroRecibo + " | Nome: " + nome + " | Emitente: " + nomePaciente + " | Valor: " + valor.ToString(),
+                    LOG_TX_REGISTRO = "Recebimento: " + item.CORE_NM_RECEBIMENTO.ToUpper() + " | Recibo: " + numeroRecibo + " | Nome: " + nome + " | Emitente: " + nomePaciente + " | Valor: " + valor.ToString(),
                     LOG_IN_SISTEMA = 6
                 };
                 Int32 volta1 = logApp.ValidateCreate(log);
@@ -5197,7 +5333,7 @@ namespace GEDSys_Presentation.Controllers
                     LOG_DT_DATA = DateTime.Now,
                     ASSI_CD_ID = usuarioLogado.ASSI_CD_ID,
                     USUA_CD_ID = usuarioLogado.USUA_CD_ID,
-                    LOG_NM_OPERACAO = "xrcCORE",
+                    LOG_NM_OPERACAO = "Recebimento - Recibo - Exclusão",
                     LOG_IN_ATIVO = 1,
                     LOG_TX_REGISTRO = "Recibo: " + item.RERC_NR_NUMERO + " | Emitente: " + item.RERC_NM_PACIENTE + " | Data: " + item.RERC_DT_EMISSAO.Value.ToShortDateString(),
                     LOG_IN_SISTEMA = 6
@@ -6861,33 +6997,49 @@ namespace GEDSys_Presentation.Controllers
                 headerTable.SpacingBefore = 1f;
                 headerTable.SpacingAfter = 1f;
 
-                PdfPCell cell = new PdfPCell();
-                cell.Border = 0;
-                cell.Colspan = 1;
-                Image image = null;
                 if (conf.CONF_IN_LOGO_EMPRESA == 1)
                 {
+                    PdfPCell cell1 = new PdfPCell();
+                    cell1.Border = 0;
+                    cell1.Colspan = 1;
+                    Image image = null;
                     EMPRESA empresa = empApp.GetItemByAssinante(idAss);
                     image = Image.GetInstance(Server.MapPath(empresa.EMPR_AQ_LOGO));
+                    image.ScaleAbsolute(50, 50);
+                    cell1.AddElement(image);
+                    cell1.Border = PdfPCell.BOTTOM_BORDER;
+                    headerTable.AddCell(cell1);
+
+                    cell1 = new PdfPCell(new Paragraph("Recebimentos", meuFont2))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_CENTER
+                    };
+                    cell1.Border = 0;
+                    cell1.Colspan = 1;
+                    cell1.Border = PdfPCell.BOTTOM_BORDER;
+                    headerTable.AddCell(cell1);
                 }
                 else
                 {
-                    image = Image.GetInstance(Server.MapPath("~/Images/Prontuario_Icone_1.png"));
-                }
-                image.ScaleAbsolute(50, 50);
-                cell.AddElement(image);
-                cell.Border = PdfPCell.BOTTOM_BORDER;
-                headerTable.AddCell(cell);
+                    PdfPCell cell2 = new PdfPCell(new Paragraph("Recebimentos", meuFont2))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_CENTER
+                    };
+                    cell2.Border = 0;
+                    cell2.Colspan = 2;
+                    headerTable.AddCell(cell2);
 
-                cell = new PdfPCell(new Paragraph("Recebimentos", meuFont2))
-                {
-                    VerticalAlignment = Element.ALIGN_MIDDLE,
-                    HorizontalAlignment = Element.ALIGN_CENTER
-                };
-                cell.Border = 0;
-                cell.Colspan = 1;
-                cell.Border = PdfPCell.BOTTOM_BORDER;
-                headerTable.AddCell(cell);
+                    cell2 = new PdfPCell(new Paragraph(" ", meuFont))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    cell2.Colspan = 2;
+                    cell2.Border = PdfPCell.BOTTOM_BORDER;
+                    headerTable.AddCell(cell2);
+                }
 
                 // Rodape
                 PdfPTable footerTable = new PdfPTable(1);
@@ -6896,7 +7048,7 @@ namespace GEDSys_Presentation.Controllers
                 footerTable.SpacingBefore = 1f;
                 footerTable.SpacingAfter = 1f;
 
-                cell = new PdfPCell();
+                PdfPCell cell = new PdfPCell();
                 cell.Border = PdfPCell.TOP_BORDER;
                 cell = new PdfPCell(new Paragraph("Gerado por WebDoctor 1.0 em " + DateTime.Today.Date.ToLongDateString(), meuFont));
                 footerTable.AddCell(cell);
@@ -7032,10 +7184,6 @@ namespace GEDSys_Presentation.Controllers
                     table.AddCell(cell);
                 }
                 pdfDoc.Add(table);
-
-                // Linha Horizontal
-                Paragraph line2 = new Paragraph(new Chunk(new iTextSharp.text.pdf.draw.LineSeparator(0.0F, 100.0F, BaseColor.BLUE, Element.ALIGN_LEFT, 1)));
-                pdfDoc.Add(line2);
 
                 // Finaliza
                 pdfWriter.CloseStream = false;
@@ -7348,13 +7496,14 @@ namespace GEDSys_Presentation.Controllers
                     ViewBag.ListaRectosMes = (List<ModeloViewModel>)Session["ListaRectosMes"];
                 }
 
-                // Resumo Pagamento x Tipo  
-                List<Int32?> tipos = pagtos.Where(p => p.COPA_IN_ATIVO == 1).Select(p => p.TIPA_CD_ID).Distinct().ToList();
+                // Resumo Pagamento x Tipo
+                List<CONSULTA_PAGAMENTO> pagTipo = pagtos.Where(p => p.TIPA_CD_ID != null).ToList();
+                List<Int32?> tipos = pagTipo.Where(p => p.COPA_IN_ATIVO == 1).Select(p => p.TIPA_CD_ID).Distinct().ToList();
                 List<ModeloViewModel> lista2 = new List<ModeloViewModel>();
                 foreach (Int32 item in tipos)
                 {
                     TIPO_PAGAMENTO tp = tpApp.GetItemById(item);
-                    Int32 conta1 = pagtos.Where(p => p.TIPA_CD_ID == item).ToList().Count;
+                    Int32 conta1 = pagTipo.Where(p => p.TIPA_CD_ID == item).ToList().Count;
                     ModeloViewModel mod1 = new ModeloViewModel();
                     mod1.Nome = tp.TIPA_NM_PAGAMENTO;
                     mod1.Valor = conta1;
@@ -7366,12 +7515,13 @@ namespace GEDSys_Presentation.Controllers
 
 
                 // Resumo Recebimento x Tipo  
-                tipos = rectos.Where(p => p.CORE_IN_ATIVO == 1).Select(p => p.VACO_CD_ID).Distinct().ToList();
+                List<CONSULTA_RECEBIMENTO> recTipo = rectos.Where(p => p.VACO_CD_ID != null).ToList();
+                tipos = recTipo.Where(p => p.CORE_IN_ATIVO == 1).Select(p => p.VACO_CD_ID).Distinct().ToList();
                 List<ModeloViewModel> lista3 = new List<ModeloViewModel>();
                 foreach (Int32 item in tipos)
                 {
                     VALOR_CONSULTA vc = vcApp.GetItemById(item);
-                    Int32 conta1 = rectos.Where(p => p.VACO_CD_ID == item).ToList().Count;
+                    Int32 conta1 = recTipo.Where(p => p.VACO_CD_ID == item).ToList().Count;
                     ModeloViewModel mod1 = new ModeloViewModel();
                     mod1.Nome = vc.VACO_NM_NOME;
                     mod1.Valor = conta1;
@@ -9421,6 +9571,11 @@ namespace GEDSys_Presentation.Controllers
                 Font meuFont = FontFactory.GetFont("Arial", 8, iTextSharp.text.Font.NORMAL, BaseColor.BLACK);
                 Font meuFont1 = FontFactory.GetFont("Arial", 9, iTextSharp.text.Font.NORMAL, BaseColor.BLACK);
                 Font meuFont2 = FontFactory.GetFont("Arial", 14, iTextSharp.text.Font.NORMAL, BaseColor.BLACK);
+                Font meuFont3 = FontFactory.GetFont("Arial", 8, iTextSharp.text.Font.BOLD, BaseColor.BLUE);
+                Decimal? num = 0;
+                Decimal? total = 0;
+                Decimal? mediaFinal = 0;
+                Decimal? itens = 0;
 
                 // Carrega dados
                 List<CONSULTA_RECEBIMENTO> pagtos = (List<CONSULTA_RECEBIMENTO>)Session["ListaRecebimento"];
@@ -9451,33 +9606,49 @@ namespace GEDSys_Presentation.Controllers
                 headerTable.SpacingBefore = 1f;
                 headerTable.SpacingAfter = 1f;
 
-                PdfPCell cell = new PdfPCell();
-                cell.Border = 0;
-                cell.Colspan = 1;
-                Image image = null;
                 if (conf.CONF_IN_LOGO_EMPRESA == 1)
                 {
+                    PdfPCell cell1 = new PdfPCell();
+                    cell1.Border = 0;
+                    cell1.Colspan = 1;
+                    Image image = null;
                     EMPRESA empresa = empApp.GetItemByAssinante(idAss);
                     image = Image.GetInstance(Server.MapPath(empresa.EMPR_AQ_LOGO));
+                    image.ScaleAbsolute(50, 50);
+                    cell1.AddElement(image);
+                    cell1.Border = PdfPCell.BOTTOM_BORDER;
+                    headerTable.AddCell(cell1);
+
+                    cell1 = new PdfPCell(new Paragraph("Recebimentos - Total e Média por Data", meuFont2))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_CENTER
+                    };
+                    cell1.Border = 0;
+                    cell1.Colspan = 1;
+                    cell1.Border = PdfPCell.BOTTOM_BORDER;
+                    headerTable.AddCell(cell1);
                 }
                 else
                 {
-                    image = Image.GetInstance(Server.MapPath("~/Images/Prontuario_Icone_1.png"));
-                }
-                image.ScaleAbsolute(50, 50);
-                cell.AddElement(image);
-                cell.Border = PdfPCell.BOTTOM_BORDER;
-                headerTable.AddCell(cell);
+                    PdfPCell cell2 = new PdfPCell(new Paragraph("Recebimentos - Total e Média por Data", meuFont2))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_CENTER
+                    };
+                    cell2.Border = 0;
+                    cell2.Colspan = 2;
+                    headerTable.AddCell(cell2);
 
-                cell = new PdfPCell(new Paragraph("Recebimentos - Total e Média por Data", meuFont2))
-                {
-                    VerticalAlignment = Element.ALIGN_MIDDLE,
-                    HorizontalAlignment = Element.ALIGN_CENTER
-                };
-                cell.Border = 0;
-                cell.Colspan = 1;
-                cell.Border = PdfPCell.BOTTOM_BORDER;
-                headerTable.AddCell(cell);
+                    cell2 = new PdfPCell(new Paragraph(" ", meuFont))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    cell2.Colspan = 2;
+                    cell2.Border = PdfPCell.BOTTOM_BORDER;
+                    headerTable.AddCell(cell2);
+                }
 
                 // Rodape
                 PdfPTable footerTable = new PdfPTable(1);
@@ -9486,7 +9657,7 @@ namespace GEDSys_Presentation.Controllers
                 footerTable.SpacingBefore = 1f;
                 footerTable.SpacingAfter = 1f;
 
-                cell = new PdfPCell();
+                PdfPCell cell = new PdfPCell();
                 cell.Border = PdfPCell.TOP_BORDER;
                 cell = new PdfPCell(new Paragraph("Gerado por WebDoctor 1.0 em " + DateTime.Today.Date.ToLongDateString(), meuFont));
                 footerTable.AddCell(cell);
@@ -9578,12 +9749,59 @@ namespace GEDSys_Presentation.Controllers
                         HorizontalAlignment = Element.ALIGN_RIGHT
                     };
                     table.AddCell(cell);
+                    num += item.Valor;
+                    total += item.ValorDec;
+                    itens++;
+
                 }
                 pdfDoc.Add(table);
 
-                // Linha Horizontal
-                Paragraph line2 = new Paragraph(new Chunk(new iTextSharp.text.pdf.draw.LineSeparator(0.0F, 100.0F, BaseColor.BLUE, Element.ALIGN_LEFT, 1)));
-                pdfDoc.Add(line2);
+                // Calcula media final
+                Decimal? mediaTotal = total / itens;
+
+                // Grid - TOTAIS
+                PdfPTable table1 = new PdfPTable(new float[] { 60f, 80f, 80f, 80f });
+                table1.WidthPercentage = 100;
+                table1.HorizontalAlignment = 0;
+                table1.SpacingBefore = 1f;
+                table1.SpacingAfter = 1f;
+
+                cell = new PdfPCell(new Paragraph(" ", meuFont))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                cell.Colspan = 1;
+                table1.AddCell(cell);
+
+                cell = new PdfPCell(new Paragraph("TOTAIS", meuFont))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_RIGHT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                table1.AddCell(cell);
+
+                cell = new PdfPCell(new Paragraph(CrossCutting.Formatters.DecimalFormatter(total.Value), meuFont3))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_RIGHT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                table1.AddCell(cell);
+
+                cell = new PdfPCell(new Paragraph(CrossCutting.Formatters.DecimalFormatter(mediaTotal.Value), meuFont3))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_RIGHT
+                };
+                cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                cell.Colspan = 1;
+                table1.AddCell(cell);
+                pdfDoc.Add(table1);
 
                 // Finaliza
                 pdfWriter.CloseStream = false;
@@ -9631,6 +9849,12 @@ namespace GEDSys_Presentation.Controllers
                 Font meuFont = FontFactory.GetFont("Arial", 8, iTextSharp.text.Font.NORMAL, BaseColor.BLACK);
                 Font meuFont1 = FontFactory.GetFont("Arial", 9, iTextSharp.text.Font.NORMAL, BaseColor.BLACK);
                 Font meuFont2 = FontFactory.GetFont("Arial", 14, iTextSharp.text.Font.NORMAL, BaseColor.BLACK);
+                Font meuFont3 = FontFactory.GetFont("Arial", 8, iTextSharp.text.Font.BOLD, BaseColor.BLUE);
+                Decimal? numX = 0;
+                Decimal? total = 0;
+                Decimal? mediaFinal = 0;
+                Decimal? itens = 0;
+
 
                 // Carrega dados
                 List<CONSULTA_RECEBIMENTO> pagtos = (List<CONSULTA_RECEBIMENTO>)Session["ListaRecebimento"];
@@ -9665,33 +9889,49 @@ namespace GEDSys_Presentation.Controllers
                 headerTable.SpacingBefore = 1f;
                 headerTable.SpacingAfter = 1f;
 
-                PdfPCell cell = new PdfPCell();
-                cell.Border = 0;
-                cell.Colspan = 1;
-                Image image = null;
                 if (conf.CONF_IN_LOGO_EMPRESA == 1)
                 {
+                    PdfPCell cell1 = new PdfPCell();
+                    cell1.Border = 0;
+                    cell1.Colspan = 1;
+                    Image image = null;
                     EMPRESA empresa = empApp.GetItemByAssinante(idAss);
                     image = Image.GetInstance(Server.MapPath(empresa.EMPR_AQ_LOGO));
+                    image.ScaleAbsolute(50, 50);
+                    cell1.AddElement(image);
+                    cell1.Border = PdfPCell.BOTTOM_BORDER;
+                    headerTable.AddCell(cell1);
+
+                    cell1 = new PdfPCell(new Paragraph("Recebimentos - Total por Mès", meuFont2))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_CENTER
+                    };
+                    cell1.Border = 0;
+                    cell1.Colspan = 1;
+                    cell1.Border = PdfPCell.BOTTOM_BORDER;
+                    headerTable.AddCell(cell1);
                 }
                 else
                 {
-                    image = Image.GetInstance(Server.MapPath("~/Images/Prontuario_Icone_1.png"));
-                }
-                image.ScaleAbsolute(50, 50);
-                cell.AddElement(image);
-                cell.Border = PdfPCell.BOTTOM_BORDER;
-                headerTable.AddCell(cell);
+                    PdfPCell cell2 = new PdfPCell(new Paragraph("Recebimentos - Total por Mês", meuFont2))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_CENTER
+                    };
+                    cell2.Border = 0;
+                    cell2.Colspan = 2;
+                    headerTable.AddCell(cell2);
 
-                cell = new PdfPCell(new Paragraph("Recebimentos - Total por Mês", meuFont2))
-                {
-                    VerticalAlignment = Element.ALIGN_MIDDLE,
-                    HorizontalAlignment = Element.ALIGN_CENTER
-                };
-                cell.Border = 0;
-                cell.Colspan = 1;
-                cell.Border = PdfPCell.BOTTOM_BORDER;
-                headerTable.AddCell(cell);
+                    cell2 = new PdfPCell(new Paragraph(" ", meuFont))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    cell2.Colspan = 2;
+                    cell2.Border = PdfPCell.BOTTOM_BORDER;
+                    headerTable.AddCell(cell2);
+                }
 
                 // Rodape
                 PdfPTable footerTable = new PdfPTable(1);
@@ -9700,7 +9940,7 @@ namespace GEDSys_Presentation.Controllers
                 footerTable.SpacingBefore = 1f;
                 footerTable.SpacingAfter = 1f;
 
-                cell = new PdfPCell();
+                PdfPCell cell = new PdfPCell();
                 cell.Border = PdfPCell.TOP_BORDER;
                 cell = new PdfPCell(new Paragraph("Gerado por WebDoctor 1.0 em " + DateTime.Today.Date.ToLongDateString(), meuFont));
                 footerTable.AddCell(cell);
@@ -9778,12 +10018,44 @@ namespace GEDSys_Presentation.Controllers
                         HorizontalAlignment = Element.ALIGN_RIGHT
                     };
                     table.AddCell(cell);
+                    total += item.ValorDec1;
+
                 }
                 pdfDoc.Add(table);
 
-                // Linha Horizontal
-                Paragraph line2 = new Paragraph(new Chunk(new iTextSharp.text.pdf.draw.LineSeparator(0.0F, 100.0F, BaseColor.BLUE, Element.ALIGN_LEFT, 1)));
-                pdfDoc.Add(line2);
+                // Grid - TOTAIS
+                PdfPTable table1 = new PdfPTable(new float[] { 60f, 80f, 80f });
+                table1.WidthPercentage = 100;
+                table1.HorizontalAlignment = 0;
+                table1.SpacingBefore = 1f;
+                table1.SpacingAfter = 1f;
+
+                cell = new PdfPCell(new Paragraph("  ", meuFont))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_RIGHT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                table1.AddCell(cell);
+                cell = new PdfPCell(new Paragraph("TOTAIS", meuFont))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_RIGHT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                table1.AddCell(cell);
+
+                cell = new PdfPCell(new Paragraph(CrossCutting.Formatters.DecimalFormatter(total.Value), meuFont3))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_RIGHT
+                };
+                cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                cell.Colspan = 1;
+                table1.AddCell(cell);
+                pdfDoc.Add(table1);
 
                 // Finaliza
                 pdfWriter.CloseStream = false;
@@ -9830,6 +10102,11 @@ namespace GEDSys_Presentation.Controllers
                 Font meuFont = FontFactory.GetFont("Arial", 8, iTextSharp.text.Font.NORMAL, BaseColor.BLACK);
                 Font meuFont1 = FontFactory.GetFont("Arial", 9, iTextSharp.text.Font.NORMAL, BaseColor.BLACK);
                 Font meuFont2 = FontFactory.GetFont("Arial", 14, iTextSharp.text.Font.NORMAL, BaseColor.BLACK);
+                Font meuFont3 = FontFactory.GetFont("Arial", 8, iTextSharp.text.Font.BOLD, BaseColor.BLUE);
+                Decimal? num = 0;
+                Decimal? total = 0;
+                Decimal? mediaFinal = 0;
+                Decimal? itens = 0;
 
                 // Carrega dados
                 List<CONSULTA_RECEBIMENTO> pagtos = (List<CONSULTA_RECEBIMENTO>)Session["ListaRecebimento"];
@@ -9860,33 +10137,50 @@ namespace GEDSys_Presentation.Controllers
                 headerTable.SpacingBefore = 1f;
                 headerTable.SpacingAfter = 1f;
 
-                PdfPCell cell = new PdfPCell();
-                cell.Border = 0;
-                cell.Colspan = 1;
-                Image image = null;
                 if (conf.CONF_IN_LOGO_EMPRESA == 1)
                 {
+                    PdfPCell cell1 = new PdfPCell();
+                    cell1.Border = 0;
+                    cell1.Colspan = 1;
+                    Image image = null;
                     EMPRESA empresa = empApp.GetItemByAssinante(idAss);
                     image = Image.GetInstance(Server.MapPath(empresa.EMPR_AQ_LOGO));
+                    image.ScaleAbsolute(50, 50);
+                    cell1.AddElement(image);
+                    cell1.Border = PdfPCell.BOTTOM_BORDER;
+                    headerTable.AddCell(cell1);
+
+                    cell1 = new PdfPCell(new Paragraph("Pagamentos - Total e Média por Paciente", meuFont2))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_CENTER
+                    };
+                    cell1.Border = 0;
+                    cell1.Colspan = 1;
+                    cell1.Border = PdfPCell.BOTTOM_BORDER;
+                    headerTable.AddCell(cell1);
                 }
                 else
                 {
-                    image = Image.GetInstance(Server.MapPath("~/Images/Prontuario_Icone_1.png"));
-                }
-                image.ScaleAbsolute(50, 50);
-                cell.AddElement(image);
-                cell.Border = PdfPCell.BOTTOM_BORDER;
-                headerTable.AddCell(cell);
+                    PdfPCell cell2 = new PdfPCell(new Paragraph("Pagamentos - Total e Média por Paciente", meuFont2))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_CENTER
+                    };
+                    cell2.Border = 0;
+                    cell2.Colspan = 2;
+                    headerTable.AddCell(cell2);
 
-                cell = new PdfPCell(new Paragraph("Recebimentos - Total e Média por Paciente", meuFont2))
-                {
-                    VerticalAlignment = Element.ALIGN_MIDDLE,
-                    HorizontalAlignment = Element.ALIGN_CENTER
-                };
-                cell.Border = 0;
-                cell.Colspan = 1;
-                cell.Border = PdfPCell.BOTTOM_BORDER;
-                headerTable.AddCell(cell);
+                    cell2 = new PdfPCell(new Paragraph(" ", meuFont))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    cell2.Colspan = 2;
+                    cell2.Border = PdfPCell.BOTTOM_BORDER;
+                    headerTable.AddCell(cell2);
+                }
+
 
                 // Rodape
                 PdfPTable footerTable = new PdfPTable(1);
@@ -9895,7 +10189,7 @@ namespace GEDSys_Presentation.Controllers
                 footerTable.SpacingBefore = 1f;
                 footerTable.SpacingAfter = 1f;
 
-                cell = new PdfPCell();
+                PdfPCell cell = new PdfPCell();
                 cell.Border = PdfPCell.TOP_BORDER;
                 cell = new PdfPCell(new Paragraph("Gerado por WebDoctor 1.0 em " + DateTime.Today.Date.ToLongDateString(), meuFont));
                 footerTable.AddCell(cell);
@@ -9987,12 +10281,58 @@ namespace GEDSys_Presentation.Controllers
                         HorizontalAlignment = Element.ALIGN_RIGHT
                     };
                     table.AddCell(cell);
+                    num += item.Valor;
+                    total += item.ValorDec;
+                    itens++;
                 }
                 pdfDoc.Add(table);
 
-                // Linha Horizontal
-                Paragraph line2 = new Paragraph(new Chunk(new iTextSharp.text.pdf.draw.LineSeparator(0.0F, 100.0F, BaseColor.BLUE, Element.ALIGN_LEFT, 1)));
-                pdfDoc.Add(line2);
+                // Calcula media final
+                Decimal? mediaTotal = total / itens;
+
+                // Grid - TOTAIS
+                PdfPTable table1 = new PdfPTable(new float[] { 60f, 80f, 80f, 80f });
+                table1.WidthPercentage = 100;
+                table1.HorizontalAlignment = 0;
+                table1.SpacingBefore = 1f;
+                table1.SpacingAfter = 1f;
+
+                cell = new PdfPCell(new Paragraph(" ", meuFont))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                cell.Colspan = 1;
+                table1.AddCell(cell);
+
+                cell = new PdfPCell(new Paragraph("TOTAIS", meuFont))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_RIGHT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                table1.AddCell(cell);
+
+                cell = new PdfPCell(new Paragraph(CrossCutting.Formatters.DecimalFormatter(total.Value), meuFont3))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_RIGHT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                table1.AddCell(cell);
+                cell = new PdfPCell(new Paragraph(" ", meuFont))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                cell.Colspan = 1;
+                table1.AddCell(cell);
+
+                pdfDoc.Add(table1);
 
                 // Finaliza
                 pdfWriter.CloseStream = false;

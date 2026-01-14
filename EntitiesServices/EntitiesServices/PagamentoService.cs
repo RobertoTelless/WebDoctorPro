@@ -218,9 +218,12 @@ namespace ModelServices.EntitiesServices
             {
                 try
                 {
+                    Int32 tipo = item.TIPA_CD_ID.Value;
+
                     item.TIPO_PAGAMENTO = null;
                     CONSULTA_PAGAMENTO obj = _baseRepository.GetById(item.COPA_CD_ID);
                     _baseRepository.Detach(obj);
+                    obj.TIPA_CD_ID = tipo;
                     _baseRepository.Update(item);
                     transaction.Commit();
                     return 0;

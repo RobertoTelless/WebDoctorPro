@@ -1589,6 +1589,8 @@
     <Compile Include="WorkClasses\DTO_ModeloEMail.cs" />
     <Compile Include="WorkClasses\DTO_ModeloSMS.cs" />
     <Compile Include="WorkClasses\DTO_ContratoLocacao.cs" />
+    <Compile Include="WorkClasses\DTO_Recebimento_Anotacao.cs" />
+    <Compile Include="WorkClasses\DTO_Recebimento.cs" />
     <Compile Include="WorkClasses\DTO_Pagamento_Anotacao.cs" />
     <Compile Include="WorkClasses\DTO_Pagamento.cs" />
     <Compile Include="WorkClasses\DTO_Paciente_ExameFisico.cs" />

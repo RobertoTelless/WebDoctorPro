@@ -169,12 +169,10 @@
                                                         <div class="col-lg-6 col-md-6 col-xs-12">
                                                             Nome do Pagamento
                                                             @Html.TextBoxFor(m => m.COPA_NM_NOME, new { @class = "form-control", @readonly = "readonly"  })
-                                                            @Html.ValidationMessageFor(m => m.COPA_NM_NOME, "", new { @style = "color:red" })
                                                         </div>
                                                         <div class="col-lg-6 col-md-6 col-xs-12">
                                                             Nome do Favorecido
                                                             @Html.TextBoxFor(m => m.COPA_NM_FAVORECIDO, new { @class = "form-control", @readonly = "readonly" })
-                                                            @Html.ValidationMessageFor(m => m.COPA_NM_FAVORECIDO, "", new { @style = "color:red" })
                                                         </div>
                                                     </div>
                                                 </div>
@@ -187,7 +185,7 @@
                                                         <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
                                                             <div class="col-lg-2 col-md-2 col-xs-12">
                                                                 Quitar Pagamento?
-                                                                @Html.DropDownListFor(m => m.QUITA_PAGAMENTO, (SelectList)ViewBag.Quitar, "Selecionar", new { @class = "form-control", autofocus = true })
+                                                                @Html.DropDownListFor(m => m.QUITA_PAGAMENTO, (SelectList)ViewBag.Quitar, "Selecionar", new { @class = "form-control", autofocus = true, @id = "quita", onchange = "ValidaQuita($(this).val())" })
                                                                 @Html.ValidationMessageFor(m => m.QUITA_PAGAMENTO, "", new { @style = "color:red" })
                                                             </div>
                                                             <div class="col-lg-2 col-md-2 col-xs-12">
@@ -197,7 +195,7 @@
                                                             </div>
                                                             <div class="col-lg-2 col-md-2 col-xs-12">
                                                                 Valor Original (R$)
-                                                                @Html.TextBoxFor(m => m.COPA_VL_VALOR, "{0:n2}", new { @class = "form-control", @id = "valor", @readonly = "readonly", @style = "color: green; font-weight: bold" })
+                                                                @Html.TextBoxFor(m => m.COPA_VL_VALOR, "{0:n2}", new { @class = "form-control", @id = "valor", autofocus = true, @readonly = "readonly", @style = "color: green; font-weight: bold" })
                                                             </div>
                                                             <div class="col-lg-2 col-md-2 col-xs-12">
                                                                 Descontos(-) (R$)
@@ -407,11 +405,11 @@
                                                                         <tr>
                                                                             @if (cond.PAAN_IN_TIPO == 1 || cond.PAAN_IN_TIPO == 2)
                                                                             {
-                                                                                <td style="width: auto"><a href="@Url.Action("VerAnexoPagamento", "Financeiro", new { id = cond.PAAN_CD_ID })" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página de visualiação do anexo"/>@cond.PAAN_NM_TITULO</td>
+                                                                                <td style="width: auto"><a href="@Url.Action("VerAnexoPagamento", "Financeiro", new { id = cond.PAAN_CD_ID })" class="btn-loading" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página de visualização do anexo"/>@cond.PAAN_NM_TITULO</td>
                                                                             }
                                                                             else if (cond.PAAN_IN_TIPO == 4)
                                                                             {
-                                                                                <td style="width: auto"><a href="@Url.Action("VerAnexoPagamentoAudio", "Financeiro", new { id = cond.PAAN_CD_ID })" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página de visualização do anexo"/>@cond.PAAN_NM_TITULO</td>
+                                                                                <td style="width: auto"><a href="@Url.Action("VerAnexoPagamentoAudio", "Financeiro", new { id = cond.PAAN_CD_ID })" class="btn-loading" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página de visualização do anexo"/>@cond.PAAN_NM_TITULO</td>
                                                                             }
                                                                             else if (cond.PAAN_IN_TIPO == 3)
                                                                             {
@@ -513,11 +511,11 @@
                                                                         <tr>
                                                                             @if (cond.PAAN_IN_TIPO == 1 || cond.PAAN_IN_TIPO == 2)
                                                                             {
-                                                                                <td style="width: auto"><a href="@Url.Action("VerAnexoPagamento", "Financeiro", new { id = cond.PAAN_CD_ID })" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página de visualiação do anexo"/>@cond.PAAN_NM_TITULO</td>
+                                                                                <td style="width: auto"><a href="@Url.Action("VerAnexoPagamento", "Financeiro", new { id = cond.PAAN_CD_ID })" class="btn-loading" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página de visualização do anexo"/>@cond.PAAN_NM_TITULO</td>
                                                                             }
                                                                             else if (cond.PAAN_IN_TIPO == 4)
                                                                             {
-                                                                                <td style="width: auto"><a href="@Url.Action("VerAnexoPagamentoAudio", "Financeiro", new { id = cond.PAAN_CD_ID })" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página de visualização do anexo"/>@cond.PAAN_NM_TITULO</td>
+                                                                                <td style="width: auto"><a href="@Url.Action("VerAnexoPagamentoAudio", "Financeiro", new { id = cond.PAAN_CD_ID })" class="btn-loading" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página de visualização do anexo"/>@cond.PAAN_NM_TITULO</td>
                                                                             }
                                                                             else if (cond.PAAN_IN_TIPO == 3)
                                                                             {
@@ -904,19 +902,19 @@
         }
 
         function ShowModalExcluirAnotacao(url) {
-            $('#modal').find('.modal-footer').prepend('<a id="btnModal" alt="Desativar" class="btn btn-primary" href="' + url + '" target="_self" title="Desativar">Confirmar</a>');
+            $('#modal').find('.modal-footer').prepend('<a id="btnModal" alt="Desativar" class="btn btn-primary btn-loading" href="' + url + '" target="_self" title="Desativar">Confirmar</a>');
             $('#modal').find('.modal-body').html('Confirma exclusão da Anotação?');
             $('#modal').find('.modal-header').prepend('<h5 id="modalTitle" class="modal-title">Confimar Exclusão</h5>');
             $('#modal').modal('show');
         }
         function ShowModalExcluirAnexo(url) {
-            $('#modal').find('.modal-footer').prepend('<a id="btnModal" alt="Desativar" class="btn btn-primary" href="' + url + '" target="_self" title="Desativar">Confirmar</a>');
+            $('#modal').find('.modal-footer').prepend('<a id="btnModal" alt="Desativar" class="btn btn-primary btn-loading" href="' + url + '" target="_self" title="Desativar">Confirmar</a>');
             $('#modal').find('.modal-body').html('Confirma exclusão de Anexo?');
             $('#modal').find('.modal-header').prepend('<h5 id="modalTitle" class="modal-title">Confimar Exclusão</h5>');
             $('#modal').modal('show');
         }
         function ShowModalExcluirNota(url) {
-            $('#modal').find('.modal-footer').prepend('<a id="btnModal" alt="Desativar" class="btn btn-primary" href="' + url + '" target="_self" title="Desativar">Confirmar</a>');
+            $('#modal').find('.modal-footer').prepend('<a id="btnModal" alt="Desativar" class="btn btn-primary btn-loading" href="' + url + '" target="_self" title="Desativar">Confirmar</a>');
             $('#modal').find('.modal-body').html('Confirma exclusão de Nota Fiscal?');
             $('#modal').find('.modal-header').prepend('<h5 id="modalTitle" class="modal-title">Confimar Exclusão</h5>');
             $('#modal').modal('show');
@@ -954,7 +952,7 @@
         });
     </script>
 
-    <script>
+    @*<script>
         function CalculaTotal() {
             var valor = $('#valor').val() == "" ? 0 : $('#valor').val();
             var desc = $('#desc').val() == "" ? 0 : $('#desc').val();
@@ -975,6 +973,33 @@
             {
                 tot = tot + multa;
             }
+            $('#total').val(parseFloat(tot).toFixed(2).replace('.', ','));
+        }
+    </script>*@
+
+    <script>
+        function CalculaTotal() {
+            // Função auxiliar para tratar a string e converter em número real
+            function parseMoeda(valor) {
+                if (!valor || valor === "") return 0;
+            
+                // 1. Remove pontos de milhar: "3.500,00" -> "3500,00"
+                // 2. Troca a vírgula decimal por ponto: "3500,00" -> "3500.00"
+                var limpo = valor.toString().replace(/\./g, '').replace(',', '.');
+            
+                var num = parseFloat(limpo);
+                return isNaN(num) ? 0 : num;
+            }
+
+            var valor = parseMoeda($('#valor').val());
+            var desc = parseMoeda($('#desc').val());
+            var multa = parseMoeda($('#multa').val());
+
+            // Cálculo simples (as variáveis já são números agora)
+            var tot = valor - desc + multa;
+
+            // Formata de volta para o padrão brasileiro: 3000.00 -> "3.000,00"
+            //$('#total').val(tot.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
             $('#total').val(parseFloat(tot).toFixed(2).replace('.', ','));
         }
     </script>
@@ -1002,6 +1027,27 @@
             }
             $('#total1').val(parseFloat(tot).toFixed(2).replace('.', ','));
         }
+    </script>
+
+    <script type="text/javascript">
+        function ValidaQuita(men) {
+            if (men == '1') {
+                function parseMoeda(valor) {
+                    if (!valor || valor === "") return 0;
+            
+                    var limpo = valor.toString().replace(/\./g, '').replace(',', '.');
+            
+                    var num = parseFloat(limpo);
+                    return isNaN(num) ? 0 : num;
+                }
+
+                var valor = parseMoeda($('#valor').val());
+                $('#total').val(parseFloat(valor).toFixed(2).replace('.', ','));
+            } 
+        }
+        $(document).ready(function () {
+            ValidaQuita($('#quita').val());
+        });
     </script>
 
     <script type="text/javascript">

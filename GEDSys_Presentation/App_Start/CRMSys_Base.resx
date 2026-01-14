@@ -2196,4 +2196,16 @@
   <data name="M0714" xml:space="preserve">
     <value>Paciente já incluído neste grupo</value>
   </data>
+  <data name="M0715" xml:space="preserve">
+    <value>Valor do pagamento deve ser informado</value>
+  </data>
+  <data name="M0716" xml:space="preserve">
+    <value>Valor do recebimento deve ser informado</value>
+  </data>
+  <data name="M0717" xml:space="preserve">
+    <value>A data de vencimento não pode ser anterior a data corrente</value>
+  </data>
+  <data name="M0718" xml:space="preserve">
+    <value>O favorecido deve ser informado</value>
+  </data>
 </root>

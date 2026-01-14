@@ -48,9 +48,12 @@
                                 <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Pagamento</h4>
                                 <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
                                     @Html.ButtonActionSubmit(text: "BtnSubmit", htmlAttributes: new { id = "submit", style = "display: none;" })
-                                    <button style="margin-left: 15px;" class="btnSubmit btn btn-sm btn-success" id="basictoast" type="button">Confirmar inclusão de Recebimento</button>
-                                    @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaRecebimento", controller: "Financeiro")
+                                    <button style="margin-left: 15px;" class="btnSubmit btn btn-sm btn-success btn-loading1" id="basictoast" type="button">Confirmar inclusão de Recebimento</button>
+                                    @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaRecebimento", controller: "Financeiro", htmlAttributes: new { @class = "btn-loading" })
                                     <a href="@Url.Action((String)Session["AjudaNivel"])" class="btn btn-sm btn-danger" target="_blank">Ajuda</a>
+                                    <span id="loadingIndicator" style="display: none; margin-left: 10px; color: #007bff;">
+                                        <i class="fa fa-spinner fa-spin"></i> Processando...
+                                    </span>
                                 </div>
 
                                 <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
@@ -69,12 +72,12 @@
                                     </div>
                                     <div class="col-lg-3 col-md-3 col-xs-12">
                                         Tipo de Consulta*
-                                        @Html.DropDownListFor(m => m.VACO_CD_ID, (SelectList)ViewBag.TipoConsulta, "Selecionar", new { @class = "form-control", autofocus = true, id = "tc", onchange = "GetConsulta($(this).val())" })
+                                        @Html.DropDownListFor(m => m.VACO_CD_ID, (SelectList)ViewBag.TipoConsulta, "Selecionar", new { @class = "form-control", autofocus = true, id = "tc", data_toggle = "popover", data_content = "Selecione o tipo de consulta deste recebimento", data_trigger="hover", data_placement="top", onchange = "GetConsulta($(this).val())" })
                                         @Html.ValidationMessageFor(m => m.VACO_CD_ID, "", new { @style = "color:red" })
                                     </div>
                                     <div class="col-lg-3 col-md-3 col-xs-12">
                                         Forma de Recebimento.*
-                                        @Html.DropDownListFor(m => m.FORE_CD_ID, (SelectList)ViewBag.Forma, "Selecionar", new { @class = "form-control", autofocus = true })
+                                        @Html.DropDownListFor(m => m.FORE_CD_ID, (SelectList)ViewBag.Forma, "Selecionar", new { @class = "form-control", autofocus = true, data_toggle = "popover", data_content = "Selecione a forma de recebimento deste recebimento", data_trigger="hover", data_placement="top" })
                                         @Html.ValidationMessageFor(m => m.FORE_CD_ID, "", new { @style = "color:red" })
                                     </div>
                                 </div>
@@ -86,14 +89,14 @@
                                     </div>
                                     <div class="col-lg-3 col-md-3 col-xs-12">
                                         Valor (R$)*
-                                        @Html.TextBoxFor(m => m.CORE_VL_VALOR, new { @class = "form-control", autofocus = true, id = "valor", onfocus="this.select();" })
+                                        @Html.TextBoxFor(m => m.CORE_VL_VALOR, new { @class = "form-control", autofocus = true, id = "valor", data_toggle = "popover", data_content = "Informe o valor recebido", data_trigger="hover", data_placement="top", onfocus="this.select();" })
                                         @Html.ValidationMessageFor(m => m.CORE_VL_VALOR, "", new { @style = "color:red" })
                                     </div>
                                 </div>
 
                                 <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
                                     <div class="col-lg-12 col-md-12 col-xs-12">
-                                        Nome do Recebimento
+                                        Nome do Recebimento*
                                         @Html.TextBoxFor(m => m.CORE_NM_RECEBIMENTO, new { @class = "form-control", autofocus = true, id = "nomeRec", data_toggle = "popover", data_content = "O WebDoctor gera um nome para o recebimento baseado nas informações fornecidas. Esse nome poderá ser alterado se necessário", data_trigger="hover", data_placement="top" })
                                         @Html.ValidationMessageFor(m => m.CORE_NM_RECEBIMENTO, "", new { @style = "color:red" })
                                     </div>
@@ -167,6 +170,47 @@
         {
             navigator.sendBeacon('../ControleAcesso/LogSessionTime');
         }; 
+    </script>
+
+    <script type="text/javascript">
+        $(document).ready(function () { 
+            $('.btn-loading').on('click', function (e) {            
+                $(this).prop('disabled', true);
+                $(this).addClass('disabled');
+                $('#loadingIndicator').show();
+                var tagName = $(this).prop('tagName').toLowerCase();
+                if (tagName === 'a') {
+                    e.preventDefault(); 
+                    var targetUrl = $(this).attr('href');
+                    window.location.href = targetUrl;
+
+                } else if (tagName === 'button' || tagName === 'input') {
+                    $(this).closest('form').submit();
+                }
+            });
+        });
+    </script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('.btn-loading1').on('click', function (e) {
+            
+                var $this = $(this);
+                var tagName = $this.prop('tagName').toLowerCase();
+                $this.addClass('disabled'); 
+                $('#loadingIndicator').show();
+
+                if (tagName === 'a') {
+                    e.preventDefault();
+                
+                    var targetUrl = $this.attr('href');
+                    window.location.href = targetUrl;
+                
+                } else if (tagName === 'button' || tagName === 'input') {               
+                    $this.closest('form').submit();
+                    $this.prop('disabled', true);
+                }
+            });
+        });
     </script>
 
     <script>

@@ -20,7 +20,7 @@
                 <a href="@Url.Action("MontarTelaRecebimento", "Financeiro")">Recebimentos</a>
             </li>
             <li>
-                <a href="@Url.Action("EditarRecebimento", "Financeiro")">Recebimentos - Edição</a>
+                <a href="@Url.Action("EditarRecebimento", "Financeiro")">Recebimentos - Alteração</a>
             </li>
             <li class="active">
                 <strong>Recebimentos - Anotações</strong>
@@ -47,8 +47,11 @@
                             </div>
                         }
                         <div class="form-group">
-                            @Html.ButtonActionSubmit(text: "Confirma Criação de Anotação")
-                            @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarAnexoRecebimento", controller: "Financeiro")
+                            @Html.ButtonActionSubmit(text: "Confirma Criação de Anotação", htmlAttributes: new { @class = "btn-loading1" })
+                            @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarAnexoRecebimento", controller: "Financeiro", htmlAttributes: new { @class = "btn-loading" })
+                            <span id="loadingIndicator" style="display: none; margin-left: 10px; color: #007bff;">
+                                <i class="fa fa-spinner fa-spin"></i> Processando...
+                            </span>
                         </div>
                         <div class="row">
                             <div class="form-group">
@@ -107,7 +110,46 @@
     @Scripts.Render("~/bundles/inputmask")
     @Scripts.Render("~/plugins/jasnyBootstrap")
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.maskedinput/1.4.1/jquery.maskedinput.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function () { 
+            $('.btn-loading').on('click', function (e) {            
+                $(this).prop('disabled', true);
+                $(this).addClass('disabled');
+                $('#loadingIndicator').show();
+                var tagName = $(this).prop('tagName').toLowerCase();
+                if (tagName === 'a') {
+                    e.preventDefault(); 
+                    var targetUrl = $(this).attr('href');
+                    window.location.href = targetUrl;
 
+                } else if (tagName === 'button' || tagName === 'input') {
+                    $(this).closest('form').submit();
+                }
+            });
+        });
+    </script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('.btn-loading1').on('click', function (e) {
+            
+                var $this = $(this);
+                var tagName = $this.prop('tagName').toLowerCase();
+                $this.addClass('disabled'); 
+                $('#loadingIndicator').show();
+
+                if (tagName === 'a') {
+                    e.preventDefault();
+                
+                    var targetUrl = $this.attr('href');
+                    window.location.href = targetUrl;
+                
+                } else if (tagName === 'button' || tagName === 'input') {               
+                    $this.closest('form').submit();
+                    $this.prop('disabled', true);
+                }
+            });
+        });
+    </script>
     @if (ViewBag.Message != null)
     {
         <script type="text/javascript">
