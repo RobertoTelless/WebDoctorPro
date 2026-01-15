@@ -5,6 +5,7 @@ using Canducci.Zip;
 using CRMPresentation.App_Start;
 using CrossCutting;
 using EntitiesServices.Model;
+using EntitiesServices.Work_Classes;
 using EntitiesServices.WorkClasses;
 using ERP_Condominios_Solution.Classes;
 using ERP_Condominios_Solution.Controllers;
@@ -14,6 +15,7 @@ using iText.IO.Codec;
 using iTextSharp.text;
 using iTextSharp.text.pdf;
 using Microsoft.Ajax.Utilities;
+using Newtonsoft.Json;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -537,6 +539,30 @@ namespace GEDSys_Presentation.Controllers
             }
         }
 
+        [HttpPost]
+        public JsonResult GetProdutoNome(String term)
+        {
+            List<PRODUTO> usu = CarregarProduto();
+            List<String> nomes = usu.Select(p => p.PROD_NM_NOME).Distinct().ToList();
+            var resultados = nomes
+                .Where(n => n.ToLower().StartsWith(term.ToLower()))
+                .Select(n => new { label = n, value = n })
+                .ToList();
+            return Json(resultados, JsonRequestBehavior.AllowGet);
+        }
+
+        [HttpPost]
+        public JsonResult GetProdutoMarca(String term)
+        {
+            List<PRODUTO> usu = CarregarProduto();
+            List<String> nomes = usu.Select(p => p.PROD_NM_MARCA).Distinct().ToList();
+            var resultados = nomes
+                .Where(n => n.ToLower().StartsWith(term.ToLower()))
+                .Select(n => new { label = n, value = n })
+                .ToList();
+            return Json(resultados, JsonRequestBehavior.AllowGet);
+        }
+
         public ActionResult RetirarFiltroProduto()
         {
             try
@@ -912,16 +938,16 @@ namespace GEDSys_Presentation.Controllers
                 try
                 {
                     // Sanitização
-                    vm.PROD_CD_CODIGO = CrossCutting.UtilitariosGeral.CleanStringGeral(vm.PROD_CD_CODIGO);
-                    vm.PROD_NM_NOME = CrossCutting.UtilitariosGeral.CleanStringGeral(vm.PROD_NM_NOME);
-                    vm.PROD_NM_MARCA = CrossCutting.UtilitariosGeral.CleanStringGeral(vm.PROD_NM_MARCA);
-                    vm.PROD_NM_MODELO = CrossCutting.UtilitariosGeral.CleanStringGeral(vm.PROD_NM_MODELO);
-                    vm.PROD_NM_FABRICANTE = CrossCutting.UtilitariosGeral.CleanStringGeral(vm.PROD_NM_FABRICANTE);
-                    vm.PROD_NR_REFERENCIA = CrossCutting.UtilitariosGeral.CleanStringGeral(vm.PROD_NR_REFERENCIA);
-                    vm.PROD_DS_DESCRICAO = CrossCutting.UtilitariosGeral.CleanStringGeral(vm.PROD_DS_DESCRICAO);
-                    vm.PROD_DS_INFORMACOES = CrossCutting.UtilitariosGeral.CleanStringGeral(vm.PROD_DS_INFORMACOES);
+                    vm.PROD_CD_CODIGO = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(vm.PROD_CD_CODIGO);
+                    vm.PROD_NM_NOME = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(vm.PROD_NM_NOME);
+                    vm.PROD_NM_MARCA = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(vm.PROD_NM_MARCA);
+                    vm.PROD_NM_MODELO = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(vm.PROD_NM_MODELO);
+                    vm.PROD_NM_FABRICANTE = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(vm.PROD_NM_FABRICANTE);
+                    vm.PROD_NR_REFERENCIA = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(vm.PROD_NR_REFERENCIA);
+                    vm.PROD_DS_DESCRICAO = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(vm.PROD_DS_DESCRICAO);
+                    vm.PROD_DS_INFORMACOES = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(vm.PROD_DS_INFORMACOES);
 
-                    // Preparação - Conversão
+                    // Preparação - Conversão   
                     USUARIO usuarioLogado = (USUARIO)Session["UserCredentials"];
                     PRODUTO item = Mapper.Map<ProdutoViewModel, PRODUTO>(vm);
 
@@ -1099,7 +1125,7 @@ namespace GEDSys_Presentation.Controllers
                     logProd.USUA_CD_ID = usuarioLogado.USUA_CD_ID;
                     logProd.LOG_CD_ID = logId;
                     logProd.PRLG_DT_MOVIMENTO = DateTime.Now;
-                    logProd.PRLG_DS_OPERACAO = "Inclusão de Produto";
+                    logProd.PRLG_DS_OPERACAO = "Inclusão de Material/Produto";
                     Int32 volta5 = prodApp.ValidateCreateLog(logProd);
 
                     // Cria pastas
@@ -1135,7 +1161,7 @@ namespace GEDSys_Presentation.Controllers
                     Session["LinhaAlterada"] = item.PROD_CD_ID;
 
                     // Mensagem do CRUD
-                    Session["MsgCRUD"] = "O material/produto " + item.PROD_NM_NOME + " foi incluído com sucesso.";
+                    Session["MsgCRUD"] = "O material/produto " + item.PROD_NM_NOME.ToUpper() + " foi incluído com sucesso.";
                     Session["MensProduto"] = 61;
 
                     // Sucesso
@@ -1167,6 +1193,113 @@ namespace GEDSys_Presentation.Controllers
             }
         }
 
+        public DTO_Produto MontarProdutoDTOObj(PRODUTO l)
+        {
+            using (var context = new CRMSysDBEntities())
+            {
+                var mediDTO = new DTO_Produto()
+                {
+                    ASSI_CD_ID = l.ASSI_CD_ID,
+                    CAPR_CD_ID = l.CAPR_CD_ID,
+                    PROD_CD_CODIGO = l.PROD_CD_CODIGO,
+                    PROD_CD_ID = l.PROD_CD_ID,
+                    SCPR_CD_ID = l.SCPR_CD_ID,
+                    TIEM_CD_ID = l.TIEM_CD_ID,
+                    UNID_CD_ID = l.UNID_CD_ID,
+                    PROD_AQ_FOTO = l.PROD_AQ_FOTO,
+                    PROD_DS_DESCRICAO = l.PROD_DS_DESCRICAO,
+                    PROD_DS_INFORMACOES = l.PROD_DS_INFORMACOES,
+                    PROD_DT_ALTERACAO = l.PROD_DT_ALTERACAO,
+                    PROD_DT_CADASTRO = l.PROD_DT_CADASTRO,
+                    PROD_IN_ATIVO = l.PROD_IN_ATIVO,
+                    PROD_IN_COMPOSTO = l.PROD_IN_COMPOSTO,
+                    PROD_IN_FRACIONADO = l.PROD_IN_FRACIONADO,
+                    PROD_IN_LOCACAO = l.PROD_IN_LOCACAO,
+                    PROD_IN_PECA = l.PROD_IN_PECA,
+                    PROD_IN_SISTEMA = l.PROD_IN_SISTEMA,
+                    PROD_IN_TIPO_PRODUTO = l.PROD_IN_TIPO_PRODUTO,
+                    PROD_IN_USUARIO_ALTERACAO = l.PROD_IN_USUARIO_ALTERACAO,
+                    PROD_NM_FABRICANTE = l.PROD_NM_FABRICANTE,
+                    PROD_NM_FORNECEDOR = l.PROD_NM_FORNECEDOR,
+                    PROD_NM_MARCA = l.PROD_NM_MARCA,
+                    PROD_NM_MODELO = l.PROD_NM_MODELO,
+                    PROD_NM_NOME = l.PROD_NM_NOME,
+                    PROD_NM_REFERENCIA_FABRICANTE = l.PROD_NM_REFERENCIA_FABRICANTE,
+                    PROD_NR_BARCODE = l.PROD_NR_BARCODE,
+                    PROD_NR_REFERENCIA = l.PROD_NM_REFERENCIA_FABRICANTE,
+                    PROD_PC_DESCONTO = l.PROD_PC_DESCONTO,
+                    PROD_TX_OBSERVACOES = l.PROD_TX_OBSERVACOES,
+                    PROD_VL_CUSTO = l.PROD_VL_CUSTO,
+                    PROD_VL_CUSTO_CONCORRENTE_MEDIO = l.PROD_VL_CUSTO_CONCORRENTE_MEDIO,
+                    PROD_VL_CVM_PESO = l.PROD_VL_CVM_PESO,
+                    PROD_VL_CVM_RECEITA = l.PROD_VL_CVM_RECEITA,
+                    PROD_VL_CVM_UNITARIO = l.PROD_VL_CVM_UNITARIO,
+                    PROD_VL_ESTOQUE_ATUAL = l.PROD_VL_ESTOQUE_ATUAL,
+                    PROD_VL_ESTOQUE_CUSTO = l.PROD_VL_ESTOQUE_CUSTO,
+                    PROD_VL_ESTOQUE_MAXIMO = l.PROD_VL_ESTOQUE_MAXIMO,
+                    PROD_VL_ESTOQUE_MINIMO = l.PROD_VL_ESTOQUE_MINIMO,
+                    PROD_VL_ESTOQUE_RESERVA = l.PROD_VL_ESTOQUE_RESERVA,
+                    PROD_VL_ESTOQUE_TOTAL = l.PROD_VL_ESTOQUE_TOTAL,
+                    PROD_VL_ESTOQUE_VENDA = l.PROD_VL_ESTOQUE_VENDA,
+                    PROD_VL_FATOR_CORRECAO = l.PROD_VL_FATOR_CORRECAO,
+                    PROD_VL_LOCACAO = l.PROD_VL_LOCACAO,
+                    PROD_VL_LOCACAO_MULTA = l.PROD_VL_LOCACAO_MULTA,
+                    PROD_VL_LOCACAO_PROMOCAO = l.PROD_VL_LOCACAO_PROMOCAO,
+                    PROD_VL_LOCACAO_TAXAS = l.PROD_VL_LOCACAO_TAXAS,
+                    PROD_VL_MARGEM_CONTRIBUICAO = l.PROD_VL_MARGEM_CONTRIBUICAO,
+                    PROD_VL_MEDIA_VENDA_MENSAL = l.PROD_VL_MEDIA_VENDA_MENSAL,
+                    PROD_VL_PRECO_ANTERIOR = l.PROD_VL_PRECO_ANTERIOR,
+                    PROD_VL_PRECO_MINIMO = l.PROD_VL_PRECO_MINIMO,
+                    PROD_VL_PRECO_PROMOCAO = l.PROD_VL_PRECO_PROMOCAO,
+                    PROD_VL_PRECO_VENDA = l.PROD_VL_PRECO_VENDA,
+                    PROD_VL_ULTIMO_CUSTO = l.PROD_VL_ULTIMO_CUSTO,
+                };
+                return mediDTO;
+            }
+
+        }
+
+        public DTO_Produto_Venda MontarProdutoVendaDTOObj(PRODUTO_PRECO_VENDA l)
+        {
+            using (var context = new CRMSysDBEntities())
+            {
+                var mediDTO = new DTO_Produto_Venda()
+                {
+                    ASSI_CD_ID = l.ASSI_CD_ID,
+                    PRPV_CD_ID = l.PRPV_CD_ID,
+                    PRPV_DT_PRECO_VENDA = l.PRPV_DT_PRECO_VENDA,
+                    PROD_CD_ID = l.PROD_CD_ID,
+                    PRPV_IN_ATIVO = l.PRPV_IN_ATIVO,
+                    PRPV_IN_SISTEMA = l.PRPV_IN_SISTEMA,
+                    PRPV_PC_DESCONTO = l.PRPV_PC_DESCONTO,
+                    PRPV_VL_PRECO_EMBALAGEM = l.PRPV_VL_PRECO_EMBALAGEM,
+                    PRPV_VL_PRECO_PROMOCAO = l.PRPV_VL_PRECO_PROMOCAO,
+                    PRPV_VL_PRECO_VENDA = l.PRPV_VL_PRECO_VENDA,
+                    TIEM_CD_ID = l.TIEM_CD_ID,
+                };
+                return mediDTO;
+            }
+
+        }
+
+        public DTO_Produto_Custo MontarProdutoCustoDTOObj(PRODUTO_CUSTO l)
+        {
+            using (var context = new CRMSysDBEntities())
+            {
+                var mediDTO = new DTO_Produto_Custo()
+                {
+                    ASSI_CD_ID = l.ASSI_CD_ID,
+                    PRCU_CD_ID = l.PRCU_CD_ID,
+                    PRCU_DT_CUSTO = l.PRCU_DT_CUSTO,
+                    PROD_CD_ID = l.PROD_CD_ID,
+                    PRCU_IN_ATIVO = l.PRCU_IN_ATIVO,
+                    PRCU_IN_SISTEMA = l.PRCU_IN_SISTEMA,
+                    PRCU_VL_CUSTO = l.PRCU_VL_CUSTO,
+                };
+                return mediDTO;
+            }
+
+        }
 
         public ActionResult ClonarProduto(Int32 id)
         {
@@ -1295,7 +1428,7 @@ namespace GEDSys_Presentation.Controllers
                 }
 
                 // Mensagem do CRUD
-                Session["MsgCRUD"] = "O material/produto " + item.PROD_NM_NOME + " foi duplicado com sucesso.";
+                Session["MsgCRUD"] = "O material/produto " + item.PROD_NM_NOME.ToUpper() + " foi duplicado com sucesso.";
                 Session["MensProduto"] = 61;
                 return RedirectToAction("VoltarAnexoProduto");
             }
@@ -1603,14 +1736,14 @@ namespace GEDSys_Presentation.Controllers
                 try
                 {
                     // Sanitização
-                    vm.PROD_CD_CODIGO = CrossCutting.UtilitariosGeral.CleanStringGeral(vm.PROD_CD_CODIGO);
-                    vm.PROD_NM_NOME = CrossCutting.UtilitariosGeral.CleanStringGeral(vm.PROD_NM_NOME);
-                    vm.PROD_NM_MARCA = CrossCutting.UtilitariosGeral.CleanStringGeral(vm.PROD_NM_MARCA);
-                    vm.PROD_NM_MODELO = CrossCutting.UtilitariosGeral.CleanStringGeral(vm.PROD_NM_MODELO);
-                    vm.PROD_NM_FABRICANTE = CrossCutting.UtilitariosGeral.CleanStringGeral(vm.PROD_NM_FABRICANTE);
-                    vm.PROD_NR_REFERENCIA = CrossCutting.UtilitariosGeral.CleanStringGeral(vm.PROD_NR_REFERENCIA);
-                    vm.PROD_DS_DESCRICAO = CrossCutting.UtilitariosGeral.CleanStringGeral(vm.PROD_DS_DESCRICAO);
-                    vm.PROD_DS_INFORMACOES = CrossCutting.UtilitariosGeral.CleanStringGeral(vm.PROD_DS_INFORMACOES);
+                    vm.PROD_CD_CODIGO = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(vm.PROD_CD_CODIGO);
+                    vm.PROD_NM_NOME = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(vm.PROD_NM_NOME);
+                    vm.PROD_NM_MARCA = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(vm.PROD_NM_MARCA);
+                    vm.PROD_NM_MODELO = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(vm.PROD_NM_MODELO);
+                    vm.PROD_NM_FABRICANTE = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(vm.PROD_NM_FABRICANTE);
+                    vm.PROD_NR_REFERENCIA = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(vm.PROD_NR_REFERENCIA);
+                    vm.PROD_DS_DESCRICAO = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(vm.PROD_DS_DESCRICAO);
+                    vm.PROD_DS_INFORMACOES = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(vm.PROD_DS_INFORMACOES);
 
                     //Critica
                     if (vm.PROD_IN_LOCACAO == 1)
@@ -1679,7 +1812,7 @@ namespace GEDSys_Presentation.Controllers
                     Session["Produtos"] = null;
 
                     // Mensagem do CRUD
-                    Session["MsgCRUD"] = "O material/produto " + item.PROD_NM_NOME + " foi alterado com sucesso.";
+                    Session["MsgCRUD"] = "O material/produto " + item.PROD_NM_NOME.ToUpper() + " foi alterado com sucesso.";
                     Session["MensProduto"] = 61;
 
                     // Retornos
@@ -1955,7 +2088,7 @@ namespace GEDSys_Presentation.Controllers
                 Int32 volta5 = prodApp.ValidateCreateLog(logProd);
 
                 // Mensagem do CRUD
-                Session["MsgCRUD"] = "O material/produto " + item.PROD_NM_NOME + " foi excluído com sucesso.";
+                Session["MsgCRUD"] = "O material/produto " + item.PROD_NM_NOME.ToUpper() + " foi excluído com sucesso.";
                 Session["MensProduto"] = 61;
 
                 // Finalização
@@ -2143,6 +2276,10 @@ namespace GEDSys_Presentation.Controllers
                 {
                     contentType = "audio/mpeg";
                 }
+                else if (arquivo.Contains(".mp4"))
+                {
+                    contentType = "video/mp4";
+                }
                 return File(arquivo, contentType, nomeDownload);
             }
             catch (Exception ex)
@@ -2290,7 +2427,7 @@ namespace GEDSys_Presentation.Controllers
         }
 
         [HttpPost]
-        public ActionResult UploadFileProduto(HttpPostedFileBase file)
+        public async Task<ActionResult> UploadFileProduto(HttpPostedFileBase file)
         {
             try
             {
@@ -2326,7 +2463,11 @@ namespace GEDSys_Presentation.Controllers
                 String caminho = "/Imagens/" + idAss.ToString() + "/Produtos/" + item.PROD_CD_ID.ToString() + "/Anexos/";
                 String path = Path.Combine(Server.MapPath(caminho), fileName);
                 System.IO.Directory.CreateDirectory(Server.MapPath(caminho));
-                file.SaveAs(path);
+                //file.SaveAs(path);
+                using (var stream = new FileStream(path, FileMode.Create))
+                {
+                    await file.InputStream.CopyToAsync(stream);
+                }
 
                 //Recupera tipo de arquivo
                 extensao = Path.GetExtension(fileName);
@@ -2374,6 +2515,20 @@ namespace GEDSys_Presentation.Controllers
                 objetoProdAntes = item;
                 Int32 volta = prodApp.ValidateEdit(item, objetoProdAntes);
                 Session["AbaProduto"] = 5;
+
+                // Monta Log
+                LOG log = new LOG
+                {
+                    LOG_DT_DATA = DateTime.Now,
+                    ASSI_CD_ID = usu.ASSI_CD_ID,
+                    USUA_CD_ID = usu.USUA_CD_ID,
+                    LOG_NM_OPERACAO = "Produto - Anexo - Inclusão",
+                    LOG_IN_ATIVO = 1,
+                    LOG_TX_REGISTRO = "Produto: " + item.PROD_NM_NOME.ToUpper() + " | Anexo: " + fileName + " | Data: " + DateTime.Today.Date,
+                    LOG_IN_SISTEMA = 6
+                };
+                Int32 volta1 = logApp.ValidateCreate(log);
+
                 return RedirectToAction("VoltarAnexoProduto");
             }
             catch (Exception ex)
@@ -2454,7 +2609,7 @@ namespace GEDSys_Presentation.Controllers
         }
 
         [HttpPost]
-        public ActionResult UploadFotoProduto(HttpPostedFileBase file)
+        public async Task<ActionResult> UploadFotoProduto(HttpPostedFileBase file)
         {
             try
             {
@@ -2499,12 +2654,30 @@ namespace GEDSys_Presentation.Controllers
                 if (extensao.ToUpper() == ".JPG" || extensao.ToUpper() == ".GIF" || extensao.ToUpper() == ".PNG" || extensao.ToUpper() == ".JPEG")
                 {
                     // Salva arquivo
-                    file.SaveAs(path);
+                    //file.SaveAs(path);
+                    using (var stream = new FileStream(path, FileMode.Create))
+                    {
+                        await file.InputStream.CopyToAsync(stream);
+                    }
 
                     // Gravar registro
                     item.PROD_AQ_FOTO = "~" + caminho + fileName;
                     objetoProd = item;
                     Int32 volta = prodApp.ValidateEdit(item, objetoProd);
+
+                    // Monta Log
+                    LOG log = new LOG
+                    {
+                        LOG_DT_DATA = DateTime.Now,
+                        ASSI_CD_ID = usu.ASSI_CD_ID,
+                        USUA_CD_ID = usu.USUA_CD_ID,
+                        LOG_NM_OPERACAO = "Produto - Foto - Inclusão",
+                        LOG_IN_ATIVO = 1,
+                        LOG_TX_REGISTRO = "Produto: " + item.PROD_NM_NOME.ToUpper() + " | Anexo: " + fileName + " | Data: " + DateTime.Today.Date,
+                        LOG_IN_SISTEMA = 6
+                    };
+                    Int32 volta1 = logApp.ValidateCreate(log);
+
                 }
                 else
                 {
@@ -4140,18 +4313,27 @@ namespace GEDSys_Presentation.Controllers
                     prod.PROD_VL_ULTIMO_CUSTO = item.PRCU_VL_CUSTO;
                     Int32 volta1 = prodApp.ValidateEdit(prod, prod);
 
+                    // Configura serialização
+                    JsonSerializerSettings settings = new JsonSerializerSettings
+                    {
+                        ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+                        NullValueHandling = NullValueHandling.Ignore
+                    };
+
                     // Monta Log
+                    DTO_Produto_Custo dto = MontarProdutoCustoDTOObj(item);
+                    String json = JsonConvert.SerializeObject(dto, settings);
                     LOG log = new LOG
                     {
                         LOG_DT_DATA = DateTime.Now,
                         ASSI_CD_ID = usuarioLogado.ASSI_CD_ID,
                         USUA_CD_ID = usuarioLogado.USUA_CD_ID,
-                        LOG_NM_OPERACAO = "ipcPROD",
+                        LOG_NM_OPERACAO = "Produto - Preço de Custo - Inclusão",
                         LOG_IN_ATIVO = 1,
-                        LOG_TX_REGISTRO = Serialization.SerializeJSON<PRODUTO_CUSTO>(item),
+                        LOG_TX_REGISTRO = json,
                         LOG_IN_SISTEMA = 6
                     };
-                    Int32 volta4 = logApp.ValidateCreate(log);
+                    Int32 voltaM = logApp.ValidateCreate(log);
 
                     // Grava Log de produto
                     PRODUTO_LOG logProd = new PRODUTO_LOG();
@@ -4581,18 +4763,27 @@ namespace GEDSys_Presentation.Controllers
                     prod.PROD_PC_DESCONTO = item.PRPV_PC_DESCONTO.Value;
                     Int32 volta1 = prodApp.ValidateEdit(prod, prod);
 
+                    // Configura serialização
+                    JsonSerializerSettings settings = new JsonSerializerSettings
+                    {
+                        ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+                        NullValueHandling = NullValueHandling.Ignore
+                    };
+
                     // Monta Log
+                    DTO_Produto_Venda dto = MontarProdutoVendaDTOObj(item);
+                    String json = JsonConvert.SerializeObject(dto, settings);
                     LOG log = new LOG
                     {
                         LOG_DT_DATA = DateTime.Now,
                         ASSI_CD_ID = usuarioLogado.ASSI_CD_ID,
                         USUA_CD_ID = usuarioLogado.USUA_CD_ID,
-                        LOG_NM_OPERACAO = "ipvPROD",
+                        LOG_NM_OPERACAO = "Produto - Preço de Venda - Inclusão",
                         LOG_IN_ATIVO = 1,
-                        LOG_TX_REGISTRO = Serialization.SerializeJSON<PRODUTO_PRECO_VENDA>(item),
+                        LOG_TX_REGISTRO = json,
                         LOG_IN_SISTEMA = 6
                     };
-                    Int32 volta4 = logApp.ValidateCreate(log);
+                    Int32 voltaM = logApp.ValidateCreate(log);
 
                     // Grava Log de produto
                     PRODUTO_LOG logProd = new PRODUTO_LOG();
@@ -5255,12 +5446,12 @@ namespace GEDSys_Presentation.Controllers
                         LOG_DT_DATA = DateTime.Now,
                         ASSI_CD_ID = usuarioLogado.ASSI_CD_ID,
                         USUA_CD_ID = usuarioLogado.USUA_CD_ID,
-                        LOG_NM_OPERACAO = "eanPROD",
+                        LOG_NM_OPERACAO = "Produto - Anotação - Alteração",
                         LOG_IN_ATIVO = 1,
-                        LOG_TX_REGISTRO = "Produto: " + not.PROD_NM_NOME + " | Anotação: " + item.PRAT_DS_ANOTACAO,
+                        LOG_TX_REGISTRO = "Produto: " + not.PROD_NM_NOME.ToUpper() + " | Anotação: " + item.PRAT_DS_ANOTACAO,
                         LOG_IN_SISTEMA = 6
                     };
-                    Int32 volta4 = logApp.ValidateCreate(log);
+                    Int32 volta1 = logApp.ValidateCreate(log);
 
                     // Verifica retorno
                     Session["ProdutoAlterada"] = 1;
@@ -5308,12 +5499,12 @@ namespace GEDSys_Presentation.Controllers
                     LOG_DT_DATA = DateTime.Now,
                     ASSI_CD_ID = usuarioLogado.ASSI_CD_ID,
                     USUA_CD_ID = usuarioLogado.USUA_CD_ID,
-                    LOG_NM_OPERACAO = "xanPROD",
+                    LOG_NM_OPERACAO = "Produto - Anotação - Exclusão",
                     LOG_IN_ATIVO = 1,
-                    LOG_TX_REGISTRO = "Produto: " + not.PROD_NM_NOME + " | Anotação: " + item.PRAT_DS_ANOTACAO,
+                    LOG_TX_REGISTRO = "Produto: " + not.PROD_NM_NOME.ToUpper() + " | Anotação: " + item.PRAT_DS_ANOTACAO,
                     LOG_IN_SISTEMA = 6
                 };
-                Int32 volta4 = logApp.ValidateCreate(log);
+                Int32 volta1 = logApp.ValidateCreate(log);
 
                 Session["ProdutoAlterada"] = 1;
                 Session["AbaProduto"] = 4;
@@ -6833,9 +7024,25 @@ namespace GEDSys_Presentation.Controllers
                     return RedirectToAction("Logout", "ControleAcesso");
                 }
 
+                USUARIO usuarioLogado = (USUARIO)Session["UserCredentials"];
                 PRODUTO_ANEXO item = prodApp.GetAnexoById(id);
+                PRODUTO pro = prodApp.GetItemById(item.PROD_CD_ID);
                 item.PRAN_IN_ATIVO = 0;
                 Int32 volta = prodApp.ValidateEditAnexo(item);
+
+                // Monta Log
+                LOG log = new LOG
+                {
+                    LOG_DT_DATA = DateTime.Now,
+                    ASSI_CD_ID = usuarioLogado.ASSI_CD_ID,
+                    USUA_CD_ID = usuarioLogado.USUA_CD_ID,
+                    LOG_NM_OPERACAO = "Produto - Anexo - Exclusão",
+                    LOG_IN_ATIVO = 1,
+                    LOG_TX_REGISTRO = "Produto: " + pro.PROD_NM_NOME.ToUpper() + " | Anexo: " + item.PRAN_NM_TITULO.ToUpper() + " | Data: " + item.PRAN_DT_ANEXO.Value.ToShortDateString(),
+                    LOG_IN_SISTEMA = 6
+                };
+                Int32 volta1 = logApp.ValidateCreate(log);
+
                 Session["AbaProduto"] = 5;
                 Session["ProdutoAlterada"] = 1;
                 return RedirectToAction("VoltarAnexoProduto");

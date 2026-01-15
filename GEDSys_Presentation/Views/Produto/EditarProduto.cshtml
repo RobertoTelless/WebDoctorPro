@@ -51,7 +51,7 @@
                 <a href="@Url.Action("MontarTelaProduto", "Produto")">Materiais/Produtos</a>
             </li>
             <li class="active">
-                <strong>Materiais/Produtos - Edição</strong>
+                <strong>Materiais/Produtos - Alteração</strong>
             </li>
         </ol>
         <br />
@@ -64,7 +64,7 @@
                 <div class="ibox-title">
                     <div class="row">
                         <div style="text-align: center;" class="col-lg-12 col-md-12 col-xs-12">
-                            <h5>Materiais/Produtos - Edição</h5>
+                            <h5>Materiais/Produtos - Alteração</h5>
                             <span style="color:green; font-weight: 500; font-size: 20px;">@Model.PROD_NM_NOME</span>
                         </div>
                     </div>
@@ -87,11 +87,14 @@
                     <div class="form-group">
                         @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_INCLUSAO_PROD == 1)
                         {
-                            @Html.ButtonLinkIndex(text: "Duplicar Material/Produto", action: "ClonarProduto", controller: "Produto", buttonClass: "success demo2", routeValues: new { id = Model.PROD_CD_ID })
+                            @Html.ButtonLinkIndex(text: "Duplicar Material/Produto", action: "ClonarProduto", controller: "Produto", buttonClass: "success demo2", routeValues: new { id = Model.PROD_CD_ID }, htmlAttributes: new { @class = "btn-loading" })
                         }
                         @Html.ButtonLinkIndex(text: "Relatório Detalhado", action: "GerarRelatorioDetalhe", controller: "Produto")
-                        @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarBaseProduto", controller: "Produto")
+                        @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarBaseProduto", controller: "Produto", htmlAttributes: new { @class = "btn-loading" })
                         <a href="@Url.Action((String)Session["AjudaNivel"])"  class="btn btn-sm btn-danger" target="_blank">Ajuda</a>                
+                        <span id="loadingIndicator" style="display: none; margin-left: 10px; color: #007bff;">
+                            <i class="fa fa-spinner fa-spin"></i> Processando...
+                        </span>
                     </div>
 
                     <div class="tabs-container">
@@ -361,7 +364,7 @@
                                                 <div class="row">
                                                     @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_EDITAR_PRODUTO == 1)
 	                                                {
-                                                        @Html.ButtonActionSubmit(text: "Confirma alteração de informações do Produto", htmlAttributes: new { id = "basictoast" })
+                                                        @Html.ButtonActionSubmit(text: "Confirma alteração de informações do Produto", htmlAttributes: new { id = "basictoast" , @class = "btn-loading1"})
 	                                                }
                                                 </div>
                                             </div>
@@ -520,14 +523,6 @@
                                                         Preço Venda (R$)
                                                         @Html.TextBoxFor(m => m.PrecoVenda, new { @class = "form-control", @id = "venda", @readonly = "readonly", @style = "color: green; font-wheight: bold" })
                                                     </div>
-                                                    @*<div class="col-lg-2 col-md-2 col-xs-12">
-                                                        Preço Promoção (R$)
-                                                        @Html.TextBoxFor(m => m.PrecoPromocao, new { @class = "form-control", @readonly = "readonly" })
-                                                    </div>
-                                                    <div class="col-lg-2 col-md-2 col-xs-12">
-                                                        Desconto (%)
-                                                        @Html.TextBoxFor(m => m.Desconto, new { @class = "form-control", @readonly = "readonly" })
-                                                    </div>*@
                                                     <div class="col-lg-2 col-md-2 col-xs-12">
                                                         Preço Anterior (R$)
                                                         @Html.TextBoxFor(m => m.PROD_VL_PRECO_ANTERIOR, new { @class = "form-control", @readonly = "readonly", @style = "color: green; font-wheight: bold"  })
@@ -645,7 +640,7 @@
                                                 <div class="row">
                                                     @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_EDITAR_PRODUTO == 1)
 	                                                {
-                                                        @Html.ButtonActionSubmit(text: "Confirma alteração de informações do Produto", htmlAttributes: new { id = "basictoast" })
+                                                        @Html.ButtonActionSubmit(text: "Confirma alteração de informações do Produto", htmlAttributes: new { id = "basictoast" , @class = "btn-loading1"})
 	                                                }
                                                 </div>
                                             </div>
@@ -804,14 +799,6 @@
                                                         Preço Venda (R$)
                                                         @Html.TextBoxFor(m => m.PrecoVenda, new { @class = "form-control", @id = "venda", @readonly = "readonly", @style = "color: green; font-wheight: bold" })
                                                     </div>
-                                                    @*<div class="col-lg-2 col-md-2 col-xs-12">
-                                                        Preço Promoção (R$)
-                                                        @Html.TextBoxFor(m => m.PrecoPromocao, new { @class = "form-control", @readonly = "readonly" })
-                                                    </div>
-                                                    <div class="col-lg-2 col-md-2 col-xs-12">
-                                                        Desconto (%)
-                                                        @Html.TextBoxFor(m => m.Desconto, new { @class = "form-control", @readonly = "readonly" })
-                                                    </div>*@
                                                     <div class="col-lg-2 col-md-2 col-xs-12">
                                                         Preço Anterior (R$)
                                                         @Html.TextBoxFor(m => m.PROD_VL_PRECO_ANTERIOR, new { @class = "form-control", @readonly = "readonly", @style = "color: green; font-wheight: bold"  })
@@ -866,19 +853,9 @@
                                                         @Html.ValidationMessageFor(m => m.PROD_VL_LOCACAO, "", new { @style = "color:red" })
                                                     </div>
                                                     <div class="col-lg-2 col-md-2 col-xs-12" style="color: green; font-weight: bold" id="descLoc">
-                                                        Desconto (%)
-                                                        @Html.TextBoxFor(m => m.PROD_VL_LOCACAO_PROMOCAO, new { @class = "form-control", autofocus = true, data_toggle = "popover", data_content = "Informe o valor do desconto a ser aplicado no valor mensal da locação em % - Opcional", data_trigger="hover", data_placement="top", onfocus="this.select();" })
+                                                        Valor Promocional (R$)
+                                                        @Html.TextBoxFor(m => m.PROD_VL_LOCACAO_PROMOCAO, new { @class = "form-control", autofocus = true, data_toggle = "popover", data_content = "Informe o valor mensal promocional para a locação - Opcional", data_trigger="hover", data_placement="top", onfocus="this.select();" })
                                                         @Html.ValidationMessageFor(m => m.PROD_VL_LOCACAO_PROMOCAO, "", new { @style = "color:red" })
-                                                    </div>
-                                                    <div class="col-lg-2 col-md-2 col-xs-12" style="color: green; font-weight: bold" id="jurosLoc">
-                                                        Juros (%)
-                                                        @Html.TextBoxFor(m => m.PROD_VL_LOCACAO_MULTA, new { @class = "form-control", autofocus = true, data_toggle = "popover", data_content = "Informe o valor dos juros a serem acrescentados ao valor mensal da locação em caso de atraso, em % - Opcional", data_trigger="hover", data_placement="top", onfocus="this.select();" })
-                                                        @Html.ValidationMessageFor(m => m.PROD_VL_LOCACAO_MULTA, "", new { @style = "color:red" })
-                                                    </div>
-                                                    <div class="col-lg-2 col-md-2 col-xs-12" style="color: green; font-weight: bold" id="taxasLoc">
-                                                        Taxas (R$)
-                                                        @Html.TextBoxFor(m => m.PROD_VL_LOCACAO_TAXAS, new { @class = "form-control", autofocus = true, data_toggle = "popover", data_content = "Informe o valor das taxas e/ou encargos que serão acrescentados ao valor mensal da locação, em R$ - Opcional", data_trigger="hover", data_placement="top", onfocus="this.select();" })
-                                                        @Html.ValidationMessageFor(m => m.PROD_VL_LOCACAO_TAXAS, "", new { @style = "color:red" })
                                                     </div>
                                                 </div>
                                                 <br />
@@ -1042,7 +1019,18 @@
                                                                     @foreach (var cond in (Model.PRODUTO_ANEXO.Where(p => p.PRAN_IN_ATIVO == 1)))
                                                                     {
                                                                         <tr>
-                                                                            <td>@cond.PRAN_NM_TITULO</td>
+                                                                            @if (cond.PRAN_IN_TIPO == 1 || cond.PRAN_IN_TIPO == 2)
+                                                                            {
+                                                                                <td style="width: auto"><a href="@Url.Action("VerAnexoProduto", "Produto", new { id = cond.PRAN_CD_ID })" class="btn-loading" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página de visualização do anexo"/>@cond.PRAN_NM_TITULO</td>
+                                                                            }
+                                                                            else if (cond.PRAN_IN_TIPO == 3)
+                                                                            {
+                                                                                <td style="width: auto"><a href="~/PdfViewer/web/viewer.html?file=@(cond.PRAN_AQ_ARQUIVO.Replace("~", ""))&ReturnUrl=@Request.Url.AbsolutePath" target="_blank" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a visualização do documento"/>@cond.PRAN_NM_TITULO</td>
+                                                                            }
+                                                                            else
+                                                                            {
+                                                                                <td style="width: auto">@cond.PRAN_NM_TITULO</td>
+                                                                            }
                                                                             <td>@cond.PRAN_DT_ANEXO.ToShortDateString()</td>
                                                                             @if (cond.PRAN_IN_TIPO == 1)
                                                                             {
@@ -1055,7 +1043,7 @@
                                                                             <td class="td-one-action">
                                                                                 @if (cond.PRAN_IN_TIPO == 1 || cond.PRAN_IN_TIPO == 2)
                                                                                 {
-                                                                                    @Html.TableLinkDetails(cond.PRAN_CD_ID, "VerAnexoProduto", "fa-camera", "Visualizar")
+                                                                                    @Html.TableLinkDetails(cond.PRAN_CD_ID, "VerAnexoProduto", "fa-camera btn-loading", "Visualizar Anexo")
                                                                                 }
                                                                                 @if (cond.PRAN_IN_TIPO == 3)
                                                                                 {
@@ -1064,7 +1052,7 @@
                                                                                 @Html.TableLinkDetails(cond.PRAN_CD_ID, "DownloadProduto", "fa-download", "Download")
                                                                                 @if (cond.PRAN_IN_ATIVO == 1)
 	                                                                            {
-                                                                                    <span style="color: #337ab7; cursor:pointer;" alt="Desativar" class="tbl-link fa-lg fa fa-trash-o" onclick="ShowModalExcluirAnexo('/Produto/ExcluirAnexo/@cond.PRAN_CD_ID')" title="Desativar"></span>
+                                                                                    <span style="color: #337ab7; cursor:pointer;" alt="Desativar" class="tbl-link fa-lg fa fa-trash-o btn-loading" onclick="ShowModalExcluirAnexo('/Produto/ExcluirAnexo/@cond.PRAN_CD_ID')" title="Desativar"></span>
 	                                                                            }
                                                                             </td>
                                                                         </tr>
@@ -1113,7 +1101,18 @@
                                                                     @foreach (var cond in (Model.PRODUTO_ANEXO.Where(p => p.PRAN_IN_ATIVO == 1)))
                                                                     {
                                                                         <tr>
-                                                                            <td>@cond.PRAN_NM_TITULO</td>
+                                                                            @if (cond.PRAN_IN_TIPO == 1 || cond.PRAN_IN_TIPO == 2)
+                                                                            {
+                                                                                <td style="width: auto"><a href="@Url.Action("VerAnexoProduto", "Produto", new { id = cond.PRAN_CD_ID })" class="btn-loading" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página de visualização do anexo"/>@cond.PRAN_NM_TITULO</td>
+                                                                            }
+                                                                            else if (cond.PRAN_IN_TIPO == 3)
+                                                                            {
+                                                                                <td style="width: auto"><a href="~/PdfViewer/web/viewer.html?file=@(cond.PRAN_AQ_ARQUIVO.Replace("~", ""))&ReturnUrl=@Request.Url.AbsolutePath" target="_blank" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a visualização do documento"/>@cond.PRAN_NM_TITULO</td>
+                                                                            }
+                                                                            else
+                                                                            {
+                                                                                <td style="width: auto">@cond.PRAN_NM_TITULO</td>
+                                                                            }
                                                                             <td>@cond.PRAN_DT_ANEXO.ToShortDateString()</td>
                                                                             @if (cond.PRAN_IN_TIPO == 1)
                                                                             {
@@ -1126,7 +1125,7 @@
                                                                             <td class="td-one-action">
                                                                                 @if (cond.PRAN_IN_TIPO == 1 || cond.PRAN_IN_TIPO == 2)
                                                                                 {
-                                                                                    @Html.TableLinkDetails(cond.PRAN_CD_ID, "VerAnexoProduto", "fa-camera", "Visualizar")
+                                                                                    @Html.TableLinkDetails(cond.PRAN_CD_ID, "VerAnexoProduto", "fa-camera btn-loading", "Visualizar Anexo")
                                                                                 }
                                                                                 @if (cond.PRAN_IN_TIPO == 3)
                                                                                 {
@@ -1135,7 +1134,7 @@
                                                                                 @Html.TableLinkDetails(cond.PRAN_CD_ID, "DownloadProduto", "fa-download", "Download")
                                                                                 @if (cond.PRAN_IN_ATIVO == 1)
 	                                                                            {
-                                                                                    <span style="color: #337ab7; cursor:pointer;" alt="Desativar" class="tbl-link fa-lg fa fa-trash-o" onclick="ShowModalExcluirAnexo('/Produto/ExcluirAnexo/@cond.PRAN_CD_ID')" title="Desativar"></span>
+                                                                                    <span style="color: #337ab7; cursor:pointer;" alt="Desativar" class="tbl-link fa-lg fa fa-trash-o btn-loading" onclick="ShowModalExcluirAnexo('/Produto/ExcluirAnexo/@cond.PRAN_CD_ID')" title="Desativar"></span>
 	                                                                            }
                                                                             </td>
                                                                         </tr>
@@ -1237,9 +1236,9 @@
                                                                     <a href="" class="pull-left">
                                                                         <img src="@Url.Content(item.USUARIO.USUA_AQ_FOTO)" style="width: auto; height: auto; max-height: 110px; max-width: 90px;">
                                                                     </a>
-                                                                    <span style="color: #337ab7; cursor:pointer;" alt="Excluir" class="tbl-link fa-lg fa fa-trash-o" onclick="ShowModalExcluirAnotacaoProduto('/Produto/ExcluirAnotacaoProduto/@item.PRAT_CD_ID')" title="Excluir"></span>
+                                                                    <span style="color: #337ab7; cursor:pointer;" alt="Excluir" class="tbl-link fa-lg fa fa-trash-o btn-loading" onclick="ShowModalExcluirAnotacaoProduto('/Produto/ExcluirAnotacaoProduto/@item.PRAT_CD_ID')" title="Excluir"></span>
                                                                     <div class="media-body">
-                                                                        <a href="@Url.Action("EditarAnotacaoProduto", "Produto", new { id = item.PRAT_CD_ID })">
+                                                                    <a href="@Url.Action("EditarAnotacaoProduto", "Produto", new { id = item.PRAT_CD_ID })" class="btn-loading" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página de edição da anotação">
                                                                             @item.USUARIO.USUA_NM_NOME
                                                                         </a>
                                                                         <small class="text-muted">@item.PRAT_DT_ANOTACAO.ToString("dd/MM/yyyy HH:mm")</small>
@@ -1247,7 +1246,7 @@
                                                                 </div>
                                                                 <div class="social-body">
                                                                     <p>
-                                                                        @item.PRAT_DS_ANOTACAO
+                                                                        <span style="white-space: pre-wrap;">@item.PRAT_DS_ANOTACAO</span>
                                                                     </p>
                                                                 </div>
                                                             </div>
@@ -1281,9 +1280,9 @@
                                                                     <a href="" class="pull-left">
                                                                         <img src="@Url.Content(item.USUARIO.USUA_AQ_FOTO)" style="width: auto; height: auto; max-height: 110px; max-width: 90px;">
                                                                     </a>
-                                                                    <span style="color: #337ab7; cursor:pointer;" alt="Excluir" class="tbl-link fa-lg fa fa-trash-o" onclick="ShowModalExcluirAnotacaoProduto('/Produto/ExcluirAnotacaoProduto/@item.PRAT_CD_ID')" title="Excluir"></span>
+                                                                    <span style="color: #337ab7; cursor:pointer;" alt="Excluir" class="tbl-link fa-lg fa fa-trash-o btn-loading" onclick="ShowModalExcluirAnotacaoProduto('/Produto/ExcluirAnotacaoProduto/@item.PRAT_CD_ID')" title="Excluir"></span>
                                                                     <div class="media-body">
-                                                                        <a href="@Url.Action("EditarAnotacaoProduto", "Produto", new { id = item.PRAT_CD_ID })">
+                                                                    <a href="@Url.Action("EditarAnotacaoProduto", "Produto", new { id = item.PRAT_CD_ID })" class="btn-loading" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página de edição da anotação">
                                                                             @item.USUARIO.USUA_NM_NOME
                                                                         </a>
                                                                         <small class="text-muted">@item.PRAT_DT_ANOTACAO.ToString("dd/MM/yyyy HH:mm")</small>
@@ -1291,7 +1290,7 @@
                                                                 </div>
                                                                 <div class="social-body">
                                                                     <p>
-                                                                        @item.PRAT_DS_ANOTACAO
+                                                                        <span style="white-space: pre-wrap;">@item.PRAT_DS_ANOTACAO</span>
                                                                     </p>
                                                                 </div>
                                                             </div>
@@ -1330,18 +1329,17 @@
                                                                         <tr>
                                                                             <th>Data</th>
                                                                             <th>Preço de Venda (R$)</th>
-                                                                            @*<th>Desconto (%)</th>
-                                                                            <th>Preço Promoção (R$)</th>*@
                                                                         </tr>
                                                                     </thead>
                                                                     <tbody>
                                                                         @foreach (var cond in (Model.PRODUTO_PRECO_VENDA.Where(p => p.PRPV_IN_ATIVO == 1)))
                                                                         {
                                                                             <tr>
-                                                                                <td>@cond.PRPV_DT_PRECO_VENDA.Value.ToShortDateString()</td>
+                                                                                <td>
+                                                                                    <span style="display:none; width: auto">@cond.PRPV_DT_PRECO_VENDA.Value.ToString("yyyyMMdd")</span>
+                                                                                    @cond.PRPV_DT_PRECO_VENDA.Value.ToShortDateString()
+                                                                                </td>
                                                                                 <td>@CrossCutting.Formatters.DecimalFormatter(cond.PRPV_VL_PRECO_VENDA.Value)</td>
-                                                                                @*<td>@CrossCutting.Formatters.DecimalFormatter(cond.PRPV_PC_DESCONTO.Value)</td>
-                                                                                <td>@CrossCutting.Formatters.DecimalFormatter(cond.PRPV_VL_PRECO_PROMOCAO.Value)</td>*@
                                                                             </tr>
                                                                         }
                                                                     </tbody>
@@ -1382,7 +1380,7 @@
                                             <div class="form-group">
                                                 @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_EDITAR_PRODUTO == 1)
 	                                            {
-                                                    @Html.ButtonLinkIndex(text: "Novo Preço de Venda para o Material/Produto", action: "IncluirProdutoPrecoVenda", controller: "Produto")
+                                                    @Html.ButtonLinkIndex(text: "Novo Preço de Venda para o Material/Produto", action: "IncluirProdutoPrecoVenda", controller: "Produto", htmlAttributes: new { @class = "btn-loading" })
 	                                            }
                                             </div>
                                         }
@@ -1406,7 +1404,10 @@
                                                                 @foreach (var cond in (Model.PRODUTO_CUSTO))
                                                                 {
                                                                     <tr>
-                                                                        <td>@cond.PRCU_DT_CUSTO.Value.ToShortDateString()</td>
+                                                                        <td>
+                                                                            <span style="display:none; width: auto">@cond.PRCU_DT_CUSTO.Value.ToString("yyyyMMdd")</span>
+                                                                            @cond.PRCU_DT_CUSTO.Value.ToShortDateString()
+                                                                        </td>
                                                                         <td>@CrossCutting.Formatters.DecimalFormatter(cond.PRCU_VL_CUSTO.Value)</td>
                                                                     </tr>
                                                                 }
@@ -1433,7 +1434,7 @@
                                         <div class="form-group">
                                             @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_EDITAR_PRODUTO == 1)
 	                                        {
-                                                @Html.ButtonLinkIndex(text: "Novo Custo para o Material/Produto", action: "IncluirProdutoCusto", controller: "Produto")
+                                                @Html.ButtonLinkIndex(text: "Novo Custo para o Material/Produto", action: "IncluirProdutoCusto", controller: "Produto", htmlAttributes: new { @class = "btn-loading" })
 	                                        }
                                         </div>
                                     </div>
@@ -1460,18 +1461,17 @@
                                                                         <tr>
                                                                             <th>Data</th>
                                                                             <th>Preço de Venda (R$)</th>
-                                                                            @*<th>Desconto (%)</th>
-                                                                            <th>Preço Promoção (R$)</th>*@
                                                                         </tr>
                                                                     </thead>
                                                                     <tbody>
                                                                         @foreach (var cond in (Model.PRODUTO_PRECO_VENDA.Where(p => p.PRPV_IN_ATIVO == 1)))
                                                                         {
                                                                             <tr>
-                                                                                <td>@cond.PRPV_DT_PRECO_VENDA.Value.ToShortDateString()</td>
+                                                                                <td>
+                                                                                    <span style="display:none; width: auto">@cond.PRPV_DT_PRECO_VENDA.Value.ToString("yyyyMMdd")</span>
+                                                                                    @cond.PRPV_DT_PRECO_VENDA.Value.ToShortDateString()
+                                                                                </td>
                                                                                 <td>@CrossCutting.Formatters.DecimalFormatter(cond.PRPV_VL_PRECO_VENDA.Value)</td>
-                                                                                @*<td>@CrossCutting.Formatters.DecimalFormatter(cond.PRPV_PC_DESCONTO.Value)</td>
-                                                                                <td>@CrossCutting.Formatters.DecimalFormatter(cond.PRPV_VL_PRECO_PROMOCAO.Value)</td>*@
                                                                             </tr>
                                                                         }
                                                                     </tbody>
@@ -1512,7 +1512,7 @@
                                             <div class="form-group">
                                                 @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_EDITAR_PRODUTO == 1)
 	                                            {
-                                                    @Html.ButtonLinkIndex(text: "Novo Preço de Venda para o Material/Produto", action: "IncluirProdutoPrecoVenda", controller: "Produto")
+                                                    @Html.ButtonLinkIndex(text: "Novo Preço de Venda para o Material/Produto", action: "IncluirProdutoPrecoVenda", controller: "Produto", htmlAttributes: new { @class = "btn-loading" })
 	                                            }
                                             </div>
                                         }
@@ -1536,7 +1536,10 @@
                                                                 @foreach (var cond in (Model.PRODUTO_CUSTO))
                                                                 {
                                                                     <tr>
-                                                                        <td>@cond.PRCU_DT_CUSTO.Value.ToShortDateString()</td>
+                                                                        <td>
+                                                                            <span style="display:none; width: auto">@cond.PRCU_DT_CUSTO.Value.ToString("yyyyMMdd")</span>
+                                                                            @cond.PRCU_DT_CUSTO.Value.ToShortDateString()
+                                                                        </td>
                                                                         <td>@CrossCutting.Formatters.DecimalFormatter(cond.PRCU_VL_CUSTO.Value)</td>
                                                                     </tr>
                                                                 }
@@ -1563,7 +1566,7 @@
                                         <div class="form-group">
                                             @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_EDITAR_PRODUTO == 1)
 	                                        {
-                                                @Html.ButtonLinkIndex(text: "Novo Custo para o Material/Produto", action: "IncluirProdutoCusto", controller: "Produto")
+                                                @Html.ButtonLinkIndex(text: "Novo Custo para o Material/Produto", action: "IncluirProdutoCusto", controller: "Produto", htmlAttributes: new { @class = "btn-loading" })
 	                                        }
                                         </div>
                                     </div>
@@ -1646,14 +1649,10 @@
                                                                                 <td class="td-one-action">
                                                                                     @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_EDITAR_PRODUTO == 1)
 	                                                                                {
-                                                                                        @Html.TableLinkDetails(cond.PRPF_CD_ID, "EditarPrecoConcorrente", "fa-edit", "Editar/Consultar")
+                                                                                        @Html.TableLinkDetails(cond.PRPF_CD_ID, "EditarPrecoConcorrente", "fa-edit btn-loading", "Editar/Consultar")
                                                                                         if (cond.PRPF_IN_ATIVO == 1)
                                                                                         {
-                                                                                            <span style="color: #337ab7; cursor:pointer;" alt="Excluir" class="tbl-link fa-lg fa fa-trash-o" onclick="ShowModalExcluirConcorrente('/Produto/ExcluirPrecoConcorrente/@cond.PRPF_CD_ID')" title="Excluir"></span>
-                                                                                        }
-                                                                                        else
-                                                                                        {
-                                                                                            <span style="color: #337ab7; cursor:pointer;" alt="Reativar" class="tbl-link fa-lg fa fa-refresh" onclick="ShowModalReativarConcorrente('/Produto/ReativarPrecoConcorrente/@cond.PRPF_CD_ID')" title="Reativar"></span>
+                                                                                            <span style="color: #337ab7; cursor:pointer;" alt="Excluir" class="tbl-link fa-lg fa fa-trash-o btn-loading" onclick="ShowModalExcluirConcorrente('/Produto/ExcluirPrecoConcorrente/@cond.PRPF_CD_ID')" title="Excluir"></span>
                                                                                         }
 	                                                                                }
                                                                                 </td>
@@ -1681,7 +1680,7 @@
                                             <div class="form-group">
                                                 @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_EDITAR_PRODUTO == 1)
 	                                            {
-                                                    @Html.ButtonLinkIndex(text: "Novo Preço de Concorrente", action: "IncluirPrecoConcorrente", controller: "Produto")
+                                                    @Html.ButtonLinkIndex(text: "Novo Preço de Concorrente", action: "IncluirPrecoConcorrente", controller: "Produto", htmlAttributes: new { @class = "btn-loading" })
 	                                            }
                                             </div>
                                         </div>
@@ -1723,14 +1722,10 @@
                                                                                 <td class="td-one-action">
                                                                                     @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_EDITAR_PRODUTO == 1)
 	                                                                                {
-                                                                                        @Html.TableLinkDetails(cond.PRPF_CD_ID, "EditarPrecoConcorrente", "fa-edit", "Editar/Consultar")
+                                                                                        @Html.TableLinkDetails(cond.PRPF_CD_ID, "EditarPrecoConcorrente", "fa-edit btn-loading", "Editar/Consultar")
                                                                                         if (cond.PRPF_IN_ATIVO == 1)
                                                                                         {
-                                                                                            <span style="color: #337ab7; cursor:pointer;" alt="Excluir" class="tbl-link fa-lg fa fa-trash-o" onclick="ShowModalExcluirConcorrente('/Produto/ExcluirPrecoConcorrente/@cond.PRPF_CD_ID')" title="Excluir"></span>
-                                                                                        }
-                                                                                        else
-                                                                                        {
-                                                                                            <span style="color: #337ab7; cursor:pointer;" alt="Reativar" class="tbl-link fa-lg fa fa-refresh" onclick="ShowModalReativarConcorrente('/Produto/ReativarPrecoConcorrente/@cond.PRPF_CD_ID')" title="Reativar"></span>
+                                                                                            <span style="color: #337ab7; cursor:pointer;" alt="Excluir" class="tbl-link fa-lg fa fa-trash-o btn-loading" onclick="ShowModalExcluirConcorrente('/Produto/ExcluirPrecoConcorrente/@cond.PRPF_CD_ID')" title="Excluir"></span>
                                                                                         }
 	                                                                                }
                                                                                 </td>
@@ -1758,7 +1753,7 @@
                                             <div class="form-group">
                                                 @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_EDITAR_PRODUTO == 1)
 	                                            {
-                                                    @Html.ButtonLinkIndex(text: "Novo Preço de Concorrente", action: "IncluirPrecoConcorrente", controller: "Produto")
+                                                    @Html.ButtonLinkIndex(text: "Novo Preço de Concorrente", action: "IncluirPrecoConcorrente", controller: "Produto", htmlAttributes: new { @class = "btn-loading" })
 	                                            }
                                             </div>
                                         </div>
@@ -2000,7 +1995,10 @@
                                                                 @foreach (var cond in (Model.PRODUTO_LOG))
                                                                 {
                                                                     <tr>
-                                                                        <td>@cond.PRLG_DT_MOVIMENTO</td>
+                                                                        <td>
+                                                                            <span style="display:none; width: auto">@cond.PRLG_DT_MOVIMENTO.ToString("yyyyMMdd")</span>
+                                                                            @cond.PRLG_DT_MOVIMENTO.ToShortDateString()
+                                                                        </td>
                                                                         <td>@cond.USUARIO.USUA_NM_NOME</td>
                                                                         <td>@cond.PRLG_DS_OPERACAO</td>
                                                                         <td><a href="@Url.Action("VerLog", "Produto", new { id = cond.LOG_CD_ID })" />@cond.LOG_CD_ID</td>
@@ -2040,7 +2038,10 @@
                                                                 @foreach (var cond in (Model.PRODUTO_LOG))
                                                                 {
                                                                     <tr>
-                                                                        <td>@cond.PRLG_DT_MOVIMENTO</td>
+                                                                        <td>
+                                                                            <span style="display:none; width: auto">@cond.PRLG_DT_MOVIMENTO.ToString("yyyyMMdd")</span>
+                                                                            @cond.PRLG_DT_MOVIMENTO.ToShortDateString()
+                                                                        </td>
                                                                         <td>@cond.USUARIO.USUA_NM_NOME</td>
                                                                         <td>@cond.PRLG_DS_OPERACAO</td>
                                                                         <td><a href="@Url.Action("VerLog", "Auditoria", new { id = cond.LOG_CD_ID })" />@cond.LOG_CD_ID</td>
@@ -2130,7 +2131,7 @@
                                                                         <td style="width: auto" class="td-one-action">
                                                                             @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_LOCACAO_ALTERAR == 1)
                                                                             {
-                                                                                @Html.TableLinkDetails(cond.LOCA_CD_ID, "EditarLocacao", "fa-edit", "Editar")
+                                                                                @Html.TableLinkDetails(cond.LOCA_CD_ID, "EditarLocacao", "fa-edit btn-loading", "Editar")
                                                                             }
                                                                             @if (cond.LOCA_IN_ATIVO == 1)
                                                                             {
@@ -2240,7 +2241,7 @@
                                                                         <td style="width: auto" class="td-one-action">
                                                                             @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_LOCACAO_ALTERAR == 1)
                                                                             {
-                                                                                @Html.TableLinkDetails(cond.LOCA_CD_ID, "EditarLocacao", "fa-edit", "Editar")
+                                                                                @Html.TableLinkDetails(cond.LOCA_CD_ID, "EditarLocacao", "fa-edit btn-loading", "Editar")
                                                                             }
                                                                             @if (cond.LOCA_IN_ATIVO == 1)
                                                                             {
@@ -2327,6 +2328,49 @@
             navigator.sendBeacon('../ControleAcesso/LogSessionTime');
         }; 
     </script>
+
+    <script type="text/javascript">
+        $(document).ready(function () { 
+            $('.btn-loading').on('click', function (e) {            
+                $(this).prop('disabled', true);
+                $(this).addClass('disabled');
+                $('#loadingIndicator').show();
+                var tagName = $(this).prop('tagName').toLowerCase();
+                if (tagName === 'a') {
+                    e.preventDefault(); 
+                    var targetUrl = $(this).attr('href');
+                    window.location.href = targetUrl;
+
+                } else if (tagName === 'button' || tagName === 'input') {
+                    $(this).closest('form').submit();
+                }
+            });
+        });
+    </script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('.btn-loading1').on('click', function (e) {
+            
+                var $this = $(this);
+                var tagName = $this.prop('tagName').toLowerCase();
+                $this.addClass('disabled'); 
+                $('#loadingIndicator').show();
+
+                if (tagName === 'a') {
+                    e.preventDefault();
+                
+                    var targetUrl = $this.attr('href');
+                    window.location.href = targetUrl;
+                
+                } else if (tagName === 'button' || tagName === 'input') {               
+                    $this.closest('form').submit();
+                    $this.prop('disabled', true);
+                }
+            });
+        });
+    </script>
+
     <script>
         $(function () {
             limpaModal();
@@ -2338,73 +2382,73 @@
         }
 
         function ShowModalExcluirVenda(url) {
-            $('#modal').find('.modal-footer').prepend('<a id="btnModal" alt="Desativar" class="btn btn-primary" href="' + url + '" target="_self" title="Desativar">Confirmar</a>');
+            $('#modal').find('.modal-footer').prepend('<a id="btnModal" alt="Desativar" class="btn btn-primary btn-loading" href="' + url + '" target="_self" title="Desativar">Confirmar</a>');
             $('#modal').find('.modal-body').html('Confirma exclusão de Preço de Venda?');
             $('#modal').find('.modal-header').prepend('<h5 id="modalTitle" class="modal-title">Confimar Exclusão</h5>');
             $('#modal').modal('show');
         }
 
         function ShowModalReativarVenda(url) {
-            $('#modal').find('.modal-footer').prepend('<a id="btnModal" alt="Reativar" class="btn btn-primary" href="' + url + '" target="_self" title="Reativar">Confirmar</a>');
+            $('#modal').find('.modal-footer').prepend('<a id="btnModal" alt="Reativar" class="btn btn-primary btn-loading" href="' + url + '" target="_self" title="Reativar">Confirmar</a>');
             $('#modal').find('.modal-body').html('Confirma reativação de Preço de Venda?');
             $('#modal').find('.modal-header').prepend('<h5 id="modalTitle" class="modal-title">Confimar Reativação</h5>');
             $('#modal').modal('show');
         }
         function ShowModalExcluirCusto(url) {
-            $('#modal').find('.modal-footer').prepend('<a id="btnModal" alt="Desativar" class="btn btn-primary" href="' + url + '" target="_self" title="Desativar">Confirmar</a>');
+            $('#modal').find('.modal-footer').prepend('<a id="btnModal" alt="Desativar" class="btn btn-primary btn-loading" href="' + url + '" target="_self" title="Desativar">Confirmar</a>');
             $('#modal').find('.modal-body').html('Confirma exclusão de Preço de Custo?');
             $('#modal').find('.modal-header').prepend('<h5 id="modalTitle" class="modal-title">Confimar Exclusão</h5>');
             $('#modal').modal('show');
         }
 
         function ShowModalReativarCusto(url) {
-            $('#modal').find('.modal-footer').prepend('<a id="btnModal" alt="Reativar" class="btn btn-primary" href="' + url + '" target="_self" title="Reativar">Confirmar</a>');
+            $('#modal').find('.modal-footer').prepend('<a id="btnModal" alt="Reativar" class="btn btn-primary btn-loading" href="' + url + '" target="_self" title="Reativar">Confirmar</a>');
             $('#modal').find('.modal-body').html('Confirma reativação de Preço de Custo?');
             $('#modal').find('.modal-header').prepend('<h5 id="modalTitle" class="modal-title">Confimar Reativação</h5>');
             $('#modal').modal('show');
         }
 
         function ShowModalExcluirKit(url) {
-            $('#modal').find('.modal-footer').prepend('<a id="btnModal" alt="Desativar" class="btn btn-primary" href="' + url + '" target="_self" title="Desativar">Confirmar</a>');
+            $('#modal').find('.modal-footer').prepend('<a id="btnModal" alt="Desativar" class="btn btn-primary btn-loading" href="' + url + '" target="_self" title="Desativar">Confirmar</a>');
             $('#modal').find('.modal-body').html('Confirma exclusão de Componente do Kit/Conjunto?');
             $('#modal').find('.modal-header').prepend('<h5 id="modalTitle" class="modal-title">Confimar Exclusão</h5>');
             $('#modal').modal('show');
         }
 
         function ShowModalExcluirAnotacaoProduto(url) {
-            $('#modal').find('.modal-footer').prepend('<a id="btnModal" alt="Desativar" class="btn btn-primary" href="' + url + '" target="_self" title="Desativar">Confirmar</a>');
+            $('#modal').find('.modal-footer').prepend('<a id="btnModal" alt="Desativar" class="btn btn-primary btn-loading" href="' + url + '" target="_self" title="Desativar">Confirmar</a>');
             $('#modal').find('.modal-body').html('Confirma exclusão da Anotação?');
             $('#modal').find('.modal-header').prepend('<h5 id="modalTitle" class="modal-title">Confimar Exclusão</h5>');
             $('#modal').modal('show');
         }
         function ShowModalExcluirConcorrente(url) {
-            $('#modal').find('.modal-footer').prepend('<a id="btnModal" alt="Desativar" class="btn btn-primary" href="' + url + '" target="_self" title="Desativar">Confirmar</a>');
+            $('#modal').find('.modal-footer').prepend('<a id="btnModal" alt="Desativar" class="btn btn-primary btn-loading" href="' + url + '" target="_self" title="Desativar">Confirmar</a>');
             $('#modal').find('.modal-body').html('Confirma exclusão de Concorrente?');
             $('#modal').find('.modal-header').prepend('<h5 id="modalTitle" class="modal-title">Confimar Exclusão</h5>');
             $('#modal').modal('show');
         }
 
         function ShowModalReativarConcorrente(url) {
-            $('#modal').find('.modal-footer').prepend('<a id="btnModal" alt="Reativar" class="btn btn-primary" href="' + url + '" target="_self" title="Reativar">Confirmar</a>');
+            $('#modal').find('.modal-footer').prepend('<a id="btnModal" alt="Reativar" class="btn btn-primary btn-loading" href="' + url + '" target="_self" title="Reativar">Confirmar</a>');
             $('#modal').find('.modal-body').html('Confirma reativação de Concorrente?');
             $('#modal').find('.modal-header').prepend('<h5 id="modalTitle" class="modal-title">Confimar Reativação</h5>');
             $('#modal').modal('show');
         }
         function ShowModalExcluirMovimentoEstoque(url) {
-            $('#modal').find('.modal-footer').prepend('<a id="btnModal" alt="Desativar" class="btn btn-primary" href="' + url + '" target="_self" title="Desativar">Confirmar</a>');
+            $('#modal').find('.modal-footer').prepend('<a id="btnModal" alt="Desativar" class="btn btn-primary btn-loading" href="' + url + '" target="_self" title="Desativar">Confirmar</a>');
             $('#modal').find('.modal-body').html('Confirma exclusão de Movimento de Estoque?');
             $('#modal').find('.modal-header').prepend('<h5 id="modalTitle" class="modal-title">Confimar Exclusão</h5>');
             $('#modal').modal('show');
         }
 
         function ShowModalReativarMovimentoEstoque(url) {
-            $('#modal').find('.modal-footer').prepend('<a id="btnModal" alt="Reativar" class="btn btn-primary" href="' + url + '" target="_self" title="Reativar">Confirmar</a>');
+            $('#modal').find('.modal-footer').prepend('<a id="btnModal" alt="Reativar" class="btn btn-primary btn-loading" href="' + url + '" target="_self" title="Reativar">Confirmar</a>');
             $('#modal').find('.modal-body').html('Confirma reativação de Movimento de Estoque?');
             $('#modal').find('.modal-header').prepend('<h5 id="modalTitle" class="modal-title">Confimar Reativação</h5>');
             $('#modal').modal('show');
         }
         function ShowModalExcluirAnexo(url) {
-            $('#modal').find('.modal-footer').prepend('<a id="btnModal" alt="Desativar" class="btn btn-primary" href="' + url + '" target="_self" title="Desativar">Confirmar</a>');
+            $('#modal').find('.modal-footer').prepend('<a id="btnModal" alt="Desativar" class="btn btn-primary btn-loading" href="' + url + '" target="_self" title="Desativar">Confirmar</a>');
             $('#modal').find('.modal-body').html('Confirma exclusão de Anexo?');
             $('#modal').find('.modal-header').prepend('<h5 id="modalTitle" class="modal-title">Confimar Exclusão</h5>');
             $('#modal').modal('show');
@@ -2480,14 +2524,6 @@
                                 pointBorderColor: "#fff",
                                 data: result.valoresVenda
                             }
-                        //    , {
-                        //        label: "Preço Promoção (R$)",
-                        //        backgroundColor: 'rgba(225, 133, 6, 0.5)',
-                        //        borderColor: "rgba(225, 133, 6,0.7)",
-                        //        pointBackgroundColor: "rgba(225, 133, 6,1)",
-                        //        pointBorderColor: "#fff",
-                        //        data: result.valoresPromocao
-                        //    }
                         ]
                     };
 

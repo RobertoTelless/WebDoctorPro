@@ -1815,13 +1815,13 @@ namespace GEDSys_Presentation.Controllers
                     vm.CORE_NM_RECEBIMENTO = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(vm.CORE_NM_RECEBIMENTO);
                     vm.CORE_IN_CONFERIDO = 0;
 
-                    // Carrega paciente
+                    // Carrega paciente e consulta
                     PACIENTE pac = pacApp.GetItemById(vm.PACI_CD_ID.Value);
 
                     // Critica
                     if (vm.CORE_NM_RECEBIMENTO == null)
                     {
-                        String nome = "Recebimento de consulta de " + pac.PACI_NM_NOME + " em " + vm.CORE_DT_RECEBIMENTO.Value.ToLongDateString();
+                        String nome = "Recebimento de " + pac.PACI_NM_NOME.ToUpper() + " em " + vm.CORE_DT_RECEBIMENTO.Value.ToLongDateString() + " referente a consulta";
                         vm.CORE_NM_RECEBIMENTO = nome;
                     }
                     if (vm.CORE_VL_VALOR == 0 || vm.CORE_VL_VALOR == null)
@@ -5698,7 +5698,7 @@ namespace GEDSys_Presentation.Controllers
         {
             var pac = pacApp.GetItemById(id);
             var hash = new Hashtable();
-            String nome = "Recebimento de " + pac.PACI_NM_NOME + " em " + DateTime.Today.Date.ToLongDateString();
+            String nome = "Recebimento de " + pac.PACI_NM_NOME.ToUpper() + " em " + DateTime.Today.Date.ToLongDateString() + " referente a consulta";
             hash.Add("nome", nome);
             return Json(hash);
         }

@@ -19,7 +19,7 @@ namespace DataServices.Repositories
             query = query.Where(p => p.ASSI_CD_ID == idAss);
             query = query.Where(p => p.PREF_IN_SISTEMA == 6);
             query = query.Include(p => p.PRODUTO);
-            return query.ToList();
+            return query.AsNoTracking().ToList();
         }
 
         public PRODUTO_ESTOQUE_FILIAL GetItemById(Int32 id)

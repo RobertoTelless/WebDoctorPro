@@ -161,7 +161,10 @@
                                                 @foreach (var cond in (Model.PACIENTE_ATESTADO.Where(p => p.PAAT_IN_ATIVO == 1).OrderByDescending(p => p.PAAT_DT_DATA)))
                                                 {
                                                     <tr>
-                                                        <td style="width: auto">@cond.PAAT_DT_DATA.Value.ToShortDateString()</td>
+                                                        <td>
+                                                            <span style="display:none; width: auto">@cond.PAAT_DT_DATA.Value.ToString("yyyyMMdd")</span>
+                                                            @cond.PAAT_DT_DATA.Value.ToShortDateString()
+                                                        </td>
                                                         <td style="width: auto">@cond.PAAT_GU_GUID</td>
                                                         <td style="width: auto">@cond.TIPO_ATESTADO.TIAT_NM_NOME</td>
                                                         <td style="width: auto">@cond.PAAT_NM_TITULO</td>
@@ -229,7 +232,10 @@
                                                 @foreach (var cond in (Model.PACIENTE_SOLICITACAO.Where(p => p.PASO_IN_ATIVO == 1).OrderByDescending(p => p.PASO_DT_EMISSAO)))
                                                 {
                                                     <tr>
-                                                        <td style="width: auto">@cond.PASO_DT_EMISSAO.Value.ToShortDateString() @cond.PASO_DT_EMISSAO.Value.ToShortTimeString()</td>
+                                                        <td>
+                                                            <span style="display:none; width: auto">@cond.PASO_DT_EMISSAO.Value.ToString("yyyyMMdd")</span>
+                                                            @cond.PASO_DT_EMISSAO.Value.ToShortDateString() @cond.PASO_DT_EMISSAO.Value.ToShortTimeString()
+                                                        </td>
                                                         <td style="width: auto">@cond.PASO_GU_GUID</td>
                                                         <td style="width: auto">@cond.TIPO_EXAME.TIEX_NM_NOME</td>
                                                         <td style="width: auto">@cond.PASO_NM_TITULO</td>
@@ -296,7 +302,10 @@
                                                 @foreach (var cond in (Model.PACIENTE_EXAMES.Where(p => p.PAEX_IN_ATIVO == 1).OrderByDescending(p => p.PAEX_DT_DATA)))
                                                 {
                                                     <tr>
-                                                        <td style="width: auto">@cond.PAEX_DT_DATA.Value.ToShortDateString()</td>                                                                       
+                                                        <td>
+                                                            <span style="display:none; width: auto">@cond.PAEX_DT_DATA.Value.ToString("yyyyMMdd")</span>
+                                                            @cond.PAEX_DT_DATA.Value.ToShortDateString()
+                                                        </td>
                                                         <td style="width: auto">@cond.TIPO_EXAME.TIEX_NM_NOME</td>                                                      
                                                         <td style="width: auto">@cond.PAEX_NM_NOME</td>                                                      
                                                         @if (cond.LABS_CD_ID != null)
@@ -362,7 +371,10 @@
                                         @foreach (var cond in (Model.PACIENTE_PRESCRICAO.Where(p => p.PAPR_IN_ATIVO == 1).OrderByDescending(p => p.PAPR_DT_EMISSAO_COMPLETA)))
                                         {
                                             <tr>
-                                                <td style="width: auto">@cond.PAPR_DT_EMISSAO.Value.Date.ToShortDateString() @cond.PAPR_DT_EMISSAO.Value.ToShortTimeString()</td>
+                                                <td>
+                                                    <span style="display:none; width: auto">@cond.PAPR_DT_EMISSAO.Value.ToString("yyyyMMdd")</span>
+                                                    @cond.PAPR_DT_EMISSAO.Value.ToShortDateString() @cond.PAPR_DT_EMISSAO.Value.ToShortTimeString()
+                                                </td>
                                                 @if (cond.TICO_CD_ID == 3)
                                                 {
                                                     <td style="width: auto"><span class="badge badge-success">@cond.TIPO_CONTROLE.TICO_NM_NOME</span></td>
@@ -462,6 +474,17 @@
             $('.dataTables-atestado').DataTable({
                 pageLength: 10,
                 dom: '<"html5buttons"B>lTfgitp',
+                // --- NOVO BLOCO DE CONFIGURAÇÃO ---
+                columnDefs: [
+                    {
+                        // Altera o tipo de ordenação para a primeira coluna (índice 0)
+                        //"type": "datetime-moment", // Se você incluiu o momento.js
+                        // OU
+                         "type": "date-eu", // Para o formato DD/MM/AAAA
+                        "targets": 0 // Aplica à coluna "Data da Transação"
+                    }
+                ],
+                // ---------------------------------       
                 buttons: [
                     { extend: 'excel', title: 'Atestado_Planilha' },
                     {

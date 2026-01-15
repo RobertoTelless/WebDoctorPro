@@ -10,6 +10,7 @@ using ModelServices.Interfaces.EntitiesServices;
 using CrossCutting;
 using System.Text.RegularExpressions;
 using ModelServices.Interfaces.Repositories;
+using Newtonsoft.Json;
 
 namespace ApplicationServices.Services
 {
@@ -204,17 +205,26 @@ namespace ApplicationServices.Services
                 item.ASSI_CD_ID = usuario.ASSI_CD_ID;
                 item.PROD_IN_SISTEMA = 6;
 
+                // Configura serilização
+                JsonSerializerSettings settings = new JsonSerializerSettings
+                {
+                    ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+                    NullValueHandling = NullValueHandling.Ignore
+                };
+
+
                 // Monta Log
+                DTO_Produto dto = MontarProdutoDTOObj(item);
+                String json = JsonConvert.SerializeObject(dto, settings);
                 LOG log = new LOG
                 {
                     LOG_DT_DATA = DateTime.Now,
                     ASSI_CD_ID = usuario.ASSI_CD_ID,
                     USUA_CD_ID = usuario.USUA_CD_ID,
-                    LOG_NM_OPERACAO = "AddPROD",
+                    LOG_NM_OPERACAO = "Material/Produto - Inclusão",
                     LOG_IN_ATIVO = 1,
-                    LOG_TX_REGISTRO = Serialization.SerializeJSON<PRODUTO>(item),
+                    LOG_TX_REGISTRO = json,
                     LOG_IN_SISTEMA = 6
-
                 };
 
                 // Persiste produto
@@ -225,6 +235,72 @@ namespace ApplicationServices.Services
             {
                 throw;
             }
+        }
+
+        public DTO_Produto MontarProdutoDTOObj(PRODUTO l)
+        {
+            using (var context = new CRMSysDBEntities())
+            {
+                var mediDTO = new DTO_Produto()
+                {
+                    ASSI_CD_ID = l.ASSI_CD_ID,
+                    CAPR_CD_ID = l.CAPR_CD_ID,
+                    PROD_CD_CODIGO = l.PROD_CD_CODIGO,
+                    PROD_CD_ID = l.PROD_CD_ID,
+                    SCPR_CD_ID = l.SCPR_CD_ID,
+                    TIEM_CD_ID = l.TIEM_CD_ID,
+                    UNID_CD_ID = l.UNID_CD_ID,
+                    PROD_AQ_FOTO = l.PROD_AQ_FOTO,
+                    PROD_DS_DESCRICAO = l.PROD_DS_DESCRICAO,
+                    PROD_DS_INFORMACOES = l.PROD_DS_INFORMACOES,
+                    PROD_DT_ALTERACAO = l.PROD_DT_ALTERACAO,
+                    PROD_DT_CADASTRO = l.PROD_DT_CADASTRO,
+                    PROD_IN_ATIVO = l.PROD_IN_ATIVO,
+                    PROD_IN_COMPOSTO = l.PROD_IN_COMPOSTO,
+                    PROD_IN_FRACIONADO = l.PROD_IN_FRACIONADO,
+                    PROD_IN_LOCACAO = l.PROD_IN_LOCACAO,
+                    PROD_IN_PECA = l.PROD_IN_PECA,
+                    PROD_IN_SISTEMA = l.PROD_IN_SISTEMA,
+                    PROD_IN_TIPO_PRODUTO = l.PROD_IN_TIPO_PRODUTO,
+                    PROD_IN_USUARIO_ALTERACAO = l.PROD_IN_USUARIO_ALTERACAO,
+                    PROD_NM_FABRICANTE = l.PROD_NM_FABRICANTE,
+                    PROD_NM_FORNECEDOR = l.PROD_NM_FORNECEDOR,
+                    PROD_NM_MARCA = l.PROD_NM_MARCA,
+                    PROD_NM_MODELO = l.PROD_NM_MODELO,
+                    PROD_NM_NOME = l.PROD_NM_NOME,
+                    PROD_NM_REFERENCIA_FABRICANTE = l.PROD_NM_REFERENCIA_FABRICANTE,
+                    PROD_NR_BARCODE = l.PROD_NR_BARCODE,
+                    PROD_NR_REFERENCIA = l.PROD_NM_REFERENCIA_FABRICANTE,
+                    PROD_PC_DESCONTO = l.PROD_PC_DESCONTO,
+                    PROD_TX_OBSERVACOES = l.PROD_TX_OBSERVACOES,
+                    PROD_VL_CUSTO = l.PROD_VL_CUSTO,
+                    PROD_VL_CUSTO_CONCORRENTE_MEDIO = l.PROD_VL_CUSTO_CONCORRENTE_MEDIO,
+                    PROD_VL_CVM_PESO = l.PROD_VL_CVM_PESO,
+                    PROD_VL_CVM_RECEITA = l.PROD_VL_CVM_RECEITA,
+                    PROD_VL_CVM_UNITARIO = l.PROD_VL_CVM_UNITARIO,
+                    PROD_VL_ESTOQUE_ATUAL = l.PROD_VL_ESTOQUE_ATUAL,
+                    PROD_VL_ESTOQUE_CUSTO = l.PROD_VL_ESTOQUE_CUSTO,
+                    PROD_VL_ESTOQUE_MAXIMO = l.PROD_VL_ESTOQUE_MAXIMO,
+                    PROD_VL_ESTOQUE_MINIMO = l.PROD_VL_ESTOQUE_MINIMO,
+                    PROD_VL_ESTOQUE_RESERVA = l.PROD_VL_ESTOQUE_RESERVA,
+                    PROD_VL_ESTOQUE_TOTAL = l.PROD_VL_ESTOQUE_TOTAL,
+                    PROD_VL_ESTOQUE_VENDA = l.PROD_VL_ESTOQUE_VENDA,
+                    PROD_VL_FATOR_CORRECAO = l.PROD_VL_FATOR_CORRECAO,
+                    PROD_VL_LOCACAO = l.PROD_VL_LOCACAO,
+                    PROD_VL_LOCACAO_MULTA = l.PROD_VL_LOCACAO_MULTA,
+                    PROD_VL_LOCACAO_PROMOCAO = l.PROD_VL_LOCACAO_PROMOCAO,
+                    PROD_VL_LOCACAO_TAXAS = l.PROD_VL_LOCACAO_TAXAS,
+                    PROD_VL_MARGEM_CONTRIBUICAO = l.PROD_VL_MARGEM_CONTRIBUICAO,
+                    PROD_VL_MEDIA_VENDA_MENSAL = l.PROD_VL_MEDIA_VENDA_MENSAL,
+                    PROD_VL_PRECO_ANTERIOR = l.PROD_VL_PRECO_ANTERIOR,
+                    PROD_VL_PRECO_MINIMO = l.PROD_VL_PRECO_MINIMO,
+                    PROD_VL_PRECO_PROMOCAO = l.PROD_VL_PRECO_PROMOCAO,
+                    PROD_VL_PRECO_VENDA = l.PROD_VL_PRECO_VENDA,
+                    PROD_VL_ULTIMO_CUSTO = l.PROD_VL_ULTIMO_CUSTO,
+                };
+                return mediDTO;
+            }
+
         }
 
         public Int32 ValidateEdit(PRODUTO item, PRODUTO itemAntes, USUARIO usuario)
@@ -238,21 +314,28 @@ namespace ApplicationServices.Services
                 }
                 item.PROD_VL_PRECO_MINIMO = item.PROD_VL_PRECO_VENDA;
 
-                // Serialização
-                String prod = item.PROD_CD_ID.ToString() + "|" + item.CAPR_CD_ID.ToString() + "|" + item.SCPR_CD_ID.ToString() + "|" + item.UNID_CD_ID.ToString() + "|" + item.PROD_DT_CADASTRO.ToString() + "|" + item.PROD_DT_ALTERACAO.ToString() + "|" + item.PROD_IN_TIPO_PRODUTO.ToString() + "|" + item.PROD_IN_COMPOSTO.ToString() + "|" + item.PROD_NM_NOME.ToString() + item.PROD_IN_ATIVO.ToString();
+                // Configura serilização
+                JsonSerializerSettings settings = new JsonSerializerSettings
+                {
+                    ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+                    NullValueHandling = NullValueHandling.Ignore
+                };
 
                 // Monta Log
+                DTO_Produto dto = MontarProdutoDTOObj(item);
+                String json = JsonConvert.SerializeObject(dto, settings);
+                DTO_Produto dtoAntes = MontarProdutoDTOObj(itemAntes);
+                String jsonAntes = JsonConvert.SerializeObject(dtoAntes, settings);
                 LOG log = new LOG
                 {
                     LOG_DT_DATA = DateTime.Now,
                     ASSI_CD_ID = usuario.ASSI_CD_ID,
                     USUA_CD_ID = usuario.USUA_CD_ID,
-                    LOG_NM_OPERACAO = "EdtPROD",
+                    LOG_NM_OPERACAO = "Material/Produto - Alteração",
                     LOG_IN_ATIVO = 1,
-                    LOG_TX_REGISTRO = prod,
-                    LOG_TX_REGISTRO_ANTES = prod,
+                    LOG_TX_REGISTRO = json,
+                    LOG_TX_REGISTRO_ANTES = jsonAntes,
                     LOG_IN_SISTEMA = 6
-
                 };
 
                 // Persiste
@@ -333,17 +416,26 @@ namespace ApplicationServices.Services
                 // Acerta campos
                 item.PROD_IN_ATIVO = 0;
 
+                // Configura serilização
+                JsonSerializerSettings settings = new JsonSerializerSettings
+                {
+                    ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+                    NullValueHandling = NullValueHandling.Ignore
+                };
+
+
                 // Monta Log
+                DTO_Produto dto = MontarProdutoDTOObj(item);
+                String json = JsonConvert.SerializeObject(dto, settings);
                 LOG log = new LOG
                 {
                     LOG_DT_DATA = DateTime.Now,
                     ASSI_CD_ID = usuario.ASSI_CD_ID,
                     USUA_CD_ID = usuario.USUA_CD_ID,
+                    LOG_NM_OPERACAO = "Material/Produto - Exclusão",
                     LOG_IN_ATIVO = 1,
-                    LOG_NM_OPERACAO = "DelPROD",
-                    LOG_TX_REGISTRO = "Produto: " + item.PROD_NM_NOME,
+                    LOG_TX_REGISTRO = json,
                     LOG_IN_SISTEMA = 6
-
                 };
 
                 // Persiste

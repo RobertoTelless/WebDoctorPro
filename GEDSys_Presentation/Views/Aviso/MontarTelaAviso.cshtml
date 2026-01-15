@@ -131,10 +131,10 @@
                                         if (cond.AVIS_DT_AVISO > DateTime.Today.Date)
                                         {
                                             <tr style="background-color: aliceblue">
-                                                <td style="width: 120px" data-order="@cond.AVIS_DT_AVISO.Value.ToString("yyyy-MM-dd HH:mm:ss")">
+                                                <td>
+                                                    <span style="display:none; width: auto">@cond.AVIS_DT_AVISO.Value.ToString("yyyyMMdd")</span>
                                                     @cond.AVIS_DT_AVISO.Value.ToShortDateString() @cond.AVIS_DT_AVISO.Value.ToShortTimeString()
                                                 </td>
-                                                @*<td style="width: auto">@cond.AVIS_DT_AVISO.Value.ToShortDateString()</td>*@                                                
                                                 @if (cond.AVIS_DT_AVISO.Value.Date >= DateTime.Today.Date)
                                                 {
                                                     <td style="width: auto"><a href="@Url.Action("EditarAviso", "Aviso", new { id = cond.AVIS_CD_ID })"  data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página de edição do aviso"/>@cond.AVIS_NM_TITULO</td>

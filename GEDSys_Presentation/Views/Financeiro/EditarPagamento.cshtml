@@ -131,7 +131,7 @@
                                                     <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
                                                         <div class="col-lg-3 col-md-3 col-xs-12">
                                                             Identificador
-                                                            @Html.TextBoxFor(m => m.COPA_GU_GUID, new { @class = "form-control", @readonly = "readonly", @style = "color: brown; font-weight: bold" })
+                                                            @Html.TextBoxFor(m => m.COPA_GU_GUID, new { @class = "form-control", @readonly = "readonly", @style = "color: brown; font-weight: bold", tabindex = "-1" })
                                                         </div>
                                                         <div class="col-lg-2 col-md-2 col-xs-12">
                                                             @Html.HiddenFor(m => m.ASSI_CD_ID)
@@ -143,36 +143,36 @@
                                                             @Html.HiddenFor(m => m.COPA_VL_VALOR)
                                                             @Html.HiddenFor(m => m.COPA_DT_CADASTRO)
                                                             Data do Vencimento
-                                                            @Html.TextBoxFor(m => m.COPA_DT_VENCIMENTO, "{0:dd/MM/yyyy}", new { @class = "form-control", @readonly = "readonly", @style = "color: green; font-weight: bold" })
+                                                            @Html.TextBoxFor(m => m.COPA_DT_VENCIMENTO, "{0:dd/MM/yyyy}", new { @class = "form-control", @readonly = "readonly", @style = "color: green; font-weight: bold", tabindex = "-1" })
                                                         </div>
                                                         <div class="col-lg-3 col-md-3 col-xs-12">
                                                             Tipo de Pagamento
-                                                            @Html.TextBoxFor(m => m.TIPO_PAGAMENTO.TIPA_NM_PAGAMENTO, new { @class = "form-control", @readonly = "readonly"})
+                                                            @Html.TextBoxFor(m => m.TIPO_PAGAMENTO.TIPA_NM_PAGAMENTO, new { @class = "form-control", @readonly = "readonly", tabindex = "-1"})
                                                         </div>
                                                         <div class="col-lg-2 col-md-2 col-xs-12">
                                                             Quitado
                                                             @if (Model.COPA_IN_PAGO == 1)
                                                             {
-                                                                @Html.TextBoxFor(m => m.Quitado, new { @class = "form-control", @readonly = "readonly" , @style = "color: green; font-weight: bold" })
+                                                                @Html.TextBoxFor(m => m.Quitado, new { @class = "form-control", @readonly = "readonly" , @style = "color: green; font-weight: bold", tabindex = "-1" })
                                                             }
                                                             else
                                                             {
-                                                                @Html.TextBoxFor(m => m.Quitado, new { @class = "form-control", @readonly = "readonly", @style = "color: brown; font-weight: bold" })
+                                                                @Html.TextBoxFor(m => m.Quitado, new { @class = "form-control", @readonly = "readonly", @style = "color: brown; font-weight: bold", tabindex = "-1" })
                                                             }
                                                         </div>
                                                         <div class="col-lg-2 col-md-2 col-xs-12">
                                                             Data de Cadastro
-                                                            @Html.TextBoxFor(m => m.COPA_DT_CADASTRO, "{0:dd/MM/yyyy}", new { @class = "form-control", @readonly = "readonly", @style = "color: palegold; font-weight: bold" })
+                                                            @Html.TextBoxFor(m => m.COPA_DT_CADASTRO, "{0:dd/MM/yyyy}", new { @class = "form-control", @readonly = "readonly", @style = "color: palegold; font-weight: bold", tabindex = "-1" })
                                                         </div>
                                                     </div>
                                                     <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
                                                         <div class="col-lg-6 col-md-6 col-xs-12">
                                                             Nome do Pagamento
-                                                            @Html.TextBoxFor(m => m.COPA_NM_NOME, new { @class = "form-control", @readonly = "readonly"  })
+                                                            @Html.TextBoxFor(m => m.COPA_NM_NOME, new { @class = "form-control", @readonly = "readonly", tabindex = "-1"  })
                                                         </div>
                                                         <div class="col-lg-6 col-md-6 col-xs-12">
                                                             Nome do Favorecido
-                                                            @Html.TextBoxFor(m => m.COPA_NM_FAVORECIDO, new { @class = "form-control", @readonly = "readonly" })
+                                                            @Html.TextBoxFor(m => m.COPA_NM_FAVORECIDO, new { @class = "form-control", @readonly = "readonly", tabindex = "-1" })
                                                         </div>
                                                     </div>
                                                 </div>
@@ -185,31 +185,31 @@
                                                         <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
                                                             <div class="col-lg-2 col-md-2 col-xs-12">
                                                                 Quitar Pagamento?
-                                                                @Html.DropDownListFor(m => m.QUITA_PAGAMENTO, (SelectList)ViewBag.Quitar, "Selecionar", new { @class = "form-control", autofocus = true, @id = "quita", onchange = "ValidaQuita($(this).val())" })
+                                                                @Html.DropDownListFor(m => m.QUITA_PAGAMENTO, (SelectList)ViewBag.Quitar, "Selecionar", new { @class = "form-control", autofocus = true, @id = "quita", onchange = "ValidaQuita($(this).val())", tabindex = "1" })
                                                                 @Html.ValidationMessageFor(m => m.QUITA_PAGAMENTO, "", new { @style = "color:red" })
                                                             </div>
                                                             <div class="col-lg-2 col-md-2 col-xs-12">
                                                                 Data do Pagamento
-                                                                @Html.TextBoxFor(m => m.COPA_DT_PAGAMENTO, new { @class = "form-control date-picker", autofocus = true, @id = "dn" })
+                                                                @Html.TextBoxFor(m => m.COPA_DT_PAGAMENTO, new { @class = "form-control date-picker", autofocus = true, @id = "dn", tabindex = "2" })
                                                                 @Html.ValidationMessageFor(m => m.COPA_DT_PAGAMENTO, "", new { @style = "color:red" })
                                                             </div>
                                                             <div class="col-lg-2 col-md-2 col-xs-12">
                                                                 Valor Original (R$)
-                                                                @Html.TextBoxFor(m => m.COPA_VL_VALOR, "{0:n2}", new { @class = "form-control", @id = "valor", autofocus = true, @readonly = "readonly", @style = "color: green; font-weight: bold" })
+                                                                @Html.TextBoxFor(m => m.COPA_VL_VALOR, "{0:n2}", new { @class = "form-control", @id = "valor", autofocus = true, @readonly = "readonly", @style = "color: green; font-weight: bold", tabindex = "-1" })
                                                             </div>
                                                             <div class="col-lg-2 col-md-2 col-xs-12">
                                                                 Descontos(-) (R$)
-                                                                @Html.TextBoxFor(m => m.COPA_VL_DESCONTO, new { @class = "form-control", autofocus = true, @id = "desc", onfocus = "this.select();", onblur = "CalculaTotal()" })
+                                                                @Html.TextBoxFor(m => m.COPA_VL_DESCONTO, new { @class = "form-control", autofocus = true, @id = "desc", onfocus = "this.select();", onblur = "CalculaTotal()", tabindex = "3" })
                                                                 @Html.ValidationMessageFor(m => m.COPA_VL_DESCONTO, "", new { @style = "color:red" })
                                                             </div>
                                                             <div class="col-lg-2 col-md-2 col-xs-12">
                                                                 Multas(+) (R$)
-                                                                @Html.TextBoxFor(m => m.COPA_VL_MULTA, new { @class = "form-control", autofocus = true, @id = "multa", onfocus = "this.select();", onblur = "CalculaTotal()" })
+                                                                @Html.TextBoxFor(m => m.COPA_VL_MULTA, new { @class = "form-control", autofocus = true, @id = "multa", onfocus = "this.select();", onblur = "CalculaTotal()", tabindex = "4" })
                                                                 @Html.ValidationMessageFor(m => m.COPA_VL_MULTA, "", new { @style = "color:red" })
                                                             </div>
                                                             <div class="col-lg-2 col-md-2  col-xs-12" style="color:brown; font-weight:bold">
                                                                 Valor Pago (R$)
-                                                                @Html.TextBoxFor(m => m.COPA_VL_PAGO, "{0:n2}", new { @class = "form-control", @readonly="readonly", @id = "total" })
+                                                                @Html.TextBoxFor(m => m.COPA_VL_PAGO, "{0:n2}", new { @class = "form-control", @readonly="readonly", @id = "total", tabindex = "-1" })
                                                             </div>
                                                         </div>
                                                     }
@@ -218,23 +218,23 @@
                                                         <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
                                                             <div class="col-lg-2 col-md-2 col-xs-12">
                                                                 Data do Pagamento
-                                                                @Html.TextBoxFor(m => m.COPA_DT_PAGAMENTO, new { @class = "form-control", @readonly = "readonly" })
+                                                                @Html.TextBoxFor(m => m.COPA_DT_PAGAMENTO, new { @class = "form-control", @readonly = "readonly", tabindex = "-1" })
                                                             </div>
                                                             <div class="col-lg-2 col-md-2 col-xs-12">
                                                                 Valor Original (R$)
-                                                                @Html.TextBoxFor(m => m.COPA_VL_VALOR, "{0:n2}", new { @class = "form-control", @readonly = "readonly", @style = "color: green; font-weight: bold" })
+                                                                @Html.TextBoxFor(m => m.COPA_VL_VALOR, "{0:n2}", new { @class = "form-control", @readonly = "readonly", @style = "color: green; font-weight: bold", tabindex = "-1" })
                                                             </div>
                                                             <div class="col-lg-2 col-md-2 col-xs-12">
                                                                 Descontos(-) (R$)
-                                                                @Html.TextBoxFor(m => m.COPA_VL_DESCONTO, "{0:n2}", new { @class = "form-control", @readonly = "readonly" })
+                                                                @Html.TextBoxFor(m => m.COPA_VL_DESCONTO, "{0:n2}", new { @class = "form-control", @readonly = "readonly", tabindex = "-1" })
                                                             </div>
                                                             <div class="col-lg-2 col-md-2 col-xs-12">
                                                                 Multas(+) (R$)
-                                                                @Html.TextBoxFor(m => m.COPA_VL_MULTA, "{0:n2}", new { @class = "form-control", @readonly = "readonly" })
+                                                                @Html.TextBoxFor(m => m.COPA_VL_MULTA, "{0:n2}", new { @class = "form-control", @readonly = "readonly", tabindex = "-1" })
                                                             </div>
                                                             <div class="col-lg-2 col-md-2  col-xs-12" style="color:brown; font-weight:bold">
                                                                 Valor Pago (R$)
-                                                                @Html.TextBoxFor(m => m.COPA_VL_PAGO, "{0:n2}", new { @class = "form-control", @readonly="readonly" })
+                                                                @Html.TextBoxFor(m => m.COPA_VL_PAGO, "{0:n2}", new { @class = "form-control", @readonly="readonly", tabindex = "-1" })
                                                             </div>
                                                         </div>
                                                     }
@@ -260,7 +260,7 @@
                                                     <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
                                                         <div class="col-lg-3 col-md-3 col-xs-12">
                                                             Identificador
-                                                            @Html.TextBoxFor(m => m.COPA_GU_GUID, new { @class = "form-control", @readonly = "readonly", @style = "color: brown; font-weight: bold" })
+                                                            @Html.TextBoxFor(m => m.COPA_GU_GUID, new { @class = "form-control", @readonly = "readonly", @style = "color: brown; font-weight: bold", tabindex = "-1" })
                                                         </div>
                                                         <div class="col-lg-2 col-md-2 col-xs-12">
                                                             @Html.HiddenFor(m => m.ASSI_CD_ID)
@@ -272,38 +272,36 @@
                                                             @Html.HiddenFor(m => m.COPA_VL_VALOR)
                                                             @Html.HiddenFor(m => m.COPA_DT_CADASTRO)
                                                             Data do Vencimento
-                                                            @Html.TextBoxFor(m => m.COPA_DT_VENCIMENTO, "{0:dd/MM/yyyy}", new { @class = "form-control", @readonly = "readonly", @style = "color: green; font-weight: bold" })
+                                                            @Html.TextBoxFor(m => m.COPA_DT_VENCIMENTO, "{0:dd/MM/yyyy}", new { @class = "form-control", @readonly = "readonly", @style = "color: green; font-weight: bold", tabindex = "-1" })
                                                         </div>
                                                         <div class="col-lg-3 col-md-3 col-xs-12">
                                                             Tipo de Pagamento
-                                                            @Html.TextBoxFor(m => m.TIPO_PAGAMENTO.TIPA_NM_PAGAMENTO, new { @class = "form-control", @readonly = "readonly"})
+                                                            @Html.TextBoxFor(m => m.TIPO_PAGAMENTO.TIPA_NM_PAGAMENTO, new { @class = "form-control", @readonly = "readonly", tabindex = "-1"})
                                                         </div>
                                                         <div class="col-lg-2 col-md-2 col-xs-12">
                                                             Quitado
                                                             @if (Model.COPA_IN_PAGO == 1)
                                                             {
-                                                                @Html.TextBoxFor(m => m.Quitado, new { @class = "form-control", @readonly = "readonly" , @style = "color: green; font-weight: bold" })
+                                                                @Html.TextBoxFor(m => m.Quitado, new { @class = "form-control", @readonly = "readonly" , @style = "color: green; font-weight: bold", tabindex = "-1" })
                                                             }
                                                             else
                                                             {
-                                                                @Html.TextBoxFor(m => m.Quitado, new { @class = "form-control", @readonly = "readonly", @style = "color: brown; font-weight: bold" })
+                                                                @Html.TextBoxFor(m => m.Quitado, new { @class = "form-control", @readonly = "readonly", @style = "color: brown; font-weight: bold", tabindex = "-1" })
                                                             }
                                                         </div>
                                                         <div class="col-lg-2 col-md-2 col-xs-12">
                                                             Data de Cadastro
-                                                            @Html.TextBoxFor(m => m.COPA_DT_CADASTRO, "{0:dd/MM/yyyy}", new { @class = "form-control", @readonly = "readonly", @style = "color: palegold; font-weight: bold" })
+                                                            @Html.TextBoxFor(m => m.COPA_DT_CADASTRO, "{0:dd/MM/yyyy}", new { @class = "form-control", @readonly = "readonly", @style = "color: palegold; font-weight: bold", tabindex = "-1" })
                                                         </div>
                                                     </div>
                                                     <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
                                                         <div class="col-lg-6 col-md-6 col-xs-12">
                                                             Nome do Pagamento
-                                                            @Html.TextBoxFor(m => m.COPA_NM_NOME, new { @class = "form-control", @readonly = "readonly"  })
-                                                            @Html.ValidationMessageFor(m => m.COPA_NM_NOME, "", new { @style = "color:red" })
+                                                            @Html.TextBoxFor(m => m.COPA_NM_NOME, new { @class = "form-control", @readonly = "readonly", tabindex = "-1"  })
                                                         </div>
                                                         <div class="col-lg-6 col-md-6 col-xs-12">
                                                             Nome do Favorecido
-                                                            @Html.TextBoxFor(m => m.COPA_NM_FAVORECIDO, new { @class = "form-control", @readonly = "readonly" })
-                                                            @Html.ValidationMessageFor(m => m.COPA_NM_FAVORECIDO, "", new { @style = "color:red" })
+                                                            @Html.TextBoxFor(m => m.COPA_NM_FAVORECIDO, new { @class = "form-control", @readonly = "readonly", tabindex = "-1" })
                                                         </div>
                                                     </div>
                                                 </div>
@@ -316,7 +314,7 @@
                                                         <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
                                                             <div class="col-lg-2 col-md-2 col-xs-12">
                                                                 Quitar Pagamento?
-                                                                @Html.DropDownListFor(m => m.QUITA_PAGAMENTO, (SelectList)ViewBag.Quitar, "Selecionar", new { @class = "form-control", autofocus = true })
+                                                                @Html.DropDownListFor(m => m.QUITA_PAGAMENTO, (SelectList)ViewBag.Quitar, "Selecionar", new { @class = "form-control", autofocus = true, @id = "quita", onchange = "ValidaQuita($(this).val())", tabindex = "1" })
                                                                 @Html.ValidationMessageFor(m => m.QUITA_PAGAMENTO, "", new { @style = "color:red" })
                                                             </div>
                                                             <div class="col-lg-2 col-md-2 col-xs-12">
@@ -326,21 +324,21 @@
                                                             </div>
                                                             <div class="col-lg-2 col-md-2 col-xs-12">
                                                                 Valor Original (R$)
-                                                                @Html.TextBoxFor(m => m.COPA_VL_VALOR, "{0:n2}", new { @class = "form-control", @id = "valor", @readonly = "readonly", @style = "color: green; font-weight: bold" })
+                                                                @Html.TextBoxFor(m => m.COPA_VL_VALOR, "{0:n2}", new { @class = "form-control", @id = "valor", autofocus = true, @readonly = "readonly", @style = "color: green; font-weight: bold", tabindex = "-1" })
                                                             </div>
                                                             <div class="col-lg-2 col-md-2 col-xs-12">
                                                                 Descontos(-) (R$)
-                                                                @Html.TextBoxFor(m => m.COPA_VL_DESCONTO, new { @class = "form-control", autofocus = true, @id = "desc", onfocus = "this.select();", onblur = "CalculaTotal()" })
+                                                                @Html.TextBoxFor(m => m.COPA_VL_DESCONTO, new { @class = "form-control", autofocus = true, @id = "desc", onfocus = "this.select();", onblur = "CalculaTotal()"})
                                                                 @Html.ValidationMessageFor(m => m.COPA_VL_DESCONTO, "", new { @style = "color:red" })
                                                             </div>
                                                             <div class="col-lg-2 col-md-2 col-xs-12">
                                                                 Multas(+) (R$)
-                                                                @Html.TextBoxFor(m => m.COPA_VL_MULTA, new { @class = "form-control", autofocus = true, @id = "multa", onfocus = "this.select();", onblur = "CalculaTotal()" })
+                                                                @Html.TextBoxFor(m => m.COPA_VL_MULTA, new { @class = "form-control", autofocus = true, @id = "multa", onfocus = "this.select();", onblur = "CalculaTotal()", tabindex = "4" })
                                                                 @Html.ValidationMessageFor(m => m.COPA_VL_MULTA, "", new { @style = "color:red" })
                                                             </div>
                                                             <div class="col-lg-2 col-md-2  col-xs-12" style="color:brown; font-weight:bold">
                                                                 Valor Pago (R$)
-                                                                @Html.TextBoxFor(m => m.COPA_VL_PAGO, "{0:n2}", new { @class = "form-control", @readonly="readonly", @id = "total" })
+                                                                @Html.TextBoxFor(m => m.COPA_VL_PAGO, "{0:n2}", new { @class = "form-control", @readonly="readonly", @id = "total", tabindex = "-1" })
                                                             </div>
                                                         </div>
                                                     }
@@ -349,23 +347,23 @@
                                                         <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
                                                             <div class="col-lg-2 col-md-2 col-xs-12">
                                                                 Data do Pagamento
-                                                                @Html.TextBoxFor(m => m.COPA_DT_PAGAMENTO, new { @class = "form-control", @readonly = "readonly" })
+                                                                @Html.TextBoxFor(m => m.COPA_DT_PAGAMENTO, new { @class = "form-control", @readonly = "readonly", tabindex = "-1" })
                                                             </div>
                                                             <div class="col-lg-2 col-md-2 col-xs-12">
                                                                 Valor Original (R$)
-                                                                @Html.TextBoxFor(m => m.COPA_VL_VALOR, "{0:n2}", new { @class = "form-control", @readonly = "readonly", @style = "color: green; font-weight: bold" })
+                                                                @Html.TextBoxFor(m => m.COPA_VL_VALOR, "{0:n2}", new { @class = "form-control", @readonly = "readonly", @style = "color: green; font-weight: bold", tabindex = "-1" })
                                                             </div>
                                                             <div class="col-lg-2 col-md-2 col-xs-12">
                                                                 Descontos(-) (R$)
-                                                                @Html.TextBoxFor(m => m.COPA_VL_DESCONTO, "{0:n2}", new { @class = "form-control", @readonly = "readonly" })
+                                                                @Html.TextBoxFor(m => m.COPA_VL_DESCONTO, "{0:n2}", new { @class = "form-control", @readonly = "readonly", tabindex = "-1" })
                                                             </div>
                                                             <div class="col-lg-2 col-md-2 col-xs-12">
                                                                 Multas(+) (R$)
-                                                                @Html.TextBoxFor(m => m.COPA_VL_MULTA, "{0:n2}", new { @class = "form-control", @readonly = "readonly" })
+                                                                @Html.TextBoxFor(m => m.COPA_VL_MULTA, "{0:n2}", new { @class = "form-control", @readonly = "readonly", tabindex = "-1" })
                                                             </div>
                                                             <div class="col-lg-2 col-md-2  col-xs-12" style="color:brown; font-weight:bold">
                                                                 Valor Pago (R$)
-                                                                @Html.TextBoxFor(m => m.COPA_VL_PAGO, "{0:n2}", new { @class = "form-control", @readonly="readonly" })
+                                                                @Html.TextBoxFor(m => m.COPA_VL_PAGO, "{0:n2}", new { @class = "form-control", @readonly="readonly", tabindex = "-1" })
                                                             </div>
                                                         </div>
                                                     }
@@ -921,29 +919,91 @@
         }
     </script>
 
-    <script type="text/javascript" language="javascript">
+    @*<script type="text/javascript">
         $(function () {
-            $('.date-picker').datepicker(
-                {
-                    dateFormat: 'dd/mm/yy',
-                    dayNames: ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'],
-                    dayNamesMin: ['D', 'S', 'T', 'Q', 'Q', 'S', 'S', 'D'],
-                    dayNamesShort: ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'],
-                    monthNames: ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'],
-                    monthNamesShort: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'],
-                    nextText: 'Proximo',
-                    prevText: 'Anterior',
-                    showOn: "focus"
+            $('.date-picker').datepicker({
+                dateFormat: 'dd/mm/yy',
+                dayNames: ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'],
+                dayNamesMin: ['D', 'S', 'T', 'Q', 'Q', 'S', 'S', 'D'],
+                dayNamesShort: ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'],
+                monthNames: ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'],
+                monthNamesShort: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'],
+                nextText: 'Proximo',
+                prevText: 'Anterior',
+                showOn: "focus", // <--- A VÍRGULA QUE FALTAVA ESTAVA AQUI
+                onSelect: function () {
+                    // Quando seleciona com o mouse
+                    setTimeout(function () {
+                        $('#desc').focus().select();
+                    }, 50);
+                },
+                onClose: function () {
+                    // Quando sai do campo ou aperta Esc/Tab
+                    setTimeout(function () {
+                        // Se o foco ainda estiver no campo de data ou "perdido" no body
+                        if (document.activeElement.id === 'dn' || document.activeElement.tagName === "BODY") {
+                            $('#desc').focus().select();
+                        }
+                    }, 50);
                 }
-            )
-                .css("display", "normal")
+            });
+
+            // CSS e Botão (Se você estiver usando o ícone ao lado)
+            $('.date-picker').css("display", "inline-block")
                 .next("button").button({
                     icons: { primary: "ui-icon-calendar" },
                     label: "Selecione uma data",
                     text: false
                 });
         });
-    </script>
+    </script>*@
+
+<script type="text/javascript">
+    $(function () {
+        $('.date-picker').datepicker({
+            dateFormat: 'dd/mm/yy',
+            dayNames: ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'],
+            dayNamesMin: ['D', 'S', 'T', 'Q', 'Q', 'S', 'S', 'D'],
+            dayNamesShort: ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'],
+            monthNames: ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'],
+            monthNamesShort: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'],
+            nextText: 'Proximo',
+            prevText: 'Anterior',
+            showOn: "focus",
+            onClose: function () {
+                // Mantém o foco no próprio campo após fechar
+                var self = this;
+                setTimeout(function () {
+                    $(self).focus();
+                }, 1);
+            }
+        });
+        
+        // Interceptar Tab para ir para o próximo campo
+        $('#dn').on('keydown', function (e) {
+            if (e.keyCode === 9) {
+                // Fecha o datepicker se estiver aberto
+                if ($(this).datepicker("widget").is(":visible")) {
+                    e.preventDefault();
+                    $(this).datepicker("hide");
+                    // Após fechar, vai para o próximo campo
+                    setTimeout(function () {
+                        $('#desc').focus().select();
+                    }, 50);
+                }
+                // Se não estiver aberto, deixa o Tab funcionar normalmente
+            }
+        });
+        
+        // CSS e Botão
+        $('.date-picker').css("display", "inline-block")
+            .next("button").button({
+                icons: { primary: "ui-icon-calendar" },
+                label: "Selecione uma data",
+                text: false
+            });
+    });
+</script>
 
     <script type="text/javascript">
         $(function () {

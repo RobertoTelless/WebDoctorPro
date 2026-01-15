@@ -104,7 +104,10 @@
                                     @foreach (var cond in (ViewBag.Listas as List<EntitiesServices.Model.PACIENTE_HISTORICO>).OrderByDescending(p => p.PAHI_DT_DATA))
                                     {
                                         <tr>    
-                                            <td style="width: 120px">@cond.PAHI_DT_DATA.Value.ToShortDateString() @cond.PAHI_DT_DATA.Value.ToShortTimeString()</td>
+                                            <td>
+                                                <span style="display:none; width: auto">@cond.PAHI_DT_DATA.Value.ToString("yyyyMMdd")</span>
+                                                @cond.PAHI_DT_DATA.Value.ToShortDateString() @cond.PAHI_DT_DATA.Value.ToShortTimeString()
+                                            </td>
 
                                             @*@if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_ACESSO_PACIENTE == 1)
                                             {*@
@@ -293,13 +296,13 @@
                 columnDefs: [
                     {
                         // Altera o tipo de ordenação para a primeira coluna (índice 0)
-                        "type": "datetime-moment", // Se você incluiu o momento.js
+                        //"type": "datetime-moment", // Se você incluiu o momento.js
                         // OU
-                        // "type": "date-eu", // Para o formato DD/MM/AAAA
+                         "type": "date-eu", // Para o formato DD/MM/AAAA
                         "targets": 0 // Aplica à coluna "Data da Transação"
                     }
                 ],
-                // ---------------------------------     
+                // ---------------------------------       
                 buttons: [
                     { extend: 'excel', title: 'Historico_Planilha' },
                     {

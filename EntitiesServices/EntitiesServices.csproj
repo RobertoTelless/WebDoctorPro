@@ -1589,6 +1589,9 @@
     <Compile Include="WorkClasses\DTO_ModeloEMail.cs" />
     <Compile Include="WorkClasses\DTO_ModeloSMS.cs" />
     <Compile Include="WorkClasses\DTO_ContratoLocacao.cs" />
+    <Compile Include="WorkClasses\DTO_Paciente_Atestado  - Cópia .cs" />
+    <Compile Include="WorkClasses\DTO_Produto_Custo.cs" />
+    <Compile Include="WorkClasses\DTO_Produto_Venda.cs" />
     <Compile Include="WorkClasses\DTO_Recebimento_Anotacao.cs" />
     <Compile Include="WorkClasses\DTO_Recebimento.cs" />
     <Compile Include="WorkClasses\DTO_Pagamento_Anotacao.cs" />
@@ -1605,7 +1608,7 @@
     <Compile Include="WorkClasses\DTO_Paciente_Exame_Anexo.cs" />
     <Compile Include="WorkClasses\DTO_Paciente_Exame.cs" />
     <Compile Include="WorkClasses\DTO_Paciente_Solicitacao .cs" />
-    <Compile Include="WorkClasses\DTO_Paciente_Atestado .cs" />
+    <Compile Include="WorkClasses\DTO_Produto .cs" />
     <Compile Include="WorkClasses\DTO_Paciente_Consulta.cs" />
     <Compile Include="WorkClasses\DTO_Paciente_Resposta.cs" />
     <Compile Include="WorkClasses\DTO_Paciente_Ficha.cs" />

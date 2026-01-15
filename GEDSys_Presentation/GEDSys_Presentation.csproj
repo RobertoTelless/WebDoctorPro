@@ -5178,7 +5178,6 @@
     <Content Include="Views\Paciente2\VerInformacaoPreviaPaciente.cshtml" />
     <Content Include="Views\Paciente2\VerAvisoPrevia.cshtml" />
     <Content Include="Views\ControleAcesso\GerarNovaSenha.cshtml" />
-    <Content Include="Views\Paciente\IncluirConsulta_OLDOLD.cshtml" />
     <Content Include="Views\Paciente2\IncluirConsulta.cshtml" />
     <Content Include="Views\AreaPaciente\LoginAreaPaciente.cshtml" />
     <Content Include="Views\AreaPaciente\GerarNovaSenhaPaciente.cshtml" />
@@ -5255,7 +5254,6 @@
     <Content Include="Views\Paciente2\EditarQuestionarioEpworth.cshtml" />
     <Content Include="Views\Paciente2\EditarQuestionarioBang.cshtml" />
     <Content Include="Views\ValidacaoDocumento\MostraValidarPrescricao.cshtml" />
-    <Content Include="Views\Produto\IncluirProduto_OLD1.cshtml" />
     <Content Include="Views\Locacao\MontarTelaLocacao.cshtml" />
     <Content Include="Views\Locacao\IncluirLocacao.cshtml" />
     <Content Include="Views\Locacao\EditarLocacao.cshtml" />

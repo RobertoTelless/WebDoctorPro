@@ -203,9 +203,8 @@
                                         if (cond.COPA_DT_VENCIMENTO == DateTime.Today.Date & cond.COPA_IN_PAGO == 0)
                                         {
                                             <tr style="background-color: beige">
-                                                @*<td style="width: auto">@cond.COPA_DT_VENCIMENTO.Value.ToShortDateString()</td>*@
                                                 <td>
-                                                    <span style="display:none">@cond.COPA_DT_VENCIMENTO.Value.ToString("yyyyMMdd")</span>
+                                                    <span style="display:none; width: auto">@cond.COPA_DT_VENCIMENTO.Value.ToString("yyyyMMdd")</span>
                                                     @cond.COPA_DT_VENCIMENTO.Value.ToString("dd/MM/yyyy")
                                                 </td>
 
@@ -283,9 +282,8 @@
                                         else if (cond.COPA_DT_VENCIMENTO < DateTime.Today.Date & cond.COPA_IN_PAGO == 0)
                                         {
                                             <tr style="background-color: bisque">
-                                                @*<td style="width: auto">@cond.COPA_DT_VENCIMENTO.Value.ToShortDateString()</td>*@
                                                 <td>
-                                                    <span style="display:none">@cond.COPA_DT_VENCIMENTO.Value.ToString("yyyyMMdd")</span>
+                                                    <span style="display:none; width: auto">@cond.COPA_DT_VENCIMENTO.Value.ToString("yyyyMMdd")</span>
                                                     @cond.COPA_DT_VENCIMENTO.Value.ToString("dd/MM/yyyy")
                                                 </td>
                                                 @if (cond.COPA_DT_PAGAMENTO != null)
@@ -360,9 +358,8 @@
                                         else if (cond.COPA_DT_VENCIMENTO < DateTime.Today.Date & cond.COPA_IN_PAGO == 1)
                                         {
                                             <tr style="background-color: aliceblue">
-                                                @*<td style="width: auto">@cond.COPA_DT_VENCIMENTO.Value.ToShortDateString()</td>*@
                                                 <td>
-                                                    <span style="display:none">@cond.COPA_DT_VENCIMENTO.Value.ToString("yyyyMMdd")</span>
+                                                    <span style="display:none; width: auto">@cond.COPA_DT_VENCIMENTO.Value.ToString("yyyyMMdd")</span>
                                                     @cond.COPA_DT_VENCIMENTO.Value.ToString("dd/MM/yyyy")
                                                 </td>
                                                 @if (cond.COPA_DT_PAGAMENTO != null)
@@ -437,9 +434,8 @@
                                         else
                                         {
                                             <tr>
-                                                @*<td style="width: auto">@cond.COPA_DT_VENCIMENTO.Value.ToShortDateString()</td>*@
                                                 <td>
-                                                    <span style="display:none">@cond.COPA_DT_VENCIMENTO.Value.ToString("yyyyMMdd")</span>
+                                                    <span style="display:none; width: auto">@cond.COPA_DT_VENCIMENTO.Value.ToString("yyyyMMdd")</span>
                                                     @cond.COPA_DT_VENCIMENTO.Value.ToString("dd/MM/yyyy")
                                                 </td>
                                                 @if (cond.COPA_DT_PAGAMENTO != null)

@@ -6332,5 +6332,23 @@ namespace GEDSys_Presentation.App_Start {
                 return ResourceManager.GetString("M0718", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Consulta uma cadeia de caracteres localizada semelhante a A data de emissão do atestado não pode ser maior que a data corrente.
+        /// </summary>
+        internal static string M0719 {
+            get {
+                return ResourceManager.GetString("M0719", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Consulta uma cadeia de caracteres localizada semelhante a A data de emissão não pode ser inferior a data corrente.
+        /// </summary>
+        internal static string M0720 {
+            get {
+                return ResourceManager.GetString("M0720", resourceCulture);
+            }
+        }
     }
 }

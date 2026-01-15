@@ -43,9 +43,12 @@
                             <div class="form-group">
                                 <br />
                                 @Html.ButtonActionSubmit(text: "BtnSubmit", htmlAttributes: new { id = "submit", style = "display: none;" })
-                                <button style="margin-left: 15px;" class="btnSubmit btn btn-sm btn-success" id="basictoast" type="button">Confirma e Prossegue para a Edição do Material/Produto</button>
-                                @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarBaseProduto", controller: "Produto")
+                                <button style="margin-left: 15px;" class="btnSubmit btn btn-sm btn-success btn-loading1" id="basictoast" type="button">Confirma e Prossegue para a Edição do Material/Produto</button>
+                                @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarBaseProduto", controller: "Produto", htmlAttributes: new { @class = "btn-loading" })
                                 <a href="@Url.Action((String)Session["AjudaNivel"])"  class="btn btn-sm btn-danger" target="_blank">Ajuda</a>                
+                                <span id="loadingIndicator" style="display: none; margin-left: 10px; color: #007bff;">
+                                    <i class="fa fa-spinner fa-spin"></i> Processando...
+                                </span>
                             </div>
                             <ul class="nav nav-tabs">
                                 <li class="active"><a data-toggle="tab" href="#tab-1">Informações do Material/Produto</a></li>
@@ -172,25 +175,12 @@
 
                                         <div class="row" id="preco">
                                             <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Valores</h4>
-                                            @*<div class="form-group" >       
-                                                <h5 style="color: brown; background-color:antiquewhite; font-weight: bold; margin-left: 15px; margin-right: 15px;">Se for especificado um percentual de desconto o preço de promoção será automaticamente calculado</h5>
-                                            </div>*@
                                             <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
                                                 <div class="col-lg-2 col-md-2 col-xs-12" style="color: green; font-weight: bold" id="venda">
                                                     Preço Venda (R$)
                                                     @Html.TextBoxFor(m => m.PrecoVenda, new { @class = "form-control", autofocus = true, data_toggle = "popover", data_content = "Informe o preço pelo qual seu produto será vendido", data_trigger="hover", data_placement="top", onfocus="this.select();" })
                                                     @Html.ValidationMessageFor(m => m.PrecoVenda, "", new { @style = "color:red" })
                                                 </div>
-                                                @*<div class="col-lg-2 col-md-2 col-xs-12" id="promo">
-                                                    Preço Promoção (R$)
-                                                    @Html.TextBoxFor(m => m.PrecoPromocao, new { @class = "form-control", autofocus = true, data_toggle = "popover", data_content = "Informe o preço promocional para o seu produto", data_trigger="hover", data_placement="top", onfocus="this.select();" })
-                                                    @Html.ValidationMessageFor(m => m.PrecoPromocao, "", new { @style = "color:red" })
-                                                </div>
-                                                <div class="col-lg-2 col-md-2 col-xs-12" id="desc">
-                                                    Desconto (%)
-                                                    @Html.TextBoxFor(m => m.Desconto, new { @class = "form-control", autofocus = true, onfocus="this.select();", data_toggle = "popover", data_content = "Informe o desconto máximo que poderá ser aplicado ao preço de venda", data_trigger="hover", data_placement="top" })
-                                                    @Html.ValidationMessageFor(m => m.Desconto, "", new { @style = "color:red" })
-                                                </div>*@
                                                 <div class="col-lg-2 col-md-2 col-xs-12" style="color: green; font-weight: bold" id="custo">
                                                     Preço Custo (R$)
                                                     @Html.TextBoxFor(m => m.PROD_VL_ULTIMO_CUSTO, new { @class = "form-control", autofocus = true, data_toggle = "popover", data_content = "Informe o preço de custo atual de seu produto", data_trigger="hover", data_placement="top", onfocus="this.select();" })
@@ -291,9 +281,7 @@
                                 <div class="form-group">
                                     <br />
                                     @Html.ButtonActionSubmit(text: "BtnSubmit", htmlAttributes: new { id = "submit", style = "display: none;" })
-                                    <button style="margin-left: 15px;" class="btnSubmit btn btn-sm btn-success" id="basictoast" type="button">Confirma e Prossegue para a Edição do Material/Produto</button>
-                                    @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaProduto", controller: "Produto")
-                                    <a href="@Url.Action((String)Session["AjudaNivel"])"  class="btn btn-sm btn-danger" target="_blank">Ajuda</a>                
+                                    <button style="margin-left: 15px;" class="btnSubmit btn btn-sm btn-success btn-loading1" id="basictoast" type="button">Confirma e Prossegue para a Edição do Material/Produto</button>
                                 </div>
                             </div>
                         }
@@ -346,7 +334,47 @@
         }; 
     </script>
 
+    <script type="text/javascript">
+        $(document).ready(function () { 
+            $('.btn-loading').on('click', function (e) {            
+                $(this).prop('disabled', true);
+                $(this).addClass('disabled');
+                $('#loadingIndicator').show();
+                var tagName = $(this).prop('tagName').toLowerCase();
+                if (tagName === 'a') {
+                    e.preventDefault(); 
+                    var targetUrl = $(this).attr('href');
+                    window.location.href = targetUrl;
 
+                } else if (tagName === 'button' || tagName === 'input') {
+                    $(this).closest('form').submit();
+                }
+            });
+        });
+    </script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('.btn-loading1').on('click', function (e) {
+            
+                var $this = $(this);
+                var tagName = $this.prop('tagName').toLowerCase();
+                $this.addClass('disabled'); 
+                $('#loadingIndicator').show();
+
+                if (tagName === 'a') {
+                    e.preventDefault();
+                
+                    var targetUrl = $this.attr('href');
+                    window.location.href = targetUrl;
+                
+                } else if (tagName === 'button' || tagName === 'input') {               
+                    $this.closest('form').submit();
+                    $this.prop('disabled', true);
+                }
+            });
+        });
+    </script>
     <script type="text/javascript">
         function ValidaTipo(valTipo) {
             if (valTipo == '1') {

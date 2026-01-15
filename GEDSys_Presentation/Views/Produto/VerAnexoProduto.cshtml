@@ -16,7 +16,7 @@
                 <a href="@Url.Action("MontarTelaProduto", "Produto")">Materiais/Produtos</a>
             </li>
             <li>
-                <a href="@Url.Action("EditarProduto", "Produto")">Materiais/Produtos - Edição</a>
+                <a href="@Url.Action("EditarProduto", "Produto")">Materiais/Produtos - Alteração</a>
             </li>
             <li class="active">
                 <strong>Materiais/Produtos - Anexo</strong>
@@ -54,7 +54,7 @@
 	                        {
                                 <div class="col-lg-12 col-md-12 col-sm-12">
                                     <div class="col-lg-12 col-md-12 col-sm-12">
-                                        <img src="@Url.Content(Model.PRAN_AQ_ARQUIVO)" style = "width: auto; height: auto; max-height: 600px; max-width: 900px;">
+                                        <img src="@Url.Content(Model.PRAN_AQ_ARQUIVO)" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Clique Ctrl+Ctrl para ampliar a imagem " style="width: auto; height: auto; max-height: 1530px; max-width: 1530px;">
                                     </div>
                                 </div>
 	                        }

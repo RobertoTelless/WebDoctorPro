@@ -190,14 +190,38 @@
                                     @foreach (var cond in (ViewBag.Hoje as List<EntitiesServices.Model.PACIENTE_CONSULTA>).OrderByDescending(p => p.PACO_DT_CONSULTA.Date).ThenBy(p => p.PACO_HR_INICIO))
                                     {   
                                         <tr>
-                                            @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_PACIENTE_CONSULTA_ACESSO == 1)
+                                            <td>
+                                                <span style="display:none">@cond.PACO_DT_CONSULTA.Value.ToString("yyyyMMdd")</span>
+                                                @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_PACIENTE_CONSULTA_ACESSO == 1)
+                                                {
+
+                                                    <td style=" width: auto"><a href="@Url.Action("VerConsultaCompleta", "Paciente", new { id = cond.PACO_CD_ID })" class="btn-loading" />@cond.PACO_DT_CONSULTA.ToShortDateString()</td>
+                                                }
+                                                else
+                                                {
+                                                    <td style="width: auto">@cond.PACO_DT_CONSULTA.ToShortDateString()</td>
+                                                }
+                                            </td>
+                                            <td style="width: 120px" data-order="@cond.PACO_DT_CONSULTA.ToString("yyyy-MM-dd HH:mm:ss")">
+                                                @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_PACIENTE_CONSULTA_ACESSO == 1)
+                                                {
+
+                                                    <td style="width: auto"><a href="@Url.Action("VerConsultaCompleta", "Paciente", new { id = cond.PACO_CD_ID })" class="btn-loading" />@cond.PACO_DT_CONSULTA.ToShortDateString()</td>
+                                                }
+                                                else
+                                                {
+                                                    <td style="width: auto">@cond.PACO_DT_CONSULTA.ToShortDateString()</td>
+                                                }
+                                            </td>
+                                            @*@if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_PACIENTE_CONSULTA_ACESSO == 1)
                                             {
+
                                                 <td style="width: auto"><a href="@Url.Action("VerConsultaCompleta", "Paciente", new { id = cond.PACO_CD_ID })" class="btn-loading" />@cond.PACO_DT_CONSULTA.ToShortDateString()</td>
                                             }
                                             else
                                             {
                                                 <td style="width: auto">@cond.PACO_DT_CONSULTA.ToShortDateString()</td>
-                                            }
+                                            }*@
                                             <td style="width: auto">@cond.PACO_HR_INICIO.ToString()</td>
                                             <td style="width: auto">@cond.PACO_HR_FINAL.ToString()</td>
                                             <td style="width: auto">@cond.PACIENTE.PACI_NM_NOME</td>
@@ -336,14 +360,16 @@
                                     @foreach (var cond in (ViewBag.Dias as List<EntitiesServices.Model.PACIENTE_CONSULTA>).OrderByDescending(p => p.PACO_DT_CONSULTA.Date).ThenBy(p => p.PACO_HR_INICIO))
                                     {   
                                         <tr>
-                                            @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_PACIENTE_CONSULTA_ACESSO == 1)
-                                            {
-                                                    <td style="width: auto"><a href="@Url.Action("EditarConsultaCompleta", "Paciente", new { id = cond.PACO_CD_ID })" />@cond.PACO_DT_CONSULTA.ToShortDateString()</td>
-                                            }
-                                            else
-                                            {
-                                                <td style="width: auto">@cond.PACO_DT_CONSULTA.ToShortDateString()</td>
-                                            }
+                                            <td style="width: 120px" data-order="@cond.PACO_DT_CONSULTA.ToString("yyyy-MM-dd HH:mm:ss")">
+                                                @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_PACIENTE_CONSULTA_ACESSO == 1)
+                                                {
+                                                        <td style="width: auto"><a href="@Url.Action("EditarConsultaCompleta", "Paciente", new { id = cond.PACO_CD_ID })" />@cond.PACO_DT_CONSULTA.ToShortDateString()</td>
+                                                }
+                                                else
+                                                {
+                                                    <td style="width: auto">@cond.PACO_DT_CONSULTA.ToShortDateString()</td>
+                                                }
+                                            </td>
                                             <td style="width: auto">@cond.PACO_HR_INICIO.ToString()</td>
                                             <td style="width: auto">@cond.PACO_HR_FINAL.ToString()</td>
                                             <td style="width: auto">@cond.PACIENTE.PACI_NM_NOME</td>
@@ -691,13 +717,13 @@
                 columnDefs: [
                     {
                         // Altera o tipo de ordenação para a primeira coluna (índice 0)
-                        "type": "datetime-moment", // Se você incluiu o momento.js
+                        //"type": "datetime-moment", // Se você incluiu o momento.js
                         // OU
-                        // "type": "date-eu", // Para o formato DD/MM/AAAA
+                         "type": "date-eu", // Para o formato DD/MM/AAAA
                         "targets": 0 // Aplica à coluna "Data da Transação"
                     }
                 ],
-                // ---------------------------------     
+                // ---------------------------------       
                 buttons: [
                     { extend: 'excel', title: 'Consulta_Planilha' },
                     {

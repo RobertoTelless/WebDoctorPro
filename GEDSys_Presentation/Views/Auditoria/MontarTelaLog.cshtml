@@ -132,7 +132,8 @@
                                     @foreach (var cond in (ViewBag.Listas as List<EntitiesServices.Model.LOG>).OrderByDescending(p => p.LOG_DT_DATA))
                                     {
                                         <tr>
-                                            <td style="width: 120px" data-order="@cond.LOG_DT_DATA.Value.ToString("yyyy-MM-dd HH:mm:ss")">
+                                            <td>
+                                                <span style="display:none; width: auto">@cond.LOG_DT_DATA.Value.ToString("yyyyMMdd")</span>
                                                 @cond.LOG_DT_DATA.Value.ToShortDateString() @cond.LOG_DT_DATA.Value.ToShortTimeString()
                                             </td>
                                             <td>@cond.LOG_DT_DATA</td>

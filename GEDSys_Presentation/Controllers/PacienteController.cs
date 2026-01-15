@@ -6974,7 +6974,11 @@ namespace GEDSys_Presentation.Controllers
                     {
                         vm.TICO_CD_ID = 1;
                     }
-
+                    if (vm.PAPR_DT_DATA.Date < DateTime.Today.Date)
+                    {
+                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0720", CultureInfo.CurrentCulture));
+                        return View(vm);
+                    }
 
                     // Executa a operação
                     CONFIGURACAO conf = CarregaConfiguracaoGeral();
@@ -8099,6 +8103,11 @@ namespace GEDSys_Presentation.Controllers
                     {
                         vm.PAAT_IN_DATA = 1;
                     }
+                    if (vm.PAAT_DT_DATA.Value.Date > DateTime.Today.Date)
+                    {
+                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0719", CultureInfo.CurrentCulture));
+                        return View(vm);
+                    }
 
                     // Executa a operação
                     CONFIGURACAO conf = CarregaConfiguracaoGeral();
@@ -8762,6 +8771,11 @@ namespace GEDSys_Presentation.Controllers
                     if (vm.PASO_IN_DATA == null)
                     {
                         vm.PASO_IN_DATA = 1;
+                    }
+                    if (vm.PASO_DT_EMISSAO.Value.Date < DateTime.Today.Date)
+                    {
+                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0720", CultureInfo.CurrentCulture));
+                        return View(vm);
                     }
 
                     // Executa a operação
@@ -25542,7 +25556,7 @@ namespace GEDSys_Presentation.Controllers
                 PACIENTE paciente = baseApp.GetItemById((Int32)Session["IdPaciente"]);
                 if (Session["ListaHistorico"] == null)
                 {
-                    listaMasterHistorico = paciente.PACIENTE_HISTORICO.ToList();
+                    listaMasterHistorico = paciente.PACIENTE_HISTORICO.OrderByDescending(p => p.PAHI_DT_DATA).ToList();
                     Session["ListaHistorico"] = listaMasterHistorico;
                 }
                 ViewBag.Listas = (List<PACIENTE_HISTORICO>)Session["ListaHistorico"];
@@ -25637,7 +25651,7 @@ namespace GEDSys_Presentation.Controllers
                 // Carrega listas
                 if (Session["ListaHistoricoGeral"] == null)
                 {
-                    listaMasterHistorico = CarregaHistorico().ToList();
+                    listaMasterHistorico = CarregaHistorico().OrderByDescending(p => p.PAHI_DT_DATA).ToList();
                     Session["ListaHistoricoGeral"] = listaMasterHistorico;
                 }
                 ViewBag.Listas = (List<PACIENTE_HISTORICO>)Session["ListaHistoricoGeral"];
@@ -25731,7 +25745,7 @@ namespace GEDSys_Presentation.Controllers
 
                 // Sucesso
                 listaMasterHistorico = volta.Item2.ToList();
-                listaMasterHistorico = listaMasterHistorico.Where(p => p.PACI_CD_ID == (Int32)Session["IdPaciente"]).ToList();
+                listaMasterHistorico = listaMasterHistorico.Where(p => p.PACI_CD_ID == (Int32)Session["IdPaciente"]).OrderByDescending(p => p.PAHI_DT_DATA).ToList();
                 Session["ListaHistorico"] = listaMasterHistorico;
                 return RedirectToAction("MontarTelaPacienteHistorico");
             }
@@ -25800,7 +25814,7 @@ namespace GEDSys_Presentation.Controllers
                 }
 
                 // Sucesso
-                listaMasterHistorico = volta.Item2.ToList();
+                listaMasterHistorico = volta.Item2.OrderByDescending(p => p.PAHI_DT_DATA).ToList();
                 Session["ListaHistoricoGeral"] = listaMasterHistorico;
                 return RedirectToAction("MontarTelaHistoricoGeral");
             }

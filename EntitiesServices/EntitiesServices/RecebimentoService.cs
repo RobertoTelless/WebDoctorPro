@@ -191,6 +191,11 @@ namespace ModelServices.EntitiesServices
             {
                 try
                 {
+                    Int32 usu = item.USUA_CD_ID;
+                    Int32 fr = item.FORE_CD_ID.Value;
+                    Int32 pac = item.PACI_CD_ID.Value;
+                    Int32 vc = item.VACO_CD_ID.Value;
+
                     item.USUARIO = null;
                     item.FORMA_RECEBIMENTO = null;
                     item.PACIENTE = null;
@@ -198,6 +203,10 @@ namespace ModelServices.EntitiesServices
                     CONSULTA_RECEBIMENTO obj = _baseRepository.GetById(item.CORE_CD_ID);
                     _baseRepository.Detach(obj);
                     _logRepository.Add(log);
+                    obj.USUA_CD_ID = usu;
+                    obj.FORE_CD_ID = fr;
+                    obj.PACI_CD_ID = pac;
+                    obj.VACO_CD_ID = vc;
                     _baseRepository.Update(item);
                     transaction.Commit();
                     return 0;
@@ -216,8 +225,21 @@ namespace ModelServices.EntitiesServices
             {
                 try
                 {
+                    Int32 usu = item.USUA_CD_ID;
+                    Int32 fr = item.FORE_CD_ID.Value;
+                    Int32 pac = item.PACI_CD_ID.Value;
+                    Int32 vc = item.VACO_CD_ID.Value;
+
+                    item.USUARIO = null;
+                    item.FORMA_RECEBIMENTO = null;
+                    item.PACIENTE = null;
+                    item.VALOR_CONSULTA = null;
                     CONSULTA_RECEBIMENTO obj = _baseRepository.GetById(item.CORE_CD_ID);
                     _baseRepository.Detach(obj);
+                    obj.USUA_CD_ID = usu;
+                    obj.FORE_CD_ID = fr;
+                    obj.PACI_CD_ID = pac;
+                    obj.VACO_CD_ID = vc;
                     _baseRepository.Update(item);
                     transaction.Commit();
                     return 0;

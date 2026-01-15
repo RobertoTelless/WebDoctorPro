@@ -20,14 +20,14 @@ namespace DataServices.Repositories
             query = query.Where(p => p.ASSI_CD_ID == idAss);
             query = query.Where(p => p.PRPV_IN_SISTEMA == 6);
             query = query.Where(p => p.PRPV_IN_ATIVO == 1);
-            return query.FirstOrDefault();
+            return query.AsNoTracking().FirstOrDefault();
         }
 
         public List<PRODUTO_PRECO_VENDA> GetAllItens(Int32 idAss)
         {
             IQueryable<PRODUTO_PRECO_VENDA> query = Db.PRODUTO_PRECO_VENDA.Where(p => p.PRPV_IN_ATIVO == 1);
             query = query.Where(p => p.PRPV_IN_SISTEMA == 6);
-            return query.ToList();
+            return query.AsNoTracking().ToList();
         }
 
         public PRODUTO_PRECO_VENDA GetItemById(Int32 id)

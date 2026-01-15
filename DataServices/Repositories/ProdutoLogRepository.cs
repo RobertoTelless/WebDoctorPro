@@ -17,7 +17,7 @@ namespace DataServices.Repositories
         {
             IQueryable<PRODUTO_LOG> query = Db.PRODUTO_LOG.Where(p => p.PRLG_IN_ATIVO == 1);
             query = query.Where(p => p.PRLG_IN_SISTEMA == 6);
-            return query.ToList();
+            return query.AsNoTracking().ToList();
         }
 
         public PRODUTO_LOG GetItemById(Int32 id)

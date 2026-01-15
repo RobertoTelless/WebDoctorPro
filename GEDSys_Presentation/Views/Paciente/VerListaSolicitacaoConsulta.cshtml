@@ -173,7 +173,10 @@
                                                 @foreach (var cond in (Model.PACIENTE_SOLICITACAO.Where(p => p.PASO_IN_ATIVO == 1).OrderByDescending(p => p.PASO_DT_EMISSAO)))
                                                 {
                                                     <tr>
-                                                        <td style="width: auto">@cond.PASO_DT_EMISSAO_COMPLETA.Value.ToShortDateString() @cond.PASO_DT_EMISSAO_COMPLETA.Value.ToShortTimeString()</td>
+                                                        <td>
+                                                            <span style="display:none; width: auto">@cond.PASO_DT_EMISSAO_COMPLETA.Value.ToString("yyyyMMdd")</span>
+                                                            @cond.PASO_DT_EMISSAO_COMPLETA.Value.ToShortDateString() @cond.PASO_DT_EMISSAO_COMPLETA.Value.ToShortTimeString()
+                                                        </td>
                                                         @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_SOLICITACAO_ALTERAR == 1)
                                                         {
                                                             if (cond.PASO_IN_ENVIADO == 0)
@@ -376,22 +379,17 @@
             $('.dataTables-atestado').DataTable({
                 pageLength: 10,
                 dom: '<"html5buttons"B>lTfgitp',
-                order: [[0, 'desc'],
+                // --- NOVO BLOCO DE CONFIGURAÇÃO ---
                 columnDefs: [
-                                {
-                                    // Aplicar o tipo de ordenação de data na Coluna 0
-                                    "type": "datetime-moment", 
-                                    "targets": 0 
-                                },
-                                {
-                                    // As colunas de Ações, Tipo, Situação, etc., podem ter elementos HTML 
-                                    // que atrapalham a ordenação. Usamos "html-num" (ou customizado)
-                                    // ou simplesmente garantir que não tente ordenar o conteúdo do link da data.
-                                    "orderable": false, // Desabilita ordenação para a coluna Ações
-                                    "targets": 7 
-                                }
+                    {
+                        // Altera o tipo de ordenação para a primeira coluna (índice 0)
+                        //"type": "datetime-moment", // Se você incluiu o momento.js
+                        // OU
+                         "type": "date-eu", // Para o formato DD/MM/AAAA
+                        "targets": 0 // Aplica à coluna "Data da Transação"
+                    }
                 ],
-                // ---------------------------------     
+                // ---------------------------------       
                 buttons: [
                     { extend: 'excel', title: 'Solicitacao_Planilha' },
                     {

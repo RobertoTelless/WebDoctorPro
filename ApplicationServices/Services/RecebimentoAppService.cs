@@ -184,22 +184,9 @@ namespace ApplicationServices.Services
                 // Acerta campos
                 item.CORE_IN_ATIVO = 0;
 
-                // Monta Log
-                String linha = "Id:" + item.CORE_CD_ID + "|Nome:" + item.CORE_NM_RECEBIMENTO + "|Data:" + item.CORE_DT_RECEBIMENTO.ToString() + "|Valor:" + item.CORE_VL_VALOR.ToString();
-                LOG log = new LOG
-                {
-                    LOG_DT_DATA = DateTime.Now,
-                    ASSI_CD_ID = usuario.ASSI_CD_ID,
-                    USUA_CD_ID = usuario.USUA_CD_ID,
-                    LOG_IN_ATIVO = 1,
-                    LOG_NM_OPERACAO = "DelCORE",
-                    LOG_TX_REGISTRO = linha,
-                    LOG_IN_SISTEMA = 6
-                };
-
                 // Persiste
-                Int32 volta = _baseService.Edit(item, log);
-                return log.LOG_CD_ID;
+                Int32 volta = _baseService.Edit(item);
+                return 0;
             }
             catch (Exception ex)
             {

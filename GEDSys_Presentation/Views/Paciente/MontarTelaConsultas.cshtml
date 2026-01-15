@@ -169,36 +169,30 @@
                                         if (cond.PACO_DT_CONSULTA > DateTime.Today.Date)
                                         {
                                             <tr  style="background-color: aliceblue">
-                                                @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_PACIENTE_CONSULTA_ALTERAR == 1)
-                                                {
-                                                    if (cond.PACO_DT_CONSULTA.Date >= DateTime.Today.Date & cond.PACO_IN_CONFIRMADA < 2)
+                                                <td>
+                                                    <span style="display:none; width: auto">@cond.PACO_DT_CONSULTA.ToString("yyyyMMdd")</span>
+                                                    @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_PACIENTE_CONSULTA_ALTERAR == 1)
                                                     {
-                                                        <td style="width: auto">
+                                                        if (cond.PACO_DT_CONSULTA.Date >= DateTime.Today.Date & cond.PACO_IN_CONFIRMADA < 2)
+                                                        {
                                                             <a href="@Url.Action("EditarConsultaCompleta", "Paciente", new { id = cond.PACO_CD_ID })" class="btn-loading">
                                                                 @cond.PACO_DT_CONSULTA.ToShortDateString()
                                                             </a>
-                                                        </td>
-                                                        @*<td style="width: auto"><a href="@Url.Action("EditarConsultaCompleta", "Paciente", new { id = cond.PACO_CD_ID })" class="btn-loading" />@cond.PACO_DT_CONSULTA.ToShortDateString()</td>*@
+                                                        }
+                                                        else
+                                                        {
+                                                            <a href="@Url.Action("VerConsultaCompleta", "Paciente", new { id = cond.PACO_CD_ID })" class="btn-loading">
+                                                                @cond.PACO_DT_CONSULTA.ToShortDateString()
+                                                            </a>
+                                                        }
                                                     }
                                                     else
                                                     {
-                                                        <td style="width: auto">
                                                             <a href="@Url.Action("VerConsultaCompleta", "Paciente", new { id = cond.PACO_CD_ID })" class="btn-loading">
                                                                 @cond.PACO_DT_CONSULTA.ToShortDateString()
                                                             </a>
-                                                        </td>
-                                                        @*<td style="width: auto"><a href="@Url.Action("VerConsultaCompleta", "Paciente", new { id = cond.PACO_CD_ID })" class="btn-loading" />@cond.PACO_DT_CONSULTA.ToShortDateString()</td>*@
                                                     }
-                                                }
-                                                else
-                                                {
-                                                        <td style="width: auto">
-                                                            <a href="@Url.Action("VerConsultaCompleta", "Paciente", new { id = cond.PACO_CD_ID })" class="btn-loading">
-                                                                @cond.PACO_DT_CONSULTA.ToShortDateString()
-                                                            </a>
-                                                        </td>
-                                                        @*<td style="width: auto"><a href="@Url.Action("VerConsultaCompleta", "Paciente", new { id = cond.PACO_CD_ID })" class="btn-loading" />@cond.PACO_DT_CONSULTA.ToShortDateString()</td>*@
-                                                }
+                                                </td>
                                                 <td style="width: auto">@cond.PACO_HR_INICIO.ToString()</td>
                                                 <td style="width: auto">@cond.PACO_HR_FINAL.ToString()</td>
                                                 <td style="width: auto">@cond.PACIENTE.PACI_NM_NOME</td>
@@ -291,7 +285,8 @@
                                         else if (cond.PACO_DT_CONSULTA < DateTime.Today.Date)
                                         {
                                             <tr style="background-color: floralwhite">
-                                                <td style="width: auto">
+                                                <td>
+                                                    <span style="display:none; width: auto">@cond.PACO_DT_CONSULTA.ToString("yyyyMMdd")</span>
                                                     <a href="@Url.Action("VerConsultaCompleta", "Paciente", new { id = cond.PACO_CD_ID })" class="btn-loading">
                                                         @cond.PACO_DT_CONSULTA.ToShortDateString()
                                                     </a>
@@ -356,36 +351,30 @@
                                         else
                                         {
                                             <tr>
-                                                @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_PACIENTE_CONSULTA_ALTERAR == 1)
-                                                {
-                                                    if (cond.PACO_DT_CONSULTA.Date >= DateTime.Today.Date & cond.PACO_IN_CONFIRMADA < 2)
+                                                <td>
+                                                    <span style="display:none; width: auto">@cond.PACO_DT_CONSULTA.ToString("yyyyMMdd")</span>
+                                                    @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_PACIENTE_CONSULTA_ALTERAR == 1)
                                                     {
-                                                        <td style="width: auto">
+                                                        if (cond.PACO_DT_CONSULTA.Date >= DateTime.Today.Date & cond.PACO_IN_CONFIRMADA < 2)
+                                                        {
                                                             <a href="@Url.Action("EditarConsultaCompleta", "Paciente", new { id = cond.PACO_CD_ID })" class="btn-loading">
                                                                 @cond.PACO_DT_CONSULTA.ToShortDateString()
                                                             </a>
-                                                        </td>
-                                                        @*<td style="width: auto"><a href="@Url.Action("EditarConsultaCompleta", "Paciente", new { id = cond.PACO_CD_ID })" class="btn-loading" />@cond.PACO_DT_CONSULTA.ToShortDateString()</td>*@
+                                                        }
+                                                        else
+                                                        {
+                                                            <a href="@Url.Action("VerConsultaCompleta", "Paciente", new { id = cond.PACO_CD_ID })" class="btn-loading">
+                                                                @cond.PACO_DT_CONSULTA.ToShortDateString()
+                                                            </a>
+                                                        }
                                                     }
                                                     else
                                                     {
-                                                        <td style="width: auto">
                                                             <a href="@Url.Action("VerConsultaCompleta", "Paciente", new { id = cond.PACO_CD_ID })" class="btn-loading">
                                                                 @cond.PACO_DT_CONSULTA.ToShortDateString()
                                                             </a>
-                                                        </td>
-                                                        @*<td style="width: auto"><a href="@Url.Action("VerConsultaCompleta", "Paciente", new { id = cond.PACO_CD_ID })" class="btn-loading" />@cond.PACO_DT_CONSULTA.ToShortDateString()</td>*@
                                                     }
-                                                }
-                                                else
-                                                {
-                                                        <td style="width: auto">
-                                                            <a href="@Url.Action("VerConsultaCompleta", "Paciente", new { id = cond.PACO_CD_ID })" class="btn-loading">
-                                                                @cond.PACO_DT_CONSULTA.ToShortDateString()
-                                                            </a>
-                                                        </td>
-                                                        @*<td style="width: auto"><a href="@Url.Action("VerConsultaCompleta", "Paciente", new { id = cond.PACO_CD_ID })" class="btn-loading" />@cond.PACO_DT_CONSULTA.ToShortDateString()</td>*@
-                                                }
+                                                </td>
                                                 <td style="width: auto">@cond.PACO_HR_INICIO.ToString()</td>
                                                 <td style="width: auto">@cond.PACO_HR_FINAL.ToString()</td>
                                                 <td style="width: auto">@cond.PACIENTE.PACI_NM_NOME</td>
@@ -722,24 +711,17 @@
             $('.dataTables-example').DataTable({
                 pageLength: 25,
                 dom: '<"html5buttons"B>lTfgitp',
-                order: [[0, 'desc'], [1, 'asc']],
-
-
+                // --- NOVO BLOCO DE CONFIGURAÇÃO ---
                 columnDefs: [
-                                {
-                                    // Aplicar o tipo de ordenação de data na Coluna 0
-                                    "type": "datetime-moment", 
-                                    "targets": 0 
-                                },
-                                {
-                                    // As colunas de Ações, Tipo, Situação, etc., podem ter elementos HTML 
-                                    // que atrapalham a ordenação. Usamos "html-num" (ou customizado)
-                                    // ou simplesmente garantir que não tente ordenar o conteúdo do link da data.
-                                    "orderable": false, // Desabilita ordenação para a coluna Ações
-                                    "targets": 7 
-                                }
+                    {
+                        // Altera o tipo de ordenação para a primeira coluna (índice 0)
+                        //"type": "datetime-moment", // Se você incluiu o momento.js
+                        // OU
+                         "type": "date-eu", // Para o formato DD/MM/AAAA
+                        "targets": 0 // Aplica à coluna "Data da Transação"
+                    }
                 ],
-                // ---------------------------------     
+                // ---------------------------------       
                 buttons: [
                     { extend: 'excel', title: 'Consulta_Planilha' },
                     {

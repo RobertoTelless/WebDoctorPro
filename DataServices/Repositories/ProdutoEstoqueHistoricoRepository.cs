@@ -17,7 +17,7 @@ namespace DataServices.Repositories
         {
             IQueryable<PRODUTO_ESTOQUE_HISTORICO> query = Db.PRODUTO_ESTOQUE_HISTORICO.Where(p => p.PREH_IN_ATIVO == 1);
             query = query.Where(p => p.PREH_IN_SISTEMA == 6);
-            return query.ToList();
+            return query.AsNoTracking().ToList();
         }
 
         public PRODUTO_ESTOQUE_HISTORICO GetItemById(Int32 id)
