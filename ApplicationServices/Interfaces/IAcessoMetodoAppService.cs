@@ -11,6 +11,6 @@ namespace ApplicationServices.Interfaces
 
         List<ACESSO_METODO> GetAllItens(Int32 idAss);
         ACESSO_METODO GetItemById(Int32 id);
-        Tuple<Int32, List<ACESSO_METODO>, Boolean> ExecuteFilter(Int32? usuario, DateTime? inicio, DateTime? final, String sigla, String entidade, String metodo, Int32 idAss);
+        Tuple<Int32, List<ACESSO_METODO>, Boolean> ExecuteFilter(Int32? assi, Int32? usuario, DateTime? inicio, DateTime? final, String sigla, String entidade, String metodo, Int32 idAss);
     }
 }

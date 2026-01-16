@@ -89,17 +89,17 @@
                                                     <div class="input-group">
                                                         @Html.DropDownListFor(m => m.CAPR_CD_ID, (SelectList)ViewBag.Cats, "Selecionar", new { @class = "form-control", autofocus = true, onchange = "FiltrarSubCategoriaProduto($(this).val())", id = "catProd" })
                                                         @Html.ValidationMessageFor(m => m.CAPR_CD_ID, "", new { @style = "color:red" })
-                                                        <span class="input-group-addon">
+                                                        <span class="input-group-addon  btn-loading">
                                                             @Html.TableLinkAction("IncluirCategoriaProduto", "Produto", null, "glyphicon glyphicon-plus", "Adicionar Categoria")
                                                         </span>
                                                     </div>
                                                 </div>
                                                 <div class="col-lg-3 col-md-3 col-xs-12">
-                                                    Subcategoria
+                                                    Subcategoria    
                                                     <div class="input-group">
                                                         @Html.DropDownListFor(m => m.SCPR_CD_ID, (SelectList)ViewBag.Subs, "Selecionar", new { @class = "form-control", autofocus = true, id = "subCatProd" })
                                                         @Html.ValidationMessageFor(m => m.SCPR_CD_ID, "", new { @style = "color:red" })
-                                                        <span class="input-group-addon">
+                                                        <span class="input-group-addon btn-loading">
                                                             @Html.TableLinkAction("IncluirSubCategoriaProduto", "Produto", null, "glyphicon glyphicon-plus", "Adicionar SubCategoria")
                                                         </span>
                                                     </div>

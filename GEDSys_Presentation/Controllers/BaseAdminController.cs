@@ -1652,6 +1652,46 @@ namespace ERP_Condominios_Solution.Controllers
                         conf = (List<ASSINANTE>)Session["Assinantes"];
                     }
                 }
+                conf = conf.Where(p => p.ASSI_CD_ID == idAss || p.ASSI_CD_ID == 83).ToList();
+                Session["Assinantes"] = conf;
+                Session["AssinanteAlterada"] = 0;
+                return conf;
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Base";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Base", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return null;
+            }
+        }
+
+        public List<ASSINANTE> CarregaAssinanteRestrito()
+        {
+            try
+            {
+                Int32 idAss = (Int32)Session["IdAssinante"];
+                List<ASSINANTE> conf = new List<ASSINANTE>();
+                if (Session["Assinantes"] == null)
+                {
+                    conf = assiApp.GetAllItens();
+                }
+                else
+                {
+                    if ((Int32)Session["AssinanteAlterada"] == 1)
+                    {
+                        conf = assiApp.GetAllItens();
+                    }
+                    else
+                    {
+                        conf = (List<ASSINANTE>)Session["Assinantes"];
+                    }
+                }
+                conf = conf.Where(p => p.ASSI_CD_ID == idAss || p.ASSI_CD_ID == 83).ToList();
                 Session["Assinantes"] = conf;
                 Session["AssinanteAlterada"] = 0;
                 return conf;
@@ -4932,18 +4972,10 @@ namespace ERP_Condominios_Solution.Controllers
 
                 // Carrega listas e parametros
                 CONFIGURACAO conf = CarregaConfiguracaoGeral();
-                List<ACESSO_METODO> acessos = aceApp.GetAllItens(idAss).Where(p => p.ASSI_CD_ID == idAss & p.ACES_IN_ATIVO == 1).ToList();
-                if (usuario.PERFIL.PERF_SG_SIGLA != "ADM")
-                {
-                    acessos = acessos.Where(p => p.USUA_CD_ID == usuario.USUA_CD_ID).ToList();
-                }
+                List<ACESSO_METODO> acessos = aceApp.GetAllItens(idAss);
                 Session["Acessos"] = acessos;
 
                 List<LOG_EXCECAO_NOVO> falhas = baseApp.GetAllLogExcecao(idAss);
-                if (usuario.PERFIL.PERF_SG_SIGLA != "ADM")
-                {
-                    falhas = falhas.Where(p => p.USUA_CD_ID == usuario.USUA_CD_ID).ToList();
-                }
                 Session["Falhas"] = falhas;
 
                 String mes = CrossCutting.UtilitariosGeral.NomeMes(DateTime.Today.Date.Month);
@@ -5471,6 +5503,99 @@ namespace ERP_Condominios_Solution.Controllers
                 // Monta demais listas
                 List<USUARIO> listaUsu = CarregaUsuario();
                 ViewBag.Usuarios = new SelectList(listaUsu, "USUA_CD_ID", "USUA_NM_NOME");
+                List<ASSINANTE> listaAss = CarregaAssinanteRestrito();
+                ViewBag.Assinante = new SelectList(listaAss, "ASSI_CD_ID", "ASSI_NM_NOME");
+                Session["VoltaTela"] = 0;
+
+                // Mensagem
+                if (Session["MensPaciente"] != null)
+                {
+                    if ((Int32)Session["MensPaciente"] == 1)
+                    {
+                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0016", CultureInfo.CurrentCulture));
+                    }
+                }
+
+                // Grava Acesso
+                ControleAcessoMetodo grava = new ControleAcessoMetodo(aceApp);
+                Int32 voltaX = grava.GravaAcesso(usuario.USUA_CD_ID, usuario.ASSI_CD_ID, "ACESSOS_TOTAL", "BaseAdmin", "MontarTelaTodosAcessos");
+
+                // Abre view
+                Session["MensPaciente"] = null;
+                Session["AjudaNivel"] = "../BaseAdmin/Ajuda/10/Ajuda10.pdf";
+                ACESSO_METODO objeto = new ACESSO_METODO();
+                if (Session["FiltroAcessoTotal"] != null)
+                {
+                    objeto = (ACESSO_METODO)Session["FiltroAcessoTotal"];
+                }
+                objeto.USUA_CD_ID = usuario.USUA_CD_ID;
+                return View(objeto);
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Acessos";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "BaseAdmin", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return RedirectToAction("TrataExcecao", "BaseAdmin");
+            }
+        }
+
+        [HttpGet]
+        public ActionResult MontarTelaTodosAcessosMes()
+        {
+            // Verifica se tem usuario logado
+            USUARIO usuario = new USUARIO();
+            if ((String)Session["Ativa"] == null)
+            {
+                return RedirectToAction("Logout", "ControleAcesso");
+            }
+            if ((USUARIO)Session["UserCredentials"] != null)
+            {
+                usuario = (USUARIO)Session["UserCredentials"];
+            }
+            else
+            {
+                return RedirectToAction("Logout", "ControleAcesso");
+            }
+            Int32 idAss = (Int32)Session["IdAssinante"];
+            Session["ModuloAtual"] = "Acessos - Detalhes";
+
+            try
+            {
+                // Carrega listas
+                DateTime hoje = DateTime.Today.Date;
+                List<ACESSO_METODO> acessos = new List<ACESSO_METODO>();
+                if (Session["ListaAcessoTotal"] == null)
+                {
+                    acessos = CarregaAcessos().Where(p => p.ACES_DT_ACESSO.Value.Month == hoje.Month & p.ACES_DT_ACESSO.Value.Year == hoje.Year).ToList();
+
+                    // Restringe pelo perfil
+                    ViewBag.Perfil = usuario.PERFIL.PERF_SG_SIGLA;
+                    Session["ListaAcessoTotal"] = acessos;
+                }
+
+                // Aplica filtros pre definidos
+                acessos = (List<ACESSO_METODO>)Session["ListaAcessoTotal"];
+                if ((Int32)Session["EscopoAcesso"] == 2)
+                {
+                    acessos = acessos.Where(p => p.ACES_DT_ACESSO.Value.Date.Month == DateTime.Today.Date.Month & p.ACES_DT_ACESSO.Value.Date.Year == DateTime.Today.Date.Year).ToList();
+                }
+                if ((Int32)Session["EscopoAcesso"] == 3)
+                {
+                    acessos = acessos.Where(p => p.ACES_DT_ACESSO.Value.Date == DateTime.Today.Date).ToList();
+                }
+                ViewBag.Faixa = (Int32)Session["EscopoAcesso"];
+                ViewBag.Listas = acessos;
+
+                // Monta demais listas
+                List<USUARIO> listaUsu = CarregaUsuario();
+                ViewBag.Usuarios = new SelectList(listaUsu, "USUA_CD_ID", "USUA_NM_NOME");
+                List<ASSINANTE> listaAss = CarregaAssinanteRestrito();
+                ViewBag.Assinante = new SelectList(listaAss, "ASSI_CD_ID", "ASSI_NM_NOME");
                 Session["VoltaTela"] = 0;
 
                 // Mensagem
@@ -5675,7 +5800,6 @@ namespace ERP_Condominios_Solution.Controllers
                 Int32 idAss = (Int32)Session["IdAssinante"];
                 List<ACESSO_METODO> conf = new List<ACESSO_METODO>();
                 conf = aceApp.GetAllItens(idAss);
-                conf = conf.Where(p => p.ACES_IN_SISTEMA == 6).ToList();
                 Session["Acessos"] = conf;
                 return conf;
             }
@@ -5692,6 +5816,7 @@ namespace ERP_Condominios_Solution.Controllers
             }
         }
 
+
         [HttpPost]
         public ActionResult FiltrarAcessoTotal(ACESSO_METODO item)
         {
@@ -5707,7 +5832,7 @@ namespace ERP_Condominios_Solution.Controllers
                 Int32 idAss = (Int32)Session["IdAssinante"];
                 List<ACESSO_METODO> listaObj = new List<ACESSO_METODO>();
                 Session["FiltroAcessoTotal"] = item;
-                Tuple<Int32, List<ACESSO_METODO>, Boolean> volta = aceApp.ExecuteFilter(item.USUA_CD_ID, item.ACES_DT_ACESSO, item.ACES_DT_DUMMY, item.ACES_SG_ACESSO, item.ACES_NM_CONTROLLER, item.ACES_NM_METHOD, idAss);
+                Tuple<Int32, List<ACESSO_METODO>, Boolean> volta = aceApp.ExecuteFilter(item.ASSI_CD_ID, item.USUA_CD_ID, item.ACES_DT_ACESSO, item.ACES_DT_DUMMY, item.ACES_SG_ACESSO, item.ACES_NM_CONTROLLER, item.ACES_NM_METHOD, idAss);
 
                 // Verifica retorno
                 if (volta.Item1 == 1)

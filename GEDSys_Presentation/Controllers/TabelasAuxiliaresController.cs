@@ -4457,6 +4457,14 @@ namespace GEDSys_Presentation.Controllers
                 return RedirectToAction("Logout", "ControleAcesso");
             }
             Int32 idAss = (Int32)Session["IdAssinante"];
+            if ((Int32)Session["VoltaCatProduto"] == 2)
+            {
+                return RedirectToAction("IncluirProduto", "Produto");
+            }
+            if ((Int32)Session["VoltaCatProduto"] == 3)
+            {
+                return RedirectToAction("VoltarAnexoProduto", "Produto");
+            }
             return RedirectToAction("MontarTelaCatProduto");
         }
 
@@ -4548,6 +4556,10 @@ namespace GEDSys_Presentation.Controllers
                     if ((Int32)Session["VoltaCatProduto"] == 2)
                     {
                         return RedirectToAction("IncluirProduto", "Produto");
+                    }
+                    if ((Int32)Session["VoltaCatProduto"] == 3)
+                    {
+                        return RedirectToAction("VoltarAnexoProduto", "Produto");
                     }
                     return RedirectToAction("MontarTelaCatProduto");
                 }
@@ -4946,6 +4958,10 @@ namespace GEDSys_Presentation.Controllers
                     if ((Int32)Session["VoltaSubCatProduto"] == 2)
                     {
                         return RedirectToAction("IncluirProduto", "Produto");
+                    }
+                    if ((Int32)Session["VoltaSubCatProduto"] == 3)
+                    {
+                        return RedirectToAction("VoltarAnexoProduto", "Produto");
                     }
                     return RedirectToAction("MontarTelaSubCatProduto");
                 }

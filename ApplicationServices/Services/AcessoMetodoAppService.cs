@@ -29,7 +29,7 @@ namespace ApplicationServices.Services
             return item;
         }
 
-        public Tuple<Int32, List<ACESSO_METODO>, Boolean> ExecuteFilter(Int32? usuario, DateTime? inicio, DateTime? final, String sigla, String entidade, String metodo, Int32 idAss)
+        public Tuple<Int32, List<ACESSO_METODO>, Boolean> ExecuteFilter(Int32? assi, Int32? usuario, DateTime? inicio, DateTime? final, String sigla, String entidade, String metodo, Int32 idAss)
         {
             try
             {
@@ -37,7 +37,7 @@ namespace ApplicationServices.Services
                 Int32 volta = 0;
 
                 // Processa filtro
-                objeto = _baseService.ExecuteFilter(usuario, inicio, final, sigla, entidade, metodo, idAss);
+                objeto = _baseService.ExecuteFilter(assi, usuario, inicio, final, sigla, entidade, metodo, idAss);
                 if (objeto.Count == 0)
                 {
                     volta = 1;

@@ -11,6 +11,6 @@ namespace ModelServices.Interfaces.Repositories
     {
         List<ACESSO_METODO> GetAllItens(Int32 idAss);
         ACESSO_METODO GetItemById(Int32 id);
-        List<ACESSO_METODO> ExecuteFilter(Int32? usuario, DateTime? inicio, DateTime? final, String sigla, String entidade, String metodo, Int32 idAss);
+        List<ACESSO_METODO> ExecuteFilter(Int32? assi, Int32? usuario, DateTime? inicio, DateTime? final, String sigla, String entidade, String metodo, Int32 idAss);
     }
 }

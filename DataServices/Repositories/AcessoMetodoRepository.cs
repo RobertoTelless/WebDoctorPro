@@ -20,17 +20,26 @@ namespace DataServices.Repositories
         public List<ACESSO_METODO> GetAllItens(Int32 idAss)
         {
             IQueryable<ACESSO_METODO> query = Db.ACESSO_METODO.Where(p => p.ACES_IN_ATIVO == 1);
-            query = query.Where(p => p.ASSI_CD_ID == idAss);
+            query = query.Where(p => p.ASSI_CD_ID == idAss || p.ASSI_CD_ID == 83);
+            query = query.Where(p => p.ACES_IN_SISTEMA == 6);
             return query.AsNoTracking().ToList();
         }
 
-        public List<ACESSO_METODO> ExecuteFilter(Int32? usuario, DateTime? dataInicio, DateTime? dataFim, String sigla, String entidade, String metodo, Int32 idAss)
+        public List<ACESSO_METODO> ExecuteFilter(Int32? assi, Int32? usuario, DateTime? dataInicio, DateTime? dataFim, String sigla, String entidade, String metodo, Int32 idAss)
         {
             List<ACESSO_METODO> lista = new List<ACESSO_METODO>();
             IQueryable<ACESSO_METODO> query = Db.ACESSO_METODO;
             if (usuario != null & usuario > 0)
             {
                 query = query.Where(p => p.USUA_CD_ID == usuario);
+            }
+            if (assi != null & assi > 0)
+            {
+                query = query.Where(p => p.ASSI_CD_ID == assi);
+            }
+            else
+            {
+                query = query.Where(p => p.ASSI_CD_ID == idAss || p.ASSI_CD_ID == 83);
             }
             if (dataInicio != null & dataFim == null)
             {
@@ -58,7 +67,6 @@ namespace DataServices.Repositories
             }
             if (query != null)
             {
-                query = query.Where(p => p.ASSI_CD_ID == idAss);
                 query = query.OrderBy(a => a.ACES_IN_ATIVO == 1);
                 query = query.OrderBy(a => a.ACES_IN_SISTEMA == 6);
                 lista = query.AsNoTracking().ToList<ACESSO_METODO>();
