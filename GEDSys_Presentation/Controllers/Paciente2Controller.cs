@@ -3824,6 +3824,12 @@ namespace GEDSys_Presentation.Controllers
                 Session["NivelPaciente"] = 4;
                 PACIENTE pac = baseApp.GetItemById(anamnese.PACI_CD_ID);
                 ViewBag.NomePaciente = pac.PACI_NM_NOME;
+                Session["VoltaEncerramento"] = 4;
+
+                // Verifica consulta a encerrar
+                List<PACIENTE_CONSULTA> cons = CarregaConsultas().Where(p => p.PACO_IN_ATIVO == 1).ToList();
+                cons = cons.Where(p => p.PACO_DT_CONSULTA.Date < DateTime.Today.Date & p.PACO_IN_CONFIRMADA == 1 & p.PACO_IN_ENCERRADA == 0 & p.PACI_CD_ID == (Int32)Session["IdPaciente"]).ToList();
+                Session["TemEncerra"] = cons.Count() > 0 ? 1 : 0;
 
                 // Grava Acesso
                 ControleAcessoMetodo grava = new ControleAcessoMetodo(aceApp);
@@ -4004,6 +4010,30 @@ namespace GEDSys_Presentation.Controllers
                     item.ASSI_CD_ID = usuarioLogado.ASSI_CD_ID;
                     Int32 volta = baseApp.ValidateCreateAnamneseAnotacao(item);
 
+                    // Atualiza prontuario
+                    PACIENTE_ANAMNESE nova = RemontarAnamnese(not);
+                    String dataHoje = DateTime.Today.Date.ToLongDateString();
+                    dataHoje = "*** Revisão de Consulta em [" + dataHoje + "] ***";
+
+                    String velho = not.PAAM_TX_TEXTO_LIVRE;
+                    String novo = item.PAAA_TX_ANOTACAO;
+                    String tripa = String.Empty;
+                    if (velho == null & novo != String.Empty)
+                    {
+                        nova.PAAM_TX_TEXTO_LIVRE = dataHoje + "\r\n" + novo;
+                    }
+                    if (velho != null & novo != String.Empty)
+                    {
+                        tripa = velho.Substring(velho.Length - 4, 4);
+                        if (tripa == "\r\n")    
+                        {
+                            velho = velho.Substring(0, velho.Length - 4);
+                        }
+                        nova.PAAM_TX_TEXTO_LIVRE = velho + "\r\n\r\n" + dataHoje + "\r\n" + novo;
+                    }
+                    nova.PAAM_IN_ALTERADA = 1;
+                    Int32 voltaAna = baseApp.ValidateEditAnamnese(nova);
+
                     // Configura serilização
                     JsonSerializerSettings settings = new JsonSerializerSettings
                     {
@@ -4019,7 +4049,7 @@ namespace GEDSys_Presentation.Controllers
                         LOG_DT_DATA = DateTime.Now,
                         ASSI_CD_ID = usuarioLogado.ASSI_CD_ID,
                         USUA_CD_ID = usuarioLogado.USUA_CD_ID,
-                        LOG_NM_OPERACAO = "Paciente - Anamnese - Anotação - Inclusão",
+                        LOG_NM_OPERACAO = "Paciente - Acompanhamento - Inclusão",
                         LOG_IN_ATIVO = 1,
                         LOG_TX_REGISTRO = json,
                         LOG_IN_SISTEMA = 6
@@ -6664,7 +6694,7 @@ namespace GEDSys_Presentation.Controllers
                 Session["ListaConsultasGeral"] = null;
                 Session["Consultas"] = null;
                 Session["ConsultasAlterada"] = 1;
-
+                Session["NivelPaciente"] = 13;
                 // Monta Log
                 LOG log = new LOG
                 {
@@ -6691,6 +6721,10 @@ namespace GEDSys_Presentation.Controllers
                 Int32 voltaHist = baseApp.ValidateCreateHistorico(hist);
 
                 // Retorno
+                if ((Int32)Session["VoltaEncerra"] == 2)
+                {
+                    return RedirectToAction("VoltarAnexoPaciente", "Paciente");
+                }
                 return RedirectToAction("VoltarProcederConsulta", "Paciente");
             }
             catch (Exception ex)
@@ -7915,6 +7949,22 @@ namespace GEDSys_Presentation.Controllers
                 return RedirectToAction("Logout", "ControleAcesso");
             }
             return RedirectToAction("EditarExameFisico", "Paciente", new { id = (Int32)Session["IdFisico"] });
+        }
+
+        public ActionResult EncerrarConsultaFiltro()
+        {
+            if ((String)Session["Ativa"] == null)
+            {
+                return RedirectToAction("Logout", "ControleAcesso");
+            }
+            Int32 idAss = (Int32)Session["IdAssinante"];
+            USUARIO usuario = (USUARIO)Session["UserCredentials"];
+            List<PACIENTE_CONSULTA> cons = null;
+            cons = CarregaConsultas().Where(p => p.PACO_IN_ATIVO == 1).ToList();
+            cons = cons.Where(p => p.PACO_DT_CONSULTA.Date < DateTime.Today.Date & p.PACO_IN_CONFIRMADA == 1 & p.PACO_IN_ENCERRADA == 0 & p.PACI_CD_ID == (Int32)Session["IdPaciente"]).ToList();
+            cons = cons.OrderBy(p => p.PACO_DT_CONSULTA).ToList();
+            Session["ListaConsultaAberta"] = cons;
+            return RedirectToAction("MontarTelaEncerrarConsulta", "Financeiro");
         }
 
         public ActionResult VerAnamneseBase()

@@ -180,6 +180,10 @@
                                 {
                                     @Html.ButtonLinkIndex(text: "Voltar", action: "VerMedicamentosPacienteForm", controller: "Paciente",  htmlAttributes: new { @class = "btn-loading" })
                                 }
+                                else if ((Int32)Session["TipoSolicitacao"] == 9)
+                                {
+                                    @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaEncerrarConsulta", controller: "Financeiro",  htmlAttributes: new { @class = "btn-loading" })
+                                }
                                 else if ((Int32)Session["TipoSolicitacao"] == 12)
                                 {
                                     @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaHistoricoGeral", controller: "Paciente",  htmlAttributes: new { @class = "btn-loading" })
@@ -6315,8 +6319,11 @@
                                 <div id="tab-13" class="tab-pane active">
                                     <div class="panel-body">
                                         <div class="form-group">
-                                            @*@Html.ButtonLinkIndex(text: "Novo Acompanhamento", action: "IncluirAnotacaoAnamnese", controller: "Paciente2", buttonClass: "primary")*@
                                             <a href="@Url.Action("IncluirAnotacaoAnamnese", "Paciente2")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Abre a página de inclusão de anotações na anamnese" class="btn btn-sm btn-primary btn-loading8" id="emp" OnClick = "Fade()">Novo Acompanhamento</a>                
+                                            @if (ViewBag.Encerra == 1)
+	                                        {
+                                                <a href="@Url.Action("EncerrarConsultaFiltro", "Paciente2")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Abre a página de encerramento de consulta" class="btn btn-sm btn-warning btn-loading8" id="emp" OnClick = "Fade()">Encerrar Consulta</a>                
+	                                        }
                                             <span id="loadingIndicator8" style="display: none; margin-left: 10px; color: #007bff;">
                                                 <i class="fa fa-spinner fa-spin"></i> Processando...
                                             </span>
@@ -6359,8 +6366,11 @@
                                 <div id="tab-13" class="tab-pane">
                                     <div class="panel-body">
                                         <div class="form-group">
-                                            @*@Html.ButtonLinkIndex(text: "Novo Acompanhamento", action: "IncluirAnotacaoAnamnese", controller: "Paciente2", buttonClass: "primary")*@
-                                            <a href="@Url.Action("IncluirAnotacaoAnamnese", "Paciente2")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Abre a página de inclusão de anotações na anamnese" class="btn btn-sm btn-primary btn-loading8" id="emp" OnClick = "Fade()">Novo Acompanhamento</a>                
+                                            <a href="@Url.Action("IncluirAnotacaoAnamnese", "Paciente2")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Abre a página de inclusão de acompanhamento" class="btn btn-sm btn-primary btn-loading8" id="emp" OnClick = "Fade()">Novo Acompanhamento</a>                
+                                            @if (ViewBag.Encerra == 1)
+	                                        {
+                                                <a href="@Url.Action("EncerrarConsultaFiltro", "Paciente2")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Abre a página de encerramento de consulta" class="btn btn-sm btn-warning btn-loading8" id="emp" OnClick = "Fade()">Encerrar Consulta</a>                
+	                                        }
                                             <span id="loadingIndicator8" style="display: none; margin-left: 10px; color: #007bff;">
                                                 <i class="fa fa-spinner fa-spin"></i> Processando...
                                             </span>

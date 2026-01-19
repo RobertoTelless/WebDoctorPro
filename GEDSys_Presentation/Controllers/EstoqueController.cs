@@ -5,6 +5,7 @@ using Canducci.Zip;
 using CRMPresentation.App_Start;
 using CrossCutting;
 using EntitiesServices.Model;
+using EntitiesServices.Work_Classes;
 using EntitiesServices.WorkClasses;
 using ERP_Condominios_Solution.Classes;
 using ERP_Condominios_Solution.Controllers;
@@ -14,6 +15,7 @@ using iText.IO.Codec;
 using iTextSharp.text;
 using iTextSharp.text.pdf;
 using Microsoft.Ajax.Utilities;
+using Newtonsoft.Json;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -324,7 +326,6 @@ namespace GEDSys_Presentation.Controllers
                         TempData["MensagemAcerto"] = (String)Session["MsgCRUD"];
                         TempData["TemMensagem"] = 1;
                     }
-
                 }
 
                 // Abre view
@@ -427,7 +428,6 @@ namespace GEDSys_Presentation.Controllers
 
                 // Executa a operação
                 List<PRODUTO> listaObj = new List<PRODUTO>();
-                //Session["FiltroEstoque"] =  Mapper.Map<PRODUTO, ProdutoViewModel>(item);
                 Session["FiltroEstoque"] = item;
                 USUARIO usuario = (USUARIO)Session["UserCredentials"];
                 Int32 idAss = (Int32)Session["IdAssinante"];
@@ -1450,7 +1450,11 @@ namespace GEDSys_Presentation.Controllers
                         ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0463", CultureInfo.CurrentCulture));
                         Session["MensEstoque"] = 0;
                     }
-
+                    if ((Int32)Session["MensEstoque"] == 61)
+                    {
+                        TempData["MensagemAcerto"] = (String)Session["MsgCRUD"];
+                        TempData["TemMensagem"] = 1;
+                    }
                 }
 
                 // Prepara view
@@ -1565,6 +1569,7 @@ namespace GEDSys_Presentation.Controllers
                     {
                         prod = prodApp.GetItemById(vm.PROD_CD_ID.Value);
                     }
+                    Session["ProdAntes"] = prod;
 
                     // Critica de entradas
                     Int32 tipoMov = vm.MOEP_IN_TIPO_MOVIMENTO;
@@ -1688,6 +1693,13 @@ namespace GEDSys_Presentation.Controllers
                     Int32? tipoOp = vm.MOEP_IN_TIPO;
                     prod = prodApp.GetItemById(vm.PROD_CD_ID.Value);
 
+                    // Configura serialização
+                    JsonSerializerSettings settings = new JsonSerializerSettings
+                    {
+                        ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+                        NullValueHandling = NullValueHandling.Ignore
+                    };
+
                     if (vm.MOEP_IN_TIPO_MOVIMENTO == 1)
                     {
                         // Grava Pagamento
@@ -1711,6 +1723,21 @@ namespace GEDSys_Presentation.Controllers
                             pagto.COPA_XM_NOTA_FISCAL = null;
                             pagto.COPA_DT_CADASTRO = DateTime.Today.Date;
                             Int32 voltaCP = pagApp.ValidateCreate(pagto, usuario);
+
+                            // Monta Log
+                            DTO_Pagamento dto = MontarPagamentoDTOObj(pagto);
+                            String json = JsonConvert.SerializeObject(dto, settings);
+                            LOG log = new LOG
+                            {
+                                LOG_DT_DATA = DateTime.Now,
+                                ASSI_CD_ID = usuario.ASSI_CD_ID,
+                                USUA_CD_ID = usuario.USUA_CD_ID,
+                                LOG_NM_OPERACAO = "Pagamento - Inclusão",
+                                LOG_IN_ATIVO = 1,
+                                LOG_TX_REGISTRO = json,
+                                LOG_IN_SISTEMA = 6
+                            };
+                            Int32 volta1 = logApp.ValidateCreate(log);
                         }
 
                         // Monta e grava movimentação de entrada 
@@ -1741,6 +1768,22 @@ namespace GEDSys_Presentation.Controllers
                         Int32 voltaC = prodApp.ValidateCreateMovimento(item, usuario);
                         logRet = voltaC;
                         pendente = 0;
+
+                        // Monta Log
+                        DTO_Movimento dto1 = MontarMovimentoDTOObj(item);
+                        String json1 = JsonConvert.SerializeObject(dto1, settings);
+                        LOG log1 = new LOG
+                        {
+                            LOG_DT_DATA = DateTime.Now,
+                            ASSI_CD_ID = usuario.ASSI_CD_ID,
+                            USUA_CD_ID = usuario.USUA_CD_ID,
+                            LOG_NM_OPERACAO = "Estoque - Movimento - Inclusão",
+                            LOG_IN_ATIVO = 1,
+                            LOG_TX_REGISTRO = json1,
+                            LOG_IN_SISTEMA = 6
+                        };
+                        Int32 volta2 = logApp.ValidateCreate(log1);
+
 
                         // Inclui historico de estoque
                         PRODUTO_ESTOQUE_HISTORICO hist = new PRODUTO_ESTOQUE_HISTORICO();
@@ -1816,6 +1859,23 @@ namespace GEDSys_Presentation.Controllers
                         Int32 voltaP = prodApp.ValidateEdit(novo, novo);
                         gravaHist = 1;
 
+                        // Monta Log
+                        DTO_Produto dto2 = MontarProdutoDTOObj(novo);
+                        String json2 = JsonConvert.SerializeObject(dto2, settings);
+                        DTO_Produto dto2Antes = MontarProdutoDTOObj((PRODUTO)Session["ProdAntes"]);
+                        String json2Antes = JsonConvert.SerializeObject(dto2Antes, settings);
+                        LOG log2 = new LOG
+                        {
+                            LOG_DT_DATA = DateTime.Now,
+                            ASSI_CD_ID = usuario.ASSI_CD_ID,
+                            USUA_CD_ID = usuario.USUA_CD_ID,
+                            LOG_NM_OPERACAO = "Material/Produto - Alteração",
+                            LOG_IN_ATIVO = 1,
+                            LOG_TX_REGISTRO = json2,
+                            LOG_TX_REGISTRO_ANTES = json2Antes,
+                            LOG_IN_SISTEMA = 6
+                        };
+
                         // Acertar locação
                     }
 
@@ -1842,6 +1902,21 @@ namespace GEDSys_Presentation.Controllers
                         Int32 voltaC = prodApp.ValidateCreateMovimento(item, usuario);
                         logRet = voltaC;
                         pendente = 0;
+
+                        // Monta Log
+                        DTO_Movimento dto1 = MontarMovimentoDTOObj(item);
+                        String json1 = JsonConvert.SerializeObject(dto1, settings);
+                        LOG log1 = new LOG
+                        {
+                            LOG_DT_DATA = DateTime.Now,
+                            ASSI_CD_ID = usuario.ASSI_CD_ID,
+                            USUA_CD_ID = usuario.USUA_CD_ID,
+                            LOG_NM_OPERACAO = "Estoque - Movimento - Inclusão",
+                            LOG_IN_ATIVO = 1,
+                            LOG_TX_REGISTRO = json1,
+                            LOG_IN_SISTEMA = 6
+                        };
+                        Int32 volta2 = logApp.ValidateCreate(log1);
 
                         // Inclui historico de estoque
                         PRODUTO_ESTOQUE_HISTORICO hist = new PRODUTO_ESTOQUE_HISTORICO();
@@ -1916,6 +1991,26 @@ namespace GEDSys_Presentation.Controllers
                         novo.PROD_VL_LOCACAO_TAXAS = prod.PROD_VL_LOCACAO_TAXAS;
                         Int32 voltaP = prodApp.ValidateEdit(novo, novo);
                         gravaHist = 1;
+
+                        // Monta Log
+                        DTO_Produto dto2 = MontarProdutoDTOObj(novo);
+                        String json2 = JsonConvert.SerializeObject(dto2, settings);
+                        DTO_Produto dto2Antes = MontarProdutoDTOObj((PRODUTO)Session["ProdAntes"]);
+                        String json2Antes = JsonConvert.SerializeObject(dto2Antes, settings);
+                        LOG log2 = new LOG
+                        {
+                            LOG_DT_DATA = DateTime.Now,
+                            ASSI_CD_ID = usuario.ASSI_CD_ID,
+                            USUA_CD_ID = usuario.USUA_CD_ID,
+                            LOG_NM_OPERACAO = "Material/Produto - Alteração",
+                            LOG_IN_ATIVO = 1,
+                            LOG_TX_REGISTRO = json2,
+                            LOG_TX_REGISTRO_ANTES = json2Antes,
+                            LOG_IN_SISTEMA = 6
+                        };
+
+                        // Acertar locação
+
                     }
 
                     // Grava histórico
@@ -1932,7 +2027,7 @@ namespace GEDSys_Presentation.Controllers
                     }
 
                     // Mensagem do CRUD
-                    Session["MsgCRUD"] = "A movimentação de estoque para o produto/material " + prod.PROD_NM_NOME + " foi incluída com sucesso.";
+                    Session["MsgCRUD"] = "A movimentação de estoque para o produto/material " + prod.PROD_NM_NOME.ToUpper() + " foi incluída com sucesso.";
                     Session["MensProduto"] = 61;
 
                     // Verifica retorno
@@ -1959,6 +2054,158 @@ namespace GEDSys_Presentation.Controllers
             {
                 return View(vm);
             }
+        }
+
+        public DTO_Produto MontarProdutoDTOObj(PRODUTO l)
+        {
+            using (var context = new CRMSysDBEntities())
+            {
+                var mediDTO = new DTO_Produto()
+                {
+                    ASSI_CD_ID = l.ASSI_CD_ID,
+                    CAPR_CD_ID = l.CAPR_CD_ID,
+                    PROD_CD_CODIGO = l.PROD_CD_CODIGO,
+                    PROD_CD_ID = l.PROD_CD_ID,
+                    SCPR_CD_ID = l.SCPR_CD_ID,
+                    TIEM_CD_ID = l.TIEM_CD_ID,
+                    UNID_CD_ID = l.UNID_CD_ID,
+                    PROD_AQ_FOTO = l.PROD_AQ_FOTO,
+                    PROD_DS_DESCRICAO = l.PROD_DS_DESCRICAO,
+                    PROD_DS_INFORMACOES = l.PROD_DS_INFORMACOES,
+                    PROD_DT_ALTERACAO = l.PROD_DT_ALTERACAO,
+                    PROD_DT_CADASTRO = l.PROD_DT_CADASTRO,
+                    PROD_IN_ATIVO = l.PROD_IN_ATIVO,
+                    PROD_IN_COMPOSTO = l.PROD_IN_COMPOSTO,
+                    PROD_IN_FRACIONADO = l.PROD_IN_FRACIONADO,
+                    PROD_IN_LOCACAO = l.PROD_IN_LOCACAO,
+                    PROD_IN_PECA = l.PROD_IN_PECA,
+                    PROD_IN_SISTEMA = l.PROD_IN_SISTEMA,
+                    PROD_IN_TIPO_PRODUTO = l.PROD_IN_TIPO_PRODUTO,
+                    PROD_IN_USUARIO_ALTERACAO = l.PROD_IN_USUARIO_ALTERACAO,
+                    PROD_NM_FABRICANTE = l.PROD_NM_FABRICANTE,
+                    PROD_NM_FORNECEDOR = l.PROD_NM_FORNECEDOR,
+                    PROD_NM_MARCA = l.PROD_NM_MARCA,
+                    PROD_NM_MODELO = l.PROD_NM_MODELO,
+                    PROD_NM_NOME = l.PROD_NM_NOME,
+                    PROD_NM_REFERENCIA_FABRICANTE = l.PROD_NM_REFERENCIA_FABRICANTE,
+                    PROD_NR_BARCODE = l.PROD_NR_BARCODE,
+                    PROD_NR_REFERENCIA = l.PROD_NM_REFERENCIA_FABRICANTE,
+                    PROD_PC_DESCONTO = l.PROD_PC_DESCONTO,
+                    PROD_TX_OBSERVACOES = l.PROD_TX_OBSERVACOES,
+                    PROD_VL_CUSTO = l.PROD_VL_CUSTO,
+                    PROD_VL_CUSTO_CONCORRENTE_MEDIO = l.PROD_VL_CUSTO_CONCORRENTE_MEDIO,
+                    PROD_VL_CVM_PESO = l.PROD_VL_CVM_PESO,
+                    PROD_VL_CVM_RECEITA = l.PROD_VL_CVM_RECEITA,
+                    PROD_VL_CVM_UNITARIO = l.PROD_VL_CVM_UNITARIO,
+                    PROD_VL_ESTOQUE_ATUAL = l.PROD_VL_ESTOQUE_ATUAL,
+                    PROD_VL_ESTOQUE_CUSTO = l.PROD_VL_ESTOQUE_CUSTO,
+                    PROD_VL_ESTOQUE_MAXIMO = l.PROD_VL_ESTOQUE_MAXIMO,
+                    PROD_VL_ESTOQUE_MINIMO = l.PROD_VL_ESTOQUE_MINIMO,
+                    PROD_VL_ESTOQUE_RESERVA = l.PROD_VL_ESTOQUE_RESERVA,
+                    PROD_VL_ESTOQUE_TOTAL = l.PROD_VL_ESTOQUE_TOTAL,
+                    PROD_VL_ESTOQUE_VENDA = l.PROD_VL_ESTOQUE_VENDA,
+                    PROD_VL_FATOR_CORRECAO = l.PROD_VL_FATOR_CORRECAO,
+                    PROD_VL_LOCACAO = l.PROD_VL_LOCACAO,
+                    PROD_VL_LOCACAO_MULTA = l.PROD_VL_LOCACAO_MULTA,
+                    PROD_VL_LOCACAO_PROMOCAO = l.PROD_VL_LOCACAO_PROMOCAO,
+                    PROD_VL_LOCACAO_TAXAS = l.PROD_VL_LOCACAO_TAXAS,
+                    PROD_VL_MARGEM_CONTRIBUICAO = l.PROD_VL_MARGEM_CONTRIBUICAO,
+                    PROD_VL_MEDIA_VENDA_MENSAL = l.PROD_VL_MEDIA_VENDA_MENSAL,
+                    PROD_VL_PRECO_ANTERIOR = l.PROD_VL_PRECO_ANTERIOR,
+                    PROD_VL_PRECO_MINIMO = l.PROD_VL_PRECO_MINIMO,
+                    PROD_VL_PRECO_PROMOCAO = l.PROD_VL_PRECO_PROMOCAO,
+                    PROD_VL_PRECO_VENDA = l.PROD_VL_PRECO_VENDA,
+                    PROD_VL_ULTIMO_CUSTO = l.PROD_VL_ULTIMO_CUSTO,
+                };
+                return mediDTO;
+            }
+
+        }
+
+
+        public DTO_Pagamento MontarPagamentoDTOObj(CONSULTA_PAGAMENTO l)
+        {
+            using (var context = new CRMSysDBEntities())
+            {
+                var mediDTO = new DTO_Pagamento()
+                {
+                    ASSI_CD_ID = l.ASSI_CD_ID,
+                    COPA_CD_ID = l.COPA_CD_ID,
+                    TIPA_CD_ID = l.TIPA_CD_ID,
+                    USUA_CD_ID = l.USUA_CD_ID,
+                    COPA_DT_CADASTRO = l.COPA_DT_CADASTRO,
+                    COPA_DT_PAGAMENTO = l.COPA_DT_PAGAMENTO,
+                    COPA_DT_VENCIMENTO = l.COPA_DT_VENCIMENTO,
+                    COPA_GU_GUID = l.COPA_GU_GUID,
+                    COPA_IN_ATIVO = l.COPA_IN_ATIVO,
+                    COPA_IN_CONFERIDO = l.COPA_IN_CONFERIDO,
+                    COPA_IN_PAGO = l.COPA_IN_PAGO,
+                    COPA_NM_FAVORECIDO = l.COPA_NM_FAVORECIDO,
+                    COPA_NM_NOME = l.COPA_NM_NOME,
+                    COPA_NR_ATRASO = l.COPA_NR_ATRASO,
+                    COPA_VL_DESCONTO = l.COPA_VL_DESCONTO,
+                    COPA_VL_MULTA = l.COPA_VL_MULTA,
+                    COPA_VL_PAGO = l.COPA_VL_PAGO,
+                    COPA_VL_VALOR = l.COPA_VL_VALOR,
+                    COPA_XM_NOTA_FISCAL = l.COPA_XM_NOTA_FISCAL,
+                };
+                return mediDTO;
+            }
+
+        }
+
+        public DTO_Movimento MontarMovimentoDTOObj(MOVIMENTO_ESTOQUE_PRODUTO l)
+        {
+            using (var context = new CRMSysDBEntities())
+            {
+                var mediDTO = new DTO_Movimento()
+                {
+                    ASSI_CD_ID = l.ASSI_CD_ID,
+                    USUA_CD_ID = l.USUA_CD_ID,
+                    COBA_CD_ID = l.COBA_CD_ID,
+                    COPA_CD_ID_1 = l.COPA_CD_ID_1,
+                    CRPV_CD_ID = l.CRPV_CD_ID,
+                    EMFI_CD_ID = l.EMFI_CD_ID,
+                    EMPR_CD_ID = l.EMPR_CD_ID,
+                    FILI_CD_ID = l.FILI_CD_ID,
+                    FOPA_CD_ID = l.FOPA_CD_ID,
+                    FORN_CD_ID = l.FORN_CD_ID,
+                    MOEP_CD_ID = l.MOEP_CD_ID,
+                    MOEP_EMFI_CD_ID = l.MOEP_EMFI_CD_ID,
+                    MOEP_EMFI_CD_ID_ALVO = l.MOEP_EMFI_CD_ID_ALVO,
+                    PROD_CD_ID = l.PROD_CD_ID,
+                    MOEP_DS_JUSTIFICATIVA = l.MOEP_DS_JUSTIFICATIVA,
+                    MOEP_DS_MANUTENCAO_OBSERVACAO = l.MOEP_DS_MANUTENCAO_OBSERVACAO,
+                    MOEP_DT_AUTORIZACAO = l.MOEP_DT_AUTORIZACAO,
+                    MOEP_DT_EXCLUSAO = l.MOEP_DT_EXCLUSAO,
+                    MOEP_DT_LANCAMENTO = l.MOEP_DT_LANCAMENTO,
+                    MOEP_DT_MOVIMENTO = l.MOEP_DT_MOVIMENTO,
+                    MOEP_DT_PAGAMENTO = l.MOEP_DT_PAGAMENTO,
+                    MOEP_GU_GUID = l.MOEP_GU_GUID,
+                    MOEP_IN_ATIVO = l.MOEP_IN_ATIVO,
+                    MOEP_IN_AUTORIZADOR = l.MOEP_IN_AUTORIZADOR,
+                    MOEP_IN_CHAVE_ORIGEM = l.MOEP_IN_CHAVE_ORIGEM,
+                    MOEP_IN_EXCLUIDOR = l.MOEP_IN_EXCLUIDOR,
+                    MOEP_IN_OPERACAO = l.MOEP_IN_OPERACAO,
+                    MOEP_IN_ORIGEM = l.MOEP_IN_ORIGEM,
+                    MOEP_IN_PENDENTE = l.MOEP_IN_PENDENTE,
+                    MOEP_IN_SISTEMA = l.MOEP_IN_SISTEMA,
+                    MOEP_IN_TIPO = l.MOEP_IN_TIPO,
+                    MOEP_IN_TIPO_LANCAMENTO = l.MOEP_IN_TIPO_LANCAMENTO,
+                    MOEP_IN_TIPO_MOVIMENTO = l.MOEP_IN_TIPO_MOVIMENTO,
+                    MOEP_IN_ULTIMO = l.MOEP_IN_ULTIMO,
+                    MOEP_NM_FORNECEDOR = l.MOEP_NM_FORNECEDOR,
+                    MOEP_QN_ALTERADA = l.MOEP_QN_ALTERADA,
+                    MOEP_QN_ANTES = l.MOEP_QN_ANTES,
+                    MOEP_QN_DEPOIS = l.MOEP_QN_DEPOIS,
+                    MOEP_QN_QUANTIDADE = l.MOEP_QN_QUANTIDADE,
+                    MOEP_VL_QUANTIDADE_ANTERIOR = l.MOEP_VL_QUANTIDADE_ANTERIOR,
+                    MOEP_VL_QUANTIDADE_MOVIMENTO = l.MOEP_VL_QUANTIDADE_MOVIMENTO,
+                    MOEP_VL_VALOR_MOVIMENTO = l.MOEP_VL_VALOR_MOVIMENTO,
+                };
+                return mediDTO;
+            }
+
         }
 
         [HttpGet]
@@ -2548,33 +2795,49 @@ namespace GEDSys_Presentation.Controllers
                 headerTable.SpacingBefore = 1f;
                 headerTable.SpacingAfter = 1f;
 
-                PdfPCell cell = new PdfPCell();
-                cell.Border = 0;
-                cell.Colspan = 1;
-                Image image = null;
                 if (conf.CONF_IN_LOGO_EMPRESA == 1)
                 {
+                    PdfPCell cell1 = new PdfPCell();
+                    cell1.Border = 0;
+                    cell1.Colspan = 1;
+                    Image image = null;
                     EMPRESA empresa = empApp.GetItemByAssinante(idAss);
                     image = Image.GetInstance(Server.MapPath(empresa.EMPR_AQ_LOGO));
+                    image.ScaleAbsolute(50, 50);
+                    cell1.AddElement(image);
+                    cell1.Border = PdfPCell.BOTTOM_BORDER;
+                    headerTable.AddCell(cell1);
+
+                    cell1 = new PdfPCell(new Paragraph("Estoque", meuFont2))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_CENTER
+                    };
+                    cell1.Border = 0;
+                    cell1.Colspan = 1;
+                    cell1.Border = PdfPCell.BOTTOM_BORDER;
+                    headerTable.AddCell(cell1);
                 }
                 else
                 {
-                    image = Image.GetInstance(Server.MapPath("~/Images/Prontuario_Icone_1.png"));
-                }
-                image.ScaleAbsolute(50, 50);
-                cell.AddElement(image);
-                cell.Border = PdfPCell.BOTTOM_BORDER;
-                headerTable.AddCell(cell);
+                    PdfPCell cell2 = new PdfPCell(new Paragraph("Estoque", meuFont2))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_CENTER
+                    };
+                    cell2.Border = 0;
+                    cell2.Colspan = 2;
+                    headerTable.AddCell(cell2);
 
-                cell = new PdfPCell(new Paragraph("Estoque", meuFont2))
-                {
-                    VerticalAlignment = Element.ALIGN_MIDDLE,
-                    HorizontalAlignment = Element.ALIGN_CENTER
-                };
-                cell.Border = 0;
-                cell.Colspan = 1;
-                cell.Border = PdfPCell.BOTTOM_BORDER;
-                headerTable.AddCell(cell);
+                    cell2 = new PdfPCell(new Paragraph(" ", meuFont))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    cell2.Colspan = 2;
+                    cell2.Border = PdfPCell.BOTTOM_BORDER;
+                    headerTable.AddCell(cell2);
+                }
 
                 // Rodape
                 PdfPTable footerTable = new PdfPTable(1);
@@ -2583,7 +2846,7 @@ namespace GEDSys_Presentation.Controllers
                 footerTable.SpacingBefore = 1f;
                 footerTable.SpacingAfter = 1f;
 
-                cell = new PdfPCell();
+                PdfPCell cell = new PdfPCell();
                 cell.Border = PdfPCell.TOP_BORDER;
                 cell = new PdfPCell(new Paragraph("Gerado por WebDoctor 1.0 em " + DateTime.Today.Date.ToLongDateString(), meuFont));
                 footerTable.AddCell(cell);
@@ -2674,7 +2937,7 @@ namespace GEDSys_Presentation.Controllers
                 };
                 cell.BackgroundColor = BaseColor.LIGHT_GRAY;
                 table.AddCell(cell);
-                cell = new PdfPCell(new Paragraph("Imagem", meuFont))
+                cell = new PdfPCell(new Paragraph(" ", meuFont))
                 {
                     VerticalAlignment = Element.ALIGN_MIDDLE,
                     HorizontalAlignment = Element.ALIGN_CENTER
@@ -2841,7 +3104,7 @@ namespace GEDSys_Presentation.Controllers
                     if (System.IO.File.Exists(Server.MapPath(item.PROD_AQ_FOTO)))
                     {
                         cell = new PdfPCell();
-                        image = Image.GetInstance(Server.MapPath(item.PROD_AQ_FOTO));
+                        Image image = Image.GetInstance(Server.MapPath(item.PROD_AQ_FOTO));
                         image.ScaleAbsolute(20, 20);
                         cell.AddElement(image);
                         table.AddCell(cell);
@@ -2913,7 +3176,7 @@ namespace GEDSys_Presentation.Controllers
                 // Monta lista
                 lista = (List<MOVIMENTO_ESTOQUE_PRODUTO>)Session["ListaMovimentoEstoque"];
                 lista = lista.OrderBy(p => p.MOEP_DT_MOVIMENTO).ThenBy(p => p.MOEP_IN_TIPO_MOVIMENTO).ThenBy(p => p.MOEP_IN_TIPO).ToList();
-                
+
                 // Cabeçalho
                 PdfPTable headerTable = new PdfPTable(new float[] { 20f, 700f });
                 headerTable.WidthPercentage = 100;
@@ -2921,33 +3184,49 @@ namespace GEDSys_Presentation.Controllers
                 headerTable.SpacingBefore = 1f;
                 headerTable.SpacingAfter = 1f;
 
-                PdfPCell cell = new PdfPCell();
-                cell.Border = 0;
-                cell.Colspan = 1;
-                Image image = null;
                 if (conf.CONF_IN_LOGO_EMPRESA == 1)
                 {
+                    PdfPCell cell1 = new PdfPCell();
+                    cell1.Border = 0;
+                    cell1.Colspan = 1;
+                    Image image = null;
                     EMPRESA empresa = empApp.GetItemByAssinante(idAss);
                     image = Image.GetInstance(Server.MapPath(empresa.EMPR_AQ_LOGO));
+                    image.ScaleAbsolute(50, 50);
+                    cell1.AddElement(image);
+                    cell1.Border = PdfPCell.BOTTOM_BORDER;
+                    headerTable.AddCell(cell1);
+
+                    cell1 = new PdfPCell(new Paragraph("Estoque - Movimentações de " + (String)Session["NomeProduto"], meuFont2))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_CENTER
+                    };
+                    cell1.Border = 0;
+                    cell1.Colspan = 1;
+                    cell1.Border = PdfPCell.BOTTOM_BORDER;
+                    headerTable.AddCell(cell1);
                 }
                 else
                 {
-                    image = Image.GetInstance(Server.MapPath("~/Images/Prontuario_Icone_1.png"));
-                }
-                image.ScaleAbsolute(50, 50);
-                cell.AddElement(image);
-                cell.Border = PdfPCell.BOTTOM_BORDER;
-                headerTable.AddCell(cell);
+                    PdfPCell cell2 = new PdfPCell(new Paragraph("Estoque - Movimentações de " + (String)Session["NomeProduto"], meuFont2))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_CENTER
+                    };
+                    cell2.Border = 0;
+                    cell2.Colspan = 2;
+                    headerTable.AddCell(cell2);
 
-                cell = new PdfPCell(new Paragraph("Estoque - Movimentações de " + (String)Session["NomeProduto"], meuFont2))
-                {
-                    VerticalAlignment = Element.ALIGN_MIDDLE,
-                    HorizontalAlignment = Element.ALIGN_CENTER
-                };
-                cell.Border = 0;
-                cell.Colspan = 1;
-                cell.Border = PdfPCell.BOTTOM_BORDER;
-                headerTable.AddCell(cell);
+                    cell2 = new PdfPCell(new Paragraph(" ", meuFont))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    cell2.Colspan = 2;
+                    cell2.Border = PdfPCell.BOTTOM_BORDER;
+                    headerTable.AddCell(cell2);
+                }
 
                 // Rodape
                 PdfPTable footerTable = new PdfPTable(1);
@@ -2956,7 +3235,7 @@ namespace GEDSys_Presentation.Controllers
                 footerTable.SpacingBefore = 1f;
                 footerTable.SpacingAfter = 1f;
 
-                cell = new PdfPCell();
+                PdfPCell cell = new PdfPCell();
                 cell.Border = PdfPCell.TOP_BORDER;
                 cell = new PdfPCell(new Paragraph("Gerado por WebDoctor 1.0 em " + DateTime.Today.Date.ToLongDateString(), meuFont));
                 footerTable.AddCell(cell);
@@ -3251,33 +3530,49 @@ namespace GEDSys_Presentation.Controllers
                 headerTable.SpacingBefore = 1f;
                 headerTable.SpacingAfter = 1f;
 
-                PdfPCell cell = new PdfPCell();
-                cell.Border = 0;
-                cell.Colspan = 1;
-                Image image = null;
                 if (conf.CONF_IN_LOGO_EMPRESA == 1)
                 {
+                    PdfPCell cell1 = new PdfPCell();
+                    cell1.Border = 0;
+                    cell1.Colspan = 1;
+                    Image image = null;
                     EMPRESA empresa = empApp.GetItemByAssinante(idAss);
                     image = Image.GetInstance(Server.MapPath(empresa.EMPR_AQ_LOGO));
+                    image.ScaleAbsolute(50, 50);
+                    cell1.AddElement(image);
+                    cell1.Border = PdfPCell.BOTTOM_BORDER;
+                    headerTable.AddCell(cell1);
+
+                    cell1 = new PdfPCell(new Paragraph(titulo, meuFont2))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_CENTER
+                    };
+                    cell1.Border = 0;
+                    cell1.Colspan = 1;
+                    cell1.Border = PdfPCell.BOTTOM_BORDER;
+                    headerTable.AddCell(cell1);
                 }
                 else
                 {
-                    image = Image.GetInstance(Server.MapPath("~/Images/Prontuario_Icone_1.png"));
-                }
-                image.ScaleAbsolute(50, 50);
-                cell.AddElement(image);
-                cell.Border = PdfPCell.BOTTOM_BORDER;
-                headerTable.AddCell(cell);
+                    PdfPCell cell2 = new PdfPCell(new Paragraph(titulo, meuFont2))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_CENTER
+                    };
+                    cell2.Border = 0;
+                    cell2.Colspan = 2;
+                    headerTable.AddCell(cell2);
 
-                cell = new PdfPCell(new Paragraph(titulo, meuFont2))
-                {
-                    VerticalAlignment = Element.ALIGN_MIDDLE,
-                    HorizontalAlignment = Element.ALIGN_CENTER
-                };
-                cell.Border = 0;
-                cell.Colspan = 1;
-                cell.Border = PdfPCell.BOTTOM_BORDER;
-                headerTable.AddCell(cell);
+                    cell2 = new PdfPCell(new Paragraph(" ", meuFont))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    cell2.Colspan = 2;
+                    cell2.Border = PdfPCell.BOTTOM_BORDER;
+                    headerTable.AddCell(cell2);
+                }
 
                 // Rodape
                 PdfPTable footerTable = new PdfPTable(1);
@@ -3286,7 +3581,7 @@ namespace GEDSys_Presentation.Controllers
                 footerTable.SpacingBefore = 1f;
                 footerTable.SpacingAfter = 1f;
 
-                cell = new PdfPCell();
+                PdfPCell cell = new PdfPCell();
                 cell.Border = PdfPCell.TOP_BORDER;
                 cell = new PdfPCell(new Paragraph("Gerado por WebDoctor 1.0 em " + DateTime.Today.Date.ToLongDateString(), meuFont));
                 footerTable.AddCell(cell);
@@ -3928,6 +4223,7 @@ namespace GEDSys_Presentation.Controllers
                 // Linha horizontal
                 Paragraph line1 = new Paragraph(new Chunk(new iTextSharp.text.pdf.draw.LineSeparator(0.0F, 100.0F, BaseColor.BLUE, Element.ALIGN_LEFT, 1)));
                 pdfDoc.Add(line1);
+
 
                 // Cabeçalho
                 PdfPTable table = new PdfPTable(new float[] { 20f, 700f });

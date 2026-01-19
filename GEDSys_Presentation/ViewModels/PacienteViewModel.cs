@@ -232,6 +232,7 @@ namespace ERP_Condominios_Solution.ViewModels
 
         [DataType(DataType.Date, ErrorMessage = "Deve ser uma data válida")]
         public Nullable<System.DateTime> PACO_DT_CONSULTA { get; set; }
+        public Nullable<int> PACO_IN_ENCERRADA { get; set; }
         public Nullable<int> CRIA_CONSULTA { get; set; }
         [CheckTimeAttributeMain(ErrorMessage = "Hora:Minuto inválido")]
         public Nullable<System.TimeSpan> HORA_INICIO { get; set; }

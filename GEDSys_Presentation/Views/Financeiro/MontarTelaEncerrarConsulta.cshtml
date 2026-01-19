@@ -139,7 +139,14 @@
                                     @foreach (var cond in (ViewBag.Listas as List<EntitiesServices.Model.PACIENTE_CONSULTA>).OrderBy(p => p.PACIENTE.PACI_NM_NOME).ThenBy(p => p.PACO_DT_CONSULTA.Date))
                                     {   
                                         <tr>
-                                            <td style="width: auto">@cond.PACIENTE.PACI_NM_NOME</td>
+                                            @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_ACESSO_PACIENTE == 1)
+                                            {
+                                                <td style="width: auto"><a href="@Url.Action("EditarPacienteEncerra", "Paciente", new { id = cond.PACIENTE.PACI__CD_ID })" class="btn-loading" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página de edição de dados do paciente"/>@cond.PACIENTE.PACI_NM_NOME</td>
+                                            }
+                                            else
+                                            {
+                                                <td style="width: auto"><a href="@Url.Action("VerPacienteEncerra", "Paciente", new { id = cond.PACIENTE.PACI__CD_ID })" class="btn-loading" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página de visualização de dados do paciente" />@cond.PACIENTE.PACI_NM_NOME</td>
+                                            }
                                             <td style="width: auto">@cond.PACO_DT_CONSULTA.ToShortDateString()</td>
                                             <td style="width: auto">@cond.PACO_HR_INICIO.ToString()</td>
                                             <td style="width: auto">@cond.PACO_HR_FINAL.ToString()</td>

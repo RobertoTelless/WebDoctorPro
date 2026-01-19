@@ -8243,9 +8243,18 @@ namespace GEDSys_Presentation.Controllers
             {
                 return RedirectToAction("Logout", "ControleAcesso");
             }
+            Session["NivelPaciente"] = 13;
             if ((Int32)Session["VoltaEncerramento"] == 1)
             {
                 return RedirectToAction("MontarTelaConsultas", "Paciente");
+            }
+            if ((Int32)Session["VoltaEncerramento"] == 3)
+            {
+                return RedirectToAction("VoltarAnexoPaciente", "Paciente");
+            }
+            if ((Int32)Session["VoltaEncerramento"] == 4)
+            {
+                return RedirectToAction("VoltarProcederConsulta", "Paciente");
             }
             return RedirectToAction("MontarTelaPaciente", "Paciente");
         }

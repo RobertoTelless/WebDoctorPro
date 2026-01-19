@@ -7509,6 +7509,13 @@ namespace GEDSys_Presentation.Controllers
                 };
                 cell.BackgroundColor = BaseColor.LIGHT_GRAY;
                 table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph("Diferença (%)", meuFont))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                table.AddCell(cell);
                 cell = new PdfPCell(new Paragraph("Categoria", meuFont))
                 {
                     VerticalAlignment = Element.ALIGN_MIDDLE,
@@ -7538,13 +7545,6 @@ namespace GEDSys_Presentation.Controllers
                 cell.BackgroundColor = BaseColor.LIGHT_GRAY;
                 table.AddCell(cell);
                 cell = new PdfPCell(new Paragraph("Marca", meuFont))
-                {
-                    VerticalAlignment = Element.ALIGN_MIDDLE,
-                    HorizontalAlignment = Element.ALIGN_LEFT
-                };
-                cell.BackgroundColor = BaseColor.LIGHT_GRAY;
-                table.AddCell(cell);
-                cell = new PdfPCell(new Paragraph("Diferença (%)", meuFont))
                 {
                     VerticalAlignment = Element.ALIGN_MIDDLE,
                     HorizontalAlignment = Element.ALIGN_LEFT
@@ -7606,6 +7606,26 @@ namespace GEDSys_Presentation.Controllers
                         table.AddCell(cell);
                     }
 
+                    Decimal? dif = (item.PROD_VL_ESTOQUE_ATUAL * 100) / item.PROD_VL_ESTOQUE_MAXIMO;
+                    if (dif > 0)
+                    {
+                        cell = new PdfPCell(new Paragraph(CrossCutting.Formatters.DecimalFormatter(dif.Value), meuFont))
+                        {
+                            VerticalAlignment = Element.ALIGN_MIDDLE,
+                            HorizontalAlignment = Element.ALIGN_RIGHT
+                        };
+                        table.AddCell(cell);
+                    }
+                    else
+                    {
+                        cell = new PdfPCell(new Paragraph("0,00", meuFont))
+                        {
+                            VerticalAlignment = Element.ALIGN_MIDDLE,
+                            HorizontalAlignment = Element.ALIGN_RIGHT
+                        };
+                        table.AddCell(cell);
+                    }
+
                     cell = new PdfPCell(new Paragraph(item.CATEGORIA_PRODUTO.CAPR_NM_NOME, meuFont))
                     {
                         VerticalAlignment = Element.ALIGN_MIDDLE,
@@ -7639,26 +7659,6 @@ namespace GEDSys_Presentation.Controllers
                         HorizontalAlignment = Element.ALIGN_LEFT
                     };
                     table.AddCell(cell);
-
-                    Decimal? dif = (item.PROD_VL_ESTOQUE_ATUAL * 100) / item.PROD_VL_ESTOQUE_MAXIMO;
-                    if (dif > 0)
-                    {
-                        cell = new PdfPCell(new Paragraph(CrossCutting.Formatters.DecimalFormatter(dif.Value), meuFont))
-                        {
-                            VerticalAlignment = Element.ALIGN_MIDDLE,
-                            HorizontalAlignment = Element.ALIGN_RIGHT
-                        };
-                        table.AddCell(cell);
-                    }
-                    else
-                    {
-                        cell = new PdfPCell(new Paragraph("0,00", meuFont))
-                        {
-                            VerticalAlignment = Element.ALIGN_MIDDLE,
-                            HorizontalAlignment = Element.ALIGN_RIGHT
-                        };
-                        table.AddCell(cell);
-                    }
 
                     if (System.IO.File.Exists(Server.MapPath(item.PROD_AQ_FOTO)))
                     {
@@ -7823,6 +7823,13 @@ namespace GEDSys_Presentation.Controllers
                 };
                 cell.BackgroundColor = BaseColor.LIGHT_GRAY;
                 table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph("Diferença (%)", meuFont))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                table.AddCell(cell);
                 cell = new PdfPCell(new Paragraph("Categoria", meuFont))
                 {
                     VerticalAlignment = Element.ALIGN_MIDDLE,
@@ -7852,13 +7859,6 @@ namespace GEDSys_Presentation.Controllers
                 cell.BackgroundColor = BaseColor.LIGHT_GRAY;
                 table.AddCell(cell);
                 cell = new PdfPCell(new Paragraph("Marca", meuFont))
-                {
-                    VerticalAlignment = Element.ALIGN_MIDDLE,
-                    HorizontalAlignment = Element.ALIGN_LEFT
-                };
-                cell.BackgroundColor = BaseColor.LIGHT_GRAY;
-                table.AddCell(cell);
-                cell = new PdfPCell(new Paragraph("Diferença (%)", meuFont))
                 {
                     VerticalAlignment = Element.ALIGN_MIDDLE,
                     HorizontalAlignment = Element.ALIGN_LEFT
@@ -7920,6 +7920,26 @@ namespace GEDSys_Presentation.Controllers
                         table.AddCell(cell);
                     }
 
+                    Decimal? dif = (item.PROD_VL_ESTOQUE_ATUAL * 100) / item.PROD_VL_ESTOQUE_MINIMO;
+                    if (dif > 0)
+                    {
+                        cell = new PdfPCell(new Paragraph(CrossCutting.Formatters.DecimalFormatter(dif.Value), meuFont))
+                        {
+                            VerticalAlignment = Element.ALIGN_MIDDLE,
+                            HorizontalAlignment = Element.ALIGN_RIGHT
+                        };
+                        table.AddCell(cell);
+                    }
+                    else
+                    {
+                        cell = new PdfPCell(new Paragraph("0,00", meuFont))
+                        {
+                            VerticalAlignment = Element.ALIGN_MIDDLE,
+                            HorizontalAlignment = Element.ALIGN_RIGHT
+                        };
+                        table.AddCell(cell);
+                    }
+
                     cell = new PdfPCell(new Paragraph(item.CATEGORIA_PRODUTO.CAPR_NM_NOME, meuFont))
                     {
                         VerticalAlignment = Element.ALIGN_MIDDLE,
@@ -7953,26 +7973,6 @@ namespace GEDSys_Presentation.Controllers
                         HorizontalAlignment = Element.ALIGN_LEFT
                     };
                     table.AddCell(cell);
-
-                    Decimal? dif = (item.PROD_VL_ESTOQUE_ATUAL * 100) / item.PROD_VL_ESTOQUE_MINIMO;
-                    if (dif > 0)
-                    {
-                        cell = new PdfPCell(new Paragraph(CrossCutting.Formatters.DecimalFormatter(dif.Value), meuFont))
-                        {
-                            VerticalAlignment = Element.ALIGN_MIDDLE,
-                            HorizontalAlignment = Element.ALIGN_RIGHT
-                        };
-                        table.AddCell(cell);
-                    }
-                    else
-                    {
-                        cell = new PdfPCell(new Paragraph("0,00", meuFont))
-                        {
-                            VerticalAlignment = Element.ALIGN_MIDDLE,
-                            HorizontalAlignment = Element.ALIGN_RIGHT
-                        };
-                        table.AddCell(cell);
-                    }
 
                     if (System.IO.File.Exists(Server.MapPath(item.PROD_AQ_FOTO)))
                     {
@@ -8135,6 +8135,13 @@ namespace GEDSys_Presentation.Controllers
                 };
                 cell.BackgroundColor = BaseColor.LIGHT_GRAY;
                 table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph("Diferença (%)", meuFont))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                table.AddCell(cell);
                 cell = new PdfPCell(new Paragraph("Categoria", meuFont))
                 {
                     VerticalAlignment = Element.ALIGN_MIDDLE,
@@ -8164,13 +8171,6 @@ namespace GEDSys_Presentation.Controllers
                 cell.BackgroundColor = BaseColor.LIGHT_GRAY;
                 table.AddCell(cell);
                 cell = new PdfPCell(new Paragraph("Marca", meuFont))
-                {
-                    VerticalAlignment = Element.ALIGN_MIDDLE,
-                    HorizontalAlignment = Element.ALIGN_LEFT
-                };
-                cell.BackgroundColor = BaseColor.LIGHT_GRAY;
-                table.AddCell(cell);
-                cell = new PdfPCell(new Paragraph("Diferença (%)", meuFont))
                 {
                     VerticalAlignment = Element.ALIGN_MIDDLE,
                     HorizontalAlignment = Element.ALIGN_LEFT
@@ -8232,6 +8232,26 @@ namespace GEDSys_Presentation.Controllers
                         table.AddCell(cell);
                     }
 
+                    Decimal? dif = (item.PROD_VL_ESTOQUE_ATUAL * 100) / item.PROD_VL_ESTOQUE_MINIMO;
+                    if (dif > 0)
+                    {
+                        cell = new PdfPCell(new Paragraph(CrossCutting.Formatters.DecimalFormatter(dif.Value), meuFont))
+                        {
+                            VerticalAlignment = Element.ALIGN_MIDDLE,
+                            HorizontalAlignment = Element.ALIGN_RIGHT
+                        };
+                        table.AddCell(cell);
+                    }
+                    else
+                    {
+                        cell = new PdfPCell(new Paragraph("0,00", meuFont))
+                        {
+                            VerticalAlignment = Element.ALIGN_MIDDLE,
+                            HorizontalAlignment = Element.ALIGN_RIGHT
+                        };
+                        table.AddCell(cell);
+                    }
+
                     cell = new PdfPCell(new Paragraph(item.CATEGORIA_PRODUTO.CAPR_NM_NOME, meuFont))
                     {
                         VerticalAlignment = Element.ALIGN_MIDDLE,
@@ -8265,26 +8285,6 @@ namespace GEDSys_Presentation.Controllers
                         HorizontalAlignment = Element.ALIGN_LEFT
                     };
                     table.AddCell(cell);
-
-                    Decimal? dif = (item.PROD_VL_ESTOQUE_ATUAL * 100) / item.PROD_VL_ESTOQUE_MINIMO;
-                    if (dif > 0)
-                    {
-                        cell = new PdfPCell(new Paragraph(CrossCutting.Formatters.DecimalFormatter(dif.Value), meuFont))
-                        {
-                            VerticalAlignment = Element.ALIGN_MIDDLE,
-                            HorizontalAlignment = Element.ALIGN_RIGHT
-                        };
-                        table.AddCell(cell);
-                    }
-                    else
-                    {
-                        cell = new PdfPCell(new Paragraph("0,00", meuFont))
-                        {
-                            VerticalAlignment = Element.ALIGN_MIDDLE,
-                            HorizontalAlignment = Element.ALIGN_RIGHT
-                        };
-                        table.AddCell(cell);
-                    }
 
                     if (System.IO.File.Exists(Server.MapPath(item.PROD_AQ_FOTO)))
                     {

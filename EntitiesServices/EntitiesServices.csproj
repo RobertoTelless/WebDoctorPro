@@ -1590,6 +1590,7 @@
     <Compile Include="WorkClasses\DTO_ModeloSMS.cs" />
     <Compile Include="WorkClasses\DTO_ContratoLocacao.cs" />
     <Compile Include="WorkClasses\DTO_Paciente_Atestado  - Cópia .cs" />
+    <Compile Include="WorkClasses\DTO_Movimento.cs" />
     <Compile Include="WorkClasses\DTO_Produto_Custo.cs" />
     <Compile Include="WorkClasses\DTO_Produto_Concorrente.cs" />
     <Compile Include="WorkClasses\DTO_Produto_Venda.cs" />

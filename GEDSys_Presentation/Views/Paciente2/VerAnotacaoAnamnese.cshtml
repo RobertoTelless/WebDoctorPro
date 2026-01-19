@@ -131,7 +131,11 @@
                             <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Anotações</h4>
                             <br />
                             <div class="form-group">
-                                @Html.ButtonLinkIndex(text: "Incluir Novo Acompanhamentoo", action: "IncluirAnotacaoAnamnese", controller: "Paciente2", htmlAttributes: new { @class = "btn-loading" })
+                                <a href="@Url.Action("IncluirAnotacaoAnamnese", "Paciente2")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Abre a página de inclusão de acompanhamento" class="btn btn-sm btn-primary btn-loading" id="emp" OnClick = "Fade()">Novo Acompanhamento</a>                
+                                @if ((Int32)Session["TemEncerra"] == 1)
+	                            {
+                                    <a href="@Url.Action("EncerrarConsultaFiltro", "Paciente2")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Abre a página de encerramento de consulta" class="btn btn-sm btn-warning btn-loading" id="emp" OnClick = "Fade()">Encerrar Consulta</a>                
+	                            }
                             </div>
                             @if (ViewBag.Listas != null && (ViewBag.Listas as List<EntitiesServices.Model.PACIENTE_ANAMNESE_ANOTACAO>).Count > 0)
                             {

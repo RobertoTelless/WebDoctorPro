@@ -586,6 +586,8 @@ namespace GEDSys_Presentation.Controllers
                 Session["VoltarProceder"] = 0;
                 Session["VoltaMedico"] = 1;
                 Session["ListaHistoricoGeral"] = null;
+                Session["VoltaEncerra"] = 1;
+                Session["TemEncerra"] = 0;
                 if (confAna.COAN_IN_BLOCO_COMUM == 0 || confAna.COAN_IN_BLOCO_COMUM == null)
                 {
                     Session["BlocoAnamnese"] = 1;
@@ -3935,6 +3937,11 @@ namespace GEDSys_Presentation.Controllers
                 List<RESPOSTA_CONSULTA> listaResposta= item.RESPOSTA_CONSULTA.Where(p => p.RECO_IN_ATIVO == 1).ToList();
                 Session["ListaResposta"] = listaResposta;
 
+                // Verifica consulta a encerrar
+                List<PACIENTE_CONSULTA> cons = item.PACIENTE_CONSULTA.Where(p => p.PACO_IN_ATIVO == 1).ToList();
+                cons = cons.Where(p => p.PACO_DT_CONSULTA.Date < DateTime.Today.Date & p.PACO_IN_CONFIRMADA == 1 & p.PACO_IN_ENCERRADA == 0 & p.PACI_CD_ID == (Int32)Session["IdPaciente"]).ToList();
+                ViewBag.Encerra = cons.Count() > 0 ? 1 : 0;
+
                 // Checa questionario Berlim
                 QUESTIONARIO_BERLIM berlim = item.QUESTIONARIO_BERLIM.FirstOrDefault();
                 if (berlim == null)
@@ -4151,7 +4158,6 @@ namespace GEDSys_Presentation.Controllers
                 Session["FlagRevisao"] = 1;
                 Session["VoltarAnamnese"] = 1;
                 Session["VoltaAnexo"] = 1;
-                Session["TipoSolicitacao"] = 1;
                 Session["VoltaAtestado"] = 0;
                 Session["VoltarConsulta"] = 3;
                 Session["VoltarEvolucao"] = 1;
@@ -4164,6 +4170,8 @@ namespace GEDSys_Presentation.Controllers
                 Session["VoltaCliGrupo"] = 1;
                 Session["VoltaResposta"] = 1;
                 Session["VoltaImpAnamnese"] = 2;
+                Session["VoltaEncerra"] = 2;
+                Session["VoltaEncerramento"] = 3;
                 Session["AjudaNivel"] = "../BaseAdmin/Ajuda/3/Ajuda3_2.pdf";
                 Session["AjudaNivelAt"] = "../BaseAdmin/Ajuda/3/Ajuda3_3.pdf";
                 Session["AjudaNivelCon"] = "../BaseAdmin/Ajuda/3/Ajuda3_10.pdf";
@@ -4681,6 +4689,10 @@ namespace GEDSys_Presentation.Controllers
                     {
                         return RedirectToAction("VerMedicamentosPacienteForm");
                     }
+                    if ((Int32)Session["TipoSolicitacao"] == 9)
+                    {
+                        return RedirectToAction("MontarTelaEncerrarConsulta", "Financeiro");
+                    }
                     if (Session["FiltroPaciente"] != null)
                     {
                         FiltrarPaciente((PACIENTE)Session["FiltroPaciente"]);
@@ -4696,6 +4708,7 @@ namespace GEDSys_Presentation.Controllers
                     {
                         Session["MensPaciente"] = 66;
                     }
+                    Session["TipoSolicitacao"] = 1;
                     return RedirectToAction("VoltarAnexoPaciente");
                 }
                 catch (Exception ex)
@@ -15732,6 +15745,7 @@ namespace GEDSys_Presentation.Controllers
                 return RedirectToAction("Logout", "ControleAcesso");
             }
             USUARIO usuarioLogado = (USUARIO)Session["UserCredentials"];
+            Int32 idAss = (Int32)Session["IdAssinante"];
             ViewBag.TipoAtestado = new SelectList(CarregaTipoAtestado(), "TIAT_CD_ID", "TIAT_NM_NOME");
             if (ModelState.IsValid)
             {
@@ -16317,6 +16331,7 @@ namespace GEDSys_Presentation.Controllers
                     {
                         velho = vm.PAAM_TX_TEXTO_LIVRE_OLD;
                         novo = vm.PAAM_TX_TEXTO_LIVRE;
+                        String anot = dataHoje + "\r\n" + novo;
                         if (velho == null & novo != String.Empty)
                         {
                             vm.PAAM_TX_TEXTO_LIVRE = dataHoje + "\r\n" + novo;
@@ -16330,6 +16345,17 @@ namespace GEDSys_Presentation.Controllers
                             }
                             vm.PAAM_TX_TEXTO_LIVRE = velho + "\r\n\r\n" + dataHoje + "\r\n" + novo;
                         }
+
+                        // Grava acompanhamento
+                        PACIENTE_ANAMNESE_ANOTACAO ano = new PACIENTE_ANAMNESE_ANOTACAO();
+                        ano.ASSI_CD_ID = idAss;
+                        ano.PAAA_DT_ANOTACAO = DateTime.Now;
+                        ano.PAAA_IN_ATIVO = 1;
+                        ano.PAAA_TX_ANOTACAO = anot;
+                        ano.PAAA_TX_TEXTO = anot;
+                        ano.PAAM_CD_ID = vm.PAAM_CD_ID;
+                        ano.USUA_CD_ID = usuarioLogado.USUA_CD_ID;
+                        Int32 voltaAno = baseApp.ValidateCreateAnamneseAnotacao(ano);
                     }
                     else
                     {
@@ -20763,6 +20789,8 @@ namespace GEDSys_Presentation.Controllers
                 Session["VoltarProceder"] = 1;
                 Session["VoltaImpAnamnese"] = 2;
                 Session["VoltaAtestado"] = 3;
+                Session["VoltaEncerra"] = 1;
+                Session["VoltaEncerramento"] = 4;
 
                 // Carrega exame físico
                 PACIENTE_EXAME_FISICOS fisico = paciente.PACIENTE_EXAME_FISICOS.Where(p => p.PAEF_IN_ATIVO == 1).ToList().FirstOrDefault();
@@ -20825,6 +20853,11 @@ namespace GEDSys_Presentation.Controllers
                         ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0540", CultureInfo.CurrentCulture));
                     }
                 }
+
+                // Verifica consulta a encerrar
+                List<PACIENTE_CONSULTA> cons = CarregaConsultas().Where(p => p.PACO_IN_ATIVO == 1).ToList();
+                cons = cons.Where(p => p.PACO_DT_CONSULTA.Date < DateTime.Today.Date & p.PACO_IN_CONFIRMADA == 1 & p.PACO_IN_ENCERRADA == 0 & p.PACI_CD_ID == (Int32)Session["IdPaciente"]).ToList();
+                Session["TemEncerra"] = cons.Count() > 0 ? 1 : 0;
 
                 if ((Int32)Session["ConsultaMarcada"] == 1)
                 {
@@ -22495,6 +22528,16 @@ namespace GEDSys_Presentation.Controllers
             return RedirectToAction("EditarPaciente", new { id = id });
         }
 
+        public ActionResult EditarPacienteEncerra(Int32 id)
+        {
+            if ((String)Session["Ativa"] == null)
+            {
+                return RedirectToAction("Logout", "ControleAcesso");
+            }
+            Session["TipoSolicitacao"] = 9;
+            return RedirectToAction("EditarPaciente", new { id = id });
+        }
+
         public ActionResult EnviarSolicitacaoEMailBase(Int32 id)
         {
             if ((String)Session["Ativa"] == null)
@@ -22530,6 +22573,16 @@ namespace GEDSys_Presentation.Controllers
                 return RedirectToAction("Logout", "ControleAcesso");
             }
             Session["TipoSolicitacao"] = 3;
+            return RedirectToAction("VerPaciente", new { id = id });
+        }
+
+        public ActionResult VerPacienteEncerra(Int32 id)
+        {
+            if ((String)Session["Ativa"] == null)
+            {
+                return RedirectToAction("Logout", "ControleAcesso");
+            }
+            Session["TipoSolicitacao"] = 9;
             return RedirectToAction("VerPaciente", new { id = id });
         }
 
@@ -24291,7 +24344,6 @@ namespace GEDSys_Presentation.Controllers
                     {
                         temHoje = 1;
                     }
-                    //listaMasterConsulta = listaMasterConsulta.OrderBy(p => p.PACO_DT_CONSULTA).ThenBy(p => p.PACO_HR_INICIO).ToList();
                     listaMasterConsulta = listaMasterConsulta.OrderBy(p => p.PACO_DT_CONSULTA).ToList();
                     Session["ListaConsultasGeral"] = listaMasterConsulta;
                     Session["TemHoje"] = temHoje;
@@ -24299,7 +24351,6 @@ namespace GEDSys_Presentation.Controllers
 
 
                 // Monta demais listas
-                //listaMasterConsulta = listaMasterConsulta.OrderBy(p => p.PACO_DT_CONSULTA).ThenBy(p => p.PACO_HR_INICIO).ToList();
                 listaMasterConsulta = listaMasterConsulta.OrderBy(p => p.PACO_DT_CONSULTA).ToList();
                 ViewBag.Listas = (List<PACIENTE_CONSULTA>)Session["ListaConsultasGeral"];
                 var tipo = new List<SelectListItem>();
@@ -24332,6 +24383,7 @@ namespace GEDSys_Presentation.Controllers
                 Session["VoltaEncerramento"] = 1;
                 Session["ListaLog"] = null;
                 Session["VoltarEnvio"] = 1;
+                Session["ListaConsultaAberta"] = null;
 
                 // Carrega view
                 objetoConsulta = new PACIENTE_CONSULTA();
