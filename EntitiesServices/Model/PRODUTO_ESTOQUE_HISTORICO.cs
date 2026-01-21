@@ -26,6 +26,8 @@ namespace EntitiesServices.Model
         public Nullable<int> PREH_IN_SISTEMA { get; set; }
         public string PREH_DS_ORIGEM { get; set; }
         public Nullable<int> MOEP_CD_ID { get; set; }
+        public Nullable<decimal> PREH_QN_ESTOQUE_TOTAL { get; set; }
+        public Nullable<int> PREH_IN_TIPO_MOV { get; set; }
     
         public virtual PRODUTO PRODUTO { get; set; }
         public virtual MOVIMENTO_ESTOQUE_PRODUTO MOVIMENTO_ESTOQUE_PRODUTO { get; set; }

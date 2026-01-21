@@ -123,7 +123,7 @@
                                 @Html.ButtonLinkIndex(text: "Retirar Filtro", controller: "Estoque", action: "RetirarFiltroMovimento", htmlAttributes: new { @class = "btn-loading" })
                                 @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_INCLUIR_MOVIMENTACAO_ESTOQUE == 1)
                                 {
-                                    @Html.ButtonLinkIndex(text: "Nova Movimentação", controller: "Estoque", action: "IncluirMovimentacaoGeral", htmlAttributes: new { @class = "btn-loading" })
+                                    @Html.ButtonLinkIndex(text: "Nova Movimentação", controller: "Estoque", action: "IncluirMovimentacaoGeral", buttonClass: "primary", htmlAttributes: new { @class = "btn-loading" })
                                 }
                                 @Html.ButtonLinkIndex(text: "Imprimir", controller: "Estoque", action: "GerarListagemMovimentacaoProduto")
                                 @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaEstoque", controller: "Estoque", htmlAttributes: new { @class = "btn-loading" })                
@@ -174,7 +174,7 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach (var cond in (ViewBag.Listas as List<EntitiesServices.Model.MOVIMENTO_ESTOQUE_PRODUTO>).OrderBy(p => p.MOEP_DT_MOVIMENTO))
+                                    @foreach (var cond in (ViewBag.Listas as List<EntitiesServices.Model.MOVIMENTO_ESTOQUE_PRODUTO>).OrderByDescending(p => p.MOEP_DT_MOVIMENTO))
                                     {
                                         <tr>                                            
                                             @if (cond.MOEP_IN_TIPO_MOVIMENTO == 1)
@@ -222,8 +222,11 @@
                                             {
                                                 <td style="width: auto"><span class="badge badge-warning">-</span></td>
                                             }
-
-                                            <td style="cursor: pointer; text-decoration: underline; color: #337ab7; width: auto" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Ver a justificativa da movimentação de estoque" onclick="mostrarDesc('@cond.MOEP_DS_JUSTIFICATIVA')">@cond.MOEP_DT_MOVIMENTO.ToShortDateString()</td>
+                                            @*<td style="cursor: pointer; text-decoration: underline; color: #337ab7; width: auto" onclick="mostrarDesc('@cond.MOEP_DS_JUSTIFICATIVA')" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Ver a justificativa da movimentação de estoque">*@
+                                            <td style="cursor: pointer; text-decoration: underline; color: #337ab7; width: auto"  onclick="mostrarDesc('@cond.MOEP_DS_JUSTIFICATIVA')" >
+                                                <span style="display:none; width: auto">@cond.MOEP_DT_MOVIMENTO.ToString("yyyyMMdd")</span>
+                                                @cond.MOEP_DT_MOVIMENTO.ToString("dd/MM/yyyy")
+                                            </td>
                                             <td style="width: auto">@cond.PRODUTO.PROD_NM_NOME</td>
                                             <td style="width: auto">@cond.PRODUTO.PROD_CD_CODIGO</td>
                                             <td style="width: auto">@cond.MOEP_QN_QUANTIDADE</td>
@@ -425,6 +428,16 @@
             $('.dataTables-example').DataTable({
                 pageLength: 25,
                 dom: '<"html5buttons"B>lTfgitp',
+                columnDefs: [
+                    {
+                        // Altera o tipo de ordenação para a primeira coluna (índice 0)
+                        //"type": "datetime-moment", // Se você incluiu o momento.js
+                        // OU
+                         "type": "date-eu", // Para o formato DD/MM/AAAA
+                        "targets": 2 // Aplica à coluna "Data da Transação"
+                    }
+                ],
+                // ---------------------------------       
                 buttons: [
                     { extend: 'excel', title: 'MovEstoque_Planilha' },
                     {

@@ -55,6 +55,7 @@ namespace GEDSys_Presentation.Controllers
         private readonly IRecursividadeAppService recuApp;
         private readonly IPagamentoAppService pagApp;
         private readonly ILocacaoAppService locApp;
+        private readonly ITipoPagamentoAppService tpApp;
 
         private String msg;
         private Exception exception;
@@ -78,7 +79,7 @@ namespace GEDSys_Presentation.Controllers
             , IEmpresaAppService filApps
             , ISubcategoriaProdutoAppService scpApps
             , IConfiguracaoAppService confApps
-            , IUsuarioAppService usuApps, IEmpresaAppService empApps, IMensagemEnviadaSistemaAppService meApps, IRecursividadeAppService recuApps, IPagamentoAppService pagApps, ILocacaoAppService locApps)
+            , IUsuarioAppService usuApps, IEmpresaAppService empApps, IMensagemEnviadaSistemaAppService meApps, IRecursividadeAppService recuApps, IPagamentoAppService pagApps, ILocacaoAppService locApps, ITipoPagamentoAppService tpApps)
         {
             prodApp = prodApps;
             logApp = logApps;
@@ -95,6 +96,7 @@ namespace GEDSys_Presentation.Controllers
             recuApp = recuApps;
             pagApp = pagApps;
             locApp = locApps;
+            tpApp = tpApps;
         }
 
         [HttpGet]
@@ -209,7 +211,7 @@ namespace GEDSys_Presentation.Controllers
                 tipo.Add(new SelectListItem() { Text = "Produto", Value = "2" });
                 ViewBag.Tipos = new SelectList(tipo, "Value", "Text");
                 List<SelectListItem> sits = new List<SelectListItem>();
-                sits.Add(new SelectListItem() { Text = "Geral", Value = "0" });
+                sits.Add(new SelectListItem() { Text = "Exibir Todos", Value = "0" });
                 sits.Add(new SelectListItem() { Text = "Estoque acima do máximo", Value = "1" });
                 sits.Add(new SelectListItem() { Text = "Estoque abaixo do mínimo", Value = "2" });
                 sits.Add(new SelectListItem() { Text = "Estoque zerado", Value = "3" });
@@ -453,7 +455,7 @@ namespace GEDSys_Presentation.Controllers
                 }
                 else if (item.PROD_IN_COMPOSTO == 2)
                 {
-                    List<PRODUTO> abaixo = (volta.Item2).Where(p => p.PROD_VL_ESTOQUE_ATUAL <= p.PROD_VL_ESTOQUE_MINIMO & p.PROD_IN_ATIVO == 1 & p.PROD_IN_COMPOSTO == 0).ToList();
+                    List<PRODUTO> abaixo = (volta.Item2).Where(p => p.PROD_VL_ESTOQUE_ATUAL < p.PROD_VL_ESTOQUE_MINIMO & p.PROD_IN_ATIVO == 1 & p.PROD_IN_COMPOSTO == 0).ToList();
                     listaMasterProd = abaixo;
                 }
                 else if (item.PROD_IN_COMPOSTO == 3)
@@ -1213,7 +1215,14 @@ namespace GEDSys_Presentation.Controllers
                     ModeloViewModel mod1 = new ModeloViewModel();
                     mod1.DataEmissao = item.PREH_DT_DATA.Value;
                     mod1.ValorDec1 = item.PREH_QN_ESTOQUE.Value;
-                    mod1.ValorDec2 = item.PREH_QN_ESTOQUE.Value * prod.PROD_VL_PRECO_VENDA.Value;
+                    if (prod.PROD_VL_PRECO_VENDA != null)
+                    {
+                        mod1.ValorDec2 = item.PREH_QN_ESTOQUE.Value * prod.PROD_VL_PRECO_VENDA.Value;
+                    }
+                    else
+                    {
+                        mod1.ValorDec2 = item.PREH_QN_ESTOQUE.Value * 1;
+                    }
                     lista1.Add(mod1);
                 }
                 lista1 = lista1.OrderBy(p => p.DataEmissao).ToList();
@@ -1371,15 +1380,14 @@ namespace GEDSys_Presentation.Controllers
                 ViewBag.Saidas = new SelectList(saidas, "Value", "Text");
                 List<SelectListItem> cp = new List<SelectListItem>();
                 cp.Add(new SelectListItem() { Text = "Sim", Value = "1" });
-                cp.Add(new SelectListItem() { Text = "Não", Value = "0" });
+                cp.Add(new SelectListItem() { Text = "Não", Value = "2" });
                 ViewBag.CP = new SelectList(cp, "Value", "Text");
-
-                // LISTA DE LOCAÇÕES ================
-                ViewBag.Locacoes = new SelectList(CarregarLocacao().Where(p => p.LOCA_IN_ESTOQUE == 0).OrderBy(p => p.LOCA_DT_EMISSAO), "USUA_CD_ID", "USUA_NM_NOME");
-
-                // LISTA DE VENDAS ================
-
-                ViewBag.Usuarios = new SelectList(CarregarUsuario().Where(p => p.PERFIL.PERF_IN_ACERTO_ESTOQUE == 1).OrderBy(p => p.USUA_NM_NOME), "LOCA_CD_ID", "LOCA_NM_TITULO");
+                List<SelectListItem> quita = new List<SelectListItem>();
+                quita.Add(new SelectListItem() { Text = "Sim", Value = "1" });
+                quita.Add(new SelectListItem() { Text = "Não", Value = "2" });
+                ViewBag.Quitado = new SelectList(quita, "Value", "Text");
+                ViewBag.Usuarios = new SelectList(CarregarUsuario().Where(p => p.PERFIL.PERF_IN_ACERTO_ESTOQUE == 1).OrderBy(p => p.USUA_NM_NOME), "USUA_CD_ID", "USUA_NM_NOME");
+                ViewBag.TipoPag = new SelectList(CarregaTipoPagamento().OrderBy(p => p.TIPA_NM_PAGAMENTO), "TIPA_CD_ID", "TIPA_NM_PAGAMENTO");
                 ViewBag.Perfil = usuario.PERFIL.PERF_SG_SIGLA;
 
                 // Mensagens
@@ -1486,6 +1494,8 @@ namespace GEDSys_Presentation.Controllers
                 vm.MOEP_IN_ORIGEM = String.Empty;
                 vm.MOEP_IN_ATIVO = 1;
                 vm.MOEP_IN_OPERACAO = 0;
+                vm.MOEP_IN_AUTORIZADOR_T = 0;
+                vm.MOEP_IN_AUTORIZADOR = 0;
                 return View(vm);
             }
             catch (Exception ex)
@@ -1527,13 +1537,16 @@ namespace GEDSys_Presentation.Controllers
             saidas.Add(new SelectListItem() { Text = "Envio para Manutenção", Value = "7" });
             saidas.Add(new SelectListItem() { Text = "Acerto Manual", Value = "8" });
             ViewBag.Saidas = new SelectList(saidas, "Value", "Text");
-            ViewBag.Usuarios = new SelectList(CarregarUsuario().Where(p => p.PERFIL.PERF_IN_ACERTO_ESTOQUE == 1).OrderBy(p => p.USUA_NM_NOME), "USUA_CD_ID", "USUA_NM_NOME");
-            ViewBag.Perfil = usuario.PERFIL.PERF_SG_SIGLA;
             List<SelectListItem> cp = new List<SelectListItem>();
             cp.Add(new SelectListItem() { Text = "Sim", Value = "1" });
-            cp.Add(new SelectListItem() { Text = "Não", Value = "0" });
+            cp.Add(new SelectListItem() { Text = "Não", Value = "2" });
             ViewBag.CP = new SelectList(cp, "Value", "Text");
-            ViewBag.Locacoes = new SelectList(CarregarLocacao().Where(p => p.LOCA_IN_ESTOQUE == 0).OrderBy(p => p.LOCA_DT_EMISSAO), "USUA_CD_ID", "USUA_NM_NOME");
+            ViewBag.Usuarios = new SelectList(CarregarUsuario().Where(p => p.PERFIL.PERF_IN_ACERTO_ESTOQUE == 1).OrderBy(p => p.USUA_NM_NOME), "USUA_CD_ID", "USUA_NM_NOME");
+            List<SelectListItem> quita = new List<SelectListItem>();
+            quita.Add(new SelectListItem() { Text = "Sim", Value = "1" });
+            quita.Add(new SelectListItem() { Text = "Não", Value = "2" });
+            ViewBag.Quitado = new SelectList(quita, "Value", "Text");
+            ViewBag.TipoPag = new SelectList(CarregaTipoPagamento().OrderBy(p => p.TIPA_NM_PAGAMENTO), "TIPA_CD_ID", "TIPA_NM_PAGAMENTO");
 
             // LISTA DE VENDAS ================
             String origem = String.Empty;
@@ -1601,6 +1614,23 @@ namespace GEDSys_Presentation.Controllers
                         if (vm.MOEP_IN_TIPO == 1)
                         {
                             origem = "Compra Manual";
+                            if (vm.MOEP_IN_OPERACAO == 0)
+                            {
+                                vm.MOEP_IN_OPERACAO = 2;
+                            }
+                            if (vm.MOEP_IN_OPERACAO == 1)
+                            {
+                                if (vm.MOEP_IN_AUTORIZADOR == 0)
+                                {
+                                    vm.MOEP_IN_AUTORIZADOR = 2;
+                                }
+                                if (vm.MOEP_IN_AUTORIZADOR_T == 0 || vm.MOEP_IN_AUTORIZADOR_T == null)
+                                {
+                                    ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0721", CultureInfo.CurrentCulture));
+                                    return View(vm);
+                                }
+                            }
+
                         }
 
                         // Devolucao
@@ -1710,18 +1740,28 @@ namespace GEDSys_Presentation.Controllers
                             pagto.COPA_GU_GUID = Xid.NewXid().ToString();
                             pagto.USUA_CD_ID = usuario.USUA_CD_ID;
                             pagto.ASSI_CD_ID = idAss;
-                            pagto.COPA_DT_PAGAMENTO = null;
                             pagto.COPA_DT_VENCIMENTO = DateTime.Today.Date;
                             pagto.COPA_IN_CONFERIDO = 0;
-                            pagto.COPA_IN_PAGO = 0;
                             pagto.COPA_NM_NOME = "Pagamento de compra feita em " + vm.MOEP_NM_FORNECEDOR;
                             pagto.COPA_VL_DESCONTO = 0;
                             pagto.COPA_NM_FAVORECIDO = vm.MOEP_NM_FORNECEDOR;
                             pagto.COPA_VL_MULTA = 0;
-                            pagto.COPA_VL_PAGO = 0;
                             pagto.COPA_VL_VALOR = vm.MOEP_VL_VALOR_MOVIMENTO;
                             pagto.COPA_XM_NOTA_FISCAL = null;
                             pagto.COPA_DT_CADASTRO = DateTime.Today.Date;
+                            pagto.TIPA_CD_ID = vm.MOEP_IN_AUTORIZADOR_T;
+                            if (vm.MOEP_IN_AUTORIZADOR == 1)
+                            {
+                                pagto.COPA_IN_PAGO = 1;
+                                pagto.COPA_DT_PAGAMENTO = DateTime.Today.Date;
+                                pagto.COPA_VL_PAGO = vm.MOEP_VL_VALOR_MOVIMENTO;
+                            }
+                            else
+                            {
+                                pagto.COPA_IN_PAGO = 0;
+                                pagto.COPA_DT_PAGAMENTO = null;
+                                pagto.COPA_VL_PAGO = 0;
+                            }
                             Int32 voltaCP = pagApp.ValidateCreate(pagto, usuario);
 
                             // Monta Log
@@ -1784,22 +1824,8 @@ namespace GEDSys_Presentation.Controllers
                         };
                         Int32 volta2 = logApp.ValidateCreate(log1);
 
-
-                        // Inclui historico de estoque
-                        PRODUTO_ESTOQUE_HISTORICO hist = new PRODUTO_ESTOQUE_HISTORICO();
-                        hist.ASSI_CD_ID = usuario.ASSI_CD_ID;
-                        hist.PROD_CD_ID = prod.PROD_CD_ID;
-                        hist.PREH_IN_ATIVO = 1;
-                        hist.PREH_DT_DATA = DateTime.Today.Date;
-                        hist.PREH_DT_COMPLETA = DateTime.Now;
-                        hist.PREH_QN_ESTOQUE = quant;
-                        hist.PREH_IN_PENDENTE = 0;
-                        hist.PREH_NM_TIPO = tipoMov == 1 ? "Entrada" : "Saída";
-                        hist.PREH_DS_ORIGEM = origem;
-                        hist.MOEP_CD_ID = item.MOEP_CD_ID;
-                        Int32 voltaH = prodApp.ValidateCreateEstoqueHistorico(hist, idAss);
-
                         // Acerta estoque total
+                        Decimal? quantEstoque = 0;
                         PRODUTO novo = new PRODUTO();
                         novo.PROD_AQ_FOTO = prod.PROD_AQ_FOTO;
                         novo.PROD_CD_CODIGO = prod.PROD_CD_CODIGO;
@@ -1829,6 +1855,7 @@ namespace GEDSys_Presentation.Controllers
                         novo.PROD_VL_CVM_RECEITA = prod.PROD_VL_CVM_RECEITA;
                         novo.PROD_VL_CVM_UNITARIO = prod.PROD_VL_CVM_UNITARIO;
                         novo.PROD_VL_ESTOQUE_ATUAL = prod.PROD_VL_ESTOQUE_ATUAL + quant;
+                        quantEstoque = prod.PROD_VL_ESTOQUE_ATUAL + quant;
                         novo.PROD_VL_ESTOQUE_CUSTO = prod.PROD_VL_ESTOQUE_CUSTO;
                         novo.PROD_VL_ESTOQUE_MAXIMO = prod.PROD_VL_ESTOQUE_MAXIMO;
                         novo.PROD_VL_ESTOQUE_MINIMO = prod.PROD_VL_ESTOQUE_MINIMO;
@@ -1859,6 +1886,22 @@ namespace GEDSys_Presentation.Controllers
                         Int32 voltaP = prodApp.ValidateEdit(novo, novo);
                         gravaHist = 1;
 
+                        // Inclui historico de estoque
+                        PRODUTO_ESTOQUE_HISTORICO hist = new PRODUTO_ESTOQUE_HISTORICO();
+                        hist.ASSI_CD_ID = usuario.ASSI_CD_ID;
+                        hist.PROD_CD_ID = prod.PROD_CD_ID;
+                        hist.PREH_IN_ATIVO = 1;
+                        hist.PREH_DT_DATA = DateTime.Today.Date;
+                        hist.PREH_DT_COMPLETA = DateTime.Now;
+                        hist.PREH_QN_ESTOQUE = quant;
+                        hist.PREH_IN_PENDENTE = 0;
+                        hist.PREH_NM_TIPO = tipoMov == 1 ? "Entrada" : "Saída";
+                        hist.PREH_DS_ORIGEM = origem;
+                        hist.MOEP_CD_ID = item.MOEP_CD_ID;
+                        hist.PREH_IN_TIPO_MOV = 1;
+                        hist.PREH_QN_ESTOQUE_TOTAL = quantEstoque;
+                        Int32 voltaH = prodApp.ValidateCreateEstoqueHistorico(hist, idAss);
+
                         // Monta Log
                         DTO_Produto dto2 = MontarProdutoDTOObj(novo);
                         String json2 = JsonConvert.SerializeObject(dto2, settings);
@@ -1875,8 +1918,6 @@ namespace GEDSys_Presentation.Controllers
                             LOG_TX_REGISTRO_ANTES = json2Antes,
                             LOG_IN_SISTEMA = 6
                         };
-
-                        // Acertar locação
                     }
 
                     // Processa saidas
@@ -1918,21 +1959,8 @@ namespace GEDSys_Presentation.Controllers
                         };
                         Int32 volta2 = logApp.ValidateCreate(log1);
 
-                        // Inclui historico de estoque
-                        PRODUTO_ESTOQUE_HISTORICO hist = new PRODUTO_ESTOQUE_HISTORICO();
-                        hist.ASSI_CD_ID = usuario.ASSI_CD_ID;
-                        hist.PROD_CD_ID = prod.PROD_CD_ID;
-                        hist.PREH_IN_ATIVO = 1;
-                        hist.PREH_DT_DATA = DateTime.Today.Date;
-                        hist.PREH_DT_COMPLETA = DateTime.Now;
-                        hist.PREH_QN_ESTOQUE = quant;
-                        hist.PREH_IN_PENDENTE = 0;
-                        hist.PREH_NM_TIPO = tipoMov == 1 ? "Entrada" : "Saída";
-                        hist.PREH_DS_ORIGEM = origem;
-                        hist.MOEP_CD_ID = item.MOEP_CD_ID;
-                        Int32 voltaH = prodApp.ValidateCreateEstoqueHistorico(hist, idAss);
-
                         // Acerta estoque total
+                        Decimal? quantEstoque = 0;
                         PRODUTO novo = new PRODUTO();
                         novo.PROD_AQ_FOTO = prod.PROD_AQ_FOTO;
                         novo.PROD_CD_CODIGO = prod.PROD_CD_CODIGO;
@@ -1962,6 +1990,7 @@ namespace GEDSys_Presentation.Controllers
                         novo.PROD_VL_CVM_RECEITA = prod.PROD_VL_CVM_RECEITA;
                         novo.PROD_VL_CVM_UNITARIO = prod.PROD_VL_CVM_UNITARIO;
                         novo.PROD_VL_ESTOQUE_ATUAL = prod.PROD_VL_ESTOQUE_ATUAL - quant;
+                        quantEstoque = prod.PROD_VL_ESTOQUE_ATUAL - quant;
                         novo.PROD_VL_ESTOQUE_CUSTO = prod.PROD_VL_ESTOQUE_CUSTO;
                         novo.PROD_VL_ESTOQUE_MAXIMO = prod.PROD_VL_ESTOQUE_MAXIMO;
                         novo.PROD_VL_ESTOQUE_MINIMO = prod.PROD_VL_ESTOQUE_MINIMO;
@@ -1992,6 +2021,22 @@ namespace GEDSys_Presentation.Controllers
                         Int32 voltaP = prodApp.ValidateEdit(novo, novo);
                         gravaHist = 1;
 
+                        // Inclui historico de estoque
+                        PRODUTO_ESTOQUE_HISTORICO hist = new PRODUTO_ESTOQUE_HISTORICO();
+                        hist.ASSI_CD_ID = usuario.ASSI_CD_ID;
+                        hist.PROD_CD_ID = prod.PROD_CD_ID;
+                        hist.PREH_IN_ATIVO = 1;
+                        hist.PREH_DT_DATA = DateTime.Today.Date;
+                        hist.PREH_DT_COMPLETA = DateTime.Now;
+                        hist.PREH_QN_ESTOQUE = quant;
+                        hist.PREH_IN_PENDENTE = 0;
+                        hist.PREH_NM_TIPO = tipoMov == 1 ? "Entrada" : "Saída";
+                        hist.PREH_DS_ORIGEM = origem;
+                        hist.MOEP_CD_ID = item.MOEP_CD_ID;
+                        hist.PREH_IN_TIPO_MOV = 2;
+                        hist.PREH_QN_ESTOQUE_TOTAL = quantEstoque;
+                        Int32 voltaH = prodApp.ValidateCreateEstoqueHistorico(hist, idAss);
+
                         // Monta Log
                         DTO_Produto dto2 = MontarProdutoDTOObj(novo);
                         String json2 = JsonConvert.SerializeObject(dto2, settings);
@@ -2008,9 +2053,6 @@ namespace GEDSys_Presentation.Controllers
                             LOG_TX_REGISTRO_ANTES = json2Antes,
                             LOG_IN_SISTEMA = 6
                         };
-
-                        // Acertar locação
-
                     }
 
                     // Grava histórico
@@ -2053,6 +2095,44 @@ namespace GEDSys_Presentation.Controllers
             else
             {
                 return View(vm);
+            }
+        }
+
+        public List<TIPO_PAGAMENTO> CarregaTipoPagamento()
+        {
+            try
+            {
+                Int32 idAss = (Int32)Session["IdAssinante"];
+                List<TIPO_PAGAMENTO> conf = new List<TIPO_PAGAMENTO>();
+                if (Session["TipoPagamentos"] == null)
+                {
+                    conf = tpApp.GetAllItens(idAss);
+                }
+                else
+                {
+                    if ((Int32)Session["TipoPagamentoAlterada"] == 1)
+                    {
+                        conf = tpApp.GetAllItens(idAss);
+                    }
+                    else
+                    {
+                        conf = (List<TIPO_PAGAMENTO>)Session["TipoPagamentos"];
+                    }
+                }
+                Session["TipoPagamentos"] = conf;
+                Session["TipoPagamentoAlterada"] = 0;
+                return conf;
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Paciente";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Paciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return null;
             }
         }
 
@@ -2326,7 +2406,7 @@ namespace GEDSys_Presentation.Controllers
                         LOG_DT_DATA = DateTime.Now,
                         ASSI_CD_ID = usuarioLogado.ASSI_CD_ID,
                         USUA_CD_ID = usuarioLogado.USUA_CD_ID,
-                        LOG_NM_OPERACAO = "ianMOEN",
+                        LOG_NM_OPERACAO = "Estoque - Movimentação - Anotação - Inclusão",
                         LOG_IN_ATIVO = 1,
                         LOG_TX_REGISTRO = "Movimentação: " + not.MOEP_DT_MOVIMENTO.ToString() + " | Anotação: " + item.MOAN_DS_ANOTACA_,
                         LOG_IN_SISTEMA = 6
@@ -2367,6 +2447,7 @@ namespace GEDSys_Presentation.Controllers
                 Session["AbaProduto"] = 4;
                 Session["VoltaProduto"] = 777;
                 MOVIMENTO_ANOTACAO item = prodApp.GetAnotacaoMovimentoById(id);
+                Session["Anotacao"] = item;
                 MOVIMENTO_ESTOQUE_PRODUTO cli = prodApp.GetMovimentoById(item.MOEP_CD_ID.Value);
                 MovimentoAnotacaoViewModel vm = Mapper.Map<MOVIMENTO_ANOTACAO, MovimentoAnotacaoViewModel>(item);
                 return View(vm);
@@ -2409,7 +2490,7 @@ namespace GEDSys_Presentation.Controllers
                         LOG_DT_DATA = DateTime.Now,
                         ASSI_CD_ID = usuarioLogado.ASSI_CD_ID,
                         USUA_CD_ID = usuarioLogado.USUA_CD_ID,
-                        LOG_NM_OPERACAO = "eanMOEP",
+                        LOG_NM_OPERACAO = "Estoque - Movimentação - Anotação - Alteração",
                         LOG_IN_ATIVO = 1,
                         LOG_TX_REGISTRO = "Movimento: " + not.MOEP_DT_MOVIMENTO.ToString() + " | Anotação: " + item.MOAN_DS_ANOTACA_,
                         LOG_IN_SISTEMA = 6
@@ -2462,7 +2543,7 @@ namespace GEDSys_Presentation.Controllers
                     LOG_DT_DATA = DateTime.Now,
                     ASSI_CD_ID = usuarioLogado.ASSI_CD_ID,
                     USUA_CD_ID = usuarioLogado.USUA_CD_ID,
-                    LOG_NM_OPERACAO = "xanMOEP",
+                    LOG_NM_OPERACAO = "Estoque - Movimentação - Anotação - Exclusão",
                     LOG_IN_ATIVO = 1,
                     LOG_TX_REGISTRO = "Movimento: " + not.MOEP_DT_MOVIMENTO.ToString() + " | Anotação: " + item.MOAN_DS_ANOTACA_,
                     LOG_IN_SISTEMA = 6
@@ -2858,7 +2939,7 @@ namespace GEDSys_Presentation.Controllers
                 pdfDoc.Open();
 
                 // Grid
-                PdfPTable table = new PdfPTable(new float[] { 50f, 50f, 180f, 80f, 50f, 50f, 50f, 50f, 50f, 50f, 40f });
+                PdfPTable table = new PdfPTable(new float[] { 50f, 50f, 180f, 80f, 70f, 70f, 70f, 70f, 70f, 70f, 40f });
                 table.WidthPercentage = 100;
                 table.HorizontalAlignment = 0;
                 table.SpacingBefore = 1f;
@@ -2879,7 +2960,7 @@ namespace GEDSys_Presentation.Controllers
                 };
                 cell.BackgroundColor = BaseColor.LIGHT_GRAY;
                 table.AddCell(cell);
-                cell = new PdfPCell(new Paragraph("Material/Produto", meuFont))
+                cell = new PdfPCell(new Paragraph("Nome do Material/Produto", meuFont))
                 {
                     VerticalAlignment = Element.ALIGN_MIDDLE,
                     HorizontalAlignment = Element.ALIGN_LEFT
@@ -4196,6 +4277,12 @@ namespace GEDSys_Presentation.Controllers
         {
             try
             {
+                if ((String)Session["Ativa"] == null)
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+
+
                 // Prepara geração
                 if ((String)Session["Ativa"] == null)
                 {
@@ -4215,59 +4302,80 @@ namespace GEDSys_Presentation.Controllers
                 Font meuFont2 = FontFactory.GetFont("Arial", 14, iTextSharp.text.Font.NORMAL, BaseColor.BLACK);
                 Font meuFontBold = FontFactory.GetFont("Arial", 8, iTextSharp.text.Font.BOLD, BaseColor.BLACK);
 
-                // Cria documento
-                Document pdfDoc = new Document(PageSize.A4, 10, 10, 10, 10);
-                PdfWriter pdfWriter = PdfWriter.GetInstance(pdfDoc, Response.OutputStream);
-                pdfDoc.Open();
-
-                // Linha horizontal
-                Paragraph line1 = new Paragraph(new Chunk(new iTextSharp.text.pdf.draw.LineSeparator(0.0F, 100.0F, BaseColor.BLUE, Element.ALIGN_LEFT, 1)));
-                pdfDoc.Add(line1);
-
-
                 // Cabeçalho
-                PdfPTable table = new PdfPTable(new float[] { 20f, 700f });
-                table.WidthPercentage = 100;
-                table.HorizontalAlignment = 1;
-                table.SpacingBefore = 1f;
-                table.SpacingAfter = 1f;
+                PdfPTable headerTable = new PdfPTable(new float[] { 20f, 700f });
+                headerTable.WidthPercentage = 100;
+                headerTable.HorizontalAlignment = 1;
+                headerTable.SpacingBefore = 1f;
+                headerTable.SpacingAfter = 1f;
 
-                PdfPCell cell = new PdfPCell();
-                cell.Border = 0;
-                cell.Colspan = 1;
-                Image image = null;
                 if (conf.CONF_IN_LOGO_EMPRESA == 1)
                 {
+                    PdfPCell cell1 = new PdfPCell();
+                    cell1.Border = 0;
+                    cell1.Colspan = 1;
+                    Image image = null;
                     EMPRESA empresa = empApp.GetItemByAssinante(idAss);
                     image = Image.GetInstance(Server.MapPath(empresa.EMPR_AQ_LOGO));
+                    image.ScaleAbsolute(50, 50);
+                    cell1.AddElement(image);
+                    cell1.Border = PdfPCell.BOTTOM_BORDER;
+                    headerTable.AddCell(cell1);
+
+                    cell1 = new PdfPCell(new Paragraph("Movimentação de Estoque - Detalhes", meuFont2))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_CENTER
+                    };
+                    cell1.Border = 0;
+                    cell1.Colspan = 1;
+                    cell1.Border = PdfPCell.BOTTOM_BORDER;
+                    headerTable.AddCell(cell1);
                 }
                 else
                 {
-                    image = Image.GetInstance(Server.MapPath("~/Images/Prontuario_Icone_1.png"));
+                    PdfPCell cell2 = new PdfPCell(new Paragraph("Movimentação de Estoque - Detalhes", meuFont2))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_CENTER
+                    };
+                    cell2.Border = 0;
+                    cell2.Colspan = 2;
+                    headerTable.AddCell(cell2);
+
+                    cell2 = new PdfPCell(new Paragraph(" ", meuFont))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    cell2.Colspan = 2;
+                    cell2.Border = PdfPCell.BOTTOM_BORDER;
+                    headerTable.AddCell(cell2);
                 }
-                image.ScaleAbsolute(50, 50);
-                cell.AddElement(image);
-                table.AddCell(cell);
 
-                cell = new PdfPCell(new Paragraph("Movimentação de Estoque - Detalhes", meuFont2))
-                {
-                    VerticalAlignment = Element.ALIGN_MIDDLE,
-                    HorizontalAlignment = Element.ALIGN_CENTER
-                };
-                cell.Border = 0;
-                cell.Colspan = 4;
-                table.AddCell(cell);
+                // Rodape
+                PdfPTable footerTable = new PdfPTable(1);
+                footerTable.WidthPercentage = 100;
+                footerTable.HorizontalAlignment = 1;
+                footerTable.SpacingBefore = 1f;
+                footerTable.SpacingAfter = 1f;
 
-                pdfDoc.Add(table);
+                PdfPCell cell = new PdfPCell();
+                cell.Border = PdfPCell.TOP_BORDER;
+                cell = new PdfPCell(new Paragraph("Gerado por WebDoctor 1.0 em " + DateTime.Today.Date.ToLongDateString(), meuFont));
+                footerTable.AddCell(cell);
 
-                // Linha Horizontal
-                line1 = new Paragraph(new Chunk(new iTextSharp.text.pdf.draw.LineSeparator(0.0F, 100.0F, BaseColor.BLUE, Element.ALIGN_LEFT, 1)));
-                pdfDoc.Add(line1);
-                line1 = new Paragraph("  ");
+                // Cria documento
+                Document pdfDoc = new Document(PageSize.A4, 10, 10, 60, 40);
+                PdfWriter pdfWriter = PdfWriter.GetInstance(pdfDoc, Response.OutputStream);
+                pdfWriter.PageEvent = new CustomPageEventHelper(headerTable, footerTable);
+                pdfDoc.Open();
+
+                Paragraph line1 = new Paragraph("  ");
                 pdfDoc.Add(line1);
 
                 // Dados Gerais
-                table = new PdfPTable(new float[] { 120f, 120f, 120f, 120f });
+                PdfPTable table = new PdfPTable(new float[] { 120f, 120f, 120f, 120f });
                 table.WidthPercentage = 100;
                 table.HorizontalAlignment = 0;
                 table.SpacingBefore = 1f;
@@ -4824,11 +4932,11 @@ namespace GEDSys_Presentation.Controllers
             {
                 ViewBag.Message = ex.Message;
                 Session["TipoVolta"] = 2;
-                Session["VoltaExcecao"] = "Estoque";
+                Session["VoltaExcecao"] = "Paciente";
                 Session["Excecao"] = ex;
                 Session["ExcecaoTipo"] = ex.GetType().ToString();
                 GravaLogExcecao grava = new GravaLogExcecao(usuApp);
-                Int32 voltaX = grava.GravarLogExcecao(ex, "Estoque", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Paciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
                 return RedirectToAction("TrataExcecao", "BaseAdmin");
             }
         }

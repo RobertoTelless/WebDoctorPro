@@ -151,7 +151,7 @@
                                         <div class="row">
                                             <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Movimentação</h4>
                                             <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
-                                                <div class="col-lg-2 col-md-2 col-xs-12">
+                                                <div class="col-lg-1 col-md-1 col-xs-12">
                                                     Quantidade*
                                                     @Html.TextBoxFor(m => m.MOEP_QN_QUANTIDADE, new { @class = "form-control", autofocus = true, onfocus="this.select();" })
                                                     @Html.ValidationMessageFor(m => m.MOEP_QN_QUANTIDADE, "", new { @style = "color:red" })
@@ -168,8 +168,18 @@
                                                 </div>
                                                 <div class="col-lg-2 col-md-2 col-xs-12" id="pag">
                                                     Gera Pagamento*
-                                                    @Html.DropDownListFor(m => m.MOEP_IN_OPERACAO, (SelectList)ViewBag.CP, "Selecionar", new { @class = "form-control", autofocus = true })
+                                                    @Html.DropDownListFor(m => m.MOEP_IN_OPERACAO, (SelectList)ViewBag.CP, "Selecionar", new { @class = "form-control", autofocus = true, @id = "gera", onchange = "ValidaPag($(this).val())" })
                                                     @Html.ValidationMessageFor(m => m.MOEP_IN_OPERACAO, "", new { @style = "color:red" })
+                                                </div>
+                                                <div class="col-lg-2 col-md-2 col-xs-12" id="tipo">
+                                                    Tipo de Pagamento
+                                                    @Html.DropDownListFor(m => m.MOEP_IN_AUTORIZADOR_T, (SelectList)ViewBag.TipoPag, "Selecionar", new { @class = "form-control", autofocus = true, @id = "tipo" })
+                                                    @Html.ValidationMessageFor(m => m.MOEP_IN_AUTORIZADOR_T, "", new { @style = "color:red" })
+                                                </div>
+                                                <div class="col-lg-2 col-md-2 col-xs-12" id="quita">
+                                                    Pagamento Quitado
+                                                    @Html.DropDownListFor(m => m.MOEP_IN_AUTORIZADOR, (SelectList)ViewBag.Quitado, "Selecionar", new { @class = "form-control", autofocus = true, @id = "quita" })
+                                                    @Html.ValidationMessageFor(m => m.MOEP_IN_AUTORIZADOR, "", new { @style = "color:red" })
                                                 </div>
                                             </div>
                                         </div>    
@@ -420,9 +430,21 @@
             if (valTipo == '1') {
                 $("#entrada").show();
                 $("#saida").hide();
+                $("#forn").hide();
+                $("#valor").hide();
+                $("#venda").hide();
+                $("#pag").hide();
+                $("#tipo").hide();
+                $("#quita").hide();
             } else if (valTipo == '2') { 
                 $("#entrada").hide();
                 $("#saida").show();
+                $("#forn").hide();
+                $("#valor").hide();
+                $("#venda").hide();
+                $("#pag").hide();
+                $("#tipo").hide();
+                $("#quita").hide();
             } else { 
                 $("#entrada").hide();
                 $("#saida").hide();
@@ -430,6 +452,8 @@
                 $("#valor").hide();
                 $("#venda").hide();
                 $("#pag").hide();
+                $("#tipo").hide();
+                $("#quita").hide();
             }
         }
 
@@ -438,100 +462,62 @@
         });
     </script>
     <script type="text/javascript">
+        function ValidaPag(valTipo) {
+            if (valTipo == '1') {
+                $("#tipo").show();
+                $("#quita").show();
+            } else if (valTipo == '2') { 
+                $("#tipo").hide();
+                $("#quita").hide();
+            } else { 
+                $("#tipo").hide();
+                $("#quita").hide();
+            }
+        }
+        $(document).ready(function () {
+            ValidaPag($('#gera').val());
+        });
+    </script>
+
+    <script type="text/javascript">
         function ValidaEntrada(valTipo) {
             if (valTipo == '1') {
                 $("#forn").show();
                 $("#valor").show();
                 $("#venda").hide();
                 $("#pag").show();
+                $("#tipo").hide();
+                $("#quita").hide();
             } else if (valTipo == '2') { 
                 $("#forn").hide();
                 $("#valor").hide();
                 $("#venda").show();
                 $("#pag").hide();
+                $("#pag").hide();
+                $("#tipo").hide();
+                $("#quita").hide();
             } else if (valTipo == '3') { 
                 $("#forn").show();
                 $("#valor").hide();
                 $("#venda").hide();
                 $("#pag").hide();
+                $("#pag").hide();
+                $("#tipo").hide();
+                $("#quita").hide();
             } else if (valTipo == '4') { 
                 $("#forn").hide();
                 $("#valor").hide();
                 $("#venda").hide();
                 $("#pag").hide();
+                $("#pag").hide();
+                $("#tipo").hide();
+                $("#quita").hide();
             }
         }
 
         $(document).ready(function () {
             ValidaEntrada($('#ent').val());
         });
-    </script>
-
-    <script>
-        function GetFormaPag(id) {
-            var data = {
-                id: id
-            }
-
-            $.ajax({
-                url: '/Estoque/GetFormaPag'
-                , type: 'POST'
-                , data: data
-                , success: function (r) {
-                    $('#banco > input').val(r.banco);
-                    $('#conta > input').val(r.conta);
-                    $('#nomeConta > input').val(r.nomeConta);
-
-                    $('#banco').show();
-                    $('#conta').show();
-                    $('#nomeconta').show();
-                }
-            });
-        }
-    </script>
-    <script>
-        function GetProposta(id) {
-            var data = {
-                id: id
-            }
-
-            $.ajax({
-                url: '/Estoque/GetProposta'
-                , type: 'POST'
-                , data: data
-                , success: function (r) {
-                    $('#numProp > input').val(r.numProp);
-                    $('#cliProp > input').val(r.cliProp);
-                    $('#dataProp > input').val(r.dataProp);
-
-                    $('#numProp').show();
-                    $('#cliProp').show();
-                    $('#dataProp').show();
-                }
-            });
-        }
-    </script>
-    <script>
-        function GetFormaPagDev(id) {
-            var data = {
-                id: id
-            }
-
-            $.ajax({
-                url: '/Estoque/GetFormaRec'
-                , type: 'POST'
-                , data: data
-                , success: function (r) {
-                    $('#bancoDev > input').val(r.bancoDev);
-                    $('#contaDev > input').val(r.contaDev);
-                    $('#nomeContaDev > input').val(r.nomeContaDev);
-
-                    $('#bancoDev').show();
-                    $('#contaDev').show();
-                    $('#nomecontaDev').show();
-                }
-            });
-        }
     </script>
     <script type="text/javascript">
         function ValidaSaida(valTipo) {
@@ -540,21 +526,33 @@
                 $("#valor").hide();
                 $("#venda").hide();
                 $("#pag").hide();
+                $("#pag").hide();
+                $("#tipo").hide();
+                $("#quita").hide();
             } else if (valTipo == '6') { 
                 $("#forn").hide();
                 $("#valor").hide();
                 $("#venda").hide();
                 $("#pag").hide();
+                $("#pag").hide();
+                $("#tipo").hide();
+                $("#quita").hide();
             } else if (valTipo == '7') { 
                 $("#forn").show();
                 $("#valor").hide();
                 $("#venda").hide();
                 $("#pag").hide();
+                $("#pag").hide();
+                $("#tipo").hide();
+                $("#quita").hide();
             } else if (valTipo == '8') { 
                 $("#forn").hide();
                 $("#valor").hide();
                 $("#venda").hide();
                 $("#pag").hide();
+                $("#pag").hide();
+                $("#tipo").hide();
+                $("#quita").hide();
             }
         }
 
@@ -563,27 +561,46 @@
         });
     </script>
 
-    <script type="text/javascript">
-        function ValidaCP(valTipo) {
-            if (valTipo == '0') {
-                $("#dataLanc").hide();
-                $("#dataPag").hide();
-            } else if (valTipo == '1') { 
-                $("#dataLanc").hide();
-                $("#dataPag").show();
-            } else if (valTipo == '2') { 
-                $("#dataLanc").show();
-                $("#dataPag").hide();
-            } else if (valTipo == '3') { 
-                $("#dataLanc").ahow();
-                $("#dataPag").show();
-            }
-        }
-
-        $(document).ready(function () {
-            ValidaCP($('#cp').val());
+    @*<script>
+        $("#lstCliente").select2({
+            ajax: {
+                // Transformamos a url em uma função para decidir o método
+                url: function () {
+                    var tipoSelecionado = $('#ent').val();
+                    var formaSelecionado = $('#es').val();
+                
+                    // Exemplo de lógica: se o valor for "1", busca por Nome, senão busca por Código
+                    // Substitua '1' pelo valor real do seu DropDownList
+                    if (formaSelecionado == 1) {
+                        if (tipoSelecionado == "1" | tipoSelecionado == "4"  ) {
+                            return '/Produto/BuscaNome';
+                        } else {
+                            return '/Produto/BuscaNomeProduto';
+                        }
+                    }
+                    else {
+                        return '/Produto/BuscaNome';
+                    }
+                },
+                type: 'POST',
+                delay: 250, // Adicionado para evitar excesso de requisições ao digitar
+                data: function (params) {
+                    return {
+                        nome: params.term,
+                        tipo: $('#ent').val() // Opcional: envia o tipo também para o C#
+                    };
+                },
+                processResults: function (data) {
+                    return {
+                        results: data
+                    };
+                }
+            },
+            placeholder: 'Busque por NOME',
+            minimumInputLength: 1
         });
-    </script>
+    </script>*@
+
 
     <script>
         $("#lstCliente").select2({

@@ -154,10 +154,6 @@ namespace DataServices.Repositories
             {
                 query = query.Where(p => p.PROD_IN_TIPO_PRODUTO == tipo);
             }
-            if (composto != null)
-            {
-                query = query.Where(p => p.PROD_IN_COMPOSTO == composto);
-            }
             if (data != null)
             {
                 query = query.Where(p => DbFunctions.TruncateTime(p.PROD_DT_ALTERACAO) == DbFunctions.TruncateTime(data));

@@ -2214,4 +2214,7 @@
   <data name="M0720" xml:space="preserve">
     <value>A data de emissão não pode ser inferior a data corrente</value>
   </data>
+  <data name="M0721" xml:space="preserve">
+    <value>Tipo de pagamento não especificado</value>
+  </data>
 </root>

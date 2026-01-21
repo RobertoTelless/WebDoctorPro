@@ -5482,6 +5482,8 @@
           <Property Name="PREH_IN_SISTEMA" Type="int" />
           <Property Name="PREH_DS_ORIGEM" Type="varchar" MaxLength="150" />
           <Property Name="MOEP_CD_ID" Type="int" />
+          <Property Name="PREH_QN_ESTOQUE_TOTAL" Type="decimal" Precision="18" Scale="2" />
+          <Property Name="PREH_IN_TIPO_MOV" Type="int" />
         </EntityType>
         <EntityType Name="PRODUTO_FALHA">
           <Key>
@@ -25753,6 +25755,8 @@
           <Property Name="PREH_DS_ORIGEM" Type="String" MaxLength="150" FixedLength="false" Unicode="false" />
           <Property Name="MOEP_CD_ID" Type="Int32" />
           <NavigationProperty Name="MOVIMENTO_ESTOQUE_PRODUTO" Relationship="CRMSysDBModel.FK_PRODUTO_ESTOQUE_HISTORICO_MOVIMENTO_ESTOQUE_PRODUTO" FromRole="PRODUTO_ESTOQUE_HISTORICO" ToRole="MOVIMENTO_ESTOQUE_PRODUTO" />
+          <Property Name="PREH_QN_ESTOQUE_TOTAL" Type="Decimal" Precision="18" Scale="2" />
+          <Property Name="PREH_IN_TIPO_MOV" Type="Int32" />
         </EntityType>
         <EntityType Name="PRODUTO_FALHA">
           <Key>
@@ -46042,6 +46046,8 @@
           <EntitySetMapping Name="PRODUTO_ESTOQUE_HISTORICO">
             <EntityTypeMapping TypeName="CRMSysDBModel.PRODUTO_ESTOQUE_HISTORICO">
               <MappingFragment StoreEntitySet="PRODUTO_ESTOQUE_HISTORICO">
+                <ScalarProperty Name="PREH_IN_TIPO_MOV" ColumnName="PREH_IN_TIPO_MOV" />
+                <ScalarProperty Name="PREH_QN_ESTOQUE_TOTAL" ColumnName="PREH_QN_ESTOQUE_TOTAL" />
                 <ScalarProperty Name="MOEP_CD_ID" ColumnName="MOEP_CD_ID" />
                 <ScalarProperty Name="PREH_DS_ORIGEM" ColumnName="PREH_DS_ORIGEM" />
                 <ScalarProperty Name="PREH_CD_ID" ColumnName="PREH_CD_ID" />

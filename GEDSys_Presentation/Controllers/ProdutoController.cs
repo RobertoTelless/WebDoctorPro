@@ -158,6 +158,32 @@ namespace GEDSys_Presentation.Controllers
             return Json(listResult);
         }
 
+        [HttpPost]
+        public JsonResult BuscaNomeProduto(String nome)
+        {
+            List<Hashtable> listResult = new List<Hashtable>();
+            Int32 idAss = (Int32)Session["IdAssinante"];
+            List<PRODUTO> lista = CarregarProduto().Where(p => p.PROD_IN_TIPO_PRODUTO == 2).ToList();
+
+            if (nome != null)
+            {
+                List<PRODUTO> lstProduto = lista.Where(x => x.PROD_NM_NOME != null && x.PROD_NM_NOME.ToLower().Contains(nome.ToLower())).ToList<PRODUTO>();
+
+                if (lstProduto != null)
+                {
+                    foreach (var item in lstProduto)
+                    {
+                        Hashtable result = new Hashtable();
+                        result.Add("id", item.PROD_CD_ID);
+                        result.Add("text", item.PROD_NM_NOME);
+                        listResult.Add(result);
+                    }
+                }
+            }
+            Session["Produtos"] = lista;
+            return Json(listResult);
+        }
+
         public ActionResult MontarTelaDashboardProduto()
         {
             try
@@ -6997,6 +7023,7 @@ namespace GEDSys_Presentation.Controllers
                 if (Session["ListaProdEsgota"] == null)
                 {
                     listaMasterProd = CarregarProduto();
+                    listaMasterProd = listaMasterProd.Where(p => p.PROD_VL_MEDIA_VENDA_MENSAL > 0).ToList();
                     listaMasterProd = listaMasterProd.Where(p => (p.PROD_VL_ESTOQUE_ATUAL / p.PROD_VL_MEDIA_VENDA_MENSAL) <= 1  & p.PROD_IN_ATIVO == 1).ToList();
                     Session["ListaProdEsgota"] = listaMasterProd;
                 }

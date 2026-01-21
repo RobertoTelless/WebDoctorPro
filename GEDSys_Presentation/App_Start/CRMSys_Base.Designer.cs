@@ -6350,5 +6350,14 @@ namespace GEDSys_Presentation.App_Start {
                 return ResourceManager.GetString("M0720", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Consulta uma cadeia de caracteres localizada semelhante a Tipo de pagamento não especificado.
+        /// </summary>
+        internal static string M0721 {
+            get {
+                return ResourceManager.GetString("M0721", resourceCulture);
+            }
+        }
     }
 }
