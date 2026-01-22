@@ -1148,6 +1148,13 @@
         <AssociationConnector Association="CRMSysDBModel.FK_RESPOSTA_CONSULTA_PACIENTE" />
         <AssociationConnector Association="CRMSysDBModel.FK_RESPOSTA_CONSULTA_USUARIO" />
         <AssociationConnector Association="CRMSysDBModel.FK_RESPOSTA_CONSULTA_PACIENTE_CONSULTA" />
+        <EntityTypeShape EntityType="CRMSysDBModel.PACIENTE_CONSULTA_MATERIAL" Width="1.5" PointX="38.5" PointY="569.375" />
+        <EntityTypeShape EntityType="CRMSysDBModel.VALOR_CONSULTA_MATERIAL" Width="1.5" PointX="39.25" PointY="557.25" />
+        <AssociationConnector Association="CRMSysDBModel.FK_MOVIMENTO_ESTOQUE_PRODUTO_PACIENTE_CONSULTA" />
+        <AssociationConnector Association="CRMSysDBModel.FK_PACIENTE_CONSULTA_MATERIAL_PACIENTE_CONSULTA" />
+        <AssociationConnector Association="CRMSysDBModel.FK_PACIENTE_CONSULTA_MATERIAL_PRODUTO" />
+        <AssociationConnector Association="CRMSysDBModel.FK_VALOR_CONSULTA_MATERIAL_PRODUTO" />
+        <AssociationConnector Association="CRMSysDBModel.FK_VALOR_CONSULTA_MATERIAL_VALOR_CONSULTA" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

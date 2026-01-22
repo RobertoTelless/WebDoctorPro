@@ -2023,5 +2023,45 @@ namespace ApplicationServices.Services
             return _baseService.GetAllResposta(idAss);
         }
 
+        public List<PACIENTE_CONSULTA_MATERIAL> GetAllConsultaMaterial(Int32 idAss)
+        {
+            return _baseService.GetAllConsultaMaterial(idAss);
+        }
+
+        public PACIENTE_CONSULTA_MATERIAL GetConsultaMaterialById(Int32 id)
+        {
+            PACIENTE_CONSULTA_MATERIAL lista = _baseService.GetConsultaMaterialById(id);
+            return lista;
+        }
+
+        public Int32 ValidadeEditConsultaMaterial(PACIENTE_CONSULTA_MATERIAL item)
+        {
+            try
+            {
+                // Persiste
+                return _baseService.EditConsultaMaterial(item);
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
+        public Int32 ValidateCreateConsultaMaterial(PACIENTE_CONSULTA_MATERIAL item)
+        {
+            try
+            {
+                item.PCMA_IN_ATIVO = 1;
+
+                // Persiste
+                Int32 volta = _baseService.CreateConsultaMaterial(item);
+                return volta;
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
     }
 }

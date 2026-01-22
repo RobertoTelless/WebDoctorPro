@@ -162,5 +162,10 @@ namespace ApplicationServices.Interfaces
         Int32 ValidateEditResposta(RESPOSTA_CONSULTA item);
         List<RESPOSTA_CONSULTA> GetAllResposta(Int32 idAss);
 
+        PACIENTE_CONSULTA_MATERIAL GetConsultaMaterialById(Int32 id);
+        Int32 ValidadeEditConsultaMaterial(PACIENTE_CONSULTA_MATERIAL item);
+        Int32 ValidateCreateConsultaMaterial(PACIENTE_CONSULTA_MATERIAL item);
+        List<PACIENTE_CONSULTA_MATERIAL> GetAllConsultaMaterial(Int32 idAss);
+
     }
 }

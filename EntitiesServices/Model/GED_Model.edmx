@@ -3674,6 +3674,7 @@
           <Property Name="MOEP_IN_SISTEMA" Type="int" />
           <Property Name="MOEP_NM_FORNECEDOR" Type="varchar" MaxLength="100" />
           <Property Name="COPA_CD_ID_1" Type="int" />
+          <Property Name="PACO_CD_ID" Type="int" />
         </EntityType>
         <EntityType Name="MUNICIPIO">
           <Key>
@@ -4244,6 +4245,19 @@
           <Property Name="PACO_IN_RECORRENTE" Type="int" />
           <Property Name="PACO_IN_RECEBE" Type="int" />
           <Property Name="PACO_TX_JUSTIFICATIVA_CANCELA" Type="varchar" MaxLength="5000" />
+          <Property Name="PACO_IN_USOU_MATERIAL" Type="int" />
+        </EntityType>
+        <EntityType Name="PACIENTE_CONSULTA_MATERIAL">
+          <Key>
+            <PropertyRef Name="PCMA_CD_ID" />
+          </Key>
+          <Property Name="PCMA_CD_ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="ASSI_CD_ID" Type="int" Nullable="false" />
+          <Property Name="PACO_CD_ID" Type="int" Nullable="false" />
+          <Property Name="PROD_CD_ID" Type="int" Nullable="false" />
+          <Property Name="PCMA_QN_PROGRAMADA" Type="decimal" Precision="18" Scale="2" />
+          <Property Name="PCMA_QN_USADA" Type="decimal" Precision="18" Scale="2" />
+          <Property Name="PCMA_IN_ATIVO" Type="int" Nullable="false" />
         </EntityType>
         <EntityType Name="PACIENTE_CONTATO">
           <Key>
@@ -6868,6 +6882,18 @@
           <Property Name="VACO_IN_ATIVO" Type="int" Nullable="false" />
           <Property Name="VACO_IN_PADRAO" Type="int" />
           <Property Name="VACO_NM_EXIBE" Type="varchar" MaxLength="150" />
+          <Property Name="VACO_IN_MATERIAL" Type="int" />
+        </EntityType>
+        <EntityType Name="VALOR_CONSULTA_MATERIAL">
+          <Key>
+            <PropertyRef Name="VCMA_CD_ID" />
+          </Key>
+          <Property Name="VCMA_CD_ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="ASSI_CD_ID" Type="int" Nullable="false" />
+          <Property Name="VACO_CD_ID" Type="int" Nullable="false" />
+          <Property Name="PROD_CD_ID" Type="int" Nullable="false" />
+          <Property Name="VCMA_QN_QUANTIDADE" Type="decimal" Precision="18" Scale="2" />
+          <Property Name="VCMA_IN_ATIVO" Type="int" Nullable="false" />
         </EntityType>
         <EntityType Name="VALOR_CONVENIO">
           <Key>
@@ -12387,6 +12413,18 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_MOVIMENTO_ESTOQUE_PRODUTO_PACIENTE_CONSULTA">
+          <End Role="PACIENTE_CONSULTA" Type="Self.PACIENTE_CONSULTA" Multiplicity="0..1" />
+          <End Role="MOVIMENTO_ESTOQUE_PRODUTO" Type="Self.MOVIMENTO_ESTOQUE_PRODUTO" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="PACIENTE_CONSULTA">
+              <PropertyRef Name="PACO_CD_ID" />
+            </Principal>
+            <Dependent Role="MOVIMENTO_ESTOQUE_PRODUTO">
+              <PropertyRef Name="PACO_CD_ID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_MOVIMENTO_ESTOQUE_PRODUTO_PRODUTO">
           <End Role="PRODUTO" Type="Self.PRODUTO" Multiplicity="1" />
           <End Role="MOVIMENTO_ESTOQUE_PRODUTO" Type="Self.MOVIMENTO_ESTOQUE_PRODUTO" Multiplicity="*" />
@@ -12936,6 +12974,30 @@
             </Principal>
             <Dependent Role="PACIENTE_ATESTADO">
               <PropertyRef Name="USUA_CD_ID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_PACIENTE_CONSULTA_MATERIAL_PACIENTE_CONSULTA">
+          <End Role="PACIENTE_CONSULTA" Type="Self.PACIENTE_CONSULTA" Multiplicity="1" />
+          <End Role="PACIENTE_CONSULTA_MATERIAL" Type="Self.PACIENTE_CONSULTA_MATERIAL" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="PACIENTE_CONSULTA">
+              <PropertyRef Name="PACO_CD_ID" />
+            </Principal>
+            <Dependent Role="PACIENTE_CONSULTA_MATERIAL">
+              <PropertyRef Name="PACO_CD_ID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_PACIENTE_CONSULTA_MATERIAL_PRODUTO">
+          <End Role="PRODUTO" Type="Self.PRODUTO" Multiplicity="1" />
+          <End Role="PACIENTE_CONSULTA_MATERIAL" Type="Self.PACIENTE_CONSULTA_MATERIAL" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="PRODUTO">
+              <PropertyRef Name="PROD_CD_ID" />
+            </Principal>
+            <Dependent Role="PACIENTE_CONSULTA_MATERIAL">
+              <PropertyRef Name="PROD_CD_ID" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -15483,6 +15545,30 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_VALOR_CONSULTA_MATERIAL_PRODUTO">
+          <End Role="PRODUTO" Type="Self.PRODUTO" Multiplicity="1" />
+          <End Role="VALOR_CONSULTA_MATERIAL" Type="Self.VALOR_CONSULTA_MATERIAL" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="PRODUTO">
+              <PropertyRef Name="PROD_CD_ID" />
+            </Principal>
+            <Dependent Role="VALOR_CONSULTA_MATERIAL">
+              <PropertyRef Name="PROD_CD_ID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_VALOR_CONSULTA_MATERIAL_VALOR_CONSULTA">
+          <End Role="VALOR_CONSULTA" Type="Self.VALOR_CONSULTA" Multiplicity="1" />
+          <End Role="VALOR_CONSULTA_MATERIAL" Type="Self.VALOR_CONSULTA_MATERIAL" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="VALOR_CONSULTA">
+              <PropertyRef Name="VACO_CD_ID" />
+            </Principal>
+            <Dependent Role="VALOR_CONSULTA_MATERIAL">
+              <PropertyRef Name="VACO_CD_ID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_VALOR_CONSULTA_TIPO_VALOR_CONSULTA">
           <End Role="TIPO_VALOR_CONSULTA" Type="Self.TIPO_VALOR_CONSULTA" Multiplicity="0..1" />
           <End Role="VALOR_CONSULTA" Type="Self.VALOR_CONSULTA" Multiplicity="*" />
@@ -16389,6 +16475,7 @@
           <EntitySet Name="PACIENTE_ANOTACAO" EntityType="Self.PACIENTE_ANOTACAO" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="PACIENTE_ATESTADO" EntityType="Self.PACIENTE_ATESTADO" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="PACIENTE_CONSULTA" EntityType="Self.PACIENTE_CONSULTA" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="PACIENTE_CONSULTA_MATERIAL" EntityType="Self.PACIENTE_CONSULTA_MATERIAL" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="PACIENTE_CONTATO" EntityType="Self.PACIENTE_CONTATO" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="PACIENTE_DADOS_EXAME_FISICO" EntityType="Self.PACIENTE_DADOS_EXAME_FISICO" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="PACIENTE_EXAME_ANEXO" EntityType="Self.PACIENTE_EXAME_ANEXO" Schema="dbo" store:Type="Tables" />
@@ -16538,6 +16625,7 @@
           <EntitySet Name="USUARIO_ANOTACAO" EntityType="Self.USUARIO_ANOTACAO" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="USUARIO_LOGIN" EntityType="Self.USUARIO_LOGIN" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="VALOR_CONSULTA" EntityType="Self.VALOR_CONSULTA" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="VALOR_CONSULTA_MATERIAL" EntityType="Self.VALOR_CONSULTA_MATERIAL" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="VALOR_CONVENIO" EntityType="Self.VALOR_CONVENIO" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="VALOR_SERVICO" EntityType="Self.VALOR_SERVICO" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="VEICULO" EntityType="Self.VEICULO" Schema="dbo" store:Type="Tables" />
@@ -18325,6 +18413,10 @@
             <End Role="FORNECEDOR" EntitySet="FORNECEDOR" />
             <End Role="MOVIMENTO_ESTOQUE_PRODUTO" EntitySet="MOVIMENTO_ESTOQUE_PRODUTO" />
           </AssociationSet>
+          <AssociationSet Name="FK_MOVIMENTO_ESTOQUE_PRODUTO_PACIENTE_CONSULTA" Association="Self.FK_MOVIMENTO_ESTOQUE_PRODUTO_PACIENTE_CONSULTA">
+            <End Role="PACIENTE_CONSULTA" EntitySet="PACIENTE_CONSULTA" />
+            <End Role="MOVIMENTO_ESTOQUE_PRODUTO" EntitySet="MOVIMENTO_ESTOQUE_PRODUTO" />
+          </AssociationSet>
           <AssociationSet Name="FK_MOVIMENTO_ESTOQUE_PRODUTO_PRODUTO" Association="Self.FK_MOVIMENTO_ESTOQUE_PRODUTO_PRODUTO">
             <End Role="PRODUTO" EntitySet="PRODUTO" />
             <End Role="MOVIMENTO_ESTOQUE_PRODUTO" EntitySet="MOVIMENTO_ESTOQUE_PRODUTO" />
@@ -18508,6 +18600,14 @@
           <AssociationSet Name="FK_PACIENTE_ATESTADO_USUARIO" Association="Self.FK_PACIENTE_ATESTADO_USUARIO">
             <End Role="USUARIO" EntitySet="USUARIO" />
             <End Role="PACIENTE_ATESTADO" EntitySet="PACIENTE_ATESTADO" />
+          </AssociationSet>
+          <AssociationSet Name="FK_PACIENTE_CONSULTA_MATERIAL_PACIENTE_CONSULTA" Association="Self.FK_PACIENTE_CONSULTA_MATERIAL_PACIENTE_CONSULTA">
+            <End Role="PACIENTE_CONSULTA" EntitySet="PACIENTE_CONSULTA" />
+            <End Role="PACIENTE_CONSULTA_MATERIAL" EntitySet="PACIENTE_CONSULTA_MATERIAL" />
+          </AssociationSet>
+          <AssociationSet Name="FK_PACIENTE_CONSULTA_MATERIAL_PRODUTO" Association="Self.FK_PACIENTE_CONSULTA_MATERIAL_PRODUTO">
+            <End Role="PRODUTO" EntitySet="PRODUTO" />
+            <End Role="PACIENTE_CONSULTA_MATERIAL" EntitySet="PACIENTE_CONSULTA_MATERIAL" />
           </AssociationSet>
           <AssociationSet Name="FK_PACIENTE_CONSULTA_PACIENTE" Association="Self.FK_PACIENTE_CONSULTA_PACIENTE">
             <End Role="PACIENTE" EntitySet="PACIENTE" />
@@ -19356,6 +19456,14 @@
           <AssociationSet Name="FK_USUARIO_TIPO_CARTEIRA_CLASSE" Association="Self.FK_USUARIO_TIPO_CARTEIRA_CLASSE">
             <End Role="TIPO_CARTEIRA_CLASSE" EntitySet="TIPO_CARTEIRA_CLASSE" />
             <End Role="USUARIO" EntitySet="USUARIO" />
+          </AssociationSet>
+          <AssociationSet Name="FK_VALOR_CONSULTA_MATERIAL_PRODUTO" Association="Self.FK_VALOR_CONSULTA_MATERIAL_PRODUTO">
+            <End Role="PRODUTO" EntitySet="PRODUTO" />
+            <End Role="VALOR_CONSULTA_MATERIAL" EntitySet="VALOR_CONSULTA_MATERIAL" />
+          </AssociationSet>
+          <AssociationSet Name="FK_VALOR_CONSULTA_MATERIAL_VALOR_CONSULTA" Association="Self.FK_VALOR_CONSULTA_MATERIAL_VALOR_CONSULTA">
+            <End Role="VALOR_CONSULTA" EntitySet="VALOR_CONSULTA" />
+            <End Role="VALOR_CONSULTA_MATERIAL" EntitySet="VALOR_CONSULTA_MATERIAL" />
           </AssociationSet>
           <AssociationSet Name="FK_VALOR_CONSULTA_TIPO_VALOR_CONSULTA" Association="Self.FK_VALOR_CONSULTA_TIPO_VALOR_CONSULTA">
             <End Role="TIPO_VALOR_CONSULTA" EntitySet="TIPO_VALOR_CONSULTA" />
@@ -23685,6 +23793,8 @@
           <Property Name="COPA_CD_ID_1" Type="Int32" />
           <NavigationProperty Name="CONSULTA_PAGAMENTO" Relationship="CRMSysDBModel.FK_MOVIMENTO_ESTOQUE_PRODUTO_CONSULTA_PAGAMENTO" FromRole="MOVIMENTO_ESTOQUE_PRODUTO" ToRole="CONSULTA_PAGAMENTO" />
           <NavigationProperty Name="PRODUTO_ESTOQUE_HISTORICO" Relationship="CRMSysDBModel.FK_PRODUTO_ESTOQUE_HISTORICO_MOVIMENTO_ESTOQUE_PRODUTO" FromRole="MOVIMENTO_ESTOQUE_PRODUTO" ToRole="PRODUTO_ESTOQUE_HISTORICO" />
+          <Property Name="PACO_CD_ID" Type="Int32" />
+          <NavigationProperty Name="PACIENTE_CONSULTA" Relationship="CRMSysDBModel.FK_MOVIMENTO_ESTOQUE_PRODUTO_PACIENTE_CONSULTA" FromRole="MOVIMENTO_ESTOQUE_PRODUTO" ToRole="PACIENTE_CONSULTA" />
         </EntityType>
         <EntityType Name="MUNICIPIO">
           <Key>
@@ -24372,6 +24482,9 @@
           <NavigationProperty Name="PACIENTE_SOLICITACAO" Relationship="Self.FK_PACIENTE_SOLICITACAO_PACIENTE_CONSULTA" FromRole="PACIENTE_CONSULTA" ToRole="PACIENTE_SOLICITACAO" />
           <Property Name="PACO_TX_JUSTIFICATIVA_CANCELA" Type="String" MaxLength="5000" FixedLength="false" Unicode="false" />
           <NavigationProperty Name="RESPOSTA_CONSULTA" Relationship="CRMSysDBModel.FK_RESPOSTA_CONSULTA_PACIENTE_CONSULTA" FromRole="PACIENTE_CONSULTA" ToRole="RESPOSTA_CONSULTA" />
+          <Property Name="PACO_IN_USOU_MATERIAL" Type="Int32" />
+          <NavigationProperty Name="MOVIMENTO_ESTOQUE_PRODUTO" Relationship="CRMSysDBModel.FK_MOVIMENTO_ESTOQUE_PRODUTO_PACIENTE_CONSULTA" FromRole="PACIENTE_CONSULTA" ToRole="MOVIMENTO_ESTOQUE_PRODUTO" />
+          <NavigationProperty Name="PACIENTE_CONSULTA_MATERIAL" Relationship="CRMSysDBModel.FK_PACIENTE_CONSULTA_MATERIAL_PACIENTE_CONSULTA" FromRole="PACIENTE_CONSULTA" ToRole="PACIENTE_CONSULTA_MATERIAL" />
         </EntityType>
         <EntityType Name="PACIENTE_CONTATO">
           <Key>
@@ -25654,6 +25767,8 @@
           <NavigationProperty Name="LOCACAO" Relationship="CRMSysDBModel.FK_LOCACAO_PRODUTO" FromRole="PRODUTO" ToRole="LOCACAO" />
           <Property Name="PROD_VL_LOCACAO_TAXAS" Type="Decimal" Precision="18" Scale="2" />
           <NavigationProperty Name="AVISO_LEMBRETE" Relationship="CRMSysDBModel.FK_AVISO_LEMBRETE_PRODUTO" FromRole="PRODUTO" ToRole="AVISO_LEMBRETE" />
+          <NavigationProperty Name="PACIENTE_CONSULTA_MATERIAL" Relationship="CRMSysDBModel.FK_PACIENTE_CONSULTA_MATERIAL_PRODUTO" FromRole="PRODUTO" ToRole="PACIENTE_CONSULTA_MATERIAL" />
+          <NavigationProperty Name="VALOR_CONSULTA_MATERIAL" Relationship="CRMSysDBModel.FK_VALOR_CONSULTA_MATERIAL_PRODUTO" FromRole="PRODUTO" ToRole="VALOR_CONSULTA_MATERIAL" />
         </EntityType>
         <EntityType Name="PRODUTO_ANEXO">
           <Key>
@@ -27391,6 +27506,8 @@
           <NavigationProperty Name="PACIENTE_CONSULTA" Relationship="Self.FK_PACIENTE_CONSULTA_VALOR_CONSULTA" FromRole="VALOR_CONSULTA" ToRole="PACIENTE_CONSULTA" />
           <NavigationProperty Name="TIPO_VALOR_CONSULTA" Relationship="Self.FK_VALOR_CONSULTA_TIPO_VALOR_CONSULTA" FromRole="VALOR_CONSULTA" ToRole="TIPO_VALOR_CONSULTA" />
           <NavigationProperty Name="USUARIO" Relationship="Self.FK_VALOR_CONSULTA_USUARIO" FromRole="VALOR_CONSULTA" ToRole="USUARIO" />
+          <Property Name="VACO_IN_MATERIAL" Type="Int32" />
+          <NavigationProperty Name="VALOR_CONSULTA_MATERIAL" Relationship="CRMSysDBModel.FK_VALOR_CONSULTA_MATERIAL_VALOR_CONSULTA" FromRole="VALOR_CONSULTA" ToRole="VALOR_CONSULTA_MATERIAL" />
         </EntityType>
         <EntityType Name="VALOR_CONVENIO">
           <Key>
@@ -39495,6 +39612,28 @@
             <End Role="PACIENTE_CONSULTA" EntitySet="PACIENTE_CONSULTA" />
             <End Role="RESPOSTA_CONSULTA" EntitySet="RESPOSTA_CONSULTA" />
           </AssociationSet>
+          <EntitySet Name="PACIENTE_CONSULTA_MATERIAL" EntityType="CRMSysDBModel.PACIENTE_CONSULTA_MATERIAL" />
+          <EntitySet Name="VALOR_CONSULTA_MATERIAL" EntityType="CRMSysDBModel.VALOR_CONSULTA_MATERIAL" />
+          <AssociationSet Name="FK_MOVIMENTO_ESTOQUE_PRODUTO_PACIENTE_CONSULTA" Association="CRMSysDBModel.FK_MOVIMENTO_ESTOQUE_PRODUTO_PACIENTE_CONSULTA">
+            <End Role="PACIENTE_CONSULTA" EntitySet="PACIENTE_CONSULTA" />
+            <End Role="MOVIMENTO_ESTOQUE_PRODUTO" EntitySet="MOVIMENTO_ESTOQUE_PRODUTO" />
+          </AssociationSet>
+          <AssociationSet Name="FK_PACIENTE_CONSULTA_MATERIAL_PACIENTE_CONSULTA" Association="CRMSysDBModel.FK_PACIENTE_CONSULTA_MATERIAL_PACIENTE_CONSULTA">
+            <End Role="PACIENTE_CONSULTA" EntitySet="PACIENTE_CONSULTA" />
+            <End Role="PACIENTE_CONSULTA_MATERIAL" EntitySet="PACIENTE_CONSULTA_MATERIAL" />
+          </AssociationSet>
+          <AssociationSet Name="FK_PACIENTE_CONSULTA_MATERIAL_PRODUTO" Association="CRMSysDBModel.FK_PACIENTE_CONSULTA_MATERIAL_PRODUTO">
+            <End Role="PRODUTO" EntitySet="PRODUTO" />
+            <End Role="PACIENTE_CONSULTA_MATERIAL" EntitySet="PACIENTE_CONSULTA_MATERIAL" />
+          </AssociationSet>
+          <AssociationSet Name="FK_VALOR_CONSULTA_MATERIAL_PRODUTO" Association="CRMSysDBModel.FK_VALOR_CONSULTA_MATERIAL_PRODUTO">
+            <End Role="PRODUTO" EntitySet="PRODUTO" />
+            <End Role="VALOR_CONSULTA_MATERIAL" EntitySet="VALOR_CONSULTA_MATERIAL" />
+          </AssociationSet>
+          <AssociationSet Name="FK_VALOR_CONSULTA_MATERIAL_VALOR_CONSULTA" Association="CRMSysDBModel.FK_VALOR_CONSULTA_MATERIAL_VALOR_CONSULTA">
+            <End Role="VALOR_CONSULTA" EntitySet="VALOR_CONSULTA" />
+            <End Role="VALOR_CONSULTA_MATERIAL" EntitySet="VALOR_CONSULTA_MATERIAL" />
+          </AssociationSet>
         </EntityContainer>
         <EntityType Name="PACIENTE_DADOS_EXAME_FISICO">
           <Key>
@@ -40684,6 +40823,93 @@
             </Principal>
             <Dependent Role="RESPOSTA_CONSULTA">
               <PropertyRef Name="PACO_CD_ID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="PACIENTE_CONSULTA_MATERIAL">
+          <Key>
+            <PropertyRef Name="PCMA_CD_ID" />
+          </Key>
+          <Property Name="PCMA_CD_ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="ASSI_CD_ID" Type="Int32" Nullable="false" />
+          <Property Name="PACO_CD_ID" Type="Int32" Nullable="false" />
+          <Property Name="PROD_CD_ID" Type="Int32" Nullable="false" />
+          <Property Name="PCMA_QN_PROGRAMADA" Type="Decimal" Precision="18" Scale="2" />
+          <Property Name="PCMA_QN_USADA" Type="Decimal" Precision="18" Scale="2" />
+          <Property Name="PCMA_IN_ATIVO" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="PACIENTE_CONSULTA" Relationship="CRMSysDBModel.FK_PACIENTE_CONSULTA_MATERIAL_PACIENTE_CONSULTA" FromRole="PACIENTE_CONSULTA_MATERIAL" ToRole="PACIENTE_CONSULTA" />
+          <NavigationProperty Name="PRODUTO" Relationship="CRMSysDBModel.FK_PACIENTE_CONSULTA_MATERIAL_PRODUTO" FromRole="PACIENTE_CONSULTA_MATERIAL" ToRole="PRODUTO" />
+        </EntityType>
+        <EntityType Name="VALOR_CONSULTA_MATERIAL">
+          <Key>
+            <PropertyRef Name="VCMA_CD_ID" />
+          </Key>
+          <Property Name="VCMA_CD_ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="ASSI_CD_ID" Type="Int32" Nullable="false" />
+          <Property Name="VACO_CD_ID" Type="Int32" Nullable="false" />
+          <Property Name="PROD_CD_ID" Type="Int32" Nullable="false" />
+          <Property Name="VCMA_QN_QUANTIDADE" Type="Decimal" Precision="18" Scale="2" />
+          <Property Name="VCMA_IN_ATIVO" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="PRODUTO" Relationship="CRMSysDBModel.FK_VALOR_CONSULTA_MATERIAL_PRODUTO" FromRole="VALOR_CONSULTA_MATERIAL" ToRole="PRODUTO" />
+          <NavigationProperty Name="VALOR_CONSULTA" Relationship="CRMSysDBModel.FK_VALOR_CONSULTA_MATERIAL_VALOR_CONSULTA" FromRole="VALOR_CONSULTA_MATERIAL" ToRole="VALOR_CONSULTA" />
+        </EntityType>
+        <Association Name="FK_MOVIMENTO_ESTOQUE_PRODUTO_PACIENTE_CONSULTA">
+          <End Type="CRMSysDBModel.PACIENTE_CONSULTA" Role="PACIENTE_CONSULTA" Multiplicity="0..1" />
+          <End Type="CRMSysDBModel.MOVIMENTO_ESTOQUE_PRODUTO" Role="MOVIMENTO_ESTOQUE_PRODUTO" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="PACIENTE_CONSULTA">
+              <PropertyRef Name="PACO_CD_ID" />
+            </Principal>
+            <Dependent Role="MOVIMENTO_ESTOQUE_PRODUTO">
+              <PropertyRef Name="PACO_CD_ID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_PACIENTE_CONSULTA_MATERIAL_PACIENTE_CONSULTA">
+          <End Type="CRMSysDBModel.PACIENTE_CONSULTA" Role="PACIENTE_CONSULTA" Multiplicity="1" />
+          <End Type="CRMSysDBModel.PACIENTE_CONSULTA_MATERIAL" Role="PACIENTE_CONSULTA_MATERIAL" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="PACIENTE_CONSULTA">
+              <PropertyRef Name="PACO_CD_ID" />
+            </Principal>
+            <Dependent Role="PACIENTE_CONSULTA_MATERIAL">
+              <PropertyRef Name="PACO_CD_ID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_PACIENTE_CONSULTA_MATERIAL_PRODUTO">
+          <End Type="CRMSysDBModel.PRODUTO" Role="PRODUTO" Multiplicity="1" />
+          <End Type="CRMSysDBModel.PACIENTE_CONSULTA_MATERIAL" Role="PACIENTE_CONSULTA_MATERIAL" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="PRODUTO">
+              <PropertyRef Name="PROD_CD_ID" />
+            </Principal>
+            <Dependent Role="PACIENTE_CONSULTA_MATERIAL">
+              <PropertyRef Name="PROD_CD_ID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_VALOR_CONSULTA_MATERIAL_PRODUTO">
+          <End Type="CRMSysDBModel.PRODUTO" Role="PRODUTO" Multiplicity="1" />
+          <End Type="CRMSysDBModel.VALOR_CONSULTA_MATERIAL" Role="VALOR_CONSULTA_MATERIAL" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="PRODUTO">
+              <PropertyRef Name="PROD_CD_ID" />
+            </Principal>
+            <Dependent Role="VALOR_CONSULTA_MATERIAL">
+              <PropertyRef Name="PROD_CD_ID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_VALOR_CONSULTA_MATERIAL_VALOR_CONSULTA">
+          <End Type="CRMSysDBModel.VALOR_CONSULTA" Role="VALOR_CONSULTA" Multiplicity="1" />
+          <End Type="CRMSysDBModel.VALOR_CONSULTA_MATERIAL" Role="VALOR_CONSULTA_MATERIAL" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="VALOR_CONSULTA">
+              <PropertyRef Name="VACO_CD_ID" />
+            </Principal>
+            <Dependent Role="VALOR_CONSULTA_MATERIAL">
+              <PropertyRef Name="VACO_CD_ID" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -44161,6 +44387,7 @@
           <EntitySetMapping Name="MOVIMENTO_ESTOQUE_PRODUTO">
             <EntityTypeMapping TypeName="CRMSysDBModel.MOVIMENTO_ESTOQUE_PRODUTO">
               <MappingFragment StoreEntitySet="MOVIMENTO_ESTOQUE_PRODUTO">
+                <ScalarProperty Name="PACO_CD_ID" ColumnName="PACO_CD_ID" />
                 <ScalarProperty Name="COPA_CD_ID_1" ColumnName="COPA_CD_ID_1" />
                 <ScalarProperty Name="MOEP_NM_FORNECEDOR" ColumnName="MOEP_NM_FORNECEDOR" />
                 <ScalarProperty Name="MOEP_CD_ID" ColumnName="MOEP_CD_ID" />
@@ -44780,6 +45007,7 @@
           <EntitySetMapping Name="PACIENTE_CONSULTA">
             <EntityTypeMapping TypeName="CRMSysDBModel.PACIENTE_CONSULTA">
               <MappingFragment StoreEntitySet="PACIENTE_CONSULTA">
+                <ScalarProperty Name="PACO_IN_USOU_MATERIAL" ColumnName="PACO_IN_USOU_MATERIAL" />
                 <ScalarProperty Name="PACO_TX_JUSTIFICATIVA_CANCELA" ColumnName="PACO_TX_JUSTIFICATIVA_CANCELA" />
                 <ScalarProperty Name="PACO_CD_ID" ColumnName="PACO_CD_ID" />
                 <ScalarProperty Name="PACI_CD_ID" ColumnName="PACI_CD_ID" />
@@ -47411,6 +47639,7 @@
           <EntitySetMapping Name="VALOR_CONSULTA">
             <EntityTypeMapping TypeName="CRMSysDBModel.VALOR_CONSULTA">
               <MappingFragment StoreEntitySet="VALOR_CONSULTA">
+                <ScalarProperty Name="VACO_IN_MATERIAL" ColumnName="VACO_IN_MATERIAL" />
                 <ScalarProperty Name="VACO_CD_ID" ColumnName="VACO_CD_ID" />
                 <ScalarProperty Name="ASSI_CD_ID" ColumnName="ASSI_CD_ID" />
                 <ScalarProperty Name="USUA_CD_ID" ColumnName="USUA_CD_ID" />
@@ -48141,6 +48370,31 @@
                 <ScalarProperty Name="RACA_IN_ATIVO" ColumnName="RACA_IN_ATIVO" />
                 <ScalarProperty Name="RACA_NM_NOME" ColumnName="RACA_NM_NOME" />
                 <ScalarProperty Name="RACA_CD_ID" ColumnName="RACA_CD_ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="PACIENTE_CONSULTA_MATERIAL">
+            <EntityTypeMapping TypeName="CRMSysDBModel.PACIENTE_CONSULTA_MATERIAL">
+              <MappingFragment StoreEntitySet="PACIENTE_CONSULTA_MATERIAL">
+                <ScalarProperty Name="PCMA_IN_ATIVO" ColumnName="PCMA_IN_ATIVO" />
+                <ScalarProperty Name="PCMA_QN_USADA" ColumnName="PCMA_QN_USADA" />
+                <ScalarProperty Name="PCMA_QN_PROGRAMADA" ColumnName="PCMA_QN_PROGRAMADA" />
+                <ScalarProperty Name="PROD_CD_ID" ColumnName="PROD_CD_ID" />
+                <ScalarProperty Name="PACO_CD_ID" ColumnName="PACO_CD_ID" />
+                <ScalarProperty Name="ASSI_CD_ID" ColumnName="ASSI_CD_ID" />
+                <ScalarProperty Name="PCMA_CD_ID" ColumnName="PCMA_CD_ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="VALOR_CONSULTA_MATERIAL">
+            <EntityTypeMapping TypeName="CRMSysDBModel.VALOR_CONSULTA_MATERIAL">
+              <MappingFragment StoreEntitySet="VALOR_CONSULTA_MATERIAL">
+                <ScalarProperty Name="VCMA_IN_ATIVO" ColumnName="VCMA_IN_ATIVO" />
+                <ScalarProperty Name="VCMA_QN_QUANTIDADE" ColumnName="VCMA_QN_QUANTIDADE" />
+                <ScalarProperty Name="PROD_CD_ID" ColumnName="PROD_CD_ID" />
+                <ScalarProperty Name="VACO_CD_ID" ColumnName="VACO_CD_ID" />
+                <ScalarProperty Name="ASSI_CD_ID" ColumnName="ASSI_CD_ID" />
+                <ScalarProperty Name="VCMA_CD_ID" ColumnName="VCMA_CD_ID" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

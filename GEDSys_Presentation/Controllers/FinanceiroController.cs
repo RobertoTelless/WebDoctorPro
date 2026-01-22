@@ -58,6 +58,7 @@ namespace GEDSys_Presentation.Controllers
         private readonly IPacienteAppService pacApp;
         private readonly IAcessoMetodoAppService aceApp;
         private readonly IPeriodicidadeAppService perApp;
+        private readonly IProdutoAppService prodApp;
 
         private VALOR_CONSULTA objetoVC = new VALOR_CONSULTA();
         private VALOR_CONSULTA objetoAntesVC = new VALOR_CONSULTA();
@@ -78,7 +79,7 @@ namespace GEDSys_Presentation.Controllers
         private PACIENTE_CONSULTA objetoPC = new PACIENTE_CONSULTA();
         private String extensao;
 
-        public FinanceiroController(IPacienteAppService baseApps, ILogAppService logApps, IValorConsultaAppService vcApps, IValorServicoAppService vsApps, IConfiguracaoAppService confApps, IValorConvenioAppService vvApps, IUsuarioAppService usuApps, ITipoValorConsultaAppService tvcApps, IPagamentoAppService pagApps, ITipoPagamentoAppService tpApps, IEmpresaAppService empApps, IRecebimentoAppService recApps, IPacienteAppService pacApps, IAcessoMetodoAppService aceApps, IPeriodicidadeAppService perApps)
+        public FinanceiroController(IPacienteAppService baseApps, ILogAppService logApps, IValorConsultaAppService vcApps, IValorServicoAppService vsApps, IConfiguracaoAppService confApps, IValorConvenioAppService vvApps, IUsuarioAppService usuApps, ITipoValorConsultaAppService tvcApps, IPagamentoAppService pagApps, ITipoPagamentoAppService tpApps, IEmpresaAppService empApps, IRecebimentoAppService recApps, IPacienteAppService pacApps, IAcessoMetodoAppService aceApps, IPeriodicidadeAppService perApps, IProdutoAppService prodApps)
         {
             baseApp = baseApps;
             logApp = logApps;
@@ -95,6 +96,7 @@ namespace GEDSys_Presentation.Controllers
             pacApp = pacApps;
             aceApp = aceApps;
             perApp = perApps;
+            prodApp = prodApps;
         }
 
         [HttpGet]
@@ -253,6 +255,10 @@ namespace GEDSys_Presentation.Controllers
                 padrao.Add(new SelectListItem() { Text = "Não", Value = "0" });
                 ViewBag.Padrao = new SelectList(padrao, "Value", "Text");
                 ViewBag.TipoConsulta = new SelectList(CarregaTipoValorConsulta(), "TIVL_CD_ID", "TIVL_NM_TIPO");
+                var mat = new List<SelectListItem>();
+                mat.Add(new SelectListItem() { Text = "Não", Value = "0" });
+                mat.Add(new SelectListItem() { Text = "Sim", Value = "1" });
+                ViewBag.Material = new SelectList(mat, "Value", "Text");
                 Session["AjudaNivel"] = "../BaseAdmin/Ajuda/17/Ajuda17_1.pdf";
                 Session["NivelPaciente"] = 1;
 
@@ -288,6 +294,7 @@ namespace GEDSys_Presentation.Controllers
                 vm.VACO_NR_VALOR = 0;
                 vm.VACO_NR_DESCONTO = 0;
                 vm.VACO_IN_PADRAO = 0;
+                vm.VACO_IN_MATERIAL = 0;
                 return View(vm);
             }
             catch (Exception ex)
@@ -318,6 +325,10 @@ namespace GEDSys_Presentation.Controllers
             padrao.Add(new SelectListItem() { Text = "Sim", Value = "1" });
             padrao.Add(new SelectListItem() { Text = "Não", Value = "0" });
             ViewBag.Padrao = new SelectList(padrao, "Value", "Text");
+            var mat = new List<SelectListItem>();
+            mat.Add(new SelectListItem() { Text = "Não", Value = "0" });
+            mat.Add(new SelectListItem() { Text = "Sim", Value = "1" });
+            ViewBag.Material = new SelectList(mat, "Value", "Text");
             if (ModelState.IsValid)
             {
                 try
@@ -326,9 +337,12 @@ namespace GEDSys_Presentation.Controllers
                     vm.VACO_NM_NOME = CrossCutting.UtilitariosGeral.CleanStringDocto(vm.VACO_NM_NOME);
 
                     // Criticas
+                    if (vm.VACO_DT_REFERENCIA == null)
+                    {
+                        vm.VACO_DT_REFERENCIA = DateTime.Today.Date.AddMonths(6);
+                    }
                     if (vm.VACO_DT_REFERENCIA.Value.Date > DateTime.Today.Date)
                     {
-                        Session["MensPaciente"] = 50;
                         ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0581", CultureInfo.CurrentCulture));
                         return View(vm);
                     }
@@ -343,8 +357,12 @@ namespace GEDSys_Presentation.Controllers
                     }
                     if (vm.VACO_NR_DESCONTO > vm.VACO_NR_VALOR)
                     {
-                        Session["MensPaciente"] = 51;
                         ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0596", CultureInfo.CurrentCulture));
+                        return View(vm);
+                    }
+                    if (vm.VACO_NR_VALOR == null || vm.VACO_NR_VALOR == 0)
+                    {
+                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0722", CultureInfo.CurrentCulture));
                         return View(vm);
                     }
 
@@ -396,6 +414,10 @@ namespace GEDSys_Presentation.Controllers
                     Session["MensPaciente"] = 61;
 
                     // Retorno
+                    if (vc.VACO_IN_MATERIAL == 1)
+                    {
+                        return RedirectToAction("EditarValorConsulta", new { id = (Int32)Session["IdValorConsulta"] });
+                    }
                     return RedirectToAction("MontarTelaValorConsulta");
                 }
                 catch (Exception ex)
@@ -451,6 +473,10 @@ namespace GEDSys_Presentation.Controllers
                 padrao.Add(new SelectListItem() { Text = "Sim", Value = "1" });
                 padrao.Add(new SelectListItem() { Text = "Não", Value = "0" });
                 ViewBag.Padrao = new SelectList(padrao, "Value", "Text");
+                var mat = new List<SelectListItem>();
+                mat.Add(new SelectListItem() { Text = "Sim", Value = "1" });
+                mat.Add(new SelectListItem() { Text = "Não", Value = "0" });
+                ViewBag.Material = new SelectList(mat, "Value", "Text");
                 ViewBag.TipoConsulta = new SelectList(CarregaTipoValorConsulta(), "TIVL_CD_ID", "TIVL_NM_TIPO");
                 Session["AjudaNivel"] = "../BaseAdmin/Ajuda/17/Ajuda17_2.pdf";
 
@@ -476,6 +502,7 @@ namespace GEDSys_Presentation.Controllers
                 Session["MensPaciente"] = null;
                 VALOR_CONSULTA item = vcApp.GetItemById(id);
                 Session["IdValorConsulta"] = item.VACO_CD_ID;
+                ViewBag.Lista = item.VALOR_CONSULTA_MATERIAL.Where(p => p.VCMA_IN_ATIVO == 1).ToList();
                 ValorConsulta1ViewModel vm = Mapper.Map<VALOR_CONSULTA, ValorConsulta1ViewModel>(item);
                 Session["ValorConsultaAntes"] = item;
                 vm.VACO_DT_REFERENCIA = DateTime.Today.Date;
@@ -510,6 +537,10 @@ namespace GEDSys_Presentation.Controllers
             padrao.Add(new SelectListItem() { Text = "Sim", Value = "1" });
             padrao.Add(new SelectListItem() { Text = "Não", Value = "0" });
             ViewBag.Padrao = new SelectList(padrao, "Value", "Text");
+            var mat = new List<SelectListItem>();
+            mat.Add(new SelectListItem() { Text = "Sim", Value = "1" });
+            mat.Add(new SelectListItem() { Text = "Não", Value = "0" });
+            ViewBag.Material = new SelectList(mat, "Value", "Text");
             if (ModelState.IsValid)
             {
                 try
@@ -518,11 +549,6 @@ namespace GEDSys_Presentation.Controllers
                     vm.VACO_NM_NOME = CrossCutting.UtilitariosGeral.CleanStringDocto(vm.VACO_NM_NOME);
 
                     // Criticas
-                    if (vm.VACO_DT_REFERENCIA.Value.Date > DateTime.Today.Date)
-                    {
-                        Session["MensPaciente"] = 50;
-                        return View(vm);
-                    }
                     if (vm.VACO_NM_NOME == String.Empty || vm.VACO_NM_NOME == null)
                     {
                         TIPO_VALOR_CONSULTA tvc = tvcApp.GetItemById(vm.TIVL_CD_ID.Value);
@@ -531,6 +557,11 @@ namespace GEDSys_Presentation.Controllers
                     if (vm.VACO_NR_DESCONTO == null)
                     {
                         vm.VACO_NR_DESCONTO = 0;
+                    }
+                    if (vm.VACO_NR_VALOR == null || vm.VACO_NR_VALOR == 0)
+                    {
+                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0722", CultureInfo.CurrentCulture));
+                        return View(vm);
                     }
 
                     // Executa a operação
@@ -11590,6 +11621,444 @@ namespace GEDSys_Presentation.Controllers
                     })
                     .FirstOrDefault();
                 return mediDTO;
+            }
+        }
+
+        public List<PRODUTO> CarregarProduto()
+        {
+            try
+            {
+                Int32 idAss = (Int32)Session["IdAssinante"];
+                List<PRODUTO> conf = new List<PRODUTO>();
+                if (Session["Produtos"] == null)
+                {
+                    conf = prodApp.GetAllItens(idAss);
+                }
+                else
+                {
+                    if ((Int32)Session["ProdutoAlterada"] == 1)
+                    {
+                        conf = prodApp.GetAllItens(idAss);
+                    }
+                    else
+                    {
+                        conf = (List<PRODUTO>)Session["Produtos"];
+                    }
+                }
+                conf = conf.Where(p => p.PROD_IN_SISTEMA == 6).ToList();
+                Session["ProdutoAlterada"] = 0;
+                Session["Produtos"] = conf;
+                return conf;
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Produto";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Produto", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return null;
+            }
+        }
+
+        [HttpGet]
+        public ActionResult IncluirConsumoMaterial()
+        {
+            try
+            {
+                // Verifica se tem usuario logado
+                USUARIO usuario = new USUARIO();
+                if ((String)Session["Ativa"] == null)
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+                if ((USUARIO)Session["UserCredentials"] != null)
+                {
+                    usuario = (USUARIO)Session["UserCredentials"];
+
+                    // Verfifica permissão
+                    if (usuario.PERFIL.PERF_IN_FINANCEIRO_REC_INCLUIR == 0)
+                    {
+                        Session["MensPermissao"] = 2;
+                        Session["ModuloPermissao"] = "Financeiro - Valor de Consulta - Inclusão";
+                        return RedirectToAction("MontarTelaValorConsulta");
+                    }
+                }
+                else
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+                Int32 idAss = (Int32)Session["IdAssinante"];
+                Session["ModuloAtual"] = "Consultas - Valores - Inclusão";
+
+                // Prepara listas
+                ViewBag.Produto = new SelectList(CarregarProduto().Where(p => p.PROD_IN_TIPO_PRODUTO == 1), "PROD_CD_ID", "PROD_NM_NOME");
+                Session["AjudaNivel"] = "../BaseAdmin/Ajuda/17/Ajuda17_1.pdf";
+                Session["NivelPaciente"] = 1;
+
+                // Mensagem
+                if (Session["MensPaciente"] != null)
+                {
+                    if ((Int32)Session["MensPaciente"] == 50)
+                    {
+                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0581", CultureInfo.CurrentCulture));
+                    }
+                    if ((Int32)Session["MensPaciente"] == 55)
+                    {
+                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0584", CultureInfo.CurrentCulture));
+                    }
+                    if ((Int32)Session["MensPaciente"] == 51)
+                    {
+                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0596", CultureInfo.CurrentCulture));
+                    }
+                }
+
+                // Grava Acesso
+                ControleAcessoMetodo grava = new ControleAcessoMetodo(aceApp);
+                Int32 voltaX = grava.GravaAcesso(usuario.USUA_CD_ID, usuario.ASSI_CD_ID, "CONSULTA_CONSUMO_MATERIAL_INCLUIR", "Financeiro", "IncluirConsumoMaterial");
+
+                // Prepara registro
+                Session["MensPaciente"] = null;
+                VALOR_CONSULTA vc = vcApp.GetItemById((Int32)Session["IdValorConsulta"]);
+                VALOR_CONSULTA_MATERIAL item = new VALOR_CONSULTA_MATERIAL();
+                ValorConsulta1MaterialViewModel vm = Mapper.Map<VALOR_CONSULTA_MATERIAL, ValorConsulta1MaterialViewModel>(item);
+                vm.VCMA_IN_ATIVO = 1;
+                vm.ASSI_CD_ID = idAss;
+                vm.VACO_CD_ID = vc.VACO_CD_ID;
+                vm.ASSI_CD_ID = idAss;
+                vm.VCMA_QN_QUANTIDADE = 0;
+                return View(vm);
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Financeiro";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Financeiro", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return RedirectToAction("TrataExcecao", "BaseAdmin");
+            }
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult IncluirConsumoMaterial(ValorConsulta1MaterialViewModel vm)
+        {
+            if ((String)Session["Ativa"] == null)
+            {
+                return RedirectToAction("Logout", "ControleAcesso");
+            }
+            Int32 idAss = (Int32)Session["IdAssinante"];
+            USUARIO usuario = (USUARIO)Session["UserCredentials"];
+            ViewBag.Produto = new SelectList(CarregarProduto().Where(p => p.PROD_IN_TIPO_PRODUTO == 1), "PROD_CD_ID", "PROD_NM_NOME");
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    // Criticas
+                    if (vm.VCMA_QN_QUANTIDADE == null || vm.VCMA_QN_QUANTIDADE == 0)
+                    {
+                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0723", CultureInfo.CurrentCulture));
+                        return View(vm);
+                    }
+                    if (vm.PROD_CD_ID == null || vm.PROD_CD_ID == 0)
+                    {
+                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0724", CultureInfo.CurrentCulture));
+                        return View(vm);
+                    }
+
+                    // Executa a operação
+                    VALOR_CONSULTA_MATERIAL item = Mapper.Map<ValorConsulta1MaterialViewModel, VALOR_CONSULTA_MATERIAL>(vm);
+                    Int32 volta = vcApp.ValidateCreateConsultaMaterial(item);
+                    if (volta == 1)
+                    {
+                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0725", CultureInfo.CurrentCulture));
+                        return View(vm);
+                    }
+
+                    // Verifica retorno
+                    Session["IdValorConsulta"] = item.VACO_CD_ID;
+                    Session["ValorConsultaAlterada"] = 1;
+                    Session["NivelPaciente"] = 1;
+                    Session["ListaValorConsulta"] = null;
+
+                    // Configura serilização
+                    JsonSerializerSettings settings = new JsonSerializerSettings
+                    {
+                        ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+                        NullValueHandling = NullValueHandling.Ignore
+                    };
+
+                    // Monta Log
+                    VALOR_CONSULTA vc = vcApp.GetItemById(item.VACO_CD_ID);
+                    PRODUTO prod = prodApp.GetItemById(item.PROD_CD_ID);
+                    String json = "Tipo: " + vc.VACO_NM_NOME + " Material: " + prod.PROD_NM_NOME + " Quantidade: " + item.VCMA_QN_QUANTIDADE.ToString();
+                    LOG log = new LOG
+                    {
+                        LOG_DT_DATA = DateTime.Now,
+                        ASSI_CD_ID = usuario.ASSI_CD_ID,
+                        USUA_CD_ID = usuario.USUA_CD_ID,
+                        LOG_NM_OPERACAO = "Valor de Consulta - Material - Inclusão",
+                        LOG_IN_ATIVO = 1,
+                        LOG_TX_REGISTRO = json,
+                        LOG_IN_SISTEMA = 6
+                    };
+                    Int32 volta1 = logApp.ValidateCreate(log);
+
+                    // Mensagem do CRUD
+                    Session["MsgCRUD"] = "O material " + prod.PROD_NM_NOME.ToUpper() + " foi incluído com sucesso no tipo de consulta.";
+                    Session["MensPaciente"] = 61;
+
+                    // Retorno
+                    return RedirectToAction("EditarValorConsulta", new { id = (Int32)Session["IdValorConsulta"] });
+                }
+                catch (Exception ex)
+                {
+                    ViewBag.Message = ex.Message;
+                    Session["TipoVolta"] = 2;
+                    Session["VoltaExcecao"] = "Paciente";
+                    Session["Excecao"] = ex;
+                    Session["ExcecaoTipo"] = ex.GetType().ToString();
+                    GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                    Int32 voltaX = grava.GravarLogExcecao(ex, "Paciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                    return RedirectToAction("TrataExcecao", "BaseAdmin");
+                }
+            }
+            else
+            {
+                return View(vm);
+            }
+        }
+
+        [HttpGet]
+        public ActionResult EditarConsumoMaterial(Int32 id)
+        {
+            try
+            {
+                // Verifica se tem usuario logado
+                USUARIO usuario = new USUARIO();
+                if ((String)Session["Ativa"] == null)
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+                if ((USUARIO)Session["UserCredentials"] != null)
+                {
+                    usuario = (USUARIO)Session["UserCredentials"];
+
+                    // Verfifica permissão
+                    if (usuario.PERFIL.PERF_IN_FINANCEIRO_REC_ALTERAR == 0)
+                    {
+                        Session["MensPermissao"] = 2;
+                        Session["ModuloPermissao"] = "Financeiro - Valor de Consulta - Edição";
+                        return RedirectToAction("MontarTelaValorConsulta");
+                    }
+                }
+                else
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+                Int32 idAss = (Int32)Session["IdAssinante"];
+                Session["ModuloAtual"] = "Consultas - Valores - Edição";
+
+                // Prepara Listas
+                Session["AjudaNivel"] = "../BaseAdmin/Ajuda/17/Ajuda17_2.pdf";
+
+                // Mensagem
+                if (Session["MensPaciente"] != null)
+                {
+                    if ((Int32)Session["MensPaciente"] == 50)
+                    {
+                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0581", CultureInfo.CurrentCulture));
+                    }
+                    if ((Int32)Session["MensPaciente"] == 61)
+                    {
+                        TempData["MensagemAcerto"] = (String)Session["MsgCRUD"];
+                        TempData["TemMensagem"] = 1;
+                    }
+                }
+
+                // Grava Acesso
+                ControleAcessoMetodo grava = new ControleAcessoMetodo(aceApp);
+                Int32 voltaX = grava.GravaAcesso(usuario.USUA_CD_ID, usuario.ASSI_CD_ID, "CONSULTA_CONSUMO_MATERIAL_EDITAR", "Financeiro", "EditarConsumoMaterial");
+
+                // Prepara registro
+                Session["MensPaciente"] = null;
+                VALOR_CONSULTA_MATERIAL item = vcApp.GetConsultaMaterialById(id);
+                Session["IdValorConsulta"] = item.VACO_CD_ID;
+                ValorConsulta1MaterialViewModel vm = Mapper.Map<VALOR_CONSULTA_MATERIAL, ValorConsulta1MaterialViewModel>(item);
+                Session["ValorMaterialAntes"] = item;
+                return View(vm);
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Paciente";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Paciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return RedirectToAction("TrataExcecao", "BaseAdmin");
+            }
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [ValidateInput(false)]
+        public ActionResult EditarConsumoMaterial(ValorConsulta1MaterialViewModel vm)
+        {
+            if ((String)Session["Ativa"] == null)
+            {
+                return RedirectToAction("Logout", "ControleAcesso");
+            }
+            Int32 idAss = (Int32)Session["IdAssinante"];
+            USUARIO usuario = (USUARIO)Session["UserCredentials"];
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    // Criticas
+                    if (vm.VCMA_QN_QUANTIDADE == null || vm.VCMA_QN_QUANTIDADE == 0)
+                    {
+                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0723", CultureInfo.CurrentCulture));
+                        return View(vm);
+                    }
+
+                    // Executa a operação
+                    VALOR_CONSULTA_MATERIAL item = Mapper.Map<ValorConsulta1MaterialViewModel, VALOR_CONSULTA_MATERIAL>(vm);
+                    Int32 volta = vcApp.ValidateEditConsultaMaterial(item);
+
+                    // Verifica retorno
+
+                    // Configura serilização
+                    JsonSerializerSettings settings = new JsonSerializerSettings
+                    {
+                        ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+                        NullValueHandling = NullValueHandling.Ignore
+                    };
+
+                    // Monta Log
+                    VALOR_CONSULTA vc = vcApp.GetItemById(item.VACO_CD_ID);
+                    PRODUTO prod = prodApp.GetItemById(item.PROD_CD_ID);
+                    String json = "Tipo: " + vc.VACO_NM_NOME + " Material: " + prod.PROD_NM_NOME + " Quantidade: " + item.VCMA_QN_QUANTIDADE.ToString();
+                    LOG log = new LOG
+                    {
+                        LOG_DT_DATA = DateTime.Now,
+                        ASSI_CD_ID = usuario.ASSI_CD_ID,
+                        USUA_CD_ID = usuario.USUA_CD_ID,
+                        LOG_NM_OPERACAO = "Valor de Consulta - Material - Alteração",
+                        LOG_IN_ATIVO = 1,
+                        LOG_TX_REGISTRO = json,
+                        LOG_IN_SISTEMA = 6
+                    };
+                    Int32 volta1 = logApp.ValidateCreate(log);
+
+                    // Mensagem do CRUD
+                    Session["MsgCRUD"] = "O quantidade do material " + prod.PROD_NM_NOME.ToUpper() + " foi alterada com sucesso no tipo de consulta.";
+                    Session["MensPaciente"] = 61;
+
+                    // Retorno
+                    return RedirectToAction("MontarTelaValorConsulta");
+                }
+                catch (Exception ex)
+                {
+                    ViewBag.Message = ex.Message;
+                    Session["TipoVolta"] = 2;
+                    Session["VoltaExcecao"] = "Paciente";
+                    Session["Excecao"] = ex;
+                    Session["ExcecaoTipo"] = ex.GetType().ToString();
+                    GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                    Int32 voltaX = grava.GravarLogExcecao(ex, "Paciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                    return RedirectToAction("TrataExcecao", "BaseAdmin");
+                }
+            }
+            else
+            {
+                return View(vm);
+            }
+        }
+
+        [HttpGet]
+        public ActionResult ExcluirConsumoMaterial(Int32 id)
+        {
+            try
+            {
+                // Verifica se tem usuario logado
+                USUARIO usuario = new USUARIO();
+                if ((String)Session["Ativa"] == null)
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+                if ((USUARIO)Session["UserCredentials"] != null)
+                {
+                    usuario = (USUARIO)Session["UserCredentials"];
+
+                    // Verfifica permissão
+                    if (usuario.PERFIL.PERF_IN_FINANCEIRO_REC_EXCLUIR == 0)
+                    {
+                        Session["MensPermissao"] = 2;
+                        Session["ModuloPermissao"] = "Financeiro - Valor de Consulta - Exclusão";
+                        return RedirectToAction("MontarTelaValorConsulta");
+                    }
+                }
+                else
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+                Int32 idAss = (Int32)Session["IdAssinante"];
+
+                VALOR_CONSULTA_MATERIAL item = vcApp.GetConsultaMaterialById(id);
+                item.VCMA_IN_ATIVO = 0;
+                Int32 volta = vcApp.ValidateEditConsultaMaterial(item);
+
+                Session["ValorConsultaAlterada"] = 1;
+                Session["NivelPaciente"] = 1;
+                Session["ListaValorConsulta"] = null;
+
+                // Configura serilização
+                JsonSerializerSettings settings = new JsonSerializerSettings
+                {
+                    ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+                    NullValueHandling = NullValueHandling.Ignore
+                };
+
+                // Monta Log
+                VALOR_CONSULTA vc = vcApp.GetItemById(item.VACO_CD_ID);
+                PRODUTO prod = prodApp.GetItemById(item.PROD_CD_ID);
+                String json = "Tipo: " + vc.VACO_NM_NOME + " Material: " + prod.PROD_NM_NOME + " Quantidade: " + item.VCMA_QN_QUANTIDADE.ToString();
+                LOG log = new LOG
+                {
+                    LOG_DT_DATA = DateTime.Now,
+                    ASSI_CD_ID = usuario.ASSI_CD_ID,
+                    USUA_CD_ID = usuario.USUA_CD_ID,
+                    LOG_NM_OPERACAO = "Valor de Consulta - Material - Exclusão",
+                    LOG_IN_ATIVO = 1,
+                    LOG_TX_REGISTRO = json,
+                    LOG_IN_SISTEMA = 6
+                };
+                Int32 volta1 = logApp.ValidateCreate(log);
+
+                // Mensagem do CRUD
+                Session["MsgCRUD"] = "O material " + prod.PROD_NM_NOME.ToUpper() + " foi excluído com sucesso no tipo de consulta.";
+                Session["MensPaciente"] = 61;
+
+                // Retorno
+                return RedirectToAction("MontarTelaValorConsulta");
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Paciente";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Paciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return RedirectToAction("TrataExcecao", "BaseAdmin");
             }
         }
 

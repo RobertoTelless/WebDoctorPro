@@ -65,6 +65,7 @@ namespace EntitiesServices.Model
         public Nullable<int> MOEP_IN_SISTEMA { get; set; }
         public string MOEP_NM_FORNECEDOR { get; set; }
         public Nullable<int> COPA_CD_ID_1 { get; set; }
+        public Nullable<int> PACO_CD_ID { get; set; }
     
         public virtual ASSINANTE ASSINANTE { get; set; }
         public virtual CONTA_BANCO CONTA_BANCO { get; set; }
@@ -84,5 +85,6 @@ namespace EntitiesServices.Model
         public virtual CONSULTA_PAGAMENTO CONSULTA_PAGAMENTO { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<PRODUTO_ESTOQUE_HISTORICO> PRODUTO_ESTOQUE_HISTORICO { get; set; }
+        public virtual PACIENTE_CONSULTA PACIENTE_CONSULTA { get; set; }
     }
 }

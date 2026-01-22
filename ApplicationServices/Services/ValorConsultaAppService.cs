@@ -156,5 +156,55 @@ namespace ApplicationServices.Services
                 throw;
             }
         }
+
+        public List<VALOR_CONSULTA_MATERIAL> GetAllConsultaMaterial(Int32 idAss)
+        {
+            return _baseService.GetAllConsultaMaterial(idAss);
+        }
+
+        public VALOR_CONSULTA_MATERIAL GetConsultaMaterialById(Int32 id)
+        {
+            VALOR_CONSULTA_MATERIAL lista = _baseService.GetConsultaMaterialById(id);
+            return lista;
+        }
+
+        public Int32 ValidateEditConsultaMaterial(VALOR_CONSULTA_MATERIAL item)
+        {
+            try
+            {
+                // Persiste
+                return _baseService.EditConsultaMaterial(item);
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
+        public Int32 ValidateCreateConsultaMaterial(VALOR_CONSULTA_MATERIAL item)
+        {
+            try
+            {
+                item.VCMA_IN_ATIVO = 1;
+
+                // Verifica existencia
+                Int32 cd = item.PROD_CD_ID;
+                List<VALOR_CONSULTA_MATERIAL> mats = _baseService.GetAllConsultaMaterial(item.ASSI_CD_ID);
+                mats = mats.Where(p => p.PROD_CD_ID == item.PROD_CD_ID || p.VACO_CD_ID == item.VACO_CD_ID).ToList();
+                if (mats.Count() > 0)
+                {
+                    return 1;
+                }
+
+                // Persiste
+                Int32 volta = _baseService.CreateConsultaMaterial(item);
+                return volta;
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
     }
 }

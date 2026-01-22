@@ -22,5 +22,11 @@ namespace ModelServices.Interfaces.EntitiesServices
         List<VALOR_CONSULTA> GetAllItensAdm(Int32 idAss);
 
         List<TIPO_VALOR_CONSULTA> GetAllTipos(Int32 idAss);
+
+        VALOR_CONSULTA_MATERIAL GetConsultaMaterialById(Int32 id);
+        Int32 EditConsultaMaterial(VALOR_CONSULTA_MATERIAL item);
+        Int32 CreateConsultaMaterial(VALOR_CONSULTA_MATERIAL item);
+        List<VALOR_CONSULTA_MATERIAL> GetAllConsultaMaterial(Int32 idAss);
+
     }
 }

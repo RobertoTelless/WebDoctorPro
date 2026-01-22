@@ -6359,5 +6359,41 @@ namespace GEDSys_Presentation.App_Start {
                 return ResourceManager.GetString("M0721", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Consulta uma cadeia de caracteres localizada semelhante a Valor da consulta não informado ou zerado.
+        /// </summary>
+        internal static string M0722 {
+            get {
+                return ResourceManager.GetString("M0722", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Consulta uma cadeia de caracteres localizada semelhante a A quantidade do consumo deve ser informada.
+        /// </summary>
+        internal static string M0723 {
+            get {
+                return ResourceManager.GetString("M0723", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Consulta uma cadeia de caracteres localizada semelhante a O material a ser consumido deve ser especificado.
+        /// </summary>
+        internal static string M0724 {
+            get {
+                return ResourceManager.GetString("M0724", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Consulta uma cadeia de caracteres localizada semelhante a Material já cadastrado para esse tipo de consulta.
+        /// </summary>
+        internal static string M0725 {
+            get {
+                return ResourceManager.GetString("M0725", resourceCulture);
+            }
+        }
     }
 }

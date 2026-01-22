@@ -52,18 +52,21 @@
                     <div class="col-lg-12 col-md-12 col-xs-12">
                         @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_FINANCEIRO_REC_INCLUIR == 1)
                         {
-                            @Html.ButtonLinkIndex(text: "Novo Tipo de Consulta", controller: "Financeiro", action: "IncluirValorConsulta", buttonClass: "primary")
+                            @Html.ButtonLinkIndex(text: "Novo Tipo de Consulta", controller: "Financeiro", action: "IncluirValorConsulta", buttonClass: "primary", htmlAttributes: new { @class = "btn-loading" })
                         }
                         @Html.ButtonLinkIndex(text: "Imprimir", controller: "Financeiro", action: "GerarRelatorioValorConsulta")
                         @if ((Int32)Session["VoltaFinanceiro"] == 0)
                         {
-                            @Html.ButtonLinkIndex(text: "Voltar", controller: "Paciente", action: "MontarTelaPaciente")
+                            @Html.ButtonLinkIndex(text: "Voltar", controller: "Paciente", action: "MontarTelaPaciente", htmlAttributes: new { @class = "btn-loading" })
                         }
                         else
                         {
-                            @Html.ButtonLinkIndex(text: "Voltar", controller: "Financeiro", action: "MontarTelaFinanceiro")
+                            @Html.ButtonLinkIndex(text: "Voltar", controller: "Financeiro", action: "MontarTelaFinanceiro", htmlAttributes: new { @class = "btn-loading" })
                         }
                         <a href="@Url.Action((String)Session["AjudaNivel"])"  class="btn btn-sm btn-danger" target="_blank">Ajuda</a>                
+                        <span id="loadingIndicator" style="display: none; margin-left: 10px; color: #007bff;">
+                            <i class="fa fa-spinner fa-spin"></i> Processando...
+                        </span>
                     </div>
                 </div>
                 <br />
@@ -95,8 +98,8 @@
                                             <th style="width: auto">Descrição</th>
                                             <th style="width: auto">Valor da Consulta (R$)</th>
                                             <th style="width: auto">Padrão</th>
+                                            <th style="width: auto">Gasta material</th>
                                             <th class="td-one-action">Ações</th>
-                                            <th style="width: 0.01px"></th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -104,7 +107,10 @@
                                         {
                                             <tr>
                                                 <td style="width: auto">@cond.TIPO_VALOR_CONSULTA.TIVL_NM_TIPO</td>
-                                                <td style="width: auto">@cond.VACO_DT_REFERENCIA.Value.ToShortDateString()</td>
+                                                <td>
+                                                    <span style="display:none; width: auto">@cond.VACO_DT_REFERENCIA.Value.ToString("yyyyMMdd")</span>
+                                                    @cond.VACO_DT_REFERENCIA.Value.ToString("dd/MM/yyyy")
+                                                </td>
                                                 @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_FINANCEIRO_REC_ALTERAR == 1)
                                                 {
                                                     <td style="width: auto"><a href="@Url.Action("EditarValorConsulta", "Financeiro", new { id = cond.VACO_CD_ID})" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página de edição de tipos/valores de consultas"/>@cond.VACO_NM_NOME</td>
@@ -127,17 +133,16 @@
                                                 <td style="width: auto" class="td-one-action">
                                                     @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_FINANCEIRO_REC_ALTERAR == 1)
                                                     {
-                                                        @Html.TableLinkDetails(cond.VACO_CD_ID, "EditarValorConsulta", "fa-edit", "Editar Tipo de Consulta")
+                                                        @Html.TableLinkDetails(cond.VACO_CD_ID, "EditarValorConsulta", "fa-edit btn-loading", "Editar Tipo de Consulta")
                                                     }
                                                     @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_FINANCEIRO_REC_EXCLUIR == 1)
                                                     {
                                                         if (cond.VACO_IN_ATIVO == 1)
                                                         {
-                                                            <span style="color: #337ab7; cursor:pointer;" alt="Desativar" class="tbl-link fa-lg fa fa-trash-o" onclick="ShowModalExcluir('/Financeiro/ExcluirValorConsulta/@cond.VACO_CD_ID')" title="Excluir Tipo de Consulta"></span>
+                                                            <span style="color: #337ab7; cursor:pointer;" alt="Desativar" class="tbl-link fa-lg fa fa-trash-o btn-loading" onclick="ShowModalExcluir('/Financeiro/ExcluirValorConsulta/@cond.VACO_CD_ID')" title="Excluir Tipo de Consulta"></span>
                                                         }
 	                                                }
                                                 </td>
-                                                <td style="width: 0.01px"></td>
                                             </tr>
                                         }
                                     </tbody>
@@ -205,7 +210,24 @@
             navigator.sendBeacon('../ControleAcesso/LogSessionTime');
         }; 
     </script>
+    <script type="text/javascript">
+        $(document).ready(function () { 
+            $('.btn-loading').on('click', function (e) {            
+                $(this).prop('disabled', true);
+                $(this).addClass('disabled');
+                $('#loadingIndicator').show();
+                var tagName = $(this).prop('tagName').toLowerCase();
+                if (tagName === 'a') {
+                    e.preventDefault(); 
+                    var targetUrl = $(this).attr('href');
+                    window.location.href = targetUrl;
 
+                } else if (tagName === 'button' || tagName === 'input') {
+                    $(this).closest('form').submit();
+                }
+            });
+        });
+    </script>
     <script>
         function Fade() {
             $('.dotContainer').fadeIn("fast");
@@ -230,7 +252,7 @@
         }
 
         function ShowModalExcluir(url) {
-            $('#modal').find('.modal-footer').prepend('<a id="btnModal" alt="Desativar" class="btn btn-primary" href="' + url + '" target="_self" title="Desativar">Confirmar</a>');
+            $('#modal').find('.modal-footer').prepend('<a id="btnModal" alt="Desativar" class="btn btn-primary btn-loading" href="' + url + '" target="_self" title="Desativar">Confirmar</a>');
             $('#modal').find('.modal-body').html('Confirma exclusão de Tipo de Consulta?');
             $('#modal').find('.modal-header').prepend('<h5 id="modalTitle" class="modal-title">Confimar Exclusão</h5>');
             $('#modal').modal('show');
@@ -243,6 +265,17 @@
             $('.dataTables-example').DataTable({
                 pageLength: 25,
                 dom: '<"html5buttons"B>lTfgitp',
+                // --- NOVO BLOCO DE CONFIGURAÇÃO ---
+                columnDefs: [
+                    {
+                        // Altera o tipo de ordenação para a primeira coluna (índice 0)
+                        //"type": "datetime-moment", // Se você incluiu o momento.js
+                        // OU
+                         "type": "date-eu", // Para o formato DD/MM/AAAA
+                        "targets": 1 // Aplica à coluna "Data da Transação"
+                    }
+                ],
+                // ---------------------------------       
                 buttons: [
                     { extend: 'excel', title: 'ValorConsulta_Planilha' },
                     {

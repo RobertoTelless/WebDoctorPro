@@ -572,6 +572,7 @@
     <Compile Include="ViewModels\QuestionarioEpworthViewModel.cs" />
     <Compile Include="ViewModels\QuestionarioBerlimViewModel.cs" />
     <Compile Include="ViewModels\TipoHistoricoViewModel.cs" />
+    <Compile Include="ViewModels\ValorConsultaMaterialViewModel.cs" />
     <Compile Include="ViewModels\VideoViewModel.cs" />
     <Compile Include="ViewModels\MedicoViewModel.cs" />
     <Compile Include="ViewModels\MovimentoAnotacaoViewModel.cs" />
@@ -5316,6 +5317,8 @@
     <Content Include="Views\Paciente2\VisualizarPrevia.cshtml" />
     <Content Include="Views\Paciente\VerMedicamentosBase.cshtml" />
     <Content Include="Views\Financeiro\VerPagamento.cshtml" />
+    <Content Include="Views\Financeiro\IncluirConsumoMaterial.cshtml" />
+    <Content Include="Views\Financeiro\EditarConsumoMaterial.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

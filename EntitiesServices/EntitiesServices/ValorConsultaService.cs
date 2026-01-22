@@ -13,13 +13,15 @@ namespace ModelServices.EntitiesServices
         private readonly IValorConsultaRepository _baseRepository;
         private readonly ILogRepository _logRepository;
         private readonly ITipoValorConsultaRepository _tipoRepository;
+        private readonly IValorConsultaMaterialRepository _matRepository;
         protected CRMSysDBEntities Db = new CRMSysDBEntities();
 
-        public ValorConsultaService(IValorConsultaRepository baseRepository, ILogRepository logRepository, ITipoValorConsultaRepository tipoRepository) : base(baseRepository)
+        public ValorConsultaService(IValorConsultaRepository baseRepository, ILogRepository logRepository, ITipoValorConsultaRepository tipoRepository, IValorConsultaMaterialRepository matRepository) : base(baseRepository)
         {
             _baseRepository = baseRepository;
             _logRepository = logRepository;
             _tipoRepository = tipoRepository;
+            _matRepository = matRepository;
         }
 
         public VALOR_CONSULTA GetItemById(Int32 id)
@@ -151,5 +153,54 @@ namespace ModelServices.EntitiesServices
                 }
             }
         }
+
+        public VALOR_CONSULTA_MATERIAL GetConsultaMaterialById(Int32 id)
+        {
+            return _matRepository.GetItemById(id);
+        }
+
+        public List<VALOR_CONSULTA_MATERIAL> GetAllConsultaMaterial(Int32 idAss)
+        {
+            return _matRepository.GetAllItens(idAss);
+        }
+
+        public Int32 EditConsultaMaterial(VALOR_CONSULTA_MATERIAL item)
+        {
+            using (DbContextTransaction transaction = Db.Database.BeginTransaction(IsolationLevel.ReadCommitted))
+            {
+                try
+                {
+                    VALOR_CONSULTA_MATERIAL obj = _matRepository.GetById(item.VCMA_CD_ID);
+                    _matRepository.Detach(obj);
+                    _matRepository.Update(item);
+                    transaction.Commit();
+                    return 0;
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    throw ex;
+                }
+            }
+        }
+
+        public Int32 CreateConsultaMaterial(VALOR_CONSULTA_MATERIAL item)
+        {
+            using (DbContextTransaction transaction = Db.Database.BeginTransaction(IsolationLevel.ReadCommitted))
+            {
+                try
+                {
+                    _matRepository.Add(item);
+                    transaction.Commit();
+                    return 0;
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    throw ex;
+                }
+            }
+        }
+
     }
 }

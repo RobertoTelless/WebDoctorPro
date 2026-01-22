@@ -1574,6 +1574,8 @@ namespace GEDSys_Presentation.Controllers
                 ViewBag.Perfil = usuario.PERFIL.PERF_SG_SIGLA;
                 Session["AjudaNivel"] = "../BaseAdmin/Ajuda/10/Ajuda10_11.pdf";
                 Session["Limite"] = DateTime.Today.Date.AddDays(-30);
+                List<MOVIMENTO_ESTOQUE_PRODUTO> estoques = item.MOVIMENTO_ESTOQUE_PRODUTO.Where(p => p.MOEP_IN_ATIVO == 1).OrderByDescending(p => p.MOEP_DT_MOVIMENTO).Take(10).ToList();
+                ViewBag.ListaMov = estoques;
 
                 // Recupera custo
                 PRODUTO_CUSTO custo = item.PRODUTO_CUSTO.ToList().OrderByDescending(p => p.PRCU_CD_ID).FirstOrDefault();
@@ -1626,7 +1628,7 @@ namespace GEDSys_Presentation.Controllers
 
                 // Monta evolução movimentacoes
                 DateTime limite = (DateTime)Session["Limite"];
-                List<MOVIMENTO_ESTOQUE_PRODUTO> estoques = item.MOVIMENTO_ESTOQUE_PRODUTO.ToList();
+                estoques = item.MOVIMENTO_ESTOQUE_PRODUTO.Where(p => p.MOEP_IN_ATIVO == 1).ToList();
                 List<DateTime> datas = estoques.Select(p => p.MOEP_DT_MOVIMENTO.Date).Distinct().ToList();
                 datas.Sort((i, j) => i.Date.CompareTo(j.Date));
                 List<ModeloViewModel> lista5 = new List<ModeloViewModel>();
@@ -3475,18 +3477,6 @@ namespace GEDSys_Presentation.Controllers
                     cell.VerticalAlignment = Element.ALIGN_MIDDLE;
                     cell.HorizontalAlignment = Element.ALIGN_LEFT;
                     table.AddCell(cell);
-                    //cell = new PdfPCell(new Paragraph("Promoção (R$): " + CrossCutting.Formatters.DecimalFormatter(aten.PROD_VL_PRECO_PROMOCAO.Value), meuFont));
-                    //cell.Border = 0;
-                    //cell.Colspan = 1;
-                    //cell.VerticalAlignment = Element.ALIGN_MIDDLE;
-                    //cell.HorizontalAlignment = Element.ALIGN_LEFT;
-                    //table.AddCell(cell);
-                    //cell = new PdfPCell(new Paragraph("Desconto (%): " + CrossCutting.Formatters.DecimalFormatter(aten.PROD_PC_DESCONTO.Value), meuFont));
-                    //cell.Border = 0;
-                    //cell.Colspan = 1;
-                    //cell.VerticalAlignment = Element.ALIGN_MIDDLE;
-                    //cell.HorizontalAlignment = Element.ALIGN_LEFT;
-                    //table.AddCell(cell);
                     cell = new PdfPCell(new Paragraph("Preço Anterior (R$): " + CrossCutting.Formatters.DecimalFormatter(aten.PROD_VL_PRECO_ANTERIOR.Value), meuFont));
                     cell.Border = 0;
                     cell.Colspan = 1;
@@ -3571,6 +3561,194 @@ namespace GEDSys_Presentation.Controllers
                 cell.HorizontalAlignment = Element.ALIGN_LEFT;
                 table.AddCell(cell);
                 pdfDoc.Add(table);
+
+                // Linha Horizontal
+                line1 = new Paragraph(new Chunk(new iTextSharp.text.pdf.draw.LineSeparator(0.0F, 100.0F, BaseColor.BLUE, Element.ALIGN_LEFT, 1)));
+                pdfDoc.Add(line1);
+
+                // Movimentações
+                table = new PdfPTable(new float[] { 80f, 80f, 80f, 80f, 90f, 120f });
+                table.WidthPercentage = 100;
+                table.HorizontalAlignment = 0;
+                table.SpacingBefore = 1f;
+                table.SpacingAfter = 1f;
+
+                cell = new PdfPCell(new Paragraph("Movimentações do Estoque", meuFontBold));
+                cell.Border = 0;
+                cell.Colspan = 6;
+                cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                table.AddCell(cell);
+
+                if (aten.MOVIMENTO_ESTOQUE_PRODUTO.Count > 0)
+                {
+                    cell = new PdfPCell(new Paragraph("Data", meuFont))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                    table.AddCell(cell);
+                    cell = new PdfPCell(new Paragraph("Tipo", meuFont))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                    table.AddCell(cell);
+                    cell = new PdfPCell(new Paragraph("Classe", meuFont))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                    table.AddCell(cell);
+                    cell = new PdfPCell(new Paragraph("Quantidade", meuFont))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                    table.AddCell(cell);
+                    cell = new PdfPCell(new Paragraph("Estoque", meuFont))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                    table.AddCell(cell);
+                    cell = new PdfPCell(new Paragraph("Identificador", meuFont))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                    table.AddCell(cell);
+
+                    foreach (MOVIMENTO_ESTOQUE_PRODUTO item in aten.MOVIMENTO_ESTOQUE_PRODUTO)
+                    {
+                        cell = new PdfPCell(new Paragraph(item.MOEP_DT_MOVIMENTO.ToShortDateString(), meuFont))
+                        {
+                            VerticalAlignment = Element.ALIGN_MIDDLE,
+                            HorizontalAlignment = Element.ALIGN_LEFT
+                        };
+                        table.AddCell(cell);
+
+                        if (item.MOEP_IN_TIPO_MOVIMENTO == 1)
+                        {
+                            cell = new PdfPCell(new Paragraph("Entrada", meuFont))
+                            {
+                                VerticalAlignment = Element.ALIGN_MIDDLE,
+                                HorizontalAlignment = Element.ALIGN_LEFT
+                            };
+                            table.AddCell(cell);
+                        }
+                        else
+                        {
+                            cell = new PdfPCell(new Paragraph("Saída", meuFont))
+                            {
+                                VerticalAlignment = Element.ALIGN_MIDDLE,
+                                HorizontalAlignment = Element.ALIGN_LEFT
+                            };
+                            table.AddCell(cell);
+                        }
+
+                        if (item.MOEP_IN_TIPO == 1)
+                        {
+                            cell = new PdfPCell(new Paragraph("Compra", meuFont))
+                            {
+                                VerticalAlignment = Element.ALIGN_MIDDLE,
+                                HorizontalAlignment = Element.ALIGN_LEFT
+                            };
+                            table.AddCell(cell);
+                        }
+                        else if (item.MOEP_IN_TIPO == 2)
+                        {
+                            cell = new PdfPCell(new Paragraph("Devolução de venda", meuFont))
+                            {
+                                VerticalAlignment = Element.ALIGN_MIDDLE,
+                                HorizontalAlignment = Element.ALIGN_LEFT
+                            };
+                            table.AddCell(cell);
+                        }
+                        else if (item.MOEP_IN_TIPO == 3)
+                        {
+                            cell = new PdfPCell(new Paragraph("Retorno de manutenção", meuFont))
+                            {
+                                VerticalAlignment = Element.ALIGN_MIDDLE,
+                                HorizontalAlignment = Element.ALIGN_LEFT
+                            };
+                            table.AddCell(cell);
+                        }
+                        else if (item.MOEP_IN_TIPO == 4)
+                        {
+                            cell = new PdfPCell(new Paragraph("Acerto Manual", meuFont))
+                            {
+                                VerticalAlignment = Element.ALIGN_MIDDLE,
+                                HorizontalAlignment = Element.ALIGN_LEFT
+                            };
+                            table.AddCell(cell);
+                        }
+                        else if (item.MOEP_IN_TIPO == 5)
+                        {
+                            cell = new PdfPCell(new Paragraph("Descarte", meuFont))
+                            {
+                                VerticalAlignment = Element.ALIGN_MIDDLE,
+                                HorizontalAlignment = Element.ALIGN_LEFT
+                            };
+                            table.AddCell(cell);
+                        }
+                        else if (item.MOEP_IN_TIPO == 6)
+                        {
+                            cell = new PdfPCell(new Paragraph("Perda", meuFont))
+                            {
+                                VerticalAlignment = Element.ALIGN_MIDDLE,
+                                HorizontalAlignment = Element.ALIGN_LEFT
+                            };
+                            table.AddCell(cell);
+                        }
+                        else if (item.MOEP_IN_TIPO == 7)
+                        {
+                            cell = new PdfPCell(new Paragraph("Envio para Manutenção", meuFont))
+                            {
+                                VerticalAlignment = Element.ALIGN_MIDDLE,
+                                HorizontalAlignment = Element.ALIGN_LEFT
+                            };
+                            table.AddCell(cell);
+                        }
+                        else if (item.MOEP_IN_TIPO == 8)
+                        {
+                            cell = new PdfPCell(new Paragraph("Acerto Manual", meuFont))
+                            {
+                                VerticalAlignment = Element.ALIGN_MIDDLE,
+                                HorizontalAlignment = Element.ALIGN_LEFT
+                            };
+                            table.AddCell(cell);
+                        }
+
+                        cell = new PdfPCell(new Paragraph(CrossCutting.Formatters.DecimalFormatter(item.MOEP_QN_QUANTIDADE), meuFont))
+                        {
+                            VerticalAlignment = Element.ALIGN_MIDDLE,
+                            HorizontalAlignment = Element.ALIGN_RIGHT
+                        };
+                        table.AddCell(cell);
+
+                        cell = new PdfPCell(new Paragraph(CrossCutting.Formatters.DecimalFormatter(item.MOEP_QN_DEPOIS.Value), meuFont))
+                        {
+                            VerticalAlignment = Element.ALIGN_MIDDLE,
+                            HorizontalAlignment = Element.ALIGN_RIGHT
+                        };
+                        table.AddCell(cell);
+
+                        cell = new PdfPCell(new Paragraph(item.MOEP_GU_GUID, meuFont))
+                        {
+                            VerticalAlignment = Element.ALIGN_MIDDLE,
+                            HorizontalAlignment = Element.ALIGN_LEFT
+                        };
+                        table.AddCell(cell);
+                    }
+                    pdfDoc.Add(table);
+                }
 
                 // Vendas
                 if (aten.PROD_IN_TIPO_PRODUTO == 2)

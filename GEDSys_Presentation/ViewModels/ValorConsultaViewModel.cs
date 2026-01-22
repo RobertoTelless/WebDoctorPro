@@ -26,15 +26,30 @@ namespace ERP_Condominios_Solution.ViewModels
         [Required(ErrorMessage = "Campo PADRÃO obrigatorio")]
         public Nullable<int> VACO_IN_PADRAO { get; set; }
         public string VACO_NM_EXIBE { get; set; }
+        public Nullable<int> VACO_IN_MATERIAL { get; set; }
+
+        public String Consumo
+        {
+            get
+            {
+                if (VACO_IN_MATERIAL == 1)
+                {
+                    return "Sim";
+                }
+                return "Não";
+            }
+        }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<CONSULTA_RECEBIMENTO> CONSULTA_RECEBIMENTO { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<PACIENTE> PACIENTE { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<PACIENTE_CONSULTA> PACIENTE_CONSULTA { get; set; }
         public virtual TIPO_VALOR_CONSULTA TIPO_VALOR_CONSULTA { get; set; }
         public virtual USUARIO USUARIO { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<PACIENTE_CONSULTA> PACIENTE_CONSULTA { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<PACIENTE> PACIENTE { get; set; }
+        public virtual ICollection<VALOR_CONSULTA_MATERIAL> VALOR_CONSULTA_MATERIAL { get; set; }
 
     }
 }

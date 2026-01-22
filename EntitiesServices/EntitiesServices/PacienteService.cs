@@ -58,10 +58,11 @@ namespace ModelServices.EntitiesServices
         private readonly IQuestionarioBangRepository _bgRepository;
         private readonly IRacaRepository _racaRepository;
         private readonly IRespostaConsultaRepository _respRepository;
+        private readonly IPacienteConsultaMaterialRepository _matRepository;
 
         protected CRMSysDBEntities Db = new CRMSysDBEntities();
 
-        public PacienteService(IPacienteRepository baseRepository, ILogRepository logRepository, ITipoPacienteRepository tipoRepository, IPacienteAnexoRepository anexoRepository, IUsuarioRepository usuRepository, IPacienteAnotacaoRepository anoRepository, IUFRepository uFRepository, ISexoRepository sexoRepository, ICorRepository corRepository, ITipoPessoaRepository pesRepository, ILinguaRepository linRepository, INacionalidadeRepository nacRepository, IMunicipioRepository munRepository, IEstadoCivilRepository esciRepository, IConvenioRepository convRepository, IGrauRepository grauRepository, ITipoExameRepository texRepository, IPacienteConsultaRepository pconRepository, IPacienteAnamneseRepository panRepository, IPacientePrescricaoRepository presRepository, IPacienteExamesRepository pexRepository, IPacienteExameFisicoRepository pexfRepository, ITipoControleRepository tcRepository, ITipoAtestadoRepository ateRepository, IPacienteSolicitacaoRepository pasoRepository, IPacienteAtestadoRepository patRepository, IGrauParentescoRepository gpRepository, IPacienteContatoRepository pcRepository, IGrupoContatoRepository gruRepository, IPacienteExameAnexoRepository eaxRepository, IPacienteExameAnotacaoRepository eanRepository, ITipoFormaRepository tfRepository, IPacientePrescricaoItemRepository piRepository, IPacienteHistoricoRepository phRepository, ILaboratorioRepository labRepository, IControleVersaoRepository cvRepository, IPacienteFichaRepository ficRepository, IPacienteAnamneseAnotacaoRepository anaRepository, IPacienteLoginRepository loginRepository, ITemplateRepository tempRepository, IConfiguracaoRepository configuracaoRepository, IPacienteDadosExameFisicoRepository pdRepository, IQuestionarioBerlimRepository qbRepository, IQuestionarioEpworthRepository epRepository, IQuestionarioBangRepository bgRepository,IRacaRepository racaRepository, IRespostaConsultaRepository respRepository) : base(baseRepository)
+        public PacienteService(IPacienteRepository baseRepository, ILogRepository logRepository, ITipoPacienteRepository tipoRepository, IPacienteAnexoRepository anexoRepository, IUsuarioRepository usuRepository, IPacienteAnotacaoRepository anoRepository, IUFRepository uFRepository, ISexoRepository sexoRepository, ICorRepository corRepository, ITipoPessoaRepository pesRepository, ILinguaRepository linRepository, INacionalidadeRepository nacRepository, IMunicipioRepository munRepository, IEstadoCivilRepository esciRepository, IConvenioRepository convRepository, IGrauRepository grauRepository, ITipoExameRepository texRepository, IPacienteConsultaRepository pconRepository, IPacienteAnamneseRepository panRepository, IPacientePrescricaoRepository presRepository, IPacienteExamesRepository pexRepository, IPacienteExameFisicoRepository pexfRepository, ITipoControleRepository tcRepository, ITipoAtestadoRepository ateRepository, IPacienteSolicitacaoRepository pasoRepository, IPacienteAtestadoRepository patRepository, IGrauParentescoRepository gpRepository, IPacienteContatoRepository pcRepository, IGrupoContatoRepository gruRepository, IPacienteExameAnexoRepository eaxRepository, IPacienteExameAnotacaoRepository eanRepository, ITipoFormaRepository tfRepository, IPacientePrescricaoItemRepository piRepository, IPacienteHistoricoRepository phRepository, ILaboratorioRepository labRepository, IControleVersaoRepository cvRepository, IPacienteFichaRepository ficRepository, IPacienteAnamneseAnotacaoRepository anaRepository, IPacienteLoginRepository loginRepository, ITemplateRepository tempRepository, IConfiguracaoRepository configuracaoRepository, IPacienteDadosExameFisicoRepository pdRepository, IQuestionarioBerlimRepository qbRepository, IQuestionarioEpworthRepository epRepository, IQuestionarioBangRepository bgRepository,IRacaRepository racaRepository, IRespostaConsultaRepository respRepository, IPacienteConsultaMaterialRepository matRepository) : base(baseRepository)
         {
             _baseRepository = baseRepository;
             _logRepository = logRepository;
@@ -110,6 +111,7 @@ namespace ModelServices.EntitiesServices
             _bgRepository = bgRepository;
             _racaRepository = racaRepository;
             _respRepository = respRepository;
+            _matRepository = matRepository;
         }
 
         public CONFIGURACAO CarregaConfiguracao(Int32 id)
@@ -1531,6 +1533,54 @@ namespace ModelServices.EntitiesServices
                     RESPOSTA_CONSULTA obj = _respRepository.GetById(item.RECO_CD_ID);
                     _respRepository.Detach(obj);
                     _respRepository.Update(item);
+                    transaction.Commit();
+                    return 0;
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    throw ex;
+                }
+            }
+        }
+
+        public PACIENTE_CONSULTA_MATERIAL GetConsultaMaterialById(Int32 id)
+        {
+            return _matRepository.GetItemById(id);
+        }
+
+        public List<PACIENTE_CONSULTA_MATERIAL> GetAllConsultaMaterial(Int32 idAss)
+        {
+            return _matRepository.GetAllItens(idAss);
+        }
+
+        public Int32 EditConsultaMaterial(PACIENTE_CONSULTA_MATERIAL item)
+        {
+            using (DbContextTransaction transaction = Db.Database.BeginTransaction(IsolationLevel.ReadCommitted))
+            {
+                try
+                {
+                    PACIENTE_CONSULTA_MATERIAL obj = _matRepository.GetById(item.PCMA_CD_ID);
+                    _matRepository.Detach(obj);
+                    _matRepository.Update(item);
+                    transaction.Commit();
+                    return 0;
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    throw ex;
+                }
+            }
+        }
+
+        public Int32 CreateConsultaMaterial(PACIENTE_CONSULTA_MATERIAL item)
+        {
+            using (DbContextTransaction transaction = Db.Database.BeginTransaction(IsolationLevel.ReadCommitted))
+            {
+                try
+                {
+                    _matRepository.Add(item);
                     transaction.Commit();
                     return 0;
                 }

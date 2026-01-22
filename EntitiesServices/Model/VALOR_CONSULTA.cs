@@ -20,6 +20,7 @@ namespace EntitiesServices.Model
             this.CONSULTA_RECEBIMENTO = new HashSet<CONSULTA_RECEBIMENTO>();
             this.PACIENTE = new HashSet<PACIENTE>();
             this.PACIENTE_CONSULTA = new HashSet<PACIENTE_CONSULTA>();
+            this.VALOR_CONSULTA_MATERIAL = new HashSet<VALOR_CONSULTA_MATERIAL>();
         }
     
         public int VACO_CD_ID { get; set; }
@@ -33,6 +34,7 @@ namespace EntitiesServices.Model
         public int VACO_IN_ATIVO { get; set; }
         public Nullable<int> VACO_IN_PADRAO { get; set; }
         public string VACO_NM_EXIBE { get; set; }
+        public Nullable<int> VACO_IN_MATERIAL { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<CONSULTA_RECEBIMENTO> CONSULTA_RECEBIMENTO { get; set; }
@@ -42,5 +44,7 @@ namespace EntitiesServices.Model
         public virtual ICollection<PACIENTE_CONSULTA> PACIENTE_CONSULTA { get; set; }
         public virtual TIPO_VALOR_CONSULTA TIPO_VALOR_CONSULTA { get; set; }
         public virtual USUARIO USUARIO { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<VALOR_CONSULTA_MATERIAL> VALOR_CONSULTA_MATERIAL { get; set; }
     }
 }

@@ -163,5 +163,11 @@ namespace ModelServices.Interfaces.EntitiesServices
         Int32 EditResposta(RESPOSTA_CONSULTA item);
         List<RESPOSTA_CONSULTA> GetAllResposta(Int32 idAss);
 
+        PACIENTE_CONSULTA_MATERIAL GetConsultaMaterialById(Int32 id);
+        Int32 EditConsultaMaterial(PACIENTE_CONSULTA_MATERIAL item);
+        Int32 CreateConsultaMaterial(PACIENTE_CONSULTA_MATERIAL item);
+        List<PACIENTE_CONSULTA_MATERIAL> GetAllConsultaMaterial(Int32 idAss);
+
+
     }
 }

@@ -43,6 +43,8 @@ namespace EntitiesServices.Model
             this.PRODUTO_ANEXO = new HashSet<PRODUTO_ANEXO>();
             this.LOCACAO = new HashSet<LOCACAO>();
             this.AVISO_LEMBRETE = new HashSet<AVISO_LEMBRETE>();
+            this.PACIENTE_CONSULTA_MATERIAL = new HashSet<PACIENTE_CONSULTA_MATERIAL>();
+            this.VALOR_CONSULTA_MATERIAL = new HashSet<VALOR_CONSULTA_MATERIAL>();
         }
     
         public int PROD_CD_ID { get; set; }
@@ -158,5 +160,9 @@ namespace EntitiesServices.Model
         public virtual ICollection<LOCACAO> LOCACAO { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<AVISO_LEMBRETE> AVISO_LEMBRETE { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<PACIENTE_CONSULTA_MATERIAL> PACIENTE_CONSULTA_MATERIAL { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<VALOR_CONSULTA_MATERIAL> VALOR_CONSULTA_MATERIAL { get; set; }
     }
 }

@@ -25,6 +25,8 @@ namespace EntitiesServices.Model
             this.PACIENTE_PRESCRICAO = new HashSet<PACIENTE_PRESCRICAO>();
             this.PACIENTE_SOLICITACAO = new HashSet<PACIENTE_SOLICITACAO>();
             this.RESPOSTA_CONSULTA = new HashSet<RESPOSTA_CONSULTA>();
+            this.MOVIMENTO_ESTOQUE_PRODUTO = new HashSet<MOVIMENTO_ESTOQUE_PRODUTO>();
+            this.PACIENTE_CONSULTA_MATERIAL = new HashSet<PACIENTE_CONSULTA_MATERIAL>();
         }
     
         public int PACO_CD_ID { get; set; }
@@ -45,6 +47,7 @@ namespace EntitiesServices.Model
         public Nullable<int> PACO_IN_RECORRENTE { get; set; }
         public Nullable<int> PACO_IN_RECEBE { get; set; }
         public string PACO_TX_JUSTIFICATIVA_CANCELA { get; set; }
+        public Nullable<int> PACO_IN_USOU_MATERIAL { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<CONSULTA_RECEBIMENTO> CONSULTA_RECEBIMENTO { get; set; }
@@ -65,5 +68,9 @@ namespace EntitiesServices.Model
         public virtual ICollection<PACIENTE_SOLICITACAO> PACIENTE_SOLICITACAO { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<RESPOSTA_CONSULTA> RESPOSTA_CONSULTA { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<MOVIMENTO_ESTOQUE_PRODUTO> MOVIMENTO_ESTOQUE_PRODUTO { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<PACIENTE_CONSULTA_MATERIAL> PACIENTE_CONSULTA_MATERIAL { get; set; }
     }
 }

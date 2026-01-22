@@ -2217,4 +2217,16 @@
   <data name="M0721" xml:space="preserve">
     <value>Tipo de pagamento não especificado</value>
   </data>
+  <data name="M0722" xml:space="preserve">
+    <value>Valor da consulta não informado ou zerado</value>
+  </data>
+  <data name="M0723" xml:space="preserve">
+    <value>A quantidade do consumo deve ser informada</value>
+  </data>
+  <data name="M0724" xml:space="preserve">
+    <value>O material a ser consumido deve ser especificado</value>
+  </data>
+  <data name="M0725" xml:space="preserve">
+    <value>Material já cadastrado para esse tipo de consulta</value>
+  </data>
 </root>

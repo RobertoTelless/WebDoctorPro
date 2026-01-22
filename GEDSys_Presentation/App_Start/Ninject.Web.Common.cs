@@ -323,6 +323,8 @@ namespace Presentation.Start
             kernel.Bind<IMedicoMensagemRepository>().To<MedicoMensagemRepository>();
             kernel.Bind<IRacaRepository>().To<RacaRepository>();
             kernel.Bind<IRespostaConsultaRepository>().To<RespostaConsultaRepository>();
+            kernel.Bind<IValorConsultaMaterialRepository>().To<ValorConsultaMaterialRepository>();
+            kernel.Bind<IPacienteConsultaMaterialRepository>().To<PacienteConsultaMaterialRepository>();
 
 
         }

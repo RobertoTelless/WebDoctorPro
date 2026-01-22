@@ -1206,7 +1206,7 @@ namespace GEDSys_Presentation.Controllers
                 List<PRODUTO_ESTOQUE_HISTORICO> hist = prod.PRODUTO_ESTOQUE_HISTORICO.ToList();
                 hist = hist.Where(p => p.PREH_IN_ATIVO == 1 & p.PREH_IN_PENDENTE == 0).OrderByDescending(p => p.PREH_DT_COMPLETA).ToList();
                 Session["ListaHistoricoEstoque"] = hist;
-                ViewBag.Listas = (List<PRODUTO_ESTOQUE_HISTORICO>)Session["ListaHistoricoEstoque"];
+                ViewBag.Listas = hist;
 
                 // Recupera evolucao
                 List<ModeloViewModel> lista1 = new List<ModeloViewModel>();
@@ -1214,14 +1214,14 @@ namespace GEDSys_Presentation.Controllers
                 {
                     ModeloViewModel mod1 = new ModeloViewModel();
                     mod1.DataEmissao = item.PREH_DT_DATA.Value;
-                    mod1.ValorDec1 = item.PREH_QN_ESTOQUE.Value;
-                    if (prod.PROD_VL_PRECO_VENDA != null)
+                    mod1.ValorDec1 = item.PREH_QN_ESTOQUE_TOTAL.Value;
+                    if (prod.PROD_IN_TIPO_PRODUTO == 2)
                     {
-                        mod1.ValorDec2 = item.PREH_QN_ESTOQUE.Value * prod.PROD_VL_PRECO_VENDA.Value;
+                        mod1.ValorDec2 = item.PREH_QN_ESTOQUE_TOTAL.Value * prod.PROD_VL_PRECO_VENDA.Value;
                     }
                     else
                     {
-                        mod1.ValorDec2 = item.PREH_QN_ESTOQUE.Value * 1;
+                        mod1.ValorDec2 = 0;
                     }
                     lista1.Add(mod1);
                 }
@@ -3674,12 +3674,12 @@ namespace GEDSys_Presentation.Controllers
                 pdfDoc.Open();
 
                 // Grid
-                PdfPTable table = new PdfPTable(new float[] { 140f, 80f, 80f, 80f, 100f});
+                PdfPTable table = new PdfPTable(new float[] { 140f, 80f, 80f, 80f, 80f, 100f});
                 table.WidthPercentage = 100;
                 table.HorizontalAlignment = 0;
                 table.SpacingBefore = 1f;
                 table.SpacingAfter = 1f;
-                cell.Colspan = 5;
+                cell.Colspan = 6;
                 cell.BackgroundColor = BaseColor.LIGHT_GRAY;
                 table.AddCell(cell);
 
@@ -3699,6 +3699,13 @@ namespace GEDSys_Presentation.Controllers
                 cell.BackgroundColor = BaseColor.LIGHT_GRAY;
                 table.AddCell(cell);
                 cell = new PdfPCell(new Paragraph("Quantidade", meuFont))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_RIGHT
+                };
+                cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph("Estoque", meuFont))
                 {
                     VerticalAlignment = Element.ALIGN_MIDDLE,
                     HorizontalAlignment = Element.ALIGN_RIGHT
@@ -3741,6 +3748,12 @@ namespace GEDSys_Presentation.Controllers
                         HorizontalAlignment = Element.ALIGN_RIGHT
                     };
                     table.AddCell(cell);
+                    cell = new PdfPCell(new Paragraph(CrossCutting.Formatters.IntegerFormatter(item.PREH_QN_ESTOQUE_TOTAL.Value), meuFont))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_RIGHT
+                    };
+                    table.AddCell(cell);
                     cell = new PdfPCell(new Paragraph(item.PREH_NM_TIPO, meuFont))
                     {
                         VerticalAlignment = Element.ALIGN_MIDDLE,
@@ -3755,10 +3768,6 @@ namespace GEDSys_Presentation.Controllers
                     table.AddCell(cell);
                 }
                 pdfDoc.Add(table);
-
-                // Linha Horizontal
-                Paragraph line2 = new Paragraph(new Chunk(new iTextSharp.text.pdf.draw.LineSeparator(0.0F, 100.0F, BaseColor.BLUE, Element.ALIGN_LEFT, 1)));
-                pdfDoc.Add(line2);
 
                 // Finaliza
                 pdfWriter.CloseStream = false;

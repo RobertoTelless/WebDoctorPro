@@ -122,7 +122,7 @@
                                 @Html.ButtonLinkIndex(text: "Retirar Filtro", controller: "Estoque", action: "RetirarFiltroMovimentoProduto", htmlAttributes: new { @class = "btn-loading" })
                                 @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_INCLUIR_MOVIMENTACAO_ESTOQUE == 1)
                                 {
-                                    @Html.ButtonLinkIndex(text: "Nova Movimentação", controller: "Estoque", action: "IncluirMovimentacaoProd", htmlAttributes: new { @class = "btn-loading" })
+                                    @Html.ButtonLinkIndex(text: "Nova Movimentação", controller: "Estoque", action: "IncluirMovimentacaoProd", buttonClass: "primary", htmlAttributes: new { @class = "btn-loading" })
                                 }
                                 @Html.ButtonLinkIndex(text: "Imprimir", controller: "Estoque", action: "GerarListagemMovimentacaoProduto")
                                 @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaEstoque", controller: "Estoque", htmlAttributes: new { @class = "btn-loading" })                

@@ -236,6 +236,8 @@
     <Compile Include="Interfaces\Repositories\IMedicoAnexoRepository.cs" />
     <Compile Include="Interfaces\Repositories\ILocacaoHistoricoRepository.cs" />
     <Compile Include="Interfaces\Repositories\ILocacaoRepository.cs" />
+    <Compile Include="Interfaces\Repositories\IPacienteConsultaMaterialRepository.cs" />
+    <Compile Include="Interfaces\Repositories\IValorConsultaMaterialRepository.cs" />
     <Compile Include="Interfaces\Repositories\IRespostaConsultaRepository.cs" />
     <Compile Include="Interfaces\Repositories\IQuestionarioBangRepository.cs" />
     <Compile Include="Interfaces\Repositories\IQuestionarioEpworthRepository.cs" />
@@ -1088,6 +1090,9 @@
     <Compile Include="Model\PACIENTE_CONSULTA.cs">
       <DependentUpon>GED_Model.tt</DependentUpon>
     </Compile>
+    <Compile Include="Model\PACIENTE_CONSULTA_MATERIAL.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
     <Compile Include="Model\PACIENTE_CONTATO.cs">
       <DependentUpon>GED_Model.tt</DependentUpon>
     </Compile>
@@ -1533,6 +1538,9 @@
       <DependentUpon>GED_Model.tt</DependentUpon>
     </Compile>
     <Compile Include="Model\VALOR_CONSULTA.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\VALOR_CONSULTA_MATERIAL.cs">
       <DependentUpon>GED_Model.tt</DependentUpon>
     </Compile>
     <Compile Include="Model\VALOR_CONVENIO.cs">
