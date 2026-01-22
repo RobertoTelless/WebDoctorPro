@@ -3733,7 +3733,7 @@ namespace GEDSys_Presentation.Controllers
                         };
                         table.AddCell(cell);
 
-                        cell = new PdfPCell(new Paragraph(CrossCutting.Formatters.DecimalFormatter(item.MOEP_QN_DEPOIS.Value), meuFont))
+                        cell = new PdfPCell(new Paragraph(CrossCutting.Formatters.DecimalFormatter(item.MOEP_VL_QUANTIDADE_ANTERIOR.Value - item.MOEP_VL_QUANTIDADE_MOVIMENTO.Value), meuFont))
                         {
                             VerticalAlignment = Element.ALIGN_MIDDLE,
                             HorizontalAlignment = Element.ALIGN_RIGHT
