@@ -93,6 +93,7 @@
                                     @Html.HiddenFor(m => m.ASSI_CD_ID)
                                     @Html.HiddenFor(m => m.VACO_CD_ID)
                                     @Html.HiddenFor(m => m.TIVL_CD_ID)
+                                    @Html.HiddenFor(m => m.VACO_IN_MATERIAL)
                                     Data de Referência  
                                     @Html.TextBoxFor(m => m.VACO_DT_REFERENCIA, "{0:dd/MM/yyyy}", new { @class = "form-control", @readonly = "readonly", @id = "dn", data_toggle = "popover", data_content = "Usada apenas para marcar a data em que esse tipo/valor foi criado ou alterado", data_trigger="hover", data_placement="top" })
                                 </div>
@@ -119,10 +120,10 @@
                                 <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Consumo de Material</h4>
                                 <div class="form-group">
                                     <div class="col-lg-12 col-md-12 col-xs-12">
-                                        <a href="@Url.Action("IncluirConsumoMaterial", "Financeiro")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Incluir um novo material a ser consumido por essa consulta" class="btn btn-sm btn-primary" id="emp" OnClick = "Fade()">Criar Novo Envio de Informações</a>                
+                                        <a href="@Url.Action("IncluirConsumoMaterial", "Financeiro")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Incluir um novo material a ser consumido por essa consulta" class="btn btn-sm btn-primary" id="emp" OnClick = "Fade()">Incluir Novo Material</a>                
                                     </div>
                                 </div>
-                                @if (ViewBag.Envios != null &&(ViewBag.Envios as List<EntitiesServices.Model.MEDICOS_ENVIO>).Count > 0)
+                                @if (ViewBag.Lista != null &&(ViewBag.Lista as List<EntitiesServices.Model.VALOR_CONSULTA_MATERIAL>).Count > 0)
                                 {
                                     <table class="table table-striped table-bordered table-hover dataTables-example">
                                         <thead style="background-color:lightsteelblue">
@@ -153,7 +154,7 @@
                                         <div class="col-lg-1 col-md-1 col-xs-2">
                                         </div>
                                         <div style="border: 5px solid #F6A54A; padding: 10px; border-radius: 8px 8px; " class="col-lg-10 col-md-10 col-xs-12">
-                                            <h2 style="font-weight: bold">Nenhum envio de informações cadastrado para esse médico</h2>
+                                            <h2 style="font-weight: bold">Nenhum material incluído para esse tipo de consulta</h2>
                                         </div>
                                         <div class="col-lg-1 col-md-1 col-xs-2">
                                         </div>

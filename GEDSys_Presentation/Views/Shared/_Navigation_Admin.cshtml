@@ -69,7 +69,7 @@
                     }
                     @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_ACESSO_FINANCEIRO == 1)
                     {
-                        <li class="@Html.IsSelected(action: "MontarTelaValorConsulta")"><a href="@Url.Action("MontarTelaValorConsulta", "Financeiro")"  data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acesso ao cadastro de tipos e valores de consultas">Consultas - Valores</a></li>
+                        <li class="@Html.IsSelected(action: "MontarTelaValorConsulta")"><a href="@Url.Action("MontarTelaValorConsulta", "Financeiro")"  data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acesso ao cadastro de tipos e valores de consultas">Tipos de Consultas</a></li>
                     }
                     <li class="@Html.IsSelected(action: "MontarTelaMensagensEnviadas")"><a href="@Url.Action("MontarTelaMensagensEnviadas", "BaseAdmin")"  data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acesso à lista de mensagens enviadas pelo WebDoctor, sob demanda ou automaticas">Mensagens Enviadas</a></li>
                     <li class="@Html.IsSelected(action: "MontarTelaMedico")"><a href="@Url.Action("MontarTelaMedico", "Medico")"  data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acesso ao cadastro de médicos para enviar informações de pacientes com funcionalidades de envio">Médicos</a></li>

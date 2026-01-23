@@ -121,6 +121,7 @@ namespace ModelServices.EntitiesServices
                 try
                 {
                     item.USUARIO = null;
+                    item.TIPO_VALOR_CONSULTA = null;
                     VALOR_CONSULTA obj = _baseRepository.GetById(item.VACO_CD_ID);
                     _baseRepository.Detach(obj);
                     _baseRepository.Update(item);
@@ -170,6 +171,8 @@ namespace ModelServices.EntitiesServices
             {
                 try
                 {
+                    item.PRODUTO = null;
+                    item.VALOR_CONSULTA = null;
                     VALOR_CONSULTA_MATERIAL obj = _matRepository.GetById(item.VCMA_CD_ID);
                     _matRepository.Detach(obj);
                     _matRepository.Update(item);
@@ -190,6 +193,7 @@ namespace ModelServices.EntitiesServices
             {
                 try
                 {
+                    item.VALOR_CONSULTA = null;
                     _matRepository.Add(item);
                     transaction.Commit();
                     return 0;

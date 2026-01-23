@@ -190,7 +190,7 @@ namespace ApplicationServices.Services
                 // Verifica existencia
                 Int32 cd = item.PROD_CD_ID;
                 List<VALOR_CONSULTA_MATERIAL> mats = _baseService.GetAllConsultaMaterial(item.ASSI_CD_ID);
-                mats = mats.Where(p => p.PROD_CD_ID == item.PROD_CD_ID || p.VACO_CD_ID == item.VACO_CD_ID).ToList();
+                mats = mats.Where(p => p.PROD_CD_ID == item.PROD_CD_ID & p.VACO_CD_ID == item.VACO_CD_ID).ToList();
                 if (mats.Count() > 0)
                 {
                     return 1;

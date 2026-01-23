@@ -130,6 +130,16 @@
                                                     <td style="width: auto"><span class="badge badge-warning">Não</span></td>
 
                                                 }
+                                                @if (cond.VACO_IN_MATERIAL == 1)
+                                                {
+                                                    <td style="width: auto"><span class="badge badge-primary">Sim</span></td>
+
+                                                }
+                                                else
+                                                {
+                                                    <td style="width: auto"><span class="badge badge-warning">Não</span></td>
+
+                                                }
                                                 <td style="width: auto" class="td-one-action">
                                                     @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_FINANCEIRO_REC_ALTERAR == 1)
                                                     {

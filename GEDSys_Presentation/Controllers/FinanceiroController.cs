@@ -4561,6 +4561,16 @@ namespace GEDSys_Presentation.Controllers
             return RedirectToAction("EditarPagamento", new { id = (Int32)Session["IdPagamento"] });
         }
 
+        public ActionResult VoltarAnexoValorConsulta()
+        {
+            if ((String)Session["Ativa"] == null)
+            {
+                return RedirectToAction("Logout", "ControleAcesso");
+            }
+            Session["VoltaTela"] = 1;
+            return RedirectToAction("EditarValorConsulta", new { id = (Int32)Session["IdValorConsulta"] });
+        }
+
         public ActionResult VoltarAnexoPagamentoVer()
         {
             if ((String)Session["Ativa"] == null)
@@ -11729,6 +11739,7 @@ namespace GEDSys_Presentation.Controllers
                 vm.VACO_CD_ID = vc.VACO_CD_ID;
                 vm.ASSI_CD_ID = idAss;
                 vm.VCMA_QN_QUANTIDADE = 0;
+                vm.VALOR_CONSULTA = vc;
                 return View(vm);
             }
             catch (Exception ex)

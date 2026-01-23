@@ -1657,7 +1657,7 @@ namespace GEDSys_Presentation.Controllers
                 {
                     if (data.Date > limite)
                     {
-                        decimal? conta = hist.Where(p => p.PREH_DT_DATA.Value.Date == data).OrderByDescending(p => p.PREH_DT_COMPLETA).FirstOrDefault().PREH_QN_ESTOQUE;
+                        decimal? conta = hist.Where(p => p.PREH_DT_DATA.Value.Date == data).Sum(p => p.PREH_QN_ESTOQUE);
                         ModeloViewModel mod = new ModeloViewModel();
                         mod.DataEmissao = data;
                         mod.ValorDec1 = conta.Value;
@@ -3567,7 +3567,7 @@ namespace GEDSys_Presentation.Controllers
                 pdfDoc.Add(line1);
 
                 // Movimentações
-                table = new PdfPTable(new float[] { 80f, 80f, 80f, 80f, 90f, 120f });
+                table = new PdfPTable(new float[] { 80f, 80f, 80f, 90f, 120f });
                 table.WidthPercentage = 100;
                 table.HorizontalAlignment = 0;
                 table.SpacingBefore = 1f;
@@ -3575,7 +3575,7 @@ namespace GEDSys_Presentation.Controllers
 
                 cell = new PdfPCell(new Paragraph("Movimentações do Estoque", meuFontBold));
                 cell.Border = 0;
-                cell.Colspan = 6;
+                cell.Colspan = 5;
                 cell.VerticalAlignment = Element.ALIGN_MIDDLE;
                 cell.HorizontalAlignment = Element.ALIGN_LEFT;
                 table.AddCell(cell);
@@ -3604,13 +3604,6 @@ namespace GEDSys_Presentation.Controllers
                     cell.BackgroundColor = BaseColor.LIGHT_GRAY;
                     table.AddCell(cell);
                     cell = new PdfPCell(new Paragraph("Quantidade", meuFont))
-                    {
-                        VerticalAlignment = Element.ALIGN_MIDDLE,
-                        HorizontalAlignment = Element.ALIGN_LEFT
-                    };
-                    cell.BackgroundColor = BaseColor.LIGHT_GRAY;
-                    table.AddCell(cell);
-                    cell = new PdfPCell(new Paragraph("Estoque", meuFont))
                     {
                         VerticalAlignment = Element.ALIGN_MIDDLE,
                         HorizontalAlignment = Element.ALIGN_LEFT
@@ -3733,17 +3726,106 @@ namespace GEDSys_Presentation.Controllers
                         };
                         table.AddCell(cell);
 
-                        cell = new PdfPCell(new Paragraph(CrossCutting.Formatters.DecimalFormatter(item.MOEP_VL_QUANTIDADE_ANTERIOR.Value - item.MOEP_VL_QUANTIDADE_MOVIMENTO.Value), meuFont))
+                        cell = new PdfPCell(new Paragraph(item.MOEP_GU_GUID, meuFont))
+                        {
+                            VerticalAlignment = Element.ALIGN_MIDDLE,
+                            HorizontalAlignment = Element.ALIGN_LEFT
+                        };
+                        table.AddCell(cell);
+                    }
+                    pdfDoc.Add(table);
+                }
+
+                // Linha Horizontal
+                line1 = new Paragraph(new Chunk(new iTextSharp.text.pdf.draw.LineSeparator(0.0F, 100.0F, BaseColor.BLUE, Element.ALIGN_LEFT, 1)));
+                pdfDoc.Add(line1);
+
+                // Movimentações
+                table = new PdfPTable(new float[] { 100f, 80f, 80f, 80f, 80f });
+                table.WidthPercentage = 100;
+                table.HorizontalAlignment = 0;
+                table.SpacingBefore = 1f;
+                table.SpacingAfter = 1f;
+
+                cell = new PdfPCell(new Paragraph("Histórico do Estoque", meuFontBold));
+                cell.Border = 0;
+                cell.Colspan = 5;
+                cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                table.AddCell(cell);
+
+                if (aten.PRODUTO_ESTOQUE_HISTORICO.Count > 0)
+                {
+                    cell = new PdfPCell(new Paragraph("Data", meuFont))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                    table.AddCell(cell);
+                    cell = new PdfPCell(new Paragraph("Tipo", meuFont))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                    table.AddCell(cell);
+                    cell = new PdfPCell(new Paragraph("Classe", meuFont))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                    table.AddCell(cell);
+                    cell = new PdfPCell(new Paragraph("Movimento", meuFont))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                    table.AddCell(cell);
+                    cell = new PdfPCell(new Paragraph("Estoque", meuFont))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                    table.AddCell(cell);
+
+                    foreach (PRODUTO_ESTOQUE_HISTORICO item in aten.PRODUTO_ESTOQUE_HISTORICO.OrderBy(p => p.PREH_DT_COMPLETA))
+                    {
+                        cell = new PdfPCell(new Paragraph(item.PREH_DT_COMPLETA.Value.ToString(), meuFont))
+                        {
+                            VerticalAlignment = Element.ALIGN_MIDDLE,
+                            HorizontalAlignment = Element.ALIGN_LEFT
+                        };
+                        table.AddCell(cell);
+
+                        cell = new PdfPCell(new Paragraph(item.PREH_NM_TIPO, meuFont))
+                        {
+                            VerticalAlignment = Element.ALIGN_MIDDLE,
+                            HorizontalAlignment = Element.ALIGN_LEFT
+                        };
+                        table.AddCell(cell);
+
+                        cell = new PdfPCell(new Paragraph(item.PREH_DS_ORIGEM, meuFont))
+                        {
+                            VerticalAlignment = Element.ALIGN_MIDDLE,
+                            HorizontalAlignment = Element.ALIGN_LEFT
+                        };
+                        table.AddCell(cell);
+
+                        cell = new PdfPCell(new Paragraph(CrossCutting.Formatters.DecimalFormatter(item.PREH_QN_ESTOQUE.Value), meuFont))
                         {
                             VerticalAlignment = Element.ALIGN_MIDDLE,
                             HorizontalAlignment = Element.ALIGN_RIGHT
                         };
                         table.AddCell(cell);
 
-                        cell = new PdfPCell(new Paragraph(item.MOEP_GU_GUID, meuFont))
+                        cell = new PdfPCell(new Paragraph(CrossCutting.Formatters.DecimalFormatter(item.PREH_QN_ESTOQUE_TOTAL.Value), meuFont))
                         {
                             VerticalAlignment = Element.ALIGN_MIDDLE,
-                            HorizontalAlignment = Element.ALIGN_LEFT
+                            HorizontalAlignment = Element.ALIGN_RIGHT
                         };
                         table.AddCell(cell);
                     }

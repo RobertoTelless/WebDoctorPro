@@ -24,6 +24,7 @@ namespace DataServices.Repositories
         {
             IQueryable<VALOR_CONSULTA> query = Db.VALOR_CONSULTA;
             query = query.Where(p => p.VACO_CD_ID == id);
+            query = query.Include(p => p.VALOR_CONSULTA_MATERIAL);
             return query.FirstOrDefault();
         }
 
