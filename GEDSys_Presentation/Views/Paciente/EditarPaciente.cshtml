@@ -91,7 +91,7 @@
                 <a href="@Url.Action("MontarTelaCentralPaciente", "Paciente")">Central de Pacientes</a>
             </li>
             <li class="active">
-                <strong>Pacientes - Edição</strong>
+                <strong>Pacientes - Alteração</strong>
             </li>
         </ol>
         <br />
@@ -102,8 +102,8 @@
                 <div class="ibox-title">
                     <div class="row">
                         <div style="text-align: center;" class="col-lg-12 col-md-12 col-xs-12">
-                            <h5>Ficha do Paciente - Edição</h5>
-                            <span style="color:green; font-weight: 500; font-size: 20px;">@Model.PACI_NM_NOME</span>
+                            <h5>Ficha do Paciente - Alteração</h5>
+                            <span style="color:green; font-weight: 500; font-size: 20px;">@Model.PACI_NM_NOME.ToUpper()</span>
                         </div>
                     </div>
                 </div>
@@ -191,6 +191,10 @@
                                 else if ((Int32)Session["TipoSolicitacao"] == 99)
                                 {
                                     @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaAusencias", controller: "Paciente2",  htmlAttributes: new { @class = "btn-loading" })
+                                }
+                                else if ((Int32)Session["TipoSolicitacao"] == 98)
+                                {
+                                    @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaLocacao", controller: "Locacao",  htmlAttributes: new { @class = "btn-loading" })
                                 }
                                 else
                                 {

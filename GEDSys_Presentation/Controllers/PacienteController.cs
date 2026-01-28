@@ -4693,6 +4693,10 @@ namespace GEDSys_Presentation.Controllers
                     {
                         return RedirectToAction("MontarTelaEncerrarConsulta", "Financeiro");
                     }
+                    if ((Int32)Session["TipoSolicitacao"] == 98)
+                    {
+                        return RedirectToAction("MontarTelaLocacao", "Locacao");
+                    }
                     if (Session["FiltroPaciente"] != null)
                     {
                         FiltrarPaciente((PACIENTE)Session["FiltroPaciente"]);
@@ -7706,6 +7710,48 @@ namespace GEDSys_Presentation.Controllers
                     hist.PAHI_DS_DESCRICAO = "Paciente " + pac.PACI_NM_NOME + " - Prescrição alterada " + item.PAPR_GU_GUID;
                     Int32 voltaHist = baseApp.ValidateCreateHistorico(hist);
 
+                    // Atualiza prontuário
+                    PACIENTE_ANAMNESE ana = pac.PACIENTE_ANAMNESE.Where(p => p.PAAM_IN_ATIVO == 1).FirstOrDefault();
+                    PACIENTE_ANAMNESE anan = RemontarAnamnese(ana);
+                    List<PACIENTE_PRESCRICAO_ITEM> itens = prescricao.PACIENTE_PRESCRICAO_ITEM.ToList();
+
+                    String velho = anan.PAAM_TX_TEXTO_LIVRE;
+                    String novo = "Emissão de Prescrição" + "\r\n";
+                    foreach (PACIENTE_PRESCRICAO_ITEM rem in itens)
+                    {
+                        novo += rem.PAPI_NM_REMEDIO + (rem.PAPI_NM_GENERICO != null ? " - " + rem.PAPI_NM_GENERICO : "") + (rem.PAPI_DS_POSOLOGIA != null ? " - " + rem.PAPI_DS_POSOLOGIA : "") + "\r\n";
+                    }
+
+                    String dataHoje = DateTime.Today.Date.ToLongDateString();
+                    dataHoje = "*** Consulta em [" + dataHoje + "] ***";
+                    if (anan.PAAM_TX_TEXTO_LIVRE != null)
+                    {
+                        String anot = dataHoje + "\r\n" + novo;
+                        if (velho == null & novo != String.Empty)
+                        {
+                            anan.PAAM_TX_TEXTO_LIVRE = dataHoje + "\r\n" + novo;
+                        }
+                        if (velho != null & novo != String.Empty)
+                        {
+                            String tripa = velho.Substring(velho.Length - 4, 4);
+                            if (tripa == "\r\n")
+                            {
+                                velho = velho.Substring(0, velho.Length - 4);
+                            }
+                            anan.PAAM_TX_TEXTO_LIVRE = velho + "\r\n\r\n" + dataHoje + "\r\n" + novo;
+                        }
+                    }
+                    else
+                    {
+                        velho = anan.PAAM_TX_TEXTO_LIVRE;
+                        anan.PAAM_TX_TEXTO_LIVRE = velho;
+                    }
+
+                    // Executa a operação
+                    anan.PAAM_IN_ALTERADA = 1;
+                    anan.PACO_CD_ID = vm.PACO_CD_ID;
+                    Int32 voltaW = baseApp.ValidateEditAnamnese(anan);
+
                     // Mensagem do CRUD
                     Session["MsgCRUD"] = "A prescrição" + item.PAPR_GU_GUID + " do(a) paciente " + pac.PACI_NM_NOME.ToUpper() + " foi alterada com sucesso.";
                     Session["MensPaciente"] = 61;
@@ -8188,6 +8234,41 @@ namespace GEDSys_Presentation.Controllers
                     hist.PAHI_NM_OPERACAO = "Paciente - Criação de Atestado";
                     hist.PAHI_DS_DESCRICAO = "Paciente " + pac1.PACI_NM_NOME + " - Atestato criado " + item.PAAT_GU_GUID;
                     Int32 voltaHist = baseApp.ValidateCreateHistorico(hist);
+
+                    // Atualiza prontuário
+                    PACIENTE_ANAMNESE ana = pac1.PACIENTE_ANAMNESE.Where(p => p.PAAM_IN_ATIVO == 1).FirstOrDefault();
+                    PACIENTE_ANAMNESE anan = RemontarAnamnese(ana);
+                    String velho = anan.PAAM_TX_TEXTO_LIVRE;
+                    String novo = "Emissão de Atestado " + atestado.PAAT_NM_TITULO.ToUpper();
+                    String dataHoje = DateTime.Today.Date.ToLongDateString();
+                    dataHoje = "*** Consulta em [" + dataHoje + "] ***";
+                    if (anan.PAAM_TX_TEXTO_LIVRE != null)
+                    {
+                        String anot = dataHoje + "\r\n" + novo;
+                        if (velho == null & novo != String.Empty)
+                        {
+                            anan.PAAM_TX_TEXTO_LIVRE = dataHoje + "\r\n" + novo;
+                        }
+                        if (velho != null & novo != String.Empty)
+                        {
+                            String tripa = velho.Substring(velho.Length - 4, 4);
+                            if (tripa == "\r\n")
+                            {
+                                velho = velho.Substring(0, velho.Length - 4);
+                            }
+                            anan.PAAM_TX_TEXTO_LIVRE = velho + "\r\n\r\n" + dataHoje + "\r\n" + novo;
+                        }
+                    }
+                    else
+                    {
+                        velho = anan.PAAM_TX_TEXTO_LIVRE;
+                        anan.PAAM_TX_TEXTO_LIVRE = velho;
+                    }
+
+                    // Executa a operação
+                    anan.PAAM_IN_ALTERADA = 1;
+                    anan.PACO_CD_ID = vm.PACO_CD_ID;
+                    Int32 voltaW = baseApp.ValidateEditAnamnese(anan);
 
                     // Mensagem do CRUD
                     Session["MsgCRUD"] = "O atestado " + item.PAAT_GU_GUID + " do(a) paciente " + pac1.PACI_NM_NOME.ToUpper() + " foi criado com sucesso.";
@@ -8869,6 +8950,41 @@ namespace GEDSys_Presentation.Controllers
                         sol.SOLI_IN_ATIVO = 1;
                         Int32 voltaSol = solApp.ValidateCreate(sol, usuarioLogado);
                     }
+
+                    // Atualiza prontuário
+                    PACIENTE_ANAMNESE ana = pac.PACIENTE_ANAMNESE.Where(p => p.PAAM_IN_ATIVO == 1).FirstOrDefault();
+                    PACIENTE_ANAMNESE anan = RemontarAnamnese(ana);
+                    String velho = anan.PAAM_TX_TEXTO_LIVRE;
+                    String novo = "Emissão de Solicitação de Exame - " + solicitacao.PASO_NM_TITULO.ToUpper() + "\r\n" + solicitacao.PASO_TX_TEXTO;
+                    String dataHoje = DateTime.Today.Date.ToLongDateString();
+                    dataHoje = "*** Consulta em [" + dataHoje + "] ***";
+                    if (anan.PAAM_TX_TEXTO_LIVRE != null)
+                    {
+                        String anot = dataHoje + "\r\n" + novo;
+                        if (velho == null & novo != String.Empty)
+                        {
+                            anan.PAAM_TX_TEXTO_LIVRE = dataHoje + "\r\n" + novo;
+                        }
+                        if (velho != null & novo != String.Empty)
+                        {
+                            String tripa = velho.Substring(velho.Length - 4, 4);
+                            if (tripa == "\r\n")
+                            {
+                                velho = velho.Substring(0, velho.Length - 4);
+                            }
+                            anan.PAAM_TX_TEXTO_LIVRE = velho + "\r\n\r\n" + dataHoje + "\r\n" + novo;
+                        }
+                    }
+                    else
+                    {
+                        velho = anan.PAAM_TX_TEXTO_LIVRE;
+                        anan.PAAM_TX_TEXTO_LIVRE = velho;
+                    }
+
+                    // Executa a operação
+                    anan.PAAM_IN_ALTERADA = 1;
+                    anan.PACO_CD_ID = vm.PACO_CD_ID;
+                    Int32 voltaW = baseApp.ValidateEditAnamnese(anan);
 
                     // Mensagem do CRUD
                     Session["MsgCRUD"] = "A solicitação de exame " + item.PASO_GU_GUID + " do(a) paciente " + pac.PACI_NM_NOME.ToUpper() + " foi criada com sucesso.";
@@ -9734,6 +9850,7 @@ namespace GEDSys_Presentation.Controllers
                     //}
 
                     // Grava historico
+                    PACIENTE_EXAMES exame = baseApp.GetExameById((Int32)Session["IdExame"]);
                     PACIENTE_HISTORICO hist = new PACIENTE_HISTORICO();
                     PACIENTE pac = baseApp.GetItemById(item.PACI_CD_ID);
                     hist.ASSI_CD_ID = usuario.ASSI_CD_ID;
@@ -9745,6 +9862,44 @@ namespace GEDSys_Presentation.Controllers
                     hist.PAHI_NM_OPERACAO = "Paciente - Inclusão de Resultado de Exame";
                     hist.PAHI_DS_DESCRICAO = "Paciente " + pac.PACI_NM_NOME + " - Resultado de Exame incluído " + item.PAEX_NM_NOME;
                     Int32 voltaHist = baseApp.ValidateCreateHistorico(hist);
+
+                    // Atualiza prontuário
+                    PACIENTE_ANAMNESE ana = pac.PACIENTE_ANAMNESE.Where(p => p.PAAM_IN_ATIVO == 1).FirstOrDefault();
+                    PACIENTE_ANAMNESE anan = RemontarAnamnese(ana);
+
+                    String velho = anan.PAAM_TX_TEXTO_LIVRE;
+                    String novo = "Resultado de Exames - " + exame.PAEX_NM_NOME.ToUpper() + "\r\n";
+                    novo += exame.PAEX_DS_COMENTARIOS;
+
+                    String dataHoje = DateTime.Today.Date.ToLongDateString();
+                    dataHoje = "*** Consulta em [" + dataHoje + "] ***";
+                    if (anan.PAAM_TX_TEXTO_LIVRE != null)
+                    {
+                        String anot = dataHoje + "\r\n" + novo;
+                        if (velho == null & novo != String.Empty)
+                        {
+                            anan.PAAM_TX_TEXTO_LIVRE = dataHoje + "\r\n" + novo;
+                        }
+                        if (velho != null & novo != String.Empty)
+                        {
+                            String tripa = velho.Substring(velho.Length - 4, 4);
+                            if (tripa == "\r\n")
+                            {
+                                velho = velho.Substring(0, velho.Length - 4);
+                            }
+                            anan.PAAM_TX_TEXTO_LIVRE = velho + "\r\n\r\n" + dataHoje + "\r\n" + novo;
+                        }
+                    }
+                    else
+                    {
+                        velho = anan.PAAM_TX_TEXTO_LIVRE;
+                        anan.PAAM_TX_TEXTO_LIVRE = velho;
+                    }
+
+                    // Executa a operação
+                    anan.PAAM_IN_ALTERADA = 1;
+                    anan.PACO_CD_ID = vm.PACO_CD_ID;
+                    Int32 voltaW = baseApp.ValidateEditAnamnese(anan);
 
                     // Mensagem do CRUD
                     Session["MsgCRUD"] = "O resultado de exame " + item.PAEX_NM_NOME.ToUpper() + " do(a) paciente " + pac.PACI_NM_NOME.ToUpper() + " foi incluído com sucesso.";
@@ -38179,6 +38334,7 @@ namespace GEDSys_Presentation.Controllers
             fisico.PAEF_DS_TABAGISMO_LONG = fisicoAnterior.PAEF_DS_TABAGISMO_LONG;
             return fisico;
         }
+
 
         public FileResult DownloadFichaPaciente(Int32 id)
         {

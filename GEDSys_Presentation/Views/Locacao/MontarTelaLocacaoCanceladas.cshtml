@@ -71,11 +71,14 @@
                         </div>
                         <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
                             <div class="col-lg-12 col-md-12 col-xs-12">
-                                @Html.ButtonActionSubmit(text: "Filtrar")
-                                @Html.ButtonLinkIndex(text: "Retirar Filtro", controller: "Locacao", action: "RetirarFiltroLocacaoCanceladas", buttonClass: "success")
-                                @Html.ButtonLinkIndex(text: "Exibir Todos", controller: "Locacao", action: "MostrarTudoLocacaoCanceladas", buttonClass: "success")
+                                @Html.ButtonActionSubmit(text: "Filtrar", htmlAttributes: new { @class = "btn-loading1" })
+                                @Html.ButtonLinkIndex(text: "Retirar Filtro", controller: "Locacao", action: "RetirarFiltroLocacaoCanceladas", buttonClass: "success", htmlAttributes: new { @class = "btn-loading" })
+                                @Html.ButtonLinkIndex(text: "Exibir Todos", controller: "Locacao", action: "MostrarTudoLocacaoCanceladas", buttonClass: "success", htmlAttributes: new { @class = "btn-loading" })
                                 @Html.ButtonLinkIndex(text: "Imprimir", controller: "Locacao", action: "GerarRelatorioListaLocacaoForm")
-                                @Html.ButtonLinkIndex(text: "Voltar", controller: "Locacao", action: "MontarTelaLocacao")
+                                @Html.ButtonLinkIndex(text: "Voltar", controller: "Locacao", action: "MontarTelaLocacao", htmlAttributes: new { @class = "btn-loading" })
+                                <span id="loadingIndicator" style="display: none; margin-left: 10px; color: #007bff;">
+                                    <i class="fa fa-spinner fa-spin"></i> Processando...
+                                </span>
                             </div>
                         </div>
                     </div>
@@ -131,15 +134,21 @@
                                                 <td style="width: auto;">@cond.PRODUTO.PROD_NM_NOME</td>
                                                 @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_LOCACAO_ALTERAR == 1)
                                                 {
-                                                    <td style="width: auto; cursor: pointer; text-decoration: underline;"><a href="@Url.Action("EditarLocacao", "Locacao", new { id = cond.LOCA_CD_ID })" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Editar a Locaçãoo"/>@cond.LOCA_NM_TITULO</td>
+                                                    <td style="width: auto; cursor: pointer; text-decoration: underline;"><a href="@Url.Action("EditarLocacao", "Locacao", new { id = cond.LOCA_CD_ID })" class="btn-loading"  data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Editar a Locaçãoo"/>@cond.LOCA_NM_TITULO</td>
                                                 }
                                                 else
                                                 {
                                                     <td style="width: auto">@cond.LOCA_NM_TITULO</td>
                                                 }
                                                 <td style="width: auto">@cond.LOCA_NR_NUMERO</td>
-                                                <td style="width: auto">@cond.LOCA_DT_INICIO.Value.ToShortDateString()</td>
-                                                <td style="width: auto">@cond.LOCA_DT_FINAL.Value.ToShortDateString()</td>
+                                                <td>
+                                                    <span style="display:none; width: auto">@cond.LOCA_DT_INICIO.Value.ToString("yyyyMMdd")</span>
+                                                    @cond.LOCA_DT_INICIO.Value.ToString("dd/MM/yyyy")
+                                                </td>
+                                                <td>
+                                                    <span style="display:none; width: auto">@cond.LOCA_DT_FINAL.Value.ToString("yyyyMMdd")</span>
+                                                    @cond.LOCA_DT_FINAL.Value.ToString("dd/MM/yyyy")
+                                                </td>
                                                 <td style="width: auto">@CrossCutting.Formatters.DecimalFormatter(cond.LOCA_VL_PARCELA.Value)</td>
                                                 <td style="width: auto">@cond.LOCA_DT_CANCELAMENTO.Value.ToShortDateString()</td>
                                                 <td style="width: auto">@cond.LOCA_DS_JUSTIFICATIVA</td>
@@ -154,7 +163,7 @@
                                                 <td style="width: auto" class="td-one-action">
                                                     @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_LOCACAO_ALTERAR == 1)
                                                     {
-                                                        @Html.TableLinkDetails(cond.PROD_CD_ID, "EditarLocacao", "fa-edit", "Editar")
+                                                        @Html.TableLinkDetails(cond.PROD_CD_ID, "EditarLocacao", "fa-edit btn-loading", "Editar")
                                                     }
                                                 </td>
                                             </tr>
@@ -170,7 +179,7 @@
                                     </div>
                                     <div style="border: 5px solid #F6A54A; padding: 10px; border-radius: 8px 8px; " class="col-lg-8 col-md-8 col-xs-8">
                                         <h2 style="font-weight: bold">Nenhuma locação cadastrada ou sua pesquisa não retornou nenhum resultado</h2>
-                                        @Html.ButtonLinkIndex(text: "Retirar Filtro", controller: "Locacao", action: "RetirarFiltroLocacao")
+                                        @Html.ButtonLinkIndex(text: "Retirar Filtro", controller: "Locacao", action: "RetirarFiltroLocacao", htmlAttributes: new { @class = "btn-loading" })
                                     </div>
                                     <div class="col-lg-2 col-md-2 col-xs-2">
 
@@ -242,11 +251,110 @@
     </script>   
 
     <script type="text/javascript">
+        $(document).ready(function () { 
+            $('.btn-loading').on('click', function (e) {            
+                $(this).prop('disabled', true);
+                $(this).addClass('disabled');
+                $('#loadingIndicator').show();
+                var tagName = $(this).prop('tagName').toLowerCase();
+                if (tagName === 'a') {
+                    e.preventDefault(); 
+                    var targetUrl = $(this).attr('href');
+                    window.location.href = targetUrl;
+
+                } else if (tagName === 'button' || tagName === 'input') {
+                    $(this).closest('form').submit();
+                }
+            });
+        });
+    </script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('.btn-loading1').on('click', function (e) {
+            
+                var $this = $(this);
+                var tagName = $this.prop('tagName').toLowerCase();
+                $this.addClass('disabled'); 
+                $('#loadingIndicator').show();
+
+                if (tagName === 'a') {
+                    e.preventDefault();
+                
+                    var targetUrl = $this.attr('href');
+                    window.location.href = targetUrl;
+                
+                } else if (tagName === 'button' || tagName === 'input') {               
+                    $this.closest('form').submit();
+                    $this.prop('disabled', true);
+                }
+            });
+        });
+    </script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#txtNomePaciente').autocomplete({
+                minLength: 2, 
+                source: function (request, response) {
+                    $.ajax({
+                        url: '@Url.Action("GetPacienteNome", "Paciente2")', 
+                        type: 'POST',
+                        dataType: 'json',
+                        data: {
+                            term: request.term 
+                        },
+                        success: function (data) {
+                            response(data); 
+                        },
+                        error: function () {
+                            console.log("Erro ao buscar dados para autocomplete.");
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#txtNomeProduto').autocomplete({
+                minLength: 2, 
+                source: function (request, response) {
+                    $.ajax({
+                        url: '@Url.Action("GetProdutoNomeLocacao", "Produto")', 
+                        type: 'POST',
+                        dataType: 'json',
+                        data: {
+                            term: request.term 
+                        },
+                        success: function (data) {
+                            response(data); 
+                        },
+                        error: function () {
+                            console.log("Erro ao buscar dados para autocomplete.");
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+
+
+    <script type="text/javascript">
         $(document).ready(function () {
 
             $('.dataTables-example').DataTable({
                 pageLength: 25,
                 dom: '<"html5buttons"B>lTfgitp',
+                // --- NOVO BLOCO DE CONFIGURAÇÃO ---
+                columnDefs: [
+                    {
+                         "type": "date-eu", 
+                        "targets": [4, 5] 
+                    }
+                ],
+                // ---------------------------------       
                 buttons: [
                     { extend: 'excel', title: 'Locacao_Planilha' },
 
@@ -277,7 +385,7 @@
         }
 
         function ShowModalExcluir(url) {
-            $('#modal').find('.modal-footer').prepend('<a id="btnModal" alt="Desativar" class="btn btn-primary" href="' + url + '" target="_self" title="Desativar">Confirmar</a>');
+            $('#modal').find('.modal-footer').prepend('<a id="btnModal" alt="Desativar" class="btn btn-primary btn-loading" href="' + url + '" target="_self" title="Desativar">Confirmar</a>');
             $('#modal').find('.modal-body').html('Confirma exclusão de Locação?');
             $('#modal').find('.modal-header').prepend('<h5 id="modalTitle" class="modal-title">Confimar Exclusão</h5>');
             $('#modal').modal('show');

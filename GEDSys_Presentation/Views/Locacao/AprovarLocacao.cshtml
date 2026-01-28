@@ -189,15 +189,18 @@
                                             <div class="col-lg-12 col-md-12 col-xs-12">
                                                 <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Aprovação</h4>
                                                 <div class="form-group" style=" margin-left: 0px; margin-right: 0px;">
-                                                    @Html.ButtonActionSubmit(text: "Confirma a Aprovação da Locação", htmlAttributes: new { id = "basictoast", onclick = "return confirm('Tem certeza que deseja aprovar essa locação?');" })
+                                                    @Html.ButtonActionSubmit(text: "Confirma a Aprovação da Locação", htmlAttributes: new { id = "basictoast", @class = "btn-loading1", onclick = "return confirm('Tem certeza que deseja aprovar essa locação?');" })
                                                     @if ((Int32)Session["VoltaLocacao"] == 2)
                                                     {
-                                                        @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarAnexoLocacao", controller: "Locacao")
+                                                        @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarAnexoLocacao", controller: "Locacao", htmlAttributes: new { @class = "btn-loading" })
                                                     }
                                                     else
                                                     {
-                                                        @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaLocacao", controller: "Locacao")
+                                                        @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaLocacao", controller: "Locacao", htmlAttributes: new { @class = "btn-loading" })
                                                     }
+                                                    <span id="loadingIndicator" style="display: none; margin-left: 10px; color: #007bff;">
+                                                        <i class="fa fa-spinner fa-spin"></i> Processando...
+                                                    </span>
                                                 </div>
                                                 <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
                                                     <div class="col-lg-2 col-md-2 col-xs-12">
@@ -239,32 +242,21 @@
 @section Styles {
     <link href="~/Content/themes/base/jquery-ui.min.css" rel="stylesheet" />
     <link href="~/Content/themes/base/all.css" rel="stylesheet" />
-    <link href="~/Content/jquery.datetimepicker.css" rel="stylesheet" />
     @Styles.Render("~/Content/plugins/dataTables/dataTablesStyles")
     @Styles.Render("~/plugins/jasnyBootstrapStyles")
     @Styles.Render("~/plugins/toastrStyles")
-    @*@Styles.Render("~/Content/plugins/summernote/summernote.css")*@
-    <link href="~/Content/jquery-ui-timepicker-addon.min.css" rel="stylesheet" />
-    <link href="~/Content/plugins/select2/select2.min.css" rel="stylesheet" />
-    @Styles.Render("~/plugins/summernoteStyles")
 }
 @section Scripts {
-    <script src="~/Scripts/jquery.datetimepicker.full.min.js"></script>
     <script type="text/javascript" src="~/Scripts/moment.min.js"></script>
     <script type="text/javascript" src="~/Scripts/bootstrap.min.js"></script>
     <script type="text/javascript" src="~/Scripts/jquery.datetimepicker"></script>
-    <script src="~/Scripts/jquery-ui-timepicker-addon.min.js"></script>
     @Scripts.Render("~/plugins/toastr")
     <script src="~/Scripts/jquery-ui-1.12.1.min.js"></script>
     @Scripts.Render("~/plugins/dataTables")
     @Scripts.Render("~/bundles/inputmask")
     @Scripts.Render("~/plugins/jasnyBootstrap")
-    @Scripts.Render("~/plugins/sparkline")
-    @*@Scripts.Render("~/Scripts/plugins/summernote/summernote.min.js")*@
-    <script src="~/Scripts/plugins/select2/select2.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.maskedinput/1.4.1/jquery.maskedinput.js"></script>    
     <script src="~/Scripts/uploadAnexo.js"></script>
-    @Scripts.Render("~/plugins/summernote")
 
     <script>
         if (getUrlParameter('voltaCliente') == "1") {
@@ -272,6 +264,49 @@
             $('.btnReturn').hide();
         }
     </script>
+
+    <script type="text/javascript">
+        $(document).ready(function () { 
+            $('.btn-loading').on('click', function (e) {            
+                $(this).prop('disabled', true);
+                $(this).addClass('disabled');
+                $('#loadingIndicator').show();
+                var tagName = $(this).prop('tagName').toLowerCase();
+                if (tagName === 'a') {
+                    e.preventDefault(); 
+                    var targetUrl = $(this).attr('href');
+                    window.location.href = targetUrl;
+
+                } else if (tagName === 'button' || tagName === 'input') {
+                    $(this).closest('form').submit();
+                }
+            });
+        });
+    </script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('.btn-loading1').on('click', function (e) {
+            
+                var $this = $(this);
+                var tagName = $this.prop('tagName').toLowerCase();
+                $this.addClass('disabled'); 
+                $('#loadingIndicator').show();
+
+                if (tagName === 'a') {
+                    e.preventDefault();
+                
+                    var targetUrl = $this.attr('href');
+                    window.location.href = targetUrl;
+                
+                } else if (tagName === 'button' || tagName === 'input') {               
+                    $this.closest('form').submit();
+                    $this.prop('disabled', true);
+                }
+            });
+        });
+    </script>
+
     <script type="text/javascript" language="javascript">
         $(function () {
             $('.date-picker').datepicker(

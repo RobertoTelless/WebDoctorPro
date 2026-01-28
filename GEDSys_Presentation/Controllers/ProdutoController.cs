@@ -606,11 +606,23 @@ namespace GEDSys_Presentation.Controllers
             return RedirectToAction("MontarTelaProduto");
         }
 
-
         [HttpPost]
         public JsonResult GetProdutoNome(String term)
         {
             List<PRODUTO> usu = CarregarProduto();
+            List<String> nomes = usu.Select(p => p.PROD_NM_NOME).Distinct().ToList();
+            var resultados = nomes
+                .Where(n => n.ToLower().StartsWith(term.ToLower()))
+                .Select(n => new { label = n, value = n })
+                .ToList();
+            return Json(resultados, JsonRequestBehavior.AllowGet);
+        }
+
+        [HttpPost]
+        public JsonResult GetProdutoNomeLocacao(String term)
+        {
+            List<PRODUTO> usu = CarregarProduto().Where(p => p.PROD_IN_TIPO_PRODUTO == 2 & p.PROD_IN_LOCACAO == 1).ToList();
+
             List<String> nomes = usu.Select(p => p.PROD_NM_NOME).Distinct().ToList();
             var resultados = nomes
                 .Where(n => n.ToLower().StartsWith(term.ToLower()))
@@ -805,6 +817,10 @@ namespace GEDSys_Presentation.Controllers
             if ((Int32)Session["VoltaProduto"] == 70)
             {
                 return RedirectToAction("MontarTelaEstoque", "Estoque");
+            }
+            if ((Int32)Session["VoltaProduto"] == 71)
+            {
+                return RedirectToAction("MontarTelaLocacao", "Locacao");
             }
             Session["ProdutoAlterada"] = 1;
             return RedirectToAction("MontarTelaProduto");
@@ -2320,6 +2336,10 @@ namespace GEDSys_Presentation.Controllers
             if ((Int32)Session["VoltaProduto"] == 70)
             {
                 return RedirectToAction("MontarTelaEstoque", "Estoque");
+            }
+            if ((Int32)Session["VoltaProduto"] == 71)
+            {
+                return RedirectToAction("MontarTelaLocacao", "Locacao");
             }
             Session["ListaProduto"] = null;
             Session["ProdutoAlterada"] = 1;

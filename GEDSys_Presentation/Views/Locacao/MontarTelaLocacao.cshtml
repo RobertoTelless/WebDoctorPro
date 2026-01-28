@@ -114,7 +114,7 @@
                     <small>Vencidas</small>
                     <br />
                     <br />
-                    @Html.ButtonLinkIndex(text: "Ver", controller: "Locacao", action: "MontarTelaLocacaoVencidas", buttonClass: "white", htmlAttributes: new { @id = "aci", OnClick = "Fade1()" })
+                    @Html.ButtonLinkIndex(text: "Ver", controller: "Locacao", action: "MontarTelaLocacaoAtrasadas", buttonClass: "white", htmlAttributes: new { @id = "aci", OnClick = "Fade1()" })
                 </div>
             </div>
         </div>
@@ -159,39 +159,42 @@
                         <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
                             <div class="col-lg-3 col-md-3 col-xs-12">
                                 Paciente
-                                @Html.TextBoxFor(m => m.LOCA_NM_PACIENTE_DUMMY, new { @class = "form-control", autofocus = true })
+                                @Html.TextBoxFor(m => m.LOCA_NM_PACIENTE_DUMMY, new { @class = "form-control", autofocus = true, @id = "txtNomePaciente", data_toggle = "popover", data_content = "Informe o nome do paciente da locação", data_trigger="hover", data_placement="top" })
                             </div>
                             <div class="col-lg-3 col-md-3 col-xs-12">
                                 Nome do Produto
-                                @Html.TextBoxFor(m => m.LOCA_NM_PRODUTO_DUMMY, new { @class = "form-control", autofocus = true })
+                                @Html.TextBoxFor(m => m.LOCA_NM_PRODUTO_DUMMY, new { @class = "form-control", autofocus = true, @id = "txtNomeProduto", data_toggle = "popover", data_content = "Informe o nome do produto da locação", data_trigger="hover", data_placement="top" })
                             </div>
                             <div class="col-lg-2 col-md-2 col-xs-12">
                                 Data Inicial
-                                @Html.TextBoxFor(m => m.LOCA_DT_INICIO, "{0:dd/MM/yyyy}", new { @class = "form-control date-picker", autofocus = true, @id = "dn" })
+                                @Html.TextBoxFor(m => m.LOCA_DT_INICIO, "{0:dd/MM/yyyy}", new { @class = "form-control date-picker", autofocus = true, @id = "dn", data_toggle = "popover", data_content = "Informe a data inicial da faixa de datas a ser pesquisada", data_trigger="hover", data_placement="top" })
                             </div>
                             <div class="col-lg-2 col-md-2 col-xs-12">
                                 Data Final
-                                @Html.TextBoxFor(m => m.LOCA_DT_DUMMY, new { @class = "form-control", autofocus = true, @id = "dn1" })
+                                @Html.TextBoxFor(m => m.LOCA_DT_DUMMY, new { @class = "form-control", autofocus = true, @id = "dn1", data_toggle = "popover", data_content = "Informe a data final da faixa de datas a ser pesquisada", data_trigger="hover", data_placement="top" })
                             </div>
                             <div class="col-lg-2 col-md-2 col-xs-12">
                                 Status
-                                @Html.DropDownListFor(m => m.LOCA_IN_STATUS, (SelectList)ViewBag.Status, "Selecionar", new { @class = "form-control", autofocus = true })
+                                @Html.DropDownListFor(m => m.LOCA_IN_STATUS, (SelectList)ViewBag.Status, "Selecionar", new { @class = "form-control", autofocus = true, data_toggle = "popover", data_content = "Selecione o status da locação a ser pesquisada", data_trigger="hover", data_placement="top" })
                             </div>
                         </div>
                         <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
                             <div class="col-lg-12 col-md-12 col-xs-12">
-                                @Html.ButtonActionSubmit(text: "Filtrar")
-                                <a href="@Url.Action("RetirarFiltroLocacao", "Locacao")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Retorna a exibição padrão das locações" class="btn btn-sm btn-warning" id="emp" OnClick = "Fade()">Retirar Filtro</a>                
-                                <a href="@Url.Action("MostrarTudoLocacao", "Locacao")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Exibe todas as locações" class="btn btn-sm btn-warning" id="emp" OnClick = "Fade()">Exibir Todas</a>                
+                                @Html.ButtonActionSubmit(text: "Filtrar", htmlAttributes: new { @class = "btn-loading1" })
+                                <a href="@Url.Action("RetirarFiltroLocacao", "Locacao")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Retorna a exibição padrão das locações" class="btn btn-sm btn-warning btn-loading" id="emp" OnClick = "Fade()">Retirar Filtro</a>                
+                                <a href="@Url.Action("MostrarTudoLocacao", "Locacao")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Exibe todas as locações" class="btn btn-sm btn-warning btn-loading" id="emp" OnClick = "Fade()">Exibir Todas</a>                
                                 @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_LOCACAO_INCLUIR == 1)
                                 {
-                                    <a href="@Url.Action("IncluirLocacao", "Locacao")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessa a página de criação de locações" class="btn btn-sm btn-primary" id="emp" OnClick = "Fade()">Nova Locação</a>                
+                                    <a href="@Url.Action("IncluirLocacao", "Locacao")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessa a página de criação de locações" class="btn btn-sm btn-primary btn-loading" id="emp" OnClick = "Fade()">Nova Locação</a>                
                                 }
-                                <a href="@Url.Action("VerHistoricoLocacoes", "Locacao")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Ver o histórico de todas as locações" class="btn btn-sm btn-warning" id="emp" OnClick = "Fade()">Histórico</a>                
-                                <a href="@Url.Action("VerParcelasLocacoes", "Locacao")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Ver as parcelas de todas as locações" class="btn btn-sm btn-warning" id="emp" OnClick = "Fade()">Parcelas</a>                
-                                <a href="@Url.Action("MontarTelaContratoLocacao", "Locacao")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acesso a página de contratos de locação e afins" class="btn btn-sm btn-warning" id="emp" OnClick = "Fade()">Contratos</a>                
+                                <a href="@Url.Action("VerHistoricoLocacoes", "Locacao")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Ver o histórico de todas as locações" class="btn btn-sm btn-warning btn-loading" id="emp" OnClick = "Fade()">Histórico</a>                
+                                <a href="@Url.Action("VerParcelasLocacoes", "Locacao")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Ver as parcelas de todas as locações" class="btn btn-sm btn-warning btn-loading" id="emp" OnClick = "Fade()">Parcelas</a>                
+                                <a href="@Url.Action("MontarTelaContratoLocacao", "Locacao")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acesso a página de contratos de locação e afins" class="btn btn-sm btn-warning btn-loading" id="emp" OnClick = "Fade()">Contratos</a>                
                                 <a href="@Url.Action("GerarRelatorioListaLocacaoForm", "Locacao")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Imprime a lista de locações seleionada no filtro" class="btn btn-sm btn-warning" id="emp" OnClick = "Fade()">Imprimir</a>                
-                                @Html.ButtonLinkIndex(text: "Voltar", controller: "Paciente", action: "MontarTelaPaciente")
+                                @Html.ButtonLinkIndex(text: "Voltar", controller: "Paciente", action: "MontarTelaPaciente", htmlAttributes: new { @class = "btn-loading" })
+                                <span id="loadingIndicator" style="display: none; margin-left: 10px; color: #007bff;">
+                                    <i class="fa fa-spinner fa-spin"></i> Processando...
+                                </span>
                             </div>
                         </div>
                     </div>
@@ -245,22 +248,30 @@
                                             <tr>
                                                 @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_ALTERAR_PACIENTE == 1)
                                                 {
-                                                    <td style="width: auto; cursor: pointer; text-decoration: underline;"><a href="@Url.Action("EditarPaciente", "Paciente", new { id = cond.PACI_CD_ID })" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Editar/Consultar paciente"/>@cond.PACIENTE.PACI_NM_NOME</td>
+                                                    <td style="width: auto; cursor: pointer; text-decoration: underline;"><a href="@Url.Action("EditarPaciente", "Paciente", new { id = cond.PACI_CD_ID })" class="btn-loading" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Editar/Consultar paciente"/>@cond.PACIENTE.PACI_NM_NOME</td>
                                                 }
                                                 else
                                                 {
-                                                    <td style="width: auto; cursor: pointer; text-decoration: underline;"><a href="@Url.Action("ConsultarPaciente", "Paciente", new { id = cond.PACI_CD_ID })" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Consultar paciente"/>@cond.PACIENTE.PACI_NM_NOME</td>
+                                                    <td style="width: auto; cursor: pointer; text-decoration: underline;"><a href="@Url.Action("ConsultarPaciente", "Paciente", new { id = cond.PACI_CD_ID })" class="btn-loading" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Consultar paciente"/>@cond.PACIENTE.PACI_NM_NOME</td>
                                                 }
                                                 @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_EDITAR_PRODUTO == 1)
                                                 {
-                                                    <td style="width: auto; cursor: pointer; text-decoration: underline;"><a href="@Url.Action("EditarProduto", "Produto", new { id = cond.PROD_CD_ID })" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Editar/Consultar Produto"/>@cond.PRODUTO.PROD_NM_NOME</td>
+                                                    <td style="width: auto; cursor: pointer; text-decoration: underline;"><a href="@Url.Action("EditarProduto", "Produto", new { id = cond.PROD_CD_ID })" class="btn-loading" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Editar/Consultar Produto"/>@cond.PRODUTO.PROD_NM_NOME</td>
                                                 }
                                                 else
                                                 {
-                                                    <td style="width: auto; cursor: pointer; text-decoration: underline;"><a href="@Url.Action("ConsultarProduto", "Produto", new { id = cond.PROD_CD_ID })" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Consultar Produto"/>@cond.PRODUTO.PROD_NM_NOME</td>
+                                                    <td style="width: auto; cursor: pointer; text-decoration: underline;"><a href="@Url.Action("ConsultarProduto", "Produto", new { id = cond.PROD_CD_ID })" class="btn-loading" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Consultar Produto"/>@cond.PRODUTO.PROD_NM_NOME</td>
                                                 }
-                                                <td style="width: auto">@cond.LOCA_DT_INICIO.Value.ToShortDateString()</td>
-                                                <td style="width: auto">@cond.LOCA_DT_FINAL.Value.ToShortDateString()</td>
+
+                                                <td>
+                                                    <span style="display:none; width: auto">@cond.LOCA_DT_INICIO.Value.ToString("yyyyMMdd")</span>
+                                                    @cond.LOCA_DT_INICIO.Value.ToString("dd/MM/yyyy")
+                                                </td>
+                                                <td>
+                                                    <span style="display:none; width: auto">@cond.LOCA_DT_FINAL.Value.ToString("yyyyMMdd")</span>
+                                                    @cond.LOCA_DT_FINAL.Value.ToString("dd/MM/yyyy")
+                                                </td>
+
                                                 <td style="width: auto">@CrossCutting.Formatters.DecimalFormatter(cond.LOCA_VL_PARCELA.Value)</td>
                                                 <td style="width: auto">@cond.LOCA_IN_QUANTIDADE</td>
                                                 <td style="width: auto">@cond.LOCA_NR_DIA</td>
@@ -307,7 +318,7 @@
                                                 <td style="width: auto" class="td-one-action">
                                                     @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_LOCACAO_ALTERAR == 1)
                                                     {
-                                                        @Html.TableLinkDetails(cond.LOCA_CD_ID, "EditarLocacao", "fa-edit", "Editar")
+                                                        @Html.TableLinkDetails(cond.LOCA_CD_ID, "EditarLocacao", "fa-edit btn-loading", "Editar")
                                                     }
                                                     @if (cond.LOCA_IN_ATIVO == 1)
                                                     {
@@ -315,7 +326,7 @@
                                                         {
                                                             if (cond.LOCA_IN_STATUS == 0)
                                                             {
-                                                                <span style="color: #337ab7; cursor:pointer;" alt="Desativar" class="tbl-link fa-lg fa fa-trash-o" onclick="ShowModalExcluir('/Locacao/ExcluirLocacao/@cond.LOCA_CD_ID')" title="Excluir"></span>
+                                                                <span style="color: #337ab7; cursor:pointer;" alt="Desativar" class="tbl-link fa-lg fa fa-trash-o btn-loading" onclick="ShowModalExcluir('/Locacao/ExcluirLocacao/@cond.LOCA_CD_ID')" title="Excluir"></span>
                                                             }
                                                         }
                                                     }
@@ -333,11 +344,11 @@
                                                     }
                                                     @if (cond.LOCA_IN_ATIVO == 1)
                                                     {
-                                                        @Html.TableLinkDetails(cond.LOCA_CD_ID, "VerHistoricoLocacao", "fa-line-chart", "Histórico")
+                                                        @Html.TableLinkDetails(cond.LOCA_CD_ID, "VerHistoricoLocacao", "fa-line-chart btn-loading", "Histórico")
                                                     }
                                                     @if (cond.LOCA_IN_ATIVO == 1)
                                                     {
-                                                        @Html.TableLinkDetails(cond.LOCA_CD_ID, "VerParcelasLocacao", "fa-calendar-o", "Parcelas")
+                                                        @Html.TableLinkDetails(cond.LOCA_CD_ID, "VerParcelasLocacao", "fa-calendar-o btn-loading", "Parcelas")
                                                     }
                                                     @if (cond.LOCA_IN_ATIVO == 1)
                                                     {
@@ -345,7 +356,7 @@
                                                         {
                                                             if (cond.LOCA_IN_STATUS == 1 || cond.LOCA_IN_STATUS == 3 || cond.LOCA_IN_STATUS == 0)
                                                             {
-                                                                @Html.TableLinkDetails(cond.LOCA_CD_ID, "CancelarLocacao", "fa-times", "Cancelar")
+                                                                @Html.TableLinkDetails(cond.LOCA_CD_ID, "CancelarLocacao", "fa-times btn-loading", "Cancelar")
                                                             }
                                                         }
                                                     }
@@ -355,7 +366,7 @@
                                                         {
                                                             if (cond.LOCA_IN_STATUS == 0)
                                                             {
-                                                                @Html.TableLinkDetails(cond.LOCA_CD_ID, "AprovarLocacao", "fa-check", "Aprovar")
+                                                                @Html.TableLinkDetails(cond.LOCA_CD_ID, "AprovarLocacao", "fa-check btn-loading", "Aprovar")
                                                             }
                                                         }
                                                     }
@@ -365,7 +376,7 @@
                                                         {
                                                             if (cond.LOCA_IN_STATUS == 3)
                                                             {
-                                                                @Html.TableLinkDetails(cond.LOCA_CD_ID, "RenovarLocacao", "fa-refresh", "Renovar")
+                                                                @Html.TableLinkDetails(cond.LOCA_CD_ID, "RenovarLocacao", "fa-refresh btn-loading", "Renovar")
                                                             }
                                                         }
                                                     }
@@ -375,7 +386,7 @@
                                                         {
                                                             if (cond.LOCA_IN_STATUS == 1 || cond.LOCA_IN_STATUS == 3)
                                                             {
-                                                                @Html.TableLinkDetails(cond.LOCA_CD_ID, "EncerrarLocacao", "fa-minus", "Encerrar")
+                                                                @Html.TableLinkDetails(cond.LOCA_CD_ID, "EncerrarLocacao", "fa-minus btn-loading", "Encerrar")
                                                             }
                                                         }
                                                     }
@@ -393,7 +404,7 @@
                                     </div>
                                     <div style="border: 5px solid #F6A54A; padding: 10px; border-radius: 8px 8px; " class="col-lg-8 col-md-8 col-xs-8">
                                         <h2 style="font-weight: bold">Nenhuma locação cadastrada ou sua pesquisa não retornou nenhum resultado</h2>
-                                        @Html.ButtonLinkIndex(text: "Retirar Filtro", controller: "Locacao", action: "RetirarFiltroLocacao")
+                                        @Html.ButtonLinkIndex(text: "Retirar Filtro", controller: "Locacao", action: "RetirarFiltroLocacao", htmlAttributes: new { @class = "btn-loading" })
                                     </div>
                                     <div class="col-lg-2 col-md-2 col-xs-2">
 
@@ -462,7 +473,97 @@
         {
             navigator.sendBeacon('../ControleAcesso/LogSessionTime');
         }; 
-    </script>   
+    </script>  
+    
+    <script type="text/javascript">
+        $(document).ready(function () { 
+            $('.btn-loading').on('click', function (e) {            
+                $(this).prop('disabled', true);
+                $(this).addClass('disabled');
+                $('#loadingIndicator').show();
+                var tagName = $(this).prop('tagName').toLowerCase();
+                if (tagName === 'a') {
+                    e.preventDefault(); 
+                    var targetUrl = $(this).attr('href');
+                    window.location.href = targetUrl;
+
+                } else if (tagName === 'button' || tagName === 'input') {
+                    $(this).closest('form').submit();
+                }
+            });
+        });
+    </script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('.btn-loading1').on('click', function (e) {
+            
+                var $this = $(this);
+                var tagName = $this.prop('tagName').toLowerCase();
+                $this.addClass('disabled'); 
+                $('#loadingIndicator').show();
+
+                if (tagName === 'a') {
+                    e.preventDefault();
+                
+                    var targetUrl = $this.attr('href');
+                    window.location.href = targetUrl;
+                
+                } else if (tagName === 'button' || tagName === 'input') {               
+                    $this.closest('form').submit();
+                    $this.prop('disabled', true);
+                }
+            });
+        });
+    </script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#txtNomePaciente').autocomplete({
+                minLength: 2, 
+                source: function (request, response) {
+                    $.ajax({
+                        url: '@Url.Action("GetPacienteNome", "Paciente2")', 
+                        type: 'POST',
+                        dataType: 'json',
+                        data: {
+                            term: request.term 
+                        },
+                        success: function (data) {
+                            response(data); 
+                        },
+                        error: function () {
+                            console.log("Erro ao buscar dados para autocomplete.");
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#txtNomeProduto').autocomplete({
+                minLength: 2, 
+                source: function (request, response) {
+                    $.ajax({
+                        url: '@Url.Action("GetProdutoNomeLocacao", "Produto")', 
+                        type: 'POST',
+                        dataType: 'json',
+                        data: {
+                            term: request.term 
+                        },
+                        success: function (data) {
+                            response(data); 
+                        },
+                        error: function () {
+                            console.log("Erro ao buscar dados para autocomplete.");
+                        }
+                    });
+                }
+            });
+        });
+    </script>
 
     <script type="text/javascript">
         $(document).ready(function () {
@@ -470,6 +571,14 @@
             $('.dataTables-example').DataTable({
                 pageLength: 25,
                 dom: '<"html5buttons"B>lTfgitp',
+                // --- NOVO BLOCO DE CONFIGURAÇÃO ---
+                columnDefs: [
+                    {
+                         "type": "date-eu", 
+                        "targets": [2, 3] 
+                    }
+                ],
+                // ---------------------------------       
                 buttons: [
                     { extend: 'excel', title: 'Locacao_Planilha' },
 
@@ -500,7 +609,7 @@
         }
 
         function ShowModalExcluir(url) {
-            $('#modal').find('.modal-footer').prepend('<a id="btnModal" alt="Desativar" class="btn btn-primary" href="' + url + '" target="_self" title="Desativar">Confirmar</a>');
+            $('#modal').find('.modal-footer').prepend('<a id="btnModal" alt="Desativar" class="btn btn-primary btn-loading" href="' + url + '" target="_self" title="Desativar">Confirmar</a>');
             $('#modal').find('.modal-body').html('Confirma exclusão de Locação?');
             $('#modal').find('.modal-header').prepend('<h5 id="modalTitle" class="modal-title">Confimar Exclusão</h5>');
             $('#modal').modal('show');

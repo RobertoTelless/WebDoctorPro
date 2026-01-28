@@ -30,7 +30,7 @@
             <div class="col-lg-12 col-md-12 col-xs-12 ibox float-e-margins">
                 <div class="ibox-title">
                     <div style="text-align: center;" class="col-lg-12 col-md-12 col-xs-12">
-                        <h5>Contrato - Edição</h5>
+                        <h5>Contrato - Alteração</h5>
                     </div>
                 </div>
                 @using (Html.BeginForm("EditarContratoLocacao", "Locacao", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal", @id = "pwd-container1" }))
@@ -56,9 +56,12 @@
                             <div class="col-lg-8 col-md-8 col-xs-12">
                                 <h4 style="margin-left: -15px; color:green; background-color: beige; font-weight:bold">Dados do Contrato de Locação</h4>
                                 <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
-                                    @Html.ButtonActionSubmit(text: "Confirma Edição do Contrato", htmlAttributes: new { id = "basictoast" })
-                                    @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaContratoLocacao", controller: "Locacao")
+                                    @Html.ButtonActionSubmit(text: "Confirma Edição do Contrato", htmlAttributes: new { id = "basictoast",  @class = "btn-loading1"  })
+                                    @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaContratoLocacao", controller: "Locacao", htmlAttributes: new { @class = "btn-loading" })
                                     <a href="@Url.Action((String)Session["AjudaNivel"])" class="btn btn-sm btn-danger" target="_blank">Ajuda</a>
+                                    <span id="loadingIndicator" style="display: none; margin-left: 10px; color: #007bff;">
+                                        <i class="fa fa-spinner fa-spin"></i> Processando...
+                                    </span>
                                 </div>
                                 <div class="form-group" style=" margin-left: -30px; margin-right: -15px;">
                                     <div class="col-lg-2 col-md-2 col-xs-12">
@@ -194,6 +197,46 @@
         }; 
     </script>
 
+    <script type="text/javascript">
+        $(document).ready(function () { 
+            $('.btn-loading').on('click', function (e) {            
+                $(this).prop('disabled', true);
+                $(this).addClass('disabled');
+                $('#loadingIndicator').show();
+                var tagName = $(this).prop('tagName').toLowerCase();
+                if (tagName === 'a') {
+                    e.preventDefault(); 
+                    var targetUrl = $(this).attr('href');
+                    window.location.href = targetUrl;
+
+                } else if (tagName === 'button' || tagName === 'input') {
+                    $(this).closest('form').submit();
+                }
+            });
+        });
+    </script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('.btn-loading1').on('click', function (e) {
+            
+                var $this = $(this);
+                var tagName = $this.prop('tagName').toLowerCase();
+                $this.addClass('disabled'); 
+                $('#loadingIndicator').show();
+
+                if (tagName === 'a') {
+                    e.preventDefault();
+                
+                    var targetUrl = $this.attr('href');
+                    window.location.href = targetUrl;
+                
+                } else if (tagName === 'button' || tagName === 'input') {               
+                    $this.closest('form').submit();
+                    $this.prop('disabled', true);
+                }
+            });
+        });
     </script>
     <script type="text/javascript">
         $(document).ready(function () {

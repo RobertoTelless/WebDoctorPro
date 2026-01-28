@@ -20,9 +20,10 @@ namespace ModelServices.EntitiesServices
         private readonly ILocacaoOcorrenciaRepository _ocoRepository;
         private readonly ITipoContratoRepository _tcRepository;
         private readonly IContratoLocacaoRepository _clRepository;
+        private readonly ITipoOcorrenciaRepository _toRepository;
         protected CRMSysDBEntities Db = new CRMSysDBEntities();
 
-        public LocacaoService(ILocacaoRepository baseRepository, ILogRepository logRepository, ILocacaoAnexoRepository aneRepository, ILocacaoAnotacaoRepository anoRepository, ITipoHistoricoRepository tenRepository, ILocacaoHistoricoRepository hisRepository, ILocacaoParcelaRepository parRepository, ILocacaoOcorrenciaRepository ocoRepository, ITipoContratoRepository tcRepository, IContratoLocacaoRepository clRepository) : base(baseRepository)
+        public LocacaoService(ILocacaoRepository baseRepository, ILogRepository logRepository, ILocacaoAnexoRepository aneRepository, ILocacaoAnotacaoRepository anoRepository, ITipoHistoricoRepository tenRepository, ILocacaoHistoricoRepository hisRepository, ILocacaoParcelaRepository parRepository, ILocacaoOcorrenciaRepository ocoRepository, ITipoContratoRepository tcRepository, IContratoLocacaoRepository clRepository, ITipoOcorrenciaRepository toRepository) : base(baseRepository)
         {
             _baseRepository = baseRepository;
             _logRepository = logRepository;
@@ -34,6 +35,7 @@ namespace ModelServices.EntitiesServices
             _ocoRepository = ocoRepository;
             _tcRepository = tcRepository;
             _clRepository = clRepository;
+            _toRepository = toRepository;
         }
 
         public List<TIPO_HISTORICO> GetAllTipos(Int32 idAss)
@@ -369,6 +371,11 @@ namespace ModelServices.EntitiesServices
                     throw ex;
                 }
             }
+        }
+
+        public List<TIPO_OCORRENCIA> GetAllTipoOcorrencia(Int32 idAss)
+        {
+            return _toRepository.GetAllItens(idAss);
         }
 
         public List<TIPO_CONTRATO> GetAllTipoContrato(Int32 idAss)

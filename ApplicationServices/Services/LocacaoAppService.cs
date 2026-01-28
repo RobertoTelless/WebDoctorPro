@@ -101,7 +101,7 @@ namespace ApplicationServices.Services
                     LOG_DT_DATA = DateTime.Now,
                     USUA_CD_ID = usuario.USUA_CD_ID,
                     ASSI_CD_ID = usuario.ASSI_CD_ID,
-                    LOG_NM_OPERACAO = "AddLOCA",
+                    LOG_NM_OPERACAO = "Locação - Inclusão",
                     LOG_IN_ATIVO = 1,
                     LOG_TX_REGISTRO = json,
                     LOG_IN_SISTEMA = 6
@@ -137,7 +137,7 @@ namespace ApplicationServices.Services
                     LOG_DT_DATA = DateTime.Now,
                     USUA_CD_ID = usuario.USUA_CD_ID,
                     ASSI_CD_ID = usuario.ASSI_CD_ID,
-                    LOG_NM_OPERACAO = "EdtLOCA",
+                    LOG_NM_OPERACAO = "Locação - Alteração",
                     LOG_IN_ATIVO = 1,
                     LOG_TX_REGISTRO = json,
                     LOG_TX_REGISTRO_ANTES = null,
@@ -230,7 +230,7 @@ namespace ApplicationServices.Services
                     USUA_CD_ID = usuario.USUA_CD_ID,
                     ASSI_CD_ID = usuario.ASSI_CD_ID,
                     LOG_IN_ATIVO = 1,
-                    LOG_NM_OPERACAO = "DelLOCA",
+                    LOG_NM_OPERACAO = "Locação - Exclusão",
                     LOG_TX_REGISTRO = json,
                     LOG_IN_SISTEMA = 6
 
@@ -524,6 +524,11 @@ namespace ApplicationServices.Services
             {
                 throw;
             }
+        }
+
+        public List<TIPO_OCORRENCIA> GetAllTipoOcorrencia(Int32 idAss)
+        {
+            return _baseService.GetAllTipoOcorrencia(idAss);
         }
 
     }

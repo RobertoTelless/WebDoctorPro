@@ -219,6 +219,8 @@ namespace GEDSys_Presentation.Controllers
                 Session["VoltaPrintLocacao"] = 1;
                 Session["VoltaProdLocacao"] = 1;
                 Session["VoltaHistLocacao"] = 1;
+                Session["TipoSolicitacao"] = 98;
+                Session["VoltaProduto"] = 71;
                 objeto = new LOCACAO();
                 return View(objeto);
             }
@@ -487,9 +489,9 @@ namespace GEDSys_Presentation.Controllers
                 try
                 {
                     // Sanitização
-                    vm.LOCA_DS_DESCRICAO = CrossCutting.UtilitariosGeral.CleanStringDocto(vm.LOCA_DS_DESCRICAO);
-                    vm.LOCA_NM_TITULO = CrossCutting.UtilitariosGeral.CleanStringDocto(vm.LOCA_NM_TITULO);
-                    vm.LOCA_NR_SERIE = CrossCutting.UtilitariosGeral.CleanStringDocto(vm.LOCA_NR_SERIE);
+                    vm.LOCA_DS_DESCRICAO = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(vm.LOCA_DS_DESCRICAO);
+                    vm.LOCA_NM_TITULO = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(vm.LOCA_NM_TITULO);
+                    vm.LOCA_NR_SERIE = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(vm.LOCA_NR_SERIE);
 
                     // Critica
                     if (vm.LOCA_VL_PARCELA == 0)
@@ -585,6 +587,13 @@ namespace GEDSys_Presentation.Controllers
                     map = Server.MapPath(caminho);
                     Directory.CreateDirectory(Server.MapPath(caminho));
 
+                    // Configura serialização
+                    JsonSerializerSettings settings = new JsonSerializerSettings
+                    {
+                        ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+                        NullValueHandling = NullValueHandling.Ignore
+                    };
+
                     // Cria parcelas
                     DateTime? venc = CalculaVencimento(vm.LOCA_NR_DIA, 1, periodo);
                     for (Int32 i = 1; i <= vm.LOCA_NR_PRAZO; i++)
@@ -621,6 +630,21 @@ namespace GEDSys_Presentation.Controllers
                             );
                             venc = novaData;
                         }
+
+                        // Monta Log
+                        DTO_Parcela dto = MontarParcelaDTO(parc.LOPA_CD_ID);
+                        String json1 = JsonConvert.SerializeObject(dto, settings);
+                        LOG log = new LOG
+                        {
+                            LOG_DT_DATA = DateTime.Now,
+                            ASSI_CD_ID = usuario.ASSI_CD_ID,
+                            USUA_CD_ID = usuario.USUA_CD_ID,
+                            LOG_NM_OPERACAO = "Locação - Parcela - Inclusão",
+                            LOG_IN_ATIVO = 1,
+                            LOG_TX_REGISTRO = json1,
+                            LOG_IN_SISTEMA = 6
+                        };
+                        Int32 volta1 = logApp.ValidateCreate(log);
                     }
 
                     // Trata anexos
@@ -682,9 +706,11 @@ namespace GEDSys_Presentation.Controllers
                     Session["LocacaoAlterada"] = 1;
                     Session["NivelPaciente"] = 17;
                     Session["NivelProduto"] = 13;
+                    Session["ListaHistoricoLocacaoGeral"] = null;
+                    Session["LocacoesHistoricos"] = null;
 
                     // Mensagem do CRUD
-                    Session["MsgCRUD"] = "A Locação de " + prod.PROD_NM_NOME.ToUpper() + " para " + pac.PACI_NM_NOME.ToUpper() + " foi incluída com sucesso. Foram geradas " + item.LOCA_NR_PRAZO.ToString() + " parcelas.";
+                    Session["MsgCRUD"] = "A Locação de " + prod.PROD_NM_NOME.ToUpper() + " para " + pac.PACI_NM_NOME.ToUpper() + " foi criada com sucesso. Foram geradas " + item.LOCA_NR_PRAZO.ToString() + " parcelas.";
                     Session["MensLocacao"] = 61;
 
                     // Trata contrato
@@ -795,11 +821,11 @@ namespace GEDSys_Presentation.Controllers
                 {
                     if (texto.Contains("{produto}"))
                     {
-                        texto = texto.Replace("{produto}", prod.PROD_NM_NOME);
+                        texto = texto.Replace("{produto}", prod.PROD_NM_NOME.ToUpper());
                     }
                     if (texto.Contains("{paciente}"))
                     {
-                        texto = texto.Replace("{paciente}", paciente.PACI_NM_NOME);
+                        texto = texto.Replace("{paciente}", paciente.PACI_NM_NOME.ToUpper());
                     }
                     if (texto.Contains("{data}"))
                     {
@@ -830,11 +856,11 @@ namespace GEDSys_Presentation.Controllers
                 {
                     if (texto.Contains("{produto}"))
                     {
-                        texto = texto.Replace("{produto}", prod.PROD_NM_NOME);
+                        texto = texto.Replace("{produto}", prod.PROD_NM_NOME.ToUpper());
                     }
                     if (texto.Contains("{paciente}"))
                     {
-                        texto = texto.Replace("{paciente}", paciente.PACI_NM_NOME);
+                        texto = texto.Replace("{paciente}", paciente.PACI_NM_NOME.ToUpper());
                     }
                     if (texto.Contains("{data}"))
                     {
@@ -861,11 +887,11 @@ namespace GEDSys_Presentation.Controllers
                 {
                     if (texto.Contains("{produto}"))
                     {
-                        texto = texto.Replace("{produto}", prod.PROD_NM_NOME);
+                        texto = texto.Replace("{produto}", prod.PROD_NM_NOME.ToUpper());
                     }
                     if (texto.Contains("{paciente}"))
                     {
-                        texto = texto.Replace("{paciente}", paciente.PACI_NM_NOME);
+                        texto = texto.Replace("{paciente}", paciente.PACI_NM_NOME.ToUpper());
                     }
                     if (texto.Contains("{data}"))
                     {
@@ -888,11 +914,11 @@ namespace GEDSys_Presentation.Controllers
                 {
                     if (texto.Contains("{produto}"))
                     {
-                        texto = texto.Replace("{produto}", prod.PROD_NM_NOME);
+                        texto = texto.Replace("{produto}", prod.PROD_NM_NOME.ToUpper());
                     }
                     if (texto.Contains("{paciente}"))
                     {
-                        texto = texto.Replace("{paciente}", paciente.PACI_NM_NOME);
+                        texto = texto.Replace("{paciente}", paciente.PACI_NM_NOME.ToUpper());
                     }
                     if (texto.Contains("{data}"))
                     {
@@ -928,19 +954,19 @@ namespace GEDSys_Presentation.Controllers
                 EmailAzure mensagem = new EmailAzure();
                 if (tipo == 1)
                 {
-                    mensagem.ASSUNTO = "Paciente - " + paciente.PACI_NM_NOME + " - Locação";
+                    mensagem.ASSUNTO = "Paciente - " + paciente.PACI_NM_NOME.ToUpper() + " - Locação";
                 }
                 else if (tipo == 2)
                 {
-                    mensagem.ASSUNTO = "Paciente - " + paciente.PACI_NM_NOME + " - Locação - Cancelamento";
+                    mensagem.ASSUNTO = "Paciente - " + paciente.PACI_NM_NOME.ToUpper() + " - Locação - Cancelamento";
                 }
                 else if (tipo == 3)
                 {
-                    mensagem.ASSUNTO = "Paciente - " + paciente.PACI_NM_NOME + " - Locação - Aprovação";
+                    mensagem.ASSUNTO = "Paciente - " + paciente.PACI_NM_NOME.ToUpper() + " - Locação - Aprovação";
                 }
                 else if (tipo == 4)
                 {
-                    mensagem.ASSUNTO = "Paciente - " + paciente.PACI_NM_NOME + " - Locação - Encerramento";
+                    mensagem.ASSUNTO = "Paciente - " + paciente.PACI_NM_NOME.ToUpper() + " - Locação - Encerramento";
                 }
                 mensagem.CORPO = emailBody;
                 mensagem.DEFAULT_CREDENTIALS = false;
@@ -983,19 +1009,19 @@ namespace GEDSys_Presentation.Controllers
                 mens.MENS_NM_CAMPANHA = paciente.PACI_NM_EMAIL;
                 if (tipo == 1)
                 {
-                    mens.MENS_NM_NOME = "Mensagem para Paciente - Locação: " + paciente.PACI_NM_NOME;
+                    mens.MENS_NM_NOME = "Mensagem para Paciente - Locação: " + paciente.PACI_NM_NOME.ToUpper();
                 }
                 else if (tipo == 2)
                 {
-                    mens.MENS_NM_NOME = "Mensagem para Paciente - Locação - Cancelamento: " + paciente.PACI_NM_NOME;
+                    mens.MENS_NM_NOME = "Mensagem para Paciente - Locação - Cancelamento: " + paciente.PACI_NM_NOME.ToUpper();
                 }
                 else if (tipo == 3)
                 {
-                    mens.MENS_NM_NOME = "Mensagem para Paciente - Locação - Aprovação: " + paciente.PACI_NM_NOME;
+                    mens.MENS_NM_NOME = "Mensagem para Paciente - Locação - Aprovação: " + paciente.PACI_NM_NOME.ToUpper();
                 }
                 else if (tipo == 4)
                 {
-                    mens.MENS_NM_NOME = "Mensagem para Paciente - Locação - Encerramento: " + paciente.PACI_NM_NOME;
+                    mens.MENS_NM_NOME = "Mensagem para Paciente - Locação - Encerramento: " + paciente.PACI_NM_NOME.ToUpper();
                 }
                 mens.PACI_CD_ID = paciente.PACI__CD_ID;
                 mens.MENS_TX_TEXTO = emailBody;
@@ -1026,7 +1052,7 @@ namespace GEDSys_Presentation.Controllers
                     LOG_DT_DATA = DateTime.Now,
                     ASSI_CD_ID = usuario.ASSI_CD_ID,
                     USUA_CD_ID = usuario.USUA_CD_ID,
-                    LOG_NM_OPERACAO = "emaLOCA",
+                    LOG_NM_OPERACAO = "Locação - Envio de e-mail",
                     LOG_IN_ATIVO = 1,
                     LOG_TX_REGISTRO = (String)Session["JSONLocacao"],
                     LOG_IN_SISTEMA = 6
@@ -1095,11 +1121,11 @@ namespace GEDSys_Presentation.Controllers
                 {
                     if (texto.Contains("{produto}"))
                     {
-                        texto = texto.Replace("{produto}", prod.PROD_NM_NOME);
+                        texto = texto.Replace("{produto}", prod.PROD_NM_NOME.ToUpper());
                     }
                     if (texto.Contains("{paciente}"))
                     {
-                        texto = texto.Replace("{paciente}", paciente.PACI_NM_NOME);
+                        texto = texto.Replace("{paciente}", paciente.PACI_NM_NOME.ToUpper());
                     }
                     if (texto.Contains("{data}"))
                     {
@@ -1114,11 +1140,11 @@ namespace GEDSys_Presentation.Controllers
                 {
                     if (texto.Contains("{produto}"))
                     {
-                        texto = texto.Replace("{produto}", prod.PROD_NM_NOME);
+                        texto = texto.Replace("{produto}", prod.PROD_NM_NOME.ToUpper());
                     }
                     if (texto.Contains("{paciente}"))
                     {
-                        texto = texto.Replace("{paciente}", paciente.PACI_NM_NOME);
+                        texto = texto.Replace("{paciente}", paciente.PACI_NM_NOME.ToUpper());
                     }
                     if (texto.Contains("{cancelamento}"))
                     {
@@ -1133,11 +1159,11 @@ namespace GEDSys_Presentation.Controllers
                 {
                     if (texto.Contains("{produto}"))
                     {
-                        texto = texto.Replace("{produto}", prod.PROD_NM_NOME);
+                        texto = texto.Replace("{produto}", prod.PROD_NM_NOME.ToUpper());
                     }
                     if (texto.Contains("{paciente}"))
                     {
-                        texto = texto.Replace("{paciente}", paciente.PACI_NM_NOME);
+                        texto = texto.Replace("{paciente}", paciente.PACI_NM_NOME.ToUpper());
                     }
                     if (texto.Contains("{aprovacao}"))
                     {
@@ -1152,11 +1178,11 @@ namespace GEDSys_Presentation.Controllers
                 {
                     if (texto.Contains("{produto}"))
                     {
-                        texto = texto.Replace("{produto}", prod.PROD_NM_NOME);
+                        texto = texto.Replace("{produto}", prod.PROD_NM_NOME.ToUpper());
                     }
                     if (texto.Contains("{paciente}"))
                     {
-                        texto = texto.Replace("{paciente}", paciente.PACI_NM_NOME);
+                        texto = texto.Replace("{paciente}", paciente.PACI_NM_NOME.ToUpper());
                     }
                     if (texto.Contains("{encerramento}"))
                     {
@@ -1238,19 +1264,19 @@ namespace GEDSys_Presentation.Controllers
                 mens.MENS_NM_CAMPANHA = paciente.PACI_NM_EMAIL;
                 if (tipo == 1)
                 {
-                    mens.MENS_NM_NOME = "Mensagem SMS para Paciente - Locação: " + paciente.PACI_NM_NOME;
+                    mens.MENS_NM_NOME = "Mensagem SMS para Paciente - Locação: " + paciente.PACI_NM_NOME.ToUpper();
                 }
                 else if (tipo == 2)
                 {
-                    mens.MENS_NM_NOME = "Mensagem SMS para Paciente - Cancelamento: " + paciente.PACI_NM_NOME;
+                    mens.MENS_NM_NOME = "Mensagem SMS para Paciente - Cancelamento: " + paciente.PACI_NM_NOME.ToUpper();
                 }
                 else if (tipo == 3)
                 {
-                    mens.MENS_NM_NOME = "Mensagem SMS para Paciente - Aprovação: " + paciente.PACI_NM_NOME;
+                    mens.MENS_NM_NOME = "Mensagem SMS para Paciente - Aprovação: " + paciente.PACI_NM_NOME.ToUpper();
                 }
                 else if (tipo == 4)
                 {
-                    mens.MENS_NM_NOME = "Mensagem SMS para Paciente - Encerramento: " + paciente.PACI_NM_NOME;
+                    mens.MENS_NM_NOME = "Mensagem SMS para Paciente - Encerramento: " + paciente.PACI_NM_NOME.ToUpper();
                 }
                 mens.PACI_CD_ID = paciente.PACI__CD_ID;
                 mens.MENS_TX_TEXTO = smsBody;
@@ -1261,19 +1287,19 @@ namespace GEDSys_Presentation.Controllers
                 Int32 volta1 = 0;
                 if (tipo == 1)
                 {
-                    volta1 = envio.GravarMensagemEnviada(mens, usuario, mens.MENS_TX_TEXTO, "Succeeded", guid, null, "Confirmação de Locação - SMS - " + paciente.PACI_NM_NOME);
+                    volta1 = envio.GravarMensagemEnviada(mens, usuario, mens.MENS_TX_TEXTO, "Succeeded", guid, null, "Confirmação de Locação - SMS - " + paciente.PACI_NM_NOME.ToUpper());
                 }
                 else if (tipo == 2)
                 {
-                    volta1 = envio.GravarMensagemEnviada(mens, usuario, mens.MENS_TX_TEXTO, "Succeeded", guid, null, "Cancelamento de Locação - SMS - " + paciente.PACI_NM_NOME);
+                    volta1 = envio.GravarMensagemEnviada(mens, usuario, mens.MENS_TX_TEXTO, "Succeeded", guid, null, "Cancelamento de Locação - SMS - " + paciente.PACI_NM_NOME.ToUpper());
                 }
                 else if (tipo == 3)
                 {
-                    volta1 = envio.GravarMensagemEnviada(mens, usuario, mens.MENS_TX_TEXTO, "Succeeded", guid, null, "Aprovação de Locação - SMS - " + paciente.PACI_NM_NOME);
+                    volta1 = envio.GravarMensagemEnviada(mens, usuario, mens.MENS_TX_TEXTO, "Succeeded", guid, null, "Aprovação de Locação - SMS - " + paciente.PACI_NM_NOME.ToUpper());
                 }
                 else if (tipo == 4)
                 {
-                    volta1 = envio.GravarMensagemEnviada(mens, usuario, mens.MENS_TX_TEXTO, "Succeeded", guid, null, "Encerramento de Locação - SMS - " + paciente.PACI_NM_NOME);
+                    volta1 = envio.GravarMensagemEnviada(mens, usuario, mens.MENS_TX_TEXTO, "Succeeded", guid, null, "Encerramento de Locação - SMS - " + paciente.PACI_NM_NOME.ToUpper());
                 }
 
                 // Sucesso
@@ -1705,8 +1731,8 @@ namespace GEDSys_Presentation.Controllers
                 try
                 {
                     // Sanitização
-                    vm.LOCA_DS_DESCRICAO = CrossCutting.UtilitariosGeral.CleanStringDocto(vm.LOCA_DS_DESCRICAO);
-                    vm.LOCA_NM_TITULO = CrossCutting.UtilitariosGeral.CleanStringDocto(vm.LOCA_NM_TITULO);
+                    vm.LOCA_DS_DESCRICAO = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(vm.LOCA_DS_DESCRICAO);
+                    vm.LOCA_NM_TITULO = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(vm.LOCA_NM_TITULO);
                     PACIENTE pac = pacApp.GetItemById(vm.PACI_CD_ID);
                     PRODUTO prod = prodApp.GetItemById(vm.PROD_CD_ID);
 
@@ -2013,7 +2039,7 @@ namespace GEDSys_Presentation.Controllers
                     LOG_DT_DATA = DateTime.Now,
                     ASSI_CD_ID = usuarioLogado.ASSI_CD_ID,
                     USUA_CD_ID = usuarioLogado.USUA_CD_ID,
-                    LOG_NM_OPERACAO = "xaeLOCA",
+                    LOG_NM_OPERACAO = "Locação - Anexo - Exclusão",
                     LOG_IN_ATIVO = 1,
                     LOG_TX_REGISTRO = json,
                     LOG_IN_SISTEMA = 6
@@ -2079,6 +2105,10 @@ namespace GEDSys_Presentation.Controllers
                 else if (arquivo.Contains(".mpeg"))
                 {
                     contentType = "audio/mpeg";
+                }
+                else if (arquivo.Contains(".mp4"))
+                {
+                    contentType = "video/mp4";
                 }
                 Session["NivelPaciente"] = 17;
                 Session["NivelProduto"] = 13;
@@ -2190,7 +2220,7 @@ namespace GEDSys_Presentation.Controllers
                         LOG_DT_DATA = DateTime.Now,
                         ASSI_CD_ID = usuarioLogado.ASSI_CD_ID,
                         USUA_CD_ID = usuarioLogado.USUA_CD_ID,
-                        LOG_NM_OPERACAO = "iaeLOCA",
+                        LOG_NM_OPERACAO = "Locação - Anotação - Inclusão",
                         LOG_IN_ATIVO = 1,
                         LOG_TX_REGISTRO = json,
                         LOG_IN_SISTEMA = 6
@@ -2308,7 +2338,7 @@ namespace GEDSys_Presentation.Controllers
                         LOG_DT_DATA = DateTime.Now,
                         ASSI_CD_ID = usuarioLogado.ASSI_CD_ID,
                         USUA_CD_ID = usuarioLogado.USUA_CD_ID,
-                        LOG_NM_OPERACAO = "eaeLOCA",
+                        LOG_NM_OPERACAO = "Locação - Anotação - Alteração",
                         LOG_IN_ATIVO = 1,
                         LOG_TX_REGISTRO = json,
                         LOG_IN_SISTEMA = 6
@@ -2386,7 +2416,7 @@ namespace GEDSys_Presentation.Controllers
                     LOG_DT_DATA = DateTime.Now,
                     ASSI_CD_ID = usuarioLogado.ASSI_CD_ID,
                     USUA_CD_ID = usuarioLogado.USUA_CD_ID,
-                    LOG_NM_OPERACAO = "xaeLOCA",
+                    LOG_NM_OPERACAO = "Locação - Anotação - Exclusão",
                     LOG_IN_ATIVO = 1,
                     LOG_TX_REGISTRO = json,
                     LOG_IN_SISTEMA = 6
@@ -2537,7 +2567,7 @@ namespace GEDSys_Presentation.Controllers
                         LOG_DT_DATA = DateTime.Now,
                         ASSI_CD_ID = usuario.ASSI_CD_ID,
                         USUA_CD_ID = usuario.USUA_CD_ID,
-                        LOG_NM_OPERACAO = "canLOCA",
+                        LOG_NM_OPERACAO = "Locação - Cancelamento",
                         LOG_IN_ATIVO = 1,
                         LOG_TX_REGISTRO = json,
                         LOG_IN_SISTEMA = 6
@@ -2641,6 +2671,8 @@ namespace GEDSys_Presentation.Controllers
                     Session["NivelPaciente"] = 17;
                     Session["NivelProduto"] = 13;
                     Session["NivelLocacao"] = 1;
+                    Session["ListaHistoricoLocacao"] = null;
+                    Session["LocacoesHistoricos"] = null;
 
                     if ((Int32)Session["VoltaLocacao"] == 2)
                     {
@@ -2720,11 +2752,11 @@ namespace GEDSys_Presentation.Controllers
                 String texto = template.TEEM_TX_CORPO;
                 if (texto.Contains("{produto}"))
                 {
-                    texto = texto.Replace("{produto}", prod.PROD_NM_NOME);
+                    texto = texto.Replace("{produto}", prod.PROD_NM_NOME.ToUpper());
                 }
                 if (texto.Contains("{paciente}"))
                 {
-                    texto = texto.Replace("{paciente}", paciente.PACI_NM_NOME);
+                    texto = texto.Replace("{paciente}", paciente.PACI_NM_NOME.ToUpper());
                 }
                 if (texto.Contains("{data}"))
                 {
@@ -2780,7 +2812,7 @@ namespace GEDSys_Presentation.Controllers
                 // Monta e-mail
                 NetworkCredential net = new NetworkCredential(conf.CONF_NM_SENDGRID_LOGIN, conf.CONF_NM_SENDGRID_PWD);
                 EmailAzure mensagem = new EmailAzure();
-                mensagem.ASSUNTO = "Paciente - " + paciente.PACI_NM_NOME + " - Locação - " + (operacao == 1 ? "Cancelamento" : (operacao == 2 ? "Renovacao" : "Encerramento"));
+                mensagem.ASSUNTO = "Paciente - " + paciente.PACI_NM_NOME.ToUpper() + " - Locação - " + (operacao == 1 ? "Cancelamento" : (operacao == 2 ? "Renovacao" : "Encerramento"));
                 mensagem.CORPO = emailBody;
                 mensagem.DEFAULT_CREDENTIALS = false;
                 mensagem.EMAIL_TO_DESTINO = paciente.PACI_NM_EMAIL;
@@ -2820,13 +2852,13 @@ namespace GEDSys_Presentation.Controllers
                 mens.MENS_DT_CRIACAO = DateTime.Today.Date;
                 mens.MENS_IN_TIPO = 1;
                 mens.MENS_NM_CAMPANHA = paciente.PACI_NM_EMAIL;
-                mens.MENS_NM_NOME = "Mensagem para Paciente: " + paciente.PACI_NM_NOME + " - Locação - " + (operacao == 1 ? "Cancelamento" : (operacao == 2 ? "Renovacao" : "Encerramento"));;
+                mens.MENS_NM_NOME = "Mensagem para Paciente: " + paciente.PACI_NM_NOME.ToUpper() + " - Locação - " + (operacao == 1 ? "Cancelamento" : (operacao == 2 ? "Renovacao" : "Encerramento"));;
                 mens.PACI_CD_ID = paciente.PACI__CD_ID;
                 mens.MENS_TX_TEXTO = emailBody;
 
                 EnvioEMailGeralBase envio = new EnvioEMailGeralBase(usuApp, confApp, meApp);
                 String guid = Xid.NewXid().ToString();
-                Int32 volta1 = envio.GravarMensagemEnviada(mens, usuario, mens.MENS_TX_TEXTO, "Succeeded", guid, null, "Confirmação de " + (operacao == 1 ? "Cancelamento" : (operacao == 2 ? "Renovacao" : "Encerramento")) + " de Locação - " + paciente.PACI_NM_NOME);
+                Int32 volta1 = envio.GravarMensagemEnviada(mens, usuario, mens.MENS_TX_TEXTO, "Succeeded", guid, null, "Confirmação de " + (operacao == 1 ? "Cancelamento" : (operacao == 2 ? "Renovacao" : "Encerramento")) + " de Locação - " + paciente.PACI_NM_NOME.ToUpper());
 
                 // Monta Log
                 LOG log = new LOG
@@ -2834,7 +2866,7 @@ namespace GEDSys_Presentation.Controllers
                     LOG_DT_DATA = DateTime.Now,
                     ASSI_CD_ID = usuario.ASSI_CD_ID,
                     USUA_CD_ID = usuario.USUA_CD_ID,
-                    LOG_NM_OPERACAO = "emaLOCA",
+                    LOG_NM_OPERACAO = "Locação - Envio de e-mail",
                     LOG_IN_ATIVO = 1,
                     LOG_TX_REGISTRO = (String)Session["JSONLocacao"],
                     LOG_IN_SISTEMA = 6
@@ -2897,11 +2929,11 @@ namespace GEDSys_Presentation.Controllers
                 String texto = template.TSMS_TX_CORPO;
                 if (texto.Contains("{produto}"))
                 {
-                    texto = texto.Replace("{produto}", prod.PROD_NM_NOME);
+                    texto = texto.Replace("{produto}", prod.PROD_NM_NOME.ToUpper());
                 }
                 if (texto.Contains("{paciente}"))
                 {
-                    texto = texto.Replace("{paciente}", paciente.PACI_NM_NOME);
+                    texto = texto.Replace("{paciente}", paciente.PACI_NM_NOME.ToUpper());
                 }
                 if (operacao == 1)
                 {
@@ -2997,7 +3029,7 @@ namespace GEDSys_Presentation.Controllers
                 mens.MENS_DT_CRIACAO = DateTime.Today.Date;
                 mens.MENS_IN_TIPO = 2;
                 mens.MENS_NM_CAMPANHA = paciente.PACI_NM_EMAIL;
-                mens.MENS_NM_NOME = "Mensagem para Paciente: " + paciente.PACI_NM_NOME + " - Locação - " + (operacao == 1 ? "Cancelamento" : (operacao == 2 ? "Renovacao" : "Encerramento")); ;
+                mens.MENS_NM_NOME = "Mensagem para Paciente: " + paciente.PACI_NM_NOME.ToUpper() + " - Locação - " + (operacao == 1 ? "Cancelamento" : (operacao == 2 ? "Renovacao" : "Encerramento")); ;
                 mens.PACI_CD_ID = paciente.PACI__CD_ID;
                 mens.MENS_TX_TEXTO = smsBody;
 
@@ -3062,11 +3094,11 @@ namespace GEDSys_Presentation.Controllers
                 String linkHtml = $"<a href=\"{urlDestino}\">{urlDestino}</a>";
                 if (texto.Contains("{produto}"))
                 {
-                    texto = texto.Replace("{produto}", prod.PROD_NM_NOME);
+                    texto = texto.Replace("{produto}", prod.PROD_NM_NOME.ToUpper());
                 }
                 if (texto.Contains("{paciente}"))
                 {
-                    texto = texto.Replace("{paciente}", paciente.PACI_NM_NOME);
+                    texto = texto.Replace("{paciente}", paciente.PACI_NM_NOME.ToUpper());
                 }
                 if (texto.Contains("{parcela}"))
                 {
@@ -3097,7 +3129,7 @@ namespace GEDSys_Presentation.Controllers
                 // Monta e-mail
                 NetworkCredential net = new NetworkCredential(conf.CONF_NM_SENDGRID_LOGIN, conf.CONF_NM_SENDGRID_PWD);
                 EmailAzure mensagem = new EmailAzure();
-                mensagem.ASSUNTO = "Paciente - " + paciente.PACI_NM_NOME + " - Locação - Parcela em Atraso";
+                mensagem.ASSUNTO = "Paciente - " + paciente.PACI_NM_NOME.ToUpper() + " - Locação - Parcela em Atraso";
                 mensagem.CORPO = emailBody;
                 mensagem.DEFAULT_CREDENTIALS = false;
                 mensagem.EMAIL_TO_DESTINO = paciente.PACI_NM_EMAIL;
@@ -3137,19 +3169,19 @@ namespace GEDSys_Presentation.Controllers
                 mens.MENS_DT_CRIACAO = DateTime.Today.Date;
                 mens.MENS_IN_TIPO = 1;
                 mens.MENS_NM_CAMPANHA = paciente.PACI_NM_EMAIL;
-                mens.MENS_NM_NOME = "Mensagem para Paciente - Locação: " + locacao.LOCA_NM_TITULO;
+                mens.MENS_NM_NOME = "Mensagem para Paciente - Locação: " + locacao.LOCA_NM_TITULO.ToUpper();
                 mens.PACI_CD_ID = paciente.PACI__CD_ID;
                 mens.MENS_TX_TEXTO = emailBody;
 
                 EnvioEMailGeralBase envio = new EnvioEMailGeralBase(usuApp, confApp, meApp);
                 String guid = Xid.NewXid().ToString();
-                Int32 volta1 = envio.GravarMensagemEnviada(mens, usuario, mens.MENS_TX_TEXTO, "Succeeded", guid, null, "Parcela em Atraso - " + paciente.PACI_NM_NOME);
+                Int32 volta1 = envio.GravarMensagemEnviada(mens, usuario, mens.MENS_TX_TEXTO, "Succeeded", guid, null, "Parcela em Atraso - " + paciente.PACI_NM_NOME.ToUpper());
 
                 // Grava historico
                 LOCACAO_HISTORICO hist = new LOCACAO_HISTORICO();
                 hist.ASSI_CD_ID = idAss;
                 hist.LOCA_CD_ID = locacao.LOCA_CD_ID;
-                hist.LOHI_DS_DESCRICAO = "Envio de Mensagem de parcela em atraso " + locacao.LOCA_NM_TITULO;
+                hist.LOHI_DS_DESCRICAO = "Envio de Mensagem de parcela em atraso " + locacao.LOCA_NM_TITULO.ToUpper();
                 hist.LOHI_DT_HISTORICO = DateTime.Now;
                 hist.USUA_CD_ID = usuario.USUA_CD_ID;
                 hist.LOHI_IN_ATIVO = 1;
@@ -3162,7 +3194,7 @@ namespace GEDSys_Presentation.Controllers
                     LOG_DT_DATA = DateTime.Now,
                     ASSI_CD_ID = usuario.ASSI_CD_ID,
                     USUA_CD_ID = usuario.USUA_CD_ID,
-                    LOG_NM_OPERACAO = "empLOCA",
+                    LOG_NM_OPERACAO = "Locação - Parcela - Envio de e-mail",
                     LOG_IN_ATIVO = 1,
                     LOG_TX_REGISTRO = json,
                     LOG_IN_SISTEMA = 6
@@ -3175,7 +3207,7 @@ namespace GEDSys_Presentation.Controllers
                 Session["NivelLocacao"] = 4;
 
                 // Mensagem do CRUD
-                Session["MsgCRUD"] = "Mensagem enviada para " + paciente.PACI_NM_NOME + " - Parcela em atraso";
+                Session["MsgCRUD"] = "Mensagem enviada para " + paciente.PACI_NM_NOME.ToUpper() + " - Parcela em atraso";
                 Session["MensLocacao"] = 61;
 
                 // Retorno
@@ -3367,6 +3399,8 @@ namespace GEDSys_Presentation.Controllers
                     Session["NivelPaciente"] = 17;
                     Session["NivelProduto"] = 13;
                     Session["NivelLocacao"] = 1;
+                    Session["ListaHistoricoLocacao"] = null;
+                    Session["LocacoesHistoricos"] = null;
 
                     if ((Int32)Session["VoltaLocacao"] == 2)
                     {
@@ -3568,7 +3602,7 @@ namespace GEDSys_Presentation.Controllers
                         LOG_DT_DATA = DateTime.Now,
                         ASSI_CD_ID = usuarioLogado.ASSI_CD_ID,
                         USUA_CD_ID = usuarioLogado.USUA_CD_ID,
-                        LOG_NM_OPERACAO = "quiLOCA",
+                        LOG_NM_OPERACAO = "Locação - Parcela - Quitação",
                         LOG_IN_ATIVO = 1,
                         LOG_TX_REGISTRO = json,
                         LOG_IN_SISTEMA = 6
@@ -3621,6 +3655,29 @@ namespace GEDSys_Presentation.Controllers
                                 rec.FORE_CD_ID = null;
                                 recApp.ValidateCreate(rec, usuarioLogado);
 
+                                // Configura serialização
+                                JsonSerializerSettings settings = new JsonSerializerSettings
+                                {
+                                    ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+                                    NullValueHandling = NullValueHandling.Ignore
+                                };
+
+                                // Monta Log
+                                DTO_Recebimento dto1 = MontarRecebimentoDTOObj(rec);
+                                String json1 = JsonConvert.SerializeObject(dto1, settings);
+                                CONSULTA_RECEBIMENTO pag = recApp.GetItemById(rec.CORE_CD_ID);
+                                LOG log1 = new LOG
+                                {
+                                    LOG_DT_DATA = DateTime.Now,
+                                    ASSI_CD_ID = usuarioLogado.ASSI_CD_ID,
+                                    USUA_CD_ID = usuarioLogado.USUA_CD_ID,
+                                    LOG_NM_OPERACAO = "Recebimento - Inclusão",
+                                    LOG_IN_ATIVO = 1,
+                                    LOG_TX_REGISTRO = json1,
+                                    LOG_IN_SISTEMA = 6
+                                };
+                                Int32 voltaU = logApp.ValidateCreate(log1);
+
                                 crud += ". Um lançamento de recebimento foi gerado para esta consulta.";
 
                                 // Cria pastas
@@ -3661,6 +3718,35 @@ namespace GEDSys_Presentation.Controllers
             else
             {
                 return View(vm);
+            }
+        }
+
+        public DTO_Recebimento MontarRecebimentoDTOObj(CONSULTA_RECEBIMENTO l)
+        {
+            using (var context = new CRMSysDBEntities())
+            {
+                var mediDTO = new DTO_Recebimento()
+                {
+                    ASSI_CD_ID = l.ASSI_CD_ID,
+                    CORE_CD_ID = l.CORE_CD_ID,
+                    FORE_CD_ID = l.FORE_CD_ID,
+                    PACI_CD_ID = l.PACI_CD_ID,
+                    PACO_CD_ID = l.PACO_CD_ID,
+                    SERV_CD_ID = l.SERV_CD_ID,
+                    USUA_CD_ID = l.USUA_CD_ID,
+                    VACO_CD_ID = l.VACO_CD_ID,
+                    VACV_CD_ID = l.VACV_CD_ID,
+                    VASE_CD_ID = l.VASE_CD_ID,
+                    CORE_DT_RECEBIMENTO = l.CORE_DT_RECEBIMENTO,
+                    CORE_GU_GUID = l.CORE_GU_GUID,
+                    CORE_IN_ATIVO = l.CORE_IN_ATIVO,
+                    CORE_IN_CONFERIDO = l.CORE_IN_CONFERIDO,
+                    CORE_NM_RECEBIMENTO = l.CORE_NM_RECEBIMENTO,
+                    CORE_VL_CONVENIO = l.CORE_VL_CONVENIO,
+                    CORE_VL_SERVICO = l.CORE_VL_SERVICO,
+                    CORE_VL_VALOR = l.CORE_VL_VALOR,
+                };
+                return mediDTO;
             }
         }
 
@@ -4560,33 +4646,49 @@ namespace GEDSys_Presentation.Controllers
                 headerTable.SpacingBefore = 1f;
                 headerTable.SpacingAfter = 1f;
 
-                PdfPCell cell = new PdfPCell();
-                cell.Border = 0;
-                cell.Colspan = 1;
-                Image image = null;
                 if (conf.CONF_IN_LOGO_EMPRESA == 1)
                 {
+                    PdfPCell cell1 = new PdfPCell();
+                    cell1.Border = 0;
+                    cell1.Colspan = 1;
+                    Image image = null;
                     EMPRESA empresa = empApp.GetItemByAssinante(idAss);
                     image = Image.GetInstance(Server.MapPath(empresa.EMPR_AQ_LOGO));
+                    image.ScaleAbsolute(50, 50);
+                    cell1.AddElement(image);
+                    cell1.Border = PdfPCell.BOTTOM_BORDER;
+                    headerTable.AddCell(cell1);
+
+                    cell1 = new PdfPCell(new Paragraph(titulo, meuFont2))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_CENTER
+                    };
+                    cell1.Border = 0;
+                    cell1.Colspan = 1;
+                    cell1.Border = PdfPCell.BOTTOM_BORDER;
+                    headerTable.AddCell(cell1);
                 }
                 else
                 {
-                    image = Image.GetInstance(Server.MapPath("~/Images/Prontuario_Icone_1.png"));
-                }
-                image.ScaleAbsolute(50, 50);
-                cell.AddElement(image);
-                cell.Border = PdfPCell.BOTTOM_BORDER;
-                headerTable.AddCell(cell);
+                    PdfPCell cell2 = new PdfPCell(new Paragraph(titulo, meuFont2))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_CENTER
+                    };
+                    cell2.Border = 0;
+                    cell2.Colspan = 2;
+                    headerTable.AddCell(cell2);
 
-                cell = new PdfPCell(new Paragraph(titulo, meuFont2))
-                {
-                    VerticalAlignment = Element.ALIGN_MIDDLE,
-                    HorizontalAlignment = Element.ALIGN_CENTER
-                };
-                cell.Border = 0;
-                cell.Colspan = 1;
-                cell.Border = PdfPCell.BOTTOM_BORDER;
-                headerTable.AddCell(cell);
+                    cell2 = new PdfPCell(new Paragraph(" ", meuFont))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    cell2.Colspan = 2;
+                    cell2.Border = PdfPCell.BOTTOM_BORDER;
+                    headerTable.AddCell(cell2);
+                }
 
                 // Rodape
                 PdfPTable footerTable = new PdfPTable(1);
@@ -4595,7 +4697,7 @@ namespace GEDSys_Presentation.Controllers
                 footerTable.SpacingBefore = 1f;
                 footerTable.SpacingAfter = 1f;
 
-                cell = new PdfPCell();
+                PdfPCell cell = new PdfPCell();
                 cell.Border = PdfPCell.TOP_BORDER;
                 cell = new PdfPCell(new Paragraph("Gerado por WebDoctor 1.0 em " + DateTime.Today.Date.ToLongDateString(), meuFont));
                 footerTable.AddCell(cell);
@@ -4609,7 +4711,6 @@ namespace GEDSys_Presentation.Controllers
                 // Linha horizontal
                 Paragraph line = new Paragraph(new Chunk(new iTextSharp.text.pdf.draw.LineSeparator(0.0F, 100.0F, BaseColor.BLUE, Element.ALIGN_LEFT, 1)));
                 pdfDoc.Add(line);
-
 
                 // Grid
                 PdfPTable table = new PdfPTable(new float[] { 150f, 180f, 80f, 70f, 70f, 70f, 70f, 60f, 50f });
@@ -4884,7 +4985,7 @@ namespace GEDSys_Presentation.Controllers
                     if (System.IO.File.Exists(Server.MapPath(item.PRODUTO.PROD_AQ_FOTO)))
                     {
                         cell = new PdfPCell();
-                        image = Image.GetInstance(Server.MapPath(item.PRODUTO.PROD_AQ_FOTO));
+                        Image image = Image.GetInstance(Server.MapPath(item.PRODUTO.PROD_AQ_FOTO));
                         image.ScaleAbsolute(20, 20);
                         cell.AddElement(image);
                         table.AddCell(cell);
@@ -4900,10 +5001,6 @@ namespace GEDSys_Presentation.Controllers
                     }
                 }
                 pdfDoc.Add(table);
-
-                // Linha Horizontal
-                Paragraph line3 = new Paragraph(new Chunk(new iTextSharp.text.pdf.draw.LineSeparator(0.0F, 100.0F, BaseColor.BLUE, Element.ALIGN_LEFT, 1)));
-                pdfDoc.Add(line3);
 
                 // Finaliza
                 pdfWriter.CloseStream = false;
@@ -5379,7 +5476,7 @@ namespace GEDSys_Presentation.Controllers
                     PdfPTable headerTable = null;
                     PdfPCell cell = new PdfPCell();
                     Image image = null;
-                    if (conf.CONF_IN_EXIBE_LOGO == 1)
+                    if (conf.CONF_IN_LOGO_EMPRESA == 1)
                     {
                         headerTable = new PdfPTable(new float[] { 20f, 700f });
                         headerTable.WidthPercentage = 100;
@@ -6136,7 +6233,7 @@ namespace GEDSys_Presentation.Controllers
                     PdfPTable headerTable = null;
                     PdfPCell cell = new PdfPCell();
                     Image image = null;
-                    if (conf.CONF_IN_EXIBE_LOGO == 1)
+                    if (conf.CONF_IN_LOGO_EMPRESA == 1)
                     {
                         headerTable = new PdfPTable(new float[] { 20f, 700f });
                         headerTable.WidthPercentage = 100;
@@ -6727,11 +6824,11 @@ namespace GEDSys_Presentation.Controllers
             String linkHtml = $"<a href=\"{urlDestino}\">{urlDestino}</a>";
             if (texto.Contains("{produto}"))
             {
-                texto = texto.Replace("{produto}", produto.PROD_NM_NOME);
+                texto = texto.Replace("{produto}", produto.PROD_NM_NOME.ToUpper());
             }
             if (texto.Contains("{paciente}"))
             {
-                texto = texto.Replace("{paciente}", paciente.PACI_NM_NOME);
+                texto = texto.Replace("{paciente}", paciente.PACI_NM_NOME.ToUpper());
             }
             if (texto.Contains("{data}"))
             {
@@ -6758,7 +6855,7 @@ namespace GEDSys_Presentation.Controllers
             // Incluir PDF como anexo
             List<AttachmentModel> models = new List<AttachmentModel>();
             String caminho = "/Imagens/" + idAss.ToString() + "/Locacao/" + vm.LOCA_CD_ID.ToString() + "/Contrato/";
-            String fileNamePDF = "Contrato_Locacao" + paciente.PACI_NM_NOME + "_" + vm.LOCA_GU_GUID + ".pdf";
+            String fileNamePDF = "Contrato_Locacao" + paciente.PACI_NM_NOME.ToUpper() + "_" + vm.LOCA_GU_GUID + ".pdf";
             String path = Path.Combine(Server.MapPath(caminho), fileNamePDF);
 
             AttachmentModel model = new AttachmentModel();
@@ -6774,7 +6871,7 @@ namespace GEDSys_Presentation.Controllers
             // Monta e-mail
             NetworkCredential net = new NetworkCredential(conf.CONF_NM_SENDGRID_LOGIN, conf.CONF_NM_SENDGRID_PWD);
             EmailAzure mensagem = new EmailAzure();
-            mensagem.ASSUNTO = "Locação - " + vm.LOCA_NM_TITULO;
+            mensagem.ASSUNTO = "Locação - " + vm.LOCA_NM_TITULO.ToUpper();
             mensagem.CORPO = emailBody;
             mensagem.DEFAULT_CREDENTIALS = false;
             mensagem.EMAIL_TO_DESTINO = paciente.PACI_NM_EMAIL;
@@ -6878,11 +6975,11 @@ namespace GEDSys_Presentation.Controllers
             String linkHtml = $"<a href=\"{urlDestino}\">{urlDestino}</a>";
             if (texto.Contains("{produto}"))
             {
-                texto = texto.Replace("{produto}", produto.PROD_NM_NOME);
+                texto = texto.Replace("{produto}", produto.PROD_NM_NOME.ToUpper());
             }
             if (texto.Contains("{paciente}"))
             {
-                texto = texto.Replace("{paciente}", paciente.PACI_NM_NOME);
+                texto = texto.Replace("{paciente}", paciente.PACI_NM_NOME.ToUpper());
             }
             if (texto.Contains("{data}"))
             {
@@ -6905,7 +7002,7 @@ namespace GEDSys_Presentation.Controllers
             // Incluir PDF como anexo
             List<AttachmentModel> models = new List<AttachmentModel>();
             String caminho = "/Imagens/" + idAss.ToString() + "/Locacao/" + vm.LOCA_CD_ID.ToString() + "/Distrato/";
-            String fileNamePDF = "Distrato_Locacao" + paciente.PACI_NM_NOME + "_" + vm.LOCA_GU_GUID + ".pdf";
+            String fileNamePDF = "Distrato_Locacao" + paciente.PACI_NM_NOME.ToUpper() + "_" + vm.LOCA_GU_GUID + ".pdf";
             String path = Path.Combine(Server.MapPath(caminho), fileNamePDF);
 
             AttachmentModel model = new AttachmentModel();
@@ -6921,7 +7018,7 @@ namespace GEDSys_Presentation.Controllers
             // Monta e-mail
             NetworkCredential net = new NetworkCredential(conf.CONF_NM_SENDGRID_LOGIN, conf.CONF_NM_SENDGRID_PWD);
             EmailAzure mensagem = new EmailAzure();
-            mensagem.ASSUNTO = "Locação - " + vm.LOCA_NM_TITULO;
+            mensagem.ASSUNTO = "Locação - " + vm.LOCA_NM_TITULO.ToUpper();
             mensagem.CORPO = emailBody;
             mensagem.DEFAULT_CREDENTIALS = false;
             mensagem.EMAIL_TO_DESTINO = paciente.PACI_NM_EMAIL;
@@ -6963,7 +7060,7 @@ namespace GEDSys_Presentation.Controllers
                 mens.MENS_DT_CRIACAO = DateTime.Today.Date;
                 mens.MENS_IN_TIPO = 1;
                 mens.MENS_NM_CAMPANHA = paciente.PACI_NM_EMAIL;
-                mens.MENS_NM_NOME = "Envio de Distrato de Locação para Paciente: " + paciente.PACI_NM_NOME;
+                mens.MENS_NM_NOME = "Envio de Distrato de Locação para Paciente: " + paciente.PACI_NM_NOME.ToUpper();
                 mens.MENS_GU_GUID = vm.LOCA_GU_GUID;
                 mens.MENS_DT_AGENDAMENTO = vm.LOCA_DT_EMISSAO;
                 mens.MENS_DT_ENVIO = DateTime.Today.Date;
@@ -7198,7 +7295,7 @@ namespace GEDSys_Presentation.Controllers
                 PdfPTable headerTable = null;
                 PdfPCell cell = new PdfPCell();
                 Image image = null;
-                if (conf.CONF_IN_EXIBE_LOGO == 1)
+                if (conf.CONF_IN_LOGO_EMPRESA == 1)
                 {
                     headerTable = new PdfPTable(new float[] { 20f, 700f });
                     headerTable.WidthPercentage = 100;
@@ -7964,7 +8061,7 @@ namespace GEDSys_Presentation.Controllers
                 PdfPTable headerTable = null;
                 PdfPCell cell = new PdfPCell();
                 Image image = null;
-                if (conf.CONF_IN_EXIBE_LOGO == 1)
+                if (conf.CONF_IN_LOGO_EMPRESA == 1)
                 {
                     headerTable = new PdfPTable(new float[] { 20f, 700f });
                     headerTable.WidthPercentage = 100;
@@ -8591,11 +8688,8 @@ namespace GEDSys_Presentation.Controllers
                 // Carrega listas
                 CONFIGURACAO conf = CarregaConfiguracaoGeral();
                 LOCACAO loca = baseApp.GetItemById(id);
-                if (Session["ListaHistoricoLocacao"] == null)
-                {
-                    listaMasterHistorico = loca.LOCACAO_HISTORICO.ToList();
-                    Session["ListaHistoricoLocacao"] = listaMasterHistorico;
-                }
+                listaMasterHistorico = loca.LOCACAO_HISTORICO.ToList();
+                Session["ListaHistoricoLocacao"] = listaMasterHistorico;
                 ViewBag.Listas = (List<LOCACAO_HISTORICO>)Session["ListaHistoricoLocacao"];
                 ViewBag.NomePaciente = loca.PACIENTE.PACI_NM_NOME;
                 ViewBag.Perfil = usuario.PERFIL.PERF_SG_SIGLA;
@@ -9159,7 +9253,7 @@ namespace GEDSys_Presentation.Controllers
                 PdfPTable headerTable = null;
                 PdfPCell cell = new PdfPCell();
                 Image image = null;
-                if (conf.CONF_IN_EXIBE_LOGO == 1)
+                if (conf.CONF_IN_LOGO_EMPRESA == 1)
                 {
                     headerTable = new PdfPTable(new float[] { 20f, 700f });
                     headerTable.WidthPercentage = 100;
@@ -9780,7 +9874,7 @@ namespace GEDSys_Presentation.Controllers
                 PdfPTable headerTable = null;
                 PdfPCell cell = new PdfPCell();
                 Image image = null;
-                if (conf.CONF_IN_EXIBE_LOGO == 1)
+                if (conf.CONF_IN_LOGO_EMPRESA == 1)
                 {
                     headerTable = new PdfPTable(new float[] { 20f, 700f });
                     headerTable.WidthPercentage = 100;
@@ -10418,7 +10512,7 @@ namespace GEDSys_Presentation.Controllers
                     PdfPTable headerTable = null;
                     PdfPCell cell = new PdfPCell();
                     Image image = null;
-                    if (conf.CONF_IN_EXIBE_LOGO == 1)
+                    if (conf.CONF_IN_LOGO_EMPRESA == 1)
                     {
                         headerTable = new PdfPTable(new float[] { 20f, 700f });
                         headerTable.WidthPercentage = 100;
@@ -11025,7 +11119,7 @@ namespace GEDSys_Presentation.Controllers
                     PdfPTable headerTable = null;
                     PdfPCell cell = new PdfPCell();
                     Image image = null;
-                    if (conf.CONF_IN_EXIBE_LOGO == 1)
+                    if (conf.CONF_IN_LOGO_EMPRESA    == 1)
                     {
                         headerTable = new PdfPTable(new float[] { 20f, 700f });
                         headerTable.WidthPercentage = 100;
@@ -11537,7 +11631,7 @@ namespace GEDSys_Presentation.Controllers
                 try
                 {
                     // Sanitização
-                    vm.LOCA_DS_JUSTIFICATIVA = CrossCutting.UtilitariosGeral.CleanStringDocto(vm.LOCA_DS_JUSTIFICATIVA);
+                    vm.LOCA_DS_JUSTIFICATIVA = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(vm.LOCA_DS_JUSTIFICATIVA);
 
                     // Verifica estoque
                     PRODUTO prod = prodApp.GetItemById(vm.PROD_CD_ID);
@@ -11565,7 +11659,7 @@ namespace GEDSys_Presentation.Controllers
                         LOG_DT_DATA = DateTime.Now,
                         ASSI_CD_ID = usuario.ASSI_CD_ID,
                         USUA_CD_ID = usuario.USUA_CD_ID,
-                        LOG_NM_OPERACAO = "aprLOCA",
+                        LOG_NM_OPERACAO = "Locação - Aprovação",
                         LOG_IN_ATIVO = 1,
                         LOG_TX_REGISTRO = json,
                         LOG_IN_SISTEMA = 6
@@ -11657,6 +11751,8 @@ namespace GEDSys_Presentation.Controllers
                     Session["NivelPaciente"] = 17;
                     Session["NivelProduto"] = 13;
                     Session["NivelLocacao"] = 1;
+                    Session["ListaHistoricoLocacao"] = null;
+                    Session["LocacoesHistoricos"] = null;
 
                     if ((Int32)Session["VoltaLocacao"] == 2)
                     {
@@ -11815,7 +11911,7 @@ namespace GEDSys_Presentation.Controllers
                         LOG_DT_DATA = DateTime.Now,
                         ASSI_CD_ID = usuario.ASSI_CD_ID,
                         USUA_CD_ID = usuario.USUA_CD_ID,
-                        LOG_NM_OPERACAO = "encLOCA",
+                        LOG_NM_OPERACAO = "Locação - Encerramento",
                         LOG_IN_ATIVO = 1,
                         LOG_TX_REGISTRO = json,
                         LOG_IN_SISTEMA = 6
@@ -11919,6 +12015,8 @@ namespace GEDSys_Presentation.Controllers
                     Session["NivelPaciente"] = 17;
                     Session["NivelProduto"] = 13;
                     Session["NivelLocacao"] = 1;
+                    Session["ListaHistoricoLocacao"] = null;
+                    Session["LocacoesHistoricos"] = null;
 
                     if ((Int32)Session["VoltaLocacao"] == 2)
                     {
@@ -12109,7 +12207,7 @@ namespace GEDSys_Presentation.Controllers
                     PdfPTable headerTable = null;
                     PdfPCell cell = new PdfPCell();
                     Image image = null;
-                    if (conf.CONF_IN_EXIBE_LOGO == 1)
+                    if (conf.CONF_IN_LOGO_EMPRESA == 1)
                     {
                         headerTable = new PdfPTable(new float[] { 20f, 700f });
                         headerTable.WidthPercentage = 100;
@@ -12672,7 +12770,7 @@ namespace GEDSys_Presentation.Controllers
                     PdfPTable headerTable = null;
                     PdfPCell cell = new PdfPCell();
                     Image image = null;
-                    if (conf.CONF_IN_EXIBE_LOGO == 1)
+                    if (conf.CONF_IN_LOGO_EMPRESA == 1)
                     {
                         headerTable = new PdfPTable(new float[] { 20f, 700f });
                         headerTable.WidthPercentage = 100;
@@ -13125,11 +13223,11 @@ namespace GEDSys_Presentation.Controllers
             String linkHtml = $"<a href=\"{urlDestino}\">{urlDestino}</a>";
             if (texto.Contains("{produto}"))
             {
-                texto = texto.Replace("{produto}", produto.PROD_NM_NOME);
+                texto = texto.Replace("{produto}", produto.PROD_NM_NOME.ToUpper());
             }
             if (texto.Contains("{paciente}"))
             {
-                texto = texto.Replace("{paciente}", paciente.PACI_NM_NOME);
+                texto = texto.Replace("{paciente}", paciente.PACI_NM_NOME.ToUpper());
             }
             if (texto.Contains("{data}"))
             {
@@ -13152,7 +13250,7 @@ namespace GEDSys_Presentation.Controllers
             // Incluir PDF como anexo
             List<AttachmentModel> models = new List<AttachmentModel>();
             String caminho = "/Imagens/" + idAss.ToString() + "/Locacao/" + vm.LOCA_CD_ID.ToString() + "/Distrato/";
-            String fileNamePDF = "Encerra_Locacao" + paciente.PACI_NM_NOME + "_" + vm.LOCA_GU_GUID + ".pdf";
+            String fileNamePDF = "Encerra_Locacao" + paciente.PACI_NM_NOME.ToUpper() + "_" + vm.LOCA_GU_GUID + ".pdf";
             String path = Path.Combine(Server.MapPath(caminho), fileNamePDF);
 
             AttachmentModel model = new AttachmentModel();
@@ -13168,7 +13266,7 @@ namespace GEDSys_Presentation.Controllers
             // Monta e-mail
             NetworkCredential net = new NetworkCredential(conf.CONF_NM_SENDGRID_LOGIN, conf.CONF_NM_SENDGRID_PWD);
             EmailAzure mensagem = new EmailAzure();
-            mensagem.ASSUNTO = "Locação - " + vm.LOCA_NM_TITULO;
+            mensagem.ASSUNTO = "Locação - " + vm.LOCA_NM_TITULO.ToUpper();
             mensagem.CORPO = emailBody;
             mensagem.DEFAULT_CREDENTIALS = false;
             mensagem.EMAIL_TO_DESTINO = paciente.PACI_NM_EMAIL;
@@ -13210,7 +13308,7 @@ namespace GEDSys_Presentation.Controllers
                 mens.MENS_DT_CRIACAO = DateTime.Today.Date;
                 mens.MENS_IN_TIPO = 1;
                 mens.MENS_NM_CAMPANHA = paciente.PACI_NM_EMAIL;
-                mens.MENS_NM_NOME = "Envio de Encerramento de Locação para Paciente: " + paciente.PACI_NM_NOME;
+                mens.MENS_NM_NOME = "Envio de Encerramento de Locação para Paciente: " + paciente.PACI_NM_NOME.ToUpper();
                 mens.MENS_GU_GUID = vm.LOCA_GU_GUID;
                 mens.MENS_DT_AGENDAMENTO = vm.LOCA_DT_EMISSAO;
                 mens.MENS_DT_ENVIO = DateTime.Today.Date;
@@ -13263,7 +13361,7 @@ namespace GEDSys_Presentation.Controllers
             LOCACAO loca = baseApp.GetItemById(id);
             if (loca.LOCA_IN_ASSINADO_DIGITAL == 1)
             {
-                return RedirectToAction("GerarEncerraPDFAssina");
+                return RedirectToAction("   ");
             }
             return RedirectToAction("GerarEncerraPDF");
         }
@@ -13464,7 +13562,7 @@ namespace GEDSys_Presentation.Controllers
                 PdfPTable headerTable = null;
                 PdfPCell cell = new PdfPCell();
                 Image image = null;
-                if (conf.CONF_IN_EXIBE_LOGO == 1)
+                if (conf.CONF_IN_LOGO_EMPRESA == 1)
                 {
                     headerTable = new PdfPTable(new float[] { 20f, 700f });
                     headerTable.WidthPercentage = 100;
@@ -14085,7 +14183,7 @@ namespace GEDSys_Presentation.Controllers
                 PdfPTable headerTable = null;
                 PdfPCell cell = new PdfPCell();
                 Image image = null;
-                if (conf.CONF_IN_EXIBE_LOGO == 1)
+                if (conf.CONF_IN_LOGO_EMPRESA == 1)
                 {
                     headerTable = new PdfPTable(new float[] { 20f, 700f });
                     headerTable.WidthPercentage = 100;
@@ -14580,7 +14678,7 @@ namespace GEDSys_Presentation.Controllers
                     LOG_DT_DATA = DateTime.Now,
                     ASSI_CD_ID = usuarioLogado.ASSI_CD_ID,
                     USUA_CD_ID = usuarioLogado.USUA_CD_ID,
-                    LOG_NM_OPERACAO = "xocLOCA",
+                    LOG_NM_OPERACAO = "Locação - Ocorrência - Exclusão",
                     LOG_IN_ATIVO = 1,
                     LOG_TX_REGISTRO = json,
                     LOG_IN_SISTEMA = 6
@@ -14588,7 +14686,7 @@ namespace GEDSys_Presentation.Controllers
                 Int32 volta1 = logApp.ValidateCreate(log);
 
                 // Mensagem do CRUD
-                Session["MsgCRUD"] = "A ocorrência " + item.LOOC_NM_TITULO + " da locação " + loca.LOCA_NM_TITULO + " foi excluída com sucesso";
+                Session["MsgCRUD"] = "A ocorrência " + item.LOOC_NM_TITULO.ToUpper() + " da locação " + loca.LOCA_NM_TITULO.ToUpper() + " foi excluída com sucesso";
                 Session["MensLocacao"] = 61;
 
                 // Retorno
@@ -14642,7 +14740,7 @@ namespace GEDSys_Presentation.Controllers
                 PACIENTE pac = pacApp.GetItemById(loca.PACI_CD_ID);
                 PRODUTO prod = prodApp.GetItemById(loca.PROD_CD_ID);
                 ViewBag.NomePaciente = pac.PACI_NM_NOME;
-                ViewBag.Tipos = new SelectList(baseApp.GetAllTipos(idAss), "TIOC_CD_ID", "TIOC_NM_NOME");
+                ViewBag.Tipos = new SelectList(baseApp.GetAllTipoOcorrencia(idAss), "TIOC_CD_ID", "TIOC_NM_NOME");
 
                 Session["NivelPaciente"] = 17;
                 Session["NivelProduto"] = 13;
@@ -14757,7 +14855,7 @@ namespace GEDSys_Presentation.Controllers
                         LOG_DT_DATA = DateTime.Now,
                         ASSI_CD_ID = usuarioLogado.ASSI_CD_ID,
                         USUA_CD_ID = usuarioLogado.USUA_CD_ID,
-                        LOG_NM_OPERACAO = "iocLOCA",
+                        LOG_NM_OPERACAO = "Locação - Ocorrência - Inclusão",
                         LOG_IN_ATIVO = 1,
                         LOG_TX_REGISTRO = json,
                         LOG_IN_SISTEMA = 6
@@ -14765,7 +14863,7 @@ namespace GEDSys_Presentation.Controllers
                     Int32 volta3 = logApp.ValidateCreate(log);
 
                     // Mensagem do CRUD
-                    Session["MsgCRUD"] = "A ocorrência " + item.LOOC_NM_TITULO + " da locação " + loca.LOCA_NM_TITULO + " foi incluída com sucesso";
+                    Session["MsgCRUD"] = "A ocorrência " + item.LOOC_NM_TITULO.ToUpper() + " da locação " + loca.LOCA_NM_TITULO.ToUpper() + " foi incluída com sucesso";
                     Session["MensLocacao"] = 61;
 
                     return RedirectToAction("VoltarAnexoLocacao");
@@ -14925,7 +15023,7 @@ namespace GEDSys_Presentation.Controllers
                         LOG_DT_DATA = DateTime.Now,
                         ASSI_CD_ID = usuarioLogado.ASSI_CD_ID,
                         USUA_CD_ID = usuarioLogado.USUA_CD_ID,
-                        LOG_NM_OPERACAO = "eocLOCA",
+                        LOG_NM_OPERACAO = "Locação - Ocorrência - Alteração",
                         LOG_IN_ATIVO = 1,
                         LOG_TX_REGISTRO = json,
                         LOG_IN_SISTEMA = 6
@@ -14933,7 +15031,7 @@ namespace GEDSys_Presentation.Controllers
                     Int32 volta1 = logApp.ValidateCreate(log);
 
                     // Mensagem do CRUD
-                    Session["MsgCRUD"] = "A ocorrência " + item.LOOC_NM_TITULO + " da locação " + loca.LOCA_NM_TITULO + " foi alterada com sucesso";
+                    Session["MsgCRUD"] = "A ocorrência " + item.LOOC_NM_TITULO.ToUpper() + " da locação " + loca.LOCA_NM_TITULO.ToUpper() + " foi alterada com sucesso";
                     Session["MensLocacao"] = 61;
 
                     return RedirectToAction("VoltarAnexoLocacao");

@@ -47,11 +47,11 @@
                             </div>
                             <div class="col-lg-2 col-md-2 col-xs-12">
                                 Data Inicial
-                                @Html.TextBoxFor(m => m.LOHI_DT_HISTORICO, new { @class = "form-control date-picker", autofocus = true, @id = "dn" })
+                                @Html.TextBoxFor(m => m.LOHI_DT_HISTORICO, new { @class = "form-control date-picker", autofocus = true, @id = "dn", data_toggle = "popover", data_content = "Informe a data inicial da faixa de datas a ser pesquisada", data_trigger="hover", data_placement="top" })
                             </div>
                             <div class="col-lg-2 col-md-2 col-xs-12">
                                 Data Final
-                                @Html.TextBoxFor(m => m.LOHI_DT_DUMMY, new { @class = "form-control date-picker", autofocus = true, @id = "dn1" })
+                                @Html.TextBoxFor(m => m.LOHI_DT_DUMMY, new { @class = "form-control date-picker", autofocus = true, @id = "dn1", data_toggle = "popover", data_content = "Informe a data final da faixa de datas a ser pesquisada", data_trigger="hover", data_placement="top" })
                             </div>
                             <div class="col-lg-3 col-md-3 col-xs-12">
                                 Paciente
@@ -61,10 +61,13 @@
 
                         <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
                             <div class="col-lg-12 col-md-12 col-xs-12">
-                                @Html.ButtonActionSubmit(text: "Filtrar")
-                                @Html.ButtonLinkIndex(text: "Retirar Filtro", controller: "Locacao", action: "RetirarFiltroHistoricoLocacao")
-                                @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaLocacao", controller: "Locacao")
+                                @Html.ButtonActionSubmit(text: "Filtrar", htmlAttributes: new { @class = "btn-loading1" })
+                                @Html.ButtonLinkIndex(text: "Retirar Filtro", controller: "Locacao", action: "RetirarFiltroHistoricoLocacao", htmlAttributes: new { @class = "btn-loading" })
+                                @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaLocacao", controller: "Locacao", htmlAttributes: new { @class = "btn-loading" })
                                 <a href="@Url.Action((String)Session["AjudaNivel"])"  class="btn btn-sm btn-danger" target="_blank">Ajuda</a>                
+                                <span id="loadingIndicator" style="display: none; margin-left: 10px; color: #007bff;">
+                                    <i class="fa fa-spinner fa-spin"></i> Processando...
+                                </span>
                             </div>
                         </div>
                     </div>
@@ -101,20 +104,21 @@
                                         <th style="width: auto">Produto</th>
                                         <th style="width: auto">Operação</th>
                                         <th style="width: 120px">Responsável</th>
-                                        <th style="width: 0.01px"></th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     @foreach (var cond in (ViewBag.Listas as List<EntitiesServices.Model.LOCACAO_HISTORICO>).OrderByDescending(p => p.LOHI_DT_HISTORICO))
                                     {
                                         <tr>
-                                            <td style="width: 100px">@cond.LOHI_DT_HISTORICO.Value.ToShortDateString() @cond.LOHI_DT_HISTORICO.Value.ToShortTimeString()</td>
+                                            <td>
+                                                <span style="display:none; width: auto">@cond.LOHI_DT_HISTORICO.Value.ToString("yyyyMMdd")</span>
+                                                @cond.LOHI_DT_HISTORICO.Value.ToShortDateString() @cond.LOHI_DT_HISTORICO.Value.ToShortTimeString()
+                                            </td>
                                             <td style="width: 120px">@cond.LOCACAO.PACIENTE.PACI_NM_NOME</td>
                                             <td style="width: 120px">@cond.LOCACAO.LOCA_NM_TITULO</td>
                                             <td style="width: 120px">@cond.LOCACAO.PRODUTO.PROD_NM_NOME</td>
                                             <td style="width: 120px">@cond.LOHI_NM_OPERACAO</td>
                                             <td style="width: 120px">@cond.USUARIO.USUA_NM_NOME</td>
-                                            <td style="width: 0.01px"></td>
                                         </tr>
                                     }
                                 </tbody>
@@ -183,6 +187,48 @@
         }; 
     </script>
 
+    <script type="text/javascript">
+        $(document).ready(function () { 
+            $('.btn-loading').on('click', function (e) {            
+                $(this).prop('disabled', true);
+                $(this).addClass('disabled');
+                $('#loadingIndicator').show();
+                var tagName = $(this).prop('tagName').toLowerCase();
+                if (tagName === 'a') {
+                    e.preventDefault(); 
+                    var targetUrl = $(this).attr('href');
+                    window.location.href = targetUrl;
+
+                } else if (tagName === 'button' || tagName === 'input') {
+                    $(this).closest('form').submit();
+                }
+            });
+        });
+    </script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('.btn-loading1').on('click', function (e) {
+            
+                var $this = $(this);
+                var tagName = $this.prop('tagName').toLowerCase();
+                $this.addClass('disabled'); 
+                $('#loadingIndicator').show();
+
+                if (tagName === 'a') {
+                    e.preventDefault();
+                
+                    var targetUrl = $this.attr('href');
+                    window.location.href = targetUrl;
+                
+                } else if (tagName === 'button' || tagName === 'input') {               
+                    $this.closest('form').submit();
+                    $this.prop('disabled', true);
+                }
+            });
+        });
+    </script>
+
     <script type="text/javascript" language="javascript">
         $(function () {
             $('.date-picker').datepicker(
@@ -233,6 +279,14 @@
             $('.dataTables-example').DataTable({
                 pageLength: 25,
                 dom: '<"html5buttons"B>lTfgitp',
+                // --- NOVO BLOCO DE CONFIGURAÇÃO ---
+                columnDefs: [
+                    {
+                         "type": "date-eu", 
+                        "targets": 0 
+                    }
+                ],
+                // ---------------------------------       
                 buttons: [
                     { extend: 'excel', title: 'HistoricoLocacoes_Planilha' },
                     {

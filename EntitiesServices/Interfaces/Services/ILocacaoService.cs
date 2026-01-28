@@ -40,6 +40,7 @@ namespace ModelServices.Interfaces.EntitiesServices
         List<LOCACAO_PARCELA> GetAllParcelas(Int32 idAss);
         List<LOCACAO_PARCELA> ExecuteFilterParcela(Int32? locacao, Int32? paci, DateTime? inicio, DateTime? final, String descricao, Int32 idAss);
 
+        List<TIPO_OCORRENCIA> GetAllTipoOcorrencia(Int32 idAss);
         LOCACAO_OCORRENCIA GetOcorrenciaById(Int32 id);
         Int32 EditOcorrencia(LOCACAO_OCORRENCIA item);
         Int32 CreateOcorrencia(LOCACAO_OCORRENCIA item);

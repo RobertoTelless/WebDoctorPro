@@ -17,7 +17,7 @@
     <meta name="description" content="WebDoctor - Login" />
     <meta name="keywords" content="WebDoctor, Login" />
 
-    <title>WebDoctor</title>
+    <title>WebDoctorPro</title>
 
     <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700' rel='stylesheet' type='text/css'>
     <!-- Add local styles, mostly for plugins css file -->
@@ -26,7 +26,7 @@
      
     <!-- Add jQuery Style direct - used for jQGrid plugin -->
     <link href="@Url.Content("~/Scripts/plugins/jquery-ui/jquery-ui.min.css")" rel="stylesheet" type="text/css" />
-    <link rel="shortcut icon" href="~/Images/Prontuario/prontuario_icon_3.png">
+    <link rel="shortcut icon" href="@Url.Content("~/Images/Prontuario/prontuario_icon_3.png?v=1.1")" type="image/png">
 
     <link href="https://cdn.datatables.net/1.10.15/css/dataTables.bootstrap.min.css" rel="stylesheet" />  
     <link href="https://cdn.datatables.net/responsive/2.1.1/css/responsive.bootstrap.min.css" rel="stylesheet" />  
@@ -77,6 +77,15 @@
       plausible.init()
     </script>
 
+    <script>
+        function initApollo() {
+            var n = Math.random().toString(36).substring(7), o = document.createElement("script");
+        o.src="https://assets.apollo.io/micro/website-tracker/tracker.iife.js?nocache="+n,o.async=!0,o.defer=!0,
+        o.onload=function(){window.trackingFunctions.onLoad({appId:"697a32c074bc0c000d39ad9c"})},
+            document.head.appendChild(o)
+        }
+        initApollo();
+    </script>
 </head>
 <body>
 

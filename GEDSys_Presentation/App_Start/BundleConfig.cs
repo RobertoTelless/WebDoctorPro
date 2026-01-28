@@ -26,7 +26,7 @@ namespace ERP_Condominios_Solution
                       "~/Content/bootstrap.css",
                       "~/Content/site.css"));
 
-                        // CSS style (bootstrap/inspinia)
+            // CSS style (bootstrap/inspinia)
             bundles.Add(new StyleBundle("~/Content/css").Include(
                       "~/Content/bootstrap.min.css",
                       "~/Content/animate.css",

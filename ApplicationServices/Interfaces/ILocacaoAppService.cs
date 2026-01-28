@@ -39,6 +39,7 @@ namespace ApplicationServices.Interfaces
         Int32 ValidateEditOcorrencia(LOCACAO_OCORRENCIA item);
         Int32 ValidateCreateOcorrencia(LOCACAO_OCORRENCIA item);
 
+        List<TIPO_OCORRENCIA> GetAllTipoOcorrencia(Int32 idAss);
         List<TIPO_CONTRATO> GetAllTipoContrato(Int32 idAss);
         CONTRATO_LOCACAO CheckExistContrato(CONTRATO_LOCACAO item, Int32 idAss);
         List<CONTRATO_LOCACAO> GetAllContratos(Int32 idAss);

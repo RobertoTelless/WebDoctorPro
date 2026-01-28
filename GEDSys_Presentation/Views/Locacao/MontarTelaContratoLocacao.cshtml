@@ -63,16 +63,19 @@
                                 <div class="col-lg-12 col-md-12 col-xs-12">
                                     @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_LOCACAO_INCLUIR == 1)
                                     {
-                                        <a href="@Url.Action("IncluirContratoLocacao", "Locacao")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessa a página de criação de contratos de locação" class="btn btn-sm btn-primary" id="emp" OnClick = "Fade()">Novo Contrato</a>                
+                                        <a href="@Url.Action("IncluirContratoLocacao", "Locacao")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessa a página de criação de contratos de locação" class="btn btn-sm btn-primary btn-loading" id="emp" OnClick = "Fade()">Novo Contrato</a>                
                                     }
                                     @if ((Int32)Session["VoltaContratoLocacao"] == 2)
                                     {
-                                        @Html.ButtonLinkIndex(text: "Voltar", controller: "Locacao", action: "MontarTelaLocacao")
+                                        @Html.ButtonLinkIndex(text: "Voltar", controller: "Locacao", action: "MontarTelaLocacao", htmlAttributes: new { @class = "btn-loading" })
                                     }
                                     else
                                     {
-                                        @Html.ButtonLinkIndex(text: "Voltar", controller: "Paciente", action: "MontarTelaPaciente")
+                                        @Html.ButtonLinkIndex(text: "Voltar", controller: "Paciente", action: "MontarTelaPaciente", htmlAttributes: new { @class = "btn-loading" })
                                     }
+                                    <span id="loadingIndicator" style="display: none; margin-left: 10px; color: #007bff;">
+                                        <i class="fa fa-spinner fa-spin"></i> Processando...
+                                    </span>
                                 </div>
                             </div>
                         </div>
@@ -97,25 +100,28 @@
                                             <tr>
                                                 @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_LOCACAO_ALTERAR == 1)
                                                 {
-                                                    <td style="width: auto; cursor: pointer; text-decoration: underline;"><a href="@Url.Action("EditarContratoLocacao", "Locacao", new { id = cond.COLO_CD_ID })" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Editar Contrato"/>@cond.COLO_NM_NOME</td>
+                                                    <td style="width: auto; cursor: pointer; text-decoration: underline;"><a href="@Url.Action("EditarContratoLocacao", "Locacao", new { id = cond.COLO_CD_ID })" class="btn-loading" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Editar Contrato"/>@cond.COLO_NM_NOME</td>
                                                 }
                                                 else
                                                 {
                                                     <td style="width: auto">@cond.COLO_NM_NOME</td>
                                                 }
                                                 <td style="width: auto">@cond.TIPO_CONTRATO.TICO_NM_NOME</td>
-                                                <td style="width: auto">@cond.COLO_DT_CRIACAO.Value.ToShortDateString()</td>
+                                                <td>
+                                                    <span style="display:none; width: auto">@cond.COLO_DT_CRIACAO.Value.ToString("yyyyMMdd")</span>
+                                                    @cond.COLO_DT_CRIACAO.Value.ToString("dd/MM/yyyy")
+                                                </td>
                                                 <td style="width: auto">@cond.USUARIO.USUA_NM_NOME</td>
                                                 <td style="width: auto" class="td-one-action">
                                                     @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_LOCACAO_ALTERAR == 1)
                                                     {
-                                                        @Html.TableLinkDetails(cond.COLO_CD_ID, "EditarContratoLocacao", "fa-edit", "Editar")
+                                                        @Html.TableLinkDetails(cond.COLO_CD_ID, "EditarContratoLocacao", "fa-edit btn-loading", "Editar")
                                                     }
                                                     @if (cond.COLO_IN_ATIVO == 1)
                                                     {
                                                         if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_LOCACAO__EXCLUIR == 1)
                                                         {
-                                                            <span style="color: #337ab7; cursor:pointer;" alt="Desativar" class="tbl-link fa-lg fa fa-trash-o" onclick="ShowModalExcluir('/Locacao/ExcluirContratoLocacao/@cond.COLO_CD_ID')" title="Excluir"></span>
+                                                            <span style="color: #337ab7; cursor:pointer;" alt="Desativar" class="tbl-link fa-lg fa fa-trash-o btn-loading" onclick="ShowModalExcluir('/Locacao/ExcluirContratoLocacao/@cond.COLO_CD_ID')" title="Excluir"></span>
                                                         }
                                                     }
                                                 </td>
@@ -165,7 +171,7 @@
     <script type="text/javascript" src="~/Scripts/moment.min.js"></script>
     <script type="text/javascript" src="~/Scripts/bootstrap.min.js"></script>
    
-        <script>
+    <script>
         function Fade() {
             $('.dotContainer').fadeIn("fast");
             $('#login').css("filter", "blur(4px)");
@@ -203,11 +209,63 @@
     </script>   
 
     <script type="text/javascript">
+        $(document).ready(function () { 
+            $('.btn-loading').on('click', function (e) {            
+                $(this).prop('disabled', true);
+                $(this).addClass('disabled');
+                $('#loadingIndicator').show();
+                var tagName = $(this).prop('tagName').toLowerCase();
+                if (tagName === 'a') {
+                    e.preventDefault(); 
+                    var targetUrl = $(this).attr('href');
+                    window.location.href = targetUrl;
+
+                } else if (tagName === 'button' || tagName === 'input') {
+                    $(this).closest('form').submit();
+                }
+            });
+        });
+    </script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('.btn-loading1').on('click', function (e) {
+            
+                var $this = $(this);
+                var tagName = $this.prop('tagName').toLowerCase();
+                $this.addClass('disabled'); 
+                $('#loadingIndicator').show();
+
+                if (tagName === 'a') {
+                    e.preventDefault();
+                
+                    var targetUrl = $this.attr('href');
+                    window.location.href = targetUrl;
+                
+                } else if (tagName === 'button' || tagName === 'input') {               
+                    $this.closest('form').submit();
+                    $this.prop('disabled', true);
+                }
+            });
+        });
+    </script>
+
+
+    <script type="text/javascript">
         $(document).ready(function () {
 
             $('.dataTables-example').DataTable({
                 pageLength: 25,
                 dom: '<"html5buttons"B>lTfgitp',
+                dom: '<"html5buttons"B>lTfgitp',
+                // --- NOVO BLOCO DE CONFIGURAÇÃO ---
+                columnDefs: [
+                    {
+                         "type": "date-eu", 
+                        "targets": 2 
+                    }
+                ],
+                // ---------------------------------       
                 buttons: [
                     { extend: 'excel', title: 'ContratoLocacao_Planilha' },
 
@@ -238,7 +296,7 @@
         }
 
         function ShowModalExcluir(url) {
-            $('#modal').find('.modal-footer').prepend('<a id="btnModal" alt="Desativar" class="btn btn-primary" href="' + url + '" target="_self" title="Desativar">Confirmar</a>');
+            $('#modal').find('.modal-footer').prepend('<a id="btnModal" alt="Desativar" class="btn btn-primary btn-loading" href="' + url + '" target="_self" title="Desativar">Confirmar</a>');
             $('#modal').find('.modal-body').html('Confirma exclusão do Contrato de Locação?');
             $('#modal').find('.modal-header').prepend('<h5 id="modalTitle" class="modal-title">Confimar Exclusão</h5>');
             $('#modal').modal('show');
