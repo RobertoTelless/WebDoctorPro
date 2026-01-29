@@ -232,6 +232,11 @@
                                                 @Html.DropDownListFor(m => m.LOPA_IN_LANCAMENTO, (SelectList)ViewBag.Gera, "Selecionar", new { @class = "form-control", autofocus = true })
                                                 @Html.ValidationMessageFor(m => m.LOPA_IN_LANCAMENTO, "", new { @style = "color:red" })
                                             </div>
+                                            <div class="col-lg-2 col-md-2 col-xs-12">
+                                                Forma de Recebimento
+                                                @Html.DropDownListFor(m => m.FORMA_RECEBE, (SelectList)ViewBag.Forma, "Selecionar", new { @class = "form-control", autofocus = true })
+                                                @Html.ValidationMessageFor(m => m.FORMA_RECEBE, "", new { @style = "color:red" })
+                                            </div>
                                         }
                                     </div>
                                 </div>

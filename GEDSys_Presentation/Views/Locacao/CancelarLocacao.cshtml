@@ -216,12 +216,15 @@
                                                     @Html.DropDownListFor(m => m.LOCA_CD_DISTRATO_ID, (SelectList)ViewBag.ContratoLocacao, "Selecionar", new { @class = "form-control", data_toggle = "popover", data_content = "Seleciona o tipo de distrato a ser usado para enviar ao paciente ", data_trigger="hover", data_placement="top", autofocus = true, @id="preco", onchange = "ValidaPreco($(this).val())" })
                                                     @Html.ValidationMessageFor(m => m.LOCA_CD_DISTRATO_ID, "", new { @style = "color:red" })
                                                 </div>
-                                                <div class="col-lg-2 col-md-2 col-xs-12">
-                                                    Entra no Estoque*
-                                                    @Html.DropDownListFor(m => m.LOCA_IN_ESTOQUE, (SelectList)ViewBag.Recebe, "Selecionar", new { @class = "form-control", data_toggle = "popover", data_content = "Indica se o equipamento já foi devolvido e será retornado para o estoque", data_trigger="hover", data_placement="top", autofocus = true })
-                                                    @Html.ValidationMessageFor(m => m.LOCA_IN_ESTOQUE, "", new { @style = "color:red" })
+                                                @if (Model.LOCA_IN_STATUS == 1 || Model.LOCA_IN_STATUS == 3)
+                                                {
+                                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                                        Entra no Estoque*
+                                                        @Html.DropDownListFor(m => m.LOCA_IN_ESTOQUE, (SelectList)ViewBag.Recebe, "Selecionar", new { @class = "form-control", data_toggle = "popover", data_content = "Indica se o equipamento já foi devolvido e será retornado para o estoque", data_trigger="hover", data_placement="top", autofocus = true })
+                                                        @Html.ValidationMessageFor(m => m.LOCA_IN_ESTOQUE, "", new { @style = "color:red" })
+                                                    </div>
+                                                }
                                                 </div>
-                                            </div>
                                             <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
                                                 <div class="col-lg-12 col-md-12 col-xs-12">
                                                     Justificativa do Cancelamento*

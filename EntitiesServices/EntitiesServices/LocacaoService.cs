@@ -116,25 +116,15 @@ namespace ModelServices.EntitiesServices
             {
                 try
                 {
-                    //// Oculta a propriedade de navegação para garantir que não seja rastreada
-                    //item.PACIENTE = null;
-                    //item.USUARIO = null;
-
-                    //// Anexa a entidade ao contexto e a marca como modificada
-                    //Db.Entry(item).State = EntityState.Modified;
-                    //_logRepository.Add(log);
-                    //Db.SaveChanges();
-                    //transaction.Commit();
-                    //return 0;
-
-
-
+                    Int32 tipo = item.COLO_CD_ID.Value;
 
                     item.PACIENTE = null;
                     item.USUARIO = null;
                     item.PRODUTO = null;
+                    item.CONTRATO_LOCACAO = null;
                     LOCACAO obj = _baseRepository.GetById(item.LOCA_CD_ID);
                     _baseRepository.Detach(obj);
+                    obj.COLO_CD_ID = tipo;
                     _logRepository.Add(log);
                     _baseRepository.Update(item);
                     transaction.Commit();

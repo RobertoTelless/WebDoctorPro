@@ -196,7 +196,7 @@ namespace GEDSys_Presentation.App_Start {
         }
         
         /// <summary>
-        ///   Consulta uma cadeia de caracteres localizada semelhante a Anexo não incluído - Nome do arquivo muito longo. Máximo de 250 caracteres.
+        ///   Consulta uma cadeia de caracteres localizada semelhante a Nome do arquivo muito longo. Máximo de 250 caracteres.
         /// </summary>
         internal static string M0024 {
             get {
@@ -3742,7 +3742,7 @@ namespace GEDSys_Presentation.App_Start {
         }
         
         /// <summary>
-        ///   Consulta uma cadeia de caracteres localizada semelhante a Erro na Anexação - Tamanho do arquivo a anexar não pode ser superior a 50Mb.
+        ///   Consulta uma cadeia de caracteres localizada semelhante a Tamanho do arquivo a anexar não pode ser superior a 50Mb.
         /// </summary>
         internal static string M0431 {
             get {
@@ -6393,6 +6393,33 @@ namespace GEDSys_Presentation.App_Start {
         internal static string M0725 {
             get {
                 return ResourceManager.GetString("M0725", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Consulta uma cadeia de caracteres localizada semelhante a Nenhum contrato assinado selecionado.
+        /// </summary>
+        internal static string M0726 {
+            get {
+                return ResourceManager.GetString("M0726", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Consulta uma cadeia de caracteres localizada semelhante a Somente serão aceitos arquivos de formato PDF.
+        /// </summary>
+        internal static string M0727 {
+            get {
+                return ResourceManager.GetString("M0727", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Consulta uma cadeia de caracteres localizada semelhante a Esse contrato não está associado ao paciente.
+        /// </summary>
+        internal static string M0728 {
+            get {
+                return ResourceManager.GetString("M0728", resourceCulture);
             }
         }
     }

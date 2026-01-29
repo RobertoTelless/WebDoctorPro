@@ -1258,6 +1258,14 @@
     <Content Include="Imagens\1\Locacao\82\Anexos\WebDoctor_Financeiro_Video_Final.mp4" />
     <Content Include="Imagens\1\Locacao\82\Anexos\WebDoctor_Icone_1.png" />
     <Content Include="Imagens\1\Locacao\82\QRCode\Contrato_QRCode_d5t8454n000csa6p1dt0.png" />
+    <Content Include="Imagens\1\Locacao\83\Anexos\Irmaos_Vassouras %281%29.mp4" />
+    <Content Include="Imagens\1\Locacao\83\Anexos\WebDoctor_Logo_1.png" />
+    <Content Include="Imagens\1\Locacao\83\QRCode\Contrato_QRCode_d5tpu64n0006597qt4i0.png" />
+    <Content Include="Imagens\1\Locacao\84\QRCode\Contrato_QRCode_d5tqm5cn0006594k2pgg.png" />
+    <Content Include="Imagens\1\Locacao\85\QRCode\Contrato_QRCode_d5tr9bsn00065976ehrg.png" />
+    <Content Include="Imagens\1\Locacao\86\QRCode\Contrato_QRCode_d5trkvcn00065976ei50.png" />
+    <Content Include="Imagens\1\Locacao\87\QRCode\Contrato_QRCode_d5ttevcn0006vg6kaltg.png" />
+    <Content Include="Imagens\1\Locacao\88\QRCode\Contrato_QRCode_d5ttl5kn000b3260bopg.png" />
     <Content Include="Imagens\1\Mensagem\237\Anexos\Cydia_3_Nova.jpg" />
     <Content Include="Imagens\1\Mensagem\239\Anexos\SysMkt_Image_2.jpg" />
     <Content Include="Imagens\1\Mensagem\259\Anexos\bz.jpg" />
@@ -3953,6 +3961,15 @@
     <Content Include="Imagens\1\Locacao\82\Anexos\LocacaoLista_28012026.pdf" />
     <Content Include="Imagens\1\Locacao\82\Contrato\Contrato_LocacaoMaricota Histérica Volátil_d5t8454n000csa6p1dt0.pdf" />
     <Content Include="Imagens\1\Locacao\82\Assinado\Contrato_LocacaoMaricota Histérica Volátil_d5t8454n000csa6p1dt0.pdf" />
+    <Content Include="Imagens\1\Locacao\83\Anexos\THARGO-CONSULTORIA_TRIBUTARIA-CYDIA_ALVES.pdf" />
+    <Content Include="Imagens\1\Locacao\84\Assinado\Contrato_LocacaoLuizinha Mansinha Nervosa_d5tqm5cn0006594k2pgg.pdf" />
+    <Content Include="Imagens\1\Locacao\84\Contrato\Contrato_LocacaoLuizinha Mansinha Nervosa_d5tqm5cn0006594k2pgg.pdf" />
+    <Content Include="Imagens\1\Locacao\85\Assinado\Contrato_LocacaoRisolina Bicofino Falagrossa_d5tr9bsn00065976ehrg.pdf" />
+    <Content Include="Imagens\1\Locacao\85\Contrato\Contrato_LocacaoRisolina Bicofino Falagrossa_d5tr9bsn00065976ehrg.pdf" />
+    <Content Include="Imagens\1\Locacao\85\Distrato\Distrato_LocacaoRisolina Bicofino Falagrossa_d5tr9bsn00065976ehrg.pdf" />
+    <Content Include="Imagens\1\Locacao\86\Assinado\Contrato_LocacaoTelurico Vibrafino Picamoles_d5trkvcn00065976ei50.pdf" />
+    <Content Include="Imagens\1\Locacao\86\Contrato\Contrato_LocacaoTelurico Vibrafino Picamoles_d5trkvcn00065976ei50.pdf" />
+    <Content Include="Imagens\1\Locacao\88\Assinado\Contrato_LocacaoTristonho Choroso Coitadinho De Oiliveira_d5ttl5kn000b3260bopg.pdf" />
     <None Include="Properties\PublishProfiles\eprontuario - FTP.pubxml" />
     <None Include="Properties\PublishProfiles\eprontuario - FTP1.pubxml" />
     <None Include="Properties\PublishProfiles\eprontuario - Web Deploy.pubxml" />
@@ -5352,6 +5369,7 @@
     <Content Include="Views\Financeiro\VerPagamento.cshtml" />
     <Content Include="Views\Financeiro\IncluirConsumoMaterial.cshtml" />
     <Content Include="Views\Financeiro\EditarConsumoMaterial.cshtml" />
+    <Content Include="Views\Locacao\CarregarContrato.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -5390,6 +5408,7 @@
     <Folder Include="Imagens\1\Exames\123\Anexos\" />
     <Folder Include="Imagens\1\Exames\124\Anexos\" />
     <Folder Include="Imagens\1\Exames\125\Anexos\" />
+    <Folder Include="Imagens\1\Exames\126\Anexos\" />
     <Folder Include="Imagens\1\Exames\46\Anexos\" />
     <Folder Include="Imagens\1\Exames\47\Anexos\" />
     <Folder Include="Imagens\1\Exames\48\Anexos\" />
@@ -5461,6 +5480,21 @@
     <Folder Include="Imagens\1\Locacao\81\Assinado\" />
     <Folder Include="Imagens\1\Locacao\81\Distrato\" />
     <Folder Include="Imagens\1\Locacao\82\Distrato\" />
+    <Folder Include="Imagens\1\Locacao\83\Assinado\" />
+    <Folder Include="Imagens\1\Locacao\83\Contrato\" />
+    <Folder Include="Imagens\1\Locacao\83\Distrato\" />
+    <Folder Include="Imagens\1\Locacao\84\Anexos\" />
+    <Folder Include="Imagens\1\Locacao\84\Distrato\" />
+    <Folder Include="Imagens\1\Locacao\85\Anexos\" />
+    <Folder Include="Imagens\1\Locacao\86\Anexos\" />
+    <Folder Include="Imagens\1\Locacao\86\Distrato\" />
+    <Folder Include="Imagens\1\Locacao\87\Anexos\" />
+    <Folder Include="Imagens\1\Locacao\87\Assinado\" />
+    <Folder Include="Imagens\1\Locacao\87\Contrato\" />
+    <Folder Include="Imagens\1\Locacao\87\Distrato\" />
+    <Folder Include="Imagens\1\Locacao\88\Anexos\" />
+    <Folder Include="Imagens\1\Locacao\88\Contrato\" />
+    <Folder Include="Imagens\1\Locacao\88\Distrato\" />
     <Folder Include="Imagens\1\Medico\1\Anexos\" />
     <Folder Include="Imagens\1\Medico\2\Anexos\" />
     <Folder Include="Imagens\1\Medico\3\Anexos\" />
@@ -6236,6 +6270,7 @@
     <Folder Include="Imagens\1\Recebimento\1381\Recibo\" />
     <Folder Include="Imagens\1\Recebimento\13\Anexos\" />
     <Folder Include="Imagens\1\Recebimento\13\Recibo\" />
+    <Folder Include="Imagens\1\Recebimento\1484\Anexos\" />
     <Folder Include="Imagens\1\Recebimento\14\Anexos\" />
     <Folder Include="Imagens\1\Recebimento\14\Recibo\" />
     <Folder Include="Imagens\1\Recebimento\15\Anexos\" />

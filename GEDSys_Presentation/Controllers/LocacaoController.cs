@@ -221,6 +221,8 @@ namespace GEDSys_Presentation.Controllers
                 Session["VoltaHistLocacao"] = 1;
                 Session["TipoSolicitacao"] = 98;
                 Session["VoltaProduto"] = 71;
+                Session["VoltarLocacaoBase"] = 5;
+
                 objeto = new LOCACAO();
                 return View(objeto);
             }
@@ -1659,6 +1661,11 @@ namespace GEDSys_Presentation.Controllers
                         TempData["MensagemAcerto"] = (String)Session["MsgCRUD"];
                         TempData["TemMensagem"] = 1;
                     }
+                    if ((Int32)Session["MensLocacao"] == 91)
+                    {
+                        TempData["MensagemAcerto"] = (String)Session["MsgCRUD"];
+                        TempData["TemMensagem"] = 1;
+                    }
                 }
                 if (Session["MensProduto"] != null)
                 {
@@ -2496,6 +2503,7 @@ namespace GEDSys_Presentation.Controllers
                 Session["LocacaoAntes"] = item;
                 LocacaoViewModel vm = Mapper.Map<LOCACAO, LocacaoViewModel>(item);
                 vm.LOCA_DT_CANCELAMENTO = DateTime.Today.Date;
+                vm.LOCA_IN_ESTOQUE = 0;
                 //vm.LOCA_IN_STATUS = 4;
                 return View(vm);
             }
@@ -2544,9 +2552,9 @@ namespace GEDSys_Presentation.Controllers
                         ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0708", CultureInfo.CurrentCulture));
                         return View(vm);
                     }
-                    if (vm.ENTRA_ESTOQUE == 0 || vm.ENTRA_ESTOQUE == null)
+                    if (vm.LOCA_IN_ESTOQUE == 0 || vm.LOCA_IN_ESTOQUE == null)
                     {
-                        vm.ENTRA_ESTOQUE = 0;
+                        vm.LOCA_IN_ESTOQUE = 0;
                     }
 
                     // Executa a operação
@@ -2602,6 +2610,7 @@ namespace GEDSys_Presentation.Controllers
                         mov.MOEP_VL_VALOR_MOVIMENTO = 0;
                         mov.PROD_CD_ID = vm.PROD_CD_ID;
                         mov.USUA_CD_ID = usuario.USUA_CD_ID;
+                        mov.MOEP_IN_TIPO_MOVIMENTO = 1;
                         mov.MOEP_IN_ORIGEM = "Cancelamento de Locação";
                         Int32 voltaC = prodApp.ValidateCreateMovimento(mov, usuario);
 
@@ -2612,7 +2621,7 @@ namespace GEDSys_Presentation.Controllers
                         est.PREH_IN_ATIVO = 1;
                         est.PREH_DT_DATA = DateTime.Today.Date;
                         est.PREH_DT_COMPLETA = DateTime.Now;
-                        est.PREH_QN_ESTOQUE = 1;
+                        est.PREH_QN_ESTOQUE = vm.LOCA_IN_QUANTIDADE.Value;
                         est.PREH_IN_PENDENTE = 0;
                         est.PREH_NM_TIPO = "Entrada";
                         est.PREH_DS_ORIGEM = "Cancelamento de Locação";
@@ -2673,6 +2682,7 @@ namespace GEDSys_Presentation.Controllers
                     Session["NivelLocacao"] = 1;
                     Session["ListaHistoricoLocacao"] = null;
                     Session["LocacoesHistoricos"] = null;
+                    Session["MensLocacao"] = null;
 
                     if ((Int32)Session["VoltaLocacao"] == 2)
                     {
@@ -3485,6 +3495,7 @@ namespace GEDSys_Presentation.Controllers
                 }
 
                 // Prepara view
+                ViewBag.Forma = new SelectList(CarregaFormas(), "FORE_CD_ID", "FORE_NM_FORMA");
                 List<SelectListItem> quitada = new List<SelectListItem>();
                 quitada.Add(new SelectListItem() { Text = "Sim", Value = "1" });
                 quitada.Add(new SelectListItem() { Text = "Não", Value = "0" });
@@ -3540,6 +3551,7 @@ namespace GEDSys_Presentation.Controllers
             }
             Int32 idAss = (Int32)Session["IdAssinante"];
             USUARIO usuarioLogado = (USUARIO)Session["UserCredentials"];
+            ViewBag.Forma = new SelectList(CarregaFormas(), "FORE_CD_ID", "FORE_NM_FORMA");
             List<SelectListItem> quitada = new List<SelectListItem>();
             quitada.Add(new SelectListItem() { Text = "Sim", Value = "1" });
             quitada.Add(new SelectListItem() { Text = "Não", Value = "0" });
@@ -11678,7 +11690,7 @@ namespace GEDSys_Presentation.Controllers
                         mov.ASSI_CD_ID = idAss;
                         mov.EMFI_CD_ID = usuario.EMFI_CD_ID;
                         mov.EMPR_CD_ID = usuario.EMPR_CD_ID;
-                        mov.MOEP_DS_JUSTIFICATIVA = vm.LOCA_DS_JUSTIFICATIVA;
+                        mov.MOEP_DS_JUSTIFICATIVA = vm.LOCA_DS_ENTREGA;
                         mov.MOEP_DT_LANCAMENTO = DateTime.Today.Date;
                         mov.MOEP_DT_MOVIMENTO = DateTime.Today.Date;
                         mov.MOEP_GU_GUID = Xid.NewXid().ToString();
@@ -11694,6 +11706,7 @@ namespace GEDSys_Presentation.Controllers
                         mov.MOEP_VL_VALOR_MOVIMENTO = 0;
                         mov.PROD_CD_ID = vm.PROD_CD_ID;
                         mov.USUA_CD_ID = usuario.USUA_CD_ID;
+                        mov.MOEP_IN_TIPO_MOVIMENTO = 2;
                         mov.MOEP_IN_ORIGEM = "Aprovação de Locação";
                         Int32 voltaC = prodApp.ValidateCreateMovimento(mov, usuario);
 
@@ -11704,7 +11717,7 @@ namespace GEDSys_Presentation.Controllers
                         est.PREH_IN_ATIVO = 1;
                         est.PREH_DT_DATA = DateTime.Today.Date;
                         est.PREH_DT_COMPLETA = DateTime.Now;
-                        est.PREH_QN_ESTOQUE = 1;
+                        est.PREH_QN_ESTOQUE = vm.LOCA_IN_QUANTIDADE.Value;
                         est.PREH_IN_PENDENTE = 0;
                         est.PREH_NM_TIPO = "Saída";
                         est.PREH_DS_ORIGEM = "Aprovação de Locação";
@@ -14805,7 +14818,7 @@ namespace GEDSys_Presentation.Controllers
                         ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0702", CultureInfo.CurrentCulture));
                         return View(vm);
                     }
-                    if (vm.LOOC_SERIE_ENTRADA != null & vm.LOOC_SERIE_SAIDA != null)
+                    if (vm.LOOC_SERIE_ENTRADA == null & vm.LOOC_SERIE_SAIDA != null)
                     {
                         if (vm.LOOC_SERIE_SAIDA == vm.LOOC_SERIE_SAIDA)
                         {
@@ -16049,6 +16062,212 @@ namespace GEDSys_Presentation.Controllers
                     })
                     .FirstOrDefault();
                 return mediDTO;
+            }
+        }
+
+        public List<FORMA_RECEBIMENTO> CarregaFormas()
+        {
+            try
+            {
+                Int32 idAss = (Int32)Session["IdAssinante"];
+                List<FORMA_RECEBIMENTO> conf = new List<FORMA_RECEBIMENTO>();
+                if (Session["FormaRecebimentos"] == null)
+                {
+                    conf = recApp.GetAllForma(idAss);
+                }
+                else
+                {
+                    if ((Int32)Session["FormaRecebimentoAlterada"] == 1)
+                    {
+                        conf = recApp.GetAllForma(idAss);
+                    }
+                    else
+                    {
+                        conf = (List<FORMA_RECEBIMENTO>)Session["FormaRecebimentos"];
+                    }
+                }
+                Session["FormaRecebimentos"] = conf;
+                Session["FormaRecebimentoAlterada"] = 0;
+                return conf;
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Paciente";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Paciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return null;
+            }
+        }
+
+        [HttpGet]
+        public ActionResult CarregarContrato()
+        {
+            try
+            {
+                // Verifica se tem usuario logado
+                USUARIO usuario = new USUARIO();
+                if ((String)Session["Ativa"] == null)
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+                if ((USUARIO)Session["UserCredentials"] != null)
+                {
+                    usuario = (USUARIO)Session["UserCredentials"];
+
+                    // Verfifica permissão
+                    if (usuario.PERFIL.PERF_IN_LOCACAO__EXCLUIR == 0)
+                    {
+                        Session["MensPermissao"] = 2;
+                        Session["ModuloPermissao"] = "Locação - Contrato";
+                        return RedirectToAction("VoltarAnexoLocacao");
+                    }
+                }
+                else
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+                Int32 idAss = (Int32)Session["IdAssinante"];
+                USUARIO usuarioLogado = (USUARIO)Session["UserCredentials"];
+
+                // Recupera informações
+                LOCACAO item = baseApp.GetItemById((Int32)Session["IdLocacao"] );
+                PACIENTE pac = pacApp.GetItemById((Int32)Session["IdPaciente"]);
+                ViewBag.NomePaciente = pac.PACI_NM_NOME;
+
+                if (Session["MensLocacao"] != null)
+                {
+                    // Mensagem
+                    if ((Int32)Session["MensLocacao"] == 5)
+                    {
+                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0726", CultureInfo.CurrentCulture));
+                    }
+                    if ((Int32)Session["MensLocacao"] == 6)
+                    {
+                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0024", CultureInfo.CurrentCulture));
+                    }
+                    if ((Int32)Session["MensLocacao"] == 7)
+                    {
+                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0431", CultureInfo.CurrentCulture));
+                    }
+                    if ((Int32)Session["MensLocacao"] == 8)
+                    {
+                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0727", CultureInfo.CurrentCulture));
+                    }
+                    if ((Int32)Session["MensLocacao"] == 9)
+                    {
+                        String frase = CRMSys_Base.ResourceManager.GetString("M0727", CultureInfo.CurrentCulture) + " " + pac.PACI_NM_NOME.ToUpper();
+                        ModelState.AddModelError("", frase);
+                    }
+                }
+
+                // Prepara view
+                Session["MensLocacao"] = null;
+                Session["LocacaoAntes"] = item;
+                LocacaoViewModel vm = Mapper.Map<LOCACAO, LocacaoViewModel>(item);
+                return View(vm);
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Locacao";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Locacao", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return RedirectToAction("TrataExcecao", "BaseAdmin");
+            }
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> UploadFileLocacaoContrato(HttpPostedFileBase file)
+        {
+            try
+            {
+                // Inicializa
+                if ((String)Session["Ativa"] == null)
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+                Int32 idNot = (Int32)Session["IdLocacao"];
+                Int32 idPac = (Int32)Session["IdPaciente"];
+                Int32 idAss = (Int32)Session["IdAssinante"];
+
+                // Recupera dados
+                LOCACAO item = baseApp.GetItemById(idNot);
+                PACIENTE pac = pacApp.GetItemById(idPac);
+                USUARIO usu = (USUARIO)Session["UserCredentials"];
+
+                // Criticas
+                if (file == null)
+                {
+                    Session["MensLocacao"] = 5;
+                    return RedirectToAction("CarregarContrato");
+                }
+
+                // Critica tamanho nome
+                var fileName = Path.GetFileName(file.FileName);
+                if (fileName.Length > 250)
+                {
+                    Session["MensLocacao"] = 6;
+                    return RedirectToAction("CarregarContrato");
+                }
+
+                // Critica tamanho arquivo
+                var fileSize = file.ContentLength;
+                if (fileSize > 50000000)
+                {
+                    Session["MensLocacao"] = 7;
+                    return RedirectToAction("CarregarContrato");
+                }
+
+                //Recupera tipo de arquivo
+                extensao = Path.GetExtension(fileName).ToUpper();
+                if (extensao != ".PDF") 
+                {
+                    Session["MensLocacao"] = 8;
+                    return RedirectToAction("CarregarContrato");
+                }
+
+                // Verifica exatidão do nome
+                String nome = "Contrato_Locacao" + pac.PACI_NM_NOME + "_" + item.LOCA_GU_GUID + ".pdf";
+                if (fileName.ToUpper() != nome.ToUpper())
+                {
+                    Session["MensLocacao"] = 9;
+                    return RedirectToAction("CarregarContrato");
+                }
+
+                // Copia arquivo
+                String caminho = "/Imagens/" + idAss.ToString() + "/Locacao/" + item.LOCA_CD_ID.ToString() + "/Assinado/";
+                String path = Path.Combine(Server.MapPath(caminho), fileName);
+                using (var stream = new FileStream(path, FileMode.Create))
+                {
+                    await file.InputStream.CopyToAsync(stream);
+                }
+
+                // Mensagem do CRUD
+                Session["MsgCRUD"] = "O contrato de locação de " + pac.PACI_NM_NOME.ToUpper() + " foi incluído com sucesso";
+                Session["MensLocacao"] = 91;
+
+                // Finaliza
+                Session["NivelLocacao"] = 1;
+                Session["LocacaoAlterada"] = 1;
+                return RedirectToAction("VoltarEditarLocacao");
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Locacao";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Locacao", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return RedirectToAction("TrataExcecao", "BaseAdmin");
             }
         }
 

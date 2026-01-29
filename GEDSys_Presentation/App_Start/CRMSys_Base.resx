@@ -163,7 +163,7 @@
     <value>Contato já cadastrado</value>
   </data>
   <data name="M0024" xml:space="preserve">
-    <value>Anexo não incluído - Nome do arquivo muito longo. Máximo de 250 caracteres</value>
+    <value>Nome do arquivo muito longo. Máximo de 250 caracteres</value>
   </data>
   <data name="M0025" xml:space="preserve">
     <value>Grupo já cadastrado</value>
@@ -1345,7 +1345,7 @@
     <value>Arquivo HTML de modelo já cadastrado</value>
   </data>
   <data name="M0431" xml:space="preserve">
-    <value>Erro na Anexação - Tamanho do arquivo a anexar não pode ser superior a 50Mb</value>
+    <value>Tamanho do arquivo a anexar não pode ser superior a 50Mb</value>
   </data>
   <data name="M0432" xml:space="preserve">
     <value>Cliente incluído com sucesso.</value>
@@ -2228,5 +2228,14 @@
   </data>
   <data name="M0725" xml:space="preserve">
     <value>Material já cadastrado para esse tipo de consulta</value>
+  </data>
+  <data name="M0726" xml:space="preserve">
+    <value>Nenhum contrato assinado selecionado</value>
+  </data>
+  <data name="M0727" xml:space="preserve">
+    <value>Somente serão aceitos arquivos de formato PDF</value>
+  </data>
+  <data name="M0728" xml:space="preserve">
+    <value>Esse contrato não está associado ao paciente</value>
   </data>
 </root>

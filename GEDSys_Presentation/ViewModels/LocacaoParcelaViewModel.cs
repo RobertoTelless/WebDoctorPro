@@ -38,6 +38,7 @@ namespace ERP_Condominios_Solution.ViewModels
         [StringLength(10, ErrorMessage = "O NÚMERO DA PARCELA deve conter no máximo 10 caracteres.")]
         public string LOPA_NM_PARCELAS { get; set; }
         public Nullable<int> LOPA_IN_LANCAMENTO { get; set; }
+        public Nullable<int> FORMA_RECEBE { get; set; }
 
         public string ValorPago
         {

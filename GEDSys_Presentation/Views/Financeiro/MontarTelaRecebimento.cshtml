@@ -187,7 +187,14 @@
                                                 <span style="display:none; width: auto">@cond.CORE_DT_RECEBIMENTO.Value.ToString("yyyyMMdd")</span>
                                                 @cond.CORE_DT_RECEBIMENTO.Value.ToShortDateString()
                                             </td>
-                                            @*<td style="width: auto">@cond.CORE_DT_RECEBIMENTO.Value.ToShortDateString()</td>*@
+                                            @if (cond.FORMA_RECEBIMENTO != null)
+                                            {
+                                                <td style="width: auto">@cond.FORMA_RECEBIMENTO.FORE_NM_FORMA</td>
+                                            }
+                                            else
+                                            {
+                                                <td style="width: auto">Não Informada</td>
+                                            }
                                             <td style="width: auto">@cond.FORMA_RECEBIMENTO.FORE_NM_FORMA</td>
                                             @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_FINANCEIRO_REC_ALTERAR == 1)
                                             {

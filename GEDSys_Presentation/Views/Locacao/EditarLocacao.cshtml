@@ -170,14 +170,14 @@
                             }
                         }
 
-                        @if (Model.LOCA_IN_STATUS == 3)
+                        @*@if (Model.LOCA_IN_STATUS == 3)
                         {
                             if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_LOCACAO_ALTERAR == 1)
                             {
                                 @Html.ButtonLinkIndex(text: "Renovar Locação", action: "RenovarLocacaoForm", controller: "Locacao", htmlAttributes: new { @class = "btn-loading" })
                             }
 
-                        }
+                        }*@
                         @Html.ButtonLinkIndex(text: "Histórico", action: "VerHistoricoLocacaoForm", controller: "Locacao", htmlAttributes: new { @class = "btn-loading" })
                         @if (Model.LOCA_IN_STATUS == 0 || Model.LOCA_IN_STATUS == 1 || Model.LOCA_IN_STATUS == 3)
                         {
@@ -192,6 +192,13 @@
                             @Html.ButtonLinkIndex(text: "Imprimir Encerramento", action: "ImprimirEncerraLocacaoDireto", controller: "Locacao")
                         }
 
+                        @if (Model.LOCA_IN_STATUS == 0)
+                        {
+                            if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_LOCACAO_ALTERAR == 1)
+                            {
+                                <a href="@Url.Action("CarregarContrato", "Locacao")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Inclui o contrato de locação assinado" class="btn btn-sm btn-primary btn-loading" id="emp" OnClick = "Fade()">Contrato Assinado</a>                
+                            }
+                        }
                         @if ((Int32)Session["TipoLocacao"] == 1)
                         {
                             @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarAnexoPaciente", controller: "Paciente", htmlAttributes: new { @class = "btn-loading" })
@@ -500,6 +507,7 @@
                                                         @Html.HiddenFor(m => m.PROD_CD_ID)
                                                         @Html.HiddenFor(m => m.LOCA_DT_ENTREGA)
                                                         @Html.HiddenFor(m => m.LOCA_DS_ENTREGA)
+                                                        @Html.HiddenFor(m => m.COLO_CD_ID)
                                                         Data Inicial
                                                         @Html.TextBoxFor(m => m.LOCA_DT_INICIO, "{0:dd/MM/yyyy}", new { @class = "form-control", @tabindex = "-1", @readonly = "readonly" })
                                                     </div>
@@ -577,6 +585,33 @@
                                                         @Html.ValidationMessageFor(m => m.LOCA_DS_DESCRICAO, "", new { @style = "color:red" })
                                                     </div>
                                                 </div>
+                                                @if (Model.LOCA_IN_STATUS == 1)
+                                                {
+                                                    <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                                        <div class="col-lg-12 col-md-12 col-xs-12">
+                                                            Comentários da Aprovação
+                                                            @Html.TextAreaFor(m => m.LOCA_DS_ENTREGA, new { @class = "form-control", style = "width: 100%; height: 120px; overflow:auto;", @tabindex = "-1", @readonly = "readonly" })
+                                                        </div>
+                                                    </div>
+                                                }
+                                                @if (Model.LOCA_IN_STATUS == 4)
+                                                {
+                                                    <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                                        <div class="col-lg-12 col-md-12 col-xs-12">
+                                                            Justificativa do Cancelamento
+                                                            @Html.TextAreaFor(m => m.LOCA_DS_JUSTIFICATIVA, new { @class = "form-control", style = "width: 100%; height: 120px; overflow:auto;", @tabindex = "-1", @readonly = "readonly" })
+                                                        </div>
+                                                    </div>
+                                                }
+                                                @if (Model.LOCA_IN_STATUS == 2)
+                                                {
+                                                    <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                                        <div class="col-lg-12 col-md-12 col-xs-12">
+                                                            Comentários do Encerramento
+                                                            @Html.TextAreaFor(m => m.LOCA_DS_ENCERRA, new { @class = "form-control", style = "width: 100%; height: 120px; overflow:auto;", @tabindex = "-1", @readonly = "readonly" })
+                                                        </div>
+                                                    </div>
+                                                }
                                             </div>                                        
                                         }
                                     </div>
@@ -822,6 +857,7 @@
                                                         @Html.HiddenFor(m => m.PROD_CD_ID)
                                                         @Html.HiddenFor(m => m.LOCA_DT_ENTREGA)
                                                         @Html.HiddenFor(m => m.LOCA_DS_ENTREGA)
+                                                        @Html.HiddenFor(m => m.COLO_CD_ID)
                                                         Data Inicial
                                                         @Html.TextBoxFor(m => m.LOCA_DT_INICIO, "{0:dd/MM/yyyy}", new { @class = "form-control", @tabindex = "-1", @readonly = "readonly" })
                                                     </div>
@@ -899,6 +935,33 @@
                                                         @Html.ValidationMessageFor(m => m.LOCA_DS_DESCRICAO, "", new { @style = "color:red" })
                                                     </div>
                                                 </div>
+                                                @if (Model.LOCA_IN_STATUS == 1)
+                                                {
+                                                    <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                                        <div class="col-lg-12 col-md-12 col-xs-12">
+                                                            Comentários da Aprovação
+                                                            @Html.TextAreaFor(m => m.LOCA_DS_ENTREGA, new { @class = "form-control", style = "width: 100%; height: 120px; overflow:auto;", @tabindex = "-1", @readonly = "readonly" })
+                                                        </div>
+                                                    </div>
+                                                }
+                                                @if (Model.LOCA_IN_STATUS == 4)
+                                                {
+                                                    <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                                        <div class="col-lg-12 col-md-12 col-xs-12">
+                                                            Justificativa do Cancelamento
+                                                            @Html.TextAreaFor(m => m.LOCA_DS_JUSTIFICATIVA, new { @class = "form-control", style = "width: 100%; height: 120px; overflow:auto;", @tabindex = "-1", @readonly = "readonly" })
+                                                        </div>
+                                                    </div>
+                                                }
+                                                @if (Model.LOCA_IN_STATUS == 2)
+                                                {
+                                                    <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                                        <div class="col-lg-12 col-md-12 col-xs-12">
+                                                            Comentários do Encerramento
+                                                            @Html.TextAreaFor(m => m.LOCA_DS_ENCERRA, new { @class = "form-control", style = "width: 100%; height: 120px; overflow:auto;", @tabindex = "-1", @readonly = "readonly" })
+                                                        </div>
+                                                    </div>
+                                                }
                                             </div>                                        
                                         }
                                     </div>
