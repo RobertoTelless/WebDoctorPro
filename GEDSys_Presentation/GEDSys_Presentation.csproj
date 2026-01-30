@@ -1217,7 +1217,10 @@
     <Content Include="Content\views\MontarTelaKanbanCRM.css" />
     <Content Include="ConteudoSite\Consulta\WebDoctor_Consulta_Video_Final.mp4" />
     <Content Include="ConteudoSite\Documento\WebDoctor_Documento_Video_Final.mp4" />
+    <Content Include="ConteudoSite\Estoque\WebDoctor_Estoque_Video_Final.mp4" />
     <Content Include="ConteudoSite\Financeiro\WebDoctor_Financeiro_Video_Final.mp4" />
+    <Content Include="ConteudoSite\Locacao\WebDoctor_Locacao_Video_Final.mp4" />
+    <Content Include="ConteudoSite\Mensageria\WebDoctor_Mensageria_Video_Final.mp4" />
     <Content Include="ConteudoSite\Paciente\WebDoctor_Paciente_Video_Final.mp4" />
     <Content Include="ConteudoSite\Procede\WebDoctor_Procede_Video_Final.mp4" />
     <Content Include="favicon.ico" />
@@ -3970,6 +3973,9 @@
     <Content Include="Imagens\1\Locacao\86\Assinado\Contrato_LocacaoTelurico Vibrafino Picamoles_d5trkvcn00065976ei50.pdf" />
     <Content Include="Imagens\1\Locacao\86\Contrato\Contrato_LocacaoTelurico Vibrafino Picamoles_d5trkvcn00065976ei50.pdf" />
     <Content Include="Imagens\1\Locacao\88\Assinado\Contrato_LocacaoTristonho Choroso Coitadinho De Oiliveira_d5ttl5kn000b3260bopg.pdf" />
+    <Content Include="ConteudoSite\Estoque\WebDoctor_Estoque_Apresentacao_Final.pdf" />
+    <Content Include="ConteudoSite\Locacao\WebDoctor_Locacao_Apresentacao_Final.pdf" />
+    <Content Include="ConteudoSite\Mensageria\WebDoctor_Mensageria_Apresentacao_Final_1.pdf" />
     <None Include="Properties\PublishProfiles\eprontuario - FTP.pubxml" />
     <None Include="Properties\PublishProfiles\eprontuario - FTP1.pubxml" />
     <None Include="Properties\PublishProfiles\eprontuario - Web Deploy.pubxml" />
@@ -5370,6 +5376,7 @@
     <Content Include="Views\Financeiro\IncluirConsumoMaterial.cshtml" />
     <Content Include="Views\Financeiro\EditarConsumoMaterial.cshtml" />
     <Content Include="Views\Locacao\CarregarContrato.cshtml" />
+    <Content Include="Views\Locacao\MontarTelaDashboardLocacao.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

@@ -431,6 +431,7 @@ namespace GEDSys_Presentation.Controllers
                 vm.LOCA_TK_TOKEN = Cryptography.GenerateToken(6);
                 vm.USUARIO = usuario;
                 vm.LOCA_IN_ESTOQUE = 0;
+                vm.LOCA_IN_CONTRATO_ASSINA = 0;
                 vm.TIPO_PRECO = 1;
                 vm.LOCA_IN_ASSINADO_DIGITAL = conf.CONF_IN_ASSINA_DIGITAL_LOCACAO;
                 if ((Int32)Session["TipoLocacao"] == 1)
@@ -1703,6 +1704,7 @@ namespace GEDSys_Presentation.Controllers
                 String filePath = Path.Combine(Server.MapPath(caminho), nomeArq);
                 Boolean existe = System.IO.File.Exists(filePath);
                 vm.CONTRATO_ASSINA = existe ? "Sim" : "Não";
+                vm.CONTRATO_ASSINA = vm.LOCA_IN_CONTRATO_ASSINA == 1 ? "Sim" : "Não";
 
                 // Grava Acesso
                 ControleAcessoMetodo grava = new ControleAcessoMetodo(aceApp);
@@ -16249,6 +16251,10 @@ namespace GEDSys_Presentation.Controllers
                     await file.InputStream.CopyToAsync(stream);
                 }
 
+                // Atualiza locacao
+                item.LOCA_IN_CONTRATO_ASSINA = 1;
+                Int32 volta = baseApp.ValidateEdit(item, item, usu);
+
                 // Mensagem do CRUD
                 Session["MsgCRUD"] = "O contrato de locação de " + pac.PACI_NM_NOME.ToUpper() + " foi incluído com sucesso";
                 Session["MensLocacao"] = 91;
@@ -16257,6 +16263,372 @@ namespace GEDSys_Presentation.Controllers
                 Session["NivelLocacao"] = 1;
                 Session["LocacaoAlterada"] = 1;
                 return RedirectToAction("VoltarEditarLocacao");
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Locacao";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Locacao", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return RedirectToAction("TrataExcecao", "BaseAdmin");
+            }
+        }
+
+        [HttpGet]
+        public ActionResult MontarTelaDashboardLocacao()
+        {
+            try
+            {
+                // Verifica se tem usuario logado
+                USUARIO usuario = new USUARIO();
+                if ((String)Session["Ativa"] == null)
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+                if ((USUARIO)Session["UserCredentials"] != null)
+                {
+                    usuario = (USUARIO)Session["UserCredentials"];
+
+                    // Verfifica permissão
+                    if (usuario.PERFIL.PERF_IN_FINANCEIRO_ACESSO == 0)
+                    {
+                        Session["MensPermissao"] = 2;
+                        Session["ModuloPermissao"] = "Paciente";
+                        return RedirectToAction("MontarTelaPaciente", "Paciente");
+                    }
+                }
+                else
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+                Int32 idAss = (Int32)Session["IdAssinante"];
+                Session["ModuloAtual"] = "Financeiro";
+
+                // Mensagem
+                if (Session["MensPaciente"] != null)
+                {
+                    if ((Int32)Session["MensPaciente"] == 1)
+                    {
+                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0016", CultureInfo.CurrentCulture));
+                    }
+                }
+
+                // Carrega listas
+                CONFIGURACAO conf = CarregaConfiguracaoGeral();
+                List<LOCACAO> locs = new List<LOCACAO>();
+                locs = CarregarLocacao().Where(p => p.LOCA_IN_ATIVO == 1).ToList();
+                String mes = CrossCutting.UtilitariosGeral.NomeMes(DateTime.Today.Date.Month);          
+                ViewBag.MesCorrente = mes + " de " + DateTime.Today.Date.Year.ToString();
+                DateTime limite = DateTime.Today.Date.AddMonths(-12);
+                List<LOCACAO_PARCELA> parcs = new List<LOCACAO_PARCELA>();
+                parcs = CarregarParcelas().Where(p => p.LOPA_IN_ATIVO == 1).ToList();
+
+                // Carrega widgets
+                List<LOCACAO> pendentes = locs.Where(p => p.LOCA_IN_STATUS == 0).ToList();
+                List<LOCACAO> ativas = locs.Where(p => p.LOCA_IN_STATUS == 1).ToList();
+                List<LOCACAO> canceladas = locs.Where(p => p.LOCA_IN_STATUS == 4).ToList();
+                List<LOCACAO> encerradas = locs.Where(p => p.LOCA_IN_STATUS == 2).ToList();
+                List<LOCACAO> vencidas = locs.Where(p => p.LOCA_DT_FINAL < DateTime.Today.Date & p.LOCA_IN_STATUS == 1).ToList();
+
+                ViewBag.Pendentes = pendentes.Count();
+                ViewBag.Ativas = ativas.Count();
+                ViewBag.Canceladas = canceladas.Count();
+                ViewBag.Encerradas = encerradas.Count();
+                ViewBag.Vencidas = vencidas.Count();
+                ViewBag.Total = locs.Count();
+
+                // Locacoes e recebimentos no mês
+                List<LOCACAO> locMes = locs.Where(p => p.LOCA_DT_INICIO.Value.Month == DateTime.Today.Date.Month & p.LOCA_DT_INICIO.Value.Year == DateTime.Today.Date.Year).ToList();
+                List<LOCACAO_PARCELA> parcMes = parcs.Where(p => p.LOPA_DT_PAGAMENTO.Value.Month == DateTime.Today.Date.Month & p.LOPA_DT_PAGAMENTO.Value.Year == DateTime.Today.Date.Year & p.LOPA_IN_QUITADA == 1).ToList();
+
+                ViewBag.LocacoesMes = locMes;
+                ViewBag.RecebimentosMes = parcMes;
+
+                // Locacoes por data - Mes corrente
+                List<DateTime> datas = locs.Where(p => p.LOCA_DT_INICIO.Value.Month == DateTime.Today.Month & p.LOCA_DT_INICIO.Value.Year == DateTime.Today.Year).Select(p => p.LOCA_DT_INICIO.Value.Date).Distinct().ToList();
+                if ((Int32)Session["LocacaoAlterada"] == 1 || Session["ListaLocacaoData"] == null)
+                {
+                    datas.Sort((i, j) => i.Date.CompareTo(j.Date));
+                    List<ModeloViewModel> lista = new List<ModeloViewModel>();
+                    foreach (DateTime item in datas)
+                    {
+                        Int32 conta = locs.Where(p => p.LOCA_DT_INICIO.Value.Date == item.Date).Count();
+                        ModeloViewModel mod = new ModeloViewModel();
+                        mod.DataEmissao = item;
+                        mod.Valor = conta;
+                        lista.Add(mod);
+                    }
+                    ViewBag.ListaLocacaoData = lista;
+                    Session["ListaLocacaoData"] = lista;
+                }
+                else
+                {
+                    ViewBag.ListaLocacaoData = (List<ModeloViewModel>)Session["ListaLocacaoData"];
+                }
+
+                // Recebimentos por data - Mes corrente
+                datas = parcMes.Where(p => p.LOPA_DT_PAGAMENTO.Value.Month == DateTime.Today.Month & p.LOPA_DT_PAGAMENTO.Value.Year == DateTime.Today.Year & p.LOPA_IN_QUITADA == 1).Select(p => p.LOPA_DT_PAGAMENTO.Value.Date).Distinct().ToList();
+                if ((Int32)Session["LocacaoAlterada"] == 1 || Session["ListaParcelaData"] == null)
+                {
+                    datas.Sort((i, j) => i.Date.CompareTo(j.Date));
+                    List<ModeloViewModel> lista = new List<ModeloViewModel>();
+                    foreach (DateTime item in datas)
+                    {
+                        Decimal? conta = parcMes.Where(p => p.LOPA_DT_PAGAMENTO.Value.Date == item.Date & p.LOPA_IN_QUITADA == 1).Sum(p => p.LOPA_VL_VALOR_PAGO);
+                        ModeloViewModel mod = new ModeloViewModel();
+                        mod.DataEmissao = item;
+                        mod.ValorDec = conta.Value;
+                        lista.Add(mod);
+                    }
+                    ViewBag.ListaParcelaData = lista;
+                    Session["ListaParcelaData"] = lista;
+                }
+                else
+                {
+                    ViewBag.ListaParcelaData = (List<ModeloViewModel>)Session["ListaParcelaData"];
+                }
+
+                // Resumo Mensal Locacoes
+                List<DateTime> datasLocacao = locs.Where(p => p.LOCA_DT_INICIO != null).Select(p => p.LOCA_DT_INICIO.Value.Date).Distinct().ToList();
+                datasLocacao.Sort((i, j) => i.Date.CompareTo(j.Date));
+                if ((Int32)Session["LocacaoAlterada"] == 1 || Session["ListaLocacaoMes"] == null)
+                {
+                    List<ModeloViewModel> listaMes = new List<ModeloViewModel>();
+                    String mes2 = null;
+                    String mesFeito2 = null;
+                    foreach (DateTime item in datasLocacao)
+                    {
+                        if (item.Date > limite)
+                        {
+                            mes2 = item.Month.ToString() + "/" + item.Year.ToString();
+                            if (mes2 != mesFeito2)
+                            {
+                                Int32 conta = locs.Where(p => p.LOCA_DT_INICIO.Value.Date.Month == item.Month & p.LOCA_DT_INICIO.Value.Date.Year == item.Year & p.LOCA_DT_INICIO > limite).Count();
+                                ModeloViewModel mod = new ModeloViewModel();
+                                mod.Nome = mes2;
+                                mod.Valor = conta;
+                                listaMes.Add(mod);
+                                mesFeito2 = item.Month.ToString() + "/" + item.Year.ToString();
+                            }
+                        }
+                    }
+
+                    mes2 = null;
+                    mesFeito2 = null;
+                    ViewBag.ListaLocacaoMes = listaMes;
+                    Session["ListaLocacaoMes"] = listaMes;
+                }
+                else
+                {
+                    ViewBag.ListaLocacaoMes = (List<ModeloViewModel>)Session["ListaLocacaoMes"];
+                }
+
+                // Resumo Mensal Recebimentos
+                List<DateTime> datasRec = parcs.Where(p => p.LOPA_DT_PAGAMENTO != null).Select(p => p.LOPA_DT_PAGAMENTO.Value.Date).Distinct().ToList();
+                datasRec.Sort((i, j) => i.Date.CompareTo(j.Date));
+                if ((Int32)Session["LocacaoAlterada"] == 1 || Session["ListaParcelaMes"] == null)
+                {
+                    List<ModeloViewModel> listaMes = new List<ModeloViewModel>();
+                    String mes2 = null;
+                    String mesFeito2 = null;
+                    foreach (DateTime item in datasRec)
+                    {
+                        if (item.Date > limite)
+                        {
+                            mes2 = item.Month.ToString() + "/" + item.Year.ToString();
+                            if (mes2 != mesFeito2)
+                            {
+                                List<LOCACAO_PARCELA> pc = parcs.Where(p => p.LOPA_DT_PAGAMENTO != null).ToList();
+                                Decimal? conta = pc.Where(p => p.LOPA_DT_PAGAMENTO.Value.Date.Month == item.Month & p.LOPA_DT_PAGAMENTO.Value.Date.Year == item.Year & p.LOPA_DT_PAGAMENTO > limite & p.LOPA_IN_QUITADA == 1).Sum(p => p.LOPA_VL_VALOR_PAGO);
+                                ModeloViewModel mod = new ModeloViewModel();
+                                mod.Nome = mes2;
+                                mod.ValorDec = conta.Value;
+                                listaMes.Add(mod);
+                                mesFeito2 = item.Month.ToString() + "/" + item.Year.ToString();
+                            }
+                        }
+                    }
+
+                    mes2 = null;
+                    mesFeito2 = null;
+                    ViewBag.ListaParcelaMes = listaMes;
+                    Session["ListaParcelaMes"] = listaMes;
+                }
+                else
+                {
+                    ViewBag.ListaParcelaMes = (List<ModeloViewModel>)Session["ListaParcelaMes"];
+                }
+
+                // Recupera Locacao por Status
+                if (Session["ListaLocacaoStatus"] == null)
+                {
+                    List<ModeloViewModel> lista9 = new List<ModeloViewModel>();
+                    for (int i = 0; i < 5; i++)
+                    {
+                        Int32 num = locs.Where(p => p.LOCA_IN_STATUS == i).ToList().Count;
+                        if (num > 0)
+                        {
+                            String nome = String.Empty;
+                            if (i == 0)
+                            {
+                                nome = "Pendente";
+                            }
+                            else if(i == 1)
+                            {
+                                nome = "Ativa";
+                            }
+                            else if (i == 2)
+                            {
+                                nome = "Encerrada";
+                            }
+                            else if (i == 3)
+                            {
+                                nome = "Vencida";
+                            }
+                            else if (i == 4)
+                            {
+                                nome = "Cancelada   ";
+                            }
+
+                            ModeloViewModel mod3 = new ModeloViewModel();
+                            mod3.Nome = nome;
+                            mod3.Valor = num;
+                            lista9.Add(mod3);
+                        }
+                    }
+                    ViewBag.ListaLocacaoStatus = lista9;
+                    Session["ListaLocacaoStatus"] = lista9;
+                }
+                else
+                {
+                    ViewBag.ListaLocacaoStatus = (List<ModeloViewModel>)Session["ListaLocacaoStatus"];
+                }
+
+                // Locacoes por Produto
+                List<ModeloViewModel> lista7 = new List<ModeloViewModel>();
+                if (Session["ListaLocacaoProduto"] == null)
+                {
+                    List<PRODUTO> prods = CarregarProduto().Where(p => p.PROD_IN_TIPO_PRODUTO == 1 & p.PROD_IN_LOCACAO == 1).ToList();
+                    foreach (PRODUTO item in prods)
+                    {
+                        Int32 num = locs.Where(p => p.PROD_CD_ID == item.PROD_CD_ID & p.LOCA_IN_STATUS == 1).ToList().Count;
+                        if (num > 0)
+                        {
+                            ModeloViewModel mod1 = new ModeloViewModel();
+                            mod1.Nome = item.PROD_NM_NOME;
+                            mod1.Valor = num;
+                            lista7.Add(mod1);
+                        }
+                    }
+                    ViewBag.ListaLocacaoProduto = lista7;
+                    Session["ListaLocacaoProduto"] = lista7;
+                }
+                else
+                {
+                    ViewBag.ListaLocacaoProduto = (List<ModeloViewModel>)Session["ListaLocacaoProduto"];
+                }
+
+                // Locacoes por paciente
+                List<ModeloViewModel> lista12 = new List<ModeloViewModel>();
+                if (Session["ListaLocacaoPaciente"] == null)
+                {
+                    List<PACIENTE> pacs = CarregaPaciente().Where(p => p.PACI_IN_ATIVO == 1).ToList();
+                    foreach (PACIENTE item in pacs)
+                    {
+                        Int32 num = locs.Where(p => p.PACI_CD_ID == item.PACI__CD_ID & p.LOCA_IN_STATUS == 1).ToList().Count;
+                        if (num > 0)
+                        {
+                            ModeloViewModel mod1 = new ModeloViewModel();
+                            mod1.Nome = item.PACI_NM_NOME;
+                            mod1.Valor = num;
+                            lista12.Add(mod1);
+                        }
+                    }
+                    ViewBag.ListaLocacaoPaciente = lista12;
+                    Session["ListaLocacaoPaciente"] = lista12;
+                }
+                else
+                {
+                    ViewBag.ListaLocacaoPaciente = (List<ModeloViewModel>)Session["ListaLocacaoPaciente"];
+                }
+
+                // Locacoes vencidas e não encerradas
+                List<ModeloViewModel> lista13 = new List<ModeloViewModel>();
+                if (Session["ListaLocacaoVencida"] == null)
+                {
+                    foreach (LOCACAO item in locs)
+                    {
+                        if (item.LOCA_DT_FINAL < DateTime.Today.Date & item.LOCA_IN_STATUS == 1)
+                        {
+                            ModeloViewModel mod1 = new ModeloViewModel();
+                            mod1.Nome = item.LOCA_NM_TITULO;
+                            mod1.DataEmissao = item.LOCA_DT_FINAL.Value;
+                            lista13.Add(mod1);
+                        }
+                    }
+                    ViewBag.ListaLocacaoVencida = lista13;
+                    Session["ListaLocacaoVencida"] = lista13;
+                }
+                else
+                {
+                    ViewBag.ListaLocacaoVencida = (List<ModeloViewModel>)Session["ListaLocacaoVencida"];
+                }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                // Acerta estado    
+                Session["VoltaFinanceiro"] = 1;
+                Session["NivelPaciente"] = 1;
+                Session["VoltarPesquisa"] = 0;
+                Session["AjudaNivel"] = "../BaseAdmin/Ajuda/20/Ajuda20.pdf";
+                Session["NivelPagamento"] = 1;
+                Session["NivelRecebimento"] = 1;
+                Session["Pagamentos"] = null;
+                Session["Recebimentos"] = null;
+                Session["ListaPagamento"] = null;
+                Session["ListaRecebimento"] = null;
+
+                // Carrega view
+                objeto = new LOCACAO();
+
+                // Grava Acesso
+                ControleAcessoMetodo grava = new ControleAcessoMetodo(aceApp);
+                Int32 voltaX = grava.GravaAcesso(usuario.USUA_CD_ID, usuario.ASSI_CD_ID, "LOCACAO_DASHBOARD", "Locacao", "MontarTelaDashboardLocacao");
+                return View(objeto);
             }
             catch (Exception ex)
             {

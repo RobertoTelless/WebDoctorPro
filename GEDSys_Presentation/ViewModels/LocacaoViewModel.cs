@@ -93,6 +93,7 @@ namespace ERP_Condominios_Solution.ViewModels
         public Nullable<int> COLO_CD_ID { get; set; }
         public Nullable<int> LOCA_CD_DISTRATO_ID { get; set; }
         public Nullable<int> LOCA_CD_ENCERRA_ID { get; set; }
+        public Nullable<int> LOCA_IN_CONTRATO_ASSINA { get; set; }
 
         public bool Encerrado
         {
@@ -234,6 +235,18 @@ namespace ERP_Condominios_Solution.ViewModels
             get
             {
                 return LOCACAO_PARCELA.Where(p => p.LOPA_IN_QUITADA == 0 & p.LOPA_DT_VENCIMENTO.Value.Date < DateTime.Today.Date).ToList().Count().ToString();
+            }
+        }
+
+        public string ContratoAssinado
+        {
+            get
+            {
+                if (LOCA_IN_CONTRATO_ASSINA == 1)
+                {
+                    return "Sim";
+                }
+                return "Não";
             }
         }
 

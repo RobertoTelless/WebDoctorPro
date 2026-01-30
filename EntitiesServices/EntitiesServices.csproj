@@ -1680,7 +1680,6 @@
     <Content Include="Model\GED_Model.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <DependentUpon>GED_Model.edmx</DependentUpon>
-      <LastGenOutput>GED_Model.cs</LastGenOutput>
     </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

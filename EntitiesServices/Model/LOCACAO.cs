@@ -73,6 +73,7 @@ namespace EntitiesServices.Model
         public Nullable<int> COLO_CD_ID { get; set; }
         public Nullable<int> LOCA_CD_DISTRATO_ID { get; set; }
         public Nullable<int> LOCA_CD_ENCERRA_ID { get; set; }
+        public Nullable<int> LOCA_IN_CONTRATO_ASSINA { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<LOCACAO_ANEXO> LOCACAO_ANEXO { get; set; }

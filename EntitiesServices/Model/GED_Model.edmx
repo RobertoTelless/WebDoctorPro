@@ -3053,6 +3053,7 @@
           <Property Name="COLO_CD_ID" Type="int" />
           <Property Name="LOCA_CD_DISTRATO_ID" Type="int" />
           <Property Name="LOCA_CD_ENCERRA_ID" Type="int" />
+          <Property Name="LOCA_IN_CONTRATO_ASSINA" Type="int" />
         </EntityType>
         <EntityType Name="LOCACAO_ANEXO">
           <Key>
@@ -40326,6 +40327,7 @@
           <Property Name="LOCA_CD_ENCERRA_ID" Type="Int32" />
           <NavigationProperty Name="CONTRATO_LOCACAO1" Relationship="CRMSysDBModel.FK_LOCACAO_CONTRATO_LOCACAO1" FromRole="LOCACAO" ToRole="CONTRATO_LOCACAO" />
           <NavigationProperty Name="CONTRATO_LOCACAO2" Relationship="CRMSysDBModel.FK_LOCACAO_CONTRATO_LOCACAO2" FromRole="LOCACAO" ToRole="CONTRATO_LOCACAO" />
+          <Property Name="LOCA_IN_CONTRATO_ASSINA" Type="Int32" />
         </EntityType>
         <EntityType Name="LOCACAO_ANEXO">
           <Key>
@@ -48168,6 +48170,7 @@
           <EntitySetMapping Name="LOCACAO">
             <EntityTypeMapping TypeName="CRMSysDBModel.LOCACAO">
               <MappingFragment StoreEntitySet="LOCACAO">
+                <ScalarProperty Name="LOCA_IN_CONTRATO_ASSINA" ColumnName="LOCA_IN_CONTRATO_ASSINA" />
                 <ScalarProperty Name="LOCA_CD_ENCERRA_ID" ColumnName="LOCA_CD_ENCERRA_ID" />
                 <ScalarProperty Name="LOCA_CD_DISTRATO_ID" ColumnName="LOCA_CD_DISTRATO_ID" />
                 <ScalarProperty Name="COLO_CD_ID" ColumnName="COLO_CD_ID" />

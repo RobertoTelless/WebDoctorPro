@@ -196,7 +196,10 @@
                         {
                             if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_LOCACAO_ALTERAR == 1)
                             {
-                                <a href="@Url.Action("CarregarContrato", "Locacao")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Inclui o contrato de locação assinado" class="btn btn-sm btn-primary btn-loading" id="emp" OnClick = "Fade()">Contrato Assinado</a>                
+                                if (Model.LOCA_IN_CONTRATO_ASSINA == 0)
+                                {
+                                    <a href="@Url.Action("CarregarContrato", "Locacao")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Inclui o contrato de locação assinado" class="btn btn-sm btn-primary btn-loading" id="emp" OnClick = "Fade()">Contrato Assinado</a>                
+                                }
                             }
                         }
                         @if ((Int32)Session["TipoLocacao"] == 1)
@@ -508,6 +511,7 @@
                                                         @Html.HiddenFor(m => m.LOCA_DT_ENTREGA)
                                                         @Html.HiddenFor(m => m.LOCA_DS_ENTREGA)
                                                         @Html.HiddenFor(m => m.COLO_CD_ID)
+                                                        @Html.HiddenFor(m => m.LOCA_IN_CONTRATO_ASSINA)
                                                         Data Inicial
                                                         @Html.TextBoxFor(m => m.LOCA_DT_INICIO, "{0:dd/MM/yyyy}", new { @class = "form-control", @tabindex = "-1", @readonly = "readonly" })
                                                     </div>
@@ -858,6 +862,7 @@
                                                         @Html.HiddenFor(m => m.LOCA_DT_ENTREGA)
                                                         @Html.HiddenFor(m => m.LOCA_DS_ENTREGA)
                                                         @Html.HiddenFor(m => m.COLO_CD_ID)
+                                                        @Html.HiddenFor(m => m.LOCA_IN_CONTRATO_ASSINA)
                                                         Data Inicial
                                                         @Html.TextBoxFor(m => m.LOCA_DT_INICIO, "{0:dd/MM/yyyy}", new { @class = "form-control", @tabindex = "-1", @readonly = "readonly" })
                                                     </div>
