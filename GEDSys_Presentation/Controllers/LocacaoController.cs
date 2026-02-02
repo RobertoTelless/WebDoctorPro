@@ -144,6 +144,25 @@ namespace GEDSys_Presentation.Controllers
                 Session["AjudaNivel"] = "../BaseAdmin/Ajuda/21/Ajuda21.pdf";
                 ViewBag.Perfil = usuario.PERFIL.PERF_SG_SIGLA;
 
+                List<SelectListItem> relat = new List<SelectListItem>();
+                relat.Add(new SelectListItem() { Text = "Relação de Locações*", Value = "1" });
+                relat.Add(new SelectListItem() { Text = "Locações/Data", Value = "2" });
+                relat.Add(new SelectListItem() { Text = "Locações/Mês", Value = "3" });
+                relat.Add(new SelectListItem() { Text = "Recebimentos/Data", Value = "4" });
+                relat.Add(new SelectListItem() { Text = "Recebimentos/Mês", Value = "5" });
+                relat.Add(new SelectListItem() { Text = "Parcelas em Atraso", Value = "6" });
+                relat.Add(new SelectListItem() { Text = "Pacientes/Locação", Value = "7" });
+                relat.Add(new SelectListItem() { Text = "Produtos/Locação", Value = "8" });
+                relat.Add(new SelectListItem() { Text = "Locações/Status", Value = "9" });
+                relat.Add(new SelectListItem() { Text = "Recebimentos/Produto", Value = "10" });
+                relat.Add(new SelectListItem() { Text = "Pendentes", Value = "11" });
+                relat.Add(new SelectListItem() { Text = "Ativas", Value = "12" });
+                relat.Add(new SelectListItem() { Text = "Canceladas", Value = "13" });
+                relat.Add(new SelectListItem() { Text = "Encerradas", Value = "14" });
+                relat.Add(new SelectListItem() { Text = "Vencidas", Value = "15" });
+                relat.Add(new SelectListItem() { Text = "A Encerrar", Value = "16" });
+                ViewBag.Relatorio = new SelectList(relat, "Value", "Text");
+
                 // Widgets
                 Int32? locPendentes = locs.Where(p => p.LOCA_IN_STATUS == 0).Count();
                 Int32? locAtivas = locs.Where(p => p.LOCA_IN_STATUS == 1).Count();
@@ -16342,7 +16361,8 @@ namespace GEDSys_Presentation.Controllers
 
                 // Locacoes e recebimentos no mês
                 List<LOCACAO> locMes = locs.Where(p => p.LOCA_DT_INICIO.Value.Month == DateTime.Today.Date.Month & p.LOCA_DT_INICIO.Value.Year == DateTime.Today.Date.Year).ToList();
-                List<LOCACAO_PARCELA> parcMes = parcs.Where(p => p.LOPA_DT_PAGAMENTO.Value.Month == DateTime.Today.Date.Month & p.LOPA_DT_PAGAMENTO.Value.Year == DateTime.Today.Date.Year & p.LOPA_IN_QUITADA == 1).ToList();
+                List<LOCACAO_PARCELA> parcMes = parcs.Where(p => p.LOPA_DT_PAGAMENTO != null).ToList();
+                parcMes = parcMes.Where(p => p.LOPA_DT_PAGAMENTO.Value.Month == DateTime.Today.Date.Month & p.LOPA_DT_PAGAMENTO.Value.Year == DateTime.Today.Date.Year & p.LOPA_IN_QUITADA == 1).ToList();
 
                 ViewBag.LocacoesMes = locMes;
                 ViewBag.RecebimentosMes = parcMes;
@@ -16511,13 +16531,14 @@ namespace GEDSys_Presentation.Controllers
                 List<ModeloViewModel> lista7 = new List<ModeloViewModel>();
                 if (Session["ListaLocacaoProduto"] == null)
                 {
-                    List<PRODUTO> prods = CarregarProduto().Where(p => p.PROD_IN_TIPO_PRODUTO == 1 & p.PROD_IN_LOCACAO == 1).ToList();
-                    foreach (PRODUTO item in prods)
+                    List<PRODUTO> prodx = CarregarProduto().Where(p => p.PROD_IN_TIPO_PRODUTO == 1 & p.PROD_IN_LOCACAO == 1).ToList();
+                    foreach (PRODUTO item in prodx)
                     {
                         Int32 num = locs.Where(p => p.PROD_CD_ID == item.PROD_CD_ID & p.LOCA_IN_STATUS == 1).ToList().Count;
                         if (num > 0)
                         {
                             ModeloViewModel mod1 = new ModeloViewModel();
+                            mod1.Valor1 = item.PROD_CD_ID;
                             mod1.Nome = item.PROD_NM_NOME;
                             mod1.Valor = num;
                             lista7.Add(mod1);
@@ -16577,50 +16598,165 @@ namespace GEDSys_Presentation.Controllers
                     ViewBag.ListaLocacaoVencida = (List<ModeloViewModel>)Session["ListaLocacaoVencida"];
                 }
 
+                // Recebimento por produto
+                List<Int32> prods = locs.Where(p => p.LOCA_IN_ATIVO == 1).Select(p => p.PROD_CD_ID).Distinct().ToList();
+                if ((Int32)Session["LocacaoAlterada"] == 1 || Session["ListaRecebeProduto"] == null)
+                {
+                    List<ModeloViewModel> lista = new List<ModeloViewModel>();
+                    Decimal? soma = 0;
+                    foreach (Int32 item in prods)
+                    {
+                        List<LOCACAO> locPro = locs.Where(p => p.PROD_CD_ID == item).ToList();
+                        foreach (LOCACAO locItem in locPro)
+                        {
+                            Decimal? valRec = locItem.LOCACAO_PARCELA.Where(p => p.LOPA_IN_QUITADA == 1).Sum(p => p.LOPA_VL_VALOR_PAGO);
+                            soma += valRec;
+                        }
 
+                        if (soma > 0)
+                        {
+                            PRODUTO pro = prodApp.GetItemById(item);
+                            ModeloViewModel mod = new ModeloViewModel();
+                            mod.Valor = item;
+                            mod.Nome = pro.PROD_NM_NOME;
+                            mod.ValorDec = soma.Value;
+                            lista.Add(mod);
+                        }
+                        soma = 0;
+                    }
 
+                    ViewBag.ListaRecebeProduto = lista;
+                    Session["ListaRecebeProduto"] = lista;
+                }
+                else
+                {
+                    ViewBag.ListaRecebeProduto = (List<ModeloViewModel>)Session["ListaRecebeProduto"];
+                }
 
+                // Parcelas em atraso por numero de dias
+                if ((Int32)Session["LocacaoAlterada"] == 1 || Session["ListaParcelaAtraso"] == null)
+                {
+                    List<LOCACAO_PARCELA> atraso = parcs.Where(p => p.LOPA_IN_QUITADA == 0 & p.LOPA_DT_VENCIMENTO.Value.Date < DateTime.Today.Date).ToList();
+                    List<ModeloViewModel> listaAtraso = new List<ModeloViewModel>();
+                    Decimal? valor = 0;
+                    Int32 diasDeAtraso = 0;
+                    Int32 atraso10 = 0;
+                    Int32 atraso30 = 0;
+                    Int32 atraso60 = 0;
+                    Int32 atraso00 = 0;
+                    Decimal? atrasoVal10 = 0;
+                    Decimal? atrasoVal30 = 0;
+                    Decimal? atrasoVal60 = 0;
+                    Decimal? atrasoVal00 = 0;
 
+                    DateTime hoje = DateTime.Today.Date;
+                    foreach (LOCACAO_PARCELA item in atraso)
+                    {
+                        TimeSpan diferenca = hoje - item.LOPA_DT_VENCIMENTO.Value.Date;
+                        diasDeAtraso = diferenca.Days;
+                        if (diasDeAtraso <= 10)
+                        {
+                            atraso10++;
+                            atrasoVal10 += item.LOPA_VL_VALOR;
+                        }
+                        else if (diasDeAtraso > 10 & diasDeAtraso <= 30)
+                        {
+                            atraso30++;
+                            atrasoVal30 += item.LOPA_VL_VALOR;
+                        }
+                        else if (diasDeAtraso > 30 & diasDeAtraso <= 60)
+                        {
+                            atraso60++;
+                            atrasoVal60 += item.LOPA_VL_VALOR;
+                        }
+                        else if (diasDeAtraso > 60)
+                        {
+                            atraso00++;
+                            atrasoVal00 += item.LOPA_VL_VALOR;
+                        }
+                    }
 
+                    ModeloViewModel mod = new ModeloViewModel();
+                    mod.Nome = "Até 10 dias de atraso";
+                    mod.Valor = atraso10;
+                    mod.ValorDec = atrasoVal10.Value;
+                    listaAtraso.Add(mod);
+                    mod.Nome = "Até 30 dias de atraso";
+                    mod.Valor = atraso30;
+                    mod.ValorDec = atrasoVal30.Value;
+                    listaAtraso.Add(mod);
+                    mod.Nome = "Até 60 dias de atraso";
+                    mod.Valor = atraso60;
+                    mod.ValorDec = atrasoVal60.Value;
+                    listaAtraso.Add(mod);
+                    mod.Nome = "Mais de 60 dias de atraso";
+                    mod.Valor = atraso00;
+                    mod.ValorDec = atrasoVal00.Value;
+                    listaAtraso.Add(mod);
 
+                    ViewBag.ListaParcelaAtraso = listaAtraso;
+                    Session["ListaParcelaAtraso"] = listaAtraso;
 
+                }
+                else
+                {
+                    ViewBag.ListaParcelaAtraso = (List<ModeloViewModel>)Session["ListaParcelaAtraso"];
+                }
 
+                // Locações encerrando por numero de dias
+                if ((Int32)Session["LocacaoAlterada"] == 1 || Session["ListaLocacaoEncerra"] == null)
+                {
+                    List<LOCACAO> encerra = locs.Where(p => p.LOCA_IN_STATUS == 1 & p.LOCA_DT_FINAL.Value.Date < DateTime.Today.Date.AddDays(60)).ToList();
+                    List<ModeloViewModel> listaEncerra = new List<ModeloViewModel>();
+                    DateTime hoje = DateTime.Today.Date;
+                    Int32 diasParaVencer = 0;
+                    Int32 venc10 = 0;
+                    Int32 venc30 = 0;
+                    Int32 venc60 = 0;
 
+                    foreach (LOCACAO item in encerra)
+                    {
+                        TimeSpan diferenca = item.LOCA_DT_FINAL.Value.Date - hoje;
+                        diasParaVencer = diferenca.Days;
+                        if (diasParaVencer <= 10)
+                        {
+                            venc10++;
+                        }
+                        else if (diasParaVencer > 10 & diasParaVencer <= 30)
+                        {
+                            venc30++;
+                        }
+                        else if (diasParaVencer > 30 & diasParaVencer <= 60)
+                        {
+                            venc60++;
+                        }
+                    }
 
+                    ModeloViewModel mod = new ModeloViewModel();
+                    mod.Nome = "Vencendo em até 10 dias";
+                    mod.Valor = venc10;
+                    listaEncerra.Add(mod);
+                    mod.Nome = "Vencendo em até 30 dias";
+                    mod.Valor = venc30;
+                    listaEncerra.Add(mod);
+                    mod.Nome = "Vencendo em até 60 dias";
+                    mod.Valor = venc60;
+                    listaEncerra.Add(mod);
 
+                    ViewBag.ListaLocacaoEncerra = listaEncerra;
+                    Session["ListaLocacaoEncerra"] = listaEncerra;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+                }
+                else
+                {
+                    ViewBag.ListaLocacaoEncerra = (List<ModeloViewModel>)Session["ListaLocacaoEncerra"];
+                }
 
                 // Acerta estado    
-                Session["VoltaFinanceiro"] = 1;
-                Session["NivelPaciente"] = 1;
-                Session["VoltarPesquisa"] = 0;
+                Session["LocacaoAlterada"] = 1;
+                Session["NivelPaciente"] = 17;
+                Session["NivelProduto"] = 13;
                 Session["AjudaNivel"] = "../BaseAdmin/Ajuda/20/Ajuda20.pdf";
-                Session["NivelPagamento"] = 1;
-                Session["NivelRecebimento"] = 1;
-                Session["Pagamentos"] = null;
-                Session["Recebimentos"] = null;
-                Session["ListaPagamento"] = null;
-                Session["ListaRecebimento"] = null;
 
                 // Carrega view
                 objeto = new LOCACAO();
@@ -16641,6 +16777,217 @@ namespace GEDSys_Presentation.Controllers
                 Int32 voltaX = grava.GravarLogExcecao(ex, "Locacao", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
                 return RedirectToAction("TrataExcecao", "BaseAdmin");
             }
+        }
+
+        public ActionResult ProcessaRelatorioLocacao(Int32? TIPO_RELATORIO)
+        {
+            if ((String)Session["Ativa"] == null)
+            {
+                return RedirectToAction("Login", "ControleAcesso");
+            }
+            Int32? tipoRel = TIPO_RELATORIO;
+
+            if (tipoRel == 1)
+            {
+                return RedirectToAction("GerarRelatorioListaLocacaoForm");
+            }
+            if (tipoRel == 2)
+            {
+                return RedirectToAction("GerarListagemLocacaoData");
+            }
+            if (tipoRel == 3)
+            {
+                return RedirectToAction("GerarListagemLocacaoMes");
+            }
+            if (tipoRel == 4)
+            {
+                return RedirectToAction("GerarListagemRecebimentoData");
+            }
+            if (tipoRel == 5)
+            {
+                return RedirectToAction("GerarListagemRecebimentoMes");
+            }
+            if (tipoRel == 6)
+            {
+                return RedirectToAction("GerarListagemParcelaAtraso");
+            }
+            if (tipoRel == 7)
+            {
+                return RedirectToAction("GerarListagemPacienteLocacao");
+            }
+            if (tipoRel == 8)
+            {
+                return RedirectToAction("GerarListagemProdutoLocacao");
+            }
+            if (tipoRel == 9)
+            {
+                return RedirectToAction("GerarListagemLocacaoStatus");
+            }
+            if (tipoRel == 10)
+            {
+                return RedirectToAction("GerarListagemRecebimentoProduto");
+            }
+            if (tipoRel == 11)
+            {
+                return RedirectToAction("GerarListagemLocacaoPendente");
+            }
+            if (tipoRel == 12)
+            {
+                return RedirectToAction("GerarListagemLocacaoAtiva");
+            }
+            if (tipoRel == 13)
+            {
+                return RedirectToAction("GerarListagemLocacaoCancelada");
+            }
+            if (tipoRel == 14)
+            {
+                return RedirectToAction("GerarListagemLocacaoEncerrada");
+            }
+            if (tipoRel == 15)
+            {
+                return RedirectToAction("GerarListagemLocacaoVencida");
+            }
+            if (tipoRel == 16)
+            {
+                return RedirectToAction("GerarListagemLocacaoEncerrar");
+            }
+            return RedirectToAction("MontarTelaLocacao");
+        }
+
+        public JsonResult GetDadosLocacaoDia()
+        {
+            List<ModeloViewModel> listaCP1 = (List<ModeloViewModel>)Session["ListaLocacaoData "];
+            List<String> dias = new List<String>();
+            List<Decimal> valor = new List<Decimal>();
+            dias.Add(" ");
+            valor.Add(0);
+
+            foreach (ModeloViewModel item in listaCP1)
+            {
+                dias.Add(item.DataEmissao.ToShortDateString());
+                valor.Add(item.Valor);
+            }
+
+            Hashtable result = new Hashtable();
+            result.Add("dias", dias);
+            result.Add("valores", valor);
+            return Json(result);
+        }
+
+        public JsonResult GetDadosRecebimentoDia()
+        {
+            List<ModeloViewModel> listaCP1 = (List<ModeloViewModel>)Session["ListaParcelaData"];
+            List<String> dias = new List<String>();
+            List<Decimal> valor = new List<Decimal>();
+            dias.Add(" ");
+            valor.Add(0);
+
+            foreach (ModeloViewModel item in listaCP1)
+            {
+                dias.Add(item.DataEmissao.ToShortDateString());
+                valor.Add(item.ValorDec);
+            }
+
+            Hashtable result = new Hashtable();
+            result.Add("dias", dias);
+            result.Add("valores", valor);
+            return Json(result);
+        }
+
+        public JsonResult GetDadosLocacaoMes()
+        {
+            List<ModeloViewModel> listaCP1 = (List<ModeloViewModel>)Session["ListaLocacaoMes"];
+            List<String> dias = new List<String>();
+            List<Decimal> valor = new List<Decimal>();
+            dias.Add(" ");
+            valor.Add(0);
+
+            foreach (ModeloViewModel item in listaCP1)
+            {
+                dias.Add(item.Nome);
+                valor.Add(item.Valor);
+            }
+
+            Hashtable result = new Hashtable();
+            result.Add("dias", dias);
+            result.Add("valores", valor);
+            return Json(result);
+        }
+
+        public JsonResult GetDadosRecebimentoMes()
+        {
+            List<ModeloViewModel> listaCP1 = (List<ModeloViewModel>)Session["ListaParcelaMes"];
+            List<String> dias = new List<String>();
+            List<Decimal> valor = new List<Decimal>();
+            dias.Add(" ");
+            valor.Add(0);
+
+            foreach (ModeloViewModel item in listaCP1)
+            {
+                dias.Add(item.DataEmissao.ToShortDateString());
+                valor.Add(item.ValorDec);
+            }
+
+            Hashtable result = new Hashtable();
+            result.Add("dias", dias);
+            result.Add("valores", valor);
+            return Json(result);
+        }
+
+        public JsonResult GetDadosLocacaoStatus()
+        {
+            List<ModeloViewModel> listaCP1 = (List<ModeloViewModel>)Session["ListaLocacaoStatus"];
+            List<String> desc = new List<String>();
+            List<Int32> quant = new List<Int32>();
+            List<String> cor = new List<String>();
+            String[] cores = CrossCutting.UtilitariosGeral.GetListaCores();
+            Int32 i = 1;
+
+            foreach (ModeloViewModel item in listaCP1)
+            {
+                desc.Add(item.Nome);
+                quant.Add(item.Valor);
+                cor.Add(cores[i]);
+                i++;
+                if (i > 10)
+                {
+                    i = 1;
+                }
+            }
+
+            Hashtable result = new Hashtable();
+            result.Add("labels", desc);
+            result.Add("valores", quant);
+            result.Add("cores", cor);
+            return Json(result);
+        }
+
+        public JsonResult GetDadosProdutoLocacao()
+        {
+            List<ModeloViewModel> listaCP1 = (List<ModeloViewModel>)Session["ListaLocacaoProduto"];
+            List<String> desc = new List<String>();
+            List<Int32> quant = new List<Int32>();
+            List<String> cor = new List<String>();
+            String[] cores = CrossCutting.UtilitariosGeral.GetListaCores();
+            Int32 i = 1;
+
+            foreach (ModeloViewModel item in listaCP1)
+            {
+                desc.Add(item.Nome);
+                quant.Add(item.Valor);
+                cor.Add(cores[i]);
+                i++;
+                if (i > 10)
+                {
+                    i = 1;
+                }
+            }
+
+            Hashtable result = new Hashtable();
+            result.Add("labels", desc);
+            result.Add("valores", quant);
+            result.Add("cores", cor);
+            return Json(result);
         }
 
     }

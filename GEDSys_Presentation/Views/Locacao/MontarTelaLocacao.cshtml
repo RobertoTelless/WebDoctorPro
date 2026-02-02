@@ -147,7 +147,7 @@
     </div>
 
     <div class="row">
-        <div class="col-lg-12 col-md-12 col-xs-12">
+        <div class="col-lg-10 col-md-10 col-xs-12">
             <div class="col-lg-12 col-md-12 col-xs-12 ibox float-e-margins">
                 <div class="ibox-title">
                     <h5>Filtros</h5>
@@ -190,7 +190,7 @@
                                 <a href="@Url.Action("VerHistoricoLocacoes", "Locacao")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Ver o histórico de todas as locações" class="btn btn-sm btn-warning btn-loading" id="emp" OnClick = "Fade()">Histórico</a>                
                                 <a href="@Url.Action("VerParcelasLocacoes", "Locacao")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Ver as parcelas de todas as locações" class="btn btn-sm btn-warning btn-loading" id="emp" OnClick = "Fade()">Parcelas</a>                
                                 <a href="@Url.Action("MontarTelaContratoLocacao", "Locacao")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acesso a página de contratos de locação e afins" class="btn btn-sm btn-warning btn-loading" id="emp" OnClick = "Fade()">Contratos</a>                
-                                <a href="@Url.Action("GerarRelatorioListaLocacaoForm", "Locacao")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Imprime a lista de locações seleionada no filtro" class="btn btn-sm btn-warning" id="emp" OnClick = "Fade()">Imprimir</a>                
+                                <a href="@Url.Action("MontarTelaDashboardLocacao", "Locacao")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acesso ao dashboard de locações" class="btn btn-sm btn-primary btn-loading" id="emp" OnClick = "Fade()">Dashboard</a>                
                                 @Html.ButtonLinkIndex(text: "Voltar", controller: "Paciente", action: "MontarTelaPaciente", htmlAttributes: new { @class = "btn-loading" })
                                 <span id="loadingIndicator" style="display: none; margin-left: 10px; color: #007bff;">
                                     <i class="fa fa-spinner fa-spin"></i> Processando...
@@ -199,6 +199,26 @@
                         </div>
                     </div>
                 }
+            </div>
+        </div>
+
+        <div class="col-lg-2 col-md-2 col-xs-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title"  style="background-color: cornsilk; color:darkgreen">
+                    <h5>Relatórios</h5>
+                </div>
+                <div class="ibox-content">
+                    @using (Html.BeginForm("ProcessaRelatorioLocacao", "Locacao", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal", autofocus = true }))
+                    {
+                        @Html.DropDownList("TIPO_RELATORIO", (SelectList)ViewBag.Relatorio, "Selecionar", new { @class = "form-control", autofocus = true })
+                        <small>Selecione o Relatório</small>
+                        <br />
+                        <small>(*) Sensivel ao filtro especificado</small>
+                        <br />
+                        <br />
+                        @Html.ButtonActionSubmit(text: "Gerar Relatório")
+                    }
+                </div>
             </div>
         </div>
     </div>

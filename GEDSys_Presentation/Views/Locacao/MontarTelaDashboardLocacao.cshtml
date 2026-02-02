@@ -1,7 +1,1075 @@
-﻿
+﻿@using Presentation.Extensions
+@using CrossCutting
+@model EntitiesServices.Model.LOCACAO
 @{
-    ViewBag.Title = "MontarTelaDashboardLocacao";
+    Layout = "~/Views/Shared/_Layout_Admin.cshtml";
+    ViewBag.Title = "WebDoctor - Locacao";
+    ViewBag.MetaDescription = "WebDoctor - Locacao - Dashhboard";
+    ViewBag.MetaKeywords = "WebDoctor, Locacao, dashboard";
+}
+<div id="content" class="wraper container-fluid">
+    <div class="modalContainer">
+        <div id="modal" class="modal" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        @*Titulo gerado dinamicamente*@
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        @*Gerado dinamicamente*@
+                    </div>
+                    <div class="modal-footer">
+                        <button onclick="limpaModal()" type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-12 col-md-12 col-sm-12">
+        @*Atalhos*@
+        <div class="row">
+            <h3 style="color:olivedrab; font-weight:bold">Locações - Dashboard</h3>
+        </div>
+
+        @*Widgets*@
+        <br />
+        <div class="row">
+            <div class="col-lg-2">
+                <div class="ibox float-e-margins">
+                    <div class="ibox-title" style="background-color: darkseagreen; color: darkgreen">
+                        <span class="label label-primary pull-right">Hoje</span>
+                        <h5>Locações</h5>
+                    </div>
+                    <div class="ibox-content">
+                        <h1 class="no-margins">@ViewBag.Total</h1>
+                        <small>Total de Locações</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-2">
+                <div class="ibox float-e-margins">
+                    <div class="ibox-title" style="background-color: darkseagreen; color: darkgreen">
+                        <span class="label label-primary pull-right">Hoje</span>
+                        <h5>Locações</h5>
+                    </div>
+                    <div class="ibox-content">
+                        <h1 class="no-margins">@ViewBag.Pendentes</h1>
+                        <small>Locações Pendentes</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-2">
+                <div class="ibox float-e-margins">
+                    <div class="ibox-title" style="background-color: darkseagreen; color: darkgreen">
+                        <span class="label label-primary pull-right">Hoje</span>
+                        <h5>Locações</h5>
+                    </div>
+                    <div class="ibox-content">
+                        <h1 class="no-margins">@ViewBag.Ativas</h1>
+                        <small>Locações Ativas</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-2">
+                <div class="ibox float-e-margins">
+                    <div class="ibox-title" style="background-color: darkseagreen; color: darkgreen">
+                        <span class="label label-primary pull-right">Hoje</span>
+                        <h5>Locações</h5>
+                    </div>
+                    <div class="ibox-content">
+                        <h1 class="no-margins">@ViewBag.Canceladas</h1>
+                        <small>Locações Canceladas</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-2">
+                <div class="ibox float-e-margins">
+                    <div class="ibox-title" style="background-color: darkseagreen; color: darkgreen">
+                        <span class="label label-primary pull-right">Hoje</span>
+                        <h5>Locações</h5>
+                    </div>
+                    <div class="ibox-content">
+                        <h1 class="no-margins">@ViewBag.Encerradas</h1>
+                        <small>Locações Encerradas</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-2">
+                <div class="ibox float-e-margins">
+                    <div class="ibox-title" style="background-color: darkseagreen; color: darkgreen">
+                        <span class="label label-primary pull-right">Hoje</span>
+                        <h5>Locações</h5>
+                    </div>
+                    <div class="ibox-content">
+                        <h1 class="no-margins">@ViewBag.Vencidas</h1>
+                        <small>Locações Vencidas</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        @*Atalhos*@
+        <div class="row">
+            <div class="form-group">
+                <div class="col-lg-12 col-md-12 col-xs-12">
+                    <a href="@Url.Action("MontarTelaLocacao", "Locacao")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acesso à Central de Locações" class="btn btn-sm btn-success btn-loading" id="emp" OnClick = "Fade()">Central de Locações</a>                
+                    @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaPaciente", controller: "Paciente", htmlAttributes: new { @id = "emp", OnClick = "Fade()" })
+                    <a href="@Url.Action((String)Session["AjudaNivel"])"  class="btn btn-sm btn-danger" target="_blank">Ajuda</a>                
+                    <span id="loadingIndicator" style="display: none; margin-left: 10px; color: #007bff;">
+                        <i class="fa fa-spinner fa-spin"></i> Processando...
+                    </span>
+                </div>
+                <br /><br />
+            </div>
+        </div>  
+
+        @*Corpo*@
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="ibox float-e-margins">
+                    <div class="ibox-title">
+                        <h5>Locações - Dashboard</h5>
+                    </div>
+                    <div class="ibox-content" style="height: 2100px">
+
+                        @*Graficos*@
+                        <div class="col-lg-7 col-md-7 col-xs-12">
+                            <div class="row">   
+                                <div class="col-lg-6 col-md-6 col-xs-12">
+                                    <div class="col-lg-12 col-md-12 col-xs-12 ibox float-e-margins" style="border-bottom: solid; border-bottom-color: darkblue; border-bottom-width: 2px; border-left: solid; border-left-color: darkblue; border-left-width: 1px; border-right: solid; border-right-color: darkblue; border-right-width: 1px; border-top: solid; border-top-color: darkblue; border-top-width: 1px">
+                                        <div class="ibox-title">
+                                            <h4>Locações x Dia - Mês Corrente<h4>
+                                        </div>
+                                        <div class="ibox-content">
+                                            <div class="row">
+                                                <canvas id="barChartLocacaoDia" height="150"></canvas>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-6 col-md-6 col-xs-12">
+                                    <div class="col-lg-12 col-md-12 col-xs-12 ibox float-e-margins" style="border-bottom: solid; border-bottom-color: darkblue; border-bottom-width: 2px; border-left: solid; border-left-color: darkblue; border-left-width: 1px; border-right: solid; border-right-color: darkblue; border-right-width: 1px; border-top: solid; border-top-color: darkblue; border-top-width: 1px">
+                                        <div class="ibox-title">
+                                            <h4>Locações x Mês - 12 meses</h4>
+                                        </div>
+                                        <div class="ibox-content">
+                                            <div class="row">
+                                                <canvas id="barChartLocacaoMes" height="150"></canvas>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">                           
+                                <div class="col-lg-6 col-md-6 col-xs-12">
+                                    <div class="col-lg-12 col-md-12 col-xs-12 ibox float-e-margins" style="border-bottom: solid; border-bottom-color: darkblue; border-bottom-width: 2px; border-left: solid; border-left-color: darkblue; border-left-width: 1px; border-right: solid; border-right-color: darkblue; border-right-width: 1px; border-top: solid; border-top-color: darkblue; border-top-width: 1px">
+                                        <div class="ibox-title">
+                                            <h4>Recebimentos x Dia (R$) - Mês Corrente</h4>
+                                        </div>
+                                        <div class="ibox-content">
+                                            <div class="row">
+                                                <canvas id="barChartRecDia" height="150"></canvas>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-6 col-md-6 col-xs-12">
+                                    <div class="col-lg-12 col-md-12 col-xs-12 ibox float-e-margins" style="border-bottom: solid; border-bottom-color: darkblue; border-bottom-width: 2px; border-left: solid; border-left-color: darkblue; border-left-width: 1px; border-right: solid; border-right-color: darkblue; border-right-width: 1px; border-top: solid; border-top-color: darkblue; border-top-width: 1px">
+                                        <div class="ibox-title">
+                                            <h4>Recebimentos x Mês (R$) - 12 meses</h4>
+                                        </div>
+                                        <div class="ibox-content">
+                                            <div class="row">
+                                                <canvas id="barChartRecMes" height="150"></canvas>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">                           
+                                <div class="col-lg-6 col-md-6 col-xs-12">
+                                    <div class="col-lg-12 col-md-12 col-xs-12 ibox float-e-margins" style="border-bottom: solid; border-bottom-color: darkblue; border-bottom-width: 2px; border-left: solid; border-left-color: darkblue; border-left-width: 1px; border-right: solid; border-right-color: darkblue; border-right-width: 1px; border-top: solid; border-top-color: darkblue; border-top-width: 1px">
+                                        <div class="ibox-title">
+                                            <h4>Locações x Status</h4>
+                                        </div>
+                                        <div class="ibox-content">
+                                            <div class="row">
+                                                <canvas id="doughnutChartStatus" height="150"></canvas>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-6 col-md-6 col-xs-12">
+                                    <div class="col-lg-12 col-md-12 col-xs-12 ibox float-e-margins" style="border-bottom: solid; border-bottom-color: darkblue; border-bottom-width: 2px; border-left: solid; border-left-color: darkblue; border-left-width: 1px; border-right: solid; border-right-color: darkblue; border-right-width: 1px; border-top: solid; border-top-color: darkblue; border-top-width: 1px">
+                                        <div class="ibox-title">
+                                            <h4>Locações x Produto</h4>
+                                        </div>
+                                        <div class="ibox-content">
+                                            <div class="row">
+                                                <canvas id="doughnutChartProd" height="150"></canvas>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        @*Listas*@
+                        <div class="col-lg-5 col-md-5 col-xs-12">
+                            <div class="col-lg-12 col-md-12 col-xs-12">
+                                <div class="col-lg-12 col-md-12 col-xs-12 ibox float-e-margins" style="border-bottom: solid; border-bottom-color: darkblue; border-bottom-width: 2px; border-left: solid; border-left-color: darkblue; border-left-width: 1px; border-right: solid; border-right-color: darkblue; border-right-width: 1px; border-top: solid; border-top-color: darkblue; border-top-width: 1px">
+                                    <div class="ibox-title">
+                                        <h4>Locações - Criadas no Mês</h4>
+                                    </div>
+                                    <div class="ibox-content">
+                                        <div class="row">
+                                            @if (ViewBag.ListaLocacaoMes != null && (ViewBag.ListaLocacaoMes as List<ERP_Condominios_Solution.ViewModels.ModeloViewModel>).Count > 0)
+                                            {
+                                                <table class="table table-striped table-bordered table-hover">
+                                                    <thead style="background-color:lightsteelblue">
+                                                        <tr>
+                                                            <th>Mês</th>
+                                                            <th>Total</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        @foreach (var cond in (ViewBag.ListaLocacaoMes as List<ERP_Condominios_Solution.ViewModels.ModeloViewModel>))
+                                                        {
+                                                            <tr>
+                                                                <td>@cond.Nome</td>
+                                                                <td>@cond.Valor</td>
+                                                            </tr>
+                                                        }
+                                                    </tbody>
+                                                </table>
+                                            }
+                                            else
+                                            {
+                                                <div class="row">
+                                                    <div class="col-lg-1 col-md-1 col-xs-12">
+                                                    </div>
+                                                    <div style="border: 5px solid #F6A54A; padding: 10px; border-radius: 8px 8px; " class="col-lg-10 col-md-10 col-xs-8">
+                                                        <h4 style="font-weight: bold">Nenhuma locação cadastrada</h4>
+                                                    </div>
+                                                    <div class="col-lg-1 col-md-1 col-xs-12">
+                                                    </div>
+                                                </div>
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>                          
+
+                            <div class="col-lg-12 col-md-12 col-xs-12">
+                                <div class="col-lg-12 col-md-12 col-xs-12 ibox float-e-margins" style="border-bottom: solid; border-bottom-color: darkblue; border-bottom-width: 2px; border-left: solid; border-left-color: darkblue; border-left-width: 1px; border-right: solid; border-right-color: darkblue; border-right-width: 1px; border-top: solid; border-top-color: darkblue; border-top-width: 1px">
+                                    <div class="ibox-title">
+                                        <h4>Recebimentos - Total por Mês (R$)</h4>
+                                    </div>
+                                    <div class="ibox-content">
+                                        <div class="row">
+                                            @if (ViewBag.ListaParcelaMes != null && (ViewBag.ListaParcelaMes as List<ERP_Condominios_Solution.ViewModels.ModeloViewModel>).Count > 0)
+                                            {
+                                                <table class="table table-striped table-bordered table-hover">
+                                                    <thead style="background-color:lightsteelblue">
+                                                        <tr>
+                                                            <th>Mês</th>
+                                                            <th>Total (R$)</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        @foreach (var cond in (ViewBag.ListaParcelaMes as List<ERP_Condominios_Solution.ViewModels.ModeloViewModel>).OrderByDescending(p => p.DataEmissao))
+                                                        {
+                                                            <tr>
+                                                                <td>@cond.Nome</td>
+                                                                <td>@CrossCutting.Formatters.DecimalFormatter(cond.ValorDec)</td>
+                                                            </tr>
+                                                        }
+                                                    </tbody>
+                                                </table>
+                                            }
+                                            else
+                                            {
+                                                <div class="row">
+                                                    <div class="col-lg-1 col-md-1 col-xs-12">
+                                                    </div>
+                                                    <div style="border: 5px solid #F6A54A; padding: 10px; border-radius: 8px 8px; " class="col-lg-10 col-md-10 col-xs-8">
+                                                        <h4 style="font-weight: bold">Nenhum recebimento cadastrado</h4>
+                                                    </div>
+                                                    <div class="col-lg-1 col-md-1 col-xs-12">
+                                                    </div>
+                                                </div>
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                            </div> 
+
+                            <div class="col-lg-12 col-md-12 col-xs-12">
+                                <div class="col-lg-12 col-md-12 col-xs-12 ibox float-e-margins" style="border-bottom: solid; border-bottom-color: darkblue; border-bottom-width: 2px; border-left: solid; border-left-color: darkblue; border-left-width: 1px; border-right: solid; border-right-color: darkblue; border-right-width: 1px; border-top: solid; border-top-color: darkblue; border-top-width: 1px">
+                                    <div class="ibox-title">
+                                        <h4>Recebimentos por Produto (R$)</h4>
+                                    </div>
+                                    <div class="ibox-content">
+                                        <div class="row">
+                                            @if (ViewBag.ListaRecebeProduto != null && (ViewBag.ListaRecebeProduto as List<ERP_Condominios_Solution.ViewModels.ModeloViewModel>).Count > 0)
+                                            {
+                                                <table class="table table-striped table-bordered table-hover">
+                                                    <thead style="background-color:lightsteelblue">
+                                                        <tr>
+                                                            <th>Nome</th>
+                                                            <th>Total (R$)</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        @foreach (var cond in (ViewBag.ListaRecebeProduto as List<ERP_Condominios_Solution.ViewModels.ModeloViewModel>).OrderByDescending(p => p.ValorDec).Take(5))
+                                                        {
+                                                            <tr>
+                                                                <td>@cond.Nome</td>
+                                                                <td>@CrossCutting.Formatters.DecimalFormatter(cond.ValorDec)</td>
+                                                            </tr>
+                                                        }
+                                                    </tbody>
+                                                </table>
+                                            }
+                                            else
+                                            {
+                                                <div class="row">
+                                                    <div class="col-lg-1 col-md-1 col-xs-12">
+                                                    </div>
+                                                    <div style="border: 5px solid #F6A54A; padding: 10px; border-radius: 8px 8px; " class="col-lg-10 col-md-10 col-xs-8">
+                                                        <h4 style="font-weight: bold">Nenhum recebimento cadastrado</h4>
+                                                    </div>
+                                                    <div class="col-lg-1 col-md-1 col-xs-12">
+                                                    </div>
+                                                </div>
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                            </div> 
+
+                            <div class="col-lg-12 col-md-12 col-xs-12">
+                                <div class="col-lg-12 col-md-12 col-xs-12 ibox float-e-margins" style="border-bottom: solid; border-bottom-color: darkblue; border-bottom-width: 2px; border-left: solid; border-left-color: darkblue; border-left-width: 1px; border-right: solid; border-right-color: darkblue; border-right-width: 1px; border-top: solid; border-top-color: darkblue; border-top-width: 1px">
+                                    <div class="ibox-title">
+                                        <h4>Parcelas em Atraso (R$)</h4>
+                                    </div>
+                                    <div class="ibox-content">
+                                        <div class="row">
+                                            @if (ViewBag.ListaParcelaAtraso != null && (ViewBag.ListaParcelaAtraso as List<ERP_Condominios_Solution.ViewModels.ModeloViewModel>).Count > 0)
+                                            {
+                                                <table class="table table-striped table-bordered table-hover">
+                                                    <thead style="background-color:lightsteelblue">
+                                                        <tr>
+                                                            <th>Faixa</th>
+                                                            <th>Número</th>
+                                                            <th>Total (R$)</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        @foreach (var cond in (ViewBag.ListaParcelaAtraso as List<ERP_Condominios_Solution.ViewModels.ModeloViewModel>))
+                                                        {
+                                                            <tr>
+                                                                <td>@cond.Nome</td>
+                                                                <td>@cond.Valor</td>
+                                                                <td>@CrossCutting.Formatters.DecimalFormatter(cond.ValorDec)</td>
+                                                            </tr>
+                                                        }
+                                                    </tbody>
+                                                </table>
+                                            }
+                                            else
+                                            {
+                                                <div class="row">
+                                                    <div class="col-lg-1 col-md-1 col-xs-12">
+                                                    </div>
+                                                    <div style="border: 5px solid #F6A54A; padding: 10px; border-radius: 8px 8px; " class="col-lg-10 col-md-10 col-xs-8">
+                                                        <h4 style="font-weight: bold">Nenhuma locação cadastrada</h4>
+                                                    </div>
+                                                    <div class="col-lg-1 col-md-1 col-xs-12">
+                                                    </div>
+                                                </div>
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                            </div> 
+
+                            <div class="col-lg-12 col-md-12 col-xs-12">
+                                <div class="col-lg-12 col-md-12 col-xs-12 ibox float-e-margins" style="border-bottom: solid; border-bottom-color: darkblue; border-bottom-width: 2px; border-left: solid; border-left-color: darkblue; border-left-width: 1px; border-right: solid; border-right-color: darkblue; border-right-width: 1px; border-top: solid; border-top-color: darkblue; border-top-width: 1px">
+                                    <div class="ibox-title">
+                                        <h4>Locações por Status</h4>
+                                    </div>
+                                    <div class="ibox-content">
+                                        <div class="row">
+                                            @if (ViewBag.ListaLocacaoStatus != null && (ViewBag.ListaLocacaoStatus as List<ERP_Condominios_Solution.ViewModels.ModeloViewModel>).Count > 0)
+                                            {
+                                                <table class="table table-striped table-bordered table-hover">
+                                                    <thead style="background-color:lightsteelblue">
+                                                        <tr>
+                                                            <th>Nome</th>
+                                                            <th>Total</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        @foreach (var cond in (ViewBag.ListaLocacaoStatus as List<ERP_Condominios_Solution.ViewModels.ModeloViewModel>).OrderBy(p => p.Nome))
+                                                        {
+                                                            <tr>
+                                                                <td>@cond.Nome</td>
+                                                                <td>@cond.Valor</td>
+                                                            </tr>
+                                                        }
+                                                    </tbody>
+                                                </table>
+                                            }
+                                            else
+                                            {
+                                                <div class="row">
+                                                    <div class="col-lg-1 col-md-1 col-xs-12">
+                                                    </div>
+                                                    <div style="border: 5px solid #F6A54A; padding: 10px; border-radius: 8px 8px; " class="col-lg-10 col-md-10 col-xs-8">
+                                                        <h4 style="font-weight: bold">Nenhuma locação cadastrada</h4>
+                                                    </div>
+                                                    <div class="col-lg-1 col-md-1 col-xs-12">
+                                                    </div>
+                                                </div>
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>                          
+                       
+                            <div class="col-lg-12 col-md-12 col-xs-12">
+                                <div class="col-lg-12 col-md-12 col-xs-12 ibox float-e-margins" style="border-bottom: solid; border-bottom-color: darkblue; border-bottom-width: 2px; border-left: solid; border-left-color: darkblue; border-left-width: 1px; border-right: solid; border-right-color: darkblue; border-right-width: 1px; border-top: solid; border-top-color: darkblue; border-top-width: 1px">
+                                    <div class="ibox-title">
+                                        <h4>Locações por Produtos</h4>
+                                    </div>
+                                    <div class="ibox-content">
+                                        <div class="row">
+                                            @if (ViewBag.ListaLocacaoProduto != null && (ViewBag.ListaLocacaoProduto as List<ERP_Condominios_Solution.ViewModels.ModeloViewModel>).Count > 0)
+                                            {
+                                                <table class="table table-striped table-bordered table-hover">
+                                                    <thead style="background-color:lightsteelblue">
+                                                        <tr>
+                                                            <th>Produto</th>
+                                                            <th>Total</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        @foreach (var cond in (ViewBag.ListaLocacaoProduto as List<ERP_Condominios_Solution.ViewModels.ModeloViewModel>).OrderByDescending(p => p.Valor).Take(5))
+                                                        {
+                                                            <tr>
+                                                                <td>@cond.Nome<td>
+                                                                <td>@cond.Valor</td>
+                                                                <td>@CrossCutting.Formatters.DecimalFormatter(cond.ValorDec)</td>
+                                                            </tr>
+                                                        }
+                                                    </tbody>
+                                                </table>
+                                            }
+                                            else
+                                            {
+                                                <div class="row">
+                                                    <div class="col-lg-1 col-md-1 col-xs-12">
+                                                    </div>
+                                                    <div style="border: 5px solid #F6A54A; padding: 10px; border-radius: 8px 8px; " class="col-lg-10 col-md-10 col-xs-8">
+                                                        <h4 style="font-weight: bold">Nenhuma locação cadastrada</h4>
+                                                    </div>
+                                                    <div class="col-lg-1 col-md-1 col-xs-12">
+                                                    </div>
+                                                </div>
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>                          
+
+                            <div class="col-lg-12 col-md-12 col-xs-12">
+                                <div class="col-lg-12 col-md-12 col-xs-12 ibox float-e-margins" style="border-bottom: solid; border-bottom-color: darkblue; border-bottom-width: 2px; border-left: solid; border-left-color: darkblue; border-left-width: 1px; border-right: solid; border-right-color: darkblue; border-right-width: 1px; border-top: solid; border-top-color: darkblue; border-top-width: 1px">
+                                    <div class="ibox-title">
+                                        <h4>Locações por Paciente</h4>
+                                    </div>
+                                    <div class="ibox-content">
+                                        <div class="row">
+                                            @if (ViewBag.ListaLocacaoPaciente != null && (ViewBag.ListaLocacaoPaciente as List<ERP_Condominios_Solution.ViewModels.ModeloViewModel>).Count > 0)
+                                            {
+                                                <table class="table table-striped table-bordered table-hover">
+                                                    <thead style="background-color:lightsteelblue">
+                                                        <tr>
+                                                            <th>Nome</th>
+                                                            <th>Total</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        @foreach (var cond in (ViewBag.ListaLocacaoPaciente as List<ERP_Condominios_Solution.ViewModels.ModeloViewModel>).OrderByDescending(p => p.Valor).Take(5))
+                                                        {
+                                                            <tr>
+                                                                <td>@cond.Nome</td>
+                                                                <td>@cond.Valor</td>
+                                                            </tr>
+                                                        }
+                                                    </tbody>
+                                                </table>
+                                            }
+                                            else
+                                            {
+                                                <div class="row">
+                                                    <div class="col-lg-1 col-md-1 col-xs-12">
+                                                    </div>
+                                                    <div style="border: 5px solid #F6A54A; padding: 10px; border-radius: 8px 8px; " class="col-lg-10 col-md-10 col-xs-8">
+                                                        <h4 style="font-weight: bold">Nenhuma locação cadastrada</h4>
+                                                    </div>
+                                                    <div class="col-lg-1 col-md-1 col-xs-12">
+                                                    </div>
+                                                </div>
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>                          
+                        
+                            <div class="col-lg-12 col-md-12 col-xs-12">
+                                <div class="col-lg-12 col-md-12 col-xs-12 ibox float-e-margins" style="border-bottom: solid; border-bottom-color: darkblue; border-bottom-width: 2px; border-left: solid; border-left-color: darkblue; border-left-width: 1px; border-right: solid; border-right-color: darkblue; border-right-width: 1px; border-top: solid; border-top-color: darkblue; border-top-width: 1px">
+                                    <div class="ibox-title">
+                                        <h4>Locações a Encerrar</h4>
+                                    </div>
+                                    <div class="ibox-content">
+                                        <div class="row">
+                                            @if (ViewBag.ListaLocacaoEncerra != null && (ViewBag.ListaLocacaoEncerra as List<ERP_Condominios_Solution.ViewModels.ModeloViewModel>).Count > 0)
+                                            {
+                                                <table class="table table-striped table-bordered table-hover">
+                                                    <thead style="background-color:lightsteelblue">
+                                                        <tr>
+                                                            <th>Nome</th>
+                                                            <th>Total</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        @foreach (var cond in (ViewBag.ListaLocacaoEncerra as List<ERP_Condominios_Solution.ViewModels.ModeloViewModel>))
+                                                        {
+                                                            <tr>
+                                                                <td>@cond.Nome</td>
+                                                                <td>@cond.Valor</td>
+                                                            </tr>
+                                                        }
+                                                    </tbody>
+                                                </table>
+                                            }
+                                            else
+                                            {
+                                                <div class="row">
+                                                    <div class="col-lg-1 col-md-1 col-xs-12">
+                                                    </div>
+                                                    <div style="border: 5px solid #F6A54A; padding: 10px; border-radius: 8px 8px; " class="col-lg-10 col-md-10 col-xs-8">
+                                                        <h4 style="font-weight: bold">Nenhuma locação cadastrada</h4>
+                                                    </div>
+                                                    <div class="col-lg-1 col-md-1 col-xs-12">
+                                                    </div>
+                                                </div>
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>                        
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+</div>
+
+
+@section Styles {
+    <link href="~/Content/themes/base/jquery-ui.min.css" rel="stylesheet" />
+    <link href="~/Content/themes/base/all.css" rel="stylesheet" />
+    @Styles.Render("~/Content/plugins/dataTables/dataTablesStyles")
+    @Styles.Render("~/plugins/jasnyBootstrapStyles")
+    @Styles.Render("~/plugins/toastrStyles")
+    @Scripts.Render("~/plugins/wow")
+    @Scripts.Render("~/bundles/inspinia")
+    @Styles.Render("~/Content/css")
+    @Styles.Render("~/font-awesome/css")
 }
 
-<h2>MontarTelaDashboardLocacao</h2>
+@section Scripts {
+
+    <script type="text/javascript" src="~/Scripts/moment.min.js"></script>
+    <script type="text/javascript" src="~/Scripts/bootstrap.min.js"></script>
+    @Scripts.Render("~/plugins/toastr")
+    <script src="~/Scripts/jquery-ui-1.12.1.min.js"></script>
+    @Scripts.Render("~/plugins/dataTables")
+    @Scripts.Render("~/bundles/inputmask")
+    @Scripts.Render("~/plugins/jasnyBootstrap")
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.maskedinput/1.4.1/jquery.maskedinput.js"></script>
+    <script src="~/Scripts/uploadAnexo.js"></script>
+    @Scripts.Render("~/plugins/chartjs")
+        <script>
+        function Fade() {
+            $('.dotContainer').fadeIn("fast");
+            $('#login').css("filter", "blur(4px)");
+        }
+    </script>
+    <script>
+        $(window).on("load", function () {
+            $('.dotContainer').fadeOut("slow");
+            $('#title').css("filter", "blur(0)");
+            $('#content').css("filter", "blur(0)");
+        });
+    </script>
+
+    <!-- Handler de fechamento do browser -->
+    <script type="text/javascript">
+        window.onbeforeunload = function ()
+        {
+            navigator.sendBeacon('../ControleAcesso/LogSessionTime');
+        }; 
+    </script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('[data-toggle="popover"]').popover();
+        });
+    </script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-toggle="popover"]'));
+            var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
+                return new bootstrap.Popover(popoverTriggerEl);
+            });
+        });
+    </script>
+
+    <script type="text/javascript">
+        $(document).ready(function () { 
+            $('.btn-loading').on('click', function (e) {            
+                $(this).prop('disabled', true);
+                $(this).addClass('disabled');
+                $('#loadingIndicator').show();
+                var tagName = $(this).prop('tagName').toLowerCase();
+                if (tagName === 'a') {
+                    e.preventDefault(); 
+                    var targetUrl = $(this).attr('href');
+                    window.location.href = targetUrl;
+
+                } else if (tagName === 'button' || tagName === 'input') {
+                    $(this).closest('form').submit();
+                }
+            });
+        });
+    </script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            $.ajax({
+                url: '../Locacao/GetDadosLocacaoDia'
+                , type: 'POST'
+                , success: function (result) {
+                    var barData = {
+                        labels: result.dias,
+                        datasets: [
+                            {
+                                label: "Locações por Dia",
+                                backgroundColor: 'rgba(26,179,148,0.5)',
+                                pointBorderColor: "#fff",
+                                data: result.valores
+                            }
+                        ]
+                    };
+
+                    var barOptions = {
+                        responsive: true
+                    };
+
+                    var ctx2 = document.getElementById("barChartLocacaoDia").getContext("2d");
+                    new Chart(ctx2, { type: 'bar', data: barData, options: barOptions });
+                }
+            });
+        });
+    </script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            $.ajax({
+                url: '../Locacao/GetDadosRecebimentoDia'
+                , type: 'POST'
+                , success: function (result) {
+                    var barData = {
+                        labels: result.dias,
+                        datasets: [
+                            {
+                                label: "Recebimentos por Dia",
+                                backgroundColor: 'rgba(26,179,148,0.5)',
+                                pointBorderColor: "#fff",
+                                data: result.valores
+                            }
+                        ]
+                    };
+
+                    var barOptions = {
+                        responsive: true
+                    };
+
+                    var ctx2 = document.getElementById("barChartRecDia").getContext("2d");
+                    new Chart(ctx2, { type: 'bar', data: barData, options: barOptions });
+                }
+            });
+        });
+    </script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            $.ajax({
+                url: '../Locacao/GetDadosLocacaoMes'
+                , type: 'POST'
+                , success: function (result) {
+                    var barData = {
+                        labels: result.dias,
+                        datasets: [
+                            {
+                                label: "Locações por Mês",
+                                backgroundColor: 'rgba(26,179,148,0.5)',
+                                pointBorderColor: "#fff",
+                                data: result.valores
+                            }
+                        ]
+                    };
+
+                    var barOptions = {
+                        responsive: true
+                    };
+
+                    var ctx2 = document.getElementById("barChartLocacaoMes").getContext("2d");
+                    new Chart(ctx2, { type: 'bar', data: barData, options: barOptions });
+                }
+            });
+        });
+    </script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            $.ajax({
+                url: '../Locacao/GetDadosRecebimentoMes'
+                , type: 'POST'
+                , success: function (result) {
+                    var barData = {
+                        labels: result.dias,
+                        datasets: [
+                            {
+                                label: "Recebimentos por Mês",
+                                backgroundColor: 'rgba(26,179,148,0.5)',
+                                pointBorderColor: "#fff",
+                                data: result.valores
+                            }
+                        ]
+                    };
+
+                    var barOptions = {
+                        responsive: true
+                    };
+
+                    var ctx2 = document.getElementById("barChartRecMes").getContext("2d");
+                    new Chart(ctx2, { type: 'bar', data: barData, options: barOptions });
+                }
+            });
+        });
+    </script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            $.ajax({
+                url: '../Locacao/GetDadosLocacaoStatus'
+                , type: 'POST'
+                , success: function (result) {
+                var doughnutData = {
+                   labels: result.labels,
+                   datasets: [{
+                     data: result.valores,
+                     backgroundColor: result.cores
+                   }]
+                };
+                var doughnutOptions = {
+                   responsive: true
+                };
+                var ctx4 = document.getElementById("doughnutChartStatus").getContext("2d");
+                new Chart(ctx4, { type: 'doughnut', data: doughnutData, options: doughnutOptions });
+              }
+            });
+        });
+    </script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            $.ajax({
+                url: '../Locacao/GetDadosProdutoLocacao'
+                , type: 'POST'
+                , success: function (result) {
+                var doughnutData = {
+                   labels: result.labels,
+                   datasets: [{
+                     data: result.valores,
+                     backgroundColor: result.cores
+                   }]
+                };
+                var doughnutOptions = {
+                   responsive: true
+                };
+                var ctx4 = document.getElementById("doughnutChartProd").getContext("2d");
+                new Chart(ctx4, { type: 'doughnut', data: doughnutData, options: doughnutOptions });
+              }
+            });
+        });
+    </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            $.ajax({
+                url: '../Financeiro/GetDadosRectoForma'
+                , type: 'POST'
+                , success: function (result) {
+                var doughnutData = {
+                   labels: result.labels,
+                   datasets: [{
+                     data: result.valores,
+                     backgroundColor: result.cores
+                   }]
+                };
+                var doughnutOptions = {
+                   responsive: true
+                };
+                var ctx4 = document.getElementById("doughnutChartRectoForma").getContext("2d");
+                new Chart(ctx4, { type: 'doughnut', data: doughnutData, options: doughnutOptions });
+              }
+            });
+        });
+    </script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            $.ajax({
+                url: '/Financeiro/GetDadosPagtoMedia'
+                , type: 'POST'
+                , success: function (result) {
+                    var lineData = {
+                        labels: result.dias,
+                        datasets: [
+
+                            {
+                                label: "Pagamentos (R$)",
+                                backgroundColor: 'rgba(26,179,148,0.5)',
+                                borderColor: "rgba(26,179,148,0.7)",
+                                pointBackgroundColor: "rgba(26,179,148,1)",
+                                pointBorderColor: "#fff",
+                                data: result.pagtos
+                            }, {
+                                label: "Média (R$)",
+                                backgroundColor: 'rgba(225, 133, 6, 0.5)',
+                                borderColor: "rgba(225, 133, 6,0.7)",
+                                pointBackgroundColor: "rgba(225, 133, 6,1)",
+                                pointBorderColor: "#fff",
+                                data: result.media
+                            }
+                        ]
+                    };
+
+                    var lineOptions = {
+                        responsive: true
+                    };
+                    var ctx = document.getElementById("lineChartPagtoMedia").getContext("2d");
+                    new Chart(ctx, { type: 'line', data: lineData, options: lineOptions });
+              }
+            });
+        });
+    </script>
+    
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            $.ajax({
+                url: '/Financeiro/GetDadosRectoMedia'
+                , type: 'POST'
+                , success: function (result) {
+                    var lineData = {
+                        labels: result.dias,
+                        datasets: [
+
+                            {
+                                label: "Recebimentos (R$)",
+                                backgroundColor: 'rgba(26,179,148,0.5)',
+                                borderColor: "rgba(26,179,148,0.7)",
+                                pointBackgroundColor: "rgba(26,179,148,1)",
+                                pointBorderColor: "#fff",
+                                data: result.rectos
+                            }, {
+                                label: "Média (R$)",
+                                backgroundColor: 'rgba(225, 133, 6, 0.5)',
+                                borderColor: "rgba(225, 133, 6,0.7)",
+                                pointBackgroundColor: "rgba(225, 133, 6,1)",
+                                pointBorderColor: "#fff",
+                                data: result.media
+                            }
+                        ]
+                    };
+
+                    var lineOptions = {
+                        responsive: true
+                    };
+                    var ctx = document.getElementById("lineChartRectoMedia").getContext("2d");
+                    new Chart(ctx, { type: 'line', data: lineData, options: lineOptions });
+              }
+            });
+        });
+    </script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            $.ajax({
+                url: '/Financeiro/GetDadosPagtoRecto'
+                , type: 'POST'
+                , success: function (result) {
+                    var lineData = {
+                        labels: result.dias,
+                        datasets: [
+
+                            {
+                                label: "Pagamentos (R$)",
+                                backgroundColor: 'rgba(26,179,148,0.5)',
+                                borderColor: "rgba(26,179,148,0.7)",
+                                pointBackgroundColor: "rgba(26,179,148,1)",
+                                pointBorderColor: "#fff",
+                                data: result.pagtos
+                            }, {
+                                label: "Recebimentos (R$)",
+                                backgroundColor: 'rgba(225, 133, 6, 0.5)',
+                                borderColor: "rgba(225, 133, 6,0.7)",
+                                pointBackgroundColor: "rgba(225, 133, 6,1)",
+                                pointBorderColor: "#fff",
+                                data: result.rectos
+                            }
+                        ]
+                    };
+
+                    var lineOptions = {
+                        responsive: true
+                    };
+                    var ctx = document.getElementById("lineChartPagtoRecto").getContext("2d");
+                    new Chart(ctx, { type: 'line', data: lineData, options: lineOptions });
+              }
+            });
+        });
+    </script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            $.ajax({
+                url: '/Financeiro/GetDadosPagtoRectoMes'
+                , type: 'POST'
+                , success: function (result) {
+                    var lineData = {
+                        labels: result.dias,
+                        datasets: [
+
+                            {
+                                label: "Pagamentos (R$)",
+                                backgroundColor: 'rgba(26,179,148,0.5)',
+                                borderColor: "rgba(26,179,148,0.7)",
+                                pointBackgroundColor: "rgba(26,179,148,1)",
+                                pointBorderColor: "#fff",
+                                data: result.pagtos
+                            }, {
+                                label: "Recebimentos (R$)",
+                                backgroundColor: 'rgba(225, 133, 6, 0.5)',
+                                borderColor: "rgba(225, 133, 6,0.7)",
+                                pointBackgroundColor: "rgba(225, 133, 6,1)",
+                                pointBorderColor: "#fff",
+                                data: result.rectos
+                            }
+                        ]
+                    };
+
+                    var lineOptions = {
+                        responsive: true
+                    };
+                    var ctx = document.getElementById("lineChartPagtoRectoMes").getContext("2d");
+                    new Chart(ctx, { type: 'line', data: lineData, options: lineOptions });
+              }
+            });
+        });
+    </script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            $.ajax({
+                url: '../Financeiro/GetDadosPagtoConsolidado'
+                , type: 'POST'
+                , success: function (result) {
+                var doughnutData = {
+                   labels: result.labels,
+                   datasets: [{
+                     data: result.valores,
+                     backgroundColor: result.cores
+                   }]
+                };
+                var doughnutOptions = {
+                   responsive: true
+                };
+                var ctx4 = document.getElementById("doughnutChartPagtoConsolidado").getContext("2d");
+                new Chart(ctx4, { type: 'doughnut', data: doughnutData, options: doughnutOptions });
+              }
+            });
+        });
+    </script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            $.ajax({
+                url: '../Financeiro/GetDadosRectoConsolidado'
+                , type: 'POST'
+                , success: function (result) {
+                var doughnutData = {
+                   labels: result.labels,
+                   datasets: [{
+                     data: result.valores,
+                     backgroundColor: result.cores
+                   }]
+                };
+                var doughnutOptions = {
+                   responsive: true
+                };
+                var ctx4 = document.getElementById("doughnutChartRectoConsolidado").getContext("2d");
+                new Chart(ctx4, { type: 'doughnut', data: doughnutData, options: doughnutOptions });
+              }
+            });
+        });
+    </script>
+
+    @if (ViewBag.Message != null)
+    {
+        <script type="text/javascript">
+            window.onload = function () {
+                  alert("@ViewBag.Message");
+            };
+        </script>
+    }
+}
 
