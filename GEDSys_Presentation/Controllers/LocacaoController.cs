@@ -731,6 +731,18 @@ namespace GEDSys_Presentation.Controllers
                     Session["ListaHistoricoLocacaoGeral"] = null;
                     Session["LocacoesHistoricos"] = null;
 
+                    Session["ListaLocacaoData"] = null;
+                    Session["ListaParcelaData"] = null;
+                    Session["ListaLocacaoMes"] = null;
+                    Session["ListaParcelaMes"] = null;
+                    Session["ListaLocacaoStatus"] = null;
+                    Session["ListaLocacaoProduto"] = null;
+                    Session["ListaLocacaoPaciente"] = null;
+                    Session["ListaLocacaoVencida"] = null;
+                    Session["ListaRecebeProduto"] = null;
+                    Session["ListaParcelaAtraso"] = null;
+                    Session["ListaLocacaoEncerra"] = null;
+
                     // Mensagem do CRUD
                     Session["MsgCRUD"] = "A Locação de " + prod.PROD_NM_NOME.ToUpper() + " para " + pac.PACI_NM_NOME.ToUpper() + " foi criada com sucesso. Foram geradas " + item.LOCA_NR_PRAZO.ToString() + " parcelas.";
                     Session["MensLocacao"] = 61;
@@ -1791,6 +1803,18 @@ namespace GEDSys_Presentation.Controllers
                     // Mensagem do CRUD
                     Session["MsgCRUD"] = "A Locação de " + prod.PROD_NM_NOME.ToUpper() + " para " + pac.PACI_NM_NOME.ToUpper()+ " foi alterada com sucesso";
                     Session["MensLocacao"] = 61;
+
+                    Session["ListaLocacaoData"] = null;
+                    Session["ListaParcelaData"] = null;
+                    Session["ListaLocacaoMes"] = null;
+                    Session["ListaParcelaMes"] = null;
+                    Session["ListaLocacaoStatus"] = null;
+                    Session["ListaLocacaoProduto"] = null;
+                    Session["ListaLocacaoPaciente"] = null;
+                    Session["ListaLocacaoVencida"] = null;
+                    Session["ListaRecebeProduto"] = null;
+                    Session["ListaParcelaAtraso"] = null;
+                    Session["ListaLocacaoEncerra"] = null;
 
                     // Retorno
                     if ((Int32)Session["TipoLocacao"] == 1)
@@ -3730,6 +3754,18 @@ namespace GEDSys_Presentation.Controllers
                     Session["MensLocacao"] = 61;
 
                     // Retorno
+                    Session["LocacaoAlterada"] = 1;
+                    Session["ListaLocacaoData"] = null;
+                    Session["ListaParcelaData"] = null;
+                    Session["ListaLocacaoMes"] = null;
+                    Session["ListaParcelaMes"] = null;
+                    Session["ListaLocacaoStatus"] = null;
+                    Session["ListaLocacaoProduto"] = null;
+                    Session["ListaLocacaoPaciente"] = null;
+                    Session["ListaLocacaoVencida"] = null;
+                    Session["ListaRecebeProduto"] = null;
+                    Session["ListaParcelaAtraso"] = null;
+                    Session["ListaLocacaoEncerra"] = null;
                     if ((Int32)Session["VoltaLocacaoParcela"] == 2)
                     {
                         return RedirectToAction("VerParcelasLocacoes");
@@ -4668,6 +4704,7 @@ namespace GEDSys_Presentation.Controllers
                     lista = (List<LOCACAO>)Session["ListaLocacao"];
                     titulo = "Locações - Pendentes";
                 }
+                lista = lista.OrderBy(p => p.PACIENTE.PACI_NM_NOME).ToList();
                 Font meuFont = FontFactory.GetFont("Arial", 8, iTextSharp.text.Font.NORMAL, BaseColor.BLACK);
                 Font meuFont1 = FontFactory.GetFont("Arial", 9, iTextSharp.text.Font.NORMAL, BaseColor.BLACK);
                 Font meuFont2 = FontFactory.GetFont("Arial", 12, iTextSharp.text.Font.NORMAL, BaseColor.BLACK);
@@ -16531,7 +16568,7 @@ namespace GEDSys_Presentation.Controllers
                 List<ModeloViewModel> lista7 = new List<ModeloViewModel>();
                 if (Session["ListaLocacaoProduto"] == null)
                 {
-                    List<PRODUTO> prodx = CarregarProduto().Where(p => p.PROD_IN_TIPO_PRODUTO == 1 & p.PROD_IN_LOCACAO == 1).ToList();
+                    List<PRODUTO> prodx = CarregarProduto().Where(p => p.PROD_IN_TIPO_PRODUTO == 2 & p.PROD_IN_LOCACAO == 1).ToList();
                     foreach (PRODUTO item in prodx)
                     {
                         Int32 num = locs.Where(p => p.PROD_CD_ID == item.PROD_CD_ID & p.LOCA_IN_STATUS == 1).ToList().Count;
@@ -16681,22 +16718,27 @@ namespace GEDSys_Presentation.Controllers
                     mod.Valor = atraso10;
                     mod.ValorDec = atrasoVal10.Value;
                     listaAtraso.Add(mod);
-                    mod.Nome = "Até 30 dias de atraso";
-                    mod.Valor = atraso30;
-                    mod.ValorDec = atrasoVal30.Value;
-                    listaAtraso.Add(mod);
-                    mod.Nome = "Até 60 dias de atraso";
-                    mod.Valor = atraso60;
-                    mod.ValorDec = atrasoVal60.Value;
-                    listaAtraso.Add(mod);
-                    mod.Nome = "Mais de 60 dias de atraso";
-                    mod.Valor = atraso00;
-                    mod.ValorDec = atrasoVal00.Value;
-                    listaAtraso.Add(mod);
+
+                    ModeloViewModel mod1 = new ModeloViewModel();
+                    mod1.Nome = "Entre 10 e 30 dias de atraso";
+                    mod1.Valor = atraso30;
+                    mod1.ValorDec = atrasoVal30.Value;
+                    listaAtraso.Add(mod1);
+
+                    ModeloViewModel mod2 = new ModeloViewModel();
+                    mod2.Nome = "Entre 30 e 60 dias de atraso";
+                    mod2.Valor = atraso60;
+                    mod2.ValorDec = atrasoVal60.Value;
+                    listaAtraso.Add(mod2);
+
+                    ModeloViewModel mod3 = new ModeloViewModel();
+                    mod3.Nome = "Mais que 60 dias de atraso";
+                    mod3.Valor = atraso00;
+                    mod3.ValorDec = atrasoVal00.Value;
+                    listaAtraso.Add(mod3);
 
                     ViewBag.ListaParcelaAtraso = listaAtraso;
                     Session["ListaParcelaAtraso"] = listaAtraso;
-
                 }
                 else
                 {
@@ -16736,12 +16778,14 @@ namespace GEDSys_Presentation.Controllers
                     mod.Nome = "Vencendo em até 10 dias";
                     mod.Valor = venc10;
                     listaEncerra.Add(mod);
-                    mod.Nome = "Vencendo em até 30 dias";
-                    mod.Valor = venc30;
-                    listaEncerra.Add(mod);
-                    mod.Nome = "Vencendo em até 60 dias";
-                    mod.Valor = venc60;
-                    listaEncerra.Add(mod);
+                    ModeloViewModel mod1 = new ModeloViewModel();
+                    mod1.Nome = "Vencendo em até 30 dias";
+                    mod1.Valor = venc30;
+                    listaEncerra.Add(mod1);
+                    ModeloViewModel mod2 = new ModeloViewModel();
+                    mod2.Nome = "Vencendo em até 60 dias";
+                    mod2.Valor = venc60;
+                    listaEncerra.Add(mod2);
 
                     ViewBag.ListaLocacaoEncerra = listaEncerra;
                     Session["ListaLocacaoEncerra"] = listaEncerra;
@@ -16856,7 +16900,7 @@ namespace GEDSys_Presentation.Controllers
 
         public JsonResult GetDadosLocacaoDia()
         {
-            List<ModeloViewModel> listaCP1 = (List<ModeloViewModel>)Session["ListaLocacaoData "];
+            List<ModeloViewModel> listaCP1 = (List<ModeloViewModel>)Session["ListaLocacaoData"];
             List<String> dias = new List<String>();
             List<Decimal> valor = new List<Decimal>();
             dias.Add(" ");
@@ -16924,7 +16968,7 @@ namespace GEDSys_Presentation.Controllers
 
             foreach (ModeloViewModel item in listaCP1)
             {
-                dias.Add(item.DataEmissao.ToShortDateString());
+                dias.Add(item.Nome);
                 valor.Add(item.ValorDec);
             }
 
@@ -16988,6 +17032,313 @@ namespace GEDSys_Presentation.Controllers
             result.Add("valores", quant);
             result.Add("cores", cor);
             return Json(result);
+        }
+
+        public ActionResult GerarListagemLocacaoData()
+        {
+            try
+            {
+                // Prepara geração
+                CONFIGURACAO conf = CarregaConfiguracaoGeral();
+                Int32 idAss = (Int32)Session["IdAssinante"];
+                String data = DateTime.Today.Date.ToShortDateString();
+                data = data.Substring(0, 2) + data.Substring(3, 2) + data.Substring(6, 4);
+                String nomeRel = String.Empty;
+                String titulo = String.Empty;
+
+                String mes = CrossCutting.UtilitariosGeral.NomeMes(DateTime.Today.Date.Month);
+                mes = mes + " de " + DateTime.Today.Date.Year.ToString();
+
+                List<LOCACAO> lista = new List<LOCACAO>();
+                nomeRel = "LocacaoData" + "_" + data + ".pdf";
+                titulo = "Locações por Data - " + mes;
+                Font meuFont = FontFactory.GetFont("Arial", 8, iTextSharp.text.Font.NORMAL, BaseColor.BLACK);
+                Font meuFont1 = FontFactory.GetFont("Arial", 9, iTextSharp.text.Font.NORMAL, BaseColor.BLACK);
+                Font meuFont2 = FontFactory.GetFont("Arial", 12, iTextSharp.text.Font.NORMAL, BaseColor.BLACK);
+                Font meuFontBold = FontFactory.GetFont("Arial", 8, iTextSharp.text.Font.BOLD, BaseColor.BLACK);
+
+                // Monta lista
+                lista = CarregarLocacao().Where(p => p.LOCA_DT_INICIO.Value.Month == DateTime.Today.Month & p.LOCA_DT_INICIO.Value.Year == DateTime.Today.Year).ToList();
+                lista = lista.OrderBy(p => p.LOCA_DT_INICIO).ToList();
+
+                // Cabeçalho
+                PdfPTable headerTable = new PdfPTable(new float[] { 20f, 700f });
+                headerTable.WidthPercentage = 100;
+                headerTable.HorizontalAlignment = 1;
+                headerTable.SpacingBefore = 1f;
+                headerTable.SpacingAfter = 1f;
+
+                if (conf.CONF_IN_LOGO_EMPRESA == 1)
+                {
+                    PdfPCell cell1 = new PdfPCell();
+                    cell1.Border = 0;
+                    cell1.Colspan = 1;
+                    Image image = null;
+                    EMPRESA empresa = empApp.GetItemByAssinante(idAss);
+                    image = Image.GetInstance(Server.MapPath(empresa.EMPR_AQ_LOGO));
+                    image.ScaleAbsolute(50, 50);
+                    cell1.AddElement(image);
+                    cell1.Border = PdfPCell.BOTTOM_BORDER;
+                    headerTable.AddCell(cell1);
+
+                    cell1 = new PdfPCell(new Paragraph(titulo, meuFont2))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_CENTER
+                    };
+                    cell1.Border = 0;
+                    cell1.Colspan = 1;
+                    cell1.Border = PdfPCell.BOTTOM_BORDER;
+                    headerTable.AddCell(cell1);
+                }
+                else
+                {
+                    PdfPCell cell2 = new PdfPCell(new Paragraph(titulo, meuFont2))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_CENTER
+                    };
+                    cell2.Border = 0;
+                    cell2.Colspan = 2;
+                    headerTable.AddCell(cell2);
+
+                    cell2 = new PdfPCell(new Paragraph(" ", meuFont))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    cell2.Colspan = 2;
+                    cell2.Border = PdfPCell.BOTTOM_BORDER;
+                    headerTable.AddCell(cell2);
+                }
+
+                // Rodape
+                PdfPTable footerTable = new PdfPTable(1);
+                footerTable.WidthPercentage = 100;
+                footerTable.HorizontalAlignment = 1;
+                footerTable.SpacingBefore = 1f;
+                footerTable.SpacingAfter = 1f;
+
+                PdfPCell cell = new PdfPCell();
+                cell.Border = PdfPCell.TOP_BORDER;
+                cell = new PdfPCell(new Paragraph("Gerado por WebDoctor 1.0 em " + DateTime.Today.Date.ToLongDateString(), meuFont));
+                footerTable.AddCell(cell);
+
+                // Cria documento
+                Document pdfDoc = new Document(PageSize.A4.Rotate(), 10, 10, 60, 40);
+                PdfWriter pdfWriter = PdfWriter.GetInstance(pdfDoc, Response.OutputStream);
+                pdfWriter.PageEvent = new CustomPageEventHelper(headerTable, footerTable);
+                pdfDoc.Open();
+
+                // Linha horizontal
+                Paragraph line = new Paragraph(new Chunk(new iTextSharp.text.pdf.draw.LineSeparator(0.0F, 100.0F, BaseColor.BLUE, Element.ALIGN_LEFT, 1)));
+                pdfDoc.Add(line);
+
+                // Grid
+                PdfPTable table = new PdfPTable(new float[] { 70f, 70f, 150f, 180f, 80f, 70f, 70f, 70f, 50f });
+                table.WidthPercentage = 100;
+                table.HorizontalAlignment = 0;
+                table.SpacingBefore = 1f;
+                table.SpacingAfter = 1f;
+
+                cell = new PdfPCell(new Paragraph("Início", meuFont))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph("Final", meuFont))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph("Paciente", meuFont))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph("Produto", meuFont))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph("Quantidade", meuFont))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_RIGHT
+                };
+                cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph("Parcela (R$)", meuFont))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_RIGHT
+                };
+                cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph("Dia de Vencimento", meuFont))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph("Status", meuFont))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph(" ", meuFont))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_CENTER
+                };
+                cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                table.AddCell(cell);
+
+                foreach (LOCACAO item in lista)
+                {
+                    cell = new PdfPCell(new Paragraph(item.LOCA_DT_INICIO.Value.ToShortDateString(), meuFontBold))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    table.AddCell(cell);
+                    cell = new PdfPCell(new Paragraph(item.LOCA_DT_FINAL.Value.ToShortDateString(), meuFont))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    table.AddCell(cell);
+                    cell = new PdfPCell(new Paragraph(item.PACIENTE.PACI_NM_NOME, meuFont))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    table.AddCell(cell);
+                    cell = new PdfPCell(new Paragraph(item.PRODUTO.PROD_NM_NOME, meuFont))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    table.AddCell(cell);
+                    cell = new PdfPCell(new Paragraph(item.LOCA_IN_QUANTIDADE.ToString(), meuFont))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_RIGHT
+                    };
+                    table.AddCell(cell);
+                    cell = new PdfPCell(new Paragraph(CrossCutting.Formatters.DecimalFormatter(item.LOCA_VL_PARCELA.Value), meuFont))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_RIGHT
+                    };
+                    table.AddCell(cell);
+                    cell = new PdfPCell(new Paragraph(item.LOCA_NR_DIA.ToString(), meuFont))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    table.AddCell(cell);
+                    if (item.LOCA_IN_STATUS == 1)
+                    {
+                        cell = new PdfPCell(new Paragraph("Ativa", meuFont))
+                        {
+                            VerticalAlignment = Element.ALIGN_MIDDLE,
+                            HorizontalAlignment = Element.ALIGN_LEFT
+                        };
+                        table.AddCell(cell);
+                    }
+                    else if (item.LOCA_IN_STATUS == 0)
+                    {
+                        cell = new PdfPCell(new Paragraph("Pendente", meuFont))
+                        {
+                            VerticalAlignment = Element.ALIGN_MIDDLE,
+                            HorizontalAlignment = Element.ALIGN_LEFT
+                        };
+                        table.AddCell(cell);
+                    }
+
+                    else if (item.LOCA_IN_STATUS == 2)
+                    {
+                        cell = new PdfPCell(new Paragraph("Encerrada", meuFont))
+                        {
+                            VerticalAlignment = Element.ALIGN_MIDDLE,
+                            HorizontalAlignment = Element.ALIGN_LEFT
+                        };
+                        table.AddCell(cell);
+                    }
+                    else if (item.LOCA_IN_STATUS == 3)
+                    {
+                        cell = new PdfPCell(new Paragraph("Atrasada", meuFont))
+                        {
+                            VerticalAlignment = Element.ALIGN_MIDDLE,
+                            HorizontalAlignment = Element.ALIGN_LEFT
+                        };
+                        table.AddCell(cell);
+                    }
+                    else if (item.LOCA_IN_STATUS == 4)
+                    {
+                        cell = new PdfPCell(new Paragraph("Cancelada", meuFont))
+                        {
+                            VerticalAlignment = Element.ALIGN_MIDDLE,
+                            HorizontalAlignment = Element.ALIGN_LEFT
+                        };
+                        table.AddCell(cell);
+                    }
+                    if (System.IO.File.Exists(Server.MapPath(item.PRODUTO.PROD_AQ_FOTO)))
+                    {
+                        cell = new PdfPCell();
+                        Image image = Image.GetInstance(Server.MapPath(item.PRODUTO.PROD_AQ_FOTO));
+                        image.ScaleAbsolute(20, 20);
+                        cell.AddElement(image);
+                        table.AddCell(cell);
+                    }
+                    else
+                    {
+                        cell = new PdfPCell(new Paragraph("-", meuFont))
+                        {
+                            VerticalAlignment = Element.ALIGN_MIDDLE,
+                            HorizontalAlignment = Element.ALIGN_CENTER
+                        };
+                        table.AddCell(cell);
+                    }
+                }
+                pdfDoc.Add(table);
+
+                // Finaliza
+                pdfWriter.CloseStream = false;
+                pdfDoc.Close();
+                Response.Buffer = true;
+                Response.ContentType = "application/pdf";
+                Response.AddHeader("content-disposition", "attachment;filename=" + nomeRel);
+                Response.Cache.SetCacheability(HttpCacheability.NoCache);
+                Response.Write(pdfDoc);
+                Response.End();
+
+                // Retorno
+                return RedirectToAction("MontarTelaLocacao");
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Produto";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Produto", "CRMsys", 1, (USUARIO)Session["UserCredentials"]);
+                return RedirectToAction("TrataExcecao", "BaseAdmin");
+            }
         }
 
     }

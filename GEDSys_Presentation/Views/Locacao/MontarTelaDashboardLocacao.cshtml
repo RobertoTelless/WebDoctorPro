@@ -116,7 +116,7 @@
             <div class="form-group">
                 <div class="col-lg-12 col-md-12 col-xs-12">
                     <a href="@Url.Action("MontarTelaLocacao", "Locacao")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acesso à Central de Locações" class="btn btn-sm btn-success btn-loading" id="emp" OnClick = "Fade()">Central de Locações</a>                
-                    @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaPaciente", controller: "Paciente", htmlAttributes: new { @id = "emp", OnClick = "Fade()" })
+                    @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaLocacao", controller: "Locacao", htmlAttributes: new { @id = "emp", OnClick = "Fade()" })
                     <a href="@Url.Action((String)Session["AjudaNivel"])"  class="btn btn-sm btn-danger" target="_blank">Ajuda</a>                
                     <span id="loadingIndicator" style="display: none; margin-left: 10px; color: #007bff;">
                         <i class="fa fa-spinner fa-spin"></i> Processando...
@@ -205,7 +205,7 @@
                                 <div class="col-lg-6 col-md-6 col-xs-12">
                                     <div class="col-lg-12 col-md-12 col-xs-12 ibox float-e-margins" style="border-bottom: solid; border-bottom-color: darkblue; border-bottom-width: 2px; border-left: solid; border-left-color: darkblue; border-left-width: 1px; border-right: solid; border-right-color: darkblue; border-right-width: 1px; border-top: solid; border-top-color: darkblue; border-top-width: 1px">
                                         <div class="ibox-title">
-                                            <h4>Locações x Produto</h4>
+                                            <h4>Locações Ativas x Produto</h4>
                                         </div>
                                         <div class="ibox-content">
                                             <div class="row">
@@ -444,7 +444,7 @@
                             <div class="col-lg-12 col-md-12 col-xs-12">
                                 <div class="col-lg-12 col-md-12 col-xs-12 ibox float-e-margins" style="border-bottom: solid; border-bottom-color: darkblue; border-bottom-width: 2px; border-left: solid; border-left-color: darkblue; border-left-width: 1px; border-right: solid; border-right-color: darkblue; border-right-width: 1px; border-top: solid; border-top-color: darkblue; border-top-width: 1px">
                                     <div class="ibox-title">
-                                        <h4>Locações por Produtos</h4>
+                                        <h4>Locações Ativas por Produtos</h4>
                                     </div>
                                     <div class="ibox-content">
                                         <div class="row">
@@ -461,9 +461,8 @@
                                                         @foreach (var cond in (ViewBag.ListaLocacaoProduto as List<ERP_Condominios_Solution.ViewModels.ModeloViewModel>).OrderByDescending(p => p.Valor).Take(5))
                                                         {
                                                             <tr>
-                                                                <td>@cond.Nome<td>
+                                                                <td>@cond.Nome</td>
                                                                 <td>@cond.Valor</td>
-                                                                <td>@CrossCutting.Formatters.DecimalFormatter(cond.ValorDec)</td>
                                                             </tr>
                                                         }
                                                     </tbody>
@@ -489,7 +488,7 @@
                             <div class="col-lg-12 col-md-12 col-xs-12">
                                 <div class="col-lg-12 col-md-12 col-xs-12 ibox float-e-margins" style="border-bottom: solid; border-bottom-color: darkblue; border-bottom-width: 2px; border-left: solid; border-left-color: darkblue; border-left-width: 1px; border-right: solid; border-right-color: darkblue; border-right-width: 1px; border-top: solid; border-top-color: darkblue; border-top-width: 1px">
                                     <div class="ibox-title">
-                                        <h4>Locações por Paciente</h4>
+                                        <h4>Locações Ativas por Paciente</h4>
                                     </div>
                                     <div class="ibox-content">
                                         <div class="row">
@@ -821,242 +820,6 @@
                    responsive: true
                 };
                 var ctx4 = document.getElementById("doughnutChartProd").getContext("2d");
-                new Chart(ctx4, { type: 'doughnut', data: doughnutData, options: doughnutOptions });
-              }
-            });
-        });
-    </script>
-
-
-
-
-
-
-
-
-
-
-
-
-
-    <script type="text/javascript">
-        $(document).ready(function () {
-
-            $.ajax({
-                url: '../Financeiro/GetDadosRectoForma'
-                , type: 'POST'
-                , success: function (result) {
-                var doughnutData = {
-                   labels: result.labels,
-                   datasets: [{
-                     data: result.valores,
-                     backgroundColor: result.cores
-                   }]
-                };
-                var doughnutOptions = {
-                   responsive: true
-                };
-                var ctx4 = document.getElementById("doughnutChartRectoForma").getContext("2d");
-                new Chart(ctx4, { type: 'doughnut', data: doughnutData, options: doughnutOptions });
-              }
-            });
-        });
-    </script>
-    <script type="text/javascript">
-        $(document).ready(function () {
-
-            $.ajax({
-                url: '/Financeiro/GetDadosPagtoMedia'
-                , type: 'POST'
-                , success: function (result) {
-                    var lineData = {
-                        labels: result.dias,
-                        datasets: [
-
-                            {
-                                label: "Pagamentos (R$)",
-                                backgroundColor: 'rgba(26,179,148,0.5)',
-                                borderColor: "rgba(26,179,148,0.7)",
-                                pointBackgroundColor: "rgba(26,179,148,1)",
-                                pointBorderColor: "#fff",
-                                data: result.pagtos
-                            }, {
-                                label: "Média (R$)",
-                                backgroundColor: 'rgba(225, 133, 6, 0.5)',
-                                borderColor: "rgba(225, 133, 6,0.7)",
-                                pointBackgroundColor: "rgba(225, 133, 6,1)",
-                                pointBorderColor: "#fff",
-                                data: result.media
-                            }
-                        ]
-                    };
-
-                    var lineOptions = {
-                        responsive: true
-                    };
-                    var ctx = document.getElementById("lineChartPagtoMedia").getContext("2d");
-                    new Chart(ctx, { type: 'line', data: lineData, options: lineOptions });
-              }
-            });
-        });
-    </script>
-    
-    <script type="text/javascript">
-        $(document).ready(function () {
-
-            $.ajax({
-                url: '/Financeiro/GetDadosRectoMedia'
-                , type: 'POST'
-                , success: function (result) {
-                    var lineData = {
-                        labels: result.dias,
-                        datasets: [
-
-                            {
-                                label: "Recebimentos (R$)",
-                                backgroundColor: 'rgba(26,179,148,0.5)',
-                                borderColor: "rgba(26,179,148,0.7)",
-                                pointBackgroundColor: "rgba(26,179,148,1)",
-                                pointBorderColor: "#fff",
-                                data: result.rectos
-                            }, {
-                                label: "Média (R$)",
-                                backgroundColor: 'rgba(225, 133, 6, 0.5)',
-                                borderColor: "rgba(225, 133, 6,0.7)",
-                                pointBackgroundColor: "rgba(225, 133, 6,1)",
-                                pointBorderColor: "#fff",
-                                data: result.media
-                            }
-                        ]
-                    };
-
-                    var lineOptions = {
-                        responsive: true
-                    };
-                    var ctx = document.getElementById("lineChartRectoMedia").getContext("2d");
-                    new Chart(ctx, { type: 'line', data: lineData, options: lineOptions });
-              }
-            });
-        });
-    </script>
-    <script type="text/javascript">
-        $(document).ready(function () {
-
-            $.ajax({
-                url: '/Financeiro/GetDadosPagtoRecto'
-                , type: 'POST'
-                , success: function (result) {
-                    var lineData = {
-                        labels: result.dias,
-                        datasets: [
-
-                            {
-                                label: "Pagamentos (R$)",
-                                backgroundColor: 'rgba(26,179,148,0.5)',
-                                borderColor: "rgba(26,179,148,0.7)",
-                                pointBackgroundColor: "rgba(26,179,148,1)",
-                                pointBorderColor: "#fff",
-                                data: result.pagtos
-                            }, {
-                                label: "Recebimentos (R$)",
-                                backgroundColor: 'rgba(225, 133, 6, 0.5)',
-                                borderColor: "rgba(225, 133, 6,0.7)",
-                                pointBackgroundColor: "rgba(225, 133, 6,1)",
-                                pointBorderColor: "#fff",
-                                data: result.rectos
-                            }
-                        ]
-                    };
-
-                    var lineOptions = {
-                        responsive: true
-                    };
-                    var ctx = document.getElementById("lineChartPagtoRecto").getContext("2d");
-                    new Chart(ctx, { type: 'line', data: lineData, options: lineOptions });
-              }
-            });
-        });
-    </script>
-    <script type="text/javascript">
-        $(document).ready(function () {
-
-            $.ajax({
-                url: '/Financeiro/GetDadosPagtoRectoMes'
-                , type: 'POST'
-                , success: function (result) {
-                    var lineData = {
-                        labels: result.dias,
-                        datasets: [
-
-                            {
-                                label: "Pagamentos (R$)",
-                                backgroundColor: 'rgba(26,179,148,0.5)',
-                                borderColor: "rgba(26,179,148,0.7)",
-                                pointBackgroundColor: "rgba(26,179,148,1)",
-                                pointBorderColor: "#fff",
-                                data: result.pagtos
-                            }, {
-                                label: "Recebimentos (R$)",
-                                backgroundColor: 'rgba(225, 133, 6, 0.5)',
-                                borderColor: "rgba(225, 133, 6,0.7)",
-                                pointBackgroundColor: "rgba(225, 133, 6,1)",
-                                pointBorderColor: "#fff",
-                                data: result.rectos
-                            }
-                        ]
-                    };
-
-                    var lineOptions = {
-                        responsive: true
-                    };
-                    var ctx = document.getElementById("lineChartPagtoRectoMes").getContext("2d");
-                    new Chart(ctx, { type: 'line', data: lineData, options: lineOptions });
-              }
-            });
-        });
-    </script>
-
-    <script type="text/javascript">
-        $(document).ready(function () {
-
-            $.ajax({
-                url: '../Financeiro/GetDadosPagtoConsolidado'
-                , type: 'POST'
-                , success: function (result) {
-                var doughnutData = {
-                   labels: result.labels,
-                   datasets: [{
-                     data: result.valores,
-                     backgroundColor: result.cores
-                   }]
-                };
-                var doughnutOptions = {
-                   responsive: true
-                };
-                var ctx4 = document.getElementById("doughnutChartPagtoConsolidado").getContext("2d");
-                new Chart(ctx4, { type: 'doughnut', data: doughnutData, options: doughnutOptions });
-              }
-            });
-        });
-    </script>
-    <script type="text/javascript">
-        $(document).ready(function () {
-
-            $.ajax({
-                url: '../Financeiro/GetDadosRectoConsolidado'
-                , type: 'POST'
-                , success: function (result) {
-                var doughnutData = {
-                   labels: result.labels,
-                   datasets: [{
-                     data: result.valores,
-                     backgroundColor: result.cores
-                   }]
-                };
-                var doughnutOptions = {
-                   responsive: true
-                };
-                var ctx4 = document.getElementById("doughnutChartRectoConsolidado").getContext("2d");
                 new Chart(ctx4, { type: 'doughnut', data: doughnutData, options: doughnutOptions });
               }
             });
