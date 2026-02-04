@@ -268,7 +268,7 @@ namespace CrossCutting
             }
             if (numMes == 2)
             {
-                mes = "Janeiro";
+                mes = "Fevereiro";
             }
             if (numMes == 3)
             {

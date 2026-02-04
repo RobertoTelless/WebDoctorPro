@@ -1269,6 +1269,7 @@
     <Content Include="Imagens\1\Locacao\86\QRCode\Contrato_QRCode_d5trkvcn00065976ei50.png" />
     <Content Include="Imagens\1\Locacao\87\QRCode\Contrato_QRCode_d5ttevcn0006vg6kaltg.png" />
     <Content Include="Imagens\1\Locacao\88\QRCode\Contrato_QRCode_d5ttl5kn000b3260bopg.png" />
+    <Content Include="Imagens\1\Locacao\89\QRCode\Contrato_QRCode_d615194n0008vh0av0kg.png" />
     <Content Include="Imagens\1\Mensagem\237\Anexos\Cydia_3_Nova.jpg" />
     <Content Include="Imagens\1\Mensagem\239\Anexos\SysMkt_Image_2.jpg" />
     <Content Include="Imagens\1\Mensagem\259\Anexos\bz.jpg" />
@@ -3977,6 +3978,7 @@
     <Content Include="ConteudoSite\Estoque\WebDoctor_Estoque_Apresentacao_Final.pdf" />
     <Content Include="ConteudoSite\Locacao\WebDoctor_Locacao_Apresentacao_Final.pdf" />
     <Content Include="ConteudoSite\Mensageria\WebDoctor_Mensageria_Apresentacao_Final_1.pdf" />
+    <Content Include="Imagens\1\Locacao\89\Contrato\Contrato_LocacaoCunegundes Bazófica Encerada_d615194n0008vh0av0kg.pdf" />
     <None Include="Properties\PublishProfiles\eprontuario - FTP.pubxml" />
     <None Include="Properties\PublishProfiles\eprontuario - FTP1.pubxml" />
     <None Include="Properties\PublishProfiles\eprontuario - Web Deploy.pubxml" />
@@ -5503,6 +5505,9 @@
     <Folder Include="Imagens\1\Locacao\88\Anexos\" />
     <Folder Include="Imagens\1\Locacao\88\Contrato\" />
     <Folder Include="Imagens\1\Locacao\88\Distrato\" />
+    <Folder Include="Imagens\1\Locacao\89\Anexos\" />
+    <Folder Include="Imagens\1\Locacao\89\Assinado\" />
+    <Folder Include="Imagens\1\Locacao\89\Distrato\" />
     <Folder Include="Imagens\1\Medico\1\Anexos\" />
     <Folder Include="Imagens\1\Medico\2\Anexos\" />
     <Folder Include="Imagens\1\Medico\3\Anexos\" />
@@ -6281,6 +6286,10 @@
     <Folder Include="Imagens\1\Recebimento\1484\Anexos\" />
     <Folder Include="Imagens\1\Recebimento\14\Anexos\" />
     <Folder Include="Imagens\1\Recebimento\14\Recibo\" />
+    <Folder Include="Imagens\1\Recebimento\1519\Anexos\" />
+    <Folder Include="Imagens\1\Recebimento\1557\Anexos\" />
+    <Folder Include="Imagens\1\Recebimento\1558\Anexos\" />
+    <Folder Include="Imagens\1\Recebimento\1559\Anexos\" />
     <Folder Include="Imagens\1\Recebimento\15\Anexos\" />
     <Folder Include="Imagens\1\Recebimento\15\Recibo\" />
     <Folder Include="Imagens\1\Recebimento\16\Anexos\" />
