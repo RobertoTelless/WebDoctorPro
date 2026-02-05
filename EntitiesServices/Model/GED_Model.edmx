@@ -1101,6 +1101,7 @@
           <Property Name="CONF_VL_ACRESCIMO_ATRASO_PARCELA" Type="decimal" Precision="18" Scale="2" />
           <Property Name="CONF_NM_SENHA_PACIENTE" Type="varchar" MaxLength="50" />
           <Property Name="CONF_IN_RECIBO_SRF" Type="int" />
+          <Property Name="CONF_IN_DOC_PRONTUARIO" Type="int" />
         </EntityType>
         <EntityType Name="CONFIGURACAO_ANAMNESE">
           <Key>
@@ -21055,6 +21056,7 @@
           <Property Name="CONF_VL_ACRESCIMO_ATRASO_PARCELA" Type="Decimal" Precision="18" Scale="2" />
           <Property Name="CONF_NM_SENHA_PACIENTE" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
           <Property Name="CONF_IN_RECIBO_SRF" Type="Int32" />
+          <Property Name="CONF_IN_DOC_PRONTUARIO" Type="Int32" />
         </EntityType>
         <EntityType Name="CONFIGURACAO_ANAMNESE">
           <Key>
@@ -41934,6 +41936,7 @@
           <EntitySetMapping Name="CONFIGURACAO">
             <EntityTypeMapping TypeName="CRMSysDBModel.CONFIGURACAO">
               <MappingFragment StoreEntitySet="CONFIGURACAO">
+                <ScalarProperty Name="CONF_IN_DOC_PRONTUARIO" ColumnName="CONF_IN_DOC_PRONTUARIO" />
                 <ScalarProperty Name="CONF_IN_RECIBO_SRF" ColumnName="CONF_IN_RECIBO_SRF" />
                 <ScalarProperty Name="CONF_NM_SENHA_PACIENTE" ColumnName="CONF_NM_SENHA_PACIENTE" />
                 <ScalarProperty Name="CONF_VL_ACRESCIMO_ATRASO_PARCELA" ColumnName="CONF_VL_ACRESCIMO_ATRASO_PARCELA" />

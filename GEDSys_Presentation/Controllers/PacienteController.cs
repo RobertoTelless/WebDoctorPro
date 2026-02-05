@@ -7711,46 +7711,49 @@ namespace GEDSys_Presentation.Controllers
                     Int32 voltaHist = baseApp.ValidateCreateHistorico(hist);
 
                     // Atualiza prontuário
-                    PACIENTE_ANAMNESE ana = pac.PACIENTE_ANAMNESE.Where(p => p.PAAM_IN_ATIVO == 1).FirstOrDefault();
-                    PACIENTE_ANAMNESE anan = RemontarAnamnese(ana);
-                    List<PACIENTE_PRESCRICAO_ITEM> itens = prescricao.PACIENTE_PRESCRICAO_ITEM.ToList();
-
-                    String velho = anan.PAAM_TX_TEXTO_LIVRE;
-                    String novo = "Emissão de Prescrição" + "\r\n";
-                    foreach (PACIENTE_PRESCRICAO_ITEM rem in itens)
+                    if (conf.CONF_IN_DOC_PRONTUARIO == 1)
                     {
-                        novo += rem.PAPI_NM_REMEDIO + (rem.PAPI_NM_GENERICO != null ? " - " + rem.PAPI_NM_GENERICO : "") + (rem.PAPI_DS_POSOLOGIA != null ? " - " + rem.PAPI_DS_POSOLOGIA : "") + "\r\n";
-                    }
+                        PACIENTE_ANAMNESE ana = pac.PACIENTE_ANAMNESE.Where(p => p.PAAM_IN_ATIVO == 1).FirstOrDefault();
+                        PACIENTE_ANAMNESE anan = RemontarAnamnese(ana);
+                        List<PACIENTE_PRESCRICAO_ITEM> itens = prescricao.PACIENTE_PRESCRICAO_ITEM.ToList();
 
-                    String dataHoje = DateTime.Today.Date.ToLongDateString();
-                    dataHoje = "*** Consulta em [" + dataHoje + "] ***";
-                    if (anan.PAAM_TX_TEXTO_LIVRE != null)
-                    {
-                        String anot = dataHoje + "\r\n" + novo;
-                        if (velho == null & novo != String.Empty)
+                        String velho = anan.PAAM_TX_TEXTO_LIVRE;
+                        String novo = "Emissão de Prescrição" + "\r\n";
+                        foreach (PACIENTE_PRESCRICAO_ITEM rem in itens)
                         {
-                            anan.PAAM_TX_TEXTO_LIVRE = dataHoje + "\r\n" + novo;
+                            novo += rem.PAPI_NM_REMEDIO + (rem.PAPI_NM_GENERICO != null ? " - " + rem.PAPI_NM_GENERICO : "") + (rem.PAPI_DS_POSOLOGIA != null ? " - " + rem.PAPI_DS_POSOLOGIA : "") + "\r\n";
                         }
-                        if (velho != null & novo != String.Empty)
+
+                        String dataHoje = DateTime.Today.Date.ToLongDateString();
+                        dataHoje = "*** Consulta em [" + dataHoje + "] ***";
+                        if (anan.PAAM_TX_TEXTO_LIVRE != null)
                         {
-                            String tripa = velho.Substring(velho.Length - 4, 4);
-                            if (tripa == "\r\n")
+                            String anot = dataHoje + "\r\n" + novo;
+                            if (velho == null & novo != String.Empty)
                             {
-                                velho = velho.Substring(0, velho.Length - 4);
+                                anan.PAAM_TX_TEXTO_LIVRE = dataHoje + "\r\n" + novo;
                             }
-                            anan.PAAM_TX_TEXTO_LIVRE = velho + "\r\n\r\n" + dataHoje + "\r\n" + novo;
+                            if (velho != null & novo != String.Empty)
+                            {
+                                String tripa = velho.Substring(velho.Length - 4, 4);
+                                if (tripa == "\r\n")
+                                {
+                                    velho = velho.Substring(0, velho.Length - 4);
+                                }
+                                anan.PAAM_TX_TEXTO_LIVRE = velho + "\r\n\r\n" + dataHoje + "\r\n" + novo;
+                            }
                         }
-                    }
-                    else
-                    {
-                        velho = anan.PAAM_TX_TEXTO_LIVRE;
-                        anan.PAAM_TX_TEXTO_LIVRE = velho;
-                    }
+                        else
+                        {
+                            velho = anan.PAAM_TX_TEXTO_LIVRE;
+                            anan.PAAM_TX_TEXTO_LIVRE = velho;
+                        }
 
-                    // Executa a operação
-                    anan.PAAM_IN_ALTERADA = 1;
-                    anan.PACO_CD_ID = vm.PACO_CD_ID;
-                    Int32 voltaW = baseApp.ValidateEditAnamnese(anan);
+                        // Executa a operação
+                        anan.PAAM_IN_ALTERADA = 1;
+                        anan.PACO_CD_ID = vm.PACO_CD_ID;
+                        Int32 voltaW = baseApp.ValidateEditAnamnese(anan);
+                    }
 
                     // Mensagem do CRUD
                     Session["MsgCRUD"] = "A prescrição" + item.PAPR_GU_GUID + " do(a) paciente " + pac.PACI_NM_NOME.ToUpper() + " foi alterada com sucesso.";
@@ -8236,39 +8239,42 @@ namespace GEDSys_Presentation.Controllers
                     Int32 voltaHist = baseApp.ValidateCreateHistorico(hist);
 
                     // Atualiza prontuário
-                    PACIENTE_ANAMNESE ana = pac1.PACIENTE_ANAMNESE.Where(p => p.PAAM_IN_ATIVO == 1).FirstOrDefault();
-                    PACIENTE_ANAMNESE anan = RemontarAnamnese(ana);
-                    String velho = anan.PAAM_TX_TEXTO_LIVRE;
-                    String novo = "Emissão de Atestado " + atestado.PAAT_NM_TITULO.ToUpper();
-                    String dataHoje = DateTime.Today.Date.ToLongDateString();
-                    dataHoje = "*** Consulta em [" + dataHoje + "] ***";
-                    if (anan.PAAM_TX_TEXTO_LIVRE != null)
+                    if (conf.CONF_IN_DOC_PRONTUARIO == 1)
                     {
-                        String anot = dataHoje + "\r\n" + novo;
-                        if (velho == null & novo != String.Empty)
+                        PACIENTE_ANAMNESE ana = pac1.PACIENTE_ANAMNESE.Where(p => p.PAAM_IN_ATIVO == 1).FirstOrDefault();
+                        PACIENTE_ANAMNESE anan = RemontarAnamnese(ana);
+                        String velho = anan.PAAM_TX_TEXTO_LIVRE;
+                        String novo = "Emissão de Atestado " + atestado.PAAT_NM_TITULO.ToUpper();
+                        String dataHoje = DateTime.Today.Date.ToLongDateString();
+                        dataHoje = "*** Consulta em [" + dataHoje + "] ***";
+                        if (anan.PAAM_TX_TEXTO_LIVRE != null)
                         {
-                            anan.PAAM_TX_TEXTO_LIVRE = dataHoje + "\r\n" + novo;
-                        }
-                        if (velho != null & novo != String.Empty)
-                        {
-                            String tripa = velho.Substring(velho.Length - 4, 4);
-                            if (tripa == "\r\n")
+                            String anot = dataHoje + "\r\n" + novo;
+                            if (velho == null & novo != String.Empty)
                             {
-                                velho = velho.Substring(0, velho.Length - 4);
+                                anan.PAAM_TX_TEXTO_LIVRE = dataHoje + "\r\n" + novo;
                             }
-                            anan.PAAM_TX_TEXTO_LIVRE = velho + "\r\n\r\n" + dataHoje + "\r\n" + novo;
+                            if (velho != null & novo != String.Empty)
+                            {
+                                String tripa = velho.Substring(velho.Length - 4, 4);
+                                if (tripa == "\r\n")
+                                {
+                                    velho = velho.Substring(0, velho.Length - 4);
+                                }
+                                anan.PAAM_TX_TEXTO_LIVRE = velho + "\r\n\r\n" + dataHoje + "\r\n" + novo;
+                            }
                         }
-                    }
-                    else
-                    {
-                        velho = anan.PAAM_TX_TEXTO_LIVRE;
-                        anan.PAAM_TX_TEXTO_LIVRE = velho;
-                    }
+                        else
+                        {
+                            velho = anan.PAAM_TX_TEXTO_LIVRE;
+                            anan.PAAM_TX_TEXTO_LIVRE = velho;
+                        }
 
-                    // Executa a operação
-                    anan.PAAM_IN_ALTERADA = 1;
-                    anan.PACO_CD_ID = vm.PACO_CD_ID;
-                    Int32 voltaW = baseApp.ValidateEditAnamnese(anan);
+                        // Executa a operação
+                        anan.PAAM_IN_ALTERADA = 1;
+                        anan.PACO_CD_ID = vm.PACO_CD_ID;
+                        Int32 voltaW = baseApp.ValidateEditAnamnese(anan);
+                    }
 
                     // Mensagem do CRUD
                     Session["MsgCRUD"] = "O atestado " + item.PAAT_GU_GUID + " do(a) paciente " + pac1.PACI_NM_NOME.ToUpper() + " foi criado com sucesso.";
@@ -8952,39 +8958,42 @@ namespace GEDSys_Presentation.Controllers
                     }
 
                     // Atualiza prontuário
-                    PACIENTE_ANAMNESE ana = pac.PACIENTE_ANAMNESE.Where(p => p.PAAM_IN_ATIVO == 1).FirstOrDefault();
-                    PACIENTE_ANAMNESE anan = RemontarAnamnese(ana);
-                    String velho = anan.PAAM_TX_TEXTO_LIVRE;
-                    String novo = "Emissão de Solicitação de Exame - " + solicitacao.PASO_NM_TITULO.ToUpper() + "\r\n" + solicitacao.PASO_TX_TEXTO;
-                    String dataHoje = DateTime.Today.Date.ToLongDateString();
-                    dataHoje = "*** Consulta em [" + dataHoje + "] ***";
-                    if (anan.PAAM_TX_TEXTO_LIVRE != null)
+                    if (conf.CONF_IN_DOC_PRONTUARIO == 1)
                     {
-                        String anot = dataHoje + "\r\n" + novo;
-                        if (velho == null & novo != String.Empty)
+                        PACIENTE_ANAMNESE ana = pac.PACIENTE_ANAMNESE.Where(p => p.PAAM_IN_ATIVO == 1).FirstOrDefault();
+                        PACIENTE_ANAMNESE anan = RemontarAnamnese(ana);
+                        String velho = anan.PAAM_TX_TEXTO_LIVRE;
+                        String novo = "Emissão de Solicitação de Exame - " + solicitacao.PASO_NM_TITULO.ToUpper() + "\r\n" + solicitacao.PASO_TX_TEXTO;
+                        String dataHoje = DateTime.Today.Date.ToLongDateString();
+                        dataHoje = "*** Consulta em [" + dataHoje + "] ***";
+                        if (anan.PAAM_TX_TEXTO_LIVRE != null)
                         {
-                            anan.PAAM_TX_TEXTO_LIVRE = dataHoje + "\r\n" + novo;
-                        }
-                        if (velho != null & novo != String.Empty)
-                        {
-                            String tripa = velho.Substring(velho.Length - 4, 4);
-                            if (tripa == "\r\n")
+                            String anot = dataHoje + "\r\n" + novo;
+                            if (velho == null & novo != String.Empty)
                             {
-                                velho = velho.Substring(0, velho.Length - 4);
+                                anan.PAAM_TX_TEXTO_LIVRE = dataHoje + "\r\n" + novo;
                             }
-                            anan.PAAM_TX_TEXTO_LIVRE = velho + "\r\n\r\n" + dataHoje + "\r\n" + novo;
+                            if (velho != null & novo != String.Empty)
+                            {
+                                String tripa = velho.Substring(velho.Length - 4, 4);
+                                if (tripa == "\r\n")
+                                {
+                                    velho = velho.Substring(0, velho.Length - 4);
+                                }
+                                anan.PAAM_TX_TEXTO_LIVRE = velho + "\r\n\r\n" + dataHoje + "\r\n" + novo;
+                            }
                         }
-                    }
-                    else
-                    {
-                        velho = anan.PAAM_TX_TEXTO_LIVRE;
-                        anan.PAAM_TX_TEXTO_LIVRE = velho;
-                    }
+                        else
+                        {
+                            velho = anan.PAAM_TX_TEXTO_LIVRE;
+                            anan.PAAM_TX_TEXTO_LIVRE = velho;
+                        }
 
-                    // Executa a operação
-                    anan.PAAM_IN_ALTERADA = 1;
-                    anan.PACO_CD_ID = vm.PACO_CD_ID;
-                    Int32 voltaW = baseApp.ValidateEditAnamnese(anan);
+                        // Executa a operação
+                        anan.PAAM_IN_ALTERADA = 1;
+                        anan.PACO_CD_ID = vm.PACO_CD_ID;
+                        Int32 voltaW = baseApp.ValidateEditAnamnese(anan);
+                    }
 
                     // Mensagem do CRUD
                     Session["MsgCRUD"] = "A solicitação de exame " + item.PASO_GU_GUID + " do(a) paciente " + pac.PACI_NM_NOME.ToUpper() + " foi criada com sucesso.";

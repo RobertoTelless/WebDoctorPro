@@ -880,6 +880,11 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>GED_Model.edmx</DependentUpon>
     </Compile>
+    <Compile Include="Model\GED_Model1.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
     <Compile Include="Model\GRAU_INSTRUCAO.cs">
       <DependentUpon>GED_Model.tt</DependentUpon>
     </Compile>
@@ -1680,6 +1685,7 @@
     <Content Include="Model\GED_Model.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <DependentUpon>GED_Model.edmx</DependentUpon>
+      <LastGenOutput>GED_Model1.cs</LastGenOutput>
     </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
