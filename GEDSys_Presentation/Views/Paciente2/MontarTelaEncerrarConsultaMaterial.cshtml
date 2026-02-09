@@ -1,0 +1,421 @@
+﻿@using Presentation.Extensions
+@model ERP_Condominios_Solution.ViewModels.ValorConsulta1ViewModel
+@{
+    Layout = "~/Views/Shared/_Layout_Admin.cshtml";
+    ViewBag.Title = "WebDoctor - Consulta - Encerrar";
+    ViewBag.MetaDescription = "WebDoctor - Consulta - Encerrar - Encerrar Consulta";
+    ViewBag.MetaKeywords = "WebDoctor, consulta, encerrar";
+}
+
+<div class="wrapper wrapper-content animated fadeInRight">
+    @if ((String)Session["ModuloAtual"] == "Consultas - Encerramento")
+    {
+        <div class="page-title">
+            <ol class="breadcrumb">
+                <li>
+                    <a href="@Url.Action("MontarTelaPaciente", "Paciente")">Dashboard</a>
+                </li>
+                <li>
+                    <a href="@Url.Action("MontarTelaConsulta", "Paciente")">Consultas</a>
+                </li>
+                <li>
+                    <a href="@Url.Action("MontarTelaEncerrarConsulta", "Financeiro")">Consultas - Encerrar</a>
+                </li>
+                <li class="active">
+                    <strong>Consultas - Material</strong>
+                </li>
+            </ol>
+            <br />
+        </div>
+    }
+    else if ((String)Session["ModuloAtual"] == "Proceder Consulta")
+    {
+        <div class="page-title">
+            <ol class="breadcrumb">
+                <li>
+                    <a href="@Url.Action("MontarTelaPaciente", "Paciente")">Dashboard</a>
+                </li>
+                <li>
+                    <a href="@Url.Action("VoltarProcederConsulta", "Paciente")">Consulta - Proceder</a>
+                </li>
+                <li class="active">
+                    <strong>Consultas - Material</strong>
+                </li>
+            </ol>
+            <br />
+        </div>
+    }
+
+    <div class="row">
+        <div class="col-lg-12 col-md-12 col-xs-12">
+            <div class="col-lg-12 col-md-12 col-xs-12 ibox float-e-margins">
+                <div class="ibox-title">
+                    <div style="text-align: center;" class="col-lg-12 col-md-12 col-xs-12">
+                        <h5>Consultas - Consumo de Material</h5>
+                        <span style="color:green; font-weight: 500; font-size: 20px;">@Model.PACI_NM_NOME</span>
+                    </div>
+                </div>
+                @using (Html.BeginForm("MontarTelaEncerrarConsultaMaterial", "Paciente2", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal", @id="pwd-container1" }))
+                {
+                    <div class="ibox-content">
+                        @Html.AntiForgeryToken()
+                        @if (!ViewData.ModelState.IsValid)
+                        {
+                            <div class="alert alert-danger">
+                                <button type="button" class="close" data-dismiss="alert">Fechar</button>
+                                @Html.ValidationSummary(false, "Erros Encontrados:", new { @class = "text-danger" })
+                            </div>
+                        }
+                        <div class="form-group" style=" margin-left: -15px; margin-right: -15px;"> 
+                            @if ((Int32)Session["VoltaEncerramento"] == 5)
+                            {
+                                @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaEncerrarConsulta", controller: "Financeiro", htmlAttributes: new { @class = "btn-loading" })
+                            }
+                            else
+                            {
+                                @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarProcederConsulta", controller: "Paciente", htmlAttributes: new { @class = "btn-loading" })
+                            }
+                            <span id="loadingIndicator" style="display: none; margin-left: 10px; color: #007bff;">
+                                <i class="fa fa-spinner fa-spin"></i> Processando...
+                            </span>
+                        </div>
+
+                        @*Paciente*@
+                        <div class="row">
+                            <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Identificação do Paciente</h4>
+                            <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">                
+                                <div class="col-lg-4 col-md-4 col-xs-12">
+                                    Nome do Paciente
+                                    @Html.TextBoxFor(m => m.PACI_NM_NOME, new { @class = "form-control", @tabindex = "-1", @readonly = "readonly", @style = "color: green; font-weight: bold" })
+                                </div>
+                                <div class="col-lg-2 col-md-2 col-xs-12">
+                                    Data Nascimento
+                                    @Html.TextBoxFor(m => m.PACI_DT_NASCIMENTO, "{0:dd/MM/yyyy}", new { @class = "form-control", @tabindex = "-1", @readonly = "readonly" })
+                                </div>
+                                @if (Model.PACI_NR_CPF != null)
+                                {
+                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                        CPF
+                                        @Html.TextBoxFor(m => m.PACI_NR_CPF, new { @class = "form-control", @tabindex = "-1", @readonly = "readonly" })
+                                    </div>
+                                }
+                                @if (Model.PACI_NR_CELULAR != null)
+                                {
+                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                        Celular
+                                        @Html.TextBoxFor(m => m.PACI_NR_CELULAR, new { @class = "form-control", @tabindex = "-1", @readonly = "readonly" })
+                                    </div>
+                                }
+                                @if (Model.PACI_NR_TELEFONE != null)
+                                {
+                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                        Telefone
+                                        @Html.TextBoxFor(m => m.PACI_NR_TELEFONE, new { @class = "form-control", @tabindex = "-1", @readonly = "readonly" })
+                                    </div>
+                                }
+                            </div>
+                        </div>
+
+                        @*Consulta*@
+                        @if ((Int32)Session["ModoConsulta"] == 1)
+                        {
+                            <div class="row">
+                                <h4 style="margin-left: 0px; color: green; background-color: beige; font-weight:bold">Dados da Consulta</h4>
+                                <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">                
+                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                        @Html.HiddenFor(m => m.ASSI_CD_ID)
+                                        @Html.HiddenFor(m => m.PACI_DT_NASCIMENTO)
+                                        @Html.HiddenFor(m => m.PACI_NM_NOME)
+                                        @Html.HiddenFor(m => m.PACI_NR_CELULAR)
+                                        @Html.HiddenFor(m => m.PACI_NR_CPF)
+                                        @Html.HiddenFor(m => m.PACI_NR_TELEFONE)
+                                        @Html.HiddenFor(m => m.PACO_DT_CONSULTA)
+                                        @Html.HiddenFor(m => m.PACO_HR_FINAL)
+                                        @Html.HiddenFor(m => m.PACO_HR_INICIO)
+                                        @Html.HiddenFor(m => m.USUA_CD_ID)
+                                        @Html.HiddenFor(m => m.VACO_CD_ID)
+                                        @Html.HiddenFor(m => m.VACO_DT_REFERENCIA)
+                                        @Html.HiddenFor(m => m.VACO_IN_ATIVO)
+                                        @Html.HiddenFor(m => m.VACO_IN_MATERIAL)
+                                        @Html.HiddenFor(m => m.VACO_IN_PADRAO)
+                                        @Html.HiddenFor(m => m.VACO_NM_EXIBE)
+                                        @Html.HiddenFor(m => m.VACO_NM_NOME)
+                                        @Html.HiddenFor(m => m.VACO_NR_DESCONTO)
+                                        @Html.HiddenFor(m => m.VACO_NR_VALOR)
+                                        @Html.HiddenFor(m => m.TIVL_CD_ID)
+                                        @Html.HiddenFor(m => m.USUA_CD_ID)
+                                        Tipo da Consulta
+                                        @Html.TextBoxFor(m => m.VACO_NM_NOME, new { @class = "form-control", @readonly = "readonly", @style = "color: green; font-weight: bold" })
+                                    </div>
+                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                        Data da Consulta
+                                        @Html.TextBoxFor(m => m.PACO_DT_CONSULTA, "{0:dd/MM/yyyy}", new { @class = "form-control", @id = "dn", @readonly = "readonly", @style = "color: darkblue; font-weight: bold" })
+                                    </div>
+                                    <div class="col-lg-1 col-md-1 col-xs-12">
+                                        Hora Início
+                                        @Html.TextBoxFor(m => m.PACO_HR_INICIO, new { @class = "form-control", @id = "hora", @readonly = "readonly" })
+                                    </div>
+                                    <div class="col-lg-1 col-md-1 col-xs-12">
+                                        Hora Final
+                                        @Html.TextBoxFor(m => m.PACO_HR_FINAL, new { @class = "form-control", @id = "hora1", @readonly = "readonly" })
+                                    </div>
+                                </div>
+                            </div>
+                        }
+
+                        @*Consumo*@
+                        <div class="row">
+                            <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Consumo de Material na Consulta</h4>
+                            <div class="form-group" style=" margin-left: 5px; margin-right: 5px;">                
+                                @Html.ButtonActionSubmit(text: "Confirma Consumo de Material", htmlAttributes: new { id = "basictoast", @class = "btn-loading1" })
+                            </div>
+                            <div class="row">
+                                <div class="form-group" style=" margin-left: 0px; margin-right: 0px;">
+                                    <div class="col-lg-8 col-md-8 col-xs-12">
+                                        @if (Model.VALOR_CONSULTA_MATERIAL.Where(p => p.VCMA_IN_ATIVO == 1).ToList().Count > 0)
+                                        {
+                                            <table class="table table-striped table-bordered table-hover dataTables-atestado">
+                                                <thead style="background-color:lightsteelblue">
+                                                    <tr>
+                                                        <th style="width: auto">Nome do Material</th>
+                                                        <th style="width: auto">Marca</th>
+                                                        <th style="width: auto">Modelo</th>
+                                                        <th style="width: 80px">Quant.Prevista</th>
+                                                        <th style="width: 80px">Quant.Utilizada</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @foreach (var cond in (Model.VALOR_CONSULTA_MATERIAL.Where(p => p.VCMA_IN_ATIVO == 1).OrderBy(p => p.PROD_CD_ID)))
+                                                    {
+                                                        <tr>
+                                                            <td style="width: auto">@cond.PRODUTO.PROD_NM_NOME</td>
+                                                            <td style="width: auto">@cond.PRODUTO.PROD_NM_MARCA</td>
+                                                            <td style="width: auto">@cond.PRODUTO.PROD_NM_MODELO</td>
+                                                            <td style="width: 80px">@cond.VCMA_QN_QUANTIDADE.ToString()</td>
+                                                            <td style="width: 80px">
+                                                                <input type="number"
+                                                                       class="form-control quantidade-real"
+                                                                       value="@cond.VCMA_QN_QUANTIDADE_REAL"
+                                                                       data-id="@cond.VCMA_CD_ID"
+                                                                       min="0" />
+                                                            </td>
+                                                        </tr>
+                                                    }
+                                                </tbody>
+                                            </table>
+                                        }
+                                        else
+                                        {
+                                            <div class="row">
+                                                <div class="col-lg-2 col-md-2 col-xs-2">
+
+                                                </div>
+                                                <div style="border: 5px solid #F6A54A; padding: 10px; border-radius: 8px 8px; " class="col-lg-8 col-md-8 col-xs-8">
+                                                    <h2 style="font-weight: bold">Nenhum material cadastrado para este tipo de consulta</h2>
+                                                </div>
+                                                <div class="col-lg-2 col-md-2 col-xs-2">
+
+                                                </div>
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+         </div>
+    </div>
+</div>
+
+@section Styles {
+    <link href="~/Content/themes/base/all.css" rel="stylesheet" />  
+    @Styles.Render("~/plugins/jasnyBootstrapStyles")
+    @Styles.Render("~/plugins/toastrStyles")
+}
+@section Scripts {
+    @Scripts.Render("~/plugins/toastr")
+    @Scripts.Render("~/bundles/inputmask")
+    @Scripts.Render("~/plugins/jasnyBootstrap")
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.maskedinput/1.4.1/jquery.maskedinput.js"></script>
+   
+    <script type="text/javascript" src="~/Scripts/moment.min.js"></script>
+    <script type="text/javascript" src="~/Scripts/bootstrap.min.js"></script>
+   
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('[data-toggle="popover"]').popover();
+        });
+    </script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-toggle="popover"]'));
+            var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
+                return new bootstrap.Popover(popoverTriggerEl);
+            });
+        });
+    </script>
+
+    <!-- Handler de fechamento do browser -->
+    <script type="text/javascript">
+        window.onbeforeunload = function ()
+        {
+            navigator.sendBeacon('../ControleAcesso/LogSessionTime');
+        }; 
+    </script>
+
+    <script type="text/javascript">
+        $(document).ready(function () { 
+            $('.btn-loading').on('click', function (e) {            
+                $(this).prop('disabled', true);
+                $(this).addClass('disabled');
+                $('#loadingIndicator').show();
+                var tagName = $(this).prop('tagName').toLowerCase();
+                if (tagName === 'a') {
+                    e.preventDefault(); 
+                    var targetUrl = $(this).attr('href');
+                    window.location.href = targetUrl;
+
+                } else if (tagName === 'button' || tagName === 'input') {
+                    $(this).closest('form').submit();
+                }
+            });
+        });
+    </script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('.btn-loading1').on('click', function (e) {
+            
+                var $this = $(this);
+                var tagName = $this.prop('tagName').toLowerCase();
+                $this.addClass('disabled'); 
+                $('#loadingIndicator').show();
+
+                if (tagName === 'a') {
+                    e.preventDefault();
+                
+                    var targetUrl = $this.attr('href');
+                    window.location.href = targetUrl;
+                
+                } else if (tagName === 'button' || tagName === 'input') {               
+                    $this.closest('form').submit();
+                    $this.prop('disabled', true);
+                }
+            });
+        });
+    </script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            var i = -1;
+            var toastCount = 0;
+            var $toastlast;
+            var getMessage = function () {
+                var msg = 'Hi, welcome to Inspinia. This is example of Toastr notification box.';
+                return msg;
+            };
+
+            $('#basictoast').click(function () {
+                // Display a success toast, with a title
+                toastr.success('Encerramento em andamento!')
+            });
+            $('#showtoast').click(function () {
+                var shortCutFunction = $("#toastTypeGroup input:radio:checked").val();
+                var msg = $('#message').val();
+                var title = $('#title').val() || '';
+                var $showDuration = $('#showDuration');
+                var $hideDuration = $('#hideDuration');
+                var $timeOut = $('#timeOut');
+                var $extendedTimeOut = $('#extendedTimeOut');
+                var $showEasing = $('#showEasing');
+                var $hideEasing = $('#hideEasing');
+                var $showMethod = $('#showMethod');
+                var $hideMethod = $('#hideMethod');
+                var toastIndex = toastCount++;
+                toastr.options = {
+                    closeButton: $('#closeButton').prop('checked'),
+                    debug: $('#debugInfo').prop('checked'),
+                    progressBar: $('#progressBar').prop('checked'),
+                    positionClass: $('#positionGroup input:radio:checked').val() || 'toast-top-right',
+                    onclick: null
+                };
+                if ($('#addBehaviorOnToastClick').prop('checked')) {
+                    toastr.options.onclick = function () {
+                        alert('You can perform some custom action after a toast goes away');
+                    };
+                }
+                if ($showDuration.val().length) {
+                    toastr.options.showDuration = $showDuration.val();
+                }
+                if ($hideDuration.val().length) {
+                    toastr.options.hideDuration = $hideDuration.val();
+                }
+                if ($timeOut.val().length) {
+                    toastr.options.timeOut = $timeOut.val();
+                }
+                if ($extendedTimeOut.val().length) {
+                    toastr.options.extendedTimeOut = $extendedTimeOut.val();
+                }
+                if ($showEasing.val().length) {
+                    toastr.options.showEasing = $showEasing.val();
+                }
+                if ($hideEasing.val().length) {
+                    toastr.options.hideEasing = $hideEasing.val();
+                }
+                if ($showMethod.val().length) {
+                    toastr.options.showMethod = $showMethod.val();
+                }
+                if ($hideMethod.val().length) {
+                    toastr.options.hideMethod = $hideMethod.val();
+                }
+                if (!msg) {
+                    msg = getMessage();
+                }
+                $("#toastrOptions").text("Command: toastr["
+                        + shortCutFunction
+                        + "](\""
+                        + msg
+                        + (title ? "\", \"" + title : '')
+                        + "\")\n\ntoastr.options = "
+                        + JSON.stringify(toastr.options, null, 2)
+                );
+                var $toast = toastr[shortCutFunction](msg, title); // Wire up an event handler to a button in the toast, if it exists
+                $toastlast = $toast;
+                if ($toast.find('#okBtn').length) {
+                    $toast.delegate('#okBtn', 'click', function () {
+                        alert('you clicked me. i was toast #' + toastIndex + '. goodbye!');
+                        $toast.remove();
+                    });
+                }
+                if ($toast.find('#surpriseBtn').length) {
+                    $toast.delegate('#surpriseBtn', 'click', function () {
+                        alert('Surprise! you clicked me. i was toast #' + toastIndex + '. You could perform an action here.');
+                    });
+                }
+            });
+            function getLastToast() {
+                return $toastlast;
+            }
+            $('#clearlasttoast').click(function () {
+                toastr.clear(getLastToast());
+            });
+            $('#cleartoasts').click(function () {
+                toastr.clear();
+            });
+
+        });
+    </script>
+
+
+    @if (ViewBag.Message != null)
+    {
+        <script type="text/javascript">
+            window.onload = function () {
+                  alert("@ViewBag.Message");
+            };
+        </script>
+    }
+}

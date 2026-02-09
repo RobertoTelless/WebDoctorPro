@@ -16,6 +16,17 @@ namespace ERP_Condominios_Solution.ViewModels
         [RegularExpression(@"^[0-9]+([,.][0-9]+)?$", ErrorMessage = "Deve ser um valor numérico positivo")]
         public Nullable<decimal> VCMA_QN_QUANTIDADE { get; set; }
         public int VCMA_IN_ATIVO { get; set; }
+        public Nullable<decimal> VCMA_QN_QUANTIDADE_REAL { get; set; }
+
+        public string PACI_NM_NOME { get; set; }
+        public string PACI_NR_CPF { get; set; }
+        public string PACI_NR_CELULAR { get; set; }
+        public string PACI_NR_TELEFONE { get; set; }
+        public Nullable<System.DateTime> PACI_DT_NASCIMENTO { get; set; }
+
+        public Nullable<System.DateTime> PACO_DT_CONSULTA { get; set; }
+        public Nullable<System.TimeSpan> PACO_HR_INICIO { get; set; }
+        public Nullable<System.TimeSpan> PACO_HR_FINAL { get; set; }
 
         public virtual PRODUTO PRODUTO { get; set; }
         public virtual VALOR_CONSULTA VALOR_CONSULTA { get; set; }

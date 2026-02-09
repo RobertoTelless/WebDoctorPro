@@ -5382,6 +5382,7 @@
     <Content Include="Views\Financeiro\EditarConsumoMaterial.cshtml" />
     <Content Include="Views\Locacao\CarregarContrato.cshtml" />
     <Content Include="Views\Locacao\MontarTelaDashboardLocacao.cshtml" />
+    <Content Include="Views\Paciente2\MontarTelaEncerrarConsultaMaterial.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

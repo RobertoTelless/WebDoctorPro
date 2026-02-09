@@ -8181,6 +8181,7 @@ namespace GEDSys_Presentation.Controllers
                 Session["ModoConsulta"] = 0;
                 Session["NivelRecebimento"] = 1;
                 Session["VoltaTelaEncerra"] = 1;
+                Session["VoltaEncerramento"] = 5;
 
                 // Carrega view
                 ViewBag.SRF = conf.CONF_IN_RECIBO_SRF;
@@ -8315,6 +8316,15 @@ namespace GEDSys_Presentation.Controllers
                 USUARIO usuario = (USUARIO)Session["UserCredentials"];
                 Int32 idAss = (Int32)Session["IdAssinante"];
                 PACIENTE_CONSULTA item = baseApp.GetConsultaById(id);
+
+                // Verifica consumo de material
+                Session["ConsultaEncerra"] = item;
+                VALOR_CONSULTA tipo = vcApp.GetItemById(item.VACO_CD_ID.Value);
+                Session["TipoConsultaEncerra"] = tipo;
+                if (tipo.VALOR_CONSULTA_MATERIAL.Count() > 0)
+                {
+                    return RedirectToAction("MontarTelaEncerrarConsultaMaterial");
+                }
 
                 // Recuperar paciente
                 PACIENTE pac = baseApp.GetItemById(item.PACI_CD_ID);
@@ -11783,6 +11793,7 @@ namespace GEDSys_Presentation.Controllers
                     }
 
                     // Executa a operação
+                    vm.VCMA_QN_QUANTIDADE_REAL = vm.VCMA_QN_QUANTIDADE;
                     VALOR_CONSULTA_MATERIAL item = Mapper.Map<ValorConsulta1MaterialViewModel, VALOR_CONSULTA_MATERIAL>(vm);
                     Int32 volta = vcApp.ValidateCreateConsultaMaterial(item);
                     if (volta == 1)
@@ -12072,6 +12083,7 @@ namespace GEDSys_Presentation.Controllers
                 return RedirectToAction("TrataExcecao", "BaseAdmin");
             }
         }
+
 
     }
 }

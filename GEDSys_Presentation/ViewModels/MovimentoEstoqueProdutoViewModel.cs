@@ -168,6 +168,10 @@ namespace ERP_Condominios_Solution.ViewModels
                 {
                     return "Ajuste Manual - Saída";
                 }
+                if (MOEP_IN_TIPO == 9)
+                {
+                    return "Material de Consulta - Saída";
+                }
                 return "-";
             }
         }

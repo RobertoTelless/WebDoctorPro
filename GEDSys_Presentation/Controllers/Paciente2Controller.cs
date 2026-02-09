@@ -74,6 +74,7 @@ namespace GEDSys_Presentation.Controllers
         private readonly ITipoExameAppService teApp;
         private readonly IValorConsultaAppService vcApp;
         private readonly IAvisoLembreteAppService aviApp;
+        private readonly IProdutoAppService prodApp;
 
         private String msg;
         private Exception exception;
@@ -105,9 +106,10 @@ namespace GEDSys_Presentation.Controllers
         private List<AVISO_LEMBRETE> listaMasterAviso = new List<AVISO_LEMBRETE>();
         private AVISO_LEMBRETE objetoAviso = new AVISO_LEMBRETE();
         private List<RESPOSTA_CONSULTA> listaMasterResposta = new List<RESPOSTA_CONSULTA>();
+        private VALOR_CONSULTA objetoTipo = new VALOR_CONSULTA();
         private String extensao;
 
-        public Paciente2Controller(IPacienteAppService baseApps, ILogAppService logApps, ITipoPessoaAppService tpApps, IUsuarioAppService usuApps, IConfiguracaoAppService confApps, IGrupoAppService gruApps, IMensagemEnviadaSistemaAppService meApps, IEmpresaAppService empApps, IAssinanteAppService assApps, IControleMensagemAppService cmApps, IRecursividadeAppService recuApps, IMensagemAppService mensApps, ITipoPacienteAppService tpaApps, ITemplateEMailAppService temApps, IConfiguracaoCalendarioAppService calApps, IConfiguracaoAnamneseAppService anaApps, ITemplateSMSAppService smsApps, IRecebimentoAppService recApps, IAcessoMetodoAppService aceApps, ITipoAtestadoAppService taApps, ITipoExameAppService teApps, IValorConsultaAppService vcApps, IAvisoLembreteAppService aviApps)
+        public Paciente2Controller(IPacienteAppService baseApps, ILogAppService logApps, ITipoPessoaAppService tpApps, IUsuarioAppService usuApps, IConfiguracaoAppService confApps, IGrupoAppService gruApps, IMensagemEnviadaSistemaAppService meApps, IEmpresaAppService empApps, IAssinanteAppService assApps, IControleMensagemAppService cmApps, IRecursividadeAppService recuApps, IMensagemAppService mensApps, ITipoPacienteAppService tpaApps, ITemplateEMailAppService temApps, IConfiguracaoCalendarioAppService calApps, IConfiguracaoAnamneseAppService anaApps, ITemplateSMSAppService smsApps, IRecebimentoAppService recApps, IAcessoMetodoAppService aceApps, ITipoAtestadoAppService taApps, ITipoExameAppService teApps, IValorConsultaAppService vcApps, IAvisoLembreteAppService aviApps,IProdutoAppService prodApps)
         {
             baseApp = baseApps;
             logApp = logApps;
@@ -132,6 +134,7 @@ namespace GEDSys_Presentation.Controllers
             teApp = teApps;
             vcApp = vcApps;
             aviApp = aviApps;
+            prodApp = prodApps;
         }
 
         public ActionResult GerarInformacaoConsulta()
@@ -6609,6 +6612,15 @@ namespace GEDSys_Presentation.Controllers
                 USUARIO usuario = (USUARIO)Session["UserCredentials"];
                 Int32 idAss = (Int32)Session["IdAssinante"];
                 PACIENTE_CONSULTA item = baseApp.GetConsultaById((Int32)Session["IdConsulta"]);
+
+                // Verifica consumo de material
+                Session["ConsultaEncerra"] = item;
+                VALOR_CONSULTA tipo = vcApp.GetItemById(item.VACO_CD_ID.Value);
+                Session["TipoConsultaEncerra"] = tipo;
+                if (tipo.VALOR_CONSULTA_MATERIAL.Count() > 0)
+                {
+                    return RedirectToAction("MontarTelaEncerrarConsultaMaterial");
+                }
 
                 // Recuperar paciente
                 PACIENTE pac = baseApp.GetItemById(item.PACI_CD_ID);
@@ -20228,6 +20240,515 @@ namespace GEDSys_Presentation.Controllers
             {
                 return View(vm);
             }
+        }
+
+        [HttpGet]
+        public ActionResult MontarTelaEncerrarConsultaMaterial()
+        {
+            try
+            {
+                // Verifica se tem usuario logado
+                USUARIO usuario = new USUARIO();
+                if ((String)Session["Ativa"] == null)
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+                if ((USUARIO)Session["UserCredentials"] != null)
+                {
+                    usuario = (USUARIO)Session["UserCredentials"];
+
+                    // Verfifica permissão
+                    if (usuario.PERFIL.PERF_IN_PACIENTE_CONSULTA_ACESSO == 0)
+                    {
+                        Session["MensPermissao"] = 2;
+                        Session["ModuloPermissao"] = "Paciente";
+                        return RedirectToAction("MontarTelaPaciente", "Paciente");
+                    }
+                }
+                else
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+                Int32 idAss = (Int32)Session["IdAssinante"];
+                Session["ModuloAtual"] = "Consultas - Encerramento";
+
+                // Mensagem
+                if (Session["MensPaciente"] != null)
+                {
+                    if ((Int32)Session["MensPaciente"] == 1)
+                    {
+                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0016", CultureInfo.CurrentCulture));
+                    }
+                    if ((Int32)Session["MensPaciente"] == 62)
+                    {
+                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0586", CultureInfo.CurrentCulture));
+                    }
+                    if ((Int32)Session["MensPaciente"] == 63)
+                    {
+                        TempData["MensagemAcerto"] = (String)Session["MsgCRUD"];
+                        TempData["TemMensagem"] = 1;
+                    }
+                }
+
+                // Recupera informações
+                CONFIGURACAO conf = CarregaConfiguracaoGeral();
+                PACIENTE_CONSULTA cons = (PACIENTE_CONSULTA)Session["ConsultaEncerra"];
+                VALOR_CONSULTA tipo = vcApp.GetItemById(cons.VACO_CD_ID.Value);
+                PACIENTE pac = baseApp.GetItemById(cons.PACI_CD_ID);
+                ViewBag.Perfil = usuario.PERFIL.PERF_SG_SIGLA;
+
+                // Acerta estado    
+                Session["MensPaciente"] = null;
+
+                // Carrega view
+                ValorConsulta1ViewModel vm = Mapper.Map<VALOR_CONSULTA, ValorConsulta1ViewModel>(tipo);
+                vm.PACI_NM_NOME = pac.PACI_NM_NOME;
+                vm.PACI_NR_CPF = pac.PACI_NR_CPF;
+                vm.PACI_NR_CELULAR = pac.PACI_NR_CELULAR;
+                vm.PACI_NR_TELEFONE = pac.PACI_NR_TELEFONE;
+                vm.PACI_DT_NASCIMENTO = pac.PACI_DT_NASCIMENTO;
+                vm.PACO_DT_CONSULTA = cons.PACO_DT_CONSULTA;
+                vm.PACO_HR_INICIO = cons.PACO_HR_INICIO;
+                vm.PACO_HR_FINAL = cons.PACO_HR_FINAL;
+
+                // Grava Acesso
+                ControleAcessoMetodo grava = new ControleAcessoMetodo(aceApp);
+                Int32 voltaX = grava.GravaAcesso(usuario.USUA_CD_ID, usuario.ASSI_CD_ID, "PACIENTE_CONSULTA_ENCERRAR", "Paciente2", "MontarTelaEncerrarConsultaMaterial");
+                return View(vm);
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Paciente";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Paciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return RedirectToAction("TrataExcecao", "BaseAdmin");
+            }
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [ValidateInput(false)]
+        public ActionResult MontarTelaEncerrarConsultaMaterial(ValorConsulta1ViewModel vm1)
+        {
+            if ((String)Session["Ativa"] == null)
+            {
+                return RedirectToAction("Logout", "ControleAcesso");
+            }
+            USUARIO usuarioLogado = (USUARIO)Session["UserCredentials"];
+            Int32 idAss = (Int32)Session["IdAssinante"];
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    // Recupera informações
+                    List<VALOR_CONSULTA_MATERIAL> mats = vm1.VALOR_CONSULTA_MATERIAL.ToList();
+
+                    // Configura serialização
+                    JsonSerializerSettings settings = new JsonSerializerSettings
+                    {
+                        ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+                        NullValueHandling = NullValueHandling.Ignore
+                    };
+
+                    // Processa materiais
+                    foreach (VALOR_CONSULTA_MATERIAL mat in mats)
+                    {
+                        // Recupera produto
+                        PRODUTO prod = prodApp.GetItemById(mat.PROD_CD_ID);
+                        Session["ProdAntes"] = prod;
+
+                        // Critica quantidade
+                        if (mat.VCMA_QN_QUANTIDADE_REAL <= 0)
+                        {
+                            mat.VCMA_QN_QUANTIDADE_REAL = 0;
+                        }
+
+                        // Monta e grava movimentação de entrada 
+                        MOVIMENTO_ESTOQUE_PRODUTO vm = new MOVIMENTO_ESTOQUE_PRODUTO();
+                        vm.ASSI_CD_ID = usuarioLogado.ASSI_CD_ID;
+                        vm.EMPR_CD_ID = usuarioLogado.EMPR_CD_ID;
+                        vm.EMFI_CD_ID = usuarioLogado.EMFI_CD_ID;
+                        vm.USUA_CD_ID = usuarioLogado.USUA_CD_ID;
+                        vm.MOEP_DT_MOVIMENTO = DateTime.Today.Date;
+                        vm.MOEP_IN_TIPO_MOVIMENTO = 2;
+                        vm.MOEP_IN_TIPO = 9;
+                        vm.MOEP_QN_QUANTIDADE = 0;
+                        vm.MOEP_VL_QUANTIDADE_ANTERIOR = prod.PROD_VL_ESTOQUE_ATUAL;
+                        vm.PROD_CD_ID = prod.PROD_CD_ID;
+                        vm.MOEP_DT_LANCAMENTO = DateTime.Today.Date;
+                        vm.MOEP_DT_PAGAMENTO = DateTime.Today.Date;
+                        vm.MOEP_IN_ORIGEM = "";
+                        vm.MOEP_IN_ATIVO = 1;
+                        vm.MOEP_IN_OPERACAO = 0;
+                        vm.MOEP_IN_AUTORIZADOR = 0;
+                        vm.MOEP_IN_ORIGEM = "Consulta - Material";
+                        vm.MOEP_IN_ULTIMO = 1;
+                        vm.MOEP_IN_ATIVO = 1;
+                        vm.MOEP_IN_PENDENTE = 0;
+                        vm.MOEP_IN_AUTORIZADOR = null;
+                        vm.MOEP_VL_QUANTIDADE_MOVIMENTO = mat.VCMA_QN_QUANTIDADE_REAL;
+                        vm.MOEP_VL_VALOR_MOVIMENTO = mat.VCMA_QN_QUANTIDADE_REAL;
+                        vm.FOPA_CD_ID = null;
+                        vm.MOEP_GU_GUID = Xid.NewXid().ToString();
+                        vm.MOEP_IN_SISTEMA = 6;
+                        Int32 voltaC = prodApp.ValidateCreateMovimento(vm, usuarioLogado);
+
+                        // Monta Log
+                        DTO_Movimento dto1 = MontarMovimentoDTOObj(vm);
+                        String json1 = JsonConvert.SerializeObject(dto1, settings);
+                        LOG log1 = new LOG
+                        {
+                            LOG_DT_DATA = DateTime.Now,
+                            ASSI_CD_ID = usuarioLogado.ASSI_CD_ID,
+                            USUA_CD_ID = usuarioLogado.USUA_CD_ID,
+                            LOG_NM_OPERACAO = "Estoque - Movimento - Consulta",
+                            LOG_IN_ATIVO = 1,
+                            LOG_TX_REGISTRO = json1,
+                            LOG_IN_SISTEMA = 6
+                        };
+                        Int32 volta2 = logApp.ValidateCreate(log1);
+
+                        // Acerta estoque total
+                        Decimal? quantEstoque = 0;
+                        PRODUTO novo = new PRODUTO();
+                        novo.PROD_AQ_FOTO = prod.PROD_AQ_FOTO;
+                        novo.PROD_CD_CODIGO = prod.PROD_CD_CODIGO;
+                        novo.PROD_CD_ID = prod.PROD_CD_ID;
+                        novo.PROD_DS_DESCRICAO = prod.PROD_DS_DESCRICAO;
+                        novo.PROD_DS_INFORMACOES = prod.PROD_DS_INFORMACOES;
+                        novo.PROD_DT_ALTERACAO = prod.PROD_DT_ALTERACAO;
+                        novo.PROD_DT_CADASTRO = prod.PROD_DT_CADASTRO;
+                        novo.PROD_IN_ATIVO = prod.PROD_IN_ATIVO;
+                        novo.PROD_IN_COMPOSTO = prod.PROD_IN_COMPOSTO;
+                        novo.PROD_IN_FRACIONADO = prod.PROD_IN_FRACIONADO;
+                        novo.PROD_IN_PECA = prod.PROD_IN_PECA;
+                        novo.PROD_IN_TIPO_PRODUTO = prod.PROD_IN_TIPO_PRODUTO;
+                        novo.PROD_IN_USUARIO_ALTERACAO = prod.PROD_IN_USUARIO_ALTERACAO;
+                        novo.PROD_NM_FABRICANTE = prod.PROD_NM_FABRICANTE;
+                        novo.PROD_NM_MARCA = prod.PROD_NM_MARCA;
+                        novo.PROD_NM_MODELO = prod.PROD_NM_MODELO;
+                        novo.PROD_NM_NOME = prod.PROD_NM_NOME;
+                        novo.PROD_NM_REFERENCIA_FABRICANTE = prod.PROD_NM_REFERENCIA_FABRICANTE;
+                        novo.PROD_NR_BARCODE = prod.PROD_NR_BARCODE;
+                        novo.PROD_NR_REFERENCIA = prod.PROD_NR_REFERENCIA;
+                        novo.PROD_PC_DESCONTO = prod.PROD_PC_DESCONTO;
+                        novo.PROD_TX_OBSERVACOES = prod.PROD_TX_OBSERVACOES;
+                        novo.PROD_VL_CUSTO = prod.PROD_VL_CUSTO;
+                        novo.PROD_VL_CUSTO_CONCORRENTE_MEDIO = prod.PROD_VL_CUSTO_CONCORRENTE_MEDIO;
+                        novo.PROD_VL_CVM_PESO = prod.PROD_VL_CVM_PESO;
+                        novo.PROD_VL_CVM_RECEITA = prod.PROD_VL_CVM_RECEITA;
+                        novo.PROD_VL_CVM_UNITARIO = prod.PROD_VL_CVM_UNITARIO;
+                        novo.PROD_VL_ESTOQUE_ATUAL = prod.PROD_VL_ESTOQUE_ATUAL - mat.VCMA_QN_QUANTIDADE_REAL;
+                        quantEstoque = prod.PROD_VL_ESTOQUE_ATUAL - mat.VCMA_QN_QUANTIDADE_REAL;
+                        novo.PROD_VL_ESTOQUE_CUSTO = prod.PROD_VL_ESTOQUE_CUSTO;
+                        novo.PROD_VL_ESTOQUE_MAXIMO = prod.PROD_VL_ESTOQUE_MAXIMO;
+                        novo.PROD_VL_ESTOQUE_MINIMO = prod.PROD_VL_ESTOQUE_MINIMO;
+                        novo.PROD_VL_ESTOQUE_RESERVA = prod.PROD_VL_ESTOQUE_RESERVA;
+                        novo.PROD_VL_ESTOQUE_VENDA = prod.PROD_VL_ESTOQUE_VENDA;
+                        novo.PROD_VL_ESTOQUE_TOTAL = quantEstoque + prod.PROD_VL_ESTOQUE_RESERVA;
+                        novo.PROD_VL_FATOR_CORRECAO = prod.PROD_VL_FATOR_CORRECAO;
+                        novo.PROD_VL_MARGEM_CONTRIBUICAO = prod.PROD_VL_MARGEM_CONTRIBUICAO;
+                        novo.PROD_VL_MEDIA_VENDA_MENSAL = prod.PROD_VL_MEDIA_VENDA_MENSAL;
+                        novo.PROD_VL_PRECO_ANTERIOR = prod.PROD_VL_PRECO_ANTERIOR;
+                        novo.PROD_VL_PRECO_MINIMO = prod.PROD_VL_PRECO_MINIMO;
+                        novo.PROD_VL_PRECO_PROMOCAO = prod.PROD_VL_PRECO_PROMOCAO;
+                        novo.PROD_VL_PRECO_VENDA = prod.PROD_VL_PRECO_VENDA;
+                        novo.PROD_VL_ULTIMO_CUSTO = prod.PROD_VL_ULTIMO_CUSTO;
+                        novo.PROD_VL_ESTOQUE_CUSTO = prod.PROD_VL_ESTOQUE_CUSTO;
+                        novo.PROD_IN_SISTEMA = 6;
+                        novo.CAPR_CD_ID = prod.CAPR_CD_ID;
+                        novo.SCPR_CD_ID = prod.SCPR_CD_ID;
+                        novo.ASSI_CD_ID = prod.ASSI_CD_ID;
+                        novo.TIEM_CD_ID = prod.TIEM_CD_ID;
+                        novo.UNID_CD_ID = prod.UNID_CD_ID;
+                        novo.PROD_NM_FORNECEDOR = prod.PROD_NM_FORNECEDOR;
+                        novo.PROD_IN_LOCACAO = prod.PROD_IN_LOCACAO;
+                        novo.PROD_VL_LOCACAO = prod.PROD_VL_LOCACAO;
+                        novo.PROD_VL_LOCACAO_MULTA = prod.PROD_VL_LOCACAO_MULTA;
+                        novo.PROD_VL_LOCACAO_PROMOCAO = prod.PROD_VL_LOCACAO_PROMOCAO;
+                        novo.PROD_VL_LOCACAO_TAXAS = prod.PROD_VL_LOCACAO_TAXAS;
+                        Int32 voltaP = prodApp.ValidateEdit(novo, novo);
+
+                        // Monta Log
+                        DTO_Produto dto2 = MontarProdutoDTOObj(novo);
+                        String json2 = JsonConvert.SerializeObject(dto2, settings);
+                        DTO_Produto dto2Antes = MontarProdutoDTOObj((PRODUTO)Session["ProdAntes"]);
+                        String json2Antes = JsonConvert.SerializeObject(dto2Antes, settings);
+                        LOG log2 = new LOG
+                        {
+                            LOG_DT_DATA = DateTime.Now,
+                            ASSI_CD_ID = usuarioLogado.ASSI_CD_ID,
+                            USUA_CD_ID = usuarioLogado.USUA_CD_ID,
+                            LOG_NM_OPERACAO = "Material/Produto - Alteração",
+                            LOG_IN_ATIVO = 1,
+                            LOG_TX_REGISTRO = json2,
+                            LOG_TX_REGISTRO_ANTES = json2Antes,
+                            LOG_IN_SISTEMA = 6
+                        };
+
+                        // Inclui historico de estoque
+                        PRODUTO_ESTOQUE_HISTORICO hist1 = new PRODUTO_ESTOQUE_HISTORICO();
+                        hist1.ASSI_CD_ID = usuarioLogado.ASSI_CD_ID;
+                        hist1.PROD_CD_ID = prod.PROD_CD_ID;
+                        hist1.PREH_IN_ATIVO = 1;
+                        hist1.PREH_DT_DATA = DateTime.Today.Date;
+                        hist1.PREH_DT_COMPLETA = DateTime.Now;
+                        hist1.PREH_QN_ESTOQUE = mat.VCMA_QN_QUANTIDADE_REAL;
+                        hist1.PREH_IN_PENDENTE = 0;
+                        hist1.PREH_NM_TIPO = "Saída";
+                        hist1.PREH_DS_ORIGEM = "Consulta - Material";
+                        hist1.MOEP_CD_ID = vm.MOEP_CD_ID;
+                        hist1.PREH_IN_TIPO_MOV = 2;
+                        hist1.PREH_QN_ESTOQUE_TOTAL = quantEstoque;
+                        Int32 voltaH = prodApp.ValidateCreateEstoqueHistorico(hist1, idAss);
+                    }
+
+                    // Recupera forma de recebimento
+                    List<FORMA_RECEBIMENTO> frs = recApp.GetAllForma(idAss);
+                    if (frs.Count == 0)
+                    {
+                        Session["MensPaciente"] = 62;
+                        return RedirectToAction("MontarTelaEncerrarConsulta");
+                    }
+                    FORMA_RECEBIMENTO fr = frs.Where(p => p.FORE_IN_PADRAO == 1).FirstOrDefault();
+                    if (fr == null)
+                    {
+                        fr = frs.FirstOrDefault();
+                    }
+
+                    // Acertar consulta
+                    PACIENTE_CONSULTA cons = (PACIENTE_CONSULTA)Session["ConsultaEncerra"];
+                    cons.PACO_IN_CONFIRMADA = 3;
+                    cons.PACO_IN_ENCERRADA = 1;
+                    Int32 volta = baseApp.ValidateEditConsultaConfirma(cons);
+
+                    // Mensagem do CRUD
+                    CONFIGURACAO conf = CarregaConfiguracaoGeral();
+                    PACIENTE pac = baseApp.GetItemById(cons.PACI_CD_ID);
+                    String crud = "A consulta do(a) paciente " + pac.PACI_NM_NOME.ToUpper() + " em " + cons.PACO_DT_CONSULTA.ToLongDateString() + " foi encerrada com sucesso e feita baixa no estoque do material utilizado";
+                    Session["MensPaciente"] = 63;
+
+                    // Gerar recebimento
+                    if (cons.PACO_IN_RECEBE == 1)
+                    {
+                        if ((Int32)Session["PermFinanceiro"] == 1)
+                        {
+                            PACIENTE_CONSULTA item1 = baseApp.GetConsultaById(cons.PACO_CD_ID);
+                            List<CONSULTA_RECEBIMENTO> pagMes = CarregaRecebimento().Where(p => p.CORE_IN_ATIVO == 1 & p.USUA_CD_ID == usuarioLogado.USUA_CD_ID).ToList();
+                            Int32 num = pagMes.Where(p => p.CORE_DT_RECEBIMENTO.Value.Month == DateTime.Today.Date.Month & p.CORE_DT_RECEBIMENTO.Value.Year == DateTime.Today.Date.Year).ToList().Count;
+                            if ((Int32)Session["NumRecebimentos"] >= num)
+                            {
+                                if (conf.CONF_IN_GERA_RECEBIMENTO == 1 & fr != null)
+                                {
+                                    String nome = "Recebimento de consulta de " + pac.PACI_NM_NOME.ToUpper() + " em " + item1.PACO_DT_CONSULTA.ToLongDateString();
+                                    CONSULTA_RECEBIMENTO rec = new CONSULTA_RECEBIMENTO();
+                                    rec.CORE_IN_ATIVO = 1;
+                                    rec.CORE_DT_RECEBIMENTO = DateTime.Today.Date;
+                                    rec.CORE_GU_GUID = Xid.NewXid().ToString();
+                                    rec.USUA_CD_ID = usuarioLogado.USUA_CD_ID;
+                                    rec.ASSI_CD_ID = idAss;
+                                    rec.CORE_IN_CONFERIDO = 0;
+                                    rec.CORE_NM_RECEBIMENTO = nome;
+                                    rec.PACI_CD_ID = pac.PACI__CD_ID;
+                                    rec.PACO_CD_ID = item1.PACO_CD_ID;
+                                    rec.VACO_CD_ID = item1.VACO_CD_ID;
+                                    rec.CORE_VL_VALOR = item1.VALOR_CONSULTA.VACO_NR_VALOR;
+                                    rec.FORE_CD_ID = fr.FORE_CD_ID;
+                                    recApp.ValidateCreate(rec, usuarioLogado);
+
+                                    crud += ". Um lançamento de recebimento foi gerado para esta consulta.";
+
+                                    // Cria pastas
+                                    String caminho = "/Imagens/" + idAss.ToString() + "/Recebimento/" + rec.CORE_CD_ID.ToString() + "/Anexos/";
+                                    String map = Server.MapPath(caminho);
+                                    Directory.CreateDirectory(Server.MapPath(caminho));
+                                    Session["ListaRecebimento"] = null;
+                                    Session["Recebimentos"] = null;
+                                    Session["RecebimentoAlterada"] = 1;
+                                }
+                            }
+                            else
+                            {
+                                crud += ". O lançamento de recebimento não pode ser gerado pois o número de lançamentos do mês excedeu o limite contratado.";
+                            }
+                        }
+                    }
+
+                    // Monta Log
+                    DTO_Paciente_Consulta dto = MontarPacienteConsultaDTOObj(cons);
+                    String json = JsonConvert.SerializeObject(dto, settings);
+                    LOG log = new LOG
+                    {
+                        LOG_DT_DATA = DateTime.Now,
+                        ASSI_CD_ID = usuarioLogado.ASSI_CD_ID,
+                        USUA_CD_ID = usuarioLogado.USUA_CD_ID,
+                        LOG_NM_OPERACAO = "Paciente - Consulta - Encerramento",
+                        LOG_IN_ATIVO = 1,
+                        LOG_TX_REGISTRO = json,
+                        LOG_IN_SISTEMA = 6
+                    };
+                    Int32 volta1 = logApp.ValidateCreate(log);
+
+                    // Grava historico
+                    PACIENTE_HISTORICO hist = new PACIENTE_HISTORICO();
+                    hist.ASSI_CD_ID = usuarioLogado.ASSI_CD_ID;
+                    hist.USUA_CD_ID = usuarioLogado.USUA_CD_ID;
+                    hist.PACI_CD_ID = cons.PACI_CD_ID;
+                    hist.PAHI_DT_DATA = DateTime.Now;
+                    hist.PAHI_IN_TIPO = 10;
+                    hist.PAHI_IN_CHAVE = cons.PACO_CD_ID;
+                    hist.PAHI_NM_OPERACAO = "Paciente - Encerramento de Consulta";
+                    hist.PAHI_DS_DESCRICAO = "Paciente: " + pac.PACI_NM_NOME.ToUpper() + " - Consulta encerrada: " + cons.PACO_DT_CONSULTA.ToShortDateString();
+                    Int32 voltaHist = baseApp.ValidateCreateHistorico(hist);
+
+                    // Retorno
+                    if ((String)Session["ModuloAtual"] == "Consultas - Encerramento")
+                    {
+                        return RedirectToAction("MontarTelaEncerrarConsulta", "Financeiro");
+                    }
+                   
+                    return RedirectToAction("VoltarProcederConsulta", "Paciente");
+                }
+                catch (Exception ex)
+                {
+                    ViewBag.Message = ex.Message;
+                    Session["TipoVolta"] = 2;
+                    Session["VoltaExcecao"] = "Paciente";
+                    Session["Excecao"] = ex;
+                    Session["ExcecaoTipo"] = ex.GetType().ToString();
+                    GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                    Int32 voltaX = grava.GravarLogExcecao(ex, "Paciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                    return RedirectToAction("TrataExcecao", "BaseAdmin");
+                }
+            }
+            else
+            {
+                return View(vm1);
+            }
+        }
+
+        public DTO_Movimento MontarMovimentoDTOObj(MOVIMENTO_ESTOQUE_PRODUTO l)
+        {
+            using (var context = new CRMSysDBEntities())
+            {
+                var mediDTO = new DTO_Movimento()
+                {
+                    ASSI_CD_ID = l.ASSI_CD_ID,
+                    USUA_CD_ID = l.USUA_CD_ID,
+                    COBA_CD_ID = l.COBA_CD_ID,
+                    COPA_CD_ID_1 = l.COPA_CD_ID_1,
+                    CRPV_CD_ID = l.CRPV_CD_ID,
+                    EMFI_CD_ID = l.EMFI_CD_ID,
+                    EMPR_CD_ID = l.EMPR_CD_ID,
+                    FILI_CD_ID = l.FILI_CD_ID,
+                    FOPA_CD_ID = l.FOPA_CD_ID,
+                    FORN_CD_ID = l.FORN_CD_ID,
+                    MOEP_CD_ID = l.MOEP_CD_ID,
+                    MOEP_EMFI_CD_ID = l.MOEP_EMFI_CD_ID,
+                    MOEP_EMFI_CD_ID_ALVO = l.MOEP_EMFI_CD_ID_ALVO,
+                    PROD_CD_ID = l.PROD_CD_ID,
+                    MOEP_DS_JUSTIFICATIVA = l.MOEP_DS_JUSTIFICATIVA,
+                    MOEP_DS_MANUTENCAO_OBSERVACAO = l.MOEP_DS_MANUTENCAO_OBSERVACAO,
+                    MOEP_DT_AUTORIZACAO = l.MOEP_DT_AUTORIZACAO,
+                    MOEP_DT_EXCLUSAO = l.MOEP_DT_EXCLUSAO,
+                    MOEP_DT_LANCAMENTO = l.MOEP_DT_LANCAMENTO,
+                    MOEP_DT_MOVIMENTO = l.MOEP_DT_MOVIMENTO,
+                    MOEP_DT_PAGAMENTO = l.MOEP_DT_PAGAMENTO,
+                    MOEP_GU_GUID = l.MOEP_GU_GUID,
+                    MOEP_IN_ATIVO = l.MOEP_IN_ATIVO,
+                    MOEP_IN_AUTORIZADOR = l.MOEP_IN_AUTORIZADOR,
+                    MOEP_IN_CHAVE_ORIGEM = l.MOEP_IN_CHAVE_ORIGEM,
+                    MOEP_IN_EXCLUIDOR = l.MOEP_IN_EXCLUIDOR,
+                    MOEP_IN_OPERACAO = l.MOEP_IN_OPERACAO,
+                    MOEP_IN_ORIGEM = l.MOEP_IN_ORIGEM,
+                    MOEP_IN_PENDENTE = l.MOEP_IN_PENDENTE,
+                    MOEP_IN_SISTEMA = l.MOEP_IN_SISTEMA,
+                    MOEP_IN_TIPO = l.MOEP_IN_TIPO,
+                    MOEP_IN_TIPO_LANCAMENTO = l.MOEP_IN_TIPO_LANCAMENTO,
+                    MOEP_IN_TIPO_MOVIMENTO = l.MOEP_IN_TIPO_MOVIMENTO,
+                    MOEP_IN_ULTIMO = l.MOEP_IN_ULTIMO,
+                    MOEP_NM_FORNECEDOR = l.MOEP_NM_FORNECEDOR,
+                    MOEP_QN_ALTERADA = l.MOEP_QN_ALTERADA,
+                    MOEP_QN_ANTES = l.MOEP_QN_ANTES,
+                    MOEP_QN_DEPOIS = l.MOEP_QN_DEPOIS,
+                    MOEP_QN_QUANTIDADE = l.MOEP_QN_QUANTIDADE,
+                    MOEP_VL_QUANTIDADE_ANTERIOR = l.MOEP_VL_QUANTIDADE_ANTERIOR,
+                    MOEP_VL_QUANTIDADE_MOVIMENTO = l.MOEP_VL_QUANTIDADE_MOVIMENTO,
+                    MOEP_VL_VALOR_MOVIMENTO = l.MOEP_VL_VALOR_MOVIMENTO,
+                };
+                return mediDTO;
+            }
+
+        }
+
+        public DTO_Produto MontarProdutoDTOObj(PRODUTO l)
+        {
+            using (var context = new CRMSysDBEntities())
+            {
+                var mediDTO = new DTO_Produto()
+                {
+                    ASSI_CD_ID = l.ASSI_CD_ID,
+                    CAPR_CD_ID = l.CAPR_CD_ID,
+                    PROD_CD_CODIGO = l.PROD_CD_CODIGO,
+                    PROD_CD_ID = l.PROD_CD_ID,
+                    SCPR_CD_ID = l.SCPR_CD_ID,
+                    TIEM_CD_ID = l.TIEM_CD_ID,
+                    UNID_CD_ID = l.UNID_CD_ID,
+                    PROD_AQ_FOTO = l.PROD_AQ_FOTO,
+                    PROD_DS_DESCRICAO = l.PROD_DS_DESCRICAO,
+                    PROD_DS_INFORMACOES = l.PROD_DS_INFORMACOES,
+                    PROD_DT_ALTERACAO = l.PROD_DT_ALTERACAO,
+                    PROD_DT_CADASTRO = l.PROD_DT_CADASTRO,
+                    PROD_IN_ATIVO = l.PROD_IN_ATIVO,
+                    PROD_IN_COMPOSTO = l.PROD_IN_COMPOSTO,
+                    PROD_IN_FRACIONADO = l.PROD_IN_FRACIONADO,
+                    PROD_IN_LOCACAO = l.PROD_IN_LOCACAO,
+                    PROD_IN_PECA = l.PROD_IN_PECA,
+                    PROD_IN_SISTEMA = l.PROD_IN_SISTEMA,
+                    PROD_IN_TIPO_PRODUTO = l.PROD_IN_TIPO_PRODUTO,
+                    PROD_IN_USUARIO_ALTERACAO = l.PROD_IN_USUARIO_ALTERACAO,
+                    PROD_NM_FABRICANTE = l.PROD_NM_FABRICANTE,
+                    PROD_NM_FORNECEDOR = l.PROD_NM_FORNECEDOR,
+                    PROD_NM_MARCA = l.PROD_NM_MARCA,
+                    PROD_NM_MODELO = l.PROD_NM_MODELO,
+                    PROD_NM_NOME = l.PROD_NM_NOME,
+                    PROD_NM_REFERENCIA_FABRICANTE = l.PROD_NM_REFERENCIA_FABRICANTE,
+                    PROD_NR_BARCODE = l.PROD_NR_BARCODE,
+                    PROD_NR_REFERENCIA = l.PROD_NM_REFERENCIA_FABRICANTE,
+                    PROD_PC_DESCONTO = l.PROD_PC_DESCONTO,
+                    PROD_TX_OBSERVACOES = l.PROD_TX_OBSERVACOES,
+                    PROD_VL_CUSTO = l.PROD_VL_CUSTO,
+                    PROD_VL_CUSTO_CONCORRENTE_MEDIO = l.PROD_VL_CUSTO_CONCORRENTE_MEDIO,
+                    PROD_VL_CVM_PESO = l.PROD_VL_CVM_PESO,
+                    PROD_VL_CVM_RECEITA = l.PROD_VL_CVM_RECEITA,
+                    PROD_VL_CVM_UNITARIO = l.PROD_VL_CVM_UNITARIO,
+                    PROD_VL_ESTOQUE_ATUAL = l.PROD_VL_ESTOQUE_ATUAL,
+                    PROD_VL_ESTOQUE_CUSTO = l.PROD_VL_ESTOQUE_CUSTO,
+                    PROD_VL_ESTOQUE_MAXIMO = l.PROD_VL_ESTOQUE_MAXIMO,
+                    PROD_VL_ESTOQUE_MINIMO = l.PROD_VL_ESTOQUE_MINIMO,
+                    PROD_VL_ESTOQUE_RESERVA = l.PROD_VL_ESTOQUE_RESERVA,
+                    PROD_VL_ESTOQUE_TOTAL = l.PROD_VL_ESTOQUE_TOTAL,
+                    PROD_VL_ESTOQUE_VENDA = l.PROD_VL_ESTOQUE_VENDA,
+                    PROD_VL_FATOR_CORRECAO = l.PROD_VL_FATOR_CORRECAO,
+                    PROD_VL_LOCACAO = l.PROD_VL_LOCACAO,
+                    PROD_VL_LOCACAO_MULTA = l.PROD_VL_LOCACAO_MULTA,
+                    PROD_VL_LOCACAO_PROMOCAO = l.PROD_VL_LOCACAO_PROMOCAO,
+                    PROD_VL_LOCACAO_TAXAS = l.PROD_VL_LOCACAO_TAXAS,
+                    PROD_VL_MARGEM_CONTRIBUICAO = l.PROD_VL_MARGEM_CONTRIBUICAO,
+                    PROD_VL_MEDIA_VENDA_MENSAL = l.PROD_VL_MEDIA_VENDA_MENSAL,
+                    PROD_VL_PRECO_ANTERIOR = l.PROD_VL_PRECO_ANTERIOR,
+                    PROD_VL_PRECO_MINIMO = l.PROD_VL_PRECO_MINIMO,
+                    PROD_VL_PRECO_PROMOCAO = l.PROD_VL_PRECO_PROMOCAO,
+                    PROD_VL_PRECO_VENDA = l.PROD_VL_PRECO_VENDA,
+                    PROD_VL_ULTIMO_CUSTO = l.PROD_VL_ULTIMO_CUSTO,
+                };
+                return mediDTO;
+            }
+
         }
 
     }

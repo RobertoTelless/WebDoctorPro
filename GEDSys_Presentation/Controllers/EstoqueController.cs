@@ -608,6 +608,7 @@ namespace GEDSys_Presentation.Controllers
                 saidas.Add(new SelectListItem() { Text = "Perda", Value = "6" });
                 saidas.Add(new SelectListItem() { Text = "Envio para Manutenção", Value = "7" });
                 saidas.Add(new SelectListItem() { Text = "Acerto Manual", Value = "8" });
+                saidas.Add(new SelectListItem() { Text = "Material de Consulta", Value = "9" });
                 ViewBag.Saidas = new SelectList(saidas, "Value", "Text");
 
                 List<SelectListItem> pend = new List<SelectListItem>();
@@ -687,6 +688,7 @@ namespace GEDSys_Presentation.Controllers
             saidas.Add(new SelectListItem() { Text = "Perda", Value = "6" });
             saidas.Add(new SelectListItem() { Text = "Envio para Manutenção", Value = "7" });
             saidas.Add(new SelectListItem() { Text = "Acerto Manual", Value = "8" });
+            saidas.Add(new SelectListItem() { Text = "Material de Consulta", Value = "9" });
             ViewBag.Saidas = new SelectList(saidas, "Value", "Text");
 
             List<SelectListItem> pend = new List<SelectListItem>();
@@ -868,6 +870,7 @@ namespace GEDSys_Presentation.Controllers
                 saidas.Add(new SelectListItem() { Text = "Perda", Value = "6" });
                 saidas.Add(new SelectListItem() { Text = "Envio para Manutenção", Value = "7" });
                 saidas.Add(new SelectListItem() { Text = "Acerto Manual", Value = "8" });
+                saidas.Add(new SelectListItem() { Text = "Material de Consulta", Value = "9" });
                 ViewBag.Saidas = new SelectList(saidas, "Value", "Text");
                 List<SelectListItem> pend = new List<SelectListItem>();
                 pend.Add(new SelectListItem() { Text = "Não", Value = "0" });
@@ -985,6 +988,7 @@ namespace GEDSys_Presentation.Controllers
                 saidas.Add(new SelectListItem() { Text = "Perda", Value = "6" });
                 saidas.Add(new SelectListItem() { Text = "Envio para Manutenção", Value = "7" });
                 saidas.Add(new SelectListItem() { Text = "Acerto Manual", Value = "8" });
+                saidas.Add(new SelectListItem() { Text = "Material de Consulta", Value = "9" });
                 ViewBag.Saidas = new SelectList(saidas, "Value", "Text");
                 ViewBag.Usuarios = new SelectList(CarregarUsuario().OrderBy(p => p.USUA_NM_NOME), "USUA_CD_ID", "USUA_NM_NOME");
                 ViewBag.Perfil = usuario.PERFIL.PERF_SG_SIGLA;
@@ -1069,6 +1073,7 @@ namespace GEDSys_Presentation.Controllers
                 saidas.Add(new SelectListItem() { Text = "Perda", Value = "6" });
                 saidas.Add(new SelectListItem() { Text = "Envio para Manutenção", Value = "7" });
                 saidas.Add(new SelectListItem() { Text = "Acerto Manual", Value = "8" });
+                saidas.Add(new SelectListItem() { Text = "Material de Consulta", Value = "9" });
                 ViewBag.Saidas = new SelectList(saidas, "Value", "Text");
                 ViewBag.Usuarios = new SelectList(CarregarUsuario().OrderBy(p => p.USUA_NM_NOME), "USUA_CD_ID", "USUA_NM_NOME");
                 ViewBag.Perfil = usuario.PERFIL.PERF_SG_SIGLA;
@@ -2672,6 +2677,7 @@ namespace GEDSys_Presentation.Controllers
             saidas.Add(new SelectListItem() { Text = "Perda", Value = "6" });
             saidas.Add(new SelectListItem() { Text = "Envio para Manutenção", Value = "7" });
             saidas.Add(new SelectListItem() { Text = "Acerto Manual", Value = "8" });
+            saidas.Add(new SelectListItem() { Text = "Material de Consulta", Value = "9" });
             ViewBag.Saidas = new SelectList(saidas, "Value", "Text");
             ViewBag.Usuarios = new SelectList(CarregarUsuario().OrderBy(p => p.USUA_NM_NOME), "USUA_CD_ID", "USUA_NM_NOME");
             ViewBag.Perfil = usuario.PERFIL.PERF_SG_SIGLA;
@@ -2770,6 +2776,7 @@ namespace GEDSys_Presentation.Controllers
             saidas.Add(new SelectListItem() { Text = "Perda", Value = "6" });
             saidas.Add(new SelectListItem() { Text = "Envio para Manutenção", Value = "7" });
             saidas.Add(new SelectListItem() { Text = "Acerto Manual", Value = "8" });
+            saidas.Add(new SelectListItem() { Text = "Material de Consulta", Value = "9" });
             ViewBag.Saidas = new SelectList(saidas, "Value", "Text");
             ViewBag.Usuarios = new SelectList(CarregarUsuario().OrderBy(p => p.USUA_NM_NOME), "USUA_CD_ID", "USUA_NM_NOME");
             ViewBag.Perfil = usuario.PERFIL.PERF_SG_SIGLA;
@@ -3503,6 +3510,15 @@ namespace GEDSys_Presentation.Controllers
                         };
                         table.AddCell(cell);
                     }
+                    else if (item.MOEP_IN_TIPO == 9)
+                    {
+                        cell = new PdfPCell(new Paragraph("Material de Consulta", meuFont))
+                        {
+                            VerticalAlignment = Element.ALIGN_MIDDLE,
+                            HorizontalAlignment = Element.ALIGN_LEFT
+                        };
+                        table.AddCell(cell);
+                    }
                     else
                     {
                         cell = new PdfPCell(new Paragraph("-", meuFont))
@@ -4057,6 +4073,15 @@ namespace GEDSys_Presentation.Controllers
                     else if (item.MOEP_IN_TIPO == 8)
                     {
                         cell = new PdfPCell(new Paragraph("Acerto Manual", meuFont))
+                        {
+                            VerticalAlignment = Element.ALIGN_MIDDLE,
+                            HorizontalAlignment = Element.ALIGN_LEFT
+                        };
+                        table.AddCell(cell);
+                    }
+                    else if (item.MOEP_IN_TIPO == 9)
+                    {
+                        cell = new PdfPCell(new Paragraph("Material de Consulta", meuFont))
                         {
                             VerticalAlignment = Element.ALIGN_MIDDLE,
                             HorizontalAlignment = Element.ALIGN_LEFT
@@ -4924,6 +4949,52 @@ namespace GEDSys_Presentation.Controllers
                     }
                 }
 
+                // Material de Consulta - Saida
+                if (aten.MOEP_IN_TIPO_MOVIMENTO == 2)
+                {
+                    if (aten.MOEP_IN_TIPO == 9)
+                    {
+                        table = new PdfPTable(new float[] { 120f, 120f, 120f});
+                        table.WidthPercentage = 100;
+                        table.HorizontalAlignment = 0;
+                        table.SpacingBefore = 1f;
+                        table.SpacingAfter = 1f;
+
+                        cell = new PdfPCell(new Paragraph("Material de Consulta - Saída", meuFontBold));
+                        cell.Border = 0;
+                        cell.Colspan = 4;
+                        cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                        cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                        table.AddCell(cell);
+
+                        cell = new PdfPCell(new Paragraph("       ", meuFontBold));
+                        cell.Border = 0;
+                        cell.Colspan = 4;
+                        cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                        cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                        table.AddCell(cell);
+
+                        cell = new PdfPCell(new Paragraph("Quantidade: " + aten.MOEP_VL_QUANTIDADE_MOVIMENTO.Value, meuFont));
+                        cell.Border = 0;
+                        cell.Colspan = 4;
+                        cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                        cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                        table.AddCell(cell);
+
+                        cell = new PdfPCell(new Paragraph("Status: " + aten.Pendente, meuFont));
+                        cell.Border = 0;
+                        cell.Colspan = 4;
+                        cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                        cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                        table.AddCell(cell);
+                        pdfDoc.Add(table);
+
+                        // Linha Horizontal
+                        line1 = new Paragraph(new Chunk(new iTextSharp.text.pdf.draw.LineSeparator(0.0F, 100.0F, BaseColor.BLUE, Element.ALIGN_LEFT, 1)));
+                        pdfDoc.Add(line1);
+                    }
+                }
+
                 // Finaliza
                 pdfWriter.CloseStream = false;
                 pdfDoc.Close();
@@ -5307,6 +5378,10 @@ namespace GEDSys_Presentation.Controllers
             if (id == 8)
             {
                 return "Ajuste Manual - Saída";
+            }
+            if (id == 9)
+            {
+                return "Material de Consulta - Saída";
             }
             return "Ajuste Manual - Entrada";
         }

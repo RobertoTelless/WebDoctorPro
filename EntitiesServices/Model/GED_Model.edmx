@@ -6896,6 +6896,7 @@
           <Property Name="PROD_CD_ID" Type="int" Nullable="false" />
           <Property Name="VCMA_QN_QUANTIDADE" Type="decimal" Precision="18" Scale="2" />
           <Property Name="VCMA_IN_ATIVO" Type="int" Nullable="false" />
+          <Property Name="VCMA_QN_QUANTIDADE_REAL" Type="decimal" Precision="18" Scale="2" />
         </EntityType>
         <EntityType Name="VALOR_CONVENIO">
           <Key>
@@ -40856,6 +40857,7 @@
           <Property Name="VCMA_IN_ATIVO" Type="Int32" Nullable="false" />
           <NavigationProperty Name="PRODUTO" Relationship="CRMSysDBModel.FK_VALOR_CONSULTA_MATERIAL_PRODUTO" FromRole="VALOR_CONSULTA_MATERIAL" ToRole="PRODUTO" />
           <NavigationProperty Name="VALOR_CONSULTA" Relationship="CRMSysDBModel.FK_VALOR_CONSULTA_MATERIAL_VALOR_CONSULTA" FromRole="VALOR_CONSULTA_MATERIAL" ToRole="VALOR_CONSULTA" />
+          <Property Name="VCMA_QN_QUANTIDADE_REAL" Type="Decimal" Precision="18" Scale="2" />
         </EntityType>
         <Association Name="FK_MOVIMENTO_ESTOQUE_PRODUTO_PACIENTE_CONSULTA">
           <End Type="CRMSysDBModel.PACIENTE_CONSULTA" Role="PACIENTE_CONSULTA" Multiplicity="0..1" />
@@ -48395,6 +48397,7 @@
           <EntitySetMapping Name="VALOR_CONSULTA_MATERIAL">
             <EntityTypeMapping TypeName="CRMSysDBModel.VALOR_CONSULTA_MATERIAL">
               <MappingFragment StoreEntitySet="VALOR_CONSULTA_MATERIAL">
+                <ScalarProperty Name="VCMA_QN_QUANTIDADE_REAL" ColumnName="VCMA_QN_QUANTIDADE_REAL" />
                 <ScalarProperty Name="VCMA_IN_ATIVO" ColumnName="VCMA_IN_ATIVO" />
                 <ScalarProperty Name="VCMA_QN_QUANTIDADE" ColumnName="VCMA_QN_QUANTIDADE" />
                 <ScalarProperty Name="PROD_CD_ID" ColumnName="PROD_CD_ID" />

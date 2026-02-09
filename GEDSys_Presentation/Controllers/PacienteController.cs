@@ -20849,6 +20849,7 @@ namespace GEDSys_Presentation.Controllers
                 CONFIGURACAO conf = CarregaConfiguracaoGeral();
                 Session["Pisca"] = conf.CONF_IN_PISCA;
                 Session["SRF"] = conf.CONF_IN_RECIBO_SRF;
+                Session["ModuloAtual"] = "Proceder Consulta";
 
                 // Checa classe
                 Int32 classe = 0;

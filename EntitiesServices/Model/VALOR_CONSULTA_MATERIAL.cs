@@ -20,6 +20,7 @@ namespace EntitiesServices.Model
         public int PROD_CD_ID { get; set; }
         public Nullable<decimal> VCMA_QN_QUANTIDADE { get; set; }
         public int VCMA_IN_ATIVO { get; set; }
+        public Nullable<decimal> VCMA_QN_QUANTIDADE_REAL { get; set; }
     
         public virtual PRODUTO PRODUTO { get; set; }
         public virtual VALOR_CONSULTA VALOR_CONSULTA { get; set; }
