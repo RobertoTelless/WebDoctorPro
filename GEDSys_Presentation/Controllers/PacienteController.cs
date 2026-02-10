@@ -17550,7 +17550,9 @@ namespace GEDSys_Presentation.Controllers
                     }
                     else if ((Int32)Session["VoltaFisico"] == 2)
                     {
-                        return RedirectToAction("VoltarEditarUltimoFisico");
+                        //return RedirectToAction("VoltarEditarUltimoFisico");
+                        return RedirectToAction("VoltarProcederConsulta");
+
                     }
                     return RedirectToAction("VoltarAnexoPaciente");
                 }

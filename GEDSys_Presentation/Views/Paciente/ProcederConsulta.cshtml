@@ -194,20 +194,39 @@
                                         {
                                             if ((Int32)Session["Pisca"] == 0)
                                             {
-                                                <div class="col-lg-2 col-md-2 col-xs-12">
+                                                @*<div class="col-lg-2 col-md-2 col-xs-12">
                                                     <br />
                                                     <button type="button" class="btn btn-sm btn-success" onclick="if (confirm('Confirma o encerramento dessa consulta?')) { window.location.href='@Url.Action("EncerrarConsulta", "Paciente2")'; }">
                                                             Encerrar Consulta
                                                     </button>  
+                                                </div>*@
+                                                <div class="col-lg-2 col-md-2 col-xs-12">
+                                                    <br />
+                                                    <a href="@Url.Action("EncerrarConsulta", "Paciente2")" 
+                                                       class="btn btn-sm btn-success btn-loading" 
+                                                       onclick="return confirm('Confirma o encerramento dessa consulta?');">
+                                                        Encerrar Consulta
+                                                    </a>
                                                 </div>
+
+
+
                                             }
                                             else
                                             {
-                                                <div class="col-lg-2 col-md-2 col-xs-12">
+                                                @*<div class="col-lg-2 col-md-2 col-xs-12">
                                                     <br />
                                                     <button type="button" class="btn btn-sm btn-success pisca" onclick="if (confirm('Confirma o encerramento dessa consulta?')) { window.location.href='@Url.Action("EncerrarConsulta", "Paciente2")'; }">
                                                         Encerrar Consulta
                                                     </button>  
+                                                </div>*@
+                                                <div class="col-lg-2 col-md-2 col-xs-12">
+                                                    <br />
+                                                    <a href="@Url.Action("EncerrarConsulta", "Paciente2")" 
+                                                       class="btn btn-sm btn-success pisca btn-loading" 
+                                                       onclick="return confirm('Confirma o encerramento dessa consulta?');">
+                                                        Encerrar Consulta
+                                                    </a>
                                                 </div>
                                             }
                                             if ((Int32)Session["SRF"] == 1)
