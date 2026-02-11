@@ -6671,9 +6671,9 @@ namespace GEDSys_Presentation.Controllers
                             rec.CORE_NM_RECEBIMENTO = nome;
                             rec.PACI_CD_ID = pac.PACI__CD_ID;
                             rec.PACO_CD_ID = item.PACO_CD_ID;
-                            if (item.VACO_CD_ID != null)
+                            if (tipo != null)
                             {
-                                rec.VACO_CD_ID = item.VACO_CD_ID;
+                                rec.VACO_CD_ID = tipo.VACO_CD_ID;
                                 rec.CORE_VL_VALOR = item.VALOR_CONSULTA.VACO_NR_VALOR;
                             }
                             else

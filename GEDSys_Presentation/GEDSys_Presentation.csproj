@@ -511,6 +511,7 @@
     <Compile Include="AutoMapper\ViewModelToDomainMappingProfile.cs" />
     <Compile Include="Classes\CacheSingleton.cs" />
     <Compile Include="Classes\ControleAcessoMetodo.cs" />
+    <Compile Include="Classes\CookieHelper.cs" />
     <Compile Include="Classes\VerificacaoDataCalendario.cs" />
     <Compile Include="Classes\PDFEventHandler.cs" />
     <Compile Include="Classes\GenerateQRCode.cs" />
@@ -3981,6 +3982,7 @@
     <Content Include="ConteudoSite\Mensageria\WebDoctor_Mensageria_Apresentacao_Final_1.pdf" />
     <Content Include="Imagens\1\Locacao\89\Contrato\Contrato_LocacaoCunegundes Bazófica Encerada_d615194n0008vh0av0kg.pdf" />
     <Content Include="Imagens\1\Locacao\90\Contrato\Contrato_LocacaoJeaanie Geniosa Genial_d61o6csn000b5u06f8m0.pdf" />
+    <Content Include="BaseAdmin\Versao\Versao_2_0_0_0 .pdf" />
     <None Include="Properties\PublishProfiles\eprontuario - FTP.pubxml" />
     <None Include="Properties\PublishProfiles\eprontuario - FTP1.pubxml" />
     <None Include="Properties\PublishProfiles\eprontuario - Web Deploy.pubxml" />
@@ -6298,6 +6300,10 @@
     <Folder Include="Imagens\1\Recebimento\1559\Anexos\" />
     <Folder Include="Imagens\1\Recebimento\15\Anexos\" />
     <Folder Include="Imagens\1\Recebimento\15\Recibo\" />
+    <Folder Include="Imagens\1\Recebimento\1633\Anexos\" />
+    <Folder Include="Imagens\1\Recebimento\1634\Anexos\" />
+    <Folder Include="Imagens\1\Recebimento\1635\Anexos\" />
+    <Folder Include="Imagens\1\Recebimento\1636\Anexos\" />
     <Folder Include="Imagens\1\Recebimento\16\Anexos\" />
     <Folder Include="Imagens\1\Recebimento\16\Recibo\" />
     <Folder Include="Imagens\1\Recebimento\17\Anexos\" />

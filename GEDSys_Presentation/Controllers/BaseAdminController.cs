@@ -2707,6 +2707,7 @@ namespace ERP_Condominios_Solution.Controllers
             ControleAcessoMetodo grava = new ControleAcessoMetodo(aceApp);
             Int32 voltaX = grava.GravaAcesso(usuario.USUA_CD_ID, usuario.ASSI_CD_ID, "SOBRE", "BaseAdmin", "MontarTelaSobre");
             return View(ultima);
+
         }
 
         [ValidateInput(false)]

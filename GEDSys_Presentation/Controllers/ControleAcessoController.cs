@@ -1162,6 +1162,13 @@ namespace ERP_Condominios_Solution.Controllers
                 ControleAcessoMetodo grava = new ControleAcessoMetodo(aceApp);
                 Int32 voltaX = grava.GravaAcesso(usuario.USUA_CD_ID, usuario.ASSI_CD_ID, "LOGIN", "ControleAcesso", "Login", ip);
 
+                // Trata cookie
+                Boolean cook = CookieManager.VerificarValidadeCookie();
+                if (!cook)
+                {
+                    CookieManager.GravarCookieInicioBase();
+                }
+
                 // Route
                 Session["MensSenha"] = 0;
                 if (volta == 30)

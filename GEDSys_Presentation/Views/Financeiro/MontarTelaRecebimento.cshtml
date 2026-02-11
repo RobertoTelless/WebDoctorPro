@@ -195,7 +195,6 @@
                                             {
                                                 <td style="width: auto">Não Informada</td>
                                             }
-                                            <td style="width: auto">@cond.FORMA_RECEBIMENTO.FORE_NM_FORMA</td>
                                             @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_FINANCEIRO_REC_ALTERAR == 1)
                                             {
                                                 <td style="width: auto"><a href="@Url.Action("EditarRecebimento", "Financeiro", new { id = cond.CORE_CD_ID })" class="btn-loading" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página de edição do recebimento"/>@cond.CORE_GU_GUID</td>
@@ -206,7 +205,14 @@
                                             }
                                             <td style="width: auto">@cond.PACIENTE.PACI_NM_NOME</td>
                                             <td style="width: auto">@cond.CORE_NM_RECEBIMENTO</td>
-                                            <td style="width: auto">@cond.VALOR_CONSULTA.VACO_NM_NOME</td>
+                                            @if (Model.VALOR_CONSULTA != null)
+                                            {
+                                                <td style="width: auto">@cond.VALOR_CONSULTA.VACO_NM_NOME</td>
+                                            }
+                                            else
+                                            {
+                                                <td style="width: auto">-</td>
+                                            }
                                             <td style="width: auto">@CrossCutting.Formatters.DecimalFormatter(cond.CORE_VL_VALOR.Value)</td>
                                             @if (cond.RECEBIMENTO_RECIBO.Count > 0)
                                             {

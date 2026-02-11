@@ -37,14 +37,7 @@
                         <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
                             @if ((String)Session["PerfilSigla"] == "ADM")
                             {
-                                <div class="col-lg-2 col-md-2 col-xs-12">
-                                    Assinante
-                                    @Html.DropDownListFor(m => m.ASSI_CD_ID, (SelectList)ViewBag.Assinante, "Selecionar", new { @class = "form-control" , autofocus = true})
-                                </div>
-                            }
-                            @if ((String)Session["PerfilSigla"] == "ADM")
-                            {
-                                <div class="col-lg-2 col-md-2 col-xs-12">
+                                <div class="col-lg-3 col-md-3 col-xs-12">
                                     Usuário
                                     @Html.DropDownListFor(m => m.USUA_CD_ID, (SelectList)ViewBag.Usuarios, "Selecionar", new { @class = "form-control" , autofocus = true})
                                 </div>
@@ -60,17 +53,13 @@
                                     @Html.TextBoxFor(m => m.ACES_DT_DUMMY, "{0:dd/MM/yyyy}", new { @class = "form-control date-picker", autofocus = true, @id="data2" })
                                 </div>
                             }
-                            <div class="col-lg-2 col-md-2 col-xs-12">
+                            <div class="col-lg-3 col-md-3 col-xs-12">
                                 Sigla da Operação
                                 @Html.TextBoxFor(m => m.ACES_SG_ACESSO, new { @class = "form-control", autofocus = true })
                             </div>
                             <div class="col-lg-2 col-md-2 col-xs-12">
                                 Entidade
                                 @Html.TextBoxFor(m => m.ACES_NM_CONTROLLER, new { @class = "form-control", autofocus = true })
-                            </div>
-                            <div class="col-lg-2 col-md-2 col-xs-12">
-                                Função
-                                @Html.TextBoxFor(m => m.ACES_NM_METHOD, new { @class = "form-control", autofocus = true })
                             </div>
                         </div>
                         <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
@@ -101,18 +90,7 @@
                         </div>
                     }
                     <div class="row">
-                        @if ((Int32)Session["EscopoAcesso"] == 1)
-                        {
-                            <h4 style="color:green; font-weight: bold; background-color:beige">Todos registros de acessos</h4>
-                        }
-                        @if ((Int32)Session["EscopoAcesso"] == 2)
-                        {
-                            <h4 style="color:green; font-weight: bold; background-color:beige">Registros de acesso do mês corrente</h4>
-                        }
-                        @if ((Int32)Session["EscopoAcesso"] == 3)
-                        {
-                            <h4 style="color:green; font-weight: bold; background-color:beige">Registros de acesso da data corrente</h4>
-                        }
+                        <h4 style="color:green; font-weight: bold; background-color:beige">Registros de acesso do mês corrente - Para consultar os demais use as opções do filtro</h4>
                         @if (ViewBag.Listas != null &&(ViewBag.Listas as List<EntitiesServices.Model.ACESSO_METODO>).Count > 0)
                         {
                             <table class="table table-striped table-bordered table-hover dataTables-example">

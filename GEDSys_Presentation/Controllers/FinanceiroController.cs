@@ -1,4 +1,4 @@
-﻿using ApplicationServices.Interfaces;
+﻿    using ApplicationServices.Interfaces;
 using AutoMapper;
 using Azure.Communication.Email;
 using Canducci.Zip;
@@ -7573,7 +7573,8 @@ namespace GEDSys_Presentation.Controllers
                 Session["ListaRectoTipo"] = lista3;
 
                 // Resumo Recebimento x Forma  
-                tipos = rectos.Where(p => p.CORE_IN_ATIVO == 1).Select(p => p.FORE_CD_ID).Distinct().ToList();
+                List<CONSULTA_RECEBIMENTO> recs = rectos.Where(p => p.FORE_CD_ID != null).ToList();
+                tipos = recs.Where(p => p.CORE_IN_ATIVO == 1).Select(p => p.FORE_CD_ID).Distinct().ToList();
                 List<ModeloViewModel> lista4 = new List<ModeloViewModel>();
                 foreach (Int32 item in tipos)
                 {

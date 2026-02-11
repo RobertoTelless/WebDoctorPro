@@ -736,7 +736,11 @@
                             <div class="vertical-timeline-content">
                                 <h2>Versão 2.0.0.0</h2>
                                 <p>Versão firme de produção</p>
-                                <a href="@Url.Action((String)Session["Versao4"])" target="_blank" class="btn btn-xs btn-primary"> Mais...</a>
+                                <a href="@Url.Content("~/BaseAdmin/Versao/Versao_2_0_0_0.pdf")" 
+                                    class="btn btn-info btn-sm" style="border-radius: 4px;" download>
+                                    <i class="fa fa-file-pdf-o"></i> Documento da Versão
+                                </a>
+                                @*<a href="@Url.Action((String)Session["Versao4"])" target="_blank" class="btn btn-xs btn-primary"> Mais...</a>*@
                                 <span class="vertical-date"> 6a Feira <br /> <small>10 de fevereiro, 2026</small> </span>
                             </div>
                         </div>
@@ -805,7 +809,7 @@
                                 <a href="https://www.facebook.com/profile.php?id=61575727388325" target="_blank"><i class="fa fa-facebook"></i></a>
                             </li>
                             <li>
-                                <a href="#"><i class="fa fa-linkedin"></i></a>
+                                <a href="https://www.linkedin.com/feed/" target="_blank"><i class="fa fa-linkedin"></i></a>
                             </li>
                         </ul>
                     </div>

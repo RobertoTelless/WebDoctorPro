@@ -22925,7 +22925,8 @@ namespace GEDSys_Presentation.Controllers
                 {
                     return RedirectToAction("Logout", "ControleAcesso");
                 }
-                Session["ListaExames"] = null;
+                listaMasterExame = CarregaExames().OrderBy(p => p.PAEX_DT_DATA).ToList();
+                Session["ListaExames"] = listaMasterExame;
                 return RedirectToAction("MontarTelaExames");
             }
             catch (Exception ex)

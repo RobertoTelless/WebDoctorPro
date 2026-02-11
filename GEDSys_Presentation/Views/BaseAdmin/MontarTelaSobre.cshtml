@@ -111,11 +111,16 @@
                                         <h5 style=" margin-left: 15px;">   Central de Pacientes</h5>
                                         <h5 style=" margin-left: 15px;">   Grupos de Pacientes</h5>
                                         <h5 style=" margin-left: 15px;">   Medicamentos</h5>
+                                        <h5 style=" margin-left: 15px;">   Materiais / Produtos</h5>
                                         <h5 style=" margin-left: 15px;">   Modelos de Solicitações de Exames</h5>
                                         <h5 style=" margin-left: 15px;">   Avisos/Lembretes</h5>
                                         <h5 style=" margin-left: 15px;">   Modelos de E-Mails</h5>
                                         <h5 style=" margin-left: 15px;">   Modelos de SMS</h5>
-                                        <h5 style=" margin-left: 15px;">   Consultas - Valores</h5>
+                                        <h5 style=" margin-left: 15px;">   Consultas - Tipos e Valores</h5>
+                                        <h5 style=" margin-left: 15px;">   Mensagens Enviadas</h5>
+                                        <h5 style=" margin-left: 15px;">   Médicos</h5>
+                                        <h5 style=" margin-left: 15px;">   Vídeos</h5>
+                                        <h5 style=" margin-left: 15px;">   Contratos de Locação</h5>
                                         <h5>Prontuários:</h5>
                                         <h5 style=" margin-left: 15px;">   Central de Pacientes</h5>
                                         <h5 style=" margin-left: 15px;">   Central de Consultas</h5>
@@ -128,14 +133,15 @@
                                         <h5 style=" margin-left: 15px;">   Recebimentos</h5>
                                         <h5 style=" margin-left: 15px;">   Dashboard</h5>
                                         <h5 style=" margin-left: 15px;">   Encerramento de Consultas</h5>
-                                        <h5 style=" margin-left: 15px;">   Envio para Contador</h5>
-                                        <h5>Importação:</h5>
-                                        <h5 style=" margin-left: 15px;">   Importação de Fichas de Pacientes</h5>
-                                        <h5 style=" margin-left: 15px;">   Falhas na Importação de Fichas de Pacientes</h5>
+                                        <h5>Estoque:</h5>
+                                        <h5 style=" margin-left: 15px;">   Materiais / Produtos</h5>
+                                        <h5 style=" margin-left: 15px;">   Controle de Estoque</h5>
+                                        <h5>Locações:</h5>
+                                        <h5 style=" margin-left: 15px;">   Central de Locações</h5>
                                         <h5>Mensageria</h5>
                                         <h5 style="margin-left: 15px;">   Central de Mensageria</h5>
                                         <h5 style="margin-left: 15px;">   Criação de Mensagens de E-Mail</h5>
-                                        <h5 style=" margin-left: 15px;">   Mensagens automáticas do WebDoctor</h5>
+                                        <h5 style=" margin-left: 15px;">  Mensagens automáticas do WebDoctor</h5>
                                         <h5>Assinante</h5>
                                         <h5 style="margin-left: 15px;">   Central do Assinante</h5>
                                         <h5>Administração:</h5>
@@ -144,7 +150,6 @@
                                         <h5 style=" margin-left: 15px;">   Perfis de Acesso</h5>
                                         <h5 style=" margin-left: 15px;">   Tabelas Auxiliares</h5>
                                         <h5 style=" margin-left: 15px;">   Resumo de Acessos</h5>
-                                        <h5 style=" margin-left: 15px;">   Resumo de Falhas</h5>
                                         <h5>E muito mais...</h5>
                                     </div>
                                 </div>
@@ -192,7 +197,7 @@
                                                     <p>
                                                         <br />
                                                         @item.Nome1
-                                                        <br />
+                                                        @*<br />
                                                         @if (item.Valor == 1)
                                                         {
                                                             <a href="@Url.Action(item.Nome4)" target="_blank">@item.Nome3</a>
@@ -200,7 +205,7 @@
                                                         else
                                                         {
                                                             @item.Nome3
-                                                        }
+                                                        }*@
                                                     </p>
                                                 </div>
                                             </div>

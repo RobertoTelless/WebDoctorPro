@@ -3693,6 +3693,14 @@ namespace GEDSys_Presentation.Controllers
                     {
                         if ((Int32)Session["PermFinanceiro"] == 1)
                         {
+                            // Recupera forma de recebimento
+                            List<FORMA_RECEBIMENTO> frs = recApp.GetAllForma(idAss);
+                            FORMA_RECEBIMENTO fr = frs.Where(p => p.FORE_IN_PADRAO == 1).FirstOrDefault();
+                            if (fr == null)
+                            {
+                                fr = frs.FirstOrDefault();
+                            }
+
                             List<CONSULTA_RECEBIMENTO> pagMes = CarregaRecebimento().Where(p => p.CORE_IN_ATIVO == 1).ToList();
                             Int32 num = pagMes.Where(p => p.CORE_DT_RECEBIMENTO.Value.Month == DateTime.Today.Date.Month & p.CORE_DT_RECEBIMENTO.Value.Year == DateTime.Today.Date.Year).ToList().Count;
                             if ((Int32)Session["NumRecebimentos"] >= num)
@@ -3709,7 +3717,7 @@ namespace GEDSys_Presentation.Controllers
                                 rec.PACI_CD_ID = pac.PACI__CD_ID;
                                 rec.PACO_CD_ID = null;
                                 rec.CORE_VL_VALOR = item.LOPA_VL_VALOR_PAGO;
-                                rec.FORE_CD_ID = null;
+                                rec.FORE_CD_ID = fr.FORE_CD_ID;
                                 recApp.ValidateCreate(rec, usuarioLogado);
 
                                 // Configura serialização

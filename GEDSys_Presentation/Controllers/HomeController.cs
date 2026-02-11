@@ -4,6 +4,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using System.Runtime.Caching;
+using ERP_Condominios_Solution.Classes;
 
 namespace CRMPresentation.Controllers
 {
@@ -21,7 +22,13 @@ namespace CRMPresentation.Controllers
             Session["DemoVencido"] = 0;
             Session["PagVencido"] = 0;
             Session["AssinantePendente"] = 0;
-            //return RedirectToAction("Login", "ControleAcesso");
+
+            // Trata cookie
+            //Boolean cook = CookieManager.VerificarValidadeCookie();
+            //if (cook)
+            //{
+            //    return RedirectToAction("Login", "ControleAcesso");
+            //}
             return RedirectToAction("CarregarLandingPage", "BaseAdmin");
         }
 
