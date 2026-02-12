@@ -415,6 +415,9 @@
     <Compile Include="Model\ACESSO_METODO.cs">
       <DependentUpon>GED_Model.tt</DependentUpon>
     </Compile>
+    <Compile Include="Model\ACESSO_SITE.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
     <Compile Include="Model\AGENDA.cs">
       <DependentUpon>GED_Model.tt</DependentUpon>
     </Compile>
@@ -1602,6 +1605,7 @@
     <Compile Include="WorkClasses\DTO_ModeloEMail.cs" />
     <Compile Include="WorkClasses\DTO_ModeloSMS.cs" />
     <Compile Include="WorkClasses\DTO_ContratoLocacao.cs" />
+    <Compile Include="WorkClasses\AcessoVisitanteDTO.cs" />
     <Compile Include="WorkClasses\DTO_Paciente_Atestado  - Cópia .cs" />
     <Compile Include="WorkClasses\DTO_Movimento.cs" />
     <Compile Include="WorkClasses\DTO_Produto_Custo.cs" />

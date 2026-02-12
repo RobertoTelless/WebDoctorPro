@@ -91,7 +91,23 @@ namespace ERP_Condominios_Solution.ViewModels
         public string USUA_NM_SALT_HASH { get; set; }
         public byte[] USUA_NM_SALT { get; set; }
         public Nullable<int> USUA_IN_HUMANO { get; set; }
+        public Nullable<int> USUA_IN_COOKIE { get; set; }
 
+        public bool Cookie
+        {
+            get
+            {
+                if (USUA_IN_COOKIE == 1)
+                {
+                    return true;
+                }
+                return false;
+            }
+            set
+            {
+                USUA_IN_COOKIE = (value == true) ? 1 : 0;
+            }
+        }
         public bool Humano
         {
             get

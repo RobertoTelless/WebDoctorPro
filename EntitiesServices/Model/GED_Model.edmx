@@ -38,6 +38,19 @@
           <Property Name="ACES_DT_DUMMY" Type="date" />
           <Property Name="ACES_IP_IP_LOGIN" Type="varchar" MaxLength="50" />
         </EntityType>
+        <EntityType Name="ACESSO_SITE">
+          <Key>
+            <PropertyRef Name="ACST_CD_ID" />
+          </Key>
+          <Property Name="ACST_CD_ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="ACST_DT_ACESSO" Type="datetime" Nullable="false" />
+          <Property Name="ACST_IP_IP" Type="varchar" MaxLength="50" />
+          <Property Name="ACST_NM_CIDADE" Type="varchar" MaxLength="50" />
+          <Property Name="ACST_NM_UF" Type="varchar" MaxLength="50" />
+          <Property Name="ACST_NM_PAIS" Type="varchar" MaxLength="50" />
+          <Property Name="ACST_NM_PROVEDOR" Type="varchar" MaxLength="50" />
+          <Property Name="ACST_IN_ATIVO" Type="int" />
+        </EntityType>
         <EntityType Name="AGENDA">
           <Key>
             <PropertyRef Name="AGEN_CD_ID" />
@@ -16258,6 +16271,7 @@
         </Association>
         <EntityContainer Name="CRMSysDBModelStoreContainer">
           <EntitySet Name="ACESSO_METODO" EntityType="Self.ACESSO_METODO" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="ACESSO_SITE" EntityType="Self.ACESSO_SITE" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="AGENDA" EntityType="Self.AGENDA" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="AGENDA_ANEXO" EntityType="Self.AGENDA_ANEXO" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="AGENDA_CONTATO" EntityType="Self.AGENDA_CONTATO" Schema="dbo" store:Type="Tables" />
@@ -39638,6 +39652,7 @@
             <End Role="VALOR_CONSULTA" EntitySet="VALOR_CONSULTA" />
             <End Role="VALOR_CONSULTA_MATERIAL" EntitySet="VALOR_CONSULTA_MATERIAL" />
           </AssociationSet>
+          <EntitySet Name="ACESSO_SITE" EntityType="CRMSysDBModel.ACESSO_SITE" />
         </EntityContainer>
         <EntityType Name="PACIENTE_DADOS_EXAME_FISICO">
           <Key>
@@ -40919,6 +40934,19 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <EntityType Name="ACESSO_SITE">
+          <Key>
+            <PropertyRef Name="ACST_CD_ID" />
+          </Key>
+          <Property Name="ACST_CD_ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="ACST_DT_ACESSO" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="ACST_IP_IP" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="ACST_NM_CIDADE" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="ACST_NM_UF" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="ACST_NM_PAIS" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="ACST_NM_PROVEDOR" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="ACST_IN_ATIVO" Type="Int32" />
+        </EntityType>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -48404,6 +48432,20 @@
                 <ScalarProperty Name="VACO_CD_ID" ColumnName="VACO_CD_ID" />
                 <ScalarProperty Name="ASSI_CD_ID" ColumnName="ASSI_CD_ID" />
                 <ScalarProperty Name="VCMA_CD_ID" ColumnName="VCMA_CD_ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="ACESSO_SITE">
+            <EntityTypeMapping TypeName="CRMSysDBModel.ACESSO_SITE">
+              <MappingFragment StoreEntitySet="ACESSO_SITE">
+                <ScalarProperty Name="ACST_IN_ATIVO" ColumnName="ACST_IN_ATIVO" />
+                <ScalarProperty Name="ACST_NM_PROVEDOR" ColumnName="ACST_NM_PROVEDOR" />
+                <ScalarProperty Name="ACST_NM_PAIS" ColumnName="ACST_NM_PAIS" />
+                <ScalarProperty Name="ACST_NM_UF" ColumnName="ACST_NM_UF" />
+                <ScalarProperty Name="ACST_NM_CIDADE" ColumnName="ACST_NM_CIDADE" />
+                <ScalarProperty Name="ACST_IP_IP" ColumnName="ACST_IP_IP" />
+                <ScalarProperty Name="ACST_DT_ACESSO" ColumnName="ACST_DT_ACESSO" />
+                <ScalarProperty Name="ACST_CD_ID" ColumnName="ACST_CD_ID" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

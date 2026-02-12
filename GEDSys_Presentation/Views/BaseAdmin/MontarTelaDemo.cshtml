@@ -12,7 +12,7 @@
         <div class="col-lg-12">
             <div class="ibox float-e-margins">
                 <div class="ibox-title">
-                    <h3>Solicitação de Assinatura de Demonstração</h3>
+                    <h3>Solicitação de Assinatura de Demonstração do WebDoctorPro</h3>
                 </div>
                 <br />
                 <div class="form-group">
@@ -20,7 +20,7 @@
                     <br />
                 </div>
                 <div class="ibox-content ibox-heading">
-                    <h3><i class="fa fa-credit-card"></i> Solicite uma assinatura de demonstração com validade de 30 dias e use o WebDoctor sem limites</h3>
+                    <h3><i class="fa fa-credit-card"></i> Solicite uma assinatura de demonstração com validade de 30 dias e use o <b>WebDoctorPro</b> sem limites</h3>
                 </div>
 
                 <div class="ibox-content" style="height: 2100px">
@@ -31,6 +31,13 @@
                             @Html.ValidationSummary(false, "", new { @class = "text-primary" })
                         </div>
                     }
+                    @if (TempData["TemMensagem"] != null)
+                    {
+                        <div class="alert alert-success">
+                            <button type="button" class="close" data-dismiss="alert">Fechar</button>
+                            <span>@TempData["MensagemAcerto"]</span>
+                        </div>
+                    }                    
                     <div class="col-lg-12 col-md-12 col-xs-12">
                         <div class="col-lg-12 col-md-12 col-xs-12">
                             <div class="col-lg-12 col-md-12 col-xs-12 ibox float-e-margins" style="border-bottom: solid; border-bottom-color: darkblue; border-bottom-width: 2px; border-left: solid; border-left-color: darkblue; border-left-width: 1px; border-right: solid; border-right-color: darkblue; border-right-width: 1px; border-top: solid; border-top-color: darkblue; border-top-width: 1px">
@@ -42,8 +49,19 @@
                                     {
                                         <div class="row">
                                             <h5 style="color: green; font-weight: bold">Preencha os campos abaixo com as suas informações.</h5>
-                                            <h5 style="color: green; font-weight: bold">Encerre a solicitação e logo você receberá um e-mail com a confirmação de sua solicitação e suas credenciais de acesso</h5>
+                                            <h5 style="color: green; font-weight: bold">Confirme a solicitação e logo você receberá um e-mail com a confirmação de sua solicitação e suas credenciais de acesso</h5>
                                         </div> 
+                                        <div class="row" id="Botoes">
+                                            <div class="form-group">
+                                                <div class="col-lg-4 col-md-4 col-xs-12" id="Basico">
+                                                    @Html.ButtonActionSubmit(text: "Confirma a Solicitação de Assinatura de Demonstração", htmlAttributes: new { id = "basictoast", @class = "btn-loading1" })
+                                                    <span id="loadingIndicator" style="display: none; margin-left: 10px; color: #007bff;">
+                                                        <i class="fa fa-spinner fa-spin"></i> Processando...
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+
                                         <div class="row" id="Ident">
                                             <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Identificação</h4>
                                             <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">                
@@ -83,7 +101,7 @@
                                                     @Html.TextBoxFor(m => m.TelefoneFixo, new { @class = "form-control", autofocus = true, @id="tel"  })
                                                 </div>
                                                 <div class="col-lg-2 col-md-2 col-xs-12">
-                                                    Celular*
+                                                    Celular
                                                     @Html.TextBoxFor(m => m.Celular, new { @class = "form-control", autofocus = true, @id="cel"  })
                                                 </div>
                                             </div>
@@ -115,6 +133,65 @@
                                                     </div>
                                                 </div>
                                             </div>
+                                            <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Endereço</h4>
+                                            <div class="col-lg-8 col-md-8 col-xs-8">
+                                                <h4 style="margin-left: -15px; color:green; background-color: beige; font-weight:bold">Endereço</h4>
+                                                <div class="form-group" style=" margin-left: -30px; margin-right: -30px;">
+                                                    <div class="col-lg-3 col-md-3 col-xs-12">
+                                                        CEP*
+                                                        <div class="input-group">
+                                                            @Html.TextBoxFor(m => m.CEP, new { @class = "form-control", @id = "cep", autofocus = true, @onblur = "PesquisaCep($('#cep').val(), $(this), 1)" })
+                                                            @Html.ValidationMessageFor(m => m.CEP, "", new { @style = "color:red" })
+                                                            <span class="input-group-btn">
+                                                                <span class="btn btn-warning btn-sm" id="btnBuscaCep" data_toggle = "popover" data_content = "Pesquisar o CEP informado" data_trigger="hover" data_placement="top" onclick="PesquisaCep($('#cep').val(), $(this), 1)">Buscar CEP</span>
+                                                            </span>
+                                                        </div>
+                                                        <div class="col-lg-12 col-md-12 col-xs-12" style="display:none" id="cepval">
+                                                            <h5>CEP inválido</h5>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group" style=" margin-left: -30px; margin-right: -30px;">
+                                                    <div class="col-lg-7 col-md-7 col-xs-12">
+                                                        Endereço*
+                                                        @Html.TextBoxFor(m => m.Endereco, new { @class = "form-control", @id = "endereco", autofocus = true })
+                                                        @Html.ValidationMessageFor(m => m.Endereco, "", new { @style = "color:red" })
+                                                    </div>
+                                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                                        Número*
+                                                        @Html.TextBoxFor(m => m.Numero, new { @class = "form-control", @id = "nmr", autofocus = true })
+                                                        @Html.ValidationMessageFor(m => m.Numero, "", new { @style = "color:red" })
+                                                    </div>
+                                                    <div class="col-lg-3 col-md-3 col-xs-12">
+                                                        Complemento
+                                                        @Html.TextBoxFor(m => m.Complemento, new { @class = "form-control", autofocus = true, @id = "complemento" })
+                                                        @Html.ValidationMessageFor(m => m.Complemento, "", new { @style = "color:red" })
+                                                    </div>
+                                                </div>
+                                                <div class="form-group" style=" margin-left: -30px; margin-right: -30px;">
+                                                    <div class="col-lg-4 col-md-4 col-xs-12">
+                                                        Bairro*
+                                                        @Html.TextBoxFor(m => m.Bairro, new { @class = "form-control", @id = "bairro", autofocus = true })
+                                                        @Html.ValidationMessageFor(m => m.Bairro, "", new { @style = "color:red" })
+                                                    </div>
+                                                    <div class="col-lg-4 col-md-4 col-xs-12">
+                                                        Cidade*
+                                                        @Html.TextBoxFor(m => m.Cidade, new { @class = "form-control", @id = "cidade", autofocus = true })
+                                                        @Html.ValidationMessageFor(m => m.Cidade, "", new { @style = "color:red" })
+                                                    </div>
+                                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                                        UF*
+                                                        @Html.DropDownListFor(m => m.UF, (SelectList)ViewBag.UF, "UF", new { @class = "form-control", @id = "uf", autofocus = true })
+                                                        @Html.ValidationMessageFor(m => m.UF, "", new { @style = "color:red" })
+                                                    </div>
+                                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                                        CEP
+                                                        @Html.TextBoxFor(m => m.CEPBase, new { @class = "form-control", @id = "cepBase", @readonly = "readonly" })
+                                                        @Html.ValidationMessageFor(m => m.CEPBase, "", new { @style = "color:red" })
+                                                    </div>
+                                                </div>
+                                            </div>
+
                                             <div class="col-lg-4 col-md-4 col-xs-4">
                                                 <div class="ibox float-e-margins" style="background-color:beige">
                                                     <div class="ibox-title"  style="background-color: darkseagreen; color: darkgreen">
@@ -139,7 +216,7 @@
                                             </div>
                                         </div>
 
-                                        <div class="row" id="Enderecos">
+                                        @*<div class="row" id="Enderecos">
                                             <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Endereço</h4>
                                             <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
                                                 <div class="col-lg-2 col-md-2 col-xs-12">
@@ -195,12 +272,15 @@
                                                     @Html.ValidationMessageFor(m => m.CEPBase, "", new { @style = "color:red" })
                                                 </div>
                                             </div>
-                                        </div>
+                                        </div>*@
 
                                         <div class="row" id="Botoes">
                                             <div class="form-group">
                                                 <div class="col-lg-4 col-md-4 col-xs-12" id="Basico">
-                                                    @Html.ButtonActionSubmit(text: "Encerrar a Solicitação de Assinatura de Demonstração", htmlAttributes: new { id = "basictoast" })
+                                                    @Html.ButtonActionSubmit(text: "Confirma a Solicitação de Assinatura de Demonstração", htmlAttributes: new { id = "basictoast", @class = "btn-loading2" })
+                                                    <span id="loadingIndicator1" style="display: none; margin-left: 10px; color: #007bff;">
+                                                        <i class="fa fa-spinner fa-spin"></i> Processando...
+                                                    </span>
                                                 </div>
                                             </div>
                                         </div>
@@ -249,6 +329,51 @@
             var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-toggle="popover"]'));
             var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
                 return new bootstrap.Popover(popoverTriggerEl);
+            });
+        });
+    </script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('.btn-loading1').on('click', function (e) {
+            
+                var $this = $(this);
+                var tagName = $this.prop('tagName').toLowerCase();
+                $this.addClass('disabled'); 
+                $('#loadingIndicator').show();
+
+                if (tagName === 'a') {
+                    e.preventDefault();
+                
+                    var targetUrl = $this.attr('href');
+                    window.location.href = targetUrl;
+                
+                } else if (tagName === 'button' || tagName === 'input') {               
+                    $this.closest('form').submit();
+                    $this.prop('disabled', true);
+                }
+            });
+        });
+    </script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('.btn-loading2').on('click', function (e) {
+            
+                var $this = $(this);
+                var tagName = $this.prop('tagName').toLowerCase();
+                $this.addClass('disabled'); 
+                $('#loadingIndicator1').show();
+
+                if (tagName === 'a') {
+                    e.preventDefault();
+                
+                    var targetUrl = $this.attr('href');
+                    window.location.href = targetUrl;
+                
+                } else if (tagName === 'button' || tagName === 'input') {               
+                    $this.closest('form').submit();
+                    $this.prop('disabled', true);
+                }
             });
         });
     </script>
@@ -416,7 +541,63 @@
         }
     </script>
 
+    <!-- 1. Estrutura do Modal (Coloque preferencialmente no final do seu arquivo .cshtml) -->
+    <div class="modal fade" id="modalAssinaturaSucesso" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header" style="background-color: #1ab394; color: white; border-radius: 4px 4px 0 0;">
+                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Fechar</span></button>
+                    <h4 class="modal-title"><i class="fa fa-check-circle"></i> WebDoctorPro</h4>
+                </div>
+                <div class="modal-body">
+                    <p style="font-size: 16px; color: #676a6c; text-align: center; margin-top: 15px;">
+                        Sua assinatura de demonstração está sendo criada nesse momento. 
+                        Você receberá um e-mail dentro de instantes com as instruções de uso. 
+                        <br /><br />
+                        <strong>Obrigado por escolher o WebDoctorPro!</strong>
+                    </p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-dismiss="modal" style="border-radius: 4px; padding-left: 30px; padding-right: 30px;">OK</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
+    <!-- 2. Script para disparar o Modal -->
+    <script type="text/javascript">
+        function exibirModalSucesso() {
+            $('#modalAssinaturaSucesso').modal({
+                backdrop: 'static',
+                keyboard: false
+            });
+            $('#modalAssinaturaSucesso').modal('show');
+        }
+
+        $(document).ready(function () {
+            // Alterado de ViewBag para TempData
+            @if (TempData["ExibirSucesso"] != null && (bool)TempData["ExibirSucesso"])
+            {
+                <text>exibirModalSucesso();</text>
+            }
+        });
+    </script>
+
+    <style>
+        /* Estilo adicional para garantir que o modal fique centralizado e bonito no Inspinia */
+        .modal-dialog-centered {
+            display: flex;
+            align-items: center;
+            min-height: calc(100% - 1rem);
+        }
+    
+        /* Usamos @@ para escapar o símbolo no Razor e evitar erro de variável inexistente */
+        @@media (min-width: 576px) {
+            .modal-dialog-centered {
+                min-height: calc(100% - 3.5rem);
+            }
+        }
+    </style>
 }
 @if (ViewBag.Message != null)
 {

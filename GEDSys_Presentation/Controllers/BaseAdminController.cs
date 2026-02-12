@@ -74,6 +74,11 @@ namespace ERP_Condominios_Solution.Controllers
         private readonly IPeriodicidadeAppService peApp;
         private readonly IConfiguracaoAnamneseAppService caApp;
         private readonly IConfiguracaoCalendarioAppService ccApp;
+        private readonly ITemplateSMSAppService smsApp;
+        private readonly ILocacaoAppService locApp;
+        private readonly ITipoPagamentoAppService tpgApp;
+        private readonly ITipoValorConsultaAppService ticoApp;
+        private readonly IUnidadeAppService uniApp;
 
 #pragma warning disable CS0169 // O campo "BaseAdminController.msg" nunca é usado
         private String msg;
@@ -88,7 +93,7 @@ namespace ERP_Condominios_Solution.Controllers
         MENSAGENS_ENVIADAS_SISTEMA objetEnviadaoAntes = new MENSAGENS_ENVIADAS_SISTEMA();
         List<MENSAGENS_ENVIADAS_SISTEMA> listaMasterEnviada = new List<MENSAGENS_ENVIADAS_SISTEMA>();
 
-        public BaseAdminController(IUsuarioAppService baseApps, ILogAppService logApps, IUsuarioAppService usuApps, IConfiguracaoAppService confApps, IAssinanteAppService assiApps, IPlanoAppService planApps, ITemplateAppService temApps, IMensagemEnviadaSistemaAppService envApps, ITemplateEMailAppService mailApps, IEmpresaAppService empApps, IPerfilAppService perfApps, IMensagemAppService mensApps, IRecursividadeAppService recApps, IPacienteAppService pacApps, IGrupoAppService gruApps, IAcessoMetodoAppService aceApps, IConvenioAppService convApps, IEspecialidadeAppService espApps, IAvisoLembreteAppService avApps, ITemplateEMailAppService teApps, ITipoExameAppService tiApps, ITipoPacienteAppService tpApps, ITipoPagamentoAppService tgApps, ITipoValorConsultaAppService tcApps, ITipoAtestadoAppService taApps, IValorConsultaAppService vcApps, IPeriodicidadeAppService peApps, IConfiguracaoAnamneseAppService caApps, IConfiguracaoCalendarioAppService ccApps)
+        public BaseAdminController(IUsuarioAppService baseApps, ILogAppService logApps, IUsuarioAppService usuApps, IConfiguracaoAppService confApps, IAssinanteAppService assiApps, IPlanoAppService planApps, ITemplateAppService temApps, IMensagemEnviadaSistemaAppService envApps, ITemplateEMailAppService mailApps, IEmpresaAppService empApps, IPerfilAppService perfApps, IMensagemAppService mensApps, IRecursividadeAppService recApps, IPacienteAppService pacApps, IGrupoAppService gruApps, IAcessoMetodoAppService aceApps, IConvenioAppService convApps, IEspecialidadeAppService espApps, IAvisoLembreteAppService avApps, ITemplateEMailAppService teApps, ITipoExameAppService tiApps, ITipoPacienteAppService tpApps, ITipoPagamentoAppService tgApps, ITipoValorConsultaAppService tcApps, ITipoAtestadoAppService taApps, IValorConsultaAppService vcApps, IPeriodicidadeAppService peApps, IConfiguracaoAnamneseAppService caApps, IConfiguracaoCalendarioAppService ccApps, ITemplateSMSAppService smsApps, ILocacaoAppService locApps, ITipoPagamentoAppService tpgApps, ITipoValorConsultaAppService ticoApps, IUnidadeAppService uniApps)
         {
             baseApp = baseApps;
             logApp = logApps;
@@ -118,6 +123,11 @@ namespace ERP_Condominios_Solution.Controllers
             caApp = caApps;
             ccApp = ccApps;
             perfApp = perfApps;
+            smsApp = smsApps;
+            locApp = locApps;
+            tpgApp = tpgApps;
+            ticoApp = ticoApps;
+            uniApp = uniApps;
         }
 
         public ActionResult CarregarAdmin()
@@ -3436,8 +3446,8 @@ namespace ERP_Condominios_Solution.Controllers
                     if ((Int32)Session["MensFC"] == 333)
                     {
                         String frase = CRMSys_Base.ResourceManager.GetString("M0638", CultureInfo.CurrentCulture);
-
-                        ModelState.AddModelError("", frase);
+                        TempData["MensagemAcerto"] = frase;
+                        TempData["TemMensagem"] = 1;
                     }
                 }
 
@@ -3483,11 +3493,6 @@ namespace ERP_Condominios_Solution.Controllers
                     if (vm.Resposta == null)
                     {
                         ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0591", CultureInfo.CurrentCulture));
-                        return View(vm);
-                    }
-                    if (vm.Celular == null)
-                    {
-                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0613", CultureInfo.CurrentCulture));
                         return View(vm);
                     }
                     if (vm.Tipo == 1)
@@ -3547,13 +3552,13 @@ namespace ERP_Condominios_Solution.Controllers
                         return View(vm);
                     }
 
-                    // Verifica assinante
+                    // Verifica se assinante já tem demo
                     List<ASSINANTE> assList = assiApp.GetAllItens().Where(p => p.ASSI_IN_ATIVO == 1).ToList();
                     ASSINANTE assBase = null;
                     Int32 novoPlano = 0;
                     if (vm.Tipo == 1)
                     {
-                        assBase = assList.Where(p => p.ASSI_NR_CPF == vm.CPF).FirstOrDefault();
+                        assBase = assList.Where(p => p.ASSI_NR_CPF == vm.CPF & p.ASSI_IN_TIPO == 2).FirstOrDefault();
                         if (assBase != null)
                         {
                             novoPlano = 1;
@@ -3561,7 +3566,7 @@ namespace ERP_Condominios_Solution.Controllers
                     }
                     else
                     {
-                        assBase = assList.Where(p => p.ASSI_NR_CNPJ == vm.CNPJ).FirstOrDefault();
+                        assBase = assList.Where(p => p.ASSI_NR_CNPJ == vm.CNPJ & p.ASSI_IN_TIPO == 2).FirstOrDefault();
                         if (assBase != null)
                         {
                             novoPlano = 1;
@@ -3646,13 +3651,16 @@ namespace ERP_Condominios_Solution.Controllers
                     mens.MENS_NM_NOME = vm.Nome;
                     mens.MENS_NM_CAMPANHA = "Solicitação de Assinatura Demonstração";
                     mens.MENS_NM_RODAPE = vm.Resposta;
-                    mens.MENS_NM_LINK = "https://eprontuario.azurewebsites.net/";
+                    mens.MENS_NM_LINK = "https://webdoctorpro.net/";
                     mens.CELULAR = vm.Telefone;
                     mens.MENS_NM_CABECALHO = vm.CPF;
                     mens.MENS_NM_ASSINATURA = vm.CNPJ;
                     mens.CIDADE = vm.Celular;
                     mens.MENS_IN_CRM = novoPlano;
                     await ProcessaEnvioEMailCompra(mens, vm);
+
+                    // DIALOG AQUI
+                    TempData["ExibirSucesso"] = true;
 
                     // Sucesso
                     Session["MensFC"] = 333;
@@ -3672,7 +3680,6 @@ namespace ERP_Condominios_Solution.Controllers
         public Int32 CriarAssinanteNormal(FaleConoscoViewModel fc)
         {
             // Criar assinante
-            //FaleConoscoViewModel vm = (FaleConoscoViewModel)Session["InfoCheckout"];
             FaleConoscoViewModel vm = fc;
             ASSINANTE assi = new ASSINANTE();
             assi.TIPE_CD_ID = vm.Tipo;
@@ -3712,23 +3719,23 @@ namespace ERP_Condominios_Solution.Controllers
             Session["idNovoAssinante"] = idAss;
             ASSINANTE assinante = assiApp.GetItemById(idAss);
 
-            // Cria assinante plano
-            ASSINANTE_PLANO assPlano = new ASSINANTE_PLANO();
-            assPlano.ASSI_CD_ID = idAss;
-            assPlano.PLAN_CD_ID = 10;
-            assPlano.ASPL_IN_ATIVO = 1;
-            assPlano.ASPL_DT_INICIO = DateTime.Today.Date;
-            if (vm.TipoAssinatura == 1)
-            {
-                assPlano.ASPL_DT_VALIDADE = DateTime.Today.Date.AddDays(365);
-            }
-            else
-            {
-                assPlano.ASPL_DT_VALIDADE = DateTime.Today.Date.AddDays(30);
-            }
-            assPlano.ASPL_IN_PRECO = 1;
-            assPlano.ASPL_IN_SISTEMA = 6;
-            assinante.ASSINANTE_PLANO.Add(assPlano);
+            //// Cria assinante plano
+            //ASSINANTE_PLANO assPlano = new ASSINANTE_PLANO();
+            //assPlano.ASSI_CD_ID = idAss;
+            //assPlano.PLAN_CD_ID = 10;
+            //assPlano.ASPL_IN_ATIVO = 1;
+            //assPlano.ASPL_DT_INICIO = DateTime.Today.Date;
+            //if (vm.TipoAssinatura == 1)
+            //{
+            //    assPlano.ASPL_DT_VALIDADE = DateTime.Today.Date.AddDays(365);
+            //}
+            //else
+            //{
+            //    assPlano.ASPL_DT_VALIDADE = DateTime.Today.Date.AddDays(30);
+            //}
+            //assPlano.ASPL_IN_PRECO = 1;
+            //assPlano.ASPL_IN_SISTEMA = 6;
+            //assinante.ASSINANTE_PLANO.Add(assPlano);
 
             // Cria assinante-plano-assinatura
             ASSINANTE_PLANO_ASSINATURA assPlanoAss = new ASSINANTE_PLANO_ASSINATURA();
@@ -3764,48 +3771,6 @@ namespace ERP_Condominios_Solution.Controllers
 
             // Salva assinante
             Int32 voltaAssi1 = assiApp.ValidateEdit(assinante);
-
-            // Cria pagamento
-            //if (vm.TipoAssinatura == 1)
-            //{
-            //    ASSINANTE_PAGAMENTO assPag = new ASSINANTE_PAGAMENTO();
-            //    assPag.ASSI_CD_ID = idAss;
-            //    assPag.PLAN_CD_ID = 3;
-            //    if (vm.Plano == 18)
-            //    {
-            //        assPag.PLAS_CD_ID = 18;
-            //        assPag.ASPA_VL_VALOR = 2000;
-            //        assPag.ASPA_VL_VALOR_PAGO = 2000;
-            //    }
-            //    if (vm.Plano == 20)
-            //    {
-            //        assPag.PLAS_CD_ID = 20;
-            //        assPag.ASPA_VL_VALOR = 3500;
-            //        assPag.ASPA_VL_VALOR_PAGO = 3500;
-            //    }
-            //    if (vm.Plano == 24)
-            //    {
-            //        assPag.PLAS_CD_ID = 24;
-            //        assPag.ASPA_VL_VALOR = 4000;
-            //        assPag.ASPA_VL_VALOR_PAGO = 4000;
-            //    }
-            //    if (vm.TipoAssinatura == 1)
-            //    {
-            //        assPag.ASPA_DS_INFORMACOES = "Assinante: " + vm.Nome + " - Contratação de Plano de Assinatura";
-            //    }
-            //    else
-            //    {
-            //        assPag.ASPA_DS_INFORMACOES = "Assinante: " + vm.Nome + " - Demonstração";
-
-            //    }
-            //    assPag.ASPA_DT_PAGAMENTO = DateTime.Today.Date;
-            //    assPag.ASPA_DT_VENCIMENTO = DateTime.Today.Date;
-            //    assPag.ASPA_IN_ATIVO = 1;
-            //    assPag.ASPA_IN_PAGO = 1;
-            //    assPag.ASPA_IN_SISTEMA = 6;
-            //    assPag.ASSI_CD_ID = idAss;
-            //    Int32 voltaPag = assiApp.ValidateCreatePagto(assPag);
-            //}
 
             // Cria pastas assinante
             String caminho = "/Imagens/Assinante/" + idAss.ToString() + "/Anexos/";
@@ -4005,6 +3970,25 @@ namespace ERP_Condominios_Solution.Controllers
             perf.PERF_IN_SOLICITACAO_ENVIAR = 1;
             perf.PERF_IN_SOLICITACAO_EXCLUIR = 1;
             perf.PERF_IN_SOLICITACAO_INCLUIR = 1;
+            perf.PERF_IN_ACERTO_ESTOQUE = 1;
+            perf.PERF_IN_ACESSO_ESTOQUE = 1;
+            perf.PERF_IN_ATUALIZA_ESTOQUE = 1;
+            perf.PERF_IN_COMPRA_MANUAL_ESTOQUE = 1;
+            perf.PERF_IN_DESCARTE_ESTOQUE = 1;
+            perf.PERF_IN_DEVOLUCAO_ESTOQUE = 1;
+            perf.PERF_IN_EDITAR_MOVIMENTACAO_ESTOQUE = 1;
+            perf.PERF_IN_EXCLUIR_MOVIMENTACAO_ESTOQUE = 1;
+            perf.PERF_IN_INCLUIR_MOVIMENTACAO_ESTOQUE = 1;
+            perf.PERF_IN_MANUTENCAO_ESTOQUE = 1;
+            perf.PERF_IN_PERDA_ESTOQUE = 1;
+            perf.PERF_IN_TRANSFERENCIA_ESTOQUE = 1;
+            perf.PERF_IN_VER_MOVIMENTACAO_ESTOQUE = 1;
+            perf.PERF_IN_LOCACAO_ACESSO = 1;
+            perf.PERF_IN_LOCACAO_ALTERAR = 1;
+            perf.PERF_IN_LOCACAO_ENCERRAR = 1;
+            perf.PERF_IN_LOCACAO_INCLUIR = 1;
+            perf.PERF_IN_LOCACAO_RENOVAR = 1;
+            perf.PERF_IN_LOCACAO__EXCLUIR = 1;
             perf.PERF_NM_NOME = "Perfil Administrador";
             perf.PERF_SG_SIGLA = "ADM";
             perf.PERF_IN_FIXO = 1;
@@ -4060,10 +4044,16 @@ namespace ERP_Condominios_Solution.Controllers
             map = Server.MapPath(caminho);
 
             // Cria demais pastas
-            caminho = "/Imagens/" + idAss.ToString() + "/Usuario/" + usuario.USUA_CD_ID.ToString() + "/Anexos/";
+            caminho = "/Imagens/" + idAss.ToString() + "/Envio/";
             map = Server.MapPath(caminho);
             Directory.CreateDirectory(Server.MapPath(caminho));
             caminho = "/Imagens/" + idAss.ToString() + "/Exames/";
+            map = Server.MapPath(caminho);
+            Directory.CreateDirectory(Server.MapPath(caminho));
+            caminho = "/Imagens/" + idAss.ToString() + "/Locacao/";
+            map = Server.MapPath(caminho);
+            Directory.CreateDirectory(Server.MapPath(caminho));
+            caminho = "/Imagens/" + idAss.ToString() + "/Medico/";
             map = Server.MapPath(caminho);
             Directory.CreateDirectory(Server.MapPath(caminho));
             caminho = "/Imagens/" + idAss.ToString() + "/Mensagem/";
@@ -4075,17 +4065,23 @@ namespace ERP_Condominios_Solution.Controllers
             caminho = "/Imagens/" + idAss.ToString() + "/Pagamento/";
             map = Server.MapPath(caminho);
             Directory.CreateDirectory(Server.MapPath(caminho));
+            caminho = "/Imagens/" + idAss.ToString() + "/Produto/";
+            map = Server.MapPath(caminho);
+            Directory.CreateDirectory(Server.MapPath(caminho));
             caminho = "/Imagens/" + idAss.ToString() + "/Recebimento/";
             map = Server.MapPath(caminho);
             Directory.CreateDirectory(Server.MapPath(caminho));
             caminho = "/Imagens/" + idAss.ToString() + "/TemplatesHTML/";
             map = Server.MapPath(caminho);
             Directory.CreateDirectory(Server.MapPath(caminho));
+            caminho = "/Imagens/" + idAss.ToString() + "/Videos/";
+            map = Server.MapPath(caminho);
+            Directory.CreateDirectory(Server.MapPath(caminho));
 
             // Cria primeiro aviso
             AVISO_LEMBRETE av = new AVISO_LEMBRETE();
             av.ASSI_CD_ID = idAss;
-            av.AVIS_DS_AVISO = "Este é o seu primeiro aviso!";
+            av.AVIS_DS_AVISO = "Bemvindo ao WebDoctorPro!";
             av.AVIS_DT_AVISO = DateTime.Now;
             av.AVIS_DT_CRIACAO = DateTime.Now;
             av.AVIS_IN_ATIVO = 1;
@@ -4095,182 +4091,51 @@ namespace ERP_Condominios_Solution.Controllers
             av.USUA_CD_ID = usuario.USUA_CD_ID;
             Int32 voltaAv = avApp.ValidateCreate(av);
 
-            // Cria templates
-            TEMPLATE_EMAIL te = new TEMPLATE_EMAIL();
-            te.ASSI_CD_ID = idAss;
-            te.EMPR_CD_ID = empresa.EMPR_CD_ID;
-            te.TEEM_NM_NOME = "Consulta - Alteração";
-            te.TEEM_SG_SIGLA = "ALTCONS";
-            te.TEEM_IN_ATIVO = 1;
-            te.TEEM_TX_CABECALHO = "<p style='background-color: darkseagreen; font-size: 24px; font-weight: bold; color: darkgreen'>Confirmação de Consulta</p>";
-            te.TEEM_TX_CORPO = "<br />Foi confirmada a consulta com Dr(a). <b>{medico}</b> conforme abaixo.<br />Data: < b >{ data}</ b >< br />Horário: De<b>{ inicio}</ b > até as < b >{ final}</ b > horas < br />Por favor confirme em sua agenda.";
-            te.TEEM_TX_DADOS = "<br />Atenciosamente<br /><b>{assinatura}</b>";
-            te.TEEM_IN_HTML = 1;
-            te.TEEM_IN_FIXO = 1;
-            te.TEEM_IN_SISTEMA = 6;
-            te.TEEM_IN_ROBOT = 0;
-            te.TEEM_IN_EDITAVEL = 1;
-            te.TEEM_IN_ANIVERSARIO = 0;
-            Int32 voltaTE = teApp.ValidateCreate(te);
-            te = new TEMPLATE_EMAIL();
-            te.ASSI_CD_ID = idAss;
-            te.EMPR_CD_ID = empresa.EMPR_CD_ID;
-            te.TEEM_NM_NOME = "Consulta - Criação";
-            te.TEEM_SG_SIGLA = "CRIACONS";
-            te.TEEM_IN_ATIVO = 1;
-            te.TEEM_TX_CABECALHO = "<p style='background-color: darkseagreen; font-size: 24px; font-weight: bold; color: darkgreen'>Marcação de Consulta</p>";
-            te.TEEM_TX_CORPO = "<br />Foi marcada uma consulta com Dr(a). <b>{medico}</b> conforme abaixo.<br />Data: < b >{ data}</ b >< br />Horário: De<b>{ inicio}</ b > até as < b >{ final}</ b > horas < br />Por favor anote em sua agenda.";
-            te.TEEM_TX_DADOS = "<br />Atenciosamente<br /><b>{assinatura}</b>";
-            te.TEEM_IN_HTML = 1;
-            te.TEEM_IN_FIXO = 1;
-            te.TEEM_IN_SISTEMA = 6;
-            te.TEEM_IN_ROBOT = 0;
-            te.TEEM_IN_EDITAVEL = 1;
-            te.TEEM_IN_ANIVERSARIO = 0;
-            voltaTE = teApp.ValidateCreate(te);
-            te = new TEMPLATE_EMAIL();
-            te.ASSI_CD_ID = idAss;
-            te.EMPR_CD_ID = empresa.EMPR_CD_ID;
-            te.TEEM_NM_NOME = "Consulta - Confirmação";
-            te.TEEM_SG_SIGLA = "CONFCONS";
-            te.TEEM_IN_ATIVO = 1;
-            te.TEEM_TX_CABECALHO = "<p style='background-color: darkseagreen; font-size: 24px; font-weight: bold; color: darkgreen'>Confirmação de Consulta</p>";
-            te.TEEM_TX_CORPO = "<br />Foi confirmada a consulta com Dr(a). <b>{medico}</b> conforme abaixo.<br />Data: < b >{ data}</ b >< br />Horário: De<b>{ inicio}</ b > até as < b >{ final}</ b > horas < br />Por favor confirme em sua agenda.";
-            te.TEEM_TX_DADOS = "<br />Atenciosamente<br /><b>{assinatura}</b>";
-            te.TEEM_IN_HTML = 1;
-            te.TEEM_IN_FIXO = 1;
-            te.TEEM_IN_SISTEMA = 6;
-            te.TEEM_IN_ROBOT = 0;
-            te.TEEM_IN_EDITAVEL = 1;
-            te.TEEM_IN_ANIVERSARIO = 0;
-            voltaTE = teApp.ValidateCreate(te);
-            te = new TEMPLATE_EMAIL();
-            te.ASSI_CD_ID = idAss;
-            te.EMPR_CD_ID = empresa.EMPR_CD_ID;
-            te.TEEM_NM_NOME = "Consulta - Cancelamento";
-            te.TEEM_SG_SIGLA = "CANCCONS";
-            te.TEEM_IN_ATIVO = 1;
-            te.TEEM_TX_CABECALHO = "<p style='background-color: darkseagreen; font-size: 24px; font-weight: bold; color: darkgreen'>Cancelamento de Consulta</p>";
-            te.TEEM_TX_CORPO = "<br />A sua consulta com Dr(a). <b>{medico}</b> foi cancelada conforme abaixo.<br />Data: < b >{ data}</ b >< br />Horário: De<b>{ inicio}</ b > até as < b >{ final}</ b > horas < br />Por favor atualize em sua agenda.< br />";
-            te.TEEM_TX_DADOS = "<br />Atenciosamente<br /><b>{assinatura}</b>";
-            te.TEEM_IN_HTML = 1;
-            te.TEEM_IN_FIXO = 1;
-            te.TEEM_IN_SISTEMA = 6;
-            te.TEEM_IN_ROBOT = 0;
-            te.TEEM_IN_EDITAVEL = 1;
-            te.TEEM_IN_ANIVERSARIO = 0;
-            voltaTE = teApp.ValidateCreate(te);
-            te = new TEMPLATE_EMAIL();
-            te.ASSI_CD_ID = idAss;
-            te.EMPR_CD_ID = empresa.EMPR_CD_ID;
-            te.TEEM_NM_NOME = "Consulta - Criação - Médico";
-            te.TEEM_SG_SIGLA = "CRMEDCONS";
-            te.TEEM_IN_ATIVO = 1;
-            te.TEEM_TX_CABECALHO = "<p style='background-color: darkseagreen; font-size: 24px; font-weight: bold; color: darkgreen'>Marcação de Consulta</p>";
-            te.TEEM_TX_CORPO = "<br />Foi marcada uma consulta com Dr(a). <b>{medico}</b> conforme abaixo.<br />Data: < b >{ data}</ b >< br />Horário: De<b>{ inicio}</ b > até as < b >{ final}</ b > horas < br />Por favor anote em sua agenda.";
-            te.TEEM_TX_DADOS = "<br />Atenciosamente<br /><b>{assinatura}</b>";
-            te.TEEM_IN_HTML = 1;
-            te.TEEM_IN_FIXO = 1;
-            te.TEEM_IN_SISTEMA = 6;
-            te.TEEM_IN_ROBOT = 0;
-            te.TEEM_IN_EDITAVEL = 1;
-            te.TEEM_IN_ANIVERSARIO = 0;
-            voltaTE = teApp.ValidateCreate(te);
-            te = new TEMPLATE_EMAIL();
-            te.ASSI_CD_ID = idAss;
-            te.EMPR_CD_ID = empresa.EMPR_CD_ID;
-            te.TEEM_NM_NOME = "Consulta - Confirmação -Médico";
-            te.TEEM_SG_SIGLA = "CFMEDCONS";
-            te.TEEM_IN_ATIVO = 1;
-            te.TEEM_TX_CABECALHO = "<p style='background-color: darkseagreen; font-size: 24px; font-weight: bold; color: darkgreen'>Confirmação de Consulta</p>";
-            te.TEEM_TX_CORPO = "<br />Foi confirmada a consulta com Dr(a). <b>{medico}</b> conforme abaixo.<br />Data: < b >{ data}</ b >< br />Horário: De<b>{ inicio}</ b > até as < b >{ final}</ b > horas < br />Por favor confirme em sua agenda.";
-            te.TEEM_TX_DADOS = "<br />Atenciosamente<br /><b>{assinatura}</b>";
-            te.TEEM_IN_HTML = 1;
-            te.TEEM_IN_FIXO = 1;
-            te.TEEM_IN_SISTEMA = 6;
-            te.TEEM_IN_ROBOT = 0;
-            te.TEEM_IN_EDITAVEL = 1;
-            te.TEEM_IN_ANIVERSARIO = 0;
-            voltaTE = teApp.ValidateCreate(te);
-            te = new TEMPLATE_EMAIL();
-            te.ASSI_CD_ID = idAss;
-            te.EMPR_CD_ID = empresa.EMPR_CD_ID;
-            te.TEEM_NM_NOME = "Consulta - Cancelamento -Médico";
-            te.TEEM_SG_SIGLA = "CCMEDCONS";
-            te.TEEM_IN_ATIVO = 1;
-            te.TEEM_TX_CABECALHO = "<p style='background-color: darkseagreen; font-size: 24px; font-weight: bold; color: darkgreen'>Cancelamento de Consulta</p>";
-            te.TEEM_TX_CORPO = "<br />A consulta com Dr(a). <b>{medico}</b> foi cancelada conforme abaixo.<br />Data: < b >{ data}</ b >< br />Horário: De<b>{ inicio}</ b > até as < b >{ final}</ b > horas < br />Por favor atualize em sua agenda.< br />";
-            te.TEEM_TX_DADOS = "<br />Atenciosamente<br /><b>{assinatura}</b>";
-            te.TEEM_IN_HTML = 1;
-            te.TEEM_IN_FIXO = 1;
-            te.TEEM_IN_SISTEMA = 6;
-            te.TEEM_IN_ROBOT = 0;
-            te.TEEM_IN_EDITAVEL = 1;
-            te.TEEM_IN_ANIVERSARIO = 0;
-            voltaTE = teApp.ValidateCreate(te);
-            te = new TEMPLATE_EMAIL();
-            te.ASSI_CD_ID = idAss;
-            te.EMPR_CD_ID = empresa.EMPR_CD_ID;
-            te.TEEM_NM_NOME = "Consulta - Cancelamento -Médico";
-            te.TEEM_SG_SIGLA = "CCMEDCONS";
-            te.TEEM_IN_ATIVO = 1;
-            te.TEEM_TX_CABECALHO = "<p style='background-color: darkseagreen; font-size: 24px; font-weight: bold; color: darkgreen'>Cancelamento de Consulta</p>";
-            te.TEEM_TX_CORPO = "<br />A consulta com Dr(a). <b>{medico}</b> foi cancelada conforme abaixo.<br />Data: < b >{ data}</ b >< br />Horário: De<b>{ inicio}</ b > até as < b >{ final}</ b > horas < br />Por favor atualize em sua agenda.< br />";
-            te.TEEM_TX_DADOS = "<br />Atenciosamente<br /><b>{assinatura}</b>";
-            te.TEEM_IN_HTML = 1;
-            te.TEEM_IN_FIXO = 1;
-            te.TEEM_IN_SISTEMA = 6;
-            te.TEEM_IN_ROBOT = 0;
-            te.TEEM_IN_EDITAVEL = 1;
-            te.TEEM_IN_ANIVERSARIO = 0;
-            voltaTE = teApp.ValidateCreate(te);
-            te = new TEMPLATE_EMAIL();
-            te.ASSI_CD_ID = idAss;
-            te.EMPR_CD_ID = empresa.EMPR_CD_ID;
-            te.TEEM_NM_NOME = "Aniversário";
-            te.TEEM_SG_SIGLA = "ANIV";
-            te.TEEM_IN_ATIVO = 1;
-            te.TEEM_TX_CABECALHO = "<p style='background-color: darkseagreen; font-size: 24px; font-weight: bold; color: darkgreen'>Mensagem de Aniversário</p>";
-            te.TEEM_TX_CORPO = "<br />Parabéns <b>{nome}</b> e muitas felicidades no dia de seu aniversário!< br /> Muita saúde e realizações em mais um ano!";
-            te.TEEM_TX_DADOS = "<br />Atenciosamente<br /><b>{assinatura}</b>";
-            te.TEEM_IN_HTML = 1;
-            te.TEEM_IN_FIXO = 1;
-            te.TEEM_IN_SISTEMA = 6;
-            te.TEEM_IN_ROBOT = 0;
-            te.TEEM_IN_EDITAVEL = 1;
-            te.TEEM_IN_ANIVERSARIO = 0;
-            voltaTE = teApp.ValidateCreate(te);
-            te = new TEMPLATE_EMAIL();
-            te.ASSI_CD_ID = idAss;
-            te.EMPR_CD_ID = empresa.EMPR_CD_ID;
-            te.TEEM_NM_NOME = "Consulta - Confirmação - Ida";
-            te.TEEM_SG_SIGLA = "CONFCONS1";
-            te.TEEM_IN_ATIVO = 1;
-            te.TEEM_TX_CABECALHO = "<p style='background - color: darkseagreen; font - size: 24px; font - weight: bold; color: darkgreen'>Solicitação de Confirmação de Consulta</p>Prezado Sr(a). < b >{ nome}</ b >";
-            te.TEEM_TX_CORPO = "<br />Por favor confirme a consulta com Dr(a). <b>{medico}</b> conforme abaixo.<br />Data: < b >{ data}</ b >< br />Horário: De<b>{ inicio}</ b > até as < b >{ final}</ b > horas < br />< br />Para confirmar clique no botão<b>Confirmar Consulta</ b >.< br />Caso deseje cancelar a consulta clique no botão<b> Cancelar Consulta </ b >.< br />Caso deseje enviar informações sobre o motivo da sua consulta clique no botão<b>Informar Motivo da Consulta</ b >.< br />Por favor atualize a sua agenda.< br />< br />< a href = 'https://WebDoctorFunctions.azurewebsites.net/api/ConfirmarConsulta?num={idConsulta}&pac={idPaciente}&usu={idUsuario}' style = 'display: inline-block; padding: 12px 24px; font-size: 16px; color: #fff; background-color: #0078D4; text - decoration: none; border - radius: 5px; font - family: Arial, sans - serif; '>Confirmar Consulta</ a > &nbsp; &nbsp; &nbsp;< a href = 'https://WebDoctorFunctions.azurewebsites.net/api/CancelarConsulta?num={idConsulta}&pac={idPaciente}&usu={idUsuario}' style = 'display: inline-block; padding: 12px 24px; font-size: 16px; color: #fff; background-color: #0078D4; text - decoration: none; border - radius: 5px; font - family: Arial, sans - serif; '>Cancelar Consulta</ a > &nbsp; &nbsp; &nbsp;< a href = '{link}' style = 'display: inline-block; padding: 12px 24px; font-size: 16px; color: #fff; background-color: #0078D4; text - decoration: none; border - radius: 5px; font - family: Arial, sans - serif; '>Informar Motivo da Consulta</ a >";
-            te.TEEM_TX_DADOS = "<br />Atenciosamente<br /><b>{assinatura}</b>";
-            te.TEEM_IN_HTML = 1;
-            te.TEEM_IN_FIXO = 1;
-            te.TEEM_IN_SISTEMA = 6;
-            te.TEEM_IN_ROBOT = 0;
-            te.TEEM_IN_EDITAVEL = 1;
-            te.TEEM_IN_ANIVERSARIO = 0;
-            te = new TEMPLATE_EMAIL();
-            te.ASSI_CD_ID = idAss;
-            te.EMPR_CD_ID = empresa.EMPR_CD_ID;
-            te.TEEM_NM_NOME = "Consulta - Prévia";
-            te.TEEM_SG_SIGLA = "CONSPREV";
-            te.TEEM_IN_ATIVO = 1;
-            te.TEEM_TX_CABECALHO = "<p style='background - color: darkseagreen; font - size: 24px; font - weight: bold; color: darkgreen'>Informações Prévias de Consulta</p>Prezado Dr(a). < b >{ nome}</ b >";
-            te.TEEM_TX_CORPO = "<br />Foram recebidas as seguintes informações prévias de consulta.<br />Data: < b >{ data}</ b >< br />Paciente: < b >{ paciente}</ b >< br />E - Mail: < b >{ email}</ b >< br />Celular: < b >{ celular}</ b >< br />Informações: { info}< br />Por favor tome as providências necessárias";
-            te.TEEM_TX_DADOS = "<br />Atenciosamente<br /><b>{assinatura}</b>";
-            te.TEEM_IN_HTML = 1;
-            te.TEEM_IN_FIXO = 1;
-            te.TEEM_IN_SISTEMA = 6;
-            te.TEEM_IN_ROBOT = 0;
-            te.TEEM_IN_EDITAVEL = 1;
-            te.TEEM_IN_ANIVERSARIO = 0;
-            voltaTE = teApp.ValidateCreate(te);
+            // Cria templates E-Mail
+            List<TEMPLATE_EMAIL> tempMail = mailApp.GetAllItens(1);
+            foreach (TEMPLATE_EMAIL item in tempMail)
+            {
+                TEMPLATE_EMAIL novo = new TEMPLATE_EMAIL();
+                novo.ASSI_CD_ID = idAss;
+                novo.EMPR_CD_ID = usuario.EMPR_CD_ID;
+                novo.TEEM_AQ_ARQUIVO = item.TEEM_AQ_ARQUIVO;
+                novo.TEEM_IN_ANIVERSARIO = item.TEEM_IN_ANIVERSARIO;
+                novo.TEEM_IN_ATIVO = 1;
+                novo.TEEM_IN_EDITAVEL = item.TEEM_IN_EDITAVEL;
+                novo.TEEM_IN_FIXO = item.TEEM_IN_FIXO;
+                novo.TEEM_IN_HTML = item.TEEM_IN_HTML;
+                novo.TEEM_IN_IMAGEM = item.TEEM_IN_IMAGEM;
+                novo.TEEM_IN_PESQUISA = item.TEEM_IN_IMAGEM;
+                novo.TEEM_IN_ROBOT = item.TEEM_IN_ROBOT;
+                novo.TEEM_IN_SISTEMA = 6;
+                novo.TEEM_LK_LINK = item.TEEM_LK_LINK;
+                novo.TEEM_NM_NOME = item.TEEM_NM_NOME;
+                novo.TEEM_SG_SIGLA = item.TEEM_SG_SIGLA;
+                novo.TEEM_TX_CABECALHO = item.TEEM_TX_CABECALHO;
+                novo.TEEM_TX_COMPLETO = item.TEEM_TX_COMPLETO;
+                novo.TEEM_TX_CORPO = item.TEEM_TX_CORPO;
+                novo.TEEM_TX_DADOS = item.TEEM_TX_DADOS;
+                Int32 voltaEM = mailApp.ValidateCreate(novo);
+            }
+
+            // Cria templates SMS
+            List<TEMPLATE_SMS> tempSMS = smsApp.GetAllItens(1);
+            foreach (TEMPLATE_SMS item in tempSMS)
+            {
+                TEMPLATE_SMS novo = new TEMPLATE_SMS();
+                novo.ASSI_CD_ID = idAss;
+                novo.EMPR_CD_ID = usuario.EMPR_CD_ID;
+                novo.TSMS_IN_ATIVO = 1;
+                novo.TSMS_IN_EDITAVEL = item.TSMS_IN_EDITAVEL;
+                novo.TSMS_IN_FIXO = item.TSMS_IN_FIXO;
+                novo.TSMS_IN_ROBOT = item.TSMS_IN_ROBOT;
+                novo.TSMS_LK_LINK = item.TSMS_LK_LINK;
+                novo.TSMS_NM_NOME = item.TSMS_NM_NOME;
+                novo.TSMS_NR_SISTEMA = 6;
+                novo.TSMS_SG_SIGLA = item.TSMS_SG_SIGLA;
+                novo.TSMS_TX_CORPO = item.TSMS_TX_CORPO;
+                Int32 voltaEM = smsApp.ValidateCreate(novo, usuario);
+            }
 
             // Cria tipo de exame
             TIPO_EXAME ti = new TIPO_EXAME();
@@ -4309,17 +4174,76 @@ namespace ERP_Condominios_Solution.Controllers
             Int32 voltaTC = tcApp.ValidateCreate(tc);
             TIPO_VALOR_CONSULTA tipoValor = tcApp.GetItemById(tc.TIVL_CD_ID);
 
+            // Cria tipo de contrato
+            List<CONTRATO_LOCACAO> conts = locApp.GetAllContratos(1);
+            foreach (CONTRATO_LOCACAO item in conts)
+            {
+                CONTRATO_LOCACAO novo = new CONTRATO_LOCACAO();
+                novo.ASSI_CD_ID = idAss;
+                novo.COLO_IN_ATIVO = 1;
+                novo.COLO_DT_CRIACAO = item.COLO_DT_CRIACAO;
+                novo.COLO_NM_NOME = item.COLO_NM_NOME;
+                novo.COLO_TX_TEXTO = item.COLO_TX_TEXTO;
+                novo.USUA_CD_ID = item.USUA_CD_ID;
+                Int32 voltaEM = locApp.ValidateCreateContrato(novo);
+            }
+
+            // Cria tipo de Pagamento
+            List<TIPO_PAGAMENTO> tps = tpgApp.GetAllItens(1);
+            foreach (TIPO_PAGAMENTO item in tps)
+            {
+                TIPO_PAGAMENTO novo = new TIPO_PAGAMENTO();
+                novo.ASSI_CD_ID = idAss;
+                novo.TIPA_IN_ATIVO = 1;
+                novo.TIPA_NM_PAGAMENTO = item.TIPA_NM_PAGAMENTO;
+                novo.USUA_CD_ID = item.USUA_CD_ID;
+                Int32 voltaEM = tpgApp.ValidateCreate(novo);
+            }
+
+            // Cria tipo de Consulta
+            List<TIPO_VALOR_CONSULTA> ticos = ticoApp.GetAllItens(1);
+            foreach (TIPO_VALOR_CONSULTA item in ticos)
+            {
+                TIPO_VALOR_CONSULTA novo = new TIPO_VALOR_CONSULTA();
+                novo.ASSI_CD_ID = idAss;
+                novo.TIVL_IN_ATIVO = 1;
+                novo.TIVL_IN_PADRAO = item.TIVL_IN_PADRAO;
+                novo.TIVL_NM_TIPO = item.TIVL_NM_TIPO;
+                Int32 voltaEM = ticoApp.ValidateCreate(novo);
+            }
+
+            // Cria Unidade
+            List<UNIDADE> uns = uniApp.GetAllItens(1);
+            foreach (UNIDADE item in uns)
+            {
+                UNIDADE novo = new UNIDADE();
+                novo.ASSI_CD_ID = idAss;
+                novo.UNID_IN_ATIVO = 1;
+                novo.UNID_IN_FRACIONADA = item.UNID_IN_FRACIONADA;
+                novo.UNID_IN_TIPO_UNIDADE = item.UNID_IN_TIPO_UNIDADE;
+                novo.UNID_NM_NOME = item.UNID_NM_NOME;
+                novo.UNID_SG_SIGLA = item.UNID_SG_SIGLA;
+                Int32 voltaEM = uniApp.ValidateCreate(novo, usuario);
+            }
+
             // Cria valor de consulta
-            VALOR_CONSULTA vc = new VALOR_CONSULTA();
-            vc.ASSI_CD_ID = idAss;
-            vc.USUA_CD_ID = usuario.USUA_CD_ID;
-            vc.TIVL_CD_ID = tipoValor.TIVL_CD_ID;
-            vc.VACO_DT_REFERENCIA = DateTime.Today.Date;
-            vc.VACO_NM_NOME = "Consulta Normal";
-            vc.VACO_NR_VALOR = 800;
-            vc.VACO_NR_DESCONTO = 600;
-            vc.VACO_IN_ATIVO = 1;
-            Int32 voltaVC = vcApp.ValidateCreate(vc, null);
+            List<VALOR_CONSULTA> vcs = vcApp.GetAllItens(1).Where(p => p.VACO_CD_ID < 3).ToList();
+            foreach (VALOR_CONSULTA item in vcs)
+            {
+                VALOR_CONSULTA novo = new VALOR_CONSULTA();
+                novo.ASSI_CD_ID = idAss;
+                novo.VACO_IN_ATIVO = 1;
+                novo.VACO_DT_REFERENCIA = item.VACO_DT_REFERENCIA;
+                novo.VACO_IN_MATERIAL = item.VACO_IN_MATERIAL;
+                novo.VACO_IN_PADRAO = item.VACO_IN_PADRAO;
+                novo.VACO_NM_EXIBE = item.VACO_NM_EXIBE;
+                novo.VACO_NM_NOME = item.VACO_NM_NOME;
+                novo.VACO_NR_DESCONTO = item.VACO_NR_DESCONTO;
+                novo.VACO_NR_VALOR = item.VACO_NR_VALOR;
+                novo.TIVL_CD_ID = item.TIVL_CD_ID;
+                novo.USUA_CD_ID = item.USUA_CD_ID;
+                Int32 voltaEM = vcApp.ValidateCreate(novo, usuario);
+            }
 
             // Cria periodicidades
             PERIODICIDADE_TAREFA pt = new PERIODICIDADE_TAREFA();
@@ -4402,6 +4326,8 @@ namespace ERP_Condominios_Solution.Controllers
             ca.COAN_NM_CAMPO_1 = "Evolução Mental";
             ca.COAN_IN_PADRAO_FORMATO = 1;
             ca.COAN_IN_FORMATO_CONTINUA = 1;
+            ca.COAN_IN_BLOCO_COMUM = 1;
+            ca.COAN_IN_BLOCO_SONO = 0;
             Int32 voltaCA = caApp.ValidateCreate(ca);
 
             // Cria configuracao de calendario
@@ -4484,7 +4410,7 @@ namespace ERP_Condominios_Solution.Controllers
             cf.CONF_IN_NOTIF_ACAO_OPR = 0;
             cf.CONF_IN_NOTIF_ACAO_USU = 0;
             cf.CONF_IN_NOTIF_ACAO_VEN = 0;
-            cf.CONF_LK_LINK_SISTEMA = "https://eprontuario.azurewebsites.net";
+            cf.CONF_LK_LINK_SISTEMA = "https://webdoctorpro.net";
             cf.CONF_EM_CRMSYS = "suporte@rtiltda.net";
             cf.CONF_EM_CRMSYS1 = "clayton@systembr.net";
             cf.CONF_NR_SUPORTE_ZAP = "(21)97302-4096";
@@ -4542,6 +4468,44 @@ namespace ERP_Condominios_Solution.Controllers
             cf.CON_TK_TOKEN_API_PAGTO = "68635879-5c7c-4121-8dc7-9dbdc01fa0c8a6b915db4bc4b0f86a6fdf81cf0e2ba207a6-b3bf-46b4-a85f-8489e680a29d";
             cf.CONF_IN_CALCULA_PROXIMA_CONSULTA = 1;
             cf.CONF_IN_DIAS_PROXIMA_CONSULTA = 60;
+            cf.CONF_LK_LINK_VALIDACAO = "https://webdoctorpro.net/";
+            cf.CONF_NR_DIAS_CONFIRMACAO = 5;
+            cf.CONF_NR_MESES_RETORNO = 6;
+            cf.CONF_IN_INCLUIR_REMEDIO = 1;
+            cf.CONF_IN_INCLUIR_SOLICITACAO = 1;
+            cf.CONF_IN_ASSINA_DIGITAL_SOLICITACAO = 1;
+            cf.CONF_IN_INCLUIR_PACIENTE_SEGUE = 0;
+            cf.CONF_IN_PACIENTE_FOTO_CAMERA = 1;
+            cf.CONF_IN_PADRAO_ANAMNESE = 1;
+            cf.CONF_FD_FICHAS = @"c:\Fichas";
+            cf.CON_TK_TOKEN_API_PAGTO = "68635879-5c7c-4121-8dc7-9dbdc01fa0c8a6b915db4bc4b0f86a6fdf81cf0e2ba207a6-b3bf-46b4-a85f-8489e680a29d";
+            cf.CONF_IN_CALCULA_PROXIMA_CONSULTA = 1;
+            cf.CONF_IN_DIAS_PROXIMA_CONSULTA = null;
+            cf.CONF_LK_FORM_URL_BASE = null;
+            cf.CONF_IN_PISCA = 1;
+            cf.CONF_IN_ENVIA_ANIVERSARIO = 1;
+            cf.CONF_IN_ENVIA_CONFIRMACAO = 1;
+            cf.CONF_NR_WHAPSAPP = "(21)97302-4096";
+            cf.CONF_IN_VALIDADE_FAIXA = 180;
+            cf.CONF_IN_ENVIA_PACIENTE_CADASTRO = 1;
+            cf.CONF_IN_ENVIA_ATRASO = 1;
+            cf.CONF_IN_MAXIMO_ENVIO = 5;
+            cf.CONF_IN_INTERVALO_ENVIO = 3;
+            cf.CONF_IN_HORA_LIMITE = null;
+            cf.CONF_IN_MENSAGEM_MARCACAO = null;
+            cf.CONF_IN_MARCA_CONSULTA_HORA = 1;
+            cf.CONF_NR_MARCA_CONSULTA_HORA = null;
+            cf.CONF_IN_ASSINA_DIGITAL_ATESTADO = 1;
+            cf.CONF_IN_ASSINA_DIGITAL_SOLICITACAO = 1;
+            cf.CONF_IN_ASSINA_DIGITAL_PRESCRICAO = 1;
+            cf.CONF_IN_ASSINA_DIGITAL_LOCAL_PFX = null;
+            cf.CONF_IN_MODELO_ANAMNESE = 1;
+            cf.CONF_IN_AVISO_ESTOQUE = 1;
+            cf.CONF_IN_ASSINA_DIGITAL_LOCACAO = 1;
+            cf.CONF_VL_ACRESCIMO_ATRASO_PARCELA = 10;
+            cf.CONF_NM_SENHA_PACIENTE = "a123456A@";
+            cf.CONF_IN_RECIBO_SRF = 1;
+            cf.CONF_IN_DOC_PRONTUARIO = 1;
             Int32 voltaCF = confApp.ValidateCreate(cf);
 
             // Encerra
@@ -6314,25 +6278,25 @@ namespace ERP_Condominios_Solution.Controllers
                 if (acao == 0)
                 {
                     texto = "<p style='background-color: darkseagreen; font-size: 24px; font-weight: bold; color: darkgreen'>Contratação de Assinatura</p><br />";
-                    texto += "Sua assinatura do plano <b>" + fc.NomePlano + "</b> do <b>WebDoctor</b> foi criada com sucesso.<br />";
+                    texto += "Sua assinatura do plano <b>" + fc.NomePlano + "</b> do <b>WebDoctorPro</b> foi criada com sucesso.<br />";
                     texto += "Estamos apenas esperando a confirmação de seu pagamento. Assim que for confirmado você receberá mensagem avisando que está pronto para utilização<br />";
-                    texto += "<br />Seguem abaixo as credenciais para você acessar o <b>WebDoctor</b>.<br />";
+                    texto += "<br />Seguem abaixo as credenciais para você acessar o <b>WebDoctorPro</b>.<br />";
                 }
                 else
                 {
                     texto = "<p style='background-color: darkseagreen; font-size: 24px; font-weight: bold; color: darkgreen'>Contratação de Assinatura</p><br />";
-                    texto += "Sua assinatura foi migrada com sucesso para o plano <b>" + fc.NomePlano + "</b> do <b>WebDoctor</b><br />";
+                    texto += "Sua assinatura foi migrada com sucesso para o plano <b>" + fc.NomePlano + "</b> do <b>WebDoctorPro</b><br />";
                     texto += "Estamos apenas esperando a confirmação de seu pagamento. Assim que for confirmado você receberá mensagem avisando que está pronto para utilização<br />";
-                    texto += "<br />As suas credenciais para você acessar o <b>WebDoctor</b> permanecem as mesmas<br />";
+                    texto += "<br />As suas credenciais para você acessar o <b>WebDoctorPro</b> permanecem as mesmas<br />";
                 }
             }
             else
             {
                 texto = "<p style='background-color: darkseagreen; font-size: 24px; font-weight: bold; color: darkgreen'>Solicitação de Assinatura de Demonstração</p><br />";
-                texto += "Sua solicitação de assinatura de demonstração <b>WebDoctor</b> foi criada com sucesso.<br />";
+                texto += "Sua solicitação de assinatura de demonstração <b>WebDoctorPro</b> foi criada com sucesso.<br />";
                 texto += "A assinatura de demonstração contempla o plano <b>Super - Financeiro</b> com todas as funcionalidades disponíveis e nenhum limite de utilização<br />";
                 texto += "A assinatura de demonstração ficará ativa por 30 dias a contar de <b>" + DateTime.Today.Date.ToLongDateString() + "</b><br />";
-                texto += "<br />Seguem abaixo as credenciais para você acessar o <b>WebDoctor</b>.<br />";
+                texto += "<br />Seguem abaixo as credenciais para você acessar o <b>WebDoctorPro</b>.<br />";
             }
 
             // Prepara informações
@@ -6340,14 +6304,14 @@ namespace ERP_Condominios_Solution.Controllers
             if (acao == 0)
             {
                 info = "<br />Credenciais de acesso:<br />";
-                info += "<b>Link: </b> " + "https://eprontuario.azurewebsites.net/ <br />";
+                info += "<b>Link: </b> " + "https://webdoctorpro.net/ <br />";
                 info += "<b>Login: </b>" + fc.LoginBase + "<br />";
                 info += "<b>Senha: </b>" + fc.SenhaBase + "<br />";
             }
 
             // Prepara rodape
             String rodape = String.Empty;
-            rodape = "<br />Enviado por <b>Suporte WebDoctor</b><br />";
+            rodape = "<br />Enviado por <b>Suporte WebDoctorPro</b><br />";
             rodape += "<b>E-Mail: </b> suporte@rtiltda.net<br />";
             rodape += "<b>WhatsApp: </b>(21)97302-4096<br />";
 

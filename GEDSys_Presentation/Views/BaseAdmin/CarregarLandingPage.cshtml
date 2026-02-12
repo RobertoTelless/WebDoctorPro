@@ -736,8 +736,7 @@
                             <div class="vertical-timeline-content">
                                 <h2>Versão 2.0.0.0</h2>
                                 <p>Versão firme de produção</p>
-                                @*<a href="@Url.Content("~/ConteudoSite/Versao/Versao_2_0_0_0.pdf")"*@ 
-                                <a href="@Url.Content("~/ConteudoSite/Locacao/WebDoctor_Locacao_Apresentacao_Final.pdf")" 
+                                <a href="@Url.Content("~/ConteudoSite/Versao/Versao_2_0_0_0.pdf")" 
                                     class="btn btn-info btn-sm" style="border-radius: 4px;" download>
                                     <i class="fa fa-file-pdf-o"></i> Documento da Versão
                                 </a>
@@ -752,6 +751,10 @@
                             <div class="vertical-timeline-content">
                                 <h2>Versão 1.2.2.0</h2>
                                 <p>Nova versão menor com melhorias e ajustes</p>
+                                <a href="@Url.Content("~/ConteudoSite/Versao/Versao_1_2_2_0.pdf")" 
+                                    class="btn btn-info btn-sm" style="border-radius: 4px;" download>
+                                    <i class="fa fa-file-pdf-o"></i> Documento da Versão
+                                </a>
                                 <span class="vertical-date"> 2a Feira <br /> <small>29 de setembro, 2025</small> </span>
                             </div>
                         </div>
@@ -763,6 +766,10 @@
                             <div class="vertical-timeline-content">
                                 <h2>Versão 1.2.1.0</h2>
                                 <p>Nova versão menor com melhorias e ajustes</p>
+                                <a href="@Url.Content("~/ConteudoSite/Versao/Versao_1_2_1_0.pdf")" 
+                                    class="btn btn-info btn-sm" style="border-radius: 4px;" download>
+                                    <i class="fa fa-file-pdf-o"></i> Documento da Versão
+                                </a>
                                 <span class="vertical-date"> 3a Feira <br /> <small>12 de agosto, 2025</small> </span>
                             </div>
                         </div>
@@ -774,6 +781,10 @@
                             <div class="vertical-timeline-content">
                                 <h2>Versão 1.2.0.0</h2>
                                 <p>Nova versão menor com o módulo financeiro e ajustes</p>
+                                <a href="@Url.Content("~/ConteudoSite/Versao/Versao_1_2_0_0.pdf")" 
+                                    class="btn btn-info btn-sm" style="border-radius: 4px;" download>
+                                    <i class="fa fa-file-pdf-o"></i> Documento da Versão
+                                </a>
                                 <span class="vertical-date"> 5a Feira <br /> <small>17 de abril, 2025</small> </span>
                             </div>
                         </div>
@@ -925,46 +936,49 @@
                             <a class="btn btn-primary btn-xs" href="@Url.Action("MontarTelaCompraBasico", "BaseAdmin")">Plano Básico</a>
                         </li>
                         <li class="pricing-desc">
-                            Acesso a todas as funcionalidades com limite de número.
+                            <strong>Acesso a todas as funcionalidades com limite de número</strong>
                         </li>
                         <li class="pricing-price">
-                            <span>R$ 2.000,00</span> / Ano
+                            <strong><span>R$ 2.000,00</span> / Ano</strong>
                         </li>
                         <li class="pricing-price">
-                            Parcelado em até 12x no cartão de crédito
+                            <strong>Parcelado em até 12x no cartão de crédito</strong>
                         </li>
                         <li>
-                            Limite de pacientes ativos: 300
+                            <strong>Limite de pacientes ativos: 300</strong>
                         </li>
                         <li>
-                            Funcionalidades de Mensageria: Sim
+                            <strong>Funcionalidades de Mensageria: Sim</strong>
                         </li>
                         <li>
-                            Funcionalidades Financeiras: Não
+                            <strong>Funcionalidades Financeiras: Não</strong>
                         </li>
                         <li>
-                            Funcionalidades de Locação: Não
+                            <strong>Funcionalidades de Locação: Não</strong>
                         </li>
                         <li>
-                            Controle de Estoque: Não
+                            <strong>Controle de Estoque: Não</strong>
                         </li>
                         <li>
-                            Limite de usuários ativos: 10
+                            <strong>Limite de usuários ativos: 10</strong>
                         </li>
                         <li>
-                            Limite de grupos ativos: 5
+                            <strong>Limite de grupos ativos: 5</strong>
                         </li>
                         <li>
-                            Limite de itens no grupo: 50
+                            <strong>Limite de itens no grupo: 50</strong>
                         </li>
                         <li>
-                            Envio de e-mails/mês: 300
+                            <strong>Envio de e-mails/mês: 300</strong>
                         </li>
                         <li>
-                            Envio de SMS/mês: 100
+                            <strong>Envio de SMS/mês: 100</strong>
                         </li>
                         <li>
-                            Documentação on-line
+                            <strong>Migração Gratuita(*)</strong>
+                        </li>
+                        <li>
+                            <strong>Documentação on-line</strong>
                         </li>
                         <li>
                             <strong>Suporte (Chat) On-Line</strong>
@@ -973,6 +987,7 @@
                             <a class="btn btn-primary btn-xs" href="@Url.Action("MontarTelaCompraBasico", "BaseAdmin")">Saiba mais e Contrate Agora</a>
                         </li>
                     </ul>
+                    <p>(*) A migração de dados de outras plataformas está sujeita à viabilidade técnica</p>
                 </div>
 
           
@@ -982,46 +997,49 @@
                             <a class="btn btn-primary btn-xs" href="@Url.Action("MontarTelaCompraBasico", "BaseAdmin")">Plano Super</a>
                         </li>
                         <li class="pricing-desc">
-                            Acesso a todas as funcionalidades sem limite de número.
+                            <strong>Acesso a todas as funcionalidades sem limite de número</strong>
                         </li>
                         <li class="pricing-price">
-                            <span>R$ 3.500,00</span> / Ano
+                            <strong><span>R$ 3.500,00</span> / Ano</strong>
                         </li>
                         <li class="pricing-price">
-                            Parcelado em até 12x no cartão de crédito
+                            <strong>Parcelado em até 12x no cartão de crédito</strong>
                         </li>
                         <li>
-                            Limite de pacientes ativos: Sem limite
+                            <strong>Limite de pacientes ativos: Sem limite</strong>
                         </li>
                         <li>
-                            Funcionalidades de Mensageria: Sim
+                            <strong>Funcionalidades de Mensageria: Sim</strong>
                         </li>
                         <li>
-                            Funcionalidades Financeiras: Não
+                            <strong>Funcionalidades Financeiras: Não</strong>
                         </li>
                         <li>
-                            Funcionalidades de Locação: Não
+                            <strong>Funcionalidades de Locação: Não</strong>
                         </li>
                         <li>
-                            Controle de Estoque: Não
+                            <strong>Controle de Estoque: Não</strong>
                         </li>
                         <li>
-                            Limite de usuários ativos: Sem limite
+                            <strong>Limite de usuários ativos: Sem limite</strong>
                         </li>
                         <li>
-                            Limite de grupos ativos: Sem limite
+                            <strong>Limite de grupos ativos: Sem limite</strong>
                         </li>
                         <li>
-                            Limite de itens no grupo: Sem limite
+                            <strong>Limite de itens no grupo: Sem limite</strong>
                         </li>
                         <li>
-                            Envio de e-mails/mês: Sem limite
+                            <strong>Envio de e-mails/mês: Sem limite</strong>
                         </li>
                         <li>
-                            Envio de SMS/mês: 300
+                            <strong>Envio de SMS/mês: 300</strong>
                         </li>
                         <li>
-                            Documentação on-line
+                            <strong>Migração Gratuita(*)</strong>
+                        </li>
+                        <li>
+                            <strong>Documentação on-line</strong>
                         </li>
                         <li>
                             <strong>Suporte (Chat) On-Line</strong>
@@ -1030,6 +1048,7 @@
                             <a class="btn btn-primary btn-xs" href="@Url.Action("MontarTelaCompraBasico", "BaseAdmin")">Saiba mais e Contrate Agora</a>
                         </li>
                     </ul>
+                    <p>(*) A migração de dados de outras plataformas está sujeita à viabilidade técnica</p>
                 </div>
             
                 <div class="col-lg-4 wow zoomIn">
@@ -1038,61 +1057,61 @@
                             <a class="btn btn-primary btn-xs" href="@Url.Action("MontarTelaCompraBasico", "BaseAdmin")">Plano Super - Financeiro</a>
                         </li>
                         <li class="pricing-desc">
-                            Acesso a todas as funcionalidades sem limite de número.
+                            <strong>Acesso a todas as funcionalidades sem limite de número</strong>
                         </li>
                         <li class="pricing-price">
-                            <span>R$ 4.000,00</span> / Ano
+                            <strong><span>R$ 4.000,00</span> / Ano</strong>
                         </li>
                         <li class="pricing-price">
-                            Parcelado em até 12x no cartão de crédito
+                            <strong>Parcelado em até 12x no cartão de crédito</strong>
                         </li>
                         <li>
-                            Limite de pacientes ativos: Sem limite
+                            <strong>Limite de pacientes ativos: Sem limite</strong>
                         </li>
                         <li>
-                            Limite de produtos: Sem limite
+                            <strong>Limite de produtos: Sem limite</strong>
                         </li>
                         <li>
-                            Funcionalidades de Mensageria: Sim
+                            <strong>Funcionalidades de Mensageria: Sim</strong>
                         </li>
                         <li>
-                            Funcionalidades Financeiras: Sim
+                            <strong>Funcionalidades Financeiras: Sim</strong>
                         </li>
                         <li>
-                            Funcionalidades de Locação: Sim
+                            <strong>Funcionalidades de Locação: Sim</strong>
                         </li>
                         <li>
-                            Controle de Estoque: Sim
+                            <strong>Controle de Estoque: Sim</strong>
                         </li>
                         <li>
-                            Limite de usuários ativos: Sem limite
+                            <strong>Limite de usuários ativos: Sem limite</strong>
                         </li>
                         <li>
-                            Limite de grupos ativos: Sem limite
+                            <strong>Limite de grupos ativos: Sem limite</strong>
                         </li>
                         <li>
-                            Limite de itens no grupo: Sem limite
+                            <strong>Limite de itens no grupo: Sem limite</strong>
                         </li>
                         <li>
-                            Limite de Pagamentos/Mês: Sem limite
+                            <strong>Limite de Pagamentos/Mês: Sem limite</strong>
                         </li>
                         <li>
-                            Limite de Recebimentos/Mês: Sem limite
+                            <strong>Limite de Recebimentos/Mês: Sem limite</strong>
                         </li>
                         <li>
-                            Limite de locações ativas: Sem limite
+                            <strong>Limite de locações ativas: Sem limite</strong>
                         </li>
                         <li>
-                            Envio de e-mails/mês: Sem limite
+                            <strong>Envio de e-mails/mês: Sem limite</strong>
                         </li>
                         <li>
-                            Envio de SMS/mês: 500
+                            <strong>Envio de SMS/mês: 500</strong>
                         </li>
                         <li>
-                            Documentação on-line
+                            <strong>Documentação on-line</strong>
                         </li>
                         <li>
-                            Migração Gratuita(*)
+                            <strong>Migração Gratuita(*)</strong>
                         </li>
                         <li>
                             <strong>Suporte (Chat) On-Line</strong>

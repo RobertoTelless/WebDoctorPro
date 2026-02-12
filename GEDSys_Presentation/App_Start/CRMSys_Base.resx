@@ -1951,7 +1951,7 @@
     <value>Senha não pode ser menor que o tamanho mínimo especificado nas configurações</value>
   </data>
   <data name="M0633" xml:space="preserve">
-    <value>Login já cadastro. Escolha outr de no máximo 10 caracteres e sem espaços</value>
+    <value>Login já cadastrado. Escolha outro login de no máximo 10 caracteres e sem espaços</value>
   </data>
   <data name="M0634" xml:space="preserve">
     <value>Assinante não localizado</value>
@@ -1960,10 +1960,10 @@
     <value>Você está tentando mudar para o mesmo plano ativo</value>
   </data>
   <data name="M0636" xml:space="preserve">
-    <value>Assinatura de demonstração vencida. Contrate uma assinatura e continue a usar o WebDoctor</value>
+    <value>Assinatura de demonstração vencida. Contrate uma assinatura e continue a usar o WebDoctorPro</value>
   </data>
   <data name="M0637" xml:space="preserve">
-    <value>Já existe uma assinatura de demonstração para este CPF/CNPJ. Contrate uma assinatura e continue a usar o WebDoctor</value>
+    <value>Já existe uma assinatura de demonstração para este CPF/CNPJ. Contrate uma assinatura e continue a usar o WebDoctorPro</value>
   </data>
   <data name="M0638" xml:space="preserve">
     <value>Sua solicitação de demonstração foi processada com sucesso. Veja as credenciais no e-mail enviado para o seu endereço cadastrado</value>

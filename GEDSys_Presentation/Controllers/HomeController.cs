@@ -5,6 +5,9 @@ using System.Web;
 using System.Web.Mvc;
 using System.Runtime.Caching;
 using ERP_Condominios_Solution.Classes;
+using Newtonsoft.Json;
+using System.Net;
+using EntitiesServices.Work_Classes;
 
 namespace CRMPresentation.Controllers
 {
@@ -22,6 +25,9 @@ namespace CRMPresentation.Controllers
             Session["DemoVencido"] = 0;
             Session["PagVencido"] = 0;
             Session["AssinantePendente"] = 0;
+
+            // Recupera informações
+            AcessoVisitanteDTO dto = CookieManager.CapturarDadosAcesso();
 
             // Trata cookie
             //Boolean cook = CookieManager.VerificarValidadeCookie();

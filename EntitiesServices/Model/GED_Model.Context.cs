@@ -412,5 +412,6 @@ namespace EntitiesServices.Model
         public virtual DbSet<RACA> RACA { get; set; }
         public virtual DbSet<PACIENTE_CONSULTA_MATERIAL> PACIENTE_CONSULTA_MATERIAL { get; set; }
         public virtual DbSet<VALOR_CONSULTA_MATERIAL> VALOR_CONSULTA_MATERIAL { get; set; }
+        public virtual DbSet<ACESSO_SITE> ACESSO_SITE { get; set; }
     }
 }

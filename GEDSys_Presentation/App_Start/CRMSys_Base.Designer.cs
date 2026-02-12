@@ -5560,7 +5560,7 @@ namespace GEDSys_Presentation.App_Start {
         }
         
         /// <summary>
-        ///   Consulta uma cadeia de caracteres localizada semelhante a Login já cadastro. Escolha outr de no máximo 10 caracteres e sem espaços.
+        ///   Consulta uma cadeia de caracteres localizada semelhante a Login já cadastrado. Escolha outro login de no máximo 10 caracteres e sem espaços.
         /// </summary>
         internal static string M0633 {
             get {
@@ -5587,7 +5587,7 @@ namespace GEDSys_Presentation.App_Start {
         }
         
         /// <summary>
-        ///   Consulta uma cadeia de caracteres localizada semelhante a Assinatura de demonstração vencida. Contrate uma assinatura e continue a usar o WebDoctor.
+        ///   Consulta uma cadeia de caracteres localizada semelhante a Assinatura de demonstração vencida. Contrate uma assinatura e continue a usar o WebDoctorPro.
         /// </summary>
         internal static string M0636 {
             get {
@@ -5596,7 +5596,7 @@ namespace GEDSys_Presentation.App_Start {
         }
         
         /// <summary>
-        ///   Consulta uma cadeia de caracteres localizada semelhante a Já existe uma assinatura de demonstração para este CPF/CNPJ. Contrate uma assinatura e continue a usar o WebDoctor.
+        ///   Consulta uma cadeia de caracteres localizada semelhante a Já existe uma assinatura de demonstração para este CPF/CNPJ. Contrate uma assinatura e continue a usar o WebDoctorPro.
         /// </summary>
         internal static string M0637 {
             get {

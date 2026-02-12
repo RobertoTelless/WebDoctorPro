@@ -5,6 +5,10 @@ using System.Collections.Generic;
 using System.Data.Entity;
 using System.Diagnostics;
 using System.Globalization;
+using ERP_Condominios_Solution.Classes;
+using Newtonsoft.Json;
+using System.Net;
+using EntitiesServices.Work_Classes;
 
 namespace ERP_Condominios_Solution.Classes
 {
@@ -85,6 +89,67 @@ namespace ERP_Condominios_Solution.Classes
                 return cookie.Value.Split('|')[0];
             }
             return cookie?.Value ?? "Não encontrado";
+        }
+
+        /// <summary>
+        /// Obtém o IP do usuário e consulta a localização/provedor para preencher a DTO.
+        /// </summary>
+        public static AcessoVisitanteDTO CapturarDadosAcesso()
+        {
+            var dto = new AcessoVisitanteDTO { DataAcesso = DateTime.Now };
+
+            try
+            {
+                // Obtém o IP Real (considerando Proxy/Load Balancers como o do Azure)
+                dto.IP = ObterIpUsuario();
+
+                // Ignora consulta em localhost (IP ::1 ou 127.0.0.1) pois APIs de GeoIP falham neles
+                if (dto.IP == "::1" || dto.IP == "127.0.0.1")
+                {
+                    dto.Cidade = "Localhost";
+                    dto.Provedor = "Desenvolvimento";
+                    return dto;
+                }
+
+                // Consulta API externa (ip-api.com é gratuita para uso moderado)
+                using (WebClient client = new WebClient())
+                {
+                    string url = $"http://ip-api.com/json/{dto.IP}?fields=status,country,regionName,city,isp";
+                    string json = client.DownloadString(url);
+
+                    dynamic result = JsonConvert.DeserializeObject(json);
+
+                    if (result.status == "success")
+                    {
+                        dto.Pais = result.country;
+                        dto.Estado = result.regionName;
+                        dto.Cidade = result.city;
+                        dto.Provedor = result.isp;
+                    }
+                }
+            }
+            catch (Exception)
+            {
+                // Em caso de erro na API, retorna a DTO apenas com o IP
+            }
+
+            return dto;
+        }
+
+        private static string ObterIpUsuario()
+        {
+            var request = HttpContext.Current.Request;
+
+            // Tenta pegar o IP caso o site esteja atrás de um Proxy (Azure/Cloudflare)
+            string ip = request.ServerVariables["HTTP_X_FORWARDED_FOR"];
+
+            if (string.IsNullOrEmpty(ip))
+                ip = request.ServerVariables["REMOTE_ADDR"];
+
+            if (string.IsNullOrEmpty(ip))
+                ip = request.UserHostAddress;
+
+            return ip;
         }
     }
 }
