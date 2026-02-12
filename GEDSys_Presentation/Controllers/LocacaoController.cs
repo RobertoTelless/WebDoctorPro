@@ -5441,9 +5441,10 @@ namespace GEDSys_Presentation.Controllers
                 Font meuFontBold = FontFactory.GetFont("Arial", 8, iTextSharp.text.Font.BOLD, BaseColor.BLACK);
 
                 // Caminho de saida
-                String caminho = "/Imagens/" + idAss.ToString() + "/Locacao/" + locacao.LOCA_CD_ID.ToString() + "/Contrato/";
-                String filePath = Path.Combine(Server.MapPath(caminho), nomeRel);
-                Directory.CreateDirectory(caminho);
+                String caminhoVirtual = "/Imagens/" + idAss.ToString() + "/Locacao/" + locacao.LOCA_CD_ID.ToString() + "/Contrato/";
+                String pastaFisica = Server.MapPath(caminhoVirtual);
+                String filePath = Path.Combine(pastaFisica, nomeRel);
+                Directory.CreateDirectory(pastaFisica);
                 Boolean existe = System.IO.File.Exists(filePath);
                 if (existe)
                 {
@@ -6198,9 +6199,10 @@ namespace GEDSys_Presentation.Controllers
                 Font meuFontBold = FontFactory.GetFont("Arial", 8, iTextSharp.text.Font.BOLD, BaseColor.BLACK);
 
                 // Caminho de saida
-                String caminho = "/Imagens/" + idAss.ToString() + "/Locacao/" + locacao.LOCA_CD_ID.ToString() + "/Contrato/";
-                String filePath = Path.Combine(Server.MapPath(caminho), nomeRel);
-                Directory.CreateDirectory(caminho);
+                String caminhoVirtual = "/Imagens/" + idAss.ToString() + "/Locacao/" + locacao.LOCA_CD_ID.ToString() + "/Contrato/";
+                String pastaFisica = Server.MapPath(caminhoVirtual);
+                String filePath = Path.Combine(pastaFisica, nomeRel);
+                Directory.CreateDirectory(pastaFisica);
                 Boolean existe = System.IO.File.Exists(filePath);
                 if (existe)
                 {
@@ -7267,9 +7269,10 @@ namespace GEDSys_Presentation.Controllers
                 Font meuFontBold = FontFactory.GetFont("Arial", 8, iTextSharp.text.Font.BOLD, BaseColor.BLACK);
 
                 // Caminho de saida
-                String caminho = "/Imagens/" + idAss.ToString() + "/Locacao/" + locacao.LOCA_CD_ID.ToString() + "/Contrato/";
-                String filePath = Path.Combine(Server.MapPath(caminho), nomeRel);
-                Directory.CreateDirectory(caminho);
+                String caminhoVirtual = "/Imagens/" + idAss.ToString() + "/Locacao/" + locacao.LOCA_CD_ID.ToString() + "/Contrato/";
+                String pastaFisica = Server.MapPath(caminhoVirtual);
+                String filePath = Path.Combine(pastaFisica, nomeRel);
+                Directory.CreateDirectory(pastaFisica);
                 Boolean existe = System.IO.File.Exists(filePath);
                 if (existe)
                 {
@@ -8029,9 +8032,10 @@ namespace GEDSys_Presentation.Controllers
                 Font meuFontBold = FontFactory.GetFont("Arial", 8, iTextSharp.text.Font.BOLD, BaseColor.BLACK);
 
                 // Caminho de saida
-                String caminho = "/Imagens/" + idAss.ToString() + "/Locacao/" + locacao.LOCA_CD_ID.ToString() + "/Contrato/";
-                String filePath = Path.Combine(Server.MapPath(caminho), nomeRel);
-                Directory.CreateDirectory(caminho);
+                String caminhoVirtual = "/Imagens/" + idAss.ToString() + "/Locacao/" + locacao.LOCA_CD_ID.ToString() + "/Contrato/";
+                String pastaFisica = Server.MapPath(caminhoVirtual);
+                String filePath = Path.Combine(pastaFisica, nomeRel);
+                Directory.CreateDirectory(pastaFisica);
                 Boolean existe = System.IO.File.Exists(filePath);
                 if (existe)
                 {
@@ -9237,9 +9241,10 @@ namespace GEDSys_Presentation.Controllers
                 Font meuFontBold = FontFactory.GetFont("Arial", 8, iTextSharp.text.Font.BOLD, BaseColor.BLACK);
 
                 // Caminho de saida
-                String caminho = "/Imagens/" + idAss.ToString() + "/Locacao/" + locacao.LOCA_CD_ID.ToString() + "/Distrato/";
-                String filePath = Path.Combine(Server.MapPath(caminho), nomeRel);
-                Directory.CreateDirectory(caminho);
+                String caminhoVirtual = "/Imagens/" + idAss.ToString() + "/Locacao/" + locacao.LOCA_CD_ID.ToString() + "/Distrato/";
+                String pastaFisica = Server.MapPath(caminhoVirtual);
+                String filePath = Path.Combine(pastaFisica, nomeRel);
+                Directory.CreateDirectory(pastaFisica);
                 Boolean existe = System.IO.File.Exists(filePath);
                 if (existe)
                 {
@@ -9854,9 +9859,10 @@ namespace GEDSys_Presentation.Controllers
                 Font meuFontBold = FontFactory.GetFont("Arial", 8, iTextSharp.text.Font.BOLD, BaseColor.BLACK);
 
                 // Caminho de saida
-                String caminho = "/Imagens/" + idAss.ToString() + "/Locacao/" + locacao.LOCA_CD_ID.ToString() + "/Distrato/";
-                String filePath = Path.Combine(Server.MapPath(caminho), nomeRel);
-                Directory.CreateDirectory(caminho);
+                String caminhoVirtual = "/Imagens/" + idAss.ToString() + "/Locacao/" + locacao.LOCA_CD_ID.ToString() + "/Distrato/";
+                String pastaFisica = Server.MapPath(caminhoVirtual);
+                String filePath = Path.Combine(pastaFisica, nomeRel);
+                Directory.CreateDirectory(pastaFisica);
                 Boolean existe = System.IO.File.Exists(filePath);
                 if (existe)
                 {
@@ -10489,9 +10495,10 @@ namespace GEDSys_Presentation.Controllers
                 Font meuFontBold = FontFactory.GetFont("Arial", 8, iTextSharp.text.Font.BOLD, BaseColor.BLACK);
 
                 // Caminho de saida
-                String caminho = "/Imagens/" + idAss.ToString() + "/Locacao/" + locacao.LOCA_CD_ID.ToString() + "/Distrato/";
-                String filePath = Path.Combine(Server.MapPath(caminho), nomeRel);
-                Directory.CreateDirectory(caminho);
+                String caminhoVirtual = "/Imagens/" + idAss.ToString() + "/Locacao/" + locacao.LOCA_CD_ID.ToString() + "/Distrato/";
+                String pastaFisica = Server.MapPath(caminhoVirtual);
+                String filePath = Path.Combine(pastaFisica, nomeRel);
+                Directory.CreateDirectory(pastaFisica);
                 Boolean existe = System.IO.File.Exists(filePath);
                 if (existe)
                 {
@@ -11096,9 +11103,10 @@ namespace GEDSys_Presentation.Controllers
                 Font meuFontBold = FontFactory.GetFont("Arial", 8, iTextSharp.text.Font.BOLD, BaseColor.BLACK);
 
                 // Caminho de saida
-                String caminho = "/Imagens/" + idAss.ToString() + "/Locacao/" + locacao.LOCA_CD_ID.ToString() + "/Distrato/";
-                String filePath = Path.Combine(Server.MapPath(caminho), nomeRel);
-                Directory.CreateDirectory(caminho);
+                String caminhoVirtual = "/Imagens/" + idAss.ToString() + "/Locacao/" + locacao.LOCA_CD_ID.ToString() + "/Distrato/";
+                String pastaFisica = Server.MapPath(caminhoVirtual);
+                String filePath = Path.Combine(pastaFisica, nomeRel);
+                Directory.CreateDirectory(pastaFisica);
                 Boolean existe = System.IO.File.Exists(filePath);
                 if (existe)
                 {
@@ -12233,9 +12241,10 @@ namespace GEDSys_Presentation.Controllers
                 Font meuFontBold = FontFactory.GetFont("Arial", 8, iTextSharp.text.Font.BOLD, BaseColor.BLACK);
 
                 // Caminho de saida
-                String caminho = "/Imagens/" + idAss.ToString() + "/Locacao/" + locacao.LOCA_CD_ID.ToString() + "/Distrato/";
-                String filePath = Path.Combine(Server.MapPath(caminho), nomeRel);
-                Directory.CreateDirectory(caminho);
+                String caminhoVirtual = "/Imagens/" + idAss.ToString() + "/Locacao/" + locacao.LOCA_CD_ID.ToString() + "/Distrato/";
+                String pastaFisica = Server.MapPath(caminhoVirtual);
+                String filePath = Path.Combine(pastaFisica, nomeRel);
+                Directory.CreateDirectory(pastaFisica);
                 Boolean existe = System.IO.File.Exists(filePath);
                 if (existe)
                 {
@@ -12792,9 +12801,10 @@ namespace GEDSys_Presentation.Controllers
                 Font meuFontBold = FontFactory.GetFont("Arial", 8, iTextSharp.text.Font.BOLD, BaseColor.BLACK);
 
                 // Caminho de saida
-                String caminho = "/Imagens/" + idAss.ToString() + "/Locacao/" + locacao.LOCA_CD_ID.ToString() + "/Distrato/";
-                String filePath = Path.Combine(Server.MapPath(caminho), nomeRel);
-                Directory.CreateDirectory(caminho);
+                String caminhoVirtual = "/Imagens/" + idAss.ToString() + "/Locacao/" + locacao.LOCA_CD_ID.ToString() + "/Distrato/";
+                String pastaFisica = Server.MapPath(caminhoVirtual);
+                String filePath = Path.Combine(pastaFisica, nomeRel);
+                Directory.CreateDirectory(pastaFisica);
                 Boolean existe = System.IO.File.Exists(filePath);
                 if (existe)
                 {
@@ -13438,10 +13448,10 @@ namespace GEDSys_Presentation.Controllers
         {
             Session["IdLocacao"] = id;
             LOCACAO loca = baseApp.GetItemById(id);
-            if (loca.LOCA_IN_ASSINADO_DIGITAL == 1)
-            {
-                return RedirectToAction("   ");
-            }
+            //if (loca.LOCA_IN_ASSINADO_DIGITAL == 1)
+            //{
+            //    return RedirectToAction("   ");
+            //}
             return RedirectToAction("GerarEncerraPDF");
         }
 
@@ -13547,9 +13557,10 @@ namespace GEDSys_Presentation.Controllers
                 Font meuFontBold = FontFactory.GetFont("Arial", 8, iTextSharp.text.Font.BOLD, BaseColor.BLACK);
 
                 // Caminho de saida
-                String caminho = "/Imagens/" + idAss.ToString() + "/Locacao/" + locacao.LOCA_CD_ID.ToString() + "/Distrato/";
-                String filePath = Path.Combine(Server.MapPath(caminho), nomeRel);
-                Directory.CreateDirectory(caminho);
+                String caminhoVirtual = "/Imagens/" + idAss.ToString() + "/Locacao/" + locacao.LOCA_CD_ID.ToString() + "/Distrato/";
+                String pastaFisica = Server.MapPath(caminhoVirtual);
+                String filePath = Path.Combine(pastaFisica, nomeRel);
+                Directory.CreateDirectory(pastaFisica);
                 Boolean existe = System.IO.File.Exists(filePath);
                 if (existe)
                 {
@@ -14164,9 +14175,10 @@ namespace GEDSys_Presentation.Controllers
                 Font meuFontBold = FontFactory.GetFont("Arial", 8, iTextSharp.text.Font.BOLD, BaseColor.BLACK);
 
                 // Caminho de saida
-                String caminho = "/Imagens/" + idAss.ToString() + "/Locacao/" + locacao.LOCA_CD_ID.ToString() + "/Distrato/";
-                String filePath = Path.Combine(Server.MapPath(caminho), nomeRel);
-                Directory.CreateDirectory(caminho);
+                String caminhoVirtual = "/Imagens/" + idAss.ToString() + "/Locacao/" + locacao.LOCA_CD_ID.ToString() + "/Distrato/";
+                String pastaFisica = Server.MapPath(caminhoVirtual);
+                String filePath = Path.Combine(pastaFisica, nomeRel);
+                Directory.CreateDirectory(pastaFisica);
                 Boolean existe = System.IO.File.Exists(filePath);
                 if (existe)
                 {

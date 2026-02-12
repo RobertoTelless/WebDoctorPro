@@ -3819,8 +3819,8 @@
     <Content Include="BaseAdmin\Ajuda\14\Ajuda14_1.pdf" />
     <Content Include="BaseAdmin\Ajuda\14\Ajuda14_2.pdf" />
     <Content Include="BaseAdmin\Apresentacao\WebDoctor_Apresentacao.ppsx" />
-    <Content Include="BaseAdmin\Versao\Versao_1_2_0_0.pdf" />
-    <Content Include="BaseAdmin\Versao\Versao_1_2_1_0.pdf" />
+    <Content Include="ConteudoSite\Versao\Versao_1_2_0_0.pdf" />
+    <Content Include="ConteudoSite\Versao\Versao_1_2_1_0.pdf" />
     <Content Include="Imagens\1\Pacientes\34\Fichas\Hank Voight_33140090030.pdf" />
     <Content Include="Imagens\1\Pacientes\56\Atestado\Atestado_Necrotério Hostilizado Pomposo_d0chohsn000bht2t7pog.pdf" />
     <Content Include="Imagens\1\Pacientes\57\Anexos\ConsultaLista_05052025.pdf" />
@@ -3876,7 +3876,7 @@
     <Content Include="BaseAdmin\Ajuda\20\Ajuda20_3.pdf" />
     <Content Include="BaseAdmin\Ajuda\20\Ajuda20_6.pdf" />
     <Content Include="BaseAdmin\Ajuda\5\Ajuda5_5.pdf" />
-    <Content Include="BaseAdmin\Versao\Versao_1_2_2_0 .pdf" />
+    <Content Include="ConteudoSite\Versao\Versao_1_2_2_0 .pdf" />
     <Content Include="Imagens\1\Mensagem\483\Anexos\voucher_DKIYOL_CYDIA ALVES PEREIRA DE SOUZA.pdf" />
     <Content Include="Imagens\1\Mensagem\484\Anexos\Proposta_Digitalize_03AFcWeA6_wFmRCKxmBmQR-CaC4jcb--2025-06-17--R3a4i.pdf" />
     <Content Include="Imagens\1\Pacientes\47\Anexos\GRT_Comprovante_2025.pdf" />
@@ -3982,7 +3982,7 @@
     <Content Include="ConteudoSite\Mensageria\WebDoctor_Mensageria_Apresentacao_Final_1.pdf" />
     <Content Include="Imagens\1\Locacao\89\Contrato\Contrato_LocacaoCunegundes Bazófica Encerada_d615194n0008vh0av0kg.pdf" />
     <Content Include="Imagens\1\Locacao\90\Contrato\Contrato_LocacaoJeaanie Geniosa Genial_d61o6csn000b5u06f8m0.pdf" />
-    <Content Include="BaseAdmin\Versao\Versao_2_0_0_0 .pdf" />
+    <Content Include="ConteudoSite\Versao\Versao_2_0_0_0 .pdf" />
     <None Include="Properties\PublishProfiles\eprontuario - FTP.pubxml" />
     <None Include="Properties\PublishProfiles\eprontuario - FTP1.pubxml" />
     <None Include="Properties\PublishProfiles\eprontuario - Web Deploy.pubxml" />

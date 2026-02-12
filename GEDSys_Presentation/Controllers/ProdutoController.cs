@@ -369,7 +369,8 @@ namespace GEDSys_Presentation.Controllers
                 if (Session["ListaProdutoEsgota"] == null)
                 {
                     List<ModeloViewModel> lista6 = new List<ModeloViewModel>();
-                    List<PRODUTO> esgota = produto.Where(p => ((p.PROD_VL_ESTOQUE_ATUAL / p.PROD_VL_MEDIA_VENDA_MENSAL) <= 1) & p.PROD_IN_ATIVO == 1 & p.PROD_IN_COMPOSTO == 0).ToList();
+                    List<PRODUTO> lp = produto.Where(p => p.PROD_VL_MEDIA_VENDA_MENSAL > 0).ToList();
+                    List<PRODUTO> esgota = lp.Where(p => ((p.PROD_VL_ESTOQUE_ATUAL / p.PROD_VL_MEDIA_VENDA_MENSAL) <= 1) & p.PROD_IN_ATIVO == 1 & p.PROD_IN_COMPOSTO == 0).ToList();
                     Int32 totEsgota = esgota.Count;
                     foreach (PRODUTO item in esgota)
                     {
