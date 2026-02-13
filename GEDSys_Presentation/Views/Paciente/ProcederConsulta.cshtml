@@ -79,19 +79,6 @@
                             </div>
                         </div>
                         <div class="row" style="width: 100%;">
-                            @*<div class="col-lg-2 col-md-2 col-xs-12">
-                                @if (!String.IsNullOrEmpty(Model.PACIENTE.PACI_AQ_FOTO))
-                                {
-                                    <img src="@Url.Content(Model.PACIENTE.PACI_AQ_FOTO)" style="width: auto; height: auto; max-height: 270px; max-width: 230px;">
-                                }
-                                else
-                                {
-                                    <img src="~/Images/icon_morador.png" style="width: auto; height: auto; max-height: 230px; max-width: 230px;">
-                                }
-                                <br />
-                                <br />
-                            </div>*@
-
                             <div class="col-lg-2 col-md-3 col-sm-4 col-xs-12">
                                 @if (!String.IsNullOrEmpty(Model.PACIENTE.PACI_AQ_FOTO))
                                 {
@@ -194,12 +181,6 @@
                                         {
                                             if ((Int32)Session["Pisca"] == 0)
                                             {
-                                                @*<div class="col-lg-2 col-md-2 col-xs-12">
-                                                    <br />
-                                                    <button type="button" class="btn btn-sm btn-success" onclick="if (confirm('Confirma o encerramento dessa consulta?')) { window.location.href='@Url.Action("EncerrarConsulta", "Paciente2")'; }">
-                                                            Encerrar Consulta
-                                                    </button>  
-                                                </div>*@
                                                 <div class="col-lg-2 col-md-2 col-xs-12">
                                                     <br />
                                                     <a href="@Url.Action("EncerrarConsulta", "Paciente2")" 
@@ -214,12 +195,6 @@
                                             }
                                             else
                                             {
-                                                @*<div class="col-lg-2 col-md-2 col-xs-12">
-                                                    <br />
-                                                    <button type="button" class="btn btn-sm btn-success pisca" onclick="if (confirm('Confirma o encerramento dessa consulta?')) { window.location.href='@Url.Action("EncerrarConsulta", "Paciente2")'; }">
-                                                        Encerrar Consulta
-                                                    </button>  
-                                                </div>*@
                                                 <div class="col-lg-2 col-md-2 col-xs-12">
                                                     <br />
                                                     <a href="@Url.Action("EncerrarConsulta", "Paciente2")" 
@@ -426,12 +401,12 @@
                                             @Html.TextBoxFor(m => m.PAEF_NR_PA_BAIXA, new { @class = "form-control", @readonly="readonly" })
                                         </div>
                                         <div class="col-lg-3 col-md-3 col-xs-12">
-                                            Freq.   Cardíaca (bpm)
+                                            Freq.Cardíaca (bpm)
                                             @Html.TextBoxFor(m => m.PAEF_NR_FREQUENCIA_CARDIACA, new { @class = "form-control", @readonly="readonly" })
                                         </div>
                                         <div class="col-lg-3 col-md-3 col-xs-12">
-                                            Temperatura (oC)
-                                            @Html.TextBoxFor(m => m.PAEF_NR_TEMPERATURA, new { @class = "form-control", @readonly="readonly" })
+                                            Tipo Sanguineo
+                                            @Html.TextBoxFor(m => m.PAEF_NM_TIPO_SANGUE, new { @class = "form-control", @readonly="readonly" })
                                         </div>
                                     </div>
                                     <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">

@@ -157,6 +157,7 @@
     <Compile Include="Attributes\CustomValidationCNPJAttribute .cs" />
     <Compile Include="Attributes\CustomValidationCPFAttribute.cs" />
     <Compile Include="Attributes\DataAnteriorAttribute.cs" />
+    <Compile Include="EntitiesServices\AcessoSiteService.cs" />
     <Compile Include="EntitiesServices\AssinanteCnpjService.cs" />
     <Compile Include="EntitiesServices\AssinanteService.cs" />
     <Compile Include="EntitiesServices\CategoriaProdutoService.cs" />
@@ -210,6 +211,7 @@
     <Compile Include="EntitiesServices\TipoPessoaService.cs" />
     <Compile Include="EntitiesServices\TipoPacienteService.cs" />
     <Compile Include="EntitiesServices\UsuarioService.cs" />
+    <Compile Include="Interfaces\Repositories\IAcessoSiteRepository.cs" />
     <Compile Include="Interfaces\Repositories\IAssinanteAnexoRepository.cs" />
     <Compile Include="Interfaces\Repositories\IAssinanteAnotacaoRepository.cs" />
     <Compile Include="Interfaces\Repositories\IAssinanteCnpjRepository.cs" />
@@ -358,6 +360,7 @@
     <Compile Include="Interfaces\Repositories\IUsuarioAnotacaoRepository.cs" />
     <Compile Include="Interfaces\Repositories\IUsuarioLoginRepository.cs" />
     <Compile Include="Interfaces\Repositories\IUsuarioRepository.cs" />
+    <Compile Include="Interfaces\Services\IAcessoSiteService.cs" />
     <Compile Include="Interfaces\Services\IAssinanteCnpjService.cs" />
     <Compile Include="Interfaces\Services\IAssinanteService.cs" />
     <Compile Include="Interfaces\Services\ICategoriaProdutoService.cs" />

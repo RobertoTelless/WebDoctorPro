@@ -50,11 +50,6 @@
                 </a>
             </li>
             <li>
-                <a href="@Url.Action("SairWebDoctor", "ControleAcesso")">
-                    <i class="fa fa-arrow-circle-o-left"></i> Sair
-                </a>
-            </li>
-            <li>
                 @if ((USUARIO)Session["UserCredentials"] == null)
                 {
                     <a href="@Url.Action("Login", "ControleAcesso")">
@@ -64,7 +59,7 @@
                 else
                 {
                     <a href="@Url.Action("Logout", "ControleAcesso")">
-                        <i class="fa fa-sign-out"></i> Logout
+                        <i class="fa fa-sign-out"></i> Sair do WebDoctorPro
                     </a>
                 }
 

@@ -229,6 +229,7 @@ namespace ERP_Condominios_Solution.ViewModels
         public string PAEF_DS_TABAGISMO_LONG { get; set; }
         public string PAEF_DS_MARCAPASSO_LONG { get; set; }
         public Nullable<int> PACI_IN_HUMANO { get; set; }
+        public string PAEF_NM_TIPO_SANGUE { get; set; }
 
         [DataType(DataType.Date, ErrorMessage = "Deve ser uma data válida")]
         public Nullable<System.DateTime> PACO_DT_CONSULTA { get; set; }

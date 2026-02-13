@@ -69,6 +69,7 @@ namespace ERP_Condominios_Solution.ViewModels
         public string PAEF_DS_MARCAPASSO { get; set; }
         public Nullable<int> PAEF_IN_PREENCHIDO { get; set; }
         public Nullable<System.DateTime> PAEF_DT_ORIGINAL { get; set; }
+        public string PAEF_NM_TIPO_SANGUE { get; set; }
 
         public System.DateTime PACO_DT_CONSULTA { get; set; }
         public int PACO_IN_TIPO { get; set; }

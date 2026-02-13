@@ -10,5 +10,6 @@ namespace EntitiesServices.Work_Classes
         public string Pais { get; set; }
         public string Provedor { get; set; }
         public DateTime DataAcesso { get; set; }
+        public Int32 Sistema { get; set; }
     }
 }

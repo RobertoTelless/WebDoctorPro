@@ -4389,6 +4389,7 @@ namespace GEDSys_Presentation.Controllers
                     vm.PAEF_DS_ONCOLOGICO_LONG = fisico.PAEF_DS_ONCOLOGICO_LONG;
                     vm.PAEF_DS_EXAME_FISICO = fisico.PAEF_DS_EXAME_FISICO;
                     vm.PAEF_TX_RESULTADOS = fisico.PAEF_TX_RESULTADOS;
+                    vm.PAEF_NM_TIPO_SANGUE = fisico.PAEF_NM_TIPO_SANGUE;
                     Session["IdUltimoFisico"] = fisico.PAEF_CD_ID;
                     Session["IdFisico"] = fisico.PAEF_CD_ID;
                 }
@@ -17622,6 +17623,7 @@ namespace GEDSys_Presentation.Controllers
                     PAEF_TX_CIRURGIAS = l.PAEF_TX_CIRURGIAS,
                     PAEF_TX_RESULTADOS = l.PAEF_TX_RESULTADOS,
                     PAEF_VL_IMC = l.PAEF_VL_IMC,
+                    PAEF_NM_TIPO_SANGUE = l.PAEF_NM_TIPO_SANGUE,
                 };
                 return mediDTO;
             }
@@ -20972,6 +20974,7 @@ namespace GEDSys_Presentation.Controllers
                 vm.PAEF_DS_EXAME_FISICO = fisico.PAEF_DS_EXAME_FISICO;
                 vm.PAEF_TX_RESULTADOS = fisico.PAEF_TX_RESULTADOS;
                 vm.PAEF_DS_FICHA_AVALIACAO = fisico.PAEF_DS_FICHA_AVALIACAO;
+                vm.PAEF_NM_TIPO_SANGUE = fisico.PAEF_NM_TIPO_SANGUE;
                 vm.Idade = age;
                 Session["IdFisicoConsulta"] = fisico.PAEF_CD_ID;
                 Session["IdFisico"] = fisico.PAEF_CD_ID;
@@ -35576,6 +35579,23 @@ namespace GEDSys_Presentation.Controllers
                 cell.BackgroundColor = BaseColor.WHITE;
                 table.AddCell(cell);
                 cell = new PdfPCell(new Paragraph(fisico.PAEF_NR_TEMPERATURA.ToString(), meuFont1))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+
+                cell = new PdfPCell(new Paragraph("Tipo Sanguineo: ", meuFont1Bold))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.WHITE;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph(fisico.PAEF_NM_TIPO_SANGUE, meuFont1))
                 {
                     VerticalAlignment = Element.ALIGN_MIDDLE,
                     HorizontalAlignment = Element.ALIGN_LEFT

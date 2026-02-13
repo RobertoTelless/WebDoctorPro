@@ -124,6 +124,7 @@ namespace ERP_Condominios_Solution.ViewModels
         public string PAEF_DS_TABAGISMO_LONG { get; set; }
         public string PAEF_DS_MARCAPASSO_LONG { get; set; }
         public string PAEF_DS_FICHA_AVALIACAO { get; set; }
+        public string PAEF_NM_TIPO_SANGUE { get; set; }
 
         [StringLength(150, ErrorMessage = "NOME deve conter no máximo 150 caracteres.")]
         public string PACI_NM_NOME { get; set; }

@@ -2,6 +2,7 @@
 using Azure.Communication.Email;
 using CrossCutting;
 using EntitiesServices.Model;
+using EntitiesServices.Work_Classes;
 using ERP_Condominios_Solution.ViewModels;
 using System;
 using System.Collections.Generic;
@@ -159,5 +160,31 @@ namespace ERP_Condominios_Solution.Classes
             return 0;
         }
 
+    }
+
+    public class ControleSiteMetodo
+    {
+        private readonly IAcessoSiteAppService aceApp;
+
+        public ControleSiteMetodo(IAcessoSiteAppService aceApps)
+        {
+            aceApp = aceApps;
+        }
+
+        public Int32 GravaAcesso(AcessoVisitanteDTO dto)
+        {
+            ACESSO_SITE acesso = new ACESSO_SITE();
+            acesso.ACST_DT_ACESSO = DateTime.Now;
+            acesso.ACST_IN_ATIVO = 1;
+            acesso.ACST_IN_SISTEMA = 6;
+            acesso.ACST_IP_IP = dto.IP;
+            acesso.ACST_NM_CIDADE = dto.Cidade;
+            acesso.ACST_NM_PAIS = dto.Pais;
+            acesso.ACST_NM_PROVEDOR = dto.Provedor;
+            acesso.ACST_NM_UF = dto.Estado;
+
+            Int32 voltaAcesso = aceApp.ValidateCreate(acesso);
+            return 0;
+        }
     }
 }

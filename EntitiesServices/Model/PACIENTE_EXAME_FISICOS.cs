@@ -72,6 +72,7 @@ namespace EntitiesServices.Model
         public string PAEF_DS_TABAGISMO_LONG { get; set; }
         public string PAEF_DS_MARCAPASSO_LONG { get; set; }
         public string PAEF_DS_FICHA_AVALIACAO { get; set; }
+        public string PAEF_NM_TIPO_SANGUE { get; set; }
     
         public virtual PACIENTE PACIENTE { get; set; }
         public virtual PACIENTE_CONSULTA PACIENTE_CONSULTA { get; set; }

@@ -50,6 +50,7 @@
           <Property Name="ACST_NM_PAIS" Type="varchar" MaxLength="50" />
           <Property Name="ACST_NM_PROVEDOR" Type="varchar" MaxLength="50" />
           <Property Name="ACST_IN_ATIVO" Type="int" />
+          <Property Name="ACST_IN_SISTEMA" Type="int" />
         </EntityType>
         <EntityType Name="AGENDA">
           <Key>
@@ -4397,6 +4398,7 @@
           <Property Name="PAEF_DS_TABAGISMO_LONG" Type="text" />
           <Property Name="PAEF_DS_MARCAPASSO_LONG" Type="text" />
           <Property Name="PAEF_DS_FICHA_AVALIACAO" Type="text" />
+          <Property Name="PAEF_NM_TIPO_SANGUE" Type="varchar" MaxLength="50" />
         </EntityType>
         <EntityType Name="PACIENTE_EXAMES">
           <Key>
@@ -24612,6 +24614,7 @@
           <NavigationProperty Name="USUARIO" Relationship="Self.FK_PACIENTE_EXAME_FISICOS_USUARIO" FromRole="PACIENTE_EXAME_FISICOS" ToRole="USUARIO" />
           <NavigationProperty Name="PACIENTE_DADOS_EXAME_FISICO" Relationship="CRMSysDBModel.FK_PACIENTE_DADOS_EXAME_FISICO_PACIENTE_EXAME_FISICOS" FromRole="PACIENTE_EXAME_FISICOS" ToRole="PACIENTE_DADOS_EXAME_FISICO" />
           <Property Name="PAEF_DS_FICHA_AVALIACAO" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="PAEF_NM_TIPO_SANGUE" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
         </EntityType>
         <EntityType Name="PACIENTE_EXAMES">
           <Key>
@@ -40946,6 +40949,7 @@
           <Property Name="ACST_NM_PAIS" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
           <Property Name="ACST_NM_PROVEDOR" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
           <Property Name="ACST_IN_ATIVO" Type="Int32" />
+          <Property Name="ACST_IN_SISTEMA" Type="Int32" />
         </EntityType>
       </Schema>
     </edmx:ConceptualModels>
@@ -45110,6 +45114,7 @@
           <EntitySetMapping Name="PACIENTE_EXAME_FISICOS">
             <EntityTypeMapping TypeName="CRMSysDBModel.PACIENTE_EXAME_FISICOS">
               <MappingFragment StoreEntitySet="PACIENTE_EXAME_FISICOS">
+                <ScalarProperty Name="PAEF_NM_TIPO_SANGUE" ColumnName="PAEF_NM_TIPO_SANGUE" />
                 <ScalarProperty Name="PAEF_DS_FICHA_AVALIACAO" ColumnName="PAEF_DS_FICHA_AVALIACAO" />
                 <ScalarProperty Name="PAEF_CD_ID" ColumnName="PAEF_CD_ID" />
                 <ScalarProperty Name="ASSI_CD_ID" ColumnName="ASSI_CD_ID" />
@@ -48438,6 +48443,7 @@
           <EntitySetMapping Name="ACESSO_SITE">
             <EntityTypeMapping TypeName="CRMSysDBModel.ACESSO_SITE">
               <MappingFragment StoreEntitySet="ACESSO_SITE">
+                <ScalarProperty Name="ACST_IN_SISTEMA" ColumnName="ACST_IN_SISTEMA" />
                 <ScalarProperty Name="ACST_IN_ATIVO" ColumnName="ACST_IN_ATIVO" />
                 <ScalarProperty Name="ACST_NM_PROVEDOR" ColumnName="ACST_NM_PROVEDOR" />
                 <ScalarProperty Name="ACST_NM_PAIS" ColumnName="ACST_NM_PAIS" />

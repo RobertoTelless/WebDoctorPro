@@ -221,6 +221,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Repositories\AcessoSiteRepository.cs" />
     <Compile Include="Repositories\AssinanteAnexoRepository.cs" />
     <Compile Include="Repositories\AssinanteAnotacaoRepository.cs" />
     <Compile Include="Repositories\AssinanteCnpjRepository.cs" />

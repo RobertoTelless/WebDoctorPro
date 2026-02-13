@@ -8,30 +8,36 @@ using System.Data;
 
 namespace ModelServices.EntitiesServices
 {
-    public class AcessoSiteService : ServiceBase<ACESSO_SITE>, IAcessoSiteService
+    public class AcessoMetodoService : ServiceBase<ACESSO_METODO>, IAcessoMetodoService
     {
-        private readonly IAcessoSiteRepository _baseRepository;
+        private readonly IAcessoMetodoRepository _baseRepository;
         private readonly ILogRepository _logRepository;
         protected CRMSysDBEntities Db = new CRMSysDBEntities();
 
-        public AcessoSiteService(IAcessoSiteRepository baseRepository, ILogRepository logRepository) : base(baseRepository)
+        public AcessoMetodoService(IAcessoMetodoRepository baseRepository, ILogRepository logRepository) : base(baseRepository)
         {
             _baseRepository = baseRepository;
             _logRepository = logRepository;
         }
 
-        public ACESSO_SITE GetItemById(Int32 id)
+        public ACESSO_METODO GetItemById(Int32 id)
         {
-            ACESSO_SITE item = _baseRepository.GetItemById(id);
+            ACESSO_METODO item = _baseRepository.GetItemById(id);
             return item;
         }
 
-        public List<ACESSO_SITE> GetAllItens()
+        public List<ACESSO_METODO> GetAllItens(Int32 idAss)
         {
-            return _baseRepository.GetAllItens();
+            return _baseRepository.GetAllItens(idAss);
         }
 
-        public Int32 Create(ACESSO_SITE item)
+        public List<ACESSO_METODO> ExecuteFilter(Int32? assi, Int32? usuario, DateTime? inicio, DateTime? final, String sigla, String entidade, String metodo, Int32 idAss)
+        {
+            return _baseRepository.ExecuteFilter(assi, usuario, inicio, final, sigla, entidade, metodo, idAss);
+
+        }
+
+        public Int32 Create(ACESSO_METODO item)
         {
             using (DbContextTransaction transaction = Db.Database.BeginTransaction(IsolationLevel.ReadCommitted))
             {
@@ -49,13 +55,13 @@ namespace ModelServices.EntitiesServices
             }
         }
 
-        public Int32 Edit(ACESSO_SITE item)
+        public Int32 Edit(ACESSO_METODO item)
         {
             using (DbContextTransaction transaction = Db.Database.BeginTransaction(IsolationLevel.ReadCommitted))
             {
                 try
                 {
-                    ACESSO_SITE obj = _baseRepository.GetById(item.ACST_CD_ID);
+                    ACESSO_METODO obj = _baseRepository.GetById(item.ACES_CD_ID);
                     _baseRepository.Detach(obj);
                     _baseRepository.Update(item);
                     transaction.Commit();

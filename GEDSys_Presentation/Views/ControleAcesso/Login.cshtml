@@ -49,25 +49,44 @@
                         </div>
                     }
                 </div> 
+                @*@if ((Int32)Session["TemCookie"] == 0)
+                {*@
+                    <div class="col-lg-12 col-md-12 col-xs-12 ibox float-e-margins">
+                        <div class="ibox-title">
+                            <h5>Utilização de Cookies</h5>
+                        </div>
+                        <div class="ibox-content">
+                            <div class="row">
+                                <div class="form-group" >
+                                    Nós utilizamos cookies para que você tenha uma melhor experiência de navegação em nosso site
+                                </div>
+                                <div class="form-group" >
+                                    @Html.CheckBoxFor(m => m.Cookie, new { @class = "checkbox i-checks", autofocus = true})&nbsp&nbsp
+                                    Aceito a gravação de cookies em meu computador
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                @*}*@
                 <div class="col-lg-12 col-md-12 col-xs-12 ibox float-e-margins">
                     <div class="ibox-title">
-                        <h5>Utilização de Cookies</h5>
+                        <h5>Política de Privacidade e Segurança de Dados</h5>
                     </div>
                     <div class="ibox-content">
                         <div class="row">
-                            <div class="form-group" >
-                                Nós utilizamos cookies para que você tenha uma melhor experiência de navegação em nosso site
+                            <div class="form-group">
+                                <div class="col-lg-12">
+                                    <p>Ao prosseguir, você concorda com nossas diretrizes de segurança.</p>
+                                    <!-- Hiperlink que dispara o Modal -->
+                                    <a href="#" class="text-navy" data-toggle="modal" data-target="#modalPrivacidade">
+                                        <i class="fa fa-external-link"></i> Clique aqui para ler a Política de Privacidade e Segurança de Dados
+                                    </a>
+                                </div>
                             </div>
-                            <div class="form-group" >
-                                @Html.CheckBoxFor(m => m.Cookie, new { @class = "checkbox i-checks", autofocus = true})&nbsp&nbsp
-                                Aceito a gravação de cookies em meu computador
-                            </div>
-
-
                         </div>
                     </div>
                 </div>
-           
+
                 <div class="col-lg-12 col-md-12 col-xs-12 ibox float-e-margins">
                     <div class="ibox-title">
                         <h5>Contatos e Suporte</h5>
@@ -151,6 +170,57 @@
 
     });
 </script>
+
+<!-- Estrutura do Modal (Pode ser colocado no final do arquivo .cshtml) -->
+<div class="modal inmodal fade" id="modalPrivacidade" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Fechar</span></button>
+                <i class="fa fa-shield modal-icon"></i>
+                <h4 class="modal-title">Política de Privacidade</h4>
+                <small class="font-bold">WebDoctorPro - Segurança e Proteção de Dados Médicos</small>
+            </div>
+            <div class="modal-body" style="background-color: #fff; color: #676a6c;">
+                <h3>1. Compromisso com a Segurança</h3>
+                <p>O <strong>WebDoctorPro</strong> utiliza protocolos de criptografia de ponta a ponta para garantir que os dados de seus pacientes e sua agenda médica estejam sempre protegidos contra acessos não autorizados.</p>
+                
+                <h3>2. Tratamento de Dados (LGPD)</h3>
+                <p>Em conformidade com a Lei Geral de Proteção de Dados, informamos que coletamos apenas as informações estritamente necessárias para a operação do sistema de gestão médica e faturamento.</p>
+                
+                <h3>3. Armazenamento no Azure</h3>
+                <p>Seus dados são armazenados em servidores seguros da Microsoft Azure, contando com redundância e backups automáticos para garantir a continuidade do seu trabalho.</p>
+                
+                <h3>4. Responsabilidade do Usuário</h3>
+                <p>É de responsabilidade do assinante manter suas credenciais de acesso em sigilo e não compartilhar senhas com terceiros não autorizados.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-dismiss="modal" style="border-radius: 4px;">Entendi e Aceito</button>
+                <button type="button" class="btn btn-white" data-dismiss="modal" style="border-radius: 4px;">Fechar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Ajuste para ícone do modal no estilo Inspinia */
+    .modal-icon {
+        font-size: 40px;
+        color: #1ab394;
+        margin-bottom: 10px;
+    }
+    .text-navy {
+        color: #1ab394;
+        font-weight: bold;
+        text-decoration: underline;
+    }
+    .text-navy:hover {
+        color: #18a689;
+    }
+</style>
+
+
+
 }
 @if (ViewBag.Message != null)
 {

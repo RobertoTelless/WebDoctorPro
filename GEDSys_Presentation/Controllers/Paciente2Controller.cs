@@ -1220,6 +1220,31 @@ namespace GEDSys_Presentation.Controllers
                 // Anamnese
                 if (temAnamnese == 1)
                 {
+                    chunk3 = new Chunk("Prontuário", FontFactory.GetFont("Arial", 13, Font.NORMAL, BaseColor.BLACK));
+                    paragraph = new Paragraph(chunk3);
+                    paragraph.Alignment = Element.ALIGN_LEFT;
+                    pdfDoc.Add(paragraph);
+
+                    line1 = new Paragraph("  ");
+                    pdfDoc.Add(line1);
+
+                    table = new PdfPTable(new float[] { 100f, 500f });
+                    table.WidthPercentage = 100;
+                    table.HorizontalAlignment = 0;
+                    table.SpacingBefore = 1f;
+                    table.SpacingAfter = 1f;
+
+                    // Dados da anamnese
+                    cell = new PdfPCell(new Paragraph(anamnese.PAAM_TX_TEXTO_LIVRE, meuFont1))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    cell.Colspan = 2;
+                    cell.BackgroundColor = BaseColor.WHITE;
+                    table.AddCell(cell);
+                    pdfDoc.Add(table);
+
                     line1 = new Paragraph(new Chunk(new iTextSharp.text.pdf.draw.LineSeparator(0.0F, 100.0F, BaseColor.BLACK, Element.ALIGN_LEFT, 1)));
                     pdfDoc.Add(line1);
                     chunk3 = new Chunk("Última Anamnese", FontFactory.GetFont("Arial", 13, Font.NORMAL, BaseColor.BLACK));
@@ -1741,6 +1766,23 @@ namespace GEDSys_Presentation.Controllers
                     cell.BackgroundColor = BaseColor.WHITE;
                     table.AddCell(cell);
                     cell = new PdfPCell(new Paragraph(fisico.PAEF_NR_TEMPERATURA.ToString(), meuFont1))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    cell.Colspan = 1;
+                    cell.BackgroundColor = BaseColor.WHITE;
+                    table.AddCell(cell);
+
+                    cell = new PdfPCell(new Paragraph("Tipo Sanguineo: ", meuFont1Bold))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    cell.Colspan = 1;
+                    cell.BackgroundColor = BaseColor.WHITE;
+                    table.AddCell(cell);
+                    cell = new PdfPCell(new Paragraph(fisico.PAEF_NM_TIPO_SANGUE, meuFont1))
                     {
                         VerticalAlignment = Element.ALIGN_MIDDLE,
                         HorizontalAlignment = Element.ALIGN_LEFT

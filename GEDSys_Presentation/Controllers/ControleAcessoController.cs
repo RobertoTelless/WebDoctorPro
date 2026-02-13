@@ -738,7 +738,6 @@ namespace ERP_Condominios_Solution.Controllers
             }
 
             // Exibe tela
-            Session.Clear();
             MontaSessao();
             Session["Close"] = false;
             Session["MensSenha"] = null;
@@ -1236,12 +1235,13 @@ namespace ERP_Condominios_Solution.Controllers
             //}
 
             // Grava flags de saida
-            USUARIO usuario = (USUARIO)Session["UserCredentials"];
-            Session["IdLoginSessao"] = null;
-            Session["MensagemLogin"] = 99;
-            Session["UserCredentials"] = null;
-            Session["MensEnvioLogin"] = 0;
             Session.Clear();
+            Session["TemCookie"] = 0;
+            Boolean cook = CookieManager.VerificarValidadeCookie();
+            if (cook)
+            {
+                Session["TemCookie"] = 1;
+            }
             return RedirectToAction("Login", "ControleAcesso");
         }
 
@@ -1253,7 +1253,6 @@ namespace ERP_Condominios_Solution.Controllers
             Session["MensagemLogin"] = 99;
             Session["UserCredentials"] = null;
             Session["MensEnvioLogin"] = 0;
-            Session.Clear();
             Session["Close"] = false;
             Session["MensagemLogin"] = null;
             Session["Versao1"] = "../BaseAdmin/Versao/Versao_1_2_0_0.pdf";

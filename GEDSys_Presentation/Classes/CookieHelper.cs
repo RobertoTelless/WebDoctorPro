@@ -91,8 +91,34 @@ namespace ERP_Condominios_Solution.Classes
             return cookie?.Value ?? "Não encontrado";
         }
 
+        // Chave para a flag de sessão que impede duplicidade
+        private const string SESSION_FLAG = "Acesso_Site_Registrado_Flag";
+
+        /// <summary>
+        /// Verifica se este visitante já teve o seu acesso gravado na sessão atual.
+        /// </summary>
+        public static bool JaRegistradoNestaSessao()
+        {
+            if (HttpContext.Current.Session == null) return false;
+            return HttpContext.Current.Session[SESSION_FLAG] != null;
+        }
+
+        /// <summary>
+        /// Marca a sessão do utilizador como já processada para evitar logs duplos.
+        /// </summary>
+        public static void MarcarComoRegistrado()
+        {
+            if (HttpContext.Current.Session != null)
+            {
+                HttpContext.Current.Session[SESSION_FLAG] = true;
+            }
+        }
+
         /// <summary>
         /// Obtém o IP do usuário e consulta a localização/provedor para preencher a DTO.
+        /// </summary>
+        /// <summary>
+        /// Obtém o IP limpo e consulta a localização/provedor para preencher a DTO.
         /// </summary>
         public static AcessoVisitanteDTO CapturarDadosAcesso()
         {
@@ -100,20 +126,27 @@ namespace ERP_Condominios_Solution.Classes
 
             try
             {
-                // Obtém o IP Real (considerando Proxy/Load Balancers como o do Azure)
-                dto.IP = ObterIpUsuario();
+                // 1. Obtém o IP bruto dos cabeçalhos do servidor
+                string ipBruto = ObterIpUsuario();
 
-                // Ignora consulta em localhost (IP ::1 ou 127.0.0.1) pois APIs de GeoIP falham neles
-                if (dto.IP == "::1" || dto.IP == "127.0.0.1")
+                // 2. Limpa o IP (Remove portas e trata listas de IPs)
+                dto.IP = LimparIp(ipBruto);
+
+                // 3. Validação para Localhost (APIs de GeoIP não funcionam com IPs locais)
+                if (string.IsNullOrEmpty(dto.IP) || dto.IP == "::1" || dto.IP == "127.0.0.1")
                 {
+                    dto.IP = "127.0.0.1";
                     dto.Cidade = "Localhost";
-                    dto.Provedor = "Desenvolvimento";
+                    dto.Provedor = "Ambiente de Desenvolvimento";
                     return dto;
                 }
 
-                // Consulta API externa (ip-api.com é gratuita para uso moderado)
+                // 4. Consulta a API externa com o IP já formatado
                 using (WebClient client = new WebClient())
                 {
+                    // Define UTF8 para suportar acentuação nas cidades portuguesas/brasileiras
+                    client.Encoding = System.Text.Encoding.UTF8;
+
                     string url = $"http://ip-api.com/json/{dto.IP}?fields=status,country,regionName,city,isp";
                     string json = client.DownloadString(url);
 
@@ -130,17 +163,20 @@ namespace ERP_Condominios_Solution.Classes
             }
             catch (Exception)
             {
-                // Em caso de erro na API, retorna a DTO apenas com o IP
+                // Em caso de falha na API, o DTO segue apenas com o IP
             }
 
             return dto;
         }
 
+        /// <summary>
+        /// Recupera o endereço IP dos cabeçalhos da requisição HTTP.
+        /// </summary>
         private static string ObterIpUsuario()
         {
             var request = HttpContext.Current.Request;
 
-            // Tenta pegar o IP caso o site esteja atrás de um Proxy (Azure/Cloudflare)
+            // Verifica primeiro se existe um IP encaminhado por Proxy/Azure
             string ip = request.ServerVariables["HTTP_X_FORWARDED_FOR"];
 
             if (string.IsNullOrEmpty(ip))
@@ -148,6 +184,31 @@ namespace ERP_Condominios_Solution.Classes
 
             if (string.IsNullOrEmpty(ip))
                 ip = request.UserHostAddress;
+
+            return ip;
+        }
+
+        /// <summary>
+        /// Trata a string do IP para remover portas e extrair apenas o IP principal de uma lista.
+        /// Resolve casos como "179.218.12.31:1716, 179.218.12.31"
+        /// </summary>
+        private static string LimparIp(string ip)
+        {
+            if (string.IsNullOrEmpty(ip)) return string.Empty;
+
+            // Se houver vírgula, significa que há múltiplos IPs (Client, Proxy1, Proxy2)
+            // Pegamos sempre o primeiro, que é o IP original do cliente.
+            if (ip.Contains(","))
+            {
+                ip = ip.Split(',')[0].Trim();
+            }
+
+            // Se houver dois pontos (:) e for um padrão IPv4 (contém pontos), removemos a porta
+            // Exemplo: "179.218.12.31:1716" -> "179.218.12.31"
+            if (ip.Contains(":") && ip.Contains("."))
+            {
+                ip = ip.Split(':')[0].Trim();
+            }
 
             return ip;
         }

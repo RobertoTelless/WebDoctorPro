@@ -46,5 +46,7 @@ namespace EntitiesServices.Work_Classes
         public string PAEF_DS_MARCAPASSO { get; set; }
         public string PAEF_TX_RESULTADOS { get; set; }
         public string PAEF_DS_FICHA_AVALIACAO { get; set; }
+        public string PAEF_NM_TIPO_SANGUE { get; set; }
+
     }
 }

@@ -22,5 +22,6 @@ namespace EntitiesServices.Model
         public string ACST_NM_PAIS { get; set; }
         public string ACST_NM_PROVEDOR { get; set; }
         public Nullable<int> ACST_IN_ATIVO { get; set; }
+        public Nullable<int> ACST_IN_SISTEMA { get; set; }
     }
 }
