@@ -149,6 +149,7 @@ namespace ERP_Condominios_Solution.Controllers
             Session["Video"] = null;
             Session["VoltarVideo"] = 1;
             Session["VoltaCliGrupo"] = 0;
+            Session["VoltaAnexoExame"] = 1;
 
 
 
@@ -944,15 +945,17 @@ namespace ERP_Condominios_Solution.Controllers
                     {
                         Session["DemoVencido"] = 1;
                         Session["MensFC"] = 334;
-                        Session["FraseDemoVencido"] = "Sua assinatura de demonstração expirou em " + plano.ASPA_DT_VALIDADE.ToLongDateString() + ". Para continuar a usar o WebDoctor você deverá contratar um plano de assinatura";
-                        return RedirectToAction("BaseAdmin", "MontarTelaCompraBasico");
+                        Session["FraseDemoVencido"] = "Sua assinatura de demonstração expirou em " + plano.ASPA_DT_VALIDADE.ToLongDateString() + ". Para continuar a usar o WebDoctorPro você deverá contratar um plano de assinatura";
+
+                        return RedirectToAction("MontarTelaCompraBasicoNova", "BaseAdmin");
                     }
                     else
                     {
+                        Session["DemoVencido"] = 2;
                         diasDemo = (plano.ASPA_DT_VALIDADE.Date - DateTime.Today.Date).Days;
                         Session["eDemo"] = 1;
-                        Session["diasDemo"] = diasDemo;
-                        Session["TextoDemo"] = "Faltam " + diasDemo.ToString() + " dias para encerrar a demonstração.";
+                        TempData["DiasDemo"] = diasDemo;
+                        TempData["DemoAtivo"] = true;
                     }
                 }
 
@@ -1069,18 +1072,6 @@ namespace ERP_Condominios_Solution.Controllers
                     Session["NumLocacao"] = item.PLANO_ASSINATURA.PLAS_NR_LOCACAO;
                 }
 
-                // Verifica pagamentos
-                Session["PagamentoAtraso"] = 0;
-                List<ASSINANTE_PAGAMENTO> pags = assinante.ASSINANTE_PAGAMENTO.Where(p => p.ASPA_DT_VENCIMENTO <= DateTime.Today.Date.AddDays(-10) & p.ASPA_IN_PAGO == 0 & p.ASPA_IN_SISTEMA == 6).ToList();
-                if (pags.Count > 0)
-                {
-                    Session["PagamentoAtraso"] = 1;
-                    Session["MensEmpresa"] = 700;
-                    Session["NivelEmpresa"] = 4;
-                    Session["FrasePagtoAtraso"] = "Sua assinatura tem " + pags.Count.ToString() + " pagamentos vencidos em aberto a continuar a usar o WebDoctor você deverá contratar um plano de assinatura";
-                    return RedirectToAction("Empresa", "MontarTelaEmpresa");
-                }
-
                 // Recupera ultimo login
                 USUARIO_LOGIN ultimoLogin = baseApp.GetAllLogin(usuario.ASSI_CD_ID).Where(p => p.USLO_IN_SISTEMA == 6 & p.USUA_CD_ID == usuario.USUA_CD_ID).OrderByDescending(p => p.USLO_DT_LOGIN).FirstOrDefault();
                 Session["UltimoLogin"] = "Primeiro Acesso";
@@ -1171,6 +1162,26 @@ namespace ERP_Condominios_Solution.Controllers
                         CookieManager.GravarCookieInicioBase();
                     }
 
+                }
+
+                // Verifica pagamentos
+                Session["PagamentoAtraso"] = 0;
+                List<ASSINANTE_PAGAMENTO> pags = assinante.ASSINANTE_PAGAMENTO.Where(p => p.ASPA_DT_VENCIMENTO > DateTime.Today.Date.AddDays(-10) & p.ASPA_IN_PAGO == 0 & p.ASPA_IN_SISTEMA == 6).ToList();
+                if (pags.Count > 0)
+                {
+                    Session["PagamentoAtraso"] = 1;
+                    Session["MensEmpresa"] = 700;
+                    Session["NivelEmpresa"] = 4;
+                    Session["FrasePagtoAtraso"] = "Sua assinatura tem " + pags.Count.ToString() + " pagamento(s) vencido(s) em aberto. Favor efetuar o pagamento e informa-lo diretamente nesta mesma página para evitar interrupções no uso.";
+                    return RedirectToAction("MontarTelaEmpresa", "Empresa");
+                }
+                // Verifica pagamentos
+                Session["PagamentoAtraso"] = 0;
+                pags = assinante.ASSINANTE_PAGAMENTO.Where(p => p.ASPA_DT_VENCIMENTO <= DateTime.Today.Date.AddDays(-10) & p.ASPA_IN_PAGO == 0 & p.ASPA_IN_SISTEMA == 6).ToList();
+                if (pags.Count > 0)
+                {
+                    TempData["MostrarModalAtraso"] = true;
+                    return RedirectToAction("Login", "ControleAcesso");
                 }
 
                 // Route

@@ -2307,7 +2307,7 @@ namespace GEDSys_Presentation.Controllers
                 Session["Excecao"] = ex;
                 Session["ExcecaoTipo"] = ex.GetType().ToString();
                 GravaLogExcecao grava = new GravaLogExcecao(usuApp);
-                Int32 voltaX = grava.GravarLogExcecao(ex, "Paciente", "eP   ront", 1, (USUARIO)Session["UserCredentials"]);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Paciente", "ePront", 1, (USUARIO)Session["UserCredentials"]);
                 return 0;
             }
         }
@@ -2320,6 +2320,15 @@ namespace GEDSys_Presentation.Controllers
                 return RedirectToAction("Logout", "ControleAcesso");
             }
             return RedirectToAction("EditarPaciente", new { id = (Int32)Session["IdPaciente"] });
+        }
+
+        public ActionResult VoltarComparaExame()
+        {
+            if ((String)Session["Ativa"] == null)
+            {
+                return RedirectToAction("Logout", "ControleAcesso");
+            }
+            return RedirectToAction("MontarTelaComparaExames", new { id = (Int32)Session["IdExame"] });
         }
 
         public ActionResult VisualizarPrevia(Int32 id)
@@ -10157,6 +10166,7 @@ namespace GEDSys_Presentation.Controllers
                 Session["NivelPaciente"] = 7;
                 Session["AjudaNivel"] = "../BaseAdmin/Ajuda/6/Ajuda6_2.pdf";
                 Session["VoltarPesquisa"] = 0;
+                Session["VoltaAnexoExame"] = 1;
 
                 PACIENTE_EXAMES item = baseApp.GetExameById(id);
                 if (item.PACIENTE_SOLICITACAO != null)
@@ -39117,6 +39127,154 @@ namespace GEDSys_Presentation.Controllers
                 return mediDTO;
             }
 
+        }
+
+        [HttpGet]
+        public ActionResult MontarTelaComparaExames(Int32 id)
+        {
+            try
+            {
+                // Verifica se tem usuario logado
+                USUARIO usuario = new USUARIO();
+                if ((String)Session["Ativa"] == null)
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+                if ((USUARIO)Session["UserCredentials"] != null)
+                {
+                    usuario = (USUARIO)Session["UserCredentials"];
+
+                    // Verfifica permissão
+                    if (usuario.PERFIL.PERF_IN_EXAME_ALTERAR == 0)
+                    {
+                        Session["MensPermissao"] = 2;
+                        Session["ModuloPermissao"] = "Paciente - Exames - Edição";
+                        return RedirectToAction("VoltarAnexoPaciente");
+                    }
+                }
+                else
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+                Int32 idAss = (Int32)Session["IdAssinante"];
+                Session["ModuloAtual"] = "Exames - Edição";
+
+                // Trata mensagens
+                if (Session["MensPaciente"] != null)
+                {
+                    // Mensagem
+                    if ((Int32)Session["MensPaciente"] == 5)
+                    {
+                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0535", CultureInfo.CurrentCulture));
+                    }
+                    if ((Int32)Session["MensPaciente"] == 61)
+                    {
+                        TempData["MensagemAcerto"] = (String)Session["MsgCRUD"];
+                        TempData["TemMensagem"] = 1;
+                    }
+                }
+
+                // Prepara view
+                Session["NivelPaciente"] = 7;
+                Session["AjudaNivel"] = "../BaseAdmin/Ajuda/6/Ajuda6_2.pdf";
+                Session["VoltarPesquisa"] = 0;
+
+                // Monta exames
+                Session["IdExame"] = id;
+                PACIENTE_EXAMES exame = baseApp.GetExameById(id);
+                List<PACIENTE_EXAMES> exames = baseApp.GetAllExame(idAss).Where(p => p.TIEX_CD_ID == exame.TIEX_CD_ID & p.PACI_CD_ID == exame.PACI_CD_ID & p.PAEX_IN_ATIVO == 1).Take(4).OrderByDescending(p => p.PAEX_DT_DATA).ToList();
+                ViewBag.Listas = exames;
+                PacienteExameViewModel vm = Mapper.Map<PACIENTE_EXAMES, PacienteExameViewModel>(exame);
+
+                // Grava Acesso
+                ControleAcessoMetodo grava = new ControleAcessoMetodo(aceApp);
+                Int32 voltaX = grava.GravaAcesso(usuario.USUA_CD_ID, usuario.ASSI_CD_ID, "PACIENTE_COMPARA", "Paciente", "MontarTelaComparaExames");
+                return View(vm);
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Paciente";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Paciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return RedirectToAction("TrataExcecao", "BaseAdmin");
+            }
+        }
+
+        [HttpGet]
+        public ActionResult VerAnexoExamesPaciente(Int32 id)
+        {
+            try
+            {
+                // Verifica se tem usuario logado
+                USUARIO usuario = new USUARIO();
+                if ((String)Session["Ativa"] == null)
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+                if ((USUARIO)Session["UserCredentials"] != null)
+                {
+                    usuario = (USUARIO)Session["UserCredentials"];
+
+                    // Verfifica permissão
+                    if (usuario.PERFIL.PERF_IN_EXAME_ALTERAR == 0)
+                    {
+                        Session["MensPermissao"] = 2;
+                        Session["ModuloPermissao"] = "Paciente - Exames - Edição";
+                        return RedirectToAction("VoltarAnexoPaciente");
+                    }
+                }
+                else
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+                Int32 idAss = (Int32)Session["IdAssinante"];
+                Session["ModuloAtual"] = "Exames - Edição";
+
+                // Trata mensagens
+                if (Session["MensPaciente"] != null)
+                {
+                    // Mensagem
+                    if ((Int32)Session["MensPaciente"] == 5)
+                    {
+                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0535", CultureInfo.CurrentCulture));
+                    }
+                    if ((Int32)Session["MensPaciente"] == 61)
+                    {
+                        TempData["MensagemAcerto"] = (String)Session["MsgCRUD"];
+                        TempData["TemMensagem"] = 1;
+                    }
+                }
+
+                // Prepara view
+                Session["NivelPaciente"] = 7;
+                Session["AjudaNivel"] = "../BaseAdmin/Ajuda/6/Ajuda6_2.pdf";
+                Session["VoltarPesquisa"] = 0;
+                Session["VoltaAnexoExame"] = 2;
+
+                // Monta anexos
+                PACIENTE_EXAMES exame = baseApp.GetExameById(id);
+                PacienteExameViewModel vm = Mapper.Map<PACIENTE_EXAMES, PacienteExameViewModel>(exame);
+
+                // Grava Acesso
+                ControleAcessoMetodo grava = new ControleAcessoMetodo(aceApp);
+                Int32 voltaX = grava.GravaAcesso(usuario.USUA_CD_ID, usuario.ASSI_CD_ID, "PACIENTE_COMPARA_ANEXO", "Paciente", "VerAnexoExamePaciente");
+                return View(vm);
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Paciente";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Paciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return RedirectToAction("TrataExcecao", "BaseAdmin");
+            }
         }
 
     }

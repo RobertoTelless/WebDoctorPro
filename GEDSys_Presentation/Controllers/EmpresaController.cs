@@ -30,6 +30,8 @@ namespace ERP_Condominios_Solution.Controllers
         private readonly IAcessoMetodoAppService aceApp;
         private readonly IPagamentoAppService pagApp;
         private readonly IRecebimentoAppService recApp;
+        private readonly IProdutoAppService prodApp;
+        private readonly ILocacaoAppService locaApp;
 
         private String msg;
         private Exception exception;
@@ -38,7 +40,7 @@ namespace ERP_Condominios_Solution.Controllers
         List<EMPRESA> listaMaster = new List<EMPRESA>();
         String extensao;
 
-        public EmpresaController(IEmpresaAppService baseApps, IUsuarioAppService usuApps, IConfiguracaoAppService confApps, ILogAppService logApps, IMensagemEnviadaSistemaAppService meApps, IAssinanteAppService assiApps, IPacienteAppService pacApps, IGrupoAppService gruApps, IAcessoMetodoAppService aceApps, IPagamentoAppService pagApps, IRecebimentoAppService recApps)
+        public EmpresaController(IEmpresaAppService baseApps, IUsuarioAppService usuApps, IConfiguracaoAppService confApps, ILogAppService logApps, IMensagemEnviadaSistemaAppService meApps, IAssinanteAppService assiApps, IPacienteAppService pacApps, IGrupoAppService gruApps, IAcessoMetodoAppService aceApps, IPagamentoAppService pagApps, IRecebimentoAppService recApps, IProdutoAppService prodApps, ILocacaoAppService locaApps)
         {
             baseApp = baseApps;
             usuApp = usuApps;
@@ -51,6 +53,8 @@ namespace ERP_Condominios_Solution.Controllers
             aceApp = aceApps;
             pagApp = pagApps;
             recApp = recApps;
+            prodApp = prodApps;
+            locaApp = locaApps;
         }
 
         [HttpGet]
@@ -157,6 +161,18 @@ namespace ERP_Condominios_Solution.Controllers
                     ViewBag.NumRec = recs.Count;
                 }
 
+                if ((Int32)Session["PermEstoque"] == 1)
+                {
+                    List<PRODUTO> prods = CarregarProduto().ToList();
+                    ViewBag.NumProd = prods.Count;
+                }
+
+                if ((Int32)Session["PermLocacao"] == 1)
+                {
+                    List<LOCACAO> locs = CarregarLocacao().Where(p => p.LOCA_IN_STATUS == 1).ToList();
+                    ViewBag.NumLoca = locs.Count;
+                }
+
                 // Recupera limites
                 ViewBag.UsuPlano = plano.PLANO_ASSINATURA.PLAS_NR_USUARIOS > 10000 ? "Ilimitado" : plano.PLANO_ASSINATURA.PLAS_NR_USUARIOS.ToString();
                 ViewBag.PacPlano = plano.PLANO_ASSINATURA.PLAS_NR_CLIENTES > 10000 ? "Ilimitado" : plano.PLANO_ASSINATURA.PLAS_NR_CLIENTES.ToString();
@@ -165,6 +181,15 @@ namespace ERP_Condominios_Solution.Controllers
                 ViewBag.GrupoPlano = plano.PLANO_ASSINATURA.PLAS_NR_GRUPO > 10000 ? "Ilimitado" : plano.PLANO_ASSINATURA.PLAS_NR_GRUPO.ToString();
                 ViewBag.PagPlano = plano.PLANO_ASSINATURA.PLAS_NR_CP > 10000 ? "Ilimitado" : plano.PLANO_ASSINATURA.PLAS_NR_CP.ToString();
                 ViewBag.RecPlano = plano.PLANO_ASSINATURA.PLAS_NR_CR > 10000 ? "Ilimitado" : plano.PLANO_ASSINATURA.PLAS_NR_CR.ToString();
+                ViewBag.ProdPlano = plano.PLANO_ASSINATURA.PLAS_NR_PRODUTO > 10000 ? "Ilimitado" : plano.PLANO_ASSINATURA.PLAS_NR_PRODUTO.ToString();
+                ViewBag.LocaPlano = plano.PLANO_ASSINATURA.PLAS_NR_LOCACAO > 10000 ? "Ilimitado" : plano.PLANO_ASSINATURA.PLAS_NR_LOCACAO.ToString();
+
+                // Recupera atrasos
+                if ((Int32)Session["PagamentoAtraso"] == 1)
+                {
+                    String frase = (String)Session["FrasePagtoAtraso"];
+                    ViewBag.FrasePag = frase;
+                }
 
                 // Mensagem
                 if (Session["MensEmpresa"] != null)
@@ -1131,6 +1156,83 @@ namespace ERP_Condominios_Solution.Controllers
                 GravaLogExcecao grava = new GravaLogExcecao(usuApp);
                 Int32 voltaX = grava.GravarLogExcecao(ex, "Paciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
                 return 0;
+            }
+        }
+
+        public List<PRODUTO> CarregarProduto()
+        {
+            try
+            {
+                Int32 idAss = (Int32)Session["IdAssinante"];
+                List<PRODUTO> conf = new List<PRODUTO>();
+                if (Session["Produtos"] == null)
+                {
+                    conf = prodApp.GetAllItens(idAss);
+                }
+                else
+                {
+                    if ((Int32)Session["ProdutoAlterada"] == 1)
+                    {
+                        conf = prodApp.GetAllItens(idAss);
+                    }
+                    else
+                    {
+                        conf = (List<PRODUTO>)Session["Produtos"];
+                    }
+                }
+                conf = conf.Where(p => p.PROD_IN_SISTEMA == 6).ToList();
+                Session["ProdutoAlterada"] = 0;
+                Session["Produtos"] = conf;
+                return conf;
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Produto";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Produto", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return null;
+            }
+        }
+
+        public List<LOCACAO> CarregarLocacao()
+        {
+            try
+            {
+                Int32 idAss = (Int32)Session["IdAssinante"];
+                List<LOCACAO> conf = new List<LOCACAO>();
+                if (Session["Locacoes"] == null)
+                {
+                    conf = locaApp.GetAllItens(idAss);
+                }
+                else
+                {
+                    if ((Int32)Session["LocacaoAlterada"] == 1)
+                    {
+                        conf = locaApp.GetAllItens(idAss);
+                    }
+                    else
+                    {
+                        conf = (List<LOCACAO>)Session["Locacoes"];
+                    }
+                }
+                Session["LocacaoAlterada"] = 0;
+                Session["Locacoes"] = conf;
+                return conf;
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Locacao";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Locacao", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return null;
             }
         }
 

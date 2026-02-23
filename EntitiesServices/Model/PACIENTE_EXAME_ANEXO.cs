@@ -14,6 +14,12 @@ namespace EntitiesServices.Model
     
     public partial class PACIENTE_EXAME_ANEXO
     {
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
+        public PACIENTE_EXAME_ANEXO()
+        {
+            this.PACIENTE_EXAME_ANEXO_IMAGEM = new HashSet<PACIENTE_EXAME_ANEXO_IMAGEM>();
+        }
+    
         public int PAEO_CD_ID { get; set; }
         public int PACI_CD_ID { get; set; }
         public int PAEX_CD_ID { get; set; }
@@ -25,5 +31,7 @@ namespace EntitiesServices.Model
     
         public virtual PACIENTE PACIENTE { get; set; }
         public virtual PACIENTE_EXAMES PACIENTE_EXAMES { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<PACIENTE_EXAME_ANEXO_IMAGEM> PACIENTE_EXAME_ANEXO_IMAGEM { get; set; }
     }
 }

@@ -3909,6 +3909,7 @@
                                                                             {
                                                                                 @Html.TableLinkDetails(cond.PAEX_CD_ID, "VerExame", "fa-search", "Consultar Exame")
                                                                             }
+                                                                            @Html.TableLinkDetails(cond.PAEX_CD_ID, "MontarTelaComparaExames", "fa-gears", "Comparar Exames do Mesmo Tipo")
                                                                             @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_EXAME_EXCLUIR == 1)
                                                                             {
                                                                                 if (cond.PAEX_IN_ATIVO == 1)
@@ -3945,7 +3946,7 @@
                                             {
                                                 @Html.ButtonLinkIndex(text: "Novo Resultado de Exame", action: "IncluirExameForm", controller: "Paciente", buttonClass: "primary")
                                             }
-                                            @Html.ButtonLinkIndex(text: "Central de Resultados de Exames", action: "MontarTelaSolicitacoes", controller: "Paciente")
+                                            @Html.ButtonLinkIndex(text: "Central de Resultados de Exames", action: "MontarTelaExames", controller: "Paciente")
                                             @Html.ButtonLinkIndex(text: "Imprimir Exames", action: "GerarListagemExame", controller: "Paciente")
                                             <a href="@Url.Action((String)Session["AjudaNivelEx"])" class="btn btn-sm btn-danger" target="_blank">Ajuda</a>
                                         </div>
@@ -4027,6 +4028,7 @@
                                                                             {
                                                                                 @Html.TableLinkDetails(cond.PAEX_CD_ID, "VerExame", "fa-search", "Consultar Exame")
                                                                             }
+                                                                            @Html.TableLinkDetails(cond.PAEX_CD_ID, "MontarTelaComparaExames", "fa-gears", "Comparar Exames do Mesmo Tipo")
                                                                             @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_EXAME_EXCLUIR == 1)
                                                                             {
                                                                                 if (cond.PAEX_IN_ATIVO == 1)
@@ -4063,7 +4065,7 @@
                                             {
                                                 @Html.ButtonLinkIndex(text: "Novo Resultado de Exame", action: "IncluirExameForm", controller: "Paciente", buttonClass: "primary")
                                             }
-                                            @Html.ButtonLinkIndex(text: "Central de Resultados de Exames", action: "MontarTelaSolicitacoes", controller: "Paciente")
+                                            @Html.ButtonLinkIndex(text: "Central de Resultados de Exames", action: "MontarTelaExames", controller: "Paciente")
                                             @Html.ButtonLinkIndex(text: "Imprimir Exames", action: "GerarListagemExame", controller: "Paciente")
                                             <a href="@Url.Action((String)Session["AjudaNivelEx"])" class="btn btn-sm btn-danger" target="_blank">Ajuda</a>
                                         </div>

@@ -1156,6 +1156,9 @@
         <AssociationConnector Association="CRMSysDBModel.FK_VALOR_CONSULTA_MATERIAL_PRODUTO" />
         <AssociationConnector Association="CRMSysDBModel.FK_VALOR_CONSULTA_MATERIAL_VALOR_CONSULTA" />
         <EntityTypeShape EntityType="CRMSysDBModel.ACESSO_SITE" Width="1.5" PointX="0.75" PointY="17.75" />
+        <EntityTypeShape EntityType="CRMSysDBModel.PACIENTE_EXAME_ANEXO_IMAGEM" Width="1.5" PointX="49" PointY="564.5" />
+        <AssociationConnector Association="CRMSysDBModel.FK_PACIENTE_EXAME_ANEXO_IMAGEM_PACIENTE_EXAME_ANEXO" />
+        <AssociationConnector Association="CRMSysDBModel.FK_PACIENTE_EXAME_ANEXO_IMAGEM_PACIENTE_EXAMES" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

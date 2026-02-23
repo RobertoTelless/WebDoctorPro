@@ -19,6 +19,7 @@ namespace EntitiesServices.Model
         {
             this.PACIENTE_EXAME_ANEXO = new HashSet<PACIENTE_EXAME_ANEXO>();
             this.PACIENTE_EXAME_ANOTACAO = new HashSet<PACIENTE_EXAME_ANOTACAO>();
+            this.PACIENTE_EXAME_ANEXO_IMAGEM = new HashSet<PACIENTE_EXAME_ANEXO_IMAGEM>();
         }
     
         public int PAEX_CD_ID { get; set; }
@@ -48,5 +49,7 @@ namespace EntitiesServices.Model
         public virtual PACIENTE_SOLICITACAO PACIENTE_SOLICITACAO { get; set; }
         public virtual TIPO_EXAME TIPO_EXAME { get; set; }
         public virtual USUARIO USUARIO { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<PACIENTE_EXAME_ANEXO_IMAGEM> PACIENTE_EXAME_ANEXO_IMAGEM { get; set; }
     }
 }

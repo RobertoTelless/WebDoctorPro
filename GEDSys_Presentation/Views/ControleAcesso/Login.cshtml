@@ -41,7 +41,7 @@
                                 <button id="login" type="submit" class="btn btn-primary block full-width m-b" onclick="Fade()">Entrar<span class="spinner"></span></button>
                             </div>
                             <div class="form-group">
-                                @Html.ActionLink("Esqueceu sua senha?", "GerarNovaSenha", "ControleAcesso")
+                                @Html.ActionLink("Esqueceu sua senha?", "GerarNovaSenha", "ControleAcesso")    
                             </div>
                             <div class="form-group">
                                 @Html.ActionLink("Acesso ao site do WebDoctorPro", "SairWebDoctor", "ControleAcesso")
@@ -201,6 +201,62 @@
         </div>
     </div>
 </div>
+@*<div class="modal inmodal fade" id="modalFinanceiro" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <i class="fa fa-check modal-icon"></i>
+                <h4 class="modal-title">Pendência Financeira</h4>
+                <h5 class="modal-title">Aviso de Pagamento em Atraso</h5>
+            </div>
+            <div class="modal-body">
+                <p><h3>Identificamos pendências financeiras em sua assinatura.</h3></p>
+                <p><h3>Por favor, regularize para continuar utilizando o <b>WebDoctorPro</b>.</h3></p>
+            </div>
+            <div class="modal-footer">
+                <a href="@Url.Action("Login", "ControleAcesso")" class="btn btn-primary">Ir para Login</a>
+            </div>
+        </div>
+    </div>
+</div>*@
+
+<div class="modal inmodal fade" id="modalFinanceiro" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="position: relative; padding: 30px 15px;">
+                <img src="@Url.Content("~/Images/Prontuario/prontuario_icon_3.png?v=1.1")" 
+                     style="position: absolute; left: 15px; top: 15px; width: 40px; height: auto;" 
+                     alt="Ícone" />
+
+                <i class="fa fa-warning modal-icon" style="display: block;"></i>
+                <h4 class="modal-title">Pendência Financeira</h4>
+                <small class="font-bold">Aviso de Pagamento em Atraso</small>
+            </div>
+            
+            <div class="modal-body text-center">
+                <h3>Identificamos pendências financeiras em sua assinatura.</h3>
+                <p>Por favor, regularize para continuar utilizando o <b>WebDoctorPro</b>.</p>
+            </div>
+            
+            <div class="modal-footer">
+                <a href="@Url.Action("Login", "ControleAcesso")" class="btn btn-primary">Ir para Login</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+@if (TempData["MostrarModalAtraso"] != null)
+{
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#modalFinanceiro').modal({
+                backdrop: 'static', // Impede fechar clicando fora
+                keyboard: false     // Impede fechar com Esc
+            });
+        });
+    </script>
+}
+
 
 <style>
     /* Ajuste para ícone do modal no estilo Inspinia */

@@ -41,7 +41,14 @@
                 {
                     <div class="ibox-content">
                         <div class="form-group">
-                            @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarEditarExame", controller: "Paciente", htmlAttributes: new { @class = "btn-loading" })
+                            @if ((Int32)Session["VoltaAnexoExame"] == 2)
+                            {
+                                @Html.ButtonLinkIndex(text: "Voltar", action: "VerAnexoExamesPaciente", controller: "Paciente", routeValues: new { id = Model.PAEX_CD_ID }, htmlAttributes: new { @class = "btn-loading" })
+                            }
+                            else
+                            {
+                                @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarEditarExame", controller: "Paciente", htmlAttributes: new { @class = "btn-loading" })
+                            }
                             <a href="@Url.Action((String)Session["AjudaNivel"])"  class="btn btn-sm btn-danger" target="_blank">Ajuda</a>                
                             <span id="loadingIndicator" style="display: none; margin-left: 10px; color: #007bff;">
                                 <i class="fa fa-spinner fa-spin"></i> Processando...

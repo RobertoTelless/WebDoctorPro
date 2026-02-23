@@ -946,6 +946,45 @@
         });
     </script>
 
+    <div class="modal inmodal fade" id="modalDemo" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header" style="position: relative; padding: 30px 15px;">
+                    <img src="@Url.Content("~/Images/Prontuario/prontuario_icon_3.png?v=1.1")" 
+                         style="position: absolute; left: 15px; top: 15px; width: 40px; height: auto;" 
+                         alt="Ícone" />
+
+                    <i class="fa fa-warning modal-icon" style="display: block;"></i>
+                    <h4 class="modal-title">Assinatura de Demonstração</h4>
+                    <small class="font-bold">Assinatura Ativa</small>
+                </div>
+            
+                <div class="modal-body text-center">
+                    <h3>Faltam @TempData["DiasDemo"] dias para encerrar a sua assinatura de demonstração. </h3>
+                    <p>Clique em <b>Contratar Assinatura</b> para efetivar a sua assinatura do <b>WebDoctorPro</b>.</p>
+                </div>
+            
+                <div class="modal-footer">
+                    <a href="@Url.Action("MontarTelaCompraBasicoNova", "BaseAdmim")" class="btn btn-primary">Contratar Assinatura</a>
+                    <button type="button" class="btn btn-white" data-dismiss="modal" style="border-radius: 4px;">Prosseguir</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @if (TempData["DemoAtivo"] != null)
+    {
+        <script type="text/javascript">
+            $(document).ready(function () {
+                $('#modalDemo').modal({
+                    backdrop: 'static', // Impede fechar clicando fora
+                    keyboard: false     // Impede fechar com Esc
+                });
+            });
+        </script>
+    }
+
+
     @if (ViewBag.Message != null)
     {
         <script type="text/javascript">

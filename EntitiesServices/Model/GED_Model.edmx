@@ -4330,6 +4330,20 @@
           <Property Name="PAEO_AQ_ARQUIVO" Type="varchar" MaxLength="250" />
           <Property Name="PAEO_IN_ATIVO" Type="int" />
         </EntityType>
+        <EntityType Name="PACIENTE_EXAME_ANEXO_IMAGEM">
+          <Key>
+            <PropertyRef Name="PAIM_CD_ID" />
+          </Key>
+          <Property Name="PAIM_CD_ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="ASSI_CD_ID" Type="int" Nullable="false" />
+          <Property Name="PAEX_CD_ID" Type="int" />
+          <Property Name="PAEO_CD_ID" Type="int" />
+          <Property Name="PAIM_NR_NOTA_X" Type="varchar" MaxLength="50" />
+          <Property Name="PAIM_NR_NOTA_Y" Type="varchar" MaxLength="50" />
+          <Property Name="PAIM_DS_TEXTO" Type="varchar" MaxLength="500" />
+          <Property Name="PAIM_DT_CRIACAO" Type="date" />
+          <Property Name="PAIM_IN_ATIVO" Type="int" />
+        </EntityType>
         <EntityType Name="PACIENTE_EXAME_ANOTACAO">
           <Key>
             <PropertyRef Name="PAET_CD_ID" />
@@ -13151,6 +13165,30 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_PACIENTE_EXAME_ANEXO_IMAGEM_PACIENTE_EXAME_ANEXO">
+          <End Role="PACIENTE_EXAME_ANEXO" Type="Self.PACIENTE_EXAME_ANEXO" Multiplicity="0..1" />
+          <End Role="PACIENTE_EXAME_ANEXO_IMAGEM" Type="Self.PACIENTE_EXAME_ANEXO_IMAGEM" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="PACIENTE_EXAME_ANEXO">
+              <PropertyRef Name="PAEO_CD_ID" />
+            </Principal>
+            <Dependent Role="PACIENTE_EXAME_ANEXO_IMAGEM">
+              <PropertyRef Name="PAEO_CD_ID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_PACIENTE_EXAME_ANEXO_IMAGEM_PACIENTE_EXAMES">
+          <End Role="PACIENTE_EXAMES" Type="Self.PACIENTE_EXAMES" Multiplicity="0..1" />
+          <End Role="PACIENTE_EXAME_ANEXO_IMAGEM" Type="Self.PACIENTE_EXAME_ANEXO_IMAGEM" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="PACIENTE_EXAMES">
+              <PropertyRef Name="PAEX_CD_ID" />
+            </Principal>
+            <Dependent Role="PACIENTE_EXAME_ANEXO_IMAGEM">
+              <PropertyRef Name="PAEX_CD_ID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_PACIENTE_EXAME_ANEXO_PACIENTE">
           <End Role="PACIENTE" Type="Self.PACIENTE" Multiplicity="1" />
           <End Role="PACIENTE_EXAME_ANEXO" Type="Self.PACIENTE_EXAME_ANEXO" Multiplicity="*" />
@@ -16498,6 +16536,7 @@
           <EntitySet Name="PACIENTE_CONTATO" EntityType="Self.PACIENTE_CONTATO" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="PACIENTE_DADOS_EXAME_FISICO" EntityType="Self.PACIENTE_DADOS_EXAME_FISICO" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="PACIENTE_EXAME_ANEXO" EntityType="Self.PACIENTE_EXAME_ANEXO" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="PACIENTE_EXAME_ANEXO_IMAGEM" EntityType="Self.PACIENTE_EXAME_ANEXO_IMAGEM" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="PACIENTE_EXAME_ANOTACAO" EntityType="Self.PACIENTE_EXAME_ANOTACAO" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="PACIENTE_EXAME_FISICOS" EntityType="Self.PACIENTE_EXAME_FISICOS" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="PACIENTE_EXAMES" EntityType="Self.PACIENTE_EXAMES" Schema="dbo" store:Type="Tables" />
@@ -18671,6 +18710,14 @@
           <AssociationSet Name="FK_PACIENTE_ESTADO_CIVIL" Association="Self.FK_PACIENTE_ESTADO_CIVIL">
             <End Role="ESTADO_CIVIL" EntitySet="ESTADO_CIVIL" />
             <End Role="PACIENTE" EntitySet="PACIENTE" />
+          </AssociationSet>
+          <AssociationSet Name="FK_PACIENTE_EXAME_ANEXO_IMAGEM_PACIENTE_EXAME_ANEXO" Association="Self.FK_PACIENTE_EXAME_ANEXO_IMAGEM_PACIENTE_EXAME_ANEXO">
+            <End Role="PACIENTE_EXAME_ANEXO" EntitySet="PACIENTE_EXAME_ANEXO" />
+            <End Role="PACIENTE_EXAME_ANEXO_IMAGEM" EntitySet="PACIENTE_EXAME_ANEXO_IMAGEM" />
+          </AssociationSet>
+          <AssociationSet Name="FK_PACIENTE_EXAME_ANEXO_IMAGEM_PACIENTE_EXAMES" Association="Self.FK_PACIENTE_EXAME_ANEXO_IMAGEM_PACIENTE_EXAMES">
+            <End Role="PACIENTE_EXAMES" EntitySet="PACIENTE_EXAMES" />
+            <End Role="PACIENTE_EXAME_ANEXO_IMAGEM" EntitySet="PACIENTE_EXAME_ANEXO_IMAGEM" />
           </AssociationSet>
           <AssociationSet Name="FK_PACIENTE_EXAME_ANEXO_PACIENTE" Association="Self.FK_PACIENTE_EXAME_ANEXO_PACIENTE">
             <End Role="PACIENTE" EntitySet="PACIENTE" />
@@ -24538,6 +24585,7 @@
           <Property Name="PAEO_IN_ATIVO" Type="Int32" />
           <NavigationProperty Name="PACIENTE" Relationship="Self.FK_PACIENTE_EXAME_ANEXO_PACIENTE" FromRole="PACIENTE_EXAME_ANEXO" ToRole="PACIENTE" />
           <NavigationProperty Name="PACIENTE_EXAMES" Relationship="Self.FK_PACIENTE_EXAME_ANEXO_PACIENTE_EXAMES" FromRole="PACIENTE_EXAME_ANEXO" ToRole="PACIENTE_EXAMES" />
+          <NavigationProperty Name="PACIENTE_EXAME_ANEXO_IMAGEM" Relationship="CRMSysDBModel.FK_PACIENTE_EXAME_ANEXO_IMAGEM_PACIENTE_EXAME_ANEXO" FromRole="PACIENTE_EXAME_ANEXO" ToRole="PACIENTE_EXAME_ANEXO_IMAGEM" />
         </EntityType>
         <EntityType Name="PACIENTE_EXAME_ANOTACAO">
           <Key>
@@ -24644,6 +24692,7 @@
           <NavigationProperty Name="PACIENTE_SOLICITACAO" Relationship="Self.FK_PACIENTE_EXAMES_PACIENTE_SOLICITACAO" FromRole="PACIENTE_EXAMES" ToRole="PACIENTE_SOLICITACAO" />
           <NavigationProperty Name="TIPO_EXAME" Relationship="Self.FK_PACIENTE_EXAMES_TIPO_EXAME" FromRole="PACIENTE_EXAMES" ToRole="TIPO_EXAME" />
           <NavigationProperty Name="USUARIO" Relationship="Self.FK_PACIENTE_EXAMES_USUARIO" FromRole="PACIENTE_EXAMES" ToRole="USUARIO" />
+          <NavigationProperty Name="PACIENTE_EXAME_ANEXO_IMAGEM" Relationship="CRMSysDBModel.FK_PACIENTE_EXAME_ANEXO_IMAGEM_PACIENTE_EXAMES" FromRole="PACIENTE_EXAMES" ToRole="PACIENTE_EXAME_ANEXO_IMAGEM" />
         </EntityType>
         <EntityType Name="PACIENTE_FICHA">
           <Key>
@@ -39656,6 +39705,15 @@
             <End Role="VALOR_CONSULTA_MATERIAL" EntitySet="VALOR_CONSULTA_MATERIAL" />
           </AssociationSet>
           <EntitySet Name="ACESSO_SITE" EntityType="CRMSysDBModel.ACESSO_SITE" />
+          <EntitySet Name="PACIENTE_EXAME_ANEXO_IMAGEM" EntityType="CRMSysDBModel.PACIENTE_EXAME_ANEXO_IMAGEM" />
+          <AssociationSet Name="FK_PACIENTE_EXAME_ANEXO_IMAGEM_PACIENTE_EXAME_ANEXO" Association="CRMSysDBModel.FK_PACIENTE_EXAME_ANEXO_IMAGEM_PACIENTE_EXAME_ANEXO">
+            <End Role="PACIENTE_EXAME_ANEXO" EntitySet="PACIENTE_EXAME_ANEXO" />
+            <End Role="PACIENTE_EXAME_ANEXO_IMAGEM" EntitySet="PACIENTE_EXAME_ANEXO_IMAGEM" />
+          </AssociationSet>
+          <AssociationSet Name="FK_PACIENTE_EXAME_ANEXO_IMAGEM_PACIENTE_EXAMES" Association="CRMSysDBModel.FK_PACIENTE_EXAME_ANEXO_IMAGEM_PACIENTE_EXAMES">
+            <End Role="PACIENTE_EXAMES" EntitySet="PACIENTE_EXAMES" />
+            <End Role="PACIENTE_EXAME_ANEXO_IMAGEM" EntitySet="PACIENTE_EXAME_ANEXO_IMAGEM" />
+          </AssociationSet>
         </EntityContainer>
         <EntityType Name="PACIENTE_DADOS_EXAME_FISICO">
           <Key>
@@ -40951,6 +41009,46 @@
           <Property Name="ACST_IN_ATIVO" Type="Int32" />
           <Property Name="ACST_IN_SISTEMA" Type="Int32" />
         </EntityType>
+        <EntityType Name="PACIENTE_EXAME_ANEXO_IMAGEM">
+          <Key>
+            <PropertyRef Name="PAIM_CD_ID" />
+          </Key>
+          <Property Name="PAIM_CD_ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="ASSI_CD_ID" Type="Int32" Nullable="false" />
+          <Property Name="PAEX_CD_ID" Type="Int32" />
+          <Property Name="PAEO_CD_ID" Type="Int32" />
+          <Property Name="PAIM_NR_NOTA_X" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="PAIM_NR_NOTA_Y" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="PAIM_DS_TEXTO" Type="String" MaxLength="500" FixedLength="false" Unicode="false" />
+          <Property Name="PAIM_DT_CRIACAO" Type="DateTime" Precision="0" />
+          <Property Name="PAIM_IN_ATIVO" Type="Int32" />
+          <NavigationProperty Name="PACIENTE_EXAME_ANEXO" Relationship="CRMSysDBModel.FK_PACIENTE_EXAME_ANEXO_IMAGEM_PACIENTE_EXAME_ANEXO" FromRole="PACIENTE_EXAME_ANEXO_IMAGEM" ToRole="PACIENTE_EXAME_ANEXO" />
+          <NavigationProperty Name="PACIENTE_EXAMES" Relationship="CRMSysDBModel.FK_PACIENTE_EXAME_ANEXO_IMAGEM_PACIENTE_EXAMES" FromRole="PACIENTE_EXAME_ANEXO_IMAGEM" ToRole="PACIENTE_EXAMES" />
+        </EntityType>
+        <Association Name="FK_PACIENTE_EXAME_ANEXO_IMAGEM_PACIENTE_EXAME_ANEXO">
+          <End Type="CRMSysDBModel.PACIENTE_EXAME_ANEXO" Role="PACIENTE_EXAME_ANEXO" Multiplicity="0..1" />
+          <End Type="CRMSysDBModel.PACIENTE_EXAME_ANEXO_IMAGEM" Role="PACIENTE_EXAME_ANEXO_IMAGEM" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="PACIENTE_EXAME_ANEXO">
+              <PropertyRef Name="PAEO_CD_ID" />
+            </Principal>
+            <Dependent Role="PACIENTE_EXAME_ANEXO_IMAGEM">
+              <PropertyRef Name="PAEO_CD_ID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_PACIENTE_EXAME_ANEXO_IMAGEM_PACIENTE_EXAMES">
+          <End Type="CRMSysDBModel.PACIENTE_EXAMES" Role="PACIENTE_EXAMES" Multiplicity="0..1" />
+          <End Type="CRMSysDBModel.PACIENTE_EXAME_ANEXO_IMAGEM" Role="PACIENTE_EXAME_ANEXO_IMAGEM" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="PACIENTE_EXAMES">
+              <PropertyRef Name="PAEX_CD_ID" />
+            </Principal>
+            <Dependent Role="PACIENTE_EXAME_ANEXO_IMAGEM">
+              <PropertyRef Name="PAEX_CD_ID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -48452,6 +48550,21 @@
                 <ScalarProperty Name="ACST_IP_IP" ColumnName="ACST_IP_IP" />
                 <ScalarProperty Name="ACST_DT_ACESSO" ColumnName="ACST_DT_ACESSO" />
                 <ScalarProperty Name="ACST_CD_ID" ColumnName="ACST_CD_ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="PACIENTE_EXAME_ANEXO_IMAGEM">
+            <EntityTypeMapping TypeName="CRMSysDBModel.PACIENTE_EXAME_ANEXO_IMAGEM">
+              <MappingFragment StoreEntitySet="PACIENTE_EXAME_ANEXO_IMAGEM">
+                <ScalarProperty Name="PAIM_IN_ATIVO" ColumnName="PAIM_IN_ATIVO" />
+                <ScalarProperty Name="PAIM_DT_CRIACAO" ColumnName="PAIM_DT_CRIACAO" />
+                <ScalarProperty Name="PAIM_DS_TEXTO" ColumnName="PAIM_DS_TEXTO" />
+                <ScalarProperty Name="PAIM_NR_NOTA_Y" ColumnName="PAIM_NR_NOTA_Y" />
+                <ScalarProperty Name="PAIM_NR_NOTA_X" ColumnName="PAIM_NR_NOTA_X" />
+                <ScalarProperty Name="PAEO_CD_ID" ColumnName="PAEO_CD_ID" />
+                <ScalarProperty Name="PAEX_CD_ID" ColumnName="PAEX_CD_ID" />
+                <ScalarProperty Name="ASSI_CD_ID" ColumnName="ASSI_CD_ID" />
+                <ScalarProperty Name="PAIM_CD_ID" ColumnName="PAIM_CD_ID" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

@@ -5002,6 +5002,7 @@
     <Content Include="Views\Mensagem\VerRecursividades.cshtml" />
     <Content Include="Views\Mensagem\VerTodosMensagemDia.cshtml" />
     <Content Include="Views\Mensagem\VerTodosMensagemEnvioDia.cshtml" />
+    <Content Include="Views\Paciente\MontarTelaComparaExames.cshtml" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
@@ -5385,6 +5386,7 @@
     <Content Include="Views\Locacao\CarregarContrato.cshtml" />
     <Content Include="Views\Locacao\MontarTelaDashboardLocacao.cshtml" />
     <Content Include="Views\Paciente2\MontarTelaEncerrarConsultaMaterial.cshtml" />
+    <Content Include="Views\Paciente\VerAnexoExamesPaciente.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
