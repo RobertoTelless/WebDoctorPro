@@ -21,6 +21,33 @@
         </ol>
         <br />
     </div>
+    <div class="modal inmodal fade" id="modalConfirmacaoAprovacao" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header" style="position: relative; padding: 30px 15px;">
+                    <img src="@Url.Content("~/Images/Prontuario/prontuario_icon_3.png?v=1.1")" 
+                         style="position: absolute; left: 15px; top: 15px; width: 40px; height: auto;" 
+                         alt="Ícone" />
+
+                    <i class="fa fa-check-circle modal-icon text-primary" style="display: block;"></i>
+                    <h4 class="modal-title">Confirmação de Aprovação</h4>
+                    <small class="font-bold">WebDoctorPro - Gestão de Locação</small>
+                </div>
+            
+                <div class="modal-body text-center">
+                    <h3>Tem certeza que deseja aprovar essa locação?</h3>
+                    <p>Esta ação não poderá ser desfeita e os registros serão atualizados no sistema.</p>
+                </div>
+            
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-white" data-dismiss="modal">Voltar</button>
+                    <button type="button" class="btn btn-primary" id="btnConfirmarSubmit">Confirmar Aprovação</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
     <div class="row">
         <div class="col-lg-12 col-md-12 col-xs-12">
             <div class="col-lg-12 col-md-12 col-xs-12 ibox float-e-margins">
@@ -191,7 +218,9 @@
                                             <div class="col-lg-12 col-md-12 col-xs-12">
                                                 <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Aprovação</h4>
                                                 <div class="form-group" style=" margin-left: 0px; margin-right: 0px;">
-                                                    @Html.ButtonActionSubmit(text: "Confirma a Aprovação da Locação", htmlAttributes: new { id = "basictoast", @class = "btn-loading1", onclick = "return confirm('Tem certeza que deseja aprovar essa locação?');" })
+                                                    <button type="button" class="btn btn-primary" id="btnDispararModal">
+                                                        Confirma a aprovação da Locação
+                                                    </button>
                                                     @if ((Int32)Session["VoltaLocacao"] == 2)
                                                     {
                                                         @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarAnexoLocacao", controller: "Locacao", htmlAttributes: new { @class = "btn-loading" })
@@ -461,6 +490,50 @@
         $('#filGeral option[value=10]').prop('selected', true);
     </script>
 
+    <script type="text/javascript">
+        $(document).ready(function () {
+            var $modal = $('#modalConfirmacaoAprovacao');
+
+            // 1. Abre a modal manualmente para evitar o "pisca" do data-toggle
+            $('#btnDispararModal').click(function () {
+                $modal.modal('show');
+            });
+
+            // 2. Ação de confirmar DENTRO da modal
+            $('#btnConfirmarSubmit').click(function (e) {
+                e.preventDefault();
+
+                var $btn = $(this);
+                var $form = $('#pwd-container1');
+
+                // Feedback visual no botão
+                $btn.prop('disabled', true).addClass('disabled');
+                $btn.html('<i class="fa fa-spinner fa-spin"></i> Processando...');
+
+                // Esconde a modal
+                $modal.modal('hide');
+
+                // 3. Limpeza e Submit
+                // O delay de 400ms garante que a animação de saída do Inspinia/Bootstrap 
+                // termine antes de removermos os elementos do DOM
+                setTimeout(function () {
+                    $('.modal-backdrop').remove();
+                    $('body').removeClass('modal-open').css('padding-right', '');
+                
+                    $('#loadingIndicator').show();
+
+                    // Submit via DOM puro para ignorar interceptors do template
+                    document.getElementById('pwd-container1').submit();
+                }, 400);
+            });
+
+            // Segurança: limpa resíduos se fechar no "X" ou clicar fora
+            $modal.on('hidden.bs.modal', function () {
+                $('.modal-backdrop').remove();
+                $('body').removeClass('modal-open');
+            });
+        });
+    </script>
     @if (ViewBag.Message != null)
     {
         <script type="text/javascript">

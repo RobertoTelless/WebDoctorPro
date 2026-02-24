@@ -168,6 +168,7 @@
     <Compile Include="EntitiesServices\ControleMensagemService.cs" />
     <Compile Include="EntitiesServices\EMailAgendaService.cs" />
     <Compile Include="EntitiesServices\EmpresaService.cs" />
+    <Compile Include="EntitiesServices\AreaPacienteService.cs" />
     <Compile Include="EntitiesServices\LocacaoService.cs" />
     <Compile Include="EntitiesServices\TipoHistoricoService.cs" />
     <Compile Include="EntitiesServices\VideoService.cs" />
@@ -226,6 +227,7 @@
     <Compile Include="Interfaces\Repositories\IConfiguracaoChavesRepository.cs" />
     <Compile Include="Interfaces\Repositories\IConfiguracaoCalendarioRepository.cs" />
     <Compile Include="Interfaces\Repositories\IConfiguracaoRepository.cs" />
+    <Compile Include="Interfaces\Repositories\IAreaPacienteRepository.cs" />
     <Compile Include="Interfaces\Repositories\IMedicoMensagemRepository.cs" />
     <Compile Include="Interfaces\Repositories\IControleMensagemRepository.cs" />
     <Compile Include="Interfaces\Repositories\IControleVersaoRepository.cs" />
@@ -371,6 +373,7 @@
     <Compile Include="Interfaces\Services\IControleMensagemService.cs" />
     <Compile Include="Interfaces\Services\IEMailAgendaService.cs" />
     <Compile Include="Interfaces\Services\IEmpresaService.cs" />
+    <Compile Include="Interfaces\Services\IAreaPacienteService.cs" />
     <Compile Include="Interfaces\Services\ILocacaoService.cs" />
     <Compile Include="Interfaces\Services\ITipoHistoricoService.cs" />
     <Compile Include="Interfaces\Services\IVideoService.cs" />
@@ -434,6 +437,9 @@
       <DependentUpon>GED_Model.tt</DependentUpon>
     </Compile>
     <Compile Include="Model\ANTECIPACAO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\AREA_PACIENTE.cs">
       <DependentUpon>GED_Model.tt</DependentUpon>
     </Compile>
     <Compile Include="Model\ASSINANTE.cs">

@@ -4181,6 +4181,7 @@ namespace GEDSys_Presentation.Controllers
                 Session["VoltaImpAnamnese"] = 2;
                 Session["VoltaEncerra"] = 2;
                 Session["VoltaEncerramento"] = 3;
+                Session["VoltaCompara"] = 1;
                 Session["AjudaNivel"] = "../BaseAdmin/Ajuda/3/Ajuda3_2.pdf";
                 Session["AjudaNivelAt"] = "../BaseAdmin/Ajuda/3/Ajuda3_3.pdf";
                 Session["AjudaNivelCon"] = "../BaseAdmin/Ajuda/3/Ajuda3_10.pdf";
@@ -20749,9 +20750,9 @@ namespace GEDSys_Presentation.Controllers
                 // Recupera prescricoes da consulta
                 PACIENTE_CONSULTA consulta = baseApp.GetConsultaById((Int32)Session["IdConsulta"]);
                 PacienteConsultaViewModel vm = Mapper.Map<PACIENTE_CONSULTA, PacienteConsultaViewModel>(consulta);
-                List<PACIENTE_PRESCRICAO> prescricoes = consulta.PACIENTE_PRESCRICAO.ToList();
-                ViewBag.Listas = prescricoes;
                 PACIENTE pac = baseApp.GetItemById(consulta.PACI_CD_ID);
+                List<PACIENTE_PRESCRICAO> prescricoes = pac.PACIENTE_PRESCRICAO.ToList();
+                ViewBag.Listas = prescricoes;
                 ViewBag.NomePaciente = pac.PACI_NM_NOME;
 
                 // Mensagem
@@ -21175,9 +21176,9 @@ namespace GEDSys_Presentation.Controllers
                 // Recupera atestados da consulta
                 PACIENTE_CONSULTA consulta = baseApp.GetConsultaById((Int32)Session["IdConsulta"]);
                 PacienteConsultaViewModel vm = Mapper.Map<PACIENTE_CONSULTA, PacienteConsultaViewModel>(consulta);
-                List<PACIENTE_ATESTADO> atestados = consulta.PACIENTE_ATESTADO.ToList();
-                ViewBag.Listas = atestados;
                 PACIENTE pac = baseApp.GetItemById(consulta.PACI_CD_ID);
+                List<PACIENTE_ATESTADO> atestados = pac.PACIENTE_ATESTADO.ToList();
+                ViewBag.Listas = atestados;
                 ViewBag.NomePaciente = pac.PACI_NM_NOME;
 
                 // Prepara view
@@ -21246,15 +21247,16 @@ namespace GEDSys_Presentation.Controllers
                 // Recupera documentos da consulta
                 PACIENTE_CONSULTA consulta = baseApp.GetConsultaById((Int32)Session["IdConsulta"]);
                 PacienteConsultaViewModel vm = Mapper.Map<PACIENTE_CONSULTA, PacienteConsultaViewModel>(consulta);
-                List<PACIENTE_ATESTADO> atestados = consulta.PACIENTE_ATESTADO.ToList();
-                ViewBag.Atestados = atestados;
-                List<PACIENTE_SOLICITACAO> solics = consulta.PACIENTE_SOLICITACAO.ToList();
-                ViewBag.Solicitacoes = solics;
-                List<PACIENTE_EXAMES> exames = consulta.PACIENTE_EXAMES.ToList();
-                ViewBag.Exames = exames;
-                List<PACIENTE_PRESCRICAO> prescricoes = consulta.PACIENTE_PRESCRICAO.ToList();
-                ViewBag.Prescricoes = prescricoes;
                 PACIENTE pac = baseApp.GetItemById(consulta.PACI_CD_ID);
+
+                List<PACIENTE_ATESTADO> atestados = pac.PACIENTE_ATESTADO.ToList();
+                ViewBag.Atestados = atestados;
+                List<PACIENTE_SOLICITACAO> solics = pac.PACIENTE_SOLICITACAO.ToList();
+                ViewBag.Solicitacoes = solics;
+                List<PACIENTE_EXAMES> exames = pac.PACIENTE_EXAMES.ToList();
+                ViewBag.Exames = exames;
+                List<PACIENTE_PRESCRICAO> prescricoes = pac.PACIENTE_PRESCRICAO.ToList();
+                ViewBag.Prescricoes = prescricoes;
                 ViewBag.NomePaciente = pac.PACI_NM_NOME;
 
                 // Prepara view
@@ -21264,6 +21266,7 @@ namespace GEDSys_Presentation.Controllers
                 Session["VoltaListaConsulta"] = 1;
                 Session["TipoSolicitacao"] = 1;
                 Session["IdConsultaCria"] = 1;
+                Session["VoltaCompara"] = 3;
                 Session["AjudaNivel"] = "../BaseAdmin/Ajuda/7/Ajuda7_4.pdf";
 
                 // Grava Acesso
@@ -21394,9 +21397,9 @@ namespace GEDSys_Presentation.Controllers
                 // Recupera solicitacoes da consulta
                 PACIENTE_CONSULTA consulta = baseApp.GetConsultaById((Int32)Session["IdConsulta"]);
                 PacienteConsultaViewModel vm = Mapper.Map<PACIENTE_CONSULTA, PacienteConsultaViewModel>(consulta);
-                List<PACIENTE_SOLICITACAO> solicitacoes = consulta.PACIENTE_SOLICITACAO.ToList();
-                ViewBag.Listas = solicitacoes;
                 PACIENTE pac = baseApp.GetItemById(consulta.PACI_CD_ID);
+                List<PACIENTE_SOLICITACAO> solicitacoes = pac.PACIENTE_SOLICITACAO.ToList();
+                ViewBag.Listas = solicitacoes;
                 ViewBag.NomePaciente = pac.PACI_NM_NOME;
 
                 // Mensagem
@@ -21468,12 +21471,12 @@ namespace GEDSys_Presentation.Controllers
                 }
                 Int32 idAss = (Int32)Session["IdAssinante"];
 
-                // Recupera exames da consulta
+                // Recupera exames do paciente
                 PACIENTE_CONSULTA consulta = baseApp.GetConsultaById((Int32)Session["IdConsulta"]);
                 PacienteConsultaViewModel vm = Mapper.Map<PACIENTE_CONSULTA, PacienteConsultaViewModel>(consulta);
-                List<PACIENTE_EXAMES> exames = consulta.PACIENTE_EXAMES.ToList();
-                ViewBag.Lista = exames;
                 PACIENTE pac = baseApp.GetItemById(consulta.PACI_CD_ID);
+                List<PACIENTE_EXAMES> exames = pac.PACIENTE_EXAMES.ToList();
+                ViewBag.Lista = exames;
                 ViewBag.NomePaciente = pac.PACI_NM_NOME;
 
                 // Mensagem
@@ -21497,6 +21500,7 @@ namespace GEDSys_Presentation.Controllers
                 Session["IdConsultaCria"] = 1;
                 Session["VoltarPesquisa"] = 0;
                 Session["VoltarExameConsulta"] = 1;
+                Session["VoltaCompara"] = 2;
                 Session["MensPaciente"] = null;
 
                 Session["AjudaNivel"] = "../BaseAdmin/Ajuda/6/Ajuda6_4.pdf";

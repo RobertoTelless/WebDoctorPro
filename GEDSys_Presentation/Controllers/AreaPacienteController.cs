@@ -51,6 +51,7 @@ namespace GEDSys_Presentation.Controllers
         private readonly IConfiguracaoCalendarioAppService calApp;
         private readonly IConfiguracaoAnamneseAppService anaApp;
         private readonly ILogAppService logApp;
+        private readonly ILocacaoAppService locaApp;
 
         private String msg;
         private Exception exception;
@@ -64,8 +65,9 @@ namespace GEDSys_Presentation.Controllers
         private List<PACIENTE_EXAMES> listaMasterExame = new List<PACIENTE_EXAMES>();
         private List<PACIENTE_SOLICITACAO> listaMasterSolicitacao = new List<PACIENTE_SOLICITACAO>();
         private List<PACIENTE_PRESCRICAO> listaMasterPrescricao = new List<PACIENTE_PRESCRICAO>();
+        private List<LOCACAO> listaMasterLocacao = new List<LOCACAO>();
 
-        public AreaPacienteController(IPacienteAppService baseApps, IConfiguracaoAppService confApps, IUsuarioAppService usuApps, IAcessoMetodoAppService aceApps, IAssinanteAppService assApps, IConfiguracaoCalendarioAppService calApps, IConfiguracaoAnamneseAppService anaApps, ILogAppService logApps)
+        public AreaPacienteController(IPacienteAppService baseApps, IConfiguracaoAppService confApps, IUsuarioAppService usuApps, IAcessoMetodoAppService aceApps, IAssinanteAppService assApps, IConfiguracaoCalendarioAppService calApps, IConfiguracaoAnamneseAppService anaApps, ILogAppService logApps, ILocacaoAppService locaApps)
         {
             baseApp = baseApps;
             confApp = confApps;
@@ -75,6 +77,7 @@ namespace GEDSys_Presentation.Controllers
             calApp = calApps;
             anaApp = anaApps;
             logApp = logApps;
+            locaApp = locaApps;
         }
 
         [HttpGet]
@@ -809,6 +812,11 @@ namespace GEDSys_Presentation.Controllers
                 ViewBag.NumPrescricoes = listaMasterPrescricao.Count();
                 Session["ListaPrescricao"] = listaMasterPrescricao;
 
+                // Montar listas de locações
+                listaMasterLocacao = locaApp.GetLocacaoByCPF(cpf);
+                ViewBag.NumLocacoes = listaMasterLocacao.Count();
+                Session["ListaLocacao"] = listaMasterLocacao;
+
                 // Acerta estado
                 Session["MensPaciente"] = null;
                 Session["VoltaPaciente"] = 1;
@@ -909,6 +917,7 @@ namespace GEDSys_Presentation.Controllers
                 // Recupera paciente
                 PACIENTE paciente = (PACIENTE)Session["UserCredentials"];
                 Session["IdPaciente"] = paciente.PACI__CD_ID;
+                paciente = baseApp.GetItemById(paciente.PACI__CD_ID);
 
                 // Listas
                 List<UF> uFs = CarregaUF();

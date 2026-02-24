@@ -1594,7 +1594,9 @@ namespace GEDSys_Presentation.Controllers
                 relat.Add(new SelectListItem() { Text = "Lista de Recebimentos*", Value = "1" });
                 relat.Add(new SelectListItem() { Text = "Total por Data*", Value = "2" });
                 relat.Add(new SelectListItem() { Text = "Total por Mês*", Value = "3" });
+                relat.Add(new SelectListItem() { Text = "Total por Ano", Value = "5" });
                 relat.Add(new SelectListItem() { Text = "Total por Paciente*", Value = "4" });
+                relat.Add(new SelectListItem() { Text = "Total por Profissional*", Value = "6" });
                 ViewBag.Relatorio = new SelectList(relat, "Value", "Text");
 
                 // Verifica possibilidade de criação
@@ -3095,7 +3097,9 @@ namespace GEDSys_Presentation.Controllers
                 relat.Add(new SelectListItem() { Text = "Relação de Pagamentos*", Value = "1" });
                 relat.Add(new SelectListItem() { Text = "Total por Data*", Value = "2" });
                 relat.Add(new SelectListItem() { Text = "Total por Mês", Value = "3" });
+                relat.Add(new SelectListItem() { Text = "Total por Ano", Value = "9" });
                 relat.Add(new SelectListItem() { Text = "Total por Favorecido*", Value = "4" });
+                relat.Add(new SelectListItem() { Text = "Total por Tipo*", Value = "10" });
                 relat.Add(new SelectListItem() { Text = "Vencendo Hoje", Value = "5" });
                 relat.Add(new SelectListItem() { Text = "Vencendo no Mês", Value = "6" });
                 relat.Add(new SelectListItem() { Text = "Quitados Hoje", Value = "7" });
@@ -8772,6 +8776,14 @@ namespace GEDSys_Presentation.Controllers
             {
                 return RedirectToAction("GerarListagemPagamentoQuitadoMes");
             }
+            if (tipoRel == 9)
+            {
+                return RedirectToAction("GerarListagemPagamentoTotalAno");
+            }
+            if (tipoRel == 10)
+            {
+                return RedirectToAction("GerarListagemPagamentoTotalTipo");
+            }
             return RedirectToAction("MontarTelaPagamento");
         }
 
@@ -9609,6 +9621,14 @@ namespace GEDSys_Presentation.Controllers
             if (tipoRel == 4)
             {
                 return RedirectToAction("GerarListagemRecebimentoTotalPaciente");
+            }
+            if (tipoRel == 5)
+            {
+                return RedirectToAction("GerarListagemRecebimentoTotalAno");
+            }
+            if (tipoRel == 6)
+            {   
+                return RedirectToAction("GerarListagemRecebimentoTotalProfissional");
             }
             return RedirectToAction("MontarTelaRecebimento");
         }
@@ -12085,6 +12105,1052 @@ namespace GEDSys_Presentation.Controllers
             }
         }
 
+        public ActionResult GerarListagemPagamentoTotalAno()
+        {
+            try
+            {
+                if ((String)Session["Ativa"] == null)
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+
+                // Prepara geração
+                CONFIGURACAO conf = CarregaConfiguracaoGeral();
+                Int32 idAss = (Int32)Session["IdAssinante"];
+                String data = DateTime.Today.Date.ToShortDateString();
+                data = data.Substring(0, 2) + data.Substring(3, 2) + data.Substring(6, 4);
+
+                String nomeRel = "PagamentoTotalAnoLista" + "_" + data + ".pdf";
+                Font meuFont = FontFactory.GetFont("Arial", 8, iTextSharp.text.Font.NORMAL, BaseColor.BLACK);
+                Font meuFont1 = FontFactory.GetFont("Arial", 9, iTextSharp.text.Font.NORMAL, BaseColor.BLACK);
+                Font meuFont2 = FontFactory.GetFont("Arial", 14, iTextSharp.text.Font.NORMAL, BaseColor.BLACK);
+                Font meuFont3 = FontFactory.GetFont("Arial", 8, iTextSharp.text.Font.BOLD, BaseColor.BLUE);
+                Decimal? num = 0;
+                Decimal? total = 0;
+                Decimal? mediaFinal = 0;
+                Decimal? itens = 0;
+
+                // Carrega dados
+                List<CONSULTA_PAGAMENTO> pagtos1 = CarregaPagamento();
+                List<CONSULTA_PAGAMENTO> pagtos = pagtos1.Where(p => p.COPA_DT_PAGAMENTO != null).ToList();
+                List<DateTime> datasPagto = pagtos.Where(p => p.COPA_DT_PAGAMENTO != null).Select(p => p.COPA_DT_PAGAMENTO.Value.Date).Distinct().ToList();
+               
+                datasPagto.Sort((i, j) => i.Date.CompareTo(j.Date));
+                List<ModeloViewModel> listaMes = new List<ModeloViewModel>();
+                String ano2 = null;
+                String anoFeito2 = null;
+                foreach (DateTime item in datasPagto)
+                {
+                    ano2 = item.Year.ToString();
+                    if (ano2 != anoFeito2)
+                    {
+                        Decimal conta = pagtos.Where(p => p.COPA_DT_PAGAMENTO.Value.Date.Year == item.Year).Sum(p => p.COPA_VL_PAGO.Value);
+                        Int32 num2 = pagtos.Where(p => p.COPA_DT_PAGAMENTO.Value.Date.Year == item.Year).Count();
+                        ModeloViewModel mod = new ModeloViewModel();
+                        mod.Nome = ano2;
+                        mod.Valor = num2;
+                        mod.ValorDec1 = conta;
+                        listaMes.Add(mod);
+                        anoFeito2 = item.Year.ToString();
+                    }
+                }
+                // Cabeçalho
+                PdfPTable headerTable = new PdfPTable(new float[] { 20f, 700f });
+                headerTable.WidthPercentage = 100;
+                headerTable.HorizontalAlignment = 1;
+                headerTable.SpacingBefore = 1f;
+                headerTable.SpacingAfter = 1f;
+
+                if (conf.CONF_IN_LOGO_EMPRESA == 1)
+                {
+                    PdfPCell cell1 = new PdfPCell();
+                    cell1.Border = 0;
+                    cell1.Colspan = 1;
+                    Image image = null;
+                    EMPRESA empresa = empApp.GetItemByAssinante(idAss);
+                    image = Image.GetInstance(Server.MapPath(empresa.EMPR_AQ_LOGO));
+                    image.ScaleAbsolute(50, 50);
+                    cell1.AddElement(image);
+                    cell1.Border = PdfPCell.BOTTOM_BORDER;
+                    headerTable.AddCell(cell1);
+
+                    cell1 = new PdfPCell(new Paragraph("Pagamentos - Total por Ano", meuFont2))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_CENTER
+                    };
+                    cell1.Border = 0;
+                    cell1.Colspan = 1;
+                    cell1.Border = PdfPCell.BOTTOM_BORDER;
+                    headerTable.AddCell(cell1);
+                }
+                else
+                {
+                    PdfPCell cell2 = new PdfPCell(new Paragraph("Pagamentos - Total por Ano", meuFont2))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_CENTER
+                    };
+                    cell2.Border = 0;
+                    cell2.Colspan = 2;
+                    headerTable.AddCell(cell2);
+
+                    cell2 = new PdfPCell(new Paragraph(" ", meuFont))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    cell2.Colspan = 2;
+                    cell2.Border = PdfPCell.BOTTOM_BORDER;
+                    headerTable.AddCell(cell2);
+                }
+
+                // Rodape
+                PdfPTable footerTable = new PdfPTable(1);
+                footerTable.WidthPercentage = 100;
+                footerTable.HorizontalAlignment = 1;
+                footerTable.SpacingBefore = 1f;
+                footerTable.SpacingAfter = 1f;
+
+                PdfPCell cell = new PdfPCell();
+                cell.Border = PdfPCell.TOP_BORDER;
+                cell = new PdfPCell(new Paragraph("Gerado por WebDoctor 1.0 em " + DateTime.Today.Date.ToLongDateString(), meuFont));
+                footerTable.AddCell(cell);
+
+                // Cria documento
+                Document pdfDoc = new Document(PageSize.A4.Rotate(), 10, 10, 60, 40);
+                PdfWriter pdfWriter = PdfWriter.GetInstance(pdfDoc, Response.OutputStream);
+                pdfWriter.PageEvent = new CustomPageEventHelper(headerTable, footerTable);
+                pdfDoc.Open();
+
+                Paragraph line1 = new Paragraph("  ");
+                pdfDoc.Add(line1);
+
+                // Grid
+                PdfPTable table = new PdfPTable(new float[] { 60f, 80f, 80f});
+                table.WidthPercentage = 100;
+                table.HorizontalAlignment = 0;
+                table.SpacingBefore = 1f;
+                table.SpacingAfter = 1f;
+
+                cell = new PdfPCell(new Paragraph("Ano de Referência", meuFont))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph("Número de Pagamentos", meuFont))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph("Total de Pagamentos (R$)", meuFont))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_RIGHT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                table.AddCell(cell);
+
+                foreach (ModeloViewModel item in listaMes)
+                {
+                    cell = new PdfPCell(new Paragraph(item.Nome, meuFont))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    table.AddCell(cell);
+                    cell = new PdfPCell(new Paragraph(CrossCutting.Formatters.IntegerFormatter(item.Valor), meuFont))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_RIGHT
+                    };
+                    table.AddCell(cell);
+                    cell = new PdfPCell(new Paragraph(CrossCutting.Formatters.DecimalFormatter(item.ValorDec1), meuFont))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_RIGHT
+                    };
+                    table.AddCell(cell);
+
+                    num += item.Valor;
+                    total += item.ValorDec1;
+                    itens++;
+                }
+                pdfDoc.Add(table);
+
+                // Calcula media final
+                Decimal? mediaTotal = total / itens;
+
+                // Grid - TOTAIS
+                PdfPTable table1 = new PdfPTable(new float[] { 60f, 80f, 80f });
+                table1.WidthPercentage = 100;
+                table1.HorizontalAlignment = 0;
+                table1.SpacingBefore = 1f;
+                table1.SpacingAfter = 1f;
+
+                cell = new PdfPCell(new Paragraph(" ", meuFont))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                cell.Colspan = 1;
+                table1.AddCell(cell);
+
+                cell = new PdfPCell(new Paragraph("TOTAIS", meuFont))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_RIGHT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                table1.AddCell(cell);
+
+                cell = new PdfPCell(new Paragraph(CrossCutting.Formatters.DecimalFormatter(total.Value), meuFont3))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_RIGHT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                table1.AddCell(cell);
+                pdfDoc.Add(table1);
+
+
+                // Finaliza
+                pdfWriter.CloseStream = false;
+                pdfDoc.Close();
+                Response.Buffer = true;
+                Response.ContentType = "application/pdf";
+                Response.AddHeader("content-disposition", "attachment;filename=" + nomeRel);
+                Response.Cache.SetCacheability(HttpCacheability.NoCache);
+                Response.Write(pdfDoc);
+                Response.End();
+
+                Session["NivelPaciente"] = 1;
+                return RedirectToAction("MontarTelaPagamento");
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Paciente";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Paciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return RedirectToAction("TrataExcecao", "BaseAdmin");
+            }
+        }
+
+        public ActionResult GerarListagemPagamentoTotalTipo()
+        {
+            try
+            {
+                if ((String)Session["Ativa"] == null)
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+
+                // Prepara geração
+                CONFIGURACAO conf = CarregaConfiguracaoGeral();
+                Int32 idAss = (Int32)Session["IdAssinante"];
+                String data = DateTime.Today.Date.ToShortDateString();
+                data = data.Substring(0, 2) + data.Substring(3, 2) + data.Substring(6, 4);
+
+                String nomeRel = "PagamentoTotalTipoLista" + "_" + data + ".pdf";
+                Font meuFont = FontFactory.GetFont("Arial", 8, iTextSharp.text.Font.NORMAL, BaseColor.BLACK);
+                Font meuFont1 = FontFactory.GetFont("Arial", 9, iTextSharp.text.Font.NORMAL, BaseColor.BLACK);
+                Font meuFont2 = FontFactory.GetFont("Arial", 14, iTextSharp.text.Font.NORMAL, BaseColor.BLACK);
+                Font meuFont3 = FontFactory.GetFont("Arial", 8, iTextSharp.text.Font.BOLD, BaseColor.BLUE);
+                Decimal? num = 0;
+                Decimal? total = 0;
+                Decimal? mediaFinal = 0;
+                Decimal? itens = 0;
+
+                // Carrega dados
+                List<CONSULTA_PAGAMENTO> pagtos = (List<CONSULTA_PAGAMENTO>)Session["ListaPagamento"];
+                List<Int32?> favs = pagtos.Select(p => p.TIPA_CD_ID).Distinct().ToList();
+                List<ModeloViewModel> lista = new List<ModeloViewModel>();
+                foreach (Int32 item in favs)
+                {
+                    Int32 conta = pagtos.Where(p => p.TIPA_CD_ID == item).Count();
+                    Decimal? soma = pagtos.Where(p => p.TIPA_CD_ID == item).Sum(p => p.COPA_VL_PAGO);
+                    Decimal? media = 0;
+                    if (conta > 0)
+                    {
+                        media = soma / conta;
+                    }
+                    ModeloViewModel mod = new ModeloViewModel();
+                    mod.Nome = tpApp.GetItemById(item).TIPA_NM_PAGAMENTO;
+                    mod.Valor = conta;
+                    mod.ValorDec = soma.Value;
+                    mod.ValorDec1 = media.Value;
+                    lista.Add(mod);
+                }
+
+                // Cabeçalho
+                PdfPTable headerTable = new PdfPTable(new float[] { 20f, 700f });
+                headerTable.WidthPercentage = 100;
+                headerTable.HorizontalAlignment = 1;
+                headerTable.SpacingBefore = 1f;
+                headerTable.SpacingAfter = 1f;
+
+                if (conf.CONF_IN_LOGO_EMPRESA == 1)
+                {
+                    PdfPCell cell1 = new PdfPCell();
+                    cell1.Border = 0;
+                    cell1.Colspan = 1;
+                    Image image = null;
+                    EMPRESA empresa = empApp.GetItemByAssinante(idAss);
+                    image = Image.GetInstance(Server.MapPath(empresa.EMPR_AQ_LOGO));
+                    image.ScaleAbsolute(50, 50);
+                    cell1.AddElement(image);
+                    cell1.Border = PdfPCell.BOTTOM_BORDER;
+                    headerTable.AddCell(cell1);
+
+                    cell1 = new PdfPCell(new Paragraph("Pagamentos - Total e Média por Tipo", meuFont2))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_CENTER
+                    };
+                    cell1.Border = 0;
+                    cell1.Colspan = 1;
+                    cell1.Border = PdfPCell.BOTTOM_BORDER;
+                    headerTable.AddCell(cell1);
+                }
+                else
+                {
+                    PdfPCell cell2 = new PdfPCell(new Paragraph("Pagamentos - Total e Média por Tipo", meuFont2))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_CENTER
+                    };
+                    cell2.Border = 0;
+                    cell2.Colspan = 2;
+                    headerTable.AddCell(cell2);
+
+                    cell2 = new PdfPCell(new Paragraph(" ", meuFont))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    cell2.Colspan = 2;
+                    cell2.Border = PdfPCell.BOTTOM_BORDER;
+                    headerTable.AddCell(cell2);
+                }
+
+                // Rodape
+                PdfPTable footerTable = new PdfPTable(1);
+                footerTable.WidthPercentage = 100;
+                footerTable.HorizontalAlignment = 1;
+                footerTable.SpacingBefore = 1f;
+                footerTable.SpacingAfter = 1f;
+
+                PdfPCell cell = new PdfPCell();
+                cell.Border = PdfPCell.TOP_BORDER;
+                cell = new PdfPCell(new Paragraph("Gerado por WebDoctor 1.0 em " + DateTime.Today.Date.ToLongDateString(), meuFont));
+                footerTable.AddCell(cell);
+
+                // Cria documento
+                Document pdfDoc = new Document(PageSize.A4.Rotate(), 10, 10, 60, 40);
+                PdfWriter pdfWriter = PdfWriter.GetInstance(pdfDoc, Response.OutputStream);
+                pdfWriter.PageEvent = new CustomPageEventHelper(headerTable, footerTable);
+                pdfDoc.Open();
+
+                Paragraph line1 = new Paragraph("  ");
+                pdfDoc.Add(line1);
+
+                // Grid
+                PdfPTable table = new PdfPTable(new float[] { 60f, 80f, 80f, 80f});
+                table.WidthPercentage = 100;
+                table.HorizontalAlignment = 0;
+                table.SpacingBefore = 1f;
+                table.SpacingAfter = 1f;
+
+                cell = new PdfPCell(new Paragraph("Tipo de Pagamento", meuFont))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph("Número de Pagamentos", meuFont))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph("Total de Pagamentos (R$)", meuFont))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_RIGHT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph("Média de Pagamentos (R$)", meuFont))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_RIGHT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                table.AddCell(cell);
+
+                foreach (ModeloViewModel item in lista)
+                {
+                    if (item.Nome != null)
+                    {
+                        cell = new PdfPCell(new Paragraph(item.Nome, meuFont))
+                        {
+                            VerticalAlignment = Element.ALIGN_MIDDLE,
+                            HorizontalAlignment = Element.ALIGN_LEFT
+                        };
+                        table.AddCell(cell);
+                    }
+                    else
+                    {
+                        cell = new PdfPCell(new Paragraph("-", meuFont))
+                        {
+                            VerticalAlignment = Element.ALIGN_MIDDLE,
+                            HorizontalAlignment = Element.ALIGN_LEFT
+                        };
+                        table.AddCell(cell);
+                    }
+                    cell = new PdfPCell(new Paragraph(CrossCutting.Formatters.IntegerFormatter(item.Valor), meuFont))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_RIGHT
+                    };
+                    table.AddCell(cell);
+                    cell = new PdfPCell(new Paragraph(CrossCutting.Formatters.DecimalFormatter(item.ValorDec), meuFont))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_RIGHT
+                    };
+                    table.AddCell(cell);
+                    cell = new PdfPCell(new Paragraph(CrossCutting.Formatters.DecimalFormatter(item.ValorDec1), meuFont))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_RIGHT
+                    };
+                    table.AddCell(cell);
+
+                    num += item.Valor;
+                    total += item.ValorDec;
+                    itens++;
+                }
+                pdfDoc.Add(table);
+
+                // Calcula media final
+                Decimal? mediaTotal =0;
+                if (itens > 0)
+                {
+                    mediaTotal = total / itens;
+                }
+
+                // Grid - TOTAIS
+                PdfPTable table1 = new PdfPTable(new float[] { 60f, 80f, 80f, 80f });
+                table1.WidthPercentage = 100;
+                table1.HorizontalAlignment = 0;
+                table1.SpacingBefore = 1f;
+                table1.SpacingAfter = 1f;
+
+                cell = new PdfPCell(new Paragraph(" ", meuFont))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                cell.Colspan = 1;
+                table1.AddCell(cell);
+
+                cell = new PdfPCell(new Paragraph("TOTAIS", meuFont))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_RIGHT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                table1.AddCell(cell);
+
+                cell = new PdfPCell(new Paragraph(CrossCutting.Formatters.DecimalFormatter(total.Value), meuFont3))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_RIGHT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                table1.AddCell(cell);
+                cell = new PdfPCell(new Paragraph(" ", meuFont))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                cell.Colspan = 1;
+                table1.AddCell(cell);
+
+                pdfDoc.Add(table1);
+
+                // Finaliza
+                pdfWriter.CloseStream = false;
+                pdfDoc.Close();
+                Response.Buffer = true;
+                Response.ContentType = "application/pdf";
+                Response.AddHeader("content-disposition", "attachment;filename=" + nomeRel);
+                Response.Cache.SetCacheability(HttpCacheability.NoCache);
+                Response.Write(pdfDoc);
+                Response.End();
+
+                Session["NivelPaciente"] = 1;
+                return RedirectToAction("MontarTelaPagamento");
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Paciente";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Paciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return RedirectToAction("TrataExcecao", "BaseAdmin");
+            }
+        }
+
+        public ActionResult GerarListagemRecebimentoTotalAno()
+        {
+            try
+            {
+                if ((String)Session["Ativa"] == null)
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+
+                // Prepara geração
+                CONFIGURACAO conf = CarregaConfiguracaoGeral();
+                Int32 idAss = (Int32)Session["IdAssinante"];
+                String data = DateTime.Today.Date.ToShortDateString();
+                data = data.Substring(0, 2) + data.Substring(3, 2) + data.Substring(6, 4);
+
+                String nomeRel = "recebimentoTotalAnoLista" + "_" + data + ".pdf";
+                Font meuFont = FontFactory.GetFont("Arial", 8, iTextSharp.text.Font.NORMAL, BaseColor.BLACK);
+                Font meuFont1 = FontFactory.GetFont("Arial", 9, iTextSharp.text.Font.NORMAL, BaseColor.BLACK);
+                Font meuFont2 = FontFactory.GetFont("Arial", 14, iTextSharp.text.Font.NORMAL, BaseColor.BLACK);
+                Font meuFont3 = FontFactory.GetFont("Arial", 8, iTextSharp.text.Font.BOLD, BaseColor.BLUE);
+                Decimal? num = 0;
+                Decimal? total = 0;
+                Decimal? mediaFinal = 0;
+                Decimal? itens = 0;
+
+                // Carrega dados
+                List<CONSULTA_RECEBIMENTO> pagtos1 = CarregaRecebimento();
+                List<CONSULTA_RECEBIMENTO> pagtos = pagtos1.Where(p => p.CORE_DT_RECEBIMENTO != null).ToList();
+                List<DateTime> datasPagto = pagtos.Where(p => p.CORE_DT_RECEBIMENTO != null).Select(p => p.CORE_DT_RECEBIMENTO.Value.Date).Distinct().ToList();
+               
+                datasPagto.Sort((i, j) => i.Date.CompareTo(j.Date));
+                List<ModeloViewModel> listaMes = new List<ModeloViewModel>();
+                String ano2 = null;
+                String anoFeito2 = null;
+                foreach (DateTime item in datasPagto)
+                {
+                    ano2 = item.Year.ToString();
+                    if (ano2 != anoFeito2)
+                    {
+                        Decimal conta = pagtos.Where(p => p.CORE_DT_RECEBIMENTO.Value.Date.Year == item.Year).Sum(p => p.CORE_VL_VALOR.Value);
+                        Int32 num2 = pagtos.Where(p => p.CORE_DT_RECEBIMENTO.Value.Date.Year == item.Year).Count();
+                        ModeloViewModel mod = new ModeloViewModel();
+                        mod.Nome = ano2;
+                        mod.Valor = num2;
+                        mod.ValorDec1 = conta;
+                        listaMes.Add(mod);
+                        anoFeito2 = item.Year.ToString();
+                    }
+                }
+                // Cabeçalho
+                PdfPTable headerTable = new PdfPTable(new float[] { 20f, 700f });
+                headerTable.WidthPercentage = 100;
+                headerTable.HorizontalAlignment = 1;
+                headerTable.SpacingBefore = 1f;
+                headerTable.SpacingAfter = 1f;
+
+                if (conf.CONF_IN_LOGO_EMPRESA == 1)
+                {
+                    PdfPCell cell1 = new PdfPCell();
+                    cell1.Border = 0;
+                    cell1.Colspan = 1;
+                    Image image = null;
+                    EMPRESA empresa = empApp.GetItemByAssinante(idAss);
+                    image = Image.GetInstance(Server.MapPath(empresa.EMPR_AQ_LOGO));
+                    image.ScaleAbsolute(50, 50);
+                    cell1.AddElement(image);
+                    cell1.Border = PdfPCell.BOTTOM_BORDER;
+                    headerTable.AddCell(cell1);
+
+                    cell1 = new PdfPCell(new Paragraph("Recebimentos - Total por Ano", meuFont2))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_CENTER
+                    };
+                    cell1.Border = 0;
+                    cell1.Colspan = 1;
+                    cell1.Border = PdfPCell.BOTTOM_BORDER;
+                    headerTable.AddCell(cell1);
+                }
+                else
+                {
+                    PdfPCell cell2 = new PdfPCell(new Paragraph("Recebimentos - Total por Ano", meuFont2))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_CENTER
+                    };
+                    cell2.Border = 0;
+                    cell2.Colspan = 2;
+                    headerTable.AddCell(cell2);
+
+                    cell2 = new PdfPCell(new Paragraph(" ", meuFont))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    cell2.Colspan = 2;
+                    cell2.Border = PdfPCell.BOTTOM_BORDER;
+                    headerTable.AddCell(cell2);
+                }
+
+                // Rodape
+                PdfPTable footerTable = new PdfPTable(1);
+                footerTable.WidthPercentage = 100;
+                footerTable.HorizontalAlignment = 1;
+                footerTable.SpacingBefore = 1f;
+                footerTable.SpacingAfter = 1f;
+
+                PdfPCell cell = new PdfPCell();
+                cell.Border = PdfPCell.TOP_BORDER;
+                cell = new PdfPCell(new Paragraph("Gerado por WebDoctor 1.0 em " + DateTime.Today.Date.ToLongDateString(), meuFont));
+                footerTable.AddCell(cell);
+
+                // Cria documento
+                Document pdfDoc = new Document(PageSize.A4.Rotate(), 10, 10, 60, 40);
+                PdfWriter pdfWriter = PdfWriter.GetInstance(pdfDoc, Response.OutputStream);
+                pdfWriter.PageEvent = new CustomPageEventHelper(headerTable, footerTable);
+                pdfDoc.Open();
+
+                Paragraph line1 = new Paragraph("  ");
+                pdfDoc.Add(line1);
+
+                // Grid
+                PdfPTable table = new PdfPTable(new float[] { 60f, 80f, 80f});
+                table.WidthPercentage = 100;
+                table.HorizontalAlignment = 0;
+                table.SpacingBefore = 1f;
+                table.SpacingAfter = 1f;
+
+                cell = new PdfPCell(new Paragraph("Ano de Referência", meuFont))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph("Número de Recebimentos", meuFont))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph("Total de Recebimentos (R$)", meuFont))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_RIGHT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                table.AddCell(cell);
+
+                foreach (ModeloViewModel item in listaMes)
+                {
+                    cell = new PdfPCell(new Paragraph(item.Nome, meuFont))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    table.AddCell(cell);
+                    cell = new PdfPCell(new Paragraph(CrossCutting.Formatters.IntegerFormatter(item.Valor), meuFont))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_RIGHT
+                    };
+                    table.AddCell(cell);
+                    cell = new PdfPCell(new Paragraph(CrossCutting.Formatters.DecimalFormatter(item.ValorDec1), meuFont))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_RIGHT
+                    };
+                    table.AddCell(cell);
+
+                    num += item.Valor;
+                    total += item.ValorDec1;
+                    itens++;
+                }
+                pdfDoc.Add(table);
+
+                // Calcula media final
+                Decimal? mediaTotal = total / itens;
+
+                // Grid - TOTAIS
+                PdfPTable table1 = new PdfPTable(new float[] { 60f, 80f, 80f });
+                table1.WidthPercentage = 100;
+                table1.HorizontalAlignment = 0;
+                table1.SpacingBefore = 1f;
+                table1.SpacingAfter = 1f;
+
+                cell = new PdfPCell(new Paragraph(" ", meuFont))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                cell.Colspan = 1;
+                table1.AddCell(cell);
+
+                cell = new PdfPCell(new Paragraph("TOTAIS", meuFont))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_RIGHT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                table1.AddCell(cell);
+
+                cell = new PdfPCell(new Paragraph(CrossCutting.Formatters.DecimalFormatter(total.Value), meuFont3))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_RIGHT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                table1.AddCell(cell);
+                pdfDoc.Add(table1);
+
+
+                // Finaliza
+                pdfWriter.CloseStream = false;
+                pdfDoc.Close();
+                Response.Buffer = true;
+                Response.ContentType = "application/pdf";
+                Response.AddHeader("content-disposition", "attachment;filename=" + nomeRel);
+                Response.Cache.SetCacheability(HttpCacheability.NoCache);
+                Response.Write(pdfDoc);
+                Response.End();
+
+                Session["NivelPaciente"] = 1;
+                return RedirectToAction("MontarTelaRecebimento");
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Paciente";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Paciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return RedirectToAction("TrataExcecao", "BaseAdmin");
+            }
+        }
+
+        public ActionResult GerarListagemRecebimentoTotalProfissional()
+        {
+            try
+            {
+                if ((String)Session["Ativa"] == null)
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+
+                // Prepara geração
+                CONFIGURACAO conf = CarregaConfiguracaoGeral();
+                Int32 idAss = (Int32)Session["IdAssinante"];
+                String data = DateTime.Today.Date.ToShortDateString();
+                data = data.Substring(0, 2) + data.Substring(3, 2) + data.Substring(6, 4);
+
+                String nomeRel = "RecebimentoTotalProfissionalLista" + "_" + data + ".pdf";
+                Font meuFont = FontFactory.GetFont("Arial", 8, iTextSharp.text.Font.NORMAL, BaseColor.BLACK);
+                Font meuFont1 = FontFactory.GetFont("Arial", 9, iTextSharp.text.Font.NORMAL, BaseColor.BLACK);
+                Font meuFont2 = FontFactory.GetFont("Arial", 14, iTextSharp.text.Font.NORMAL, BaseColor.BLACK);
+                Font meuFont3 = FontFactory.GetFont("Arial", 8, iTextSharp.text.Font.BOLD, BaseColor.BLUE);
+                Decimal? num = 0;
+                Decimal? total = 0;
+                Decimal? mediaFinal = 0;
+                Decimal? itens = 0;
+
+                // Carrega dados
+                List<CONSULTA_RECEBIMENTO> pagtos = (List<CONSULTA_RECEBIMENTO>)Session["ListaRecebimento"];
+                List<Int32> pacs = pagtos.Select(p => p.USUA_CD_ID).Distinct().ToList();
+                List<ModeloViewModel> lista = new List<ModeloViewModel>();
+                foreach (Int32 item in pacs)
+                {
+                    USUARIO pac = usuApp.GetItemById(item);
+                    Int32 conta = pagtos.Where(p => p.USUA_CD_ID == item).Count();
+                    Decimal? soma = pagtos.Where(p => p.USUA_CD_ID == item).Sum(p => p.CORE_VL_VALOR);
+                    Decimal? media = 0;
+                    if (conta > 0)
+                    {
+                        media = soma / conta;
+                    }
+                    ModeloViewModel mod = new ModeloViewModel();
+                    mod.Nome = pac.USUA_NM_NOME;
+                    mod.Valor = conta;
+                    mod.ValorDec = soma.Value;
+                    mod.ValorDec1 = media.Value;
+                    lista.Add(mod);
+                }
+
+                // Cabeçalho
+                PdfPTable headerTable = new PdfPTable(new float[] { 20f, 700f });
+                headerTable.WidthPercentage = 100;
+                headerTable.HorizontalAlignment = 1;
+                headerTable.SpacingBefore = 1f;
+                headerTable.SpacingAfter = 1f;
+
+                if (conf.CONF_IN_LOGO_EMPRESA == 1)
+                {
+                    PdfPCell cell1 = new PdfPCell();
+                    cell1.Border = 0;
+                    cell1.Colspan = 1;
+                    Image image = null;
+                    EMPRESA empresa = empApp.GetItemByAssinante(idAss);
+                    image = Image.GetInstance(Server.MapPath(empresa.EMPR_AQ_LOGO));
+                    image.ScaleAbsolute(50, 50);
+                    cell1.AddElement(image);
+                    cell1.Border = PdfPCell.BOTTOM_BORDER;
+                    headerTable.AddCell(cell1);
+
+                    cell1 = new PdfPCell(new Paragraph("Recebimentos - Total e Média por Profissional", meuFont2))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_CENTER
+                    };
+                    cell1.Border = 0;
+                    cell1.Colspan = 1;
+                    cell1.Border = PdfPCell.BOTTOM_BORDER;
+                    headerTable.AddCell(cell1);
+                }
+                else
+                {
+                    PdfPCell cell2 = new PdfPCell(new Paragraph("Recebimentos - Total e Média por Profissional", meuFont2))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_CENTER
+                    };
+                    cell2.Border = 0;
+                    cell2.Colspan = 2;
+                    headerTable.AddCell(cell2);
+
+                    cell2 = new PdfPCell(new Paragraph(" ", meuFont))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    cell2.Colspan = 2;
+                    cell2.Border = PdfPCell.BOTTOM_BORDER;
+                    headerTable.AddCell(cell2);
+                }
+
+
+                // Rodape
+                PdfPTable footerTable = new PdfPTable(1);
+                footerTable.WidthPercentage = 100;
+                footerTable.HorizontalAlignment = 1;
+                footerTable.SpacingBefore = 1f;
+                footerTable.SpacingAfter = 1f;
+
+                PdfPCell cell = new PdfPCell();
+                cell.Border = PdfPCell.TOP_BORDER;
+                cell = new PdfPCell(new Paragraph("Gerado por WebDoctor 1.0 em " + DateTime.Today.Date.ToLongDateString(), meuFont));
+                footerTable.AddCell(cell);
+
+                // Cria documento
+                Document pdfDoc = new Document(PageSize.A4.Rotate(), 10, 10, 60, 40);
+                PdfWriter pdfWriter = PdfWriter.GetInstance(pdfDoc, Response.OutputStream);
+                pdfWriter.PageEvent = new CustomPageEventHelper(headerTable, footerTable);
+                pdfDoc.Open();
+
+                Paragraph line1 = new Paragraph("  ");
+                pdfDoc.Add(line1);
+
+                // Grid
+                PdfPTable table = new PdfPTable(new float[] { 60f, 80f, 80f, 80f});
+                table.WidthPercentage = 100;
+                table.HorizontalAlignment = 0;
+                table.SpacingBefore = 1f;
+                table.SpacingAfter = 1f;
+
+                cell = new PdfPCell(new Paragraph("Nome do Profissional", meuFont))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph("Número de Recebimentos", meuFont))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph("Total de Recebimentos (R$)", meuFont))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_RIGHT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph("Média de Recebimentos (R$)", meuFont))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_RIGHT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                table.AddCell(cell);
+
+                foreach (ModeloViewModel item in lista)
+                {
+                    if (item.DataEmissao != null)
+                    {
+                        cell = new PdfPCell(new Paragraph(item.Nome, meuFont))
+                        {
+                            VerticalAlignment = Element.ALIGN_MIDDLE,
+                            HorizontalAlignment = Element.ALIGN_LEFT
+                        };
+                        table.AddCell(cell);
+                    }
+                    else
+                    {
+                        cell = new PdfPCell(new Paragraph("-", meuFont))
+                        {
+                            VerticalAlignment = Element.ALIGN_MIDDLE,
+                            HorizontalAlignment = Element.ALIGN_LEFT
+                        };
+                        table.AddCell(cell);
+                    }
+                    cell = new PdfPCell(new Paragraph(CrossCutting.Formatters.IntegerFormatter(item.Valor), meuFont))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_RIGHT
+                    };
+                    table.AddCell(cell);
+                    cell = new PdfPCell(new Paragraph(CrossCutting.Formatters.DecimalFormatter(item.ValorDec), meuFont))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_RIGHT
+                    };
+                    table.AddCell(cell);
+                    cell = new PdfPCell(new Paragraph(CrossCutting.Formatters.DecimalFormatter(item.ValorDec1), meuFont))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_RIGHT
+                    };
+                    table.AddCell(cell);
+                    num += item.Valor;
+                    total += item.ValorDec;
+                    itens++;
+                }
+                pdfDoc.Add(table);
+
+                // Calcula media final
+                Decimal? mediaTotal = total / itens;
+
+                // Grid - TOTAIS
+                PdfPTable table1 = new PdfPTable(new float[] { 60f, 80f, 80f, 80f });
+                table1.WidthPercentage = 100;
+                table1.HorizontalAlignment = 0;
+                table1.SpacingBefore = 1f;
+                table1.SpacingAfter = 1f;
+
+                cell = new PdfPCell(new Paragraph(" ", meuFont))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                cell.Colspan = 1;
+                table1.AddCell(cell);
+
+                cell = new PdfPCell(new Paragraph("TOTAIS", meuFont))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_RIGHT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                table1.AddCell(cell);
+
+                cell = new PdfPCell(new Paragraph(CrossCutting.Formatters.DecimalFormatter(total.Value), meuFont3))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_RIGHT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                table1.AddCell(cell);
+                cell = new PdfPCell(new Paragraph(" ", meuFont))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                cell.Colspan = 1;
+                table1.AddCell(cell);
+
+                pdfDoc.Add(table1);
+
+                // Finaliza
+                pdfWriter.CloseStream = false;
+                pdfDoc.Close();
+                Response.Buffer = true;
+                Response.ContentType = "application/pdf";
+                Response.AddHeader("content-disposition", "attachment;filename=" + nomeRel);
+                Response.Cache.SetCacheability(HttpCacheability.NoCache);
+                Response.Write(pdfDoc);
+                Response.End();
+
+                Session["NivelPaciente"] = 1;
+                return RedirectToAction("MontarTelaRecebimento");
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Paciente";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Paciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return RedirectToAction("TrataExcecao", "BaseAdmin");
+            }
+        }
 
     }
 }

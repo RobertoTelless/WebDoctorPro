@@ -168,6 +168,7 @@
                                         <th style="width: auto">Tipo de Controle</th>
                                         <th style="width: auto">Nome do Paciente</th>
                                         <th style="width: auto">Identificador</th>
+                                        <th style="width: auto">Data da Consulta</th>
                                         <th style="width: auto">Enviada</th>
                                         <th style="width: auto">Último Envio</th>
                                         <th style="width: auto">Num. Envios</th>
@@ -206,6 +207,17 @@
                                             else
                                             {
                                                 <td style="width: auto"><a href="@Url.Action("VerPrescricaoCompleta", "Paciente", new { id = cond.PAPR_CD_ID })" class="btn-loading" />@cond.PAPR_GU_GUID</td>
+                                            }
+                                            @if (cond.PACIENTE_CONSULTA != null)
+                                            {
+                                                <td>
+                                                    <span style="display:none; width: auto">@cond.PACIENTE_CONSULTA.PACO_DT_CONSULTA.ToString("yyyyMMdd")</span>
+                                                    @cond.PACIENTE_CONSULTA.PACO_DT_CONSULTA.ToShortDateString()
+                                                </td>
+                                            }
+                                            else
+                                            {
+                                                <td style="width: auto">-</td>
                                             }
                                             @if (cond.PAPR_IN_ENVIADO == 1)
                                             {

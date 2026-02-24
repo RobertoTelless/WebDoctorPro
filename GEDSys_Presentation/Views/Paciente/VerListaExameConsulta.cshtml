@@ -152,7 +152,7 @@
                                 <div class="col-lg-12 col-md-12 col-xs-12">
                                     <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Resultados de Exames</h4>
                                     <br />
-                                    @if (Model.PACIENTE_EXAMES.Where(p => p.PAEX_IN_ATIVO == 1).ToList().Count > 0)
+                                    @if (ViewBag.Lista != null &&(ViewBag.Lista as List<EntitiesServices.Model.PACIENTE_EXAMES>).Count > 0)
                                     {
                                         <table class="table table-striped table-bordered table-hover dataTables-exame">
                                             <thead style="background-color:lightsteelblue">
@@ -161,12 +161,13 @@
                                                     <th style="width: auto">Tipo de Exame</th>
                                                     <th style="width: auto">Nome do Exame</th>
                                                     <th style="width: auto">Laboratório</th>
+                                                    <th style="width: auto">Data da Consulta</th>
                                                     <th style="width: auto">Anexos</th>
                                                     <th style="width: auto" class="td-one-action">Ações</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                @foreach (var cond in (Model.PACIENTE_EXAMES.Where(p => p.PAEX_IN_ATIVO == 1).OrderByDescending(p => p.PAEX_DT_DATA)))
+                                                @foreach (var cond in (ViewBag.Lista as List<EntitiesServices.Model.PACIENTE_EXAMES>).OrderByDescending(p => p.PAEX_DT_DATA.Value.Date))
                                                 {
                                                     <tr>
                                                         <td>
@@ -190,6 +191,17 @@
                                                         {
                                                             <td style="width: auto">Não informado</td>
                                                         }
+                                                        @if (cond.PACIENTE_CONSULTA != null)
+                                                        {
+                                                            <td>
+                                                                <span style="display:none; width: auto">@cond.PACIENTE_CONSULTA.PACO_DT_CONSULTA.ToString("yyyyMMdd")</span>
+                                                                @cond.PACIENTE_CONSULTA.PACO_DT_CONSULTA.ToShortDateString()
+                                                            </td>
+                                                        }
+                                                        else
+                                                        {
+                                                            <td style="width: auto">-</td>
+                                                        }
                                                         @if (cond.PACIENTE_EXAME_ANEXO.Count > 0)
                                                         {
                                                             <td style="width: auto"><span class="badge badge-primary">@cond.PACIENTE_EXAME_ANEXO.Count</span></td>
@@ -209,6 +221,7 @@
                                                             {
                                                                 @Html.TableLinkDetails(cond.PAEX_CD_ID, "VerExame", "fa-search btn-loading", "Consultar")
                                                             }
+                                                            @Html.TableLinkDetails(cond.PAEX_CD_ID, "MontarTelaComparaExames", "fa-gears", "Comparar Exames do Mesmo Tipo")
                                                             @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_EXAME_EXCLUIR == 1)
                                                             {
                                                                 if (cond.PAEX_IN_ATIVO == 1)

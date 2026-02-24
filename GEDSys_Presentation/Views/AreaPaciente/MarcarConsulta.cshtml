@@ -14,7 +14,7 @@
                 <a href="@Url.Action("MontarTelaAreaPaciente", "AreaPaciente")">Dashboard</a>
             </li>
             <li class="active">
-                <strong>Consultas - Marcação</strong>
+                <strong>Consultas - Solicitação</strong>
             </li>
         </ol>
         <br />
@@ -24,7 +24,7 @@
         <div class="col-lg-12 col-md-12 col-xs-12">
             <div class="col-lg-12 col-md-12 col-xs-12 ibox float-e-margins">
                 <div class="ibox-title">
-                    <h5>Paciente - Consulta - Criação</h5>
+                    <h5>Paciente - Consulta - Solicitação</h5>
                 </div>
                 @using (Html.BeginForm("MarcarConsulta", "AreaPaciente", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal", @id = "pwd-container1" }))
                 {
@@ -73,12 +73,6 @@
                                     @Html.TextBoxFor(m => m.PACIENTE.PACI_NR_TELEFONE, new { @class = "form-control", @readonly = "readonly" })
                                 </div>
                             </div>
-                            <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
-                                <div class="col-lg-4 col-md-4 col-xs-12">
-                                    Valor da Consulta
-                                    @Html.TextBoxFor(m => m.PACIENTE.VALOR_CONSULTA.VACO_NM_EXIBE, new { @class = "form-control", @readonly = "readonly", @style = "color: brown; font-weight: bold" })
-                                </div>
-                            </div>
                         </div>
                         <div class="row">
                             <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Profissional</h4>
@@ -117,9 +111,12 @@
                         <div class="row">
                             <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Dados da Consulta</h4>
                             <div class="form-group" style=" margin-left: 5px; margin-right: 5px;">
-                                @Html.ButtonActionSubmit(text: "Confirma Marcação de Consulta", htmlAttributes: new { id = "basictoast" })
-                                @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaAreaPaciente", controller: "AreaPaciente")
+                                @Html.ButtonActionSubmit(text: "Confirma Solicitação de Consulta", htmlAttributes: new { id = "basictoast", @class = "btn-loading1" })
+                                @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaAreaPaciente", controller: "AreaPaciente", htmlAttributes: new { @class = "btn-loading" })
                                 <a href="@Url.Action((String)Session["AjudaNivel"])" class="btn btn-sm btn-danger" target="_blank">Ajuda</a>
+                                <span id="loadingIndicator" style="display: none; margin-left: 10px; color: #007bff;">
+                                    <i class="fa fa-spinner fa-spin"></i> Processando...
+                                </span>
                             </div>
                         </div>
 
@@ -152,16 +149,6 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="row">
-                            <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
-                                <div class="col-lg-12 col-md-12 col-xs-12">
-                                    <br />
-                                    @Html.ButtonLinkIndex(text: "Ver Dias Úteis e Horários Úteis", action: "MontarTelaVerConfiguracaoCalendario", controller: "AreaPaciente", buttonClass: "primary")
-                                    @Html.ButtonLinkIndex(text: "Ver Bloqueios", action: "VerBloqueio", controller: "AreaPaciente", buttonClass: "primary")
-                                    @Html.ButtonLinkIndex(text: "Ver Horários Livres na Data Selecionada", action: "VerHorarioLivre", controller: "AreaPaciente", buttonClass: "primary")
-                                </div>
-                            </div>
-                        </div>                    
                     </div>
                 }
             </div>

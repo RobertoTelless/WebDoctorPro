@@ -32,6 +32,13 @@ namespace DataServices.Repositories
             return query.FirstOrDefault();
         }
 
+        public List<LOCACAO> GetByCPF(String cpf)
+        {
+            IQueryable<LOCACAO> query = Db.LOCACAO.Where(p => p.LOCA_IN_ATIVO == 1);
+            query = query.Where(p => p.PACIENTE.PACI_NR_CPF == cpf);
+            return query.ToList();
+        }
+
         public List<LOCACAO> GetAllItens(Int32 idAss)
         {
             IQueryable<LOCACAO> query = Db.LOCACAO;

@@ -82,7 +82,10 @@
                                     @Html.HiddenFor(m => m.PACI_NM_LOGIN)
                                     @Html.HiddenFor(m => m.PACI_NM_SENHA)
                                     @Html.HiddenFor(m => m.PACI_IN_MENSAGEM_ATRASO)
-
+                                    @Html.HiddenFor(m => m.RACA_CD_ID)
+                                    @Html.HiddenFor(m => m.PACI_IN_NUMERO_ENVIO)
+                                    @Html.HiddenFor(m => m.PACI_IN_FIM_ENVIO)
+                                    @Html.HiddenFor(m => m.PACI_DT_ULTIMO_ENVIO)
                                     @if (!String.IsNullOrEmpty(Model.PACI_AQ_FOTO))
                                     {
                                         <img src="@Url.Content(Model.PACI_AQ_FOTO)" style="width: auto; height: auto; max-height: 220px; max-width: 220px;" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Clique Ctrl+Ctrl para ampliar a fotografia">
@@ -275,7 +278,7 @@
                                     @Html.TextBoxFor(m => m.SEXO.SEXO_NM_NOME, new { @class = "form-control", @readonly = "readonly" })
                                 </div>
                                 <div class="col-lg-2 col-md-2 col-xs-12" id="RS">
-                                    Côr
+                                    Raça
                                     @Html.TextBoxFor(m => m.COR.COR1_NM_NOME, new { @class = "form-control", @readonly = "readonly" })
                                 </div>
                                 <div class="col-lg-2 col-md-2 col-xs-12">

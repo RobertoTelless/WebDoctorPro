@@ -116,6 +116,7 @@ namespace ERP_Condominios_Solution.Controllers
             Session["PermGeral"] = 1;
             Session["VoltarTabs"] = 1;
             Session["VoltarEmpresa"] = 1;
+            Session["VoltaCompara"] = 1;
 
             // Acesso
             Session["ListaAcessos"] = null;

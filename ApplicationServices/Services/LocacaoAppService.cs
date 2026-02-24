@@ -531,5 +531,10 @@ namespace ApplicationServices.Services
             return _baseService.GetAllTipoOcorrencia(idAss);
         }
 
+        public List<LOCACAO> GetLocacaoByCPF(String cpf)
+        {
+            return _baseService.GetLocacaoByCPF(cpf);
+        }
+
     }
 }

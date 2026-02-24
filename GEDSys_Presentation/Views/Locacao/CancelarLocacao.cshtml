@@ -21,6 +21,32 @@
         </ol>
         <br />
     </div>
+    <div class="modal inmodal fade" id="modalConfirmacaoAprovacao" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header" style="position: relative; padding: 30px 15px;">
+                    <img src="@Url.Content("~/Images/Prontuario/prontuario_icon_3.png?v=1.1")" 
+                         style="position: absolute; left: 15px; top: 15px; width: 40px; height: auto;" 
+                         alt="Ícone" />
+
+                    <i class="fa fa-times-circle modal-icon text-primary" style="display: block;"></i>
+                    <h4 class="modal-title">Confirmação de Cancelamento</h4>
+                    <small class="font-bold">WebDoctorPro - Gestão de Locação</small>
+                </div>
+            
+                <div class="modal-body text-center">
+                    <h3>Tem certeza que deseja cancelar essa locação?</h3>
+                    <p>Esta ação não poderá ser desfeita e os registros serão atualizados no sistema.</p>
+                </div>
+            
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-white" data-dismiss="modal">Voltar</button>
+                    <button type="button" class="btn btn-primary" id="btnConfirmarSubmit">Confirmar Cancelamento</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="row">
         <div class="col-lg-12 col-md-12 col-xs-12">
             <div class="col-lg-12 col-md-12 col-xs-12 ibox float-e-margins">
@@ -193,14 +219,16 @@
                                         <div class="row">
                                             <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Cancelamento</h4>
                                             <div class="form-group" style=" margin-left: 0px; margin-right: 0px;">
-                                                @Html.ButtonActionSubmit(text: "Confirma Cancelamento da Locação", htmlAttributes: new { id = "basictoast", @class = "btn-loading1", onclick = "return confirm('Tem certeza que deseja cancelar essa locação?');" })
+                                                <button type="button" class="btn btn-primary" id="btnDispararModal">
+                                                    Confirma o Cancelamento da Locação
+                                                </button>
                                                 @if ((Int32)Session["VoltaLocacao"] == 2)
                                                 {
-                                                    @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarAnexoLocacao", controller: "Locacao", htmlAttributes: new { @class = "btn-loading" })
+                                                    @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarAnexoLocacao", controller: "Locacao")
                                                 }
                                                 else
                                                 {
-                                                    @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaLocacao", controller: "Locacao", htmlAttributes: new { @class = "btn-loading" })
+                                                    @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaLocacao", controller: "Locacao")
                                                 }
                                                 <span id="loadingIndicator" style="display: none; margin-left: 10px; color: #007bff;">
                                                     <i class="fa fa-spinner fa-spin"></i> Processando...
@@ -251,6 +279,17 @@
     @Styles.Render("~/Content/plugins/dataTables/dataTablesStyles")
     @Styles.Render("~/plugins/jasnyBootstrapStyles")
     @Styles.Render("~/plugins/toastrStyles")
+
+    <style>
+        /* Força a remoção do escurecimento caso ele tente voltar durante o POST */
+        body.modal-open {
+            overflow: auto !important;
+            padding-right: 0 !important;
+        }
+/*        .modal-backdrop {
+            display: none !important;
+        }
+*/    </style>
 }
 @section Scripts {
     <script type="text/javascript" src="~/Scripts/moment.min.js"></script>
@@ -268,48 +307,6 @@
             $('.btnSubmit').html('Salvar');
             $('.btnReturn').hide();
         }
-    </script>
-
-        <script type="text/javascript">
-        $(document).ready(function () { 
-            $('.btn-loading').on('click', function (e) {            
-                $(this).prop('disabled', true);
-                $(this).addClass('disabled');
-                $('#loadingIndicator').show();
-                var tagName = $(this).prop('tagName').toLowerCase();
-                if (tagName === 'a') {
-                    e.preventDefault(); 
-                    var targetUrl = $(this).attr('href');
-                    window.location.href = targetUrl;
-
-                } else if (tagName === 'button' || tagName === 'input') {
-                    $(this).closest('form').submit();
-                }
-            });
-        });
-    </script>
-
-    <script type="text/javascript">
-        $(document).ready(function () {
-            $('.btn-loading1').on('click', function (e) {
-            
-                var $this = $(this);
-                var tagName = $this.prop('tagName').toLowerCase();
-                $this.addClass('disabled'); 
-                $('#loadingIndicator').show();
-
-                if (tagName === 'a') {
-                    e.preventDefault();
-                
-                    var targetUrl = $this.attr('href');
-                    window.location.href = targetUrl;
-                
-                } else if (tagName === 'button' || tagName === 'input') {               
-                    $this.closest('form').submit();
-                    $this.prop('disabled', true);
-                }
-            });
-        });
     </script>
 
     <script type="text/javascript" language="javascript">
@@ -460,6 +457,50 @@
 
     <script>
         $('#filGeral option[value=10]').prop('selected', true);
+    </script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            var $modal = $('#modalConfirmacaoAprovacao');
+
+            // 1. Abre a modal manualmente para evitar o "pisca" do data-toggle
+            $('#btnDispararModal').click(function () {
+                $modal.modal('show');
+            });
+
+            // 2. Ação de confirmar DENTRO da modal
+            $('#btnConfirmarSubmit').click(function (e) {
+                e.preventDefault();
+
+                var $btn = $(this);
+                var $form = $('#pwd-container1');
+
+                // Feedback visual no botão
+                $btn.prop('disabled', true).addClass('disabled');
+                $btn.html('<i class="fa fa-spinner fa-spin"></i> Processando...');
+
+                // Esconde a modal
+                $modal.modal('hide');
+
+                // 3. Limpeza e Submit
+                // O delay de 400ms garante que a animação de saída do Inspinia/Bootstrap 
+                // termine antes de removermos os elementos do DOM
+                setTimeout(function () {
+                    $('.modal-backdrop').remove();
+                    $('body').removeClass('modal-open').css('padding-right', '');
+                
+                    $('#loadingIndicator').show();
+
+                    // Submit via DOM puro para ignorar interceptors do template
+                    document.getElementById('pwd-container1').submit();
+                }, 400);
+            });
+
+            // Segurança: limpa resíduos se fechar no "X" ou clicar fora
+            $modal.on('hidden.bs.modal', function () {
+                $('.modal-backdrop').remove();
+                $('body').removeClass('modal-open');
+            });
+        });
     </script>
 
     @if (ViewBag.Message != null)

@@ -1159,6 +1159,9 @@
         <EntityTypeShape EntityType="CRMSysDBModel.PACIENTE_EXAME_ANEXO_IMAGEM" Width="1.5" PointX="49" PointY="564.5" />
         <AssociationConnector Association="CRMSysDBModel.FK_PACIENTE_EXAME_ANEXO_IMAGEM_PACIENTE_EXAME_ANEXO" />
         <AssociationConnector Association="CRMSysDBModel.FK_PACIENTE_EXAME_ANEXO_IMAGEM_PACIENTE_EXAMES" />
+        <EntityTypeShape EntityType="CRMSysDBModel.AREA_PACIENTE" Width="1.5" PointX="34" PointY="569.75" />
+        <AssociationConnector Association="CRMSysDBModel.FK_AREA_PACIENTE_PACIENTE" />
+        <AssociationConnector Association="CRMSysDBModel.FK_AREA_PACIENTE_USUARIO" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

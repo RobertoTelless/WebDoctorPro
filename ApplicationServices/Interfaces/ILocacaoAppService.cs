@@ -17,6 +17,7 @@ namespace ApplicationServices.Interfaces
         List<LOCACAO> GetAllItensAdm(Int32 idAss);
         Tuple<Int32, List<LOCACAO>, Boolean> ExecuteFilter(String paciente, String prod, DateTime? inicio, DateTime? final, Int32? status, String numero, Int32 idAss);
         List<TIPO_HISTORICO> GetAllTipos(Int32 idAss);
+        List<LOCACAO> GetLocacaoByCPF(String cpf);
 
         LOCACAO_ANEXO GetLocacaoAnexoById(Int32 id);
         Int32 ValidateEditLocacaoAnexo(LOCACAO_ANEXO item);

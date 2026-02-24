@@ -126,6 +126,23 @@
           <Property Name="ANTE_IN_ATIVO" Type="int" Nullable="false" />
           <Property Name="ANTE_VL_VALOR" Type="decimal" Precision="18" Scale="2" />
         </EntityType>
+        <EntityType Name="AREA_PACIENTE">
+          <Key>
+            <PropertyRef Name="AREA_CD_ID" />
+          </Key>
+          <Property Name="AREA_CD_ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="ASSI_CD_ID" Type="int" Nullable="false" />
+          <Property Name="AREA_DT_ENTRADA" Type="datetime" />
+          <Property Name="PACI_CD_ID" Type="int" />
+          <Property Name="USUA_CD_ID" Type="int" />
+          <Property Name="AREA_IN_TIPO" Type="int" />
+          <Property Name="AREA_IN_ATIVO" Type="int" />
+          <Property Name="AREA_DT_CONSULTA" Type="date" />
+          <Property Name="AREA_HR_INICIO" Type="time" Precision="7" />
+          <Property Name="AREA_HR_FINAL" Type="time" Precision="7" />
+          <Property Name="AREA_NM_TITULO" Type="varchar" MaxLength="500" />
+          <Property Name="AREA_TX_CONTEUDO" Type="text" />
+        </EntityType>
         <EntityType Name="ASSINANTE">
           <Key>
             <PropertyRef Name="ASSI_CD_ID" />
@@ -7330,6 +7347,30 @@
             </Principal>
             <Dependent Role="ANTECIPACAO">
               <PropertyRef Name="MAQN_CD_ID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_AREA_PACIENTE_PACIENTE">
+          <End Role="PACIENTE" Type="Self.PACIENTE" Multiplicity="0..1" />
+          <End Role="AREA_PACIENTE" Type="Self.AREA_PACIENTE" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="PACIENTE">
+              <PropertyRef Name="PACI__CD_ID" />
+            </Principal>
+            <Dependent Role="AREA_PACIENTE">
+              <PropertyRef Name="PACI_CD_ID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_AREA_PACIENTE_USUARIO">
+          <End Role="USUARIO" Type="Self.USUARIO" Multiplicity="0..1" />
+          <End Role="AREA_PACIENTE" Type="Self.AREA_PACIENTE" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="USUARIO">
+              <PropertyRef Name="USUA_CD_ID" />
+            </Principal>
+            <Dependent Role="AREA_PACIENTE">
+              <PropertyRef Name="USUA_CD_ID" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -16317,6 +16358,7 @@
           <EntitySet Name="AGENDA_CONTATO" EntityType="Self.AGENDA_CONTATO" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="AGENDA_VINCULO" EntityType="Self.AGENDA_VINCULO" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="ANTECIPACAO" EntityType="Self.ANTECIPACAO" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="AREA_PACIENTE" EntityType="Self.AREA_PACIENTE" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="ASSINANTE" EntityType="Self.ASSINANTE" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="ASSINANTE_ANEXO" EntityType="Self.ASSINANTE_ANEXO" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="ASSINANTE_ANOTACAO" EntityType="Self.ASSINANTE_ANOTACAO" Schema="dbo" store:Type="Tables" />
@@ -16766,6 +16808,14 @@
           <AssociationSet Name="FK_ANTECIPACAO_MAQUINA" Association="Self.FK_ANTECIPACAO_MAQUINA">
             <End Role="MAQUINA" EntitySet="MAQUINA" />
             <End Role="ANTECIPACAO" EntitySet="ANTECIPACAO" />
+          </AssociationSet>
+          <AssociationSet Name="FK_AREA_PACIENTE_PACIENTE" Association="Self.FK_AREA_PACIENTE_PACIENTE">
+            <End Role="PACIENTE" EntitySet="PACIENTE" />
+            <End Role="AREA_PACIENTE" EntitySet="AREA_PACIENTE" />
+          </AssociationSet>
+          <AssociationSet Name="FK_AREA_PACIENTE_USUARIO" Association="Self.FK_AREA_PACIENTE_USUARIO">
+            <End Role="USUARIO" EntitySet="USUARIO" />
+            <End Role="AREA_PACIENTE" EntitySet="AREA_PACIENTE" />
           </AssociationSet>
           <AssociationSet Name="FK_ASSINANTE_ANEXO_ASSINANTE" Association="Self.FK_ASSINANTE_ANEXO_ASSINANTE">
             <End Role="ASSINANTE" EntitySet="ASSINANTE" />
@@ -24242,6 +24292,7 @@
           <Property Name="RACA_CD_ID" Type="Int32" />
           <NavigationProperty Name="RACA" Relationship="CRMSysDBModel.FK_PACIENTE_RACA" FromRole="PACIENTE" ToRole="RACA" />
           <NavigationProperty Name="RESPOSTA_CONSULTA" Relationship="CRMSysDBModel.FK_RESPOSTA_CONSULTA_PACIENTE" FromRole="PACIENTE" ToRole="RESPOSTA_CONSULTA" />
+          <NavigationProperty Name="AREA_PACIENTE" Relationship="CRMSysDBModel.FK_AREA_PACIENTE_PACIENTE" FromRole="PACIENTE" ToRole="AREA_PACIENTE" />
         </EntityType>
         <EntityType Name="PACIENTE_ANAMNESE">
           <Key>
@@ -27513,6 +27564,7 @@
           <NavigationProperty Name="CONTRATO_LOCACAO" Relationship="CRMSysDBModel.FK_CONTRATO_LOCACAO_USUARIO" FromRole="USUARIO" ToRole="CONTRATO_LOCACAO" />
           <NavigationProperty Name="MEDICOS_MENSAGEM" Relationship="CRMSysDBModel.FK_MEDICOS_MENSAGEM_USUARIO" FromRole="USUARIO" ToRole="MEDICOS_MENSAGEM" />
           <NavigationProperty Name="RESPOSTA_CONSULTA" Relationship="CRMSysDBModel.FK_RESPOSTA_CONSULTA_USUARIO" FromRole="USUARIO" ToRole="RESPOSTA_CONSULTA" />
+          <NavigationProperty Name="AREA_PACIENTE" Relationship="CRMSysDBModel.FK_AREA_PACIENTE_USUARIO" FromRole="USUARIO" ToRole="AREA_PACIENTE" />
         </EntityType>
         <EntityType Name="USUARIO_ANEXO">
           <Key>
@@ -39714,6 +39766,15 @@
             <End Role="PACIENTE_EXAMES" EntitySet="PACIENTE_EXAMES" />
             <End Role="PACIENTE_EXAME_ANEXO_IMAGEM" EntitySet="PACIENTE_EXAME_ANEXO_IMAGEM" />
           </AssociationSet>
+          <EntitySet Name="AREA_PACIENTE" EntityType="CRMSysDBModel.AREA_PACIENTE" />
+          <AssociationSet Name="FK_AREA_PACIENTE_PACIENTE" Association="CRMSysDBModel.FK_AREA_PACIENTE_PACIENTE">
+            <End Role="PACIENTE" EntitySet="PACIENTE" />
+            <End Role="AREA_PACIENTE" EntitySet="AREA_PACIENTE" />
+          </AssociationSet>
+          <AssociationSet Name="FK_AREA_PACIENTE_USUARIO" Association="CRMSysDBModel.FK_AREA_PACIENTE_USUARIO">
+            <End Role="USUARIO" EntitySet="USUARIO" />
+            <End Role="AREA_PACIENTE" EntitySet="AREA_PACIENTE" />
+          </AssociationSet>
         </EntityContainer>
         <EntityType Name="PACIENTE_DADOS_EXAME_FISICO">
           <Key>
@@ -41046,6 +41107,49 @@
             </Principal>
             <Dependent Role="PACIENTE_EXAME_ANEXO_IMAGEM">
               <PropertyRef Name="PAEX_CD_ID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="AREA_PACIENTE">
+          <Key>
+            <PropertyRef Name="AREA_CD_ID" />
+          </Key>
+          <Property Name="AREA_CD_ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="ASSI_CD_ID" Type="Int32" Nullable="false" />
+          <Property Name="AREA_DT_ENTRADA" Type="DateTime" Precision="3" />
+          <Property Name="PACI_CD_ID" Type="Int32" />
+          <Property Name="USUA_CD_ID" Type="Int32" />
+          <Property Name="AREA_IN_TIPO" Type="Int32" />
+          <Property Name="AREA_IN_ATIVO" Type="Int32" />
+          <Property Name="AREA_DT_CONSULTA" Type="DateTime" Precision="0" />
+          <Property Name="AREA_HR_INICIO" Type="Time" Precision="7" />
+          <Property Name="AREA_HR_FINAL" Type="Time" Precision="7" />
+          <Property Name="AREA_NM_TITULO" Type="String" MaxLength="500" FixedLength="false" Unicode="false" />
+          <Property Name="AREA_TX_CONTEUDO" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="PACIENTE" Relationship="CRMSysDBModel.FK_AREA_PACIENTE_PACIENTE" FromRole="AREA_PACIENTE" ToRole="PACIENTE" />
+          <NavigationProperty Name="USUARIO" Relationship="CRMSysDBModel.FK_AREA_PACIENTE_USUARIO" FromRole="AREA_PACIENTE" ToRole="USUARIO" />
+        </EntityType>
+        <Association Name="FK_AREA_PACIENTE_PACIENTE">
+          <End Type="CRMSysDBModel.PACIENTE" Role="PACIENTE" Multiplicity="0..1" />
+          <End Type="CRMSysDBModel.AREA_PACIENTE" Role="AREA_PACIENTE" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="PACIENTE">
+              <PropertyRef Name="PACI__CD_ID" />
+            </Principal>
+            <Dependent Role="AREA_PACIENTE">
+              <PropertyRef Name="PACI_CD_ID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_AREA_PACIENTE_USUARIO">
+          <End Type="CRMSysDBModel.USUARIO" Role="USUARIO" Multiplicity="0..1" />
+          <End Type="CRMSysDBModel.AREA_PACIENTE" Role="AREA_PACIENTE" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="USUARIO">
+              <PropertyRef Name="USUA_CD_ID" />
+            </Principal>
+            <Dependent Role="AREA_PACIENTE">
+              <PropertyRef Name="USUA_CD_ID" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -48565,6 +48669,24 @@
                 <ScalarProperty Name="PAEX_CD_ID" ColumnName="PAEX_CD_ID" />
                 <ScalarProperty Name="ASSI_CD_ID" ColumnName="ASSI_CD_ID" />
                 <ScalarProperty Name="PAIM_CD_ID" ColumnName="PAIM_CD_ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="AREA_PACIENTE">
+            <EntityTypeMapping TypeName="CRMSysDBModel.AREA_PACIENTE">
+              <MappingFragment StoreEntitySet="AREA_PACIENTE">
+                <ScalarProperty Name="AREA_TX_CONTEUDO" ColumnName="AREA_TX_CONTEUDO" />
+                <ScalarProperty Name="AREA_NM_TITULO" ColumnName="AREA_NM_TITULO" />
+                <ScalarProperty Name="AREA_HR_FINAL" ColumnName="AREA_HR_FINAL" />
+                <ScalarProperty Name="AREA_HR_INICIO" ColumnName="AREA_HR_INICIO" />
+                <ScalarProperty Name="AREA_DT_CONSULTA" ColumnName="AREA_DT_CONSULTA" />
+                <ScalarProperty Name="AREA_IN_ATIVO" ColumnName="AREA_IN_ATIVO" />
+                <ScalarProperty Name="AREA_IN_TIPO" ColumnName="AREA_IN_TIPO" />
+                <ScalarProperty Name="USUA_CD_ID" ColumnName="USUA_CD_ID" />
+                <ScalarProperty Name="PACI_CD_ID" ColumnName="PACI_CD_ID" />
+                <ScalarProperty Name="AREA_DT_ENTRADA" ColumnName="AREA_DT_ENTRADA" />
+                <ScalarProperty Name="ASSI_CD_ID" ColumnName="ASSI_CD_ID" />
+                <ScalarProperty Name="AREA_CD_ID" ColumnName="AREA_CD_ID" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

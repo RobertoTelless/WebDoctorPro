@@ -41,7 +41,7 @@
     <div class="col-lg-12 col-md-12 col-sm-12">
         @*Atalhos*@
         <div class="row">
-            <h3 style="color:olivedrab; font-weight:bold">WebDoctor - Área do Paciente</h3>
+            <h3 style="color:olivedrab; font-weight:bold">WebDoctorPro - Área do Paciente</h3>
         </div>
 
         @*Widgets*@
@@ -124,6 +124,20 @@
                     </div>
                 </div>
             </div>
+            <div class="col-lg-2">
+                <div class="ibox float-e-margins">
+                    <div class="ibox-title" style="background-color: darkseagreen; color: darkgreen">
+                        <span class="label label-primary pull-right">Hoje</span>
+                        <h5>Locações</h5>
+                    </div>
+                    <div class="ibox-content">
+                        <h1 class="no-margins">@ViewBag.NumLocacoes</h1>
+                        <small>
+                            Locações Ativas
+                        </small>
+                    </div>
+                </div>
+            </div>
         </div>
 
         @*Atalhos*@
@@ -131,11 +145,8 @@
             <div class="form-group">
                 <div class="col-lg-12 col-md-12 col-xs-12">
                     <a href="@Url.Action("AlterarDadosCadastrais", "AreaPaciente")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Alteração de dados cadastrais do paciente" class="btn btn-sm btn-success" id="emp" OnClick = "Fade()">Dados Cadastrais</a>                
-                    <a href="@Url.Action("MontarTelaConsultas", "AreaPaciente")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acesso à central de consultas do paciente" class="btn btn-sm btn-success" id="emp" OnClick = "Fade()">Consultas</a>                
-                    <a href="@Url.Action("MontarTelaAtestados", "AreaPaciente")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acesso à central de atestados do paciente" class="btn btn-sm btn-success" id="emp" OnClick = "Fade()">Atestados</a>                
-                    <a href="@Url.Action("MontarTelaSolicitacoes", "AreaPaciente")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acesso à central de solicitações de exames do paciente" class="btn btn-sm btn-success" id="emp" OnClick = "Fade()">Solicitações</a>                
-                    <a href="@Url.Action("MontarTelaPrescricoes", "AreaPaciente")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acesso à central de prescrições do paciente" class="btn btn-sm btn-success" id="emp" OnClick = "Fade()">Prescrições</a>                
                     <a href="@Url.Action("MontarTelaInformacoes", "AreaPaciente")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Enviar informações do paciente" class="btn btn-sm btn-success" id="emp" OnClick = "Fade()">Informações</a>                
+                    <a href="@Url.Action("CarregarLandingPage", "BaseAdmin")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Retornar  ao Site" class="btn btn-sm btn-warning" id="emp" OnClick = "Fade()">Retornar ao Site do WebDoctorPro</a>                
                     <a href="@Url.Action((String)Session["AjudaNivel"])"  class="btn btn-sm btn-danger" target="_blank" >Ajuda</a>                
                 </div>
                 <br /><br />
@@ -153,11 +164,11 @@
                         <div class="col-lg-2 col-md-2 col-xs-12">
                             @if (!String.IsNullOrEmpty(Model.PACI_AQ_FOTO))
                             {
-                                <img src="@Url.Content(Model.PACI_AQ_FOTO)" style="width: auto; height: auto; max-height: 220px; max-width: 220px;">
+                                <img src="@Url.Content(Model.PACI_AQ_FOTO)" style="width: auto; height: auto; max-height: 220px; max-width: 300px;">
                             }
                             else
                             {
-                                <img src="~/Images/icon_morador.png" style="width: auto; height: auto; max-height: 220px; max-width: 220px;">
+                                <img src="~/Images/icon_morador.png" style="width: auto; height: auto; max-height: 220px; max-width: 300px;">
                             }
                             <br />
                             <br />
@@ -234,7 +245,7 @@
         <div class="row">
             <div class="ibox float-e-margins">
                 <div class="ibox-title">
-                    <h5>Dashboard Inicial</h5>
+                    <h5>Informações do Paciente</h5>
                 </div>
                 <div class="ibox-content" style="height: 2100px">
 
@@ -249,9 +260,9 @@
 
                                     <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
                                         <div class="col-lg-12 col-md-12 col-xs-12">
-                                            <a href="@Url.Action("MarcarConsulta", "AreaPaciente")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Abre a página de marcação de consultas" id="emp" class="btn btn-sm btn-primary" OnClick = "Fade()">Marcação de Consultas</a>                
-                                            <a href="@Url.Action("ExibirHoje", "AreaPaciente")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Exibir apenas as consultas marcadas para hoje ou data futura" id="emp" class="btn btn-sm btn-warning" OnClick = "Fade()">Exibir Hoje</a>                
-                                            <a href="@Url.Action("ExibirFuturas", "AreaPaciente")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Exibir apenas as consultas marcadas para hoje ou data futura" id="emp" class="btn btn-sm btn-warning" OnClick = "Fade()">Exibir Futuras</a>                
+                                            <a href="@Url.Action("MarcarConsulta", "AreaPaciente")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Abre a página de marcação de consultas" id="emp" class="btn btn-sm btn-primary" OnClick = "Fade()">Solicitar Marcação de Consulta</a>                
+                                            <a href="@Url.Action("ExibirHoje", "AreaPaciente")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Exibir apenas as consultas marcadas para hoje" id="emp" class="btn btn-sm btn-warning" OnClick = "Fade()">Exibir Hoje</a>                
+                                            <a href="@Url.Action("ExibirFuturas", "AreaPaciente")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Exibir apenas as consultas marcadas para uma data futura" id="emp" class="btn btn-sm btn-warning" OnClick = "Fade()">Exibir Futuras</a>                
                                             <a href="@Url.Action("ExibirTodas", "AreaPaciente")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Exibir todas as consultas do paciente" id="emp" class="btn btn-sm btn-warning" OnClick = "Fade()">Exibir Todas</a>                
                                         </div>
                                     </div>
@@ -264,7 +275,7 @@
                                                     <th style="width: auto">Data</th>
                                                     <th style="width: auto">Início</th>
                                                     <th style="width: auto">Término</th>
-                                                    <th style="width: auto">Tipo de Consulta</th>
+                                                    <th style="width: auto">Valor (R$)</th>
                                                     <th style="width: auto">Situação</th>
                                                     <th style="width: auto">Profissional</th>
                                                     <th class="td-one-action">Ações</th>
@@ -275,25 +286,11 @@
                                                 {   
                                                     if (cond.PACO_DT_CONSULTA > DateTime.Today.Date)
                                                     {
-                                                        <tr  style="background-color: aliceblue">
-                                                            @if (cond.PACO_DT_CONSULTA.Date >= DateTime.Today.Date & cond.PACO_IN_CONFIRMADA < 2)
-                                                            {
-                                                                <td style="width: auto"><a href="@Url.Action("EditarConsulta", "AreaPaciente", new { id = cond.PACO_CD_ID })" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página de alteração da consulta" />@cond.PACO_DT_CONSULTA.ToShortDateString()</td>
-                                                            }
-                                                            else
-                                                            {
-                                                                <td style="width: auto"><a href="@Url.Action("VerConsulta", "AreaPaciente", new { id = cond.PACO_CD_ID })" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página de visualização do atestado" />@cond.PACO_DT_CONSULTA.ToShortDateString()</td>
-                                                            }
+                                                        <tr  style="background-color: gainsboro">
+                                                            <td style="width: auto">@cond.PACO_DT_CONSULTA.ToShortDateString()</td>
                                                             <td style="width: auto">@cond.PACO_HR_INICIO.ToString()</td>
                                                             <td style="width: auto">@cond.PACO_HR_FINAL.ToString()</td>
-                                                            @if (cond.VALOR_CONSULTA != null)
-                                                            {
-                                                                <td style="width: auto"><span class="badge badge-primary">@cond.VALOR_CONSULTA.VACO_NM_NOME</span></td>
-                                                            }
-                                                            else
-                                                            {
-                                                                <td style="width: auto"><span class="badge badge-primary">-</span></td>
-                                                            }
+                                                            <td style="width: auto">@CrossCutting.Formatters.DecimalFormatter(cond.VALOR_CONSULTA.VACO_NR_VALOR.Value)</td>
                                                             @if (cond.PACO_IN_CONFIRMADA == 1)
                                                             {
                                                                 <td style="width: auto"><span class="badge badge-primary">Confirmada</span></td>
@@ -310,7 +307,7 @@
                                                             {
                                                                 <td style="width: auto"><span class="badge badge-success">Encerrada</span></td>
                                                             }
-                                                            <td style="width: auto; color: green; font-weight: bold">@cond.USUARIO.USUA_NM_NOME</td>
+                                                            <td style="width: auto">@cond.USUARIO.USUA_NM_NOME</td>
                                                             <td style="width: auto" class="td-one-action">
                                                                 @if (cond.PACO_IN_ATIVO == 1 & cond.PACO_IN_CONFIRMADA == 0)
                                                                 {
@@ -322,23 +319,15 @@
                                                                 }
                                                                 @Html.TableLinkDetails(cond.PACO_CD_ID, "EnviarInformacaoConsulta", "fa-send", "Enviar Informações")
                                                             </td>
-                                                            <td style="width: 0.005px"></td>
                                                         </tr>
                                                     }
                                                     else if (cond.PACO_DT_CONSULTA < DateTime.Today.Date)
                                                     {
-                                                        <tr style="background-color: floralwhite">
-                                                            <td style="width: auto"><a href="@Url.Action("VerConsulta", "Paciente", new { id = cond.PACO_CD_ID })" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página de visualização da consulta" />@cond.PACO_DT_CONSULTA.ToShortDateString()</td>
+                                                        <tr style="background-color: aliceblue">
+                                                            <td style="width: auto">@cond.PACO_DT_CONSULTA.ToShortDateString()</td>
                                                             <td style="width: auto">@cond.PACO_HR_INICIO.ToString()</td>
                                                             <td style="width: auto">@cond.PACO_HR_FINAL.ToString()</td>
-                                                            @if (cond.VALOR_CONSULTA != null)
-                                                            {
-                                                                <td style="width: auto"><span class="badge badge-primary">@cond.VALOR_CONSULTA.VACO_NM_NOME</span></td>
-                                                            }
-                                                            else
-                                                            {
-                                                                <td style="width: auto"><span class="badge badge-primary">-</span></td>
-                                                            }
+                                                            <td style="width: auto">@CrossCutting.Formatters.DecimalFormatter(cond.VALOR_CONSULTA.VACO_NR_VALOR.Value)</td>
                                                             @if (cond.PACO_IN_CONFIRMADA == 1)
                                                             {
                                                                 <td style="width: auto"><span class="badge badge-primary">Confirmada</span></td>
@@ -355,33 +344,18 @@
                                                             {
                                                                 <td style="width: auto"><span class="badge badge-success">Encerrada</span></td>
                                                             }
-                                                            <td style="width: auto; color: green; font-weight: bold">@cond.USUARIO.USUA_NM_NOME</td>
+                                                            <td style="width: auto">@cond.USUARIO.USUA_NM_NOME</td>
                                                             <td style="width: auto" class="td-one-action">
                                                             </td>
-                                                            <td style="width: 0.005px"></td>
                                                         </tr>
                                                     }
                                                     else
                                                     {
-                                                        <tr style="background-color: palegoldenrod; color: darkgreen; font-weight: bold">
-                                                            @if (cond.PACO_DT_CONSULTA.Date >= DateTime.Today.Date & cond.PACO_IN_CONFIRMADA < 2)
-                                                            {
-                                                                <td style="width: auto"><a href="@Url.Action("EditarConsulta", "Paciente", new { id = cond.PACO_CD_ID })" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página de alteração da consulta"/>@cond.PACO_DT_CONSULTA.ToShortDateString()</td>
-                                                            }
-                                                            else
-                                                            {
-                                                                <td style="width: auto"><a href="@Url.Action("VerConsulta", "Paciente", new { id = cond.PACO_CD_ID })" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página de visualização da consulta"/>@cond.PACO_DT_CONSULTA.ToShortDateString()</td>
-                                                            }
+                                                        <tr style="background-color: beige; color: darkgreen; font-weight: bold">
+                                                            <td style="width: auto">@cond.PACO_DT_CONSULTA.ToShortDateString()</td>
                                                             <td style="width: auto">@cond.PACO_HR_INICIO.ToString()</td>
                                                             <td style="width: auto">@cond.PACO_HR_FINAL.ToString()</td>
-                                                            @if (cond.VALOR_CONSULTA != null)
-                                                            {
-                                                                <td style="width: auto"><span class="badge badge-primary">@cond.VALOR_CONSULTA.VACO_NM_NOME</span></td>
-                                                            }
-                                                            else
-                                                            {
-                                                                <td style="width: auto"><span class="badge badge-primary">-</span></td>
-                                                            }
+                                                            <td style="width: auto">@CrossCutting.Formatters.DecimalFormatter(cond.VALOR_CONSULTA.VACO_NR_VALOR.Value)</td>
                                                             @if (cond.PACO_IN_CONFIRMADA == 1)
                                                             {
                                                                 <td style="width: auto"><span class="badge badge-primary">Confirmada</span></td>
@@ -410,7 +384,6 @@
                                                                 }
                                                                 @Html.TableLinkDetails(cond.PACO_CD_ID, "EnviarInformacaoConsulta", "fa-send", "Enviar Informações")
                                                             </td>
-                                                            <td style="width: 0.005px"></td>
                                                         </tr>
                                                     }
                                                 }

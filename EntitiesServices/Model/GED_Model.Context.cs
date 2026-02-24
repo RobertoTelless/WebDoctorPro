@@ -414,5 +414,6 @@ namespace EntitiesServices.Model
         public virtual DbSet<VALOR_CONSULTA_MATERIAL> VALOR_CONSULTA_MATERIAL { get; set; }
         public virtual DbSet<ACESSO_SITE> ACESSO_SITE { get; set; }
         public virtual DbSet<PACIENTE_EXAME_ANEXO_IMAGEM> PACIENTE_EXAME_ANEXO_IMAGEM { get; set; }
+        public virtual DbSet<AREA_PACIENTE> AREA_PACIENTE { get; set; }
     }
 }

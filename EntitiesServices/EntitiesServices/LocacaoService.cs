@@ -429,5 +429,9 @@ namespace ModelServices.EntitiesServices
             }
         }
 
+        public List<LOCACAO> GetLocacaoByCPF(String cpf)
+        {
+            return _baseRepository.GetByCPF(cpf);
+        }
     }
 }
