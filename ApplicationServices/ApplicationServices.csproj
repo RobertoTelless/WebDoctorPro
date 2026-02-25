@@ -226,6 +226,7 @@
     <Compile Include="Interfaces\IControleMensagemAppService.cs" />
     <Compile Include="Interfaces\IEMailAgendaAppService.cs" />
     <Compile Include="Interfaces\IEmpresaAppService.cs" />
+    <Compile Include="Interfaces\IAreaPacienteAppService.cs" />
     <Compile Include="Interfaces\ILocacaoAppService.cs" />
     <Compile Include="Interfaces\ITipoHistoricoAppService.cs" />
     <Compile Include="Interfaces\IVideoAppService.cs" />
@@ -281,6 +282,7 @@
     <Compile Include="Services\ControleMensagemAppService.cs" />
     <Compile Include="Services\EMailAgendaAppService.cs" />
     <Compile Include="Services\EmpresaAppService.cs" />
+    <Compile Include="Services\AreaPacienteAppService.cs" />
     <Compile Include="Services\LocacaoAppService.cs" />
     <Compile Include="Services\TipoHistoricoAppService.cs" />
     <Compile Include="Services\VideoAppService.cs" />

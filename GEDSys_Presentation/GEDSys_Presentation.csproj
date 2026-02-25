@@ -5388,6 +5388,7 @@
     <Content Include="Views\Locacao\MontarTelaDashboardLocacao.cshtml" />
     <Content Include="Views\Paciente2\MontarTelaEncerrarConsultaMaterial.cshtml" />
     <Content Include="Views\Paciente\VerAnexoExamesPaciente.cshtml" />
+    <Content Include="Views\AreaPaciente\MontarTelaPerguntas.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

@@ -52,6 +52,7 @@ namespace GEDSys_Presentation.Controllers
         private readonly IConfiguracaoAnamneseAppService anaApp;
         private readonly ILogAppService logApp;
         private readonly ILocacaoAppService locaApp;
+        private readonly IAreaPacienteAppService areaApp;
 
         private String msg;
         private Exception exception;
@@ -67,7 +68,7 @@ namespace GEDSys_Presentation.Controllers
         private List<PACIENTE_PRESCRICAO> listaMasterPrescricao = new List<PACIENTE_PRESCRICAO>();
         private List<LOCACAO> listaMasterLocacao = new List<LOCACAO>();
 
-        public AreaPacienteController(IPacienteAppService baseApps, IConfiguracaoAppService confApps, IUsuarioAppService usuApps, IAcessoMetodoAppService aceApps, IAssinanteAppService assApps, IConfiguracaoCalendarioAppService calApps, IConfiguracaoAnamneseAppService anaApps, ILogAppService logApps, ILocacaoAppService locaApps)
+        public AreaPacienteController(IPacienteAppService baseApps, IConfiguracaoAppService confApps, IUsuarioAppService usuApps, IAcessoMetodoAppService aceApps, IAssinanteAppService assApps, IConfiguracaoCalendarioAppService calApps, IConfiguracaoAnamneseAppService anaApps, ILogAppService logApps, ILocacaoAppService locaApps, IAreaPacienteAppService areaApps)
         {
             baseApp = baseApps;
             confApp = confApps;
@@ -78,6 +79,7 @@ namespace GEDSys_Presentation.Controllers
             anaApp = anaApps;
             logApp = logApps;
             locaApp = locaApps;
+            areaApp = areaApps;
         }
 
         [HttpGet]
@@ -762,12 +764,17 @@ namespace GEDSys_Presentation.Controllers
                 Session["PacienteCPF"] = cpf;
 
                 // Trata mensagens
-                if (Session["MensPaciente"] != null)
+                if (Session["MensArea"] != null)
                 {
                     // Mensagem
-                    if ((Int32)Session["MensPaciente"] == 61)
+                    if ((Int32)Session["MensArea"] == 61)
                     {
                         ModelState.AddModelError("", (String)Session["MsgCRUD"]);
+                    }
+                    if ((Int32)Session["MensArea"] == 61)
+                    {
+                        TempData["MensagemAcerto"] = (String)Session["MsgCRUD"];
+                        TempData["TemMensagem"] = 1;
                     }
                 }
 
@@ -1097,51 +1104,11 @@ namespace GEDSys_Presentation.Controllers
                 ViewBag.Tipo = new SelectList(tipo, "Value", "Text");
 
                 // Mensagem
-                if (Session["MensPaciente"] != null)
+                if (Session["MensArea"] != null)
                 {
                     if ((Int32)Session["MensPaciente"] == 500)
                     {
                         ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0524", CultureInfo.CurrentCulture));
-                    }
-                    if ((Int32)Session["MensPaciente"] == 501)
-                    {
-                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0526", CultureInfo.CurrentCulture));
-                    }
-                    if ((Int32)Session["MensPaciente"] == 502)
-                    {
-                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0529", CultureInfo.CurrentCulture));
-                    }
-                    if ((Int32)Session["MensPaciente"] == 503)
-                    {
-                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0530", CultureInfo.CurrentCulture));
-                    }
-                    if ((Int32)Session["MensPaciente"] == 504)
-                    {
-                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0545", CultureInfo.CurrentCulture));
-                    }
-                    if ((Int32)Session["MensPaciente"] == 701)
-                    {
-                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0542", CultureInfo.CurrentCulture));
-                    }
-                    if ((Int32)Session["MensPaciente"] == 702)
-                    {
-                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0543", CultureInfo.CurrentCulture));
-                    }
-                    if ((Int32)Session["MensPaciente"] == 703)
-                    {
-                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0544", CultureInfo.CurrentCulture));
-                    }
-                    if ((Int32)Session["MensPaciente"] == 800)
-                    {
-                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0551", CultureInfo.CurrentCulture));
-                    }
-                    if ((Int32)Session["MensPaciente"] == 801)
-                    {
-                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0552", CultureInfo.CurrentCulture));
-                    }
-                    if ((Int32)Session["MensPaciente"] == 802)
-                    {
-                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0553", CultureInfo.CurrentCulture));
                     }
                 }
 
@@ -1208,311 +1175,30 @@ namespace GEDSys_Presentation.Controllers
             {
                 try
                 {
-                    // Sanitização
-
-                    // Criação de consulta normal (única)
+                    // Criação da solicitação
                     Session["UsuarioProf"] = vm.USUA_CD_ID;
                     Session["idAss"] = vm.ASSI_CD_ID;
                     Int32? usuarioProf = vm.USUA_CD_ID;
                     Int32? idAss = vm.ASSI_CD_ID;
 
-                    CONFIGURACAO_CALENDARIO confCal = CarregaConfiguracaoCalendario();
-                    if (vm.MODO_CONSULTA == 1)
-                    {
-                        // Critica dia util
-                        DateTime dataCons = vm.PACO_DT_CONSULTA;
-                        Int32 dia = (Int32)dataCons.DayOfWeek;
-                        Int32 voltaCal = VerificacaoDataCalendario.ValidaDiaUtil(dia, confCal);
-                        if (voltaCal == 1)
-                        {
-                            Session["MensPaciente"] = 800;
-                            ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0551", CultureInfo.CurrentCulture));
-                            return View(vm);
-                        }
+                    AREA_PACIENTE area = new AREA_PACIENTE();
+                    area.ASSI_CD_ID = idAss.Value;
+                    area.AREA_DT_ENTRADA = DateTime.Now;
+                    area.PACI_CD_ID = usuario.PACI__CD_ID;
+                    area.USUA_CD_ID = usuario.USUA_CD_ID;
+                    area.AREA_IN_TIPO = 1;
+                    area.AREA_IN_ATIVO = 1;
+                    area.AREA_DT_CONSULTA = vm.PACO_DT_CONSULTA;
+                    area.AREA_HR_INICIO = vm.PACO_HR_INICIO;
+                    area.AREA_HR_FINAL = vm.PACO_HR_FINAL;
+                    area.AREA_NM_TITULO = "Solicitação de marcação de consulta";
+                    area.AREA_TX_CONTEUDO = "~Solicitação de marcação de consulta de " + usuario.PACI_NM_NOME.ToUpper() + " com o profissional " + usuario.USUARIO.USUA_NM_NOME.ToUpper() + " para o dia " + vm.PACO_DT_CONSULTA.ToShortDateString() + " - " + vm.PACO_HR_INICIO.ToString() + " até " + vm.PACO_HR_FINAL.ToString();
+                    Int32 volta = areaApp.ValidateCreate(area);
 
-                        // Critica de horario util
-                        Int32 voltaUtil = VerificacaoDataCalendario.ValidaHoraUtil(dia, vm, confCal);
-                        if (voltaUtil == 1)
-                        {
-                            Session["MensPaciente"] = 801;
-                            ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0552", CultureInfo.CurrentCulture));
-                            return View(vm);
-                        }
-                        if (voltaUtil == 2)
-                        {
-                            Session["MensPaciente"] = 802;
-                            ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0553", CultureInfo.CurrentCulture));
-                            return View(vm);
-                        }
+                    // Mensagem
+                    Session["MsgCRUD"] = "A solicitação de marcação de consulta de " + usuario.PACI_NM_NOME.ToUpper() + " com o profissional " + usuario.USUARIO.USUA_NM_NOME.ToUpper() + " para o dia " + vm.PACO_DT_CONSULTA.ToShortDateString() + " - " + vm.PACO_HR_INICIO.ToString() + " até " + vm.PACO_HR_FINAL.ToString() + " foi enviada com sucesso. Você receberá a confirmação de sua conaulta em seu e-mail cadastrado no WebDoctorPro";
+                    Session["MensFC"] = 61;
 
-                        // Critica de data
-                        if (vm.PACO_HR_INICIO == null || vm.PACO_HR_FINAL == null)
-                        {
-                            Session["MensPaciente"] = 504;
-                            ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0545", CultureInfo.CurrentCulture));
-                            return View(vm);
-                        }
-                        if (vm.PACO_DT_CONSULTA.Date < DateTime.Today.Date)
-                        {
-                            Session["MensPaciente"] = 501;
-                            ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0526", CultureInfo.CurrentCulture));
-                            return View(vm);
-                        }
-                        if (vm.PACO_HR_INICIO == vm.PACO_HR_FINAL)
-                        {
-                            Session["MensPaciente"] = 502;
-                            ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0529", CultureInfo.CurrentCulture));
-                            return View(vm);
-                        }
-                        if (vm.PACO_HR_INICIO > vm.PACO_HR_FINAL)
-                        {
-                            Session["MensPaciente"] = 503;
-                            ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0530", CultureInfo.CurrentCulture));
-                            return View(vm);
-                        }
-
-                        // Verifica se já tem consulta na data selecionada para o mesmo paciente e mesmo tipo de consulta
-                        if (vm.PACO_IN_NOVO_PACIENTE == 2)
-                        {
-                            List<PACIENTE_CONSULTA> conPaciente = CarregaConsultasNova().Where(p => p.USUA_CD_ID == vm.USUA_CD_ID & p.PACI_CD_ID == vm.PACI_CD_ID & p.PACO_DT_CONSULTA == vm.PACO_DT_CONSULTA & p.PACO_IN_ATIVO == 1 & p.PACO_IN_CONFIRMADA < 2).ToList();
-                            if (conPaciente.Count > 0)
-                            {
-                                Session["MensPaciente"] = 600;
-                                ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0533", CultureInfo.CurrentCulture));
-                                return View(vm);
-                            }
-                        }
-
-                        // Critica de horario
-                        List<PACIENTE_CONSULTA> lista = baseApp.GetAllConsultas(vm.ASSI_CD_ID.Value).Where(p => p.USUA_CD_ID == vm.USUA_CD_ID & p.PACO_DT_CONSULTA.Date == vm.PACO_DT_CONSULTA.Date & p.PACO_IN_ATIVO == 1 & p.PACO_IN_CONFIRMADA < 2).ToList();
-                        List<PACIENTE_CONSULTA> lista1 = lista.Where(p => p.PACO_HR_INICIO >= vm.PACO_HR_INICIO & p.PACO_HR_FINAL >= vm.PACO_HR_FINAL & p.PACO_HR_INICIO < vm.PACO_HR_FINAL).ToList();
-                        List<PACIENTE_CONSULTA> lista2 = lista.Where(p => p.PACO_HR_INICIO <= vm.PACO_HR_INICIO & p.PACO_HR_FINAL >= vm.PACO_HR_FINAL).ToList();
-                        List<PACIENTE_CONSULTA> lista3 = lista.Where(p => p.PACO_HR_INICIO <= vm.PACO_HR_INICIO & p.PACO_HR_FINAL <= vm.PACO_HR_FINAL & p.PACO_HR_FINAL > vm.PACO_HR_INICIO).ToList();
-                        List<PACIENTE_CONSULTA> lista4 = lista.Where(p => p.PACO_HR_INICIO >= vm.PACO_HR_INICIO & p.PACO_HR_FINAL <= vm.PACO_HR_FINAL).ToList();
-                        if (lista1.Count > 0 || lista2.Count > 0 || lista3.Count > 0 || lista4.Count > 0)
-                        {
-                            Session["MensPaciente"] = 500;
-                            ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0524", CultureInfo.CurrentCulture));
-                            return View(vm);
-                        }
-
-                        // Verifica bloqueios
-                        List<CONFIGURACAO_CALENDARIO> confs = calApp.GetAllItems(vm.ASSI_CD_ID.Value);
-                        CONFIGURACAO_CALENDARIO cal = null;
-                        cal = confs.Where(p => p.USUA_CD_ID == vm.USUA_CD_ID).FirstOrDefault();
-                        List<CONFIGURACAO_CALENDARIO_BLOQUEIO> bloqs = cal.CONFIGURACAO_CALENDARIO_BLOQUEIO.Where(p => p.COCB_IN_ATIVO == 1).ToList();
-                        Int32 bloqFlag = 0;
-                        foreach (CONFIGURACAO_CALENDARIO_BLOQUEIO bloq in bloqs)
-                        {
-                            if (vm.PACO_DT_CONSULTA >= bloq.COCB_DT_BLOQUEIO_INICIO & vm.PACO_DT_CONSULTA <= bloq.COCB_DT_BLOQUEIO_FINAL)
-                            {
-                                if (bloq.COCB_HR_INICIO == null || bloq.COCB_HR_FINAL == null)
-                                {
-                                    bloqFlag = 1;
-                                }
-                                else
-                                {
-                                    if (vm.PACO_HR_INICIO >= bloq.COCB_HR_INICIO & vm.PACO_HR_FINAL <= bloq.COCB_HR_FINAL)
-                                    {
-                                        bloqFlag = 1;
-                                    }
-                                }
-                            }
-                        }
-
-                        if (bloqFlag > 0)
-                        {
-                            Session["MensPaciente"] = 500;
-                            ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0565", CultureInfo.CurrentCulture));
-                            return View(vm);
-                        }
-
-                        // Completa campo
-                        vm.PACO_IN_RECORRENTE = 0;
-                        vm.PACO_IN_RECEBE = 1;
-
-                        // Executa a operação
-                        PACIENTE_CONSULTA item = Mapper.Map<PacienteConsultaViewModel, PACIENTE_CONSULTA>(vm);
-                        Int32 volta = baseApp.ValidateCreateConsulta(item);
-
-                        // Recupera paciente
-                        PACIENTE pac = baseApp.GetItemById(item.PACI_CD_ID);
-
-                        // Acerta estado
-                        Session["PacienteConsulta"] = pac;
-                        Session["PacienteAlterada"] = 1;
-                        Session["NivelPaciente"] = 3;
-                        Session["ConsultasAlterada"] = 1;
-                        Session["ListaConsultasGeral"] = null;
-                        Session["IdPaciente"] = item.PACI_CD_ID;
-                        Session["IdConsulta"] = item.PACO_CD_ID;
-                        Session["VoltaConfCalendario"] = 1;
-
-                        // Verifica se já existe anamnese para o paciente
-                        List<PACIENTE_CONSULTA> listaAnterior = baseApp.GetAllConsultas(vm.ASSI_CD_ID.Value).Where(p => p.USUA_CD_ID == usuario.USUA_CD_ID & p.PACI_CD_ID == item.PACI_CD_ID & p.PACO_IN_ATIVO == 1 & p.PACO_IN_ENCERRADA == 0 & p.PACO_DT_CONSULTA != item.PACO_DT_CONSULTA).OrderBy(p => p.PACO_DT_CONSULTA).ToList();
-                        PACIENTE_CONSULTA consultaAnterior = listaAnterior.LastOrDefault();
-                        PACIENTE_ANAMNESE anam = pac.PACIENTE_ANAMNESE.Where(p => p.PAAM_IN_ATIVO == 1).FirstOrDefault();
-
-                        // Cria anamnese em branco ou atualiza a da ultima consulta
-                        CONFIGURACAO_ANAMNESE ana = anaApp.GetItemById(idAss.Value);
-                        PACIENTE_ANAMNESE anamnese = new PACIENTE_ANAMNESE();
-                        if (anam == null)
-                        {
-                            anamnese.ASSI_CD_ID = usuario.ASSI_CD_ID;
-                            anamnese.PAAM_DT_DATA = vm.PACO_DT_CONSULTA;
-                            anamnese.PAAM_DT_ORIGINAL = vm.PACO_DT_CONSULTA;
-                            anamnese.PAAM_IN_ATIVO = 1;
-                            anamnese.PACI_CD_ID = item.PACI_CD_ID;
-                            anamnese.USUA_CD_ID = usuario.USUA_CD_ID;
-                            anamnese.PACO_CD_ID = item.PACO_CD_ID;
-                            anamnese.PAAM_IN_PREENCHIDA = 0;
-                            anamnese.PAAM_IN_FLAG_MOTIVO_CONSULTA = 1;
-                            anamnese.PAAM_IN_FLAG_MEDICAMENTO = 1;
-                            anamnese.PAAM_IN_FLAG__HISTORIA_FAMILIAR = 1;
-                            anamnese.PAAM_IN_FLAG_HISTORIA_SOCIAL = ana.COAN_IN_HISTORIA_SOCIAL;
-                            anamnese.PAAM_IN_FLAG_AVALIACAO_CARDIOLOGICA = ana.COAN_IN_CARDIOLOGICA;
-                            anamnese.PAAM_IN_FLAG_RESPIRATORIO = ana.COAN_IN_RESPIRATORIA;
-                            anamnese.PAAM_IN_FLAG_ABDOMEM = ana.COAN_IN_ABDOMEM;
-                            anamnese.PAAM_IN_FLAG_MEMBROS_INFERIORES = ana.COAN_IN_MEMBROS;
-                            anamnese.PAAM_IN_FLAG_QUEIXA_PRINCIPAL = 1;
-                            anamnese.PAAM_IN_FLAG_HISTORIA_DOENCA_ATUAL = 1;
-                            anamnese.PAAM_IN_FLAG_HISTORIA_PROGRESSIVA = ana.COAN_IN_HISTORIA_PATOLOGIA;
-                            anamnese.PAAM_IN_FLAG_DIAGNOSTICO_1 = 1;
-                            anamnese.PAAM_IN_CAMPO_1 = ana.COAN_IN_CAMPO_1;
-                            anamnese.PAAM_NM_CAMPO_1 = ana.COAN_NM_CAMPO_1;
-                            anamnese.PAAM_IN_CAMPO_2 = ana.COAN_IN_CAMPO_2;
-                            anamnese.PAAM_NM_CAMPO_2 = ana.COAN_NM_CAMPO_2;
-                            anamnese.PAAM_IN_CAMPO_3 = ana.COAN_IN_CAMPO_3;
-                            anamnese.PAAM_NM_CAMPO_3 = ana.COAN_NM_CAMPO_3;
-                            anamnese.PAAM_IN_CAMPO_4 = ana.COAN_IN_CAMPO_4;
-                            anamnese.PAAM_NM_CAMPO_4 = ana.COAN_NM_CAMPO_4;
-                            anamnese.PAAM_IN_CAMPO_5 = ana.COAN_IN_CAMPO_5;
-                            anamnese.PAAM_NM_CAMPO_5 = ana.COAN_NM_CAMPO_5;
-                            anamnese.PAAM_IN_ALTERADA = 0;
-                            Int32 voltaA = baseApp.ValidateCreateAnamnese(anamnese);
-                        }
-
-                        // Cria exame fisico em branco ou copia da ultima consulta
-                        PACIENTE_EXAME_FISICOS fisi = pac.PACIENTE_EXAME_FISICOS.Where(p => p.PAEF_IN_ATIVO == 1).FirstOrDefault();
-                        PACIENTE_EXAME_FISICOS fisico = new PACIENTE_EXAME_FISICOS();
-                        if (fisi == null)
-                        {
-                            fisico.ASSI_CD_ID = usuario.ASSI_CD_ID;
-                            fisico.PACI_CD_ID = item.PACI_CD_ID;
-                            fisico.PAEF_DT_DATA = vm.PACO_DT_CONSULTA;
-                            fisico.PAEF_DT_ORIGINAL = vm.PACO_DT_CONSULTA;
-                            fisico.PAEF_IN_ALCOOLISMO = 0;
-                            fisico.PAEF_IN_ALCOOLISMO_FREQUENCIA = 0;
-                            fisico.PAEF_IN_ANTE_ALERGICO = 0;
-                            fisico.PAEF_IN_ANTE_ONCOLOGICO = 0;
-                            fisico.PAEF_IN_ANTICONCEPCIONAL = 0;
-                            fisico.PAEF_IN_ATIVO = 1;
-                            fisico.PAEF_IN_CIRURGIAS = 0;
-                            fisico.PAEF_IN_DIABETE = 0;
-                            fisico.PAEF_IN_EPILEPSIA = 0;
-                            fisico.PAEF_IN_EXERCICIO_FISICO = 0;
-                            fisico.PAEF_IN_EXERCICIO_FISICO_FREQUENCIA = 0;
-                            fisico.PAEF_IN_GESTANTE = 0;
-                            fisico.PAEF_IN_HIPERTENSAO = 0;
-                            fisico.PAEF_IN_HIPOTENSAO = 0;
-                            fisico.PAEF_IN_MARCAPASSO = 0;
-                            fisico.PAEF_IN_TABAGISMO = 0;
-                            fisico.PAEF_IN_VARIZES = 0;
-                            fisico.USUA_CD_ID = usuario.USUA_CD_ID;
-                            fisico.PACO_CD_ID = item.PACO_CD_ID;
-                            fisico.PAEF_IN_PREENCHIDO = 0;
-                            fisico.PAEF_VL_IMC = 0;
-                            Int32 voltaF = baseApp.ValidateCreateExameFisico(fisico);
-                        }
-
-                        // Acerta proxima consulta do paciente
-                        Int32? ret = conf.CONF_NR_MESES_RETORNO;
-                        Int32? calc = conf.CONF_IN_CALCULA_PROXIMA_CONSULTA;
-                        List<PACIENTE_CONSULTA> cons = pac.PACIENTE_CONSULTA.Where(p => p.PACO_DT_CONSULTA.Date >= DateTime.Today.Date & p.PACO_IN_ATIVO == 1 & p.PACO_IN_CONFIRMADA < 2).ToList();
-                        if (cons.Count == 0)
-                        {
-                            pac.PACI_DT_CONSULTA = item.PACO_DT_CONSULTA;
-                            if (calc == 1)
-                            {
-                                pac.PACI_DT_PREVISAO_RETORNO = item.PACO_DT_CONSULTA.AddMonths(ret.Value);
-                            }
-                            else
-                            {
-                                pac.PACI_DT_PREVISAO_RETORNO = null;
-                            }
-                            Int32 voltaP = baseApp.ValidateEdit(pac, pac);
-                        }
-                        else
-                        {
-                            cons = pac.PACIENTE_CONSULTA.Where(p => p.PACO_DT_CONSULTA.Date < item.PACO_DT_CONSULTA.Date & p.PACO_IN_ATIVO == 1 & p.PACO_IN_CONFIRMADA < 2).ToList();
-                            if (cons.Count == 0)
-                            {
-                                pac.PACI_DT_CONSULTA = item.PACO_DT_CONSULTA;
-                                if (calc == 1)
-                                {
-                                    pac.PACI_DT_PREVISAO_RETORNO = item.PACO_DT_CONSULTA.AddMonths(ret.Value);
-                                }
-                                else
-                                {
-                                    pac.PACI_DT_PREVISAO_RETORNO = null;
-                                }
-                                Int32 voltaP = baseApp.ValidateEdit(pac, pac);
-                            }
-                        }
-
-                        // Envia mensagem
-                        if (pac.PACI_NM_EMAIL != null & conf.CONF_IN_MENSAGEM_CONSULTA == 1)
-                        {
-                            PACIENTE_CONSULTA consMensagem = baseApp.GetConsultaById((Int32)Session["IdConsulta"]);
-                            //Int32 voltaCons = EnviarEMailConsulta(consMensagem, 1);
-                        }
-                        if (pac.PACI_NR_CELULAR != null & conf.CONF_IN_MENSAGEM_CONSULTA == 1)
-                        {
-                            PACIENTE_CONSULTA consMensagem = baseApp.GetConsultaById((Int32)Session["IdConsulta"]);
-                            //Int32 voltaCons = EnviarSMSConsulta(consMensagem, 1);
-                        }
-                        //if (usuario.USUA_NM_EMAIL != null & conf.CONF_IN_MENSAGEM_CONSULTA == 1)
-                        //{
-                        //    PACIENTE_CONSULTA consMensagem = baseApp.GetConsultaById((Int32)Session["IdConsulta"]);
-                        //    Int32 voltaCons = EnviarEMailConsulta(consMensagem, 5);
-                        //}
-
-                        // Monta Log
-                        String frase = item.PACI_CD_ID.ToString() + "|" + item.PACI_CD_ID.ToString() + "|" + item.PACO_DT_CONSULTA.ToString() + "|" + item.PACO_HR_INICIO.ToString() + "|" + item.PACO_HR_FINAL.ToString() + "|" + item.VACO_CD_ID.ToString();
-                        LOG log = new LOG
-                        {
-                            LOG_DT_DATA = DateTime.Now,
-                            ASSI_CD_ID = vm.ASSI_CD_ID.Value,
-                            USUA_CD_ID = vm.USUA_CD_ID.Value,
-                            LOG_NM_OPERACAO = "icoPACI",
-                            LOG_IN_ATIVO = 1,
-                            LOG_TX_REGISTRO = frase,
-                            LOG_IN_SISTEMA = 6
-                        };
-                        Int32 volta1 = logApp.ValidateCreate(log);
-
-                        // Grava historico
-                        PACIENTE_HISTORICO hist = new PACIENTE_HISTORICO();
-                        hist.ASSI_CD_ID = usuario.ASSI_CD_ID;
-                        hist.USUA_CD_ID = usuario.USUA_CD_ID;
-                        hist.PACI_CD_ID = item.PACI_CD_ID;
-                        hist.PAHI_DT_DATA = DateTime.Now;
-                        hist.PAHI_IN_TIPO = 10;
-                        hist.PAHI_IN_CHAVE = item.PACO_CD_ID;
-                        hist.PAHI_NM_OPERACAO = "Paciente - Inclusão de Consulta";
-                        hist.PAHI_DS_DESCRICAO = "Paciente: " + pac.PACI_NM_NOME + " - Consulta incluída: " + item.PACO_DT_CONSULTA.ToShortDateString();
-                        Int32 voltaHist = baseApp.ValidateCreateHistorico(hist);
-
-                        Session["ListaPacienteBase"] = null;
-                        Session["PacienteAlterada"] = 1;
-                        Session["ListaPaciente"] = null;
-
-                        // Mensagem do CRUD
-                        Session["MsgCRUD"] = "A consulta do(a) paciente " + pac.PACI_NM_NOME.ToUpper() + " foi marcada com sucesso para " + item.PACO_DT_CONSULTA.ToLongDateString();
-                        Session["MensPaciente"] = 888;
-                        Session["ConsultaMarcada"] = 1;
-                        Session["ConsultaFrase"] = item.PACO_DT_CONSULTA.ToShortDateString() + " de " + item.PACO_HR_INICIO.ToString() + " até " + item.PACO_HR_FINAL.ToString();
-                    }
 
                     // Retorno
                     return RedirectToAction("MontarTelaAreaPaciente");
@@ -1622,6 +1308,198 @@ namespace GEDSys_Presentation.Controllers
             hash.Add("cpf", prof.USUA_NR_CPF);
             hash.Add("classe", classe);
             return Json(hash);
+        }
+
+        [HttpGet]
+        public ActionResult MontarTelaPerguntas()
+        {
+            try
+            {
+                // Verifica se tem usuario logado
+                if ((String)Session["Ativa"] == null)
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+                Int32 idAss = (Int32)Session["IdAssinante"];
+                PACIENTE usuario = (PACIENTE)Session["UserCredentials"];
+
+                // Configuração
+                CONFIGURACAO conf = confApp.GetItemById(usuario.ASSI_CD_ID);
+
+                // Mensagem
+                if (Session["MensFC"] != null)
+                {
+                    if ((Int32)Session["MensFC"] == 100)
+                    {
+                        String frase = CRMSys_Base.ResourceManager.GetString("M0256", CultureInfo.CurrentCulture) + " ID do envio: " + (String)Session["IdMail"];
+                        ModelState.AddModelError("", frase);
+                    }
+                }
+
+                // Monta objeto
+                Session["MensFC"] = 0;
+                FaleConoscoViewModel fale = new FaleConoscoViewModel();
+                fale.Telefone = conf.CONF_NR_SUPORTE_ZAP;
+                fale.EMail = conf.CONF_EM_CRMSYS;
+                fale.Resposta = usuario.PACI_NM_EMAIL;
+                fale.Nome = usuario.PACI_NM_NOME;
+
+                List<SelectListItem> assunto = new List<SelectListItem>();
+                assunto.Add(new SelectListItem() { Text = "Sugestões", Value = "1" });
+                assunto.Add(new SelectListItem() { Text = "Informações", Value = "2" });
+                assunto.Add(new SelectListItem() { Text = "Reclamações", Value = "3" });
+                assunto.Add(new SelectListItem() { Text = "Suporte Técnico", Value = "4" });
+                assunto.Add(new SelectListItem() { Text = "Outros Assuntos", Value = "5" });
+                ViewBag.Assunto = new SelectList(assunto, "Value", "Text");
+                fale.Assunto = null;
+
+                // Grava Acesso
+                ControleAcessoMetodo grava = new ControleAcessoMetodo(aceApp);
+                Int32 voltaX = grava.GravaAcesso(usuario.USUA_CD_ID.Value, usuario.ASSI_CD_ID, "PERGUNTAS", "AreaPaciente", "MontarTelaPerguntas");
+
+                return View(fale);
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Comunicacao";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Comunicacao", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return RedirectToAction("TrataExcecao", "BaseAdmin");
+            }
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> MontarTelaPerguntas(FaleConoscoViewModel vm)
+        {
+            if ((String)Session["Ativa"] == null)
+            {
+                return RedirectToAction("Logout", "ControleAcesso");
+            }
+            Int32 idAss = (Int32)Session["IdAssinante"];
+            PACIENTE usuario = (PACIENTE)Session["UserCredentials"];
+            List<SelectListItem> assunto = new List<SelectListItem>();
+            assunto.Add(new SelectListItem() { Text = "Sugestões", Value = "1" });
+            assunto.Add(new SelectListItem() { Text = "Informações", Value = "2" });
+            assunto.Add(new SelectListItem() { Text = "Reclamações", Value = "3" });
+            assunto.Add(new SelectListItem() { Text = "Suporte Técnico", Value = "4" });
+            assunto.Add(new SelectListItem() { Text = "Outros Assuntos", Value = "5" });
+            ViewBag.Assunto = new SelectList(assunto, "Value", "Text");
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    // Executa a operação
+                    if (vm.Mensagem != null)
+                    {
+                        // Valida informações
+                        if (vm.Assunto == null)
+                        {
+                            ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0600", CultureInfo.CurrentCulture));
+                            return View(vm);
+                        }
+
+                        // Decodifica assunto
+                        String assuntoDesc = vm.Assunto == 1 ? "Sugestões" : (vm.Assunto == 2 ? "Informações" : (vm.Assunto == 3 ? "Reclamações" : (vm.Assunto == 4 ? "Suporte Técnico" : "Outros Assuntos")));
+
+                        // Prepara mensagem
+                        MensagemViewModel mens = new MensagemViewModel();
+                        mens.NOME = vm.Nome;
+                        mens.ID = usuario.USUA_CD_ID;
+                        mens.MODELO = vm.EMail;
+                        mens.MENS_DT_CRIACAO = DateTime.Today.Date;
+                        mens.MENS_IN_TIPO = 1;
+                        mens.MENS_TX_TEXTO = vm.Mensagem;
+                        mens.MENS_NM_LINK = null;
+                        mens.MENS_NM_NOME = "Área do Paciente - Pergunta";
+                        mens.MENS_NM_CAMPANHA = assuntoDesc;
+                        await ProcessaEnvioEMailPergunta(mens, usuario);
+                    }
+
+                    // Sucesso
+                    return RedirectToAction("MontarTelaAreaPaciente");
+                }
+                catch (Exception ex)
+                {
+                    ViewBag.Message = ex.Message;
+                    Session["TipoVolta"] = 2;
+                    Session["VoltaExcecao"] = "Comunicacao";
+                    Session["Excecao"] = ex;
+                    Session["ExcecaoTipo"] = ex.GetType().ToString();
+                    GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                    Int32 voltaX = grava.GravarLogExcecao(ex, "Comunicacao", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                    return RedirectToAction("TrataExcecao", "BaseAdmin");
+                }
+            }
+            else
+            {
+                return View(vm);
+            }
+        }
+
+        [ValidateInput(false)]
+        public async Task<Int32> ProcessaEnvioEMailPergunta(MensagemViewModel vm, PACIENTE usuario)
+        {
+            // Recupera usuario
+            Int32 idAss = usuario.ASSI_CD_ID;
+
+            // Prepara corpo do e-mail e trata link
+            CONFIGURACAO conf = confApp.GetItemById(usuario.ASSI_CD_ID);
+            String corpo = vm.MENS_TX_TEXTO + "<br /><br />";
+            corpo = corpo.Replace("\r\n", "<br />");
+
+            // Monta mensagem
+            ASSINANTE assi = assApp.GetItemById(idAss);
+            corpo = corpo + "<b style='color:darkblue'>Assinante:</b> " + assi.ASSI_NM_NOME + "<br />";
+            corpo = corpo + "<b style='color:darkblue'>Num.Assinante:</b> " + assi.ASSI_CD_ID.ToString() + "<br />";
+            corpo = corpo + "<b style='color:darkblue'>Usuário:</b> " + usuario.USUARIO.USUA_NM_NOME + "<br />";
+            corpo = corpo + "<b style='color:darkblue'>CPF/CNPJ:</b> " + (assi.TIPE_CD_ID == 1 ? assi.ASSI_NR_CPF : assi.ASSI_NR_CNPJ) + "<br />";
+            corpo = corpo + "<b style='color:darkblue'>Data Assinatura:</b> " + assi.ASSI_DT_INICIO.Value.ToShortDateString() + "<br />";
+
+            String status = "Succeeded";
+            String iD = "xyz";
+            String erro = null;
+
+            // Decriptografa chaves
+            String emissor = CrossCutting.Cryptography.Decrypt(conf.CONF_NM_EMISSOR_AZURE_CRIP);
+            String conn = CrossCutting.Cryptography.Decrypt(conf.CONF_CS_CONNECTION_STRING_AZURE_CRIP);
+
+            // Monta e-mail
+            NetworkCredential net = new NetworkCredential(conf.CONF_NM_SENDGRID_LOGIN, conf.CONF_NM_SENDGRID_PWD);
+            EmailAzure mensagem = new EmailAzure();
+            mensagem.ASSUNTO = vm.MENS_NM_CAMPANHA;
+            mensagem.CORPO = corpo;
+            mensagem.DEFAULT_CREDENTIALS = false;
+            mensagem.EMAIL_TO_DESTINO = vm.MODELO;
+            mensagem.NOME_EMISSOR_AZURE = emissor;
+            mensagem.ENABLE_SSL = true;
+            mensagem.NOME_EMISSOR = usuario.ASSINANTE.ASSI_NM_NOME;
+            mensagem.PORTA = conf.CONF_NM_PORTA_SMTP;
+            mensagem.PRIORIDADE = System.Net.Mail.MailPriority.High;
+            mensagem.SENHA_EMISSOR = conf.CONF_NM_SENDGRID_PWD;
+            mensagem.SMTP = conf.CONF_NM_HOST_SMTP;
+            mensagem.IS_HTML = true;
+            mensagem.NETWORK_CREDENTIAL = net;
+            mensagem.ConnectionString = conn;
+
+            // Envia mensagem
+            try
+            {
+                await CrossCutting.CommunicationAzurePackage.SendMailAsync(mensagem, null);
+            }
+            catch (Exception ex)
+            {
+                erro = ex.Message;
+                throw;
+            }
+
+            // Mensagem deenvio
+            Session["MsgCRUD"] = "E-Mail para " + usuario.USUARIO.USUA_NM_NOME + " foi enviado com sucesso.";
+            Session["MensFC"] = 61;
+            return 0;
         }
 
     }

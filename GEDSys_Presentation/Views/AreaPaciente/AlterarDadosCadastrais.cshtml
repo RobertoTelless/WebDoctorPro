@@ -39,7 +39,6 @@
                         }
                         <div class="form-group" style=" margin-left: -15px; margin-right: -15px;"> 
                             @Html.ButtonActionSubmit(text: "Confirmar Alterações", htmlAttributes: new { id = "basictoast" })
-                            @Html.ButtonLinkIndex(text: "Imprimir Dados Cadastrais", action: "GerarDadosCadastrais", controller: "AreaPaciente")
                             @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaAreaPaciente", controller: "AreaPaciente")
                             <a href="@Url.Action((String)Session["AjudaNivel"])"  class="btn btn-sm btn-danger" target="_blank">Ajuda</a>                
                         </div>
