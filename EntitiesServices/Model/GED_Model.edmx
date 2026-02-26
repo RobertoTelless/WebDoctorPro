@@ -142,6 +142,20 @@
           <Property Name="AREA_HR_FINAL" Type="time" Precision="7" />
           <Property Name="AREA_NM_TITULO" Type="varchar" MaxLength="500" />
           <Property Name="AREA_TX_CONTEUDO" Type="text" />
+          <Property Name="AREA_GU_IDENTIFICADOR" Type="varchar" MaxLength="50" />
+        </EntityType>
+        <EntityType Name="AREA_PACIENTE_ANEXO">
+          <Key>
+            <PropertyRef Name="APAN_CD_ID" />
+          </Key>
+          <Property Name="APAN_CD_ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="ASSI_CD_ID" Type="int" Nullable="false" />
+          <Property Name="AREA_CD_ID" Type="int" Nullable="false" />
+          <Property Name="APAN_NM_TITULO" Type="varchar" MaxLength="250" />
+          <Property Name="APAN_DT_ANEXO" Type="date" />
+          <Property Name="APAN_IN_TIPO" Type="int" />
+          <Property Name="APAN_AQ_ARQUIVO" Type="varchar" MaxLength="250" />
+          <Property Name="APAN_IN_ATIVO" Type="int" />
         </EntityType>
         <EntityType Name="ASSINANTE">
           <Key>
@@ -7347,6 +7361,18 @@
             </Principal>
             <Dependent Role="ANTECIPACAO">
               <PropertyRef Name="MAQN_CD_ID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_AREA_PACIENTE_ANEXO_AREA_PACIENTE">
+          <End Role="AREA_PACIENTE" Type="Self.AREA_PACIENTE" Multiplicity="1" />
+          <End Role="AREA_PACIENTE_ANEXO" Type="Self.AREA_PACIENTE_ANEXO" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="AREA_PACIENTE">
+              <PropertyRef Name="AREA_CD_ID" />
+            </Principal>
+            <Dependent Role="AREA_PACIENTE_ANEXO">
+              <PropertyRef Name="AREA_CD_ID" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -16359,6 +16385,7 @@
           <EntitySet Name="AGENDA_VINCULO" EntityType="Self.AGENDA_VINCULO" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="ANTECIPACAO" EntityType="Self.ANTECIPACAO" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="AREA_PACIENTE" EntityType="Self.AREA_PACIENTE" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="AREA_PACIENTE_ANEXO" EntityType="Self.AREA_PACIENTE_ANEXO" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="ASSINANTE" EntityType="Self.ASSINANTE" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="ASSINANTE_ANEXO" EntityType="Self.ASSINANTE_ANEXO" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="ASSINANTE_ANOTACAO" EntityType="Self.ASSINANTE_ANOTACAO" Schema="dbo" store:Type="Tables" />
@@ -16808,6 +16835,10 @@
           <AssociationSet Name="FK_ANTECIPACAO_MAQUINA" Association="Self.FK_ANTECIPACAO_MAQUINA">
             <End Role="MAQUINA" EntitySet="MAQUINA" />
             <End Role="ANTECIPACAO" EntitySet="ANTECIPACAO" />
+          </AssociationSet>
+          <AssociationSet Name="FK_AREA_PACIENTE_ANEXO_AREA_PACIENTE" Association="Self.FK_AREA_PACIENTE_ANEXO_AREA_PACIENTE">
+            <End Role="AREA_PACIENTE" EntitySet="AREA_PACIENTE" />
+            <End Role="AREA_PACIENTE_ANEXO" EntitySet="AREA_PACIENTE_ANEXO" />
           </AssociationSet>
           <AssociationSet Name="FK_AREA_PACIENTE_PACIENTE" Association="Self.FK_AREA_PACIENTE_PACIENTE">
             <End Role="PACIENTE" EntitySet="PACIENTE" />
@@ -39775,6 +39806,11 @@
             <End Role="USUARIO" EntitySet="USUARIO" />
             <End Role="AREA_PACIENTE" EntitySet="AREA_PACIENTE" />
           </AssociationSet>
+          <EntitySet Name="AREA_PACIENTE_ANEXO" EntityType="CRMSysDBModel.AREA_PACIENTE_ANEXO" />
+          <AssociationSet Name="FK_AREA_PACIENTE_ANEXO_AREA_PACIENTE" Association="CRMSysDBModel.FK_AREA_PACIENTE_ANEXO_AREA_PACIENTE">
+            <End Role="AREA_PACIENTE" EntitySet="AREA_PACIENTE" />
+            <End Role="AREA_PACIENTE_ANEXO" EntitySet="AREA_PACIENTE_ANEXO" />
+          </AssociationSet>
         </EntityContainer>
         <EntityType Name="PACIENTE_DADOS_EXAME_FISICO">
           <Key>
@@ -41128,6 +41164,8 @@
           <Property Name="AREA_TX_CONTEUDO" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
           <NavigationProperty Name="PACIENTE" Relationship="CRMSysDBModel.FK_AREA_PACIENTE_PACIENTE" FromRole="AREA_PACIENTE" ToRole="PACIENTE" />
           <NavigationProperty Name="USUARIO" Relationship="CRMSysDBModel.FK_AREA_PACIENTE_USUARIO" FromRole="AREA_PACIENTE" ToRole="USUARIO" />
+          <Property Name="AREA_GU_IDENTIFICADOR" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="AREA_PACIENTE_ANEXO" Relationship="CRMSysDBModel.FK_AREA_PACIENTE_ANEXO_AREA_PACIENTE" FromRole="AREA_PACIENTE" ToRole="AREA_PACIENTE_ANEXO" />
         </EntityType>
         <Association Name="FK_AREA_PACIENTE_PACIENTE">
           <End Type="CRMSysDBModel.PACIENTE" Role="PACIENTE" Multiplicity="0..1" />
@@ -41150,6 +41188,32 @@
             </Principal>
             <Dependent Role="AREA_PACIENTE">
               <PropertyRef Name="USUA_CD_ID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="AREA_PACIENTE_ANEXO">
+          <Key>
+            <PropertyRef Name="APAN_CD_ID" />
+          </Key>
+          <Property Name="APAN_CD_ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="ASSI_CD_ID" Type="Int32" Nullable="false" />
+          <Property Name="AREA_CD_ID" Type="Int32" Nullable="false" />
+          <Property Name="APAN_NM_TITULO" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
+          <Property Name="APAN_DT_ANEXO" Type="DateTime" Precision="0" />
+          <Property Name="APAN_IN_TIPO" Type="Int32" />
+          <Property Name="APAN_AQ_ARQUIVO" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
+          <Property Name="APAN_IN_ATIVO" Type="Int32" />
+          <NavigationProperty Name="AREA_PACIENTE" Relationship="CRMSysDBModel.FK_AREA_PACIENTE_ANEXO_AREA_PACIENTE" FromRole="AREA_PACIENTE_ANEXO" ToRole="AREA_PACIENTE" />
+        </EntityType>
+        <Association Name="FK_AREA_PACIENTE_ANEXO_AREA_PACIENTE">
+          <End Type="CRMSysDBModel.AREA_PACIENTE" Role="AREA_PACIENTE" Multiplicity="1" />
+          <End Type="CRMSysDBModel.AREA_PACIENTE_ANEXO" Role="AREA_PACIENTE_ANEXO" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="AREA_PACIENTE">
+              <PropertyRef Name="AREA_CD_ID" />
+            </Principal>
+            <Dependent Role="AREA_PACIENTE_ANEXO">
+              <PropertyRef Name="AREA_CD_ID" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -48675,6 +48739,7 @@
           <EntitySetMapping Name="AREA_PACIENTE">
             <EntityTypeMapping TypeName="CRMSysDBModel.AREA_PACIENTE">
               <MappingFragment StoreEntitySet="AREA_PACIENTE">
+                <ScalarProperty Name="AREA_GU_IDENTIFICADOR" ColumnName="AREA_GU_IDENTIFICADOR" />
                 <ScalarProperty Name="AREA_TX_CONTEUDO" ColumnName="AREA_TX_CONTEUDO" />
                 <ScalarProperty Name="AREA_NM_TITULO" ColumnName="AREA_NM_TITULO" />
                 <ScalarProperty Name="AREA_HR_FINAL" ColumnName="AREA_HR_FINAL" />
@@ -48687,6 +48752,20 @@
                 <ScalarProperty Name="AREA_DT_ENTRADA" ColumnName="AREA_DT_ENTRADA" />
                 <ScalarProperty Name="ASSI_CD_ID" ColumnName="ASSI_CD_ID" />
                 <ScalarProperty Name="AREA_CD_ID" ColumnName="AREA_CD_ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="AREA_PACIENTE_ANEXO">
+            <EntityTypeMapping TypeName="CRMSysDBModel.AREA_PACIENTE_ANEXO">
+              <MappingFragment StoreEntitySet="AREA_PACIENTE_ANEXO">
+                <ScalarProperty Name="APAN_IN_ATIVO" ColumnName="APAN_IN_ATIVO" />
+                <ScalarProperty Name="APAN_AQ_ARQUIVO" ColumnName="APAN_AQ_ARQUIVO" />
+                <ScalarProperty Name="APAN_IN_TIPO" ColumnName="APAN_IN_TIPO" />
+                <ScalarProperty Name="APAN_DT_ANEXO" ColumnName="APAN_DT_ANEXO" />
+                <ScalarProperty Name="APAN_NM_TITULO" ColumnName="APAN_NM_TITULO" />
+                <ScalarProperty Name="AREA_CD_ID" ColumnName="AREA_CD_ID" />
+                <ScalarProperty Name="ASSI_CD_ID" ColumnName="ASSI_CD_ID" />
+                <ScalarProperty Name="APAN_CD_ID" ColumnName="APAN_CD_ID" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

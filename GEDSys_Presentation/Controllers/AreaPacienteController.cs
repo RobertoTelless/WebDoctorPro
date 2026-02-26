@@ -38,6 +38,8 @@ using CrossCutting;
 #pragma warning restore CS0105 // Usando diretiva exibida anteriormente neste namespace
 using nClam;
 using iTextSharp.tool.xml;
+using Newtonsoft.Json;
+using EntitiesServices.Work_Classes;
 
 namespace GEDSys_Presentation.Controllers
 {
@@ -53,6 +55,9 @@ namespace GEDSys_Presentation.Controllers
         private readonly ILogAppService logApp;
         private readonly ILocacaoAppService locaApp;
         private readonly IAreaPacienteAppService areaApp;
+        private readonly ITemplateEMailAppService temApp;
+        private readonly IMensagemEnviadaSistemaAppService meApp;
+        private readonly ITemplateSMSAppService smsApp;
 
         private String msg;
         private Exception exception;
@@ -68,7 +73,7 @@ namespace GEDSys_Presentation.Controllers
         private List<PACIENTE_PRESCRICAO> listaMasterPrescricao = new List<PACIENTE_PRESCRICAO>();
         private List<LOCACAO> listaMasterLocacao = new List<LOCACAO>();
 
-        public AreaPacienteController(IPacienteAppService baseApps, IConfiguracaoAppService confApps, IUsuarioAppService usuApps, IAcessoMetodoAppService aceApps, IAssinanteAppService assApps, IConfiguracaoCalendarioAppService calApps, IConfiguracaoAnamneseAppService anaApps, ILogAppService logApps, ILocacaoAppService locaApps, IAreaPacienteAppService areaApps)
+        public AreaPacienteController(IPacienteAppService baseApps, IConfiguracaoAppService confApps, IUsuarioAppService usuApps, IAcessoMetodoAppService aceApps, IAssinanteAppService assApps, IConfiguracaoCalendarioAppService calApps, IConfiguracaoAnamneseAppService anaApps, ILogAppService logApps, ILocacaoAppService locaApps, IAreaPacienteAppService areaApps, ITemplateEMailAppService temApps, IMensagemEnviadaSistemaAppService meApps, ITemplateSMSAppService smsApps)
         {
             baseApp = baseApps;
             confApp = confApps;
@@ -80,6 +85,9 @@ namespace GEDSys_Presentation.Controllers
             logApp = logApps;
             locaApp = locaApps;
             areaApp = areaApps;
+            temApp = temApps;
+            meApp = meApps;
+            smsApp = smsApps;
         }
 
         [HttpGet]
@@ -769,13 +777,14 @@ namespace GEDSys_Presentation.Controllers
                     // Mensagem
                     if ((Int32)Session["MensArea"] == 61)
                     {
-                        ModelState.AddModelError("", (String)Session["MsgCRUD"]);
-                    }
-                    if ((Int32)Session["MensArea"] == 61)
-                    {
                         TempData["MensagemAcerto"] = (String)Session["MsgCRUD"];
                         TempData["TemMensagem"] = 1;
                     }
+                    if ((Int32)Session["MensArea"] == 111)
+                    {
+                        ModelState.AddModelError("", (String)Session["MsgCRUD"]);
+                    }
+
                 }
 
                 // Consultas
@@ -1191,14 +1200,14 @@ namespace GEDSys_Presentation.Controllers
                     area.AREA_DT_CONSULTA = vm.PACO_DT_CONSULTA;
                     area.AREA_HR_INICIO = vm.PACO_HR_INICIO;
                     area.AREA_HR_FINAL = vm.PACO_HR_FINAL;
+                    area.AREA_GU_IDENTIFICADOR = Xid.NewXid().ToString();
                     area.AREA_NM_TITULO = "Solicitação de marcação de consulta";
-                    area.AREA_TX_CONTEUDO = "~Solicitação de marcação de consulta de " + usuario.PACI_NM_NOME.ToUpper() + " com o profissional " + usuario.USUARIO.USUA_NM_NOME.ToUpper() + " para o dia " + vm.PACO_DT_CONSULTA.ToShortDateString() + " - " + vm.PACO_HR_INICIO.ToString() + " até " + vm.PACO_HR_FINAL.ToString();
+                    area.AREA_TX_CONTEUDO = "Solicitação de marcação de consulta de " + usuario.PACI_NM_NOME.ToUpper() + " com o profissional " + usuario.USUARIO.USUA_NM_NOME.ToUpper() + " para o dia " + vm.PACO_DT_CONSULTA.ToShortDateString() + " - " + vm.PACO_HR_INICIO.ToString() + " até " + vm.PACO_HR_FINAL.ToString();
                     Int32 volta = areaApp.ValidateCreate(area);
 
                     // Mensagem
                     Session["MsgCRUD"] = "A solicitação de marcação de consulta de " + usuario.PACI_NM_NOME.ToUpper() + " com o profissional " + usuario.USUARIO.USUA_NM_NOME.ToUpper() + " para o dia " + vm.PACO_DT_CONSULTA.ToShortDateString() + " - " + vm.PACO_HR_INICIO.ToString() + " até " + vm.PACO_HR_FINAL.ToString() + " foi enviada com sucesso. Você receberá a confirmação de sua conaulta em seu e-mail cadastrado no WebDoctorPro";
                     Session["MensFC"] = 61;
-
 
                     // Retorno
                     return RedirectToAction("MontarTelaAreaPaciente");
@@ -1361,14 +1370,10 @@ namespace GEDSys_Presentation.Controllers
             }
             catch (Exception ex)
             {
-                ViewBag.Message = ex.Message;
-                Session["TipoVolta"] = 2;
-                Session["VoltaExcecao"] = "Comunicacao";
+                Session["MensagemLogin"] = 100;
+                Session["MensagemErro"] = ex.Message;
                 Session["Excecao"] = ex;
-                Session["ExcecaoTipo"] = ex.GetType().ToString();
-                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
-                Int32 voltaX = grava.GravarLogExcecao(ex, "Comunicacao", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
-                return RedirectToAction("TrataExcecao", "BaseAdmin");
+                return RedirectToAction("ErroGeralAreaPaciente", "AreaPaciente");
             }
         }
 
@@ -1424,14 +1429,10 @@ namespace GEDSys_Presentation.Controllers
                 }
                 catch (Exception ex)
                 {
-                    ViewBag.Message = ex.Message;
-                    Session["TipoVolta"] = 2;
-                    Session["VoltaExcecao"] = "Comunicacao";
+                    Session["MensagemLogin"] = 100;
+                    Session["MensagemErro"] = ex.Message;
                     Session["Excecao"] = ex;
-                    Session["ExcecaoTipo"] = ex.GetType().ToString();
-                    GravaLogExcecao grava = new GravaLogExcecao(usuApp);
-                    Int32 voltaX = grava.GravarLogExcecao(ex, "Comunicacao", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
-                    return RedirectToAction("TrataExcecao", "BaseAdmin");
+                    return RedirectToAction("ErroGeralAreaPaciente", "AreaPaciente");
                 }
             }
             else
@@ -1500,6 +1501,1300 @@ namespace GEDSys_Presentation.Controllers
             Session["MsgCRUD"] = "E-Mail para " + usuario.USUARIO.USUA_NM_NOME + " foi enviado com sucesso.";
             Session["MensFC"] = 61;
             return 0;
+        }
+
+        [HttpGet]
+        public async Task<ActionResult> ConfirmarConsulta(Int32 id)
+        {
+            try
+            {
+                // Verifica se tem usuario logado
+                PACIENTE paciente = new PACIENTE();
+                if ((String)Session["Ativa"] == null)
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+                if ((PACIENTE)Session["UserCredentials"] != null)
+                {
+                    paciente = (PACIENTE)Session["UserCredentials"];
+                }
+                else
+                {
+                    return RedirectToAction("LogoutAreaPaciente", "AreaPaciente");
+                }
+
+                // Recupera dados
+                CONFIGURACAO conf = CarregaConfiguracaoGeral();
+                PACIENTE_CONSULTA item = baseApp.GetConsultaById(id);
+
+                // Recupera paciente
+                PACIENTE pac = baseApp.GetItemById(paciente.PACI__CD_ID);
+                USUARIO usuarioLogado = usuApp.GetItemById(pac.USUA_CD_ID.Value);
+
+                // Verifica se pode confirmar
+                List<PACIENTE_CONSULTA> cons = pac.PACIENTE_CONSULTA.Where(p => p.PACO_IN_ATIVO == 1 & p.PACO_IN_CONFIRMADA == 1 & p.PACO_IN_ENCERRADA == 0 & p.PACO_DT_CONSULTA.Date < DateTime.Today.Date).ToList();
+                if (cons.Count > 0)
+                {
+                    String frase = CRMSys_Base.ResourceManager.GetString("M0593", CultureInfo.CurrentCulture);
+                    String frase1 = CRMSys_Base.ResourceManager.GetString("M0594", CultureInfo.CurrentCulture);
+                    frase += " de " + pac.PACI_NM_NOME + " em " + item.PACO_DT_CONSULTA.ToShortDateString() + ". " + frase1;
+                    Session["MensArea"] = 111;
+                    Session["MsgCRUD"] = frase;
+                    return RedirectToAction("MontarTelaAreaPaciente");
+                }
+
+                objetoAntes = (PACIENTE)Session["Paciente"];
+                item.PACO_IN_CONFIRMADA = 1;
+                Int32 volta = baseApp.ValidateEditConsultaConfirma(item);
+
+                // Acerta anamnese
+                PACIENTE_ANAMNESE anam = pac.PACIENTE_ANAMNESE.Where(p => p.PAAM_IN_ATIVO == 1).FirstOrDefault();
+                if (anam != null)
+                {
+                    PACIENTE_ANAMNESE anamnese = RemontarAnamnese(anam);
+                    anamnese.PAAM_DT_DATA = item.PACO_DT_CONSULTA;
+                    anamnese.PACO_CD_ID = item.PACO_CD_ID;
+                    Int32 voltaA = baseApp.ValidateEditAnamnese(anamnese);
+                }
+
+                // Acerta exame fisico
+                PACIENTE_EXAME_FISICOS fisi = pac.PACIENTE_EXAME_FISICOS.Where(p => p.PAEF_IN_ATIVO == 1).FirstOrDefault();
+                if (fisi != null)
+                {
+                    PACIENTE_EXAME_FISICOS fisico = RemontarFisico(fisi);
+                    fisico.PAEF_DT_DATA = item.PACO_DT_CONSULTA;
+                    fisico.PACO_CD_ID = item.PACO_CD_ID;
+                    Int32 voltaF = baseApp.ValidateEditExameFisico(fisico);
+                }
+
+                // Acerta paciente
+                PACIENTE pac1 = baseApp.GetItemById(item.PACI_CD_ID);
+                paciente.PACI_DT_CONSULTA = item.PACO_DT_CONSULTA;
+                if (conf.CONF_IN_CALCULA_PROXIMA_CONSULTA == 1)
+                {
+                    paciente.PACI_DT_PREVISAO_RETORNO = item.PACO_DT_CONSULTA.AddMonths(conf.CONF_NR_MESES_RETORNO.Value);
+                }
+                Int32 voltaP = baseApp.ValidateEdit(paciente, paciente);
+
+                // Acerta estado
+                Session["PacienteAlterada"] = 1;
+                Session["NivelPaciente"] = 3;
+                Session["ListaConsultasGeral"] = null;
+                Session["ConsultasAlterada"] = 1;
+                Session["ListaConfirma"] = null;
+
+                // Configura serilização
+                JsonSerializerSettings settings = new JsonSerializerSettings
+                {
+                    ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+                    NullValueHandling = NullValueHandling.Ignore
+                };
+
+                // Monta Log
+                DTO_Paciente_Consulta dto = MontarPacienteConsultaDTOObj(item);
+                String json = JsonConvert.SerializeObject(dto, settings);
+                LOG log = new LOG
+                {
+                    LOG_DT_DATA = DateTime.Now,
+                    ASSI_CD_ID = usuarioLogado.ASSI_CD_ID,
+                    USUA_CD_ID = usuarioLogado.USUA_CD_ID,
+                    LOG_NM_OPERACAO = "Paciente - Consulta - Confirmação",
+                    LOG_IN_ATIVO = 1,
+                    LOG_TX_REGISTRO = json,
+                    LOG_IN_SISTEMA = 6
+                };
+                Int32 volta1 = logApp.ValidateCreate(log);
+
+                // Grava historico
+                PACIENTE_HISTORICO hist = new PACIENTE_HISTORICO();
+                hist.ASSI_CD_ID = usuarioLogado.ASSI_CD_ID;
+                hist.USUA_CD_ID = usuarioLogado.USUA_CD_ID;
+                hist.PACI_CD_ID = item.PACI_CD_ID;
+                hist.PAHI_DT_DATA = DateTime.Now;
+                hist.PAHI_IN_TIPO = 10;
+                hist.PAHI_IN_CHAVE = item.PACO_CD_ID;
+                hist.PAHI_NM_OPERACAO = "Paciente - Confirmação de Consulta";
+                hist.PAHI_DS_DESCRICAO = "Paciente " + paciente.PACI_NM_NOME + " - Consulta confirmada " + item.PACO_DT_CONSULTA.ToShortDateString();
+                Int32 voltaHist = baseApp.ValidateCreateHistorico(hist);
+
+                // Mensagem do CRUD
+                Session["MsgCRUD"] = "A consulta do(a) paciente " + pac.PACI_NM_NOME.ToUpper() + " marcada para " + item.PACO_DT_CONSULTA.ToLongDateString() + " foi confirmada com sucesso";
+                Session["MensArea"] = 61;
+
+                // Envia mensagem
+                if (pac.PACI_NM_EMAIL != null & conf.CONF_IN_ENVIA_CONFIRMACAO == 1)
+                {
+                    Int32 voltaCons = await EnviarEMailConsulta(item, 3);
+                }
+                if (pac.PACI_NR_CELULAR != null & conf.CONF_IN_ENVIA_CONFIRMACAO == 1)
+                {
+                    Int32 voltaCons = EnviarSMSConsulta(item, 3);
+                }
+                if (usuarioLogado.USUA_NM_EMAIL != null & conf.CONF_IN_ENVIA_CONFIRMACAO == 1)
+                {
+                    Int32 voltaCons = await EnviarEMailConsulta(item, 6);
+                }
+
+                // Retorno
+                return RedirectToAction("MontarTelaAreaPaciente");
+            }
+            catch (Exception ex)
+            {
+                Session["MensagemLogin"] = 100;
+                Session["MensagemErro"] = ex.Message;
+                Session["Excecao"] = ex;
+                return RedirectToAction("ErroGeralAreaPaciente", "AreaPaciente");
+            }
+        }
+
+        public PACIENTE_ANAMNESE RemontarAnamnese(PACIENTE_ANAMNESE anamneseAnterior)
+        {
+            PACIENTE_ANAMNESE anamnese = new PACIENTE_ANAMNESE();
+            anamnese.PAAM_CD_ID = anamneseAnterior.PAAM_CD_ID;
+            anamnese.ASSI_CD_ID = anamneseAnterior.ASSI_CD_ID;
+            anamnese.PAAM_DT_DATA = anamneseAnterior.PAAM_DT_DATA;
+            anamnese.PAAM_IN_ATIVO = 1;
+            anamnese.PACI_CD_ID = anamneseAnterior.PACI_CD_ID;
+            anamnese.USUA_CD_ID = anamneseAnterior.USUA_CD_ID;
+            anamnese.PACO_CD_ID = anamneseAnterior.PACO_CD_ID;
+            anamnese.PAAM_IN_PREENCHIDA = 0;
+            anamnese.PAAM_DS_CONDUTA = anamneseAnterior.PAAM_DS_CONDUTA;
+            anamnese.PAAM_DS_DIAGNOSTICO_1 = anamneseAnterior.PAAM_DS_DIAGNOSTICO_1;
+            anamnese.PAAM_DS_DIAGNOSTICO_2 = anamneseAnterior.PAAM_DS_DIAGNOSTICO_2;
+            anamnese.PAAM_DS_HISTORIA_DOENCA_ATUAL = anamneseAnterior.PAAM_DS_HISTORIA_DOENCA_ATUAL;
+            anamnese.PAAM_DS_HISTORIA_FAMILIAR = anamneseAnterior.PAAM_DS_HISTORIA_FAMILIAR;
+            anamnese.PAAM_DS_HISTORIA_PATOLOGICA_PROGRESSIVA = anamneseAnterior.PAAM_DS_HISTORIA_PATOLOGICA_PROGRESSIVA;
+            anamnese.PAAM_DS_HISTORIA_SOCIAL = anamneseAnterior.PAAM_DS_HISTORIA_SOCIAL;
+            anamnese.PAAM_DS_MOTIVO_CONSULTA = anamneseAnterior.PAAM_DS_MOTIVO_CONSULTA;
+            anamnese.PAAM_DS_QUEIXA_PRINCIPAL = anamneseAnterior.PAAM_DS_QUEIXA_PRINCIPAL;
+            anamnese.PAAM_TX_OBSERVACOES = anamneseAnterior.PAAM_TX_OBSERVACOES;
+            anamnese.PAAN_NM_ABDOMEM = anamneseAnterior.PAAN_NM_ABDOMEM;
+            anamnese.PAAM_NM_MEDICAMENTO = anamneseAnterior.PAAM_NM_MEDICAMENTO;
+            anamnese.PAAN_NM_AVALIACAO_CARDIOLOGICA = anamneseAnterior.PAAN_NM_AVALIACAO_CARDIOLOGICA;
+            anamnese.PAAN_NM_MEMBROS_INFERIORES = anamneseAnterior.PAAN_NM_MEMBROS_INFERIORES;
+            anamnese.PAAN_NM_RESPIRATORIO = anamneseAnterior.PAAN_NM_RESPIRATORIO;
+            anamnese.PAAM_DT_COPIA = anamneseAnterior.PAAM_DT_COPIA;
+            anamnese.PAAM_DT_ORIGINAL = anamneseAnterior.PAAM_DT_ORIGINAL;
+            anamnese.PAAM_TX_TEXTO_LIVRE = anamneseAnterior.PAAM_TX_TEXTO_LIVRE;
+
+            anamnese.PAAM_DS_SONO_ACESSO_SAUDE = anamneseAnterior.PAAM_DS_SONO_ACESSO_SAUDE;
+            anamnese.PAAM_DS_SONO_ACONCHEGANTE = anamneseAnterior.PAAM_DS_SONO_ACONCHEGANTE;
+            anamnese.PAAM_DS_SONO_AGRESSIVO = anamneseAnterior.PAAM_DS_SONO_AGRESSIVO;
+            anamnese.PAAM_DS_SONO_ALMOCO = anamneseAnterior.PAAM_DS_SONO_ALMOCO;
+            anamnese.PAAM_DS_SONO_ANIMAIS = anamneseAnterior.PAAM_DS_SONO_ANIMAIS;
+            anamnese.PAAM_DS_SONO_APNEIA = anamneseAnterior.PAAM_DS_SONO_APNEIA;
+            anamnese.PAAM_DS_SONO_ATIVIDADES = anamneseAnterior.PAAM_DS_SONO_ATIVIDADES;
+            anamnese.PAAM_DS_SONO_ATIVIDADES_OLD = anamneseAnterior.PAAM_DS_SONO_ATIVIDADES_OLD;
+            anamnese.PAAM_DS_SONO_AZIA = anamneseAnterior.PAAM_DS_SONO_AZIA;
+            anamnese.PAAM_DS_SONO_BARULHO = anamneseAnterior.PAAM_DS_SONO_BARULHO;
+            anamnese.PAAM_DS_SONO_BOCA_SECA = anamneseAnterior.PAAM_DS_SONO_BOCA_SECA;
+            anamnese.PAAM_DS_SONO_CAFE = anamneseAnterior.PAAM_DS_SONO_CAFE;
+            anamnese.PAAM_DS_SONO_CAIBRAS = anamneseAnterior.PAAM_DS_SONO_CAIBRAS;
+            anamnese.PAAM_DS_SONO_CANSACO = anamneseAnterior.PAAM_DS_SONO_CANSACO;
+            anamnese.PAAM_DS_SONO_CELULAR_CAMA = anamneseAnterior.PAAM_DS_SONO_CELULAR_CAMA;
+            anamnese.PAAM_DS_SONO_CIRURGIAS = anamneseAnterior.PAAM_DS_SONO_CIRURGIAS;
+            anamnese.PAAM_DS_SONO_CIRURGIAS_OLD = anamneseAnterior.PAAM_DS_SONO_CIRURGIAS_OLD;
+            anamnese.PAAM_DS_SONO_COCHILOS = anamneseAnterior.PAAM_DS_SONO_COCHILOS;
+            anamnese.PAAM_DS_SONO_COMORBIDADES = anamneseAnterior.PAAM_DS_SONO_COMORBIDADES;
+            anamnese.PAAM_DS_SONO_COMORBIDADES_OLD = anamneseAnterior.PAAM_DS_SONO_COMORBIDADES_OLD;
+            anamnese.PAAM_DS_SONO_CONGESTAO = anamneseAnterior.PAAM_DS_SONO_CONGESTAO;
+            anamnese.PAAM_DS_SONO_DEFICIT = anamneseAnterior.PAAM_DS_SONO_DEFICIT;
+            anamnese.PAAM_DS_SONO_DEFICIT_CONCENTRA = anamneseAnterior.PAAM_DS_SONO_DEFICIT_CONCENTRA;
+            anamnese.PAAM_DS_SONO_DEFICIT_MEMO = anamneseAnterior.PAAM_DS_SONO_DEFICIT_MEMO;
+            anamnese.PAAM_DS_SONO_DEFICIT_MEMORIA = anamneseAnterior.PAAM_DS_SONO_DEFICIT_MEMORIA;
+            anamnese.PAAM_DS_SONO_DEITADO_PERDE_SONO = anamneseAnterior.PAAM_DS_SONO_DEITADO_PERDE_SONO;
+            anamnese.PAAM_DS_SONO_DEITADO_SONO = anamneseAnterior.PAAM_DS_SONO_DEITADO_SONO;
+            anamnese.PAAM_DS_SONO_DISFUNCAO = anamneseAnterior.PAAM_DS_SONO_DISFUNCAO;
+            anamnese.PAAM_DS_SONO_DOR = anamneseAnterior.PAAM_DS_SONO_DOR;
+            anamnese.PAAM_DS_SONO_DOR_CABECA = anamneseAnterior.PAAM_DS_SONO_DOR_CABECA;
+            anamnese.PAAM_DS_SONO_DURACAO = anamneseAnterior.PAAM_DS_SONO_DURACAO;
+            anamnese.PAAM_DS_SONO_DURACAO_OLD = anamneseAnterior.PAAM_DS_SONO_DURACAO_OLD;
+            anamnese.PAAM_DS_SONO_ENCENACAO = anamneseAnterior.PAAM_DS_SONO_ENCENACAO;
+            anamnese.PAAM_DS_SONO_ENGASGOS = anamneseAnterior.PAAM_DS_SONO_ENGASGOS;
+            anamnese.PAAM_DS_SONO_EXERCICIO = anamneseAnterior.PAAM_DS_SONO_EXERCICIO;
+            anamnese.PAAM_DS_SONO_EXERCICIO_FREQ = anamneseAnterior.PAAM_DS_SONO_EXERCICIO_FREQ;
+            anamnese.PAAM_DS_SONO_EXERCICIO_FREQ_OLD = anamneseAnterior.PAAM_DS_SONO_EXERCICIO_FREQ_OLD;
+            anamnese.PAAM_DS_SONO_EXERCICIO_HORARIO = anamneseAnterior.PAAM_DS_SONO_EXERCICIO_HORARIO;
+            anamnese.PAAM_DS_SONO_FADIGA = anamneseAnterior.PAAM_DS_SONO_FADIGA;
+            anamnese.PAAM_DS_SONO_FALA = anamneseAnterior.PAAM_DS_SONO_FALA;
+            anamnese.PAAM_DS_SONO_FINANCAS = anamneseAnterior.PAAM_DS_SONO_FINANCAS;
+            anamnese.PAAM_DS_SONO_FUMA_NOITE = anamneseAnterior.PAAM_DS_SONO_FUMA_NOITE;
+            anamnese.PAAM_DS_SONO_HORARIO_REGULAR = anamneseAnterior.PAAM_DS_SONO_HORARIO_REGULAR;
+            anamnese.PAAM_DS_SONO_HORARIO_REGULAR_NOVO = anamneseAnterior.PAAM_DS_SONO_HORARIO_REGULAR_NOVO;
+            anamnese.PAAM_DS_SONO_HORARIO_REGULAR_NOVO_OLD = anamneseAnterior.PAAM_DS_SONO_HORARIO_REGULAR_NOVO_OLD;
+            anamnese.PAAM_DS_SONO_IRRITA = anamneseAnterior.PAAM_DS_SONO_IRRITA;
+            anamnese.PAAM_DS_SONO_JANTAR = anamneseAnterior.PAAM_DS_SONO_JANTAR;
+            anamnese.PAAM_DS_SONO_LANCHE = anamneseAnterior.PAAM_DS_SONO_LANCHE;
+            anamnese.PAAM_DS_SONO_LATENCIA = anamneseAnterior.PAAM_DS_SONO_LATENCIA;
+            anamnese.PAAM_DS_SONO_LATENCIA_NOVO = anamneseAnterior.PAAM_DS_SONO_LATENCIA_NOVO;
+            anamnese.PAAM_DS_SONO_LATENCIA_NOVO_OLD = anamneseAnterior.PAAM_DS_SONO_LATENCIA_NOVO_OLD;
+            anamnese.PAAM_DS_SONO_LECAMA = anamneseAnterior.PAAM_DS_SONO_LECAMA;
+            anamnese.PAAM_DS_SONO_MALLAMPATI = anamneseAnterior.PAAM_DS_SONO_MALLAMPATI;
+            anamnese.PAAM_DS_SONO_MALLAMPATI_OLD = anamneseAnterior.PAAM_DS_SONO_MALLAMPATI_OLD;
+            anamnese.PAAM_DS_SONO_MEDICAMENTOS = anamneseAnterior.PAAM_DS_SONO_MEDICAMENTOS;
+            anamnese.PAAM_DS_SONO_MEDICAMENTOS_OLD = anamneseAnterior.PAAM_DS_SONO_MEDICAMENTOS_OLD;
+            anamnese.PAAM_DS_SONO_MOTIVOS_DESPERTA = anamneseAnterior.PAAM_DS_SONO_MOTIVOS_DESPERTA;
+            anamnese.PAAM_DS_SONO_MOTIVOS_DESPERTA_OLD = anamneseAnterior.PAAM_DS_SONO_MOTIVOS_DESPERTA_OLD;
+            anamnese.PAAM_DS_SONO_MOVE_MEMBRO = anamneseAnterior.PAAM_DS_SONO_MOVE_MEMBRO;
+            anamnese.PAAM_DS_SONO_OVERLAP = anamneseAnterior.PAAM_DS_SONO_OVERLAP;
+            anamnese.PAAM_DS_SONO_OVERLAP_OLD = anamneseAnterior.PAAM_DS_SONO_OVERLAP_OLD;
+            anamnese.PAAM_DS_SONO_PATOLOGIAS = anamneseAnterior.PAAM_DS_SONO_PATOLOGIAS;
+            anamnese.PAAM_DS_SONO_PATOLOGIAS_OLD = anamneseAnterior.PAAM_DS_SONO_PATOLOGIAS_OLD;
+            anamnese.PAAM_DS_SONO_PESADELO = anamneseAnterior.PAAM_DS_SONO_PESADELO;
+            anamnese.PAAM_DS_SONO_PESSOAS = anamneseAnterior.PAAM_DS_SONO_PESSOAS;
+            anamnese.PAAM_DS_SONO_POLISONO = anamneseAnterior.PAAM_DS_SONO_POLISONO;
+            anamnese.PAAM_DS_SONO_POLISONO_OLD = anamneseAnterior.PAAM_DS_SONO_POLISONO_OLD;
+            anamnese.PAAM_DS_SONO_PONDERAL = anamneseAnterior.PAAM_DS_SONO_PONDERAL;
+            anamnese.PAAM_DS_SONO_POSICAO_DORMIR = anamneseAnterior.PAAM_DS_SONO_POSICAO_DORMIR;
+            anamnese.PAAM_DS_SONO_POSICAO_DORMIR_OLD = anamneseAnterior.PAAM_DS_SONO_POSICAO_DORMIR_OLD;
+            anamnese.PAAM_DS_SONO_PRINCIPAL_QUEIXA = anamneseAnterior.PAAM_DS_SONO_PRINCIPAL_QUEIXA;
+            anamnese.PAAM_DS_SONO_PRINCIPAL_QUEIXA_OLD = anamneseAnterior.PAAM_DS_SONO_PRINCIPAL_QUEIXA_OLD;
+            anamnese.PAAM_DS_SONO_QUANTAS_DESPERTA = anamneseAnterior.PAAM_DS_SONO_QUANTAS_DESPERTA;
+            anamnese.PAAM_DS_SONO_QUANTAS_DESPERTA_OLD = anamneseAnterior.PAAM_DS_SONO_QUANTAS_DESPERTA_OLD;
+            anamnese.PAAM_DS_SONO_RANGE = anamneseAnterior.PAAM_DS_SONO_RANGE;
+            anamnese.PAAM_DS_SONO_REFEICAO_PESADA = anamneseAnterior.PAAM_DS_SONO_REFEICAO_PESADA;
+            anamnese.PAAM_DS_SONO_REFLUXO = anamneseAnterior.PAAM_DS_SONO_REFLUXO;
+            anamnese.PAAM_DS_SONO_REPARADOR = anamneseAnterior.PAAM_DS_SONO_REPARADOR;
+            anamnese.PAAM_DS_SONO_RIGIDEZ_FACE = anamneseAnterior.PAAM_DS_SONO_RIGIDEZ_FACE;
+            anamnese.PAAM_DS_SONO_RIGIDEZ_FACE_OUTROS = anamneseAnterior.PAAM_DS_SONO_RIGIDEZ_FACE_OUTROS;
+            anamnese.PAAM_DS_SONO_RONCO = anamneseAnterior.PAAM_DS_SONO_RONCO;
+            anamnese.PAAM_DS_SONO_ROTINA_FDS = anamneseAnterior.PAAM_DS_SONO_ROTINA_FDS;
+            anamnese.PAAM_DS_SONO_SENSACAO_PERNA = anamneseAnterior.PAAM_DS_SONO_SENSACAO_PERNA;
+            anamnese.PAAM_DS_SONO_SINTOMAS = anamneseAnterior.PAAM_DS_SONO_SINTOMAS;
+            anamnese.PAAM_DS_SONO_SINTOMAS_OLD = anamneseAnterior.PAAM_DS_SONO_SINTOMAS_OLD;
+            anamnese.PAAM_DS_SONO_SONANBULISMO = anamneseAnterior.PAAM_DS_SONO_SONANBULISMO;
+            anamnese.PAAM_DS_SONO_SONOLENCIA = anamneseAnterior.PAAM_DS_SONO_SONOLENCIA;
+            anamnese.PAAM_DS_SONO_SONOLENCIA_DIURNA = anamneseAnterior.PAAM_DS_SONO_SONOLENCIA_DIURNA;
+            anamnese.PAAM_DS_SONO_SUDORESE = anamneseAnterior.PAAM_DS_SONO_SUDORESE;
+            anamnese.PAAM_DS_SONO_TEMPERATURA = anamneseAnterior.PAAM_DS_SONO_TEMPERATURA;
+            anamnese.PAAM_DS_SONO_TEMPO_PEGAR_SONO = anamneseAnterior.PAAM_DS_SONO_TEMPO_PEGAR_SONO;
+            anamnese.PAAM_DS_SONO_TEMPO_PEGAR_SONO_OLD = anamneseAnterior.PAAM_DS_SONO_TEMPO_PEGAR_SONO_OLD;
+            anamnese.PAAM_DS_SONO_TIPO_RESPIRACAO = anamneseAnterior.PAAM_DS_SONO_TIPO_RESPIRACAO;
+            anamnese.PAAM_DS_SONO_TODAS_REFEICOES = anamneseAnterior.PAAM_DS_SONO_TODAS_REFEICOES;
+            anamnese.PAAM_DS_SONO_TOSSE = anamneseAnterior.PAAM_DS_SONO_TOSSE;
+            anamnese.PAAM_DS_SONO_TURNO = anamneseAnterior.PAAM_DS_SONO_TURNO;
+            anamnese.PAAM_DS_SONO_TVCAMA = anamneseAnterior.PAAM_DS_SONO_TVCAMA;
+            anamnese.PAAM_DS_SONO_ULTIMO_ALCOOL = anamneseAnterior.PAAM_DS_SONO_ULTIMO_ALCOOL;
+            anamnese.PAAM_DS_SONO_ULTIMO_ALCOOL_OLD = anamneseAnterior.PAAM_DS_SONO_ULTIMO_ALCOOL_OLD;
+            anamnese.PAAM_DS_SONO_URINA_NOITE = anamneseAnterior.PAAM_DS_SONO_URINA_NOITE;
+            anamnese.PAAM_DS_SONO_URINA_NOITE_OLD = anamneseAnterior.PAAM_DS_SONO_URINA_NOITE_OLD;
+
+            anamnese.PAAM_IN_FLAG_MOTIVO_CONSULTA = 1;
+            anamnese.PAAM_IN_FLAG__HISTORIA_FAMILIAR = 1;
+            anamnese.PAAM_IN_FLAG_HISTORIA_SOCIAL = anamneseAnterior.PAAM_IN_FLAG_HISTORIA_SOCIAL;
+            anamnese.PAAM_IN_FLAG_AVALIACAO_CARDIOLOGICA = anamneseAnterior.PAAM_IN_FLAG_AVALIACAO_CARDIOLOGICA;
+            anamnese.PAAM_IN_FLAG_RESPIRATORIO = anamneseAnterior.PAAM_IN_FLAG_RESPIRATORIO;
+            anamnese.PAAM_IN_FLAG_ABDOMEM = anamneseAnterior.PAAM_IN_FLAG_ABDOMEM;
+            anamnese.PAAM_IN_FLAG_MEDICAMENTO = anamneseAnterior.PAAM_IN_FLAG_MEDICAMENTO;
+            anamnese.PAAM_IN_FLAG_MEMBROS_INFERIORES = anamneseAnterior.PAAM_IN_FLAG_MEMBROS_INFERIORES;
+            anamnese.PAAM_IN_FLAG_QUEIXA_PRINCIPAL = 1;
+            anamnese.PAAM_IN_FLAG_HISTORIA_DOENCA_ATUAL = 1;
+            anamnese.PAAM_IN_FLAG_HISTORIA_PROGRESSIVA = anamneseAnterior.PAAM_IN_FLAG_HISTORIA_PROGRESSIVA;
+            anamnese.PAAM_IN_FLAG_DIAGNOSTICO_1 = 1;
+            anamnese.PAAM_IN_CAMPO_1 = anamneseAnterior.PAAM_IN_CAMPO_1;
+            anamnese.PAAM_NM_CAMPO_1 = anamneseAnterior.PAAM_NM_CAMPO_1;
+            anamnese.PAAM_DS_CAMPO_1 = anamneseAnterior.PAAM_DS_CAMPO_1;
+            anamnese.PAAM_IN_CAMPO_2 = anamneseAnterior.PAAM_IN_CAMPO_2;
+            anamnese.PAAM_NM_CAMPO_2 = anamneseAnterior.PAAM_NM_CAMPO_2;
+            anamnese.PAAM_DS_CAMPO_2 = anamneseAnterior.PAAM_DS_CAMPO_2;
+            anamnese.PAAM_IN_CAMPO_3 = anamneseAnterior.PAAM_IN_CAMPO_3;
+            anamnese.PAAM_NM_CAMPO_3 = anamneseAnterior.PAAM_NM_CAMPO_3;
+            anamnese.PAAM_DS_CAMPO_3 = anamneseAnterior.PAAM_DS_CAMPO_3;
+            anamnese.PAAM_IN_CAMPO_4 = anamneseAnterior.PAAM_IN_CAMPO_4;
+            anamnese.PAAM_NM_CAMPO_4 = anamneseAnterior.PAAM_NM_CAMPO_4;
+            anamnese.PAAM_DS_CAMPO_4 = anamneseAnterior.PAAM_DS_CAMPO_4;
+            anamnese.PAAM_IN_CAMPO_5 = anamneseAnterior.PAAM_IN_CAMPO_5;
+            anamnese.PAAM_NM_CAMPO_5 = anamneseAnterior.PAAM_NM_CAMPO_5;
+            anamnese.PAAM_DS_CAMPO_5 = anamneseAnterior.PAAM_DS_CAMPO_5;
+            anamnese.PAAM_IN_ALTERADA = 0;
+            return anamnese;
+        }
+
+        public PACIENTE_EXAME_FISICOS RemontarFisico(PACIENTE_EXAME_FISICOS fisicoAnterior)
+        {
+            PACIENTE_EXAME_FISICOS fisico = new PACIENTE_EXAME_FISICOS();
+            fisico.ASSI_CD_ID = fisicoAnterior.ASSI_CD_ID;
+            fisico.PAEF_CD_ID = fisicoAnterior.PAEF_CD_ID;
+            fisico.PACI_CD_ID = fisicoAnterior.PACI_CD_ID;
+            fisico.PAEF_DT_DATA = fisicoAnterior.PAEF_DT_DATA;
+            fisico.PAEF_IN_ATIVO = 1;
+            fisico.USUA_CD_ID = fisicoAnterior.USUA_CD_ID;
+            fisico.PACO_CD_ID = fisicoAnterior.PACO_CD_ID;
+            fisico.PAEF_IN_PREENCHIDO = 0;
+            fisico.PAEF_VL_IMC = 0;
+            fisico.PAEF_DS_ALCOOLISMO = fisicoAnterior.PAEF_DS_ALCOOLISMO;
+            fisico.PAEF_DS_ALERGICO = fisicoAnterior.PAEF_DS_ALERGICO;
+            fisico.PAEF_DS_ANTICONCEPCIONAL = fisicoAnterior.PAEF_DS_ANTICONCEPCIONAL;
+            fisico.PAEF_DS_EXAME_FISICO = fisicoAnterior.PAEF_DS_EXAME_FISICO;
+            fisico.PAEF_DS_EXERCICIO_FISICO = fisicoAnterior.PAEF_DS_EXERCICIO_FISICO;
+            fisico.PAEF_DS_MARCAPASSO = fisicoAnterior.PAEF_DS_MARCAPASSO;
+            fisico.PAEF_DS_ONCOLOGICO = fisicoAnterior.PAEF_DS_ONCOLOGICO;
+            fisico.PAEF_DS_TABAGISMO = fisicoAnterior.PAEF_DS_TABAGISMO;
+            fisico.PAEF_IN_ALCOOLISMO = fisicoAnterior.PAEF_IN_ALCOOLISMO;
+            fisico.PAEF_IN_ALCOOLISMO_FREQUENCIA = fisicoAnterior.PAEF_IN_ALCOOLISMO_FREQUENCIA;
+            fisico.PAEF_IN_ANTE_ALERGICO = fisicoAnterior.PAEF_IN_ANTE_ALERGICO;
+            fisico.PAEF_IN_ANTE_ONCOLOGICO = fisicoAnterior.PAEF_IN_ANTE_ONCOLOGICO;
+            fisico.PAEF_IN_ANTICONCEPCIONAL = fisicoAnterior.PAEF_IN_ANTICONCEPCIONAL;
+            fisico.PAEF_IN_CIRURGIAS = fisicoAnterior.PAEF_IN_CIRURGIAS;
+            fisico.PAEF_IN_DIABETE = fisicoAnterior.PAEF_IN_DIABETE;
+            fisico.PAEF_IN_EPILEPSIA = fisicoAnterior.PAEF_IN_EPILEPSIA;
+            fisico.PAEF_IN_EXERCICIO_FISICO = fisicoAnterior.PAEF_IN_EXERCICIO_FISICO;
+            fisico.PAEF_IN_EXERCICIO_FISICO_FREQUENCIA = fisicoAnterior.PAEF_IN_EXERCICIO_FISICO_FREQUENCIA;
+            fisico.PAEF_IN_GESTANTE = fisicoAnterior.PAEF_IN_GESTANTE;
+            fisico.PAEF_IN_HIPERTENSAO = fisicoAnterior.PAEF_IN_HIPERTENSAO;
+            fisico.PAEF_IN_HIPOTENSAO = fisicoAnterior.PAEF_IN_HIPOTENSAO;
+            fisico.PAEF_IN_MARCAPASSO = fisicoAnterior.PAEF_IN_MARCAPASSO;
+            fisico.PAEF_IN_TABAGISMO = fisicoAnterior.PAEF_IN_TABAGISMO;
+            fisico.PAEF_IN_VARIZES = fisicoAnterior.PAEF_IN_VARIZES;
+            fisico.PAEF_NR_ALTURA = fisicoAnterior.PAEF_NR_ALTURA;
+            fisico.PAEF_NR_FREQUENCIA_CARDIACA = fisicoAnterior.PAEF_NR_FREQUENCIA_CARDIACA;
+            fisico.PAEF_NR_MES_GESTANTE = fisicoAnterior.PAEF_NR_MES_GESTANTE;
+            fisico.PAEF_NR_PA_ALTA = fisicoAnterior.PAEF_NR_PA_ALTA;
+            fisico.PAEF_NR_PA_BAIXA = fisicoAnterior.PAEF_NR_PA_BAIXA;
+            fisico.PAEF_NR_PESO = fisicoAnterior.PAEF_NR_PESO;
+            fisico.PAEF_NR_TEMPERATURA = fisicoAnterior.PAEF_NR_TEMPERATURA;
+            fisico.PAEF_TX_CIRURGIAS = fisicoAnterior.PAEF_TX_CIRURGIAS;
+            fisico.PAEF_VL_IMC = fisicoAnterior.PAEF_VL_IMC;
+            fisico.PAEF_DT_COPIA = fisicoAnterior.PAEF_DT_DATA;
+            fisico.PAEF_TX_RESULTADOS = fisicoAnterior.PAEF_TX_RESULTADOS;
+            fisico.PAEF_DT_ORIGINAL = fisicoAnterior.PAEF_DT_ORIGINAL;
+            fisico.PAEF_DS_ALCOOLISMO_LONG = fisicoAnterior.PAEF_DS_ALCOOLISMO_LONG;
+            fisico.PAEF_DS_ALERGICO_LONG = fisicoAnterior.PAEF_DS_ALERGICO_LONG;
+            fisico.PAEF_DS_EXERCICIO_FISICO_LONG = fisicoAnterior.PAEF_DS_EXERCICIO_FISICO_LONG;
+            fisico.PAEF_DS_MARCAPASSO_LONG = fisicoAnterior.PAEF_DS_MARCAPASSO_LONG;
+            fisico.PAEF_DS_ONCOLOGICO_LONG = fisicoAnterior.PAEF_DS_ONCOLOGICO_LONG;
+            fisico.PAEF_DS_TABAGISMO_LONG = fisicoAnterior.PAEF_DS_TABAGISMO_LONG;
+            fisico.PAEF_DS_FICHA_AVALIACAO = fisicoAnterior.PAEF_DS_FICHA_AVALIACAO;
+            fisico.PAEF_NM_TIPO_SANGUE = fisicoAnterior.PAEF_NM_TIPO_SANGUE;
+            return fisico;
+        }
+
+        public DTO_Paciente_Consulta MontarPacienteConsultaDTOObj(PACIENTE_CONSULTA l)
+        {
+            using (var context = new CRMSysDBEntities())
+            {
+                var mediDTO = new DTO_Paciente_Consulta()
+                {
+                    ASSI_CD_ID = l.ASSI_CD_ID,
+                    PACO_CD_ID = l.PACO_CD_ID,
+                    PACO_DT_CONSULTA = l.PACO_DT_CONSULTA,
+                    PACO_DT_DUMMY = l.PACO_DT_DUMMY,
+                    PACO_DT_PROXIMA = l.PACO_DT_PROXIMA,
+                    PACO_HR_FINAL = l.PACO_HR_FINAL,
+                    PACO_HR_INICIO = l.PACO_HR_INICIO,
+                    PACO_IN_ATIVO = l.PACO_IN_ATIVO,
+                    PACO_IN_CONFIRMADA = l.PACO_IN_CONFIRMADA,
+                    PACO_IN_ENCERRADA = l.PACO_IN_ENCERRADA,
+                    PACO_IN_RECEBE = l.PACO_IN_RECEBE,
+                    PACO_IN_RECORRENTE = l.PACO_IN_RECORRENTE,
+                    PACO_IN_TIPO = l.PACO_IN_TIPO,
+                    PACO_TX_JUSTIFICATIVA_CANCELA = l.PACO_TX_JUSTIFICATIVA_CANCELA,
+                    PACI_CD_ID = l.PACI_CD_ID,
+                    PACO_TX_RESUMO = l.PACO_TX_RESUMO,
+                    USUA_CD_ID = l.USUA_CD_ID,
+                    VACO_CD_ID = l.VACO_CD_ID,
+                };
+                return mediDTO;
+            }
+
+        }
+
+        public async Task<Int32> EnviarEMailConsulta(PACIENTE_CONSULTA consulta, Int32 tipo)
+        {
+            // Recupera informações
+            Int32 idAss = (Int32)Session["IdAssinante"];
+            PACIENTE paciente = (PACIENTE)Session["UserCredentials"];
+            USUARIO usuario = usuApp.GetItemById(paciente.USUA_CD_ID.Value);
+            CONFIGURACAO conf = CarregaConfiguracaoGeral();
+
+            // Processo
+            try
+            {
+                // Recupera Template
+                TEMPLATE_EMAIL template = null;
+                if (tipo == 1)
+                {
+                    template = temApp.GetByCode("CRIACONS", idAss);
+                }
+                else if (tipo == 2)
+                {
+                    template = temApp.GetByCode("ALTCONS", idAss);
+                }
+                else if (tipo == 3)
+                {
+                    template = temApp.GetByCode("CONFCONS", idAss);
+                }
+                else if (tipo == 4)
+                {
+                    template = temApp.GetByCode("CANCCONS", idAss);
+                }
+                else if (tipo == 5)
+                {
+                    template = temApp.GetByCode("CRMEDCONS", idAss);
+                }
+                else if (tipo == 6)
+                {
+                    template = temApp.GetByCode("CFMEDCONS", idAss);
+                }
+                else if (tipo == 7)
+                {
+                    template = temApp.GetByCode("CCMEDCONS", idAss);
+                }
+
+                // Prepara cabeçalho
+                String cab = template.TEEM_TX_CABECALHO;
+                String cor = template.TEEM_TX_CORPO;
+                if (tipo < 5)
+                {
+                    if (cab.Contains("{nome}"))
+                    {
+                        cab = cab.Replace("{nome}", paciente.PACI_NM_NOME);
+                    }
+                }
+                else
+                {
+                    if (cab.Contains("{medico}"))
+                    {
+                        cab = cab.Replace("{medico}", usuario.USUA_NM_NOME);
+                    }
+                }
+
+                // Prepara assinatura
+                String assinatura = String.Empty;
+                if (tipo < 5)
+                {
+                    String classe = String.Empty;
+                    if (usuario.TIPO_CARTEIRA_CLASSE != null)
+                    {
+                        classe = usuario.TIPO_CARTEIRA_CLASSE.TICL_NM_NOME + ": " + usuario.USUA_NR_CLASSE;
+                    }
+                    assinatura = "<b>" + usuario.USUA_NM_NOME + "</b><br />";
+                    if (usuario.ESPECIALIDADE != null)
+                    {
+                        assinatura += usuario.ESPECIALIDADE.ESPE_NM_NOME + "<br />";
+                    }
+                    else
+                    {
+                        assinatura += usuario.USUA_NM_ESPECIALIDADE + "<br />";
+                    }
+                    assinatura += classe + "  CPF: " + usuario.USUA_NR_CPF + "<br />";
+                }
+                else
+                {
+                    assinatura = "Enviado por <b>WebDoctor</b><br />";
+                }
+
+                // Prepara corpo da mensagem
+                String texto = template.TEEM_TX_CORPO;
+                if (texto.Contains("{medico}"))
+                {
+                    texto = texto.Replace("{medico}", usuario.USUA_NM_NOME);
+                }
+                if (texto.Contains("{nome}"))
+                {
+                    texto = texto.Replace("{nome}", paciente.PACI_NM_NOME);
+                }
+                if (texto.Contains("{data}"))
+                {
+                    texto = texto.Replace("{data}", consulta.PACO_DT_CONSULTA.ToLongDateString());
+                }
+                if (texto.Contains("{inicio}"))
+                {
+                    texto = texto.Replace("{inicio}", consulta.PACO_HR_INICIO.ToString());
+                }
+                if (texto.Contains("{final}"))
+                {
+                    texto = texto.Replace("{final}", consulta.PACO_HR_FINAL.ToString());
+                }
+                if (texto.Contains("{paciente}"))
+                {
+                    texto = texto.Replace("{paciente}", paciente.PACI_NM_NOME);
+                }
+                if (texto.Contains("{justificativa}"))
+                {
+                    texto = texto.Replace("{justificativa}", consulta.PACO_TX_JUSTIFICATIVA_CANCELA);
+                }
+                String emailBody = cab + "<br />" + texto + "<br /><br />" + assinatura;
+
+                // Decriptografa chaves
+                String emissor = CrossCutting.Cryptography.Decrypt(conf.CONF_NM_EMISSOR_AZURE_CRIP);
+                String conn = CrossCutting.Cryptography.Decrypt(conf.CONF_CS_CONNECTION_STRING_AZURE_CRIP);
+                List<AttachmentModel> models = new List<AttachmentModel>();
+
+                // Monta e-mail
+                NetworkCredential net = new NetworkCredential(conf.CONF_NM_SENDGRID_LOGIN, conf.CONF_NM_SENDGRID_PWD);
+                EmailAzure mensagem = new EmailAzure();
+                if (tipo < 5)
+                {
+                    mensagem.ASSUNTO = "Envio de Mensagem para Paciente - " + paciente.PACI_NM_NOME + " - " + DateTime.Now.ToString();
+                }
+                else
+                {
+                    mensagem.ASSUNTO = "Envio de Mensagem para Médico - " + usuario.USUA_NM_NOME + " - " + DateTime.Now.ToString();
+                }
+                mensagem.ASSUNTO = "Paciente - " + paciente.PACI_NM_NOME + " - Consulta";
+                mensagem.CORPO = emailBody;
+                mensagem.DEFAULT_CREDENTIALS = false;
+                mensagem.EMAIL_TO_DESTINO = paciente.PACI_NM_EMAIL;
+                mensagem.NOME_EMISSOR_AZURE = emissor;
+                mensagem.ENABLE_SSL = true;
+                mensagem.NOME_EMISSOR = usuario.USUA_NM_NOME;
+                mensagem.PORTA = conf.CONF_NM_PORTA_SMTP;
+                mensagem.PRIORIDADE = System.Net.Mail.MailPriority.High;
+                mensagem.SENHA_EMISSOR = conf.CONF_NM_SENDGRID_PWD;
+                mensagem.SMTP = conf.CONF_NM_HOST_SMTP;
+                mensagem.IS_HTML = true;
+                mensagem.NETWORK_CREDENTIAL = net;
+                mensagem.ConnectionString = conn;
+
+                // Envia mensagem
+                try
+                {
+                    await CrossCutting.CommunicationAzurePackage.SendMailAsync(mensagem, models);
+                }
+                catch (Exception ex)
+                {
+                    Session["MensagemLogin"] = 100;
+                    Session["MensagemErro"] = ex.Message;
+                    Session["Excecao"] = ex;
+                    return 0;
+                }
+
+                // Grava mensagem enviada
+                MensagemViewModel mens = new MensagemViewModel();
+                mens.NOME = paciente.PACI_NM_NOME;
+                mens.ID = paciente.PACI__CD_ID;
+                if (tipo < 5)
+                {
+                    mens.MODELO = paciente.PACI_NM_EMAIL;
+                    mens.MENS_DT_CRIACAO = DateTime.Today.Date;
+                    mens.MENS_IN_TIPO = 1;
+                    mens.MENS_NM_CAMPANHA = paciente.PACI_NM_EMAIL;
+                    mens.MENS_NM_NOME = "Mensagem para Paciente - Consulta: " + paciente.PACI_NM_NOME;
+                    mens.PACI_CD_ID = paciente.PACI__CD_ID;
+                }
+                else
+                {
+                    mens.MODELO = usuario.USUA_NM_EMAIL;
+                    mens.MENS_DT_CRIACAO = DateTime.Today.Date;
+                    mens.MENS_IN_TIPO = 1;
+                    mens.MENS_NM_CAMPANHA = usuario.USUA_NM_EMAIL;
+                    mens.MENS_NM_NOME = "Mensagem para Médico - Consulta: " + usuario.USUA_NM_NOME;
+                    mens.PACI_CD_ID = null;
+                }
+                mens.MENS_TX_TEXTO = emailBody;
+
+                EnvioEMailGeralBase envio = new EnvioEMailGeralBase(usuApp, confApp, meApp);
+                String guid = Xid.NewXid().ToString();
+                Int32 volta1 = envio.GravarMensagemEnviada(mens, usuario, mens.MENS_TX_TEXTO, "Succeeded", guid, null, "Confirmação de Consulta de Paciente - " + paciente.PACI_NM_NOME);
+
+                // Sucesso
+                return 1;
+            }
+            catch (Exception ex)
+            {
+                Session["MensagemLogin"] = 100;
+                Session["MensagemErro"] = ex.Message;
+                Session["Excecao"] = ex;
+                return 1;
+            }
+        }
+
+        public Int32 EnviarSMSConsulta(PACIENTE_CONSULTA consulta, Int32 tipo)
+        {
+            // Recupera informações
+            Int32 idAss = (Int32)Session["IdAssinante"];
+            PACIENTE paciente = (PACIENTE)Session["UserCredentials"];
+            USUARIO usuario = usuApp.GetItemById(consulta.USUA_CD_ID.Value);
+
+            // Processo
+            try
+            {
+                // Recupera Template
+                TEMPLATE_SMS template = null;
+                if (tipo == 1)
+                {
+                    template = smsApp.GetByCode("CRIACONS", idAss);
+                }
+                else if (tipo == 2)
+                {
+                    template = smsApp.GetByCode("ALTCONS", idAss);
+                }
+                else if (tipo == 3)
+                {
+                    template = smsApp.GetByCode("CONFCONS", idAss);
+                }
+                else if (tipo == 4)
+                {
+                    template = smsApp.GetByCode("CANCCONS", idAss);
+                }
+
+                // Prepara assinatura
+                String classe = String.Empty;
+                if (usuario.TIPO_CARTEIRA_CLASSE != null)
+                {
+                    classe = usuario.TIPO_CARTEIRA_CLASSE.TICL_NM_NOME + ": " + usuario.USUA_NR_CLASSE;
+                }
+                String assinatura = usuario.USUA_NM_NOME + " - ";
+                assinatura += usuario.USUA_NM_ESPECIALIDADE + " - ";
+                assinatura += classe + " - CPF: " + usuario.USUA_NR_CPF;
+
+                // Prepara corpo da mensagem
+                String texto = template.TSMS_TX_CORPO;
+                if (texto.Contains("{nome}"))
+                {
+                    texto = texto.Replace("{nome}", paciente.PACI_NM_NOME);
+                }
+                if (texto.Contains("{medico}"))
+                {       
+                    texto = texto.Replace("{medico}", usuario.USUA_NM_NOME);
+                }
+                if (texto.Contains("{data}"))
+                {
+                    texto = texto.Replace("{data}", consulta.PACO_DT_CONSULTA.ToLongDateString());
+                }
+                if (texto.Contains("{inicio}"))
+                {
+                    texto = texto.Replace("{inicio}", consulta.PACO_HR_INICIO.ToString());
+                }
+                if (texto.Contains("{classe}"))
+                {
+                    texto = texto.Replace("{classe}", assinatura);
+                }
+                String smsBody = texto + ".";
+
+                // Carraga configuracao
+                CONFIGURACAO conf = CarregaConfiguracaoGeral();
+
+                // Decriptografa chaves
+                String login = CrossCutting.Cryptography.Decrypt(conf.CONF_SG_LOGIN_SMS_CRIP);
+                String senha = CrossCutting.Cryptography.Decrypt(conf.CONF_SG_SENHA_SMS_CRIP);
+
+                // Monta token
+                String text = login + ":" + senha;
+                byte[] textBytes = Encoding.UTF8.GetBytes(text);
+                String token = Convert.ToBase64String(textBytes);
+                String auth = "Basic " + token;
+
+                // inicia processo
+                String resposta = String.Empty;
+
+                // processa envio
+                String listaDest = "55" + Regex.Replace(paciente.PACI_NR_CELULAR, "[^a-zA-Z0-9_.]+", "", RegexOptions.Compiled).ToString();
+                String customId = Cryptography.GenerateRandomPassword(8);
+                String data = String.Empty;
+                String json = String.Empty;
+
+                // Monta o JSON corretamente
+                var payload = new
+                {
+                    destinations = new[]
+                    {
+                        new {
+                            to = listaDest,
+                            text = smsBody,
+                            customId = customId,
+                            from = "WebDoctor"
+                        }
+    }
+                };
+                json = Newtonsoft.Json.JsonConvert.SerializeObject(payload);
+
+                // Prepara requisição
+                var httpWebRequest = (HttpWebRequest)WebRequest.Create("https://api-v2.smsfire.com.br/sms/send/bulk");
+                httpWebRequest.Method = "POST";
+                httpWebRequest.ContentType = "application/json";
+                httpWebRequest.Headers["Authorization"] = auth;
+
+                // Converte JSON em bytes e seta ContentLength
+                var dataBytes = Encoding.UTF8.GetBytes(json);
+                httpWebRequest.ContentLength = dataBytes.Length;
+
+                using (var requestStream = httpWebRequest.GetRequestStream())
+                {
+                    requestStream.Write(dataBytes, 0, dataBytes.Length);
+                }
+
+                // Lê resposta
+                using (var httpResponse = (HttpWebResponse)httpWebRequest.GetResponse())
+                using (var streamReader = new StreamReader(httpResponse.GetResponseStream()))
+                {
+                    resposta = streamReader.ReadToEnd();
+                }
+
+                // Grava mensagem enviada
+                MensagemViewModel mens = new MensagemViewModel();
+                mens.NOME = paciente.PACI_NM_NOME;
+                mens.ID = paciente.PACI__CD_ID;
+                mens.MODELO = paciente.PACI_NM_EMAIL;
+                mens.MENS_DT_CRIACAO = DateTime.Today.Date;
+                mens.MENS_IN_TIPO = 2;
+                mens.MENS_NM_CAMPANHA = paciente.PACI_NM_EMAIL;
+                mens.MENS_NM_NOME = "Mensagem SMS para Paciente - Consulta - Marcação: " + paciente.PACI_NM_NOME;
+                mens.PACI_CD_ID = paciente.PACI__CD_ID;
+                mens.MENS_TX_TEXTO = smsBody;
+
+                EnvioEMailGeralBase envio = new EnvioEMailGeralBase(usuApp, confApp, meApp);
+                String guid = Xid.NewXid().ToString();
+                Int32 volta1 = envio.GravarMensagemEnviada(mens, usuario, mens.MENS_TX_TEXTO, "Succeeded", guid, null, "Marcação de Consulta de Paciente - SMS - " + paciente.PACI_NM_NOME);
+
+                // Sucesso
+                Session["NivelPaciente"] = 1;
+                return 1;
+            }
+            catch (Exception ex)
+            {
+                Session["MensagemLogin"] = 100;
+                Session["MensagemErro"] = ex.Message;
+                Session["Excecao"] = ex;
+                return 1;
+            }
+        }
+
+        [HttpGet]
+        public async Task<ActionResult> CancelarConsulta(Int32 id)
+        {
+            try
+            {
+                // Verifica se tem usuario logado
+                PACIENTE paciente = new PACIENTE();
+                if ((String)Session["Ativa"] == null)
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+                if ((PACIENTE)Session["UserCredentials"] != null)
+                {
+                    paciente = (PACIENTE)Session["UserCredentials"];
+                }
+                else
+                {
+                    return RedirectToAction("LogoutAreaPaciente", "AreaPaciente");
+                }
+
+                // Recupera dados
+                CONFIGURACAO conf = CarregaConfiguracaoGeral();
+                PACIENTE_CONSULTA item = baseApp.GetConsultaById(id);
+
+                // Recupera paciente
+                PACIENTE pac1 = baseApp.GetItemById(paciente.PACI__CD_ID);
+                USUARIO usuarioLogado = usuApp.GetItemById(pac1.USUA_CD_ID.Value);
+
+                // Processa cancelamento
+                item.PACO_IN_CONFIRMADA = 2;
+                Int32 volta = baseApp.ValidateEditConsultaConfirma(item);
+
+                // Acerta estado
+                Session["PacienteAlterada"] = 1;
+                Session["NivelPaciente"] = 3;
+                Session["ListaConsultasGeral"] = null;
+                Session["ConsultasAlterada"] = 1;
+                Session["ListaConfirma"] = null;
+                Session["ListaConsultaAberta"] = null;
+
+                // Recupera paciente
+                PACIENTE pac = baseApp.GetItemById(item.PACI_CD_ID);
+
+                // Monta Log
+                LOG log = new LOG
+                {
+                    LOG_DT_DATA = DateTime.Now,
+                    ASSI_CD_ID = usuarioLogado.ASSI_CD_ID,
+                    USUA_CD_ID = usuarioLogado.USUA_CD_ID,
+                    LOG_NM_OPERACAO = "Paciente - Consulta - Cancelamento",
+                    LOG_IN_ATIVO = 1,
+                    LOG_TX_REGISTRO = "Paciente: " + pac.PACI_NM_NOME + " | Data: " + item.PACO_DT_CONSULTA,
+                    LOG_IN_SISTEMA = 6
+                };
+                Int32 volta1 = logApp.ValidateCreate(log);
+
+                // Grava historico
+                PACIENTE_HISTORICO hist = new PACIENTE_HISTORICO();
+                hist.ASSI_CD_ID = usuarioLogado.ASSI_CD_ID;
+                hist.USUA_CD_ID = usuarioLogado.USUA_CD_ID;
+                hist.PACI_CD_ID = item.PACI_CD_ID;
+                hist.PAHI_DT_DATA = DateTime.Now;
+                hist.PAHI_IN_TIPO = 10;
+                hist.PAHI_IN_CHAVE = item.PACO_CD_ID;
+                hist.PAHI_NM_OPERACAO = "Paciente - Cancelamento de Consulta";
+                hist.PAHI_DS_DESCRICAO = "Paciente " + pac.PACI_NM_NOME + " - Consulta cancelada " + item.PACO_DT_CONSULTA.ToShortDateString();
+                Int32 voltaHist = baseApp.ValidateCreateHistorico(hist);
+
+                // Mensagem do CRUD
+                Session["MsgCRUD"] = "A consulta do(a) paciente " + pac.PACI_NM_NOME.ToUpper() + " marcada para " + item.PACO_DT_CONSULTA.ToLongDateString() + " foi cancelada com sucesso";
+                Session["MensPaciente"] = 61;
+
+                // Envia mensagem
+                if (pac.PACI_NM_EMAIL != null)
+                {
+                    Int32 voltaCons = await EnviarEMailConsulta(item, 4);
+                }
+                if (pac.PACI_NR_CELULAR != null)
+                {
+                    Int32 voltaCons = EnviarSMSConsulta(item, 4);
+                }
+                if (usuarioLogado.USUA_NM_EMAIL != null)
+                {
+                    Int32 voltaCons = await EnviarEMailConsulta(item, 7);
+                }
+
+                // Retorno
+                return RedirectToAction("MontarTelaAreaPaciente");
+            }
+            catch (Exception ex)
+            {
+                Session["MensagemLogin"] = 100;
+                Session["MensagemErro"] = ex.Message;
+                Session["Excecao"] = ex;
+                return RedirectToAction("ErroGeralAreaPaciente", "AreaPaciente");
+            }
+        }
+
+        [HttpGet]
+        public ActionResult EnviarInformacaoConsulta(Int32 id)
+        {
+            try
+            {
+                if ((String)Session["Ativa"] == null)
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+
+                // Recupera paciente
+                PACIENTE cont = (PACIENTE)Session["UserCredentials"];
+                USUARIO usuario = usuApp.GetItemById(cont.USUA_CD_ID.Value);
+                Session["Paciente"] = cont;
+                ViewBag.Paciente = cont;
+                Session["AjudaNivel"] = "../BaseAdmin/Ajuda/3/Ajuda3_9.pdf";
+                ViewBag.NomePaciente = cont.PACI_NM_NOME;
+                ViewBag.Profissional = cont.USUARIO.USUA_NM_NOME;
+                ViewBag.EMail = cont.USUARIO.USUA_NM_EMAIL;
+
+                // Recupera Consulta
+                PACIENTE_CONSULTA cons = baseApp.GetConsultaById(id);
+                ViewBag.Data = cons.PACO_DT_CONSULTA.ToShortDateString();
+                ViewBag.Inicio = cons.PACO_HR_INICIO.ToString();
+                ViewBag.Final = cons.PACO_HR_FINAL.ToString();
+
+                // Grava Acesso
+                ControleAcessoMetodo grava = new ControleAcessoMetodo(aceApp);
+                Int32 voltaX = grava.GravaAcesso(usuario.USUA_CD_ID, usuario.ASSI_CD_ID, "AREA_PACIENTE_ENVIO_PREVIA", "AreaPaciente", "EnviarInformacaoConsulta");
+                
+                AREA_PACIENTE area = new AREA_PACIENTE();
+                AreaPacienteViewModel vm = Mapper.Map<AREA_PACIENTE, AreaPacienteViewModel>(area);
+                vm.AREA_DT_CONSULTA = cons.PACO_DT_CONSULTA;
+                vm.AREA_DT_ENTRADA = DateTime.Now;
+                vm.AREA_HR_FINAL = cons.PACO_HR_FINAL;
+                vm.AREA_HR_INICIO = cons.PACO_HR_INICIO;
+                vm.AREA_IN_ATIVO = 1;
+                vm.AREA_IN_TIPO = 2;
+                vm.AREA_GU_IDENTIFICADOR = Xid.NewXid().ToString();
+                vm.AREA_NM_TITULO = "Envio de informações de consulta - " + "Paciente: " + cont.PACI_NM_NOME.ToUpper();
+                vm.ASSI_CD_ID = cont.ASSI_CD_ID;
+                vm.PACI_CD_ID = cont.PACI__CD_ID;
+                vm.USUA_CD_ID = cont.USUA_CD_ID;
+                vm.NOME_PACIENTE = cont.PACI_NM_NOME;
+                vm.NOME_PROFISSIONAL = cont.USUARIO.USUA_NM_NOME;
+                vm.EMAIL_PROFISSIONAL = cont.USUARIO.USUA_NM_EMAIL;
+                vm.HORARIO = cons.PACO_HR_INICIO.ToString() + " até " + cons.PACO_HR_FINAL.ToString();
+
+                return View(vm);
+            }
+            catch (Exception ex)
+            {
+                Session["MensagemLogin"] = 100;
+                Session["MensagemErro"] = ex.Message;
+                Session["Excecao"] = ex;
+                return RedirectToAction("ErroGeralAreaPaciente", "AreaPaciente");
+            }
+        }
+
+        [HttpPost]
+        [ValidateInput(false)]
+        public async Task<ActionResult> EnviarInformacaoConsulta(AreaPacienteViewModel vm)
+        {
+            if ((String)Session["Ativa"] == null)
+            {
+                return RedirectToAction("Logout", "ControleAcesso");
+            }
+            PACIENTE cont = (PACIENTE)Session["UserCredentials"];
+            USUARIO usuario = usuApp.GetItemById(cont.USUA_CD_ID.Value);
+            Int32 idAss = cont.ASSI_CD_ID;
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    // Sanitização
+                    vm.AREA_TX_CONTEUDO = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(vm.AREA_TX_CONTEUDO);
+
+                    // Critica basica
+                    if (vm.AREA_TX_CONTEUDO == null)
+                    {
+                        Session["MensArea"] = 3;
+                        return View(vm);
+                    }
+
+                    // Monta Area
+                    AREA_PACIENTE item = Mapper.Map<AreaPacienteViewModel, AREA_PACIENTE>(vm);
+
+                    // Executa criação
+                    Int32 volta = areaApp.ValidateCreate(item, usuario);
+                    Session["IdArea"] = item.AREA_CD_ID;
+
+                    // Cria pastas
+                    String caminho = "/Imagens/" + idAss.ToString() + "/AreaPaciente/" + item.AREA_CD_ID.ToString() + "/Anexos/";
+                    String map = Server.MapPath(caminho);
+                    Directory.CreateDirectory(Server.MapPath(caminho));
+
+                    // Trata anexos
+                    if (Session["FileQueueArea"] != null)
+                    {
+                        List<FileQueue> fq = (List<FileQueue>)Session["FileQueueArea"];
+                        foreach (var file in fq)
+                        {
+                            if (file.Profile == null)
+                            {
+                                Int32 volta1 = UploadFileQueueArea(file);
+                            }
+                        }
+                        Session["FileQueueArea"] = null;
+                    }
+
+                    // Configura serilização
+                    JsonSerializerSettings settings = new JsonSerializerSettings
+                    {
+                        ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+                        NullValueHandling = NullValueHandling.Ignore
+                    };
+
+                    // Monta Log
+                    DTO_Area_Paciente dto = MontarAreaPacienteDTOObj(item);
+                    String json = JsonConvert.SerializeObject(dto, settings);
+                    LOG log = new LOG
+                    {
+                        LOG_DT_DATA = DateTime.Now,
+                        ASSI_CD_ID = usuario.ASSI_CD_ID,
+                        USUA_CD_ID = usuario.USUA_CD_ID,
+                        LOG_NM_OPERACAO = "Paciente - Envio de Informação de Consulta",
+                        LOG_IN_ATIVO = 1,
+                        LOG_TX_REGISTRO = json,
+                        LOG_IN_SISTEMA = 6
+                    };
+                    Int32 volta2 = logApp.ValidateCreate(log);
+
+                    // Mensagem de cadastramento
+                    if (usuario.USUA_NM_EMAIL != null)
+                    {
+                        var voltaCons = await EnviarEMailAvisoArea(usuario, 1);
+                    }
+
+                    // Mensagem
+                    Session["MsgCRUD"] = "O envio de informações de " + cont.PACI_NM_NOME.ToUpper() + " para o profissional " + usuario.USUA_NM_NOME.ToUpper() + " foi realizado com sucesso. Identificador do envio: " + item.AREA_GU_IDENTIFICADOR;
+                    Session["MensFC"] = 61;
+
+                    // Retorno
+                    return RedirectToAction("MontarTelaAreaPaciente");
+                }
+                catch (Exception ex)
+                {
+                    Session["MensagemLogin"] = 100;
+                    Session["MensagemErro"] = ex.Message;
+                    Session["Excecao"] = ex;
+                    return RedirectToAction("ErroGeralAreaPaciente", "AreaPaciente");
+                }
+            }
+            else
+            {
+                return View(vm);
+            }
+        }
+
+        [HttpPost]
+        public void UploadFileToSession(IEnumerable<HttpPostedFileBase> files, String profile)
+        {
+            List<FileQueue> queue = new List<FileQueue>();
+            foreach (var file in files)
+            {
+                FileQueue f = new FileQueue();
+                f.Name = Path.GetFileName(file.FileName);
+                f.ContentType = Path.GetExtension(file.FileName);
+
+                MemoryStream ms = new MemoryStream();
+                file.InputStream.CopyTo(ms);
+                f.Contents = ms.ToArray();
+
+                if (profile != null)
+                {
+                    if (file.FileName.Equals(profile))
+                    {
+                        f.Profile = 1;
+                    }
+                }
+                queue.Add(f);
+            }
+            Session["FileQueueAreaPaciente"] = queue;
+        }
+
+        [HttpPost]
+        public Int32 UploadFileQueueArea(FileQueue file)
+        {
+            try
+            {
+                if (file == null)
+                {
+                    Session["MensArea"] = 5;
+                    return 1;
+                }
+
+                // Recupera paciente
+                PACIENTE paciente = (PACIENTE)Session["UserCredentials"];
+                USUARIO item = usuApp.GetItemById(paciente.USUA_CD_ID.Value);
+                Int32 idNot = paciente.PACI__CD_ID;
+                Int32 idAss = paciente.ASSI_CD_ID;
+                Int32 idArea = (Int32)Session["IdArea"];
+                AREA_PACIENTE area = areaApp.GetItemById(idArea);
+
+                var fileName = file.Name;
+                if (fileName.Length > 250)
+                {
+                    Session["MensArea"] = 6;
+                    return 2;
+                }
+
+                // Critica tamanho arquivo
+                var fileSize = file.Contents.Length;
+                if (fileSize > 50000000)
+                {
+                    Session["MensArea"] = 7;
+                    return 3;
+                }
+
+                // Recupera tipo de arquivo
+                String extensao = Path.GetExtension(fileName);
+                if (!((String)Session["ExtensoesPossiveis"]).Contains(extensao.ToUpper()))
+                {
+                    Session["MensArea"] = 8;
+                    return 4;
+                }
+
+                // Copia arquivo para pasta
+                String caminho = "/Imagens/" +idAss.ToString() + "/AreaPaciente/" + idArea.ToString() + "/Anexos/";
+                String path = Path.Combine(Server.MapPath(caminho), fileName);
+                System.IO.File.WriteAllBytes(path, file.Contents);
+
+                // Gravar registro
+                AREA_PACIENTE_ANEXO foto = new AREA_PACIENTE_ANEXO();
+                foto.APAN_AQ_ARQUIVO = "~" + caminho + fileName;
+                foto.APAN_DT_ANEXO = DateTime.Today;
+                foto.APAN_IN_ATIVO = 1;
+                Int32 tipo = 3;
+                if (extensao.ToUpper() == ".JPG" || extensao.ToUpper() == ".GIF" || extensao.ToUpper() == ".PNG" || extensao.ToUpper() == ".JPEG")
+                {
+                    tipo = 1;
+                }
+                else if (extensao.ToUpper() == ".MP4" || extensao.ToUpper() == ".AVI" || extensao.ToUpper() == ".MPEG")
+                {
+                    tipo = 2;
+                }
+                else if (extensao.ToUpper() == ".PDF")
+                {
+                    tipo = 3;
+                }
+                else if (extensao.ToUpper() == ".MP3" || extensao.ToUpper() == ".MPEG")
+                {
+                    tipo = 4;
+                }
+                else if (extensao.ToUpper() == ".DOCX" || extensao.ToUpper() == ".DOC" || extensao.ToUpper() == ".ODT")
+                {
+                    tipo = 5;
+                }
+                else if (extensao.ToUpper() == ".XLSX" || extensao.ToUpper() == ".XLS" || extensao.ToUpper() == ".ODS")
+                {
+                    tipo = 6;
+                }
+                else
+                {
+                    tipo = 7;
+                }
+                foto.APAN_IN_TIPO = tipo;
+                foto.APAN_NM_TITULO = fileName;
+                foto.AREA_CD_ID = idArea;
+                area.AREA_PACIENTE_ANEXO.Add(foto);
+                Int32 volta = areaApp.ValidateEdit(area, item);
+
+                // Configura serilização
+                JsonSerializerSettings settings = new JsonSerializerSettings
+                {
+                    ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+                    NullValueHandling = NullValueHandling.Ignore
+                };
+
+                // Monta Log
+                DTO_Area_Paciente_Anexo dto = MontarAreaPacienteAnexoDTOObj(foto);
+                String json = JsonConvert.SerializeObject(dto, settings);
+                LOG log = new LOG
+                {
+                    LOG_DT_DATA = DateTime.Now,
+                    ASSI_CD_ID = item.ASSI_CD_ID,
+                    USUA_CD_ID = item.USUA_CD_ID,
+                    LOG_NM_OPERACAO = "Paciente - Envio de Informação - Anexo - Inclusão",
+                    LOG_IN_ATIVO = 1,
+                    LOG_TX_REGISTRO = json,
+                    LOG_IN_SISTEMA = 6
+                };
+                Int32 volta1 = logApp.ValidateCreate(log);
+
+                return 0;
+            }
+            catch (Exception ex)
+            {
+                Session["MensagemLogin"] = 100;
+                Session["MensagemErro"] = ex.Message;
+                Session["Excecao"] = ex;
+                return 0;
+            }
+        }
+
+        public DTO_Area_Paciente MontarAreaPacienteDTOObj(AREA_PACIENTE l)
+        {
+            using (var context = new CRMSysDBEntities())
+            {
+                var mediDTO = new DTO_Area_Paciente()
+                {
+                    ASSI_CD_ID = l.ASSI_CD_ID,
+                    PACI_CD_ID = l.PACI_CD_ID,
+                    USUA_CD_ID = l.USUA_CD_ID,
+                    AREA_CD_ID = l.ASSI_CD_ID,
+                    AREA_DT_CONSULTA = l.AREA_DT_CONSULTA,
+                    AREA_HR_FINAL = l.AREA_HR_FINAL,
+                    AREA_HR_INICIO = l.AREA_HR_INICIO,
+                    AREA_DT_ENTRADA = l.AREA_DT_ENTRADA,
+                    AREA_IN_ATIVO = l.AREA_IN_ATIVO,
+                    AREA_IN_TIPO = l.AREA_IN_TIPO,
+                    AREA_NM_TITULO = l.AREA_NM_TITULO,
+                    AREA_TX_CONTEUDO = l.AREA_TX_CONTEUDO,
+                    AREA_GU_IDENTIFICADOR = l.AREA_GU_IDENTIFICADOR,
+                };
+                return mediDTO;
+            }
+
+        }
+
+        public DTO_Area_Paciente_Anexo MontarAreaPacienteAnexoDTOObj(AREA_PACIENTE_ANEXO l)
+        {
+            using (var context = new CRMSysDBEntities())
+            {
+                var mediDTO = new DTO_Area_Paciente_Anexo()
+                {
+                    APAN_AQ_ARQUIVO = l.APAN_AQ_ARQUIVO,
+                    APAN_DT_ANEXO = l.APAN_DT_ANEXO,
+                    APAN_CD_ID = l.APAN_CD_ID,
+                    APAN_IN_ATIVO = l.APAN_IN_ATIVO,
+                    APAN_IN_TIPO = l.APAN_IN_TIPO,
+                    APAN_NM_TITULO = l.APAN_NM_TITULO,
+                    AREA_CD_ID = l.AREA_CD_ID,
+                    ASSI_CD_ID = l.ASSI_CD_ID,
+                };
+                return mediDTO;
+            }
+
+        }
+
+        public async Task<Int32> EnviarEMailAvisoArea(USUARIO paciente, Int32 tipo)
+        {
+            // Recupera informações
+            PACIENTE cont = (PACIENTE)Session["UserCredentials"];
+            Int32 idAss = cont.ASSI_CD_ID;
+            CONFIGURACAO conf = CarregaConfiguracaoGeral();
+
+            // Processo
+            try
+            {
+                // Recupera Template
+                TEMPLATE_EMAIL template = null;
+                template = temApp.GetByCode("INFOPAC", idAss);
+
+                // Prepara cabeçalho
+                String cab = template.TEEM_TX_CABECALHO;
+                if (cab.Contains("{nome}"))
+                {
+                    cab = cab.Replace("{nome}", paciente.USUA_NM_NOME);
+                }
+
+                // Prepara corpo da mensagem
+                String texto = template.TEEM_TX_CORPO;
+                String rodape = template.TEEM_TX_DADOS;
+                if (texto.Contains("{paciente}"))
+                {
+                    texto = texto.Replace("{paciente}", cont.PACI_NM_NOME);
+                }
+                if (texto.Contains("{data}"))
+                {
+                    texto = texto.Replace("{data}", DateTime.Today.Date.ToLongDateString());
+                }
+                String emailBody = cab + "<br />" + texto + "<br /><br />" + rodape;
+
+                // Decriptografa chaves
+                String emissor = CrossCutting.Cryptography.Decrypt(conf.CONF_NM_EMISSOR_AZURE_CRIP);
+                String conn = CrossCutting.Cryptography.Decrypt(conf.CONF_CS_CONNECTION_STRING_AZURE_CRIP);
+                List<AttachmentModel> models = new List<AttachmentModel>();
+
+                // Monta e-mail
+                NetworkCredential net = new NetworkCredential(conf.CONF_NM_SENDGRID_LOGIN, conf.CONF_NM_SENDGRID_PWD);
+                EmailAzure mensagem = new EmailAzure();
+                mensagem.ASSUNTO = "Paciente - " + cont.PACI_NM_NOME + " - Envio de Informações Relevantes";
+                mensagem.CORPO = emailBody;
+                mensagem.DEFAULT_CREDENTIALS = false;
+                mensagem.EMAIL_TO_DESTINO = paciente.USUA_NM_EMAIL;
+                mensagem.NOME_EMISSOR_AZURE = emissor;
+                mensagem.ENABLE_SSL = true;
+                mensagem.NOME_EMISSOR = cont.PACI_NM_NOME;
+                mensagem.PORTA = conf.CONF_NM_PORTA_SMTP;
+                mensagem.PRIORIDADE = System.Net.Mail.MailPriority.High;
+                mensagem.SENHA_EMISSOR = conf.CONF_NM_SENDGRID_PWD;
+                mensagem.SMTP = conf.CONF_NM_HOST_SMTP;
+                mensagem.IS_HTML = true;
+                mensagem.NETWORK_CREDENTIAL = net;
+                mensagem.ConnectionString = conn;
+
+                // Envia mensagem
+                try
+                {
+                    await CrossCutting.CommunicationAzurePackage.SendMailAsync(mensagem, models);
+                }
+                catch (Exception ex)
+                {
+                    Session["MensagemLogin"] = 100;
+                    Session["MensagemErro"] = ex.Message;
+                    Session["Excecao"] = ex;
+                    return 0;
+                }
+                
+                // Grava mensagem enviada
+                MensagemViewModel mens = new MensagemViewModel();
+                mens.NOME = paciente.USUA_NM_NOME;
+                mens.ID = paciente.USUA_CD_ID;
+                mens.MODELO = paciente.USUA_NM_EMAIL;
+                mens.MENS_DT_CRIACAO = DateTime.Today.Date;
+                mens.MENS_IN_TIPO = 1;
+                mens.MENS_NM_CAMPANHA = paciente.USUA_NM_EMAIL;
+                mens.MENS_NM_NOME = "Mensagem para Profissional - Envio de Informações do Paciente: " + cont.PACI_NM_NOME;
+                mens.PACI_CD_ID = cont.PACI__CD_ID;
+                mens.MENS_TX_TEXTO = emailBody;
+
+                EnvioEMailGeralBase envio = new EnvioEMailGeralBase(usuApp, confApp, meApp);
+                String guid = Xid.NewXid().ToString();
+                Int32 volta1 = envio.GravarMensagemEnviada(mens, paciente, mens.MENS_TX_TEXTO, "Succeeded", guid, null, "Envio de Informações do Paciente - " + cont.PACI_NM_NOME);
+
+                // Sucesso
+                return 1;
+            }
+            catch (Exception ex)
+            {
+                Session["MensagemLogin"] = 100;
+                Session["MensagemErro"] = ex.Message;
+                Session["Excecao"] = ex;
+                return 1;
+            }
         }
 
     }

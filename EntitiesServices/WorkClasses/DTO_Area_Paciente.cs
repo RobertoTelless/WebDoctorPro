@@ -16,5 +16,7 @@ namespace EntitiesServices.Work_Classes
         public Nullable<System.TimeSpan> AREA_HR_FINAL { get; set; }
         public string AREA_NM_TITULO { get; set; }
         public string AREA_TX_CONTEUDO { get; set; }
+        public string AREA_GU_IDENTIFICADOR { get; set; }
+
     }
 }

@@ -3783,6 +3783,7 @@ namespace ERP_Condominios_Solution.Controllers
             map = Server.MapPath(caminho);
             Directory.CreateDirectory(Server.MapPath(caminho));
 
+
             // Criar empresa
             EMPRESA emp = new EMPRESA();
             emp.ASSI_CD_ID = idAss;
@@ -3853,6 +3854,7 @@ namespace ERP_Condominios_Solution.Controllers
             Directory.CreateDirectory(Server.MapPath(caminho));
             caminho = "/Imagens/" + idAss.ToString() + "/Empresa/" + empresa.EMPR_CD_ID.ToString() + "/Logo/";
             map = Server.MapPath(caminho);
+            Directory.CreateDirectory(Server.MapPath(caminho));
 
             // Senha
             String senha = vm.SenhaBase;
@@ -4075,6 +4077,9 @@ namespace ERP_Condominios_Solution.Controllers
             map = Server.MapPath(caminho);
             Directory.CreateDirectory(Server.MapPath(caminho));
             caminho = "/Imagens/" + idAss.ToString() + "/Videos/";
+            map = Server.MapPath(caminho);
+            Directory.CreateDirectory(Server.MapPath(caminho));
+            caminho = "/Imagens/" + idAss.ToString() + "/AreaPaciente/";
             map = Server.MapPath(caminho);
             Directory.CreateDirectory(Server.MapPath(caminho));
 

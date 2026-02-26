@@ -27,6 +27,12 @@ namespace ERP_Condominios_Solution.ViewModels
         [StringLength(500, MinimumLength = 1, ErrorMessage = "O TÍTULO DO ITEM deve conter no minimo 1 caracteres e no máximo 500 caracteres.")]
         public string AREA_NM_TITULO { get; set; }
         public string AREA_TX_CONTEUDO { get; set; }
+        public string AREA_GU_IDENTIFICADOR { get; set; }
+
+        public string NOME_PACIENTE { get; set; }
+        public string NOME_PROFISSIONAL { get; set; }
+        public string HORARIO { get; set; }
+        public string EMAIL_PROFISSIONAL { get; set; }
 
         public virtual PACIENTE PACIENTE { get; set; }
         public virtual USUARIO USUARIO { get; set; }

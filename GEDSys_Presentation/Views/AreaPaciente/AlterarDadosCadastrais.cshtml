@@ -38,9 +38,8 @@
                             </div>
                         }
                         <div class="form-group" style=" margin-left: -15px; margin-right: -15px;"> 
-                            @Html.ButtonActionSubmit(text: "Confirmar Alterações", htmlAttributes: new { id = "basictoast" })
-                            @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaAreaPaciente", controller: "AreaPaciente")
-                            <a href="@Url.Action((String)Session["AjudaNivel"])"  class="btn btn-sm btn-danger" target="_blank">Ajuda</a>                
+                            @Html.ButtonActionSubmit(text: "Confirmar Alterações", htmlAttributes: new { id = "basictoast", @class = "btn-loading1" })
+                            @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaAreaPaciente", controller: "AreaPaciente", htmlAttributes: new { @class = "btn-loading" })
                         </div>
                         <div class="row" style="width: 100%;">
                             <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Identificação</h4>
@@ -368,7 +367,47 @@
             navigator.sendBeacon('../ControleAcesso/LogSessionTime');
         }; 
     </script>
+    <script type="text/javascript">
+        $(document).ready(function () { 
+            $('.btn-loading').on('click', function (e) {            
+                $(this).prop('disabled', true);
+                $(this).addClass('disabled');
+                $('#loadingIndicator').show();
+                var tagName = $(this).prop('tagName').toLowerCase();
+                if (tagName === 'a') {
+                    e.preventDefault(); 
+                    var targetUrl = $(this).attr('href');
+                    window.location.href = targetUrl;
 
+                } else if (tagName === 'button' || tagName === 'input') {
+                    $(this).closest('form').submit();
+                }
+            });
+        });
+    </script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('.btn-loading1').on('click', function (e) {
+            
+                var $this = $(this);
+                var tagName = $this.prop('tagName').toLowerCase();
+                $this.addClass('disabled'); 
+                $('#loadingIndicator').show();
+
+                if (tagName === 'a') {
+                    e.preventDefault();
+                
+                    var targetUrl = $this.attr('href');
+                    window.location.href = targetUrl;
+                
+                } else if (tagName === 'button' || tagName === 'input') {               
+                    $this.closest('form').submit();
+                    $this.prop('disabled', true);
+                }
+            });
+        });
+    </script>
     <script>
         function FiltrarCidade(UF_CD_ID) {
             var data = {

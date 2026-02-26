@@ -14,6 +14,12 @@ namespace EntitiesServices.Model
     
     public partial class AREA_PACIENTE
     {
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
+        public AREA_PACIENTE()
+        {
+            this.AREA_PACIENTE_ANEXO = new HashSet<AREA_PACIENTE_ANEXO>();
+        }
+    
         public int AREA_CD_ID { get; set; }
         public int ASSI_CD_ID { get; set; }
         public Nullable<System.DateTime> AREA_DT_ENTRADA { get; set; }
@@ -26,8 +32,11 @@ namespace EntitiesServices.Model
         public Nullable<System.TimeSpan> AREA_HR_FINAL { get; set; }
         public string AREA_NM_TITULO { get; set; }
         public string AREA_TX_CONTEUDO { get; set; }
+        public string AREA_GU_IDENTIFICADOR { get; set; }
     
         public virtual PACIENTE PACIENTE { get; set; }
         public virtual USUARIO USUARIO { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<AREA_PACIENTE_ANEXO> AREA_PACIENTE_ANEXO { get; set; }
     }
 }

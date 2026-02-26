@@ -442,6 +442,9 @@
     <Compile Include="Model\AREA_PACIENTE.cs">
       <DependentUpon>GED_Model.tt</DependentUpon>
     </Compile>
+    <Compile Include="Model\AREA_PACIENTE_ANEXO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
     <Compile Include="Model\ASSINANTE.cs">
       <DependentUpon>GED_Model.tt</DependentUpon>
     </Compile>
@@ -1612,6 +1615,7 @@
     <Compile Include="WorkClasses\AttachmentForn.cs" />
     <Compile Include="WorkClasses\CNPJ.cs" />
     <Compile Include="WorkClasses\CEP.cs" />
+    <Compile Include="WorkClasses\DTO_Area_Paciente_Anexo.cs" />
     <Compile Include="WorkClasses\DTO_GrupoPaciente.cs" />
     <Compile Include="WorkClasses\DTO_ModeloEMailHTML.cs" />
     <Compile Include="WorkClasses\DTO_ModeloEMail.cs" />

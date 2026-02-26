@@ -5389,10 +5389,12 @@
     <Content Include="Views\Paciente2\MontarTelaEncerrarConsultaMaterial.cshtml" />
     <Content Include="Views\Paciente\VerAnexoExamesPaciente.cshtml" />
     <Content Include="Views\AreaPaciente\MontarTelaPerguntas.cshtml" />
+    <Content Include="Views\AreaPaciente\EnviarInformacaoConsulta.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="Filters\" />
+    <Folder Include="Imagens\1\AreaPaciente\" />
     <Folder Include="Imagens\1\Envio\34\Anexos\" />
     <Folder Include="Imagens\1\Envio\35\Anexos\" />
     <Folder Include="Imagens\1\Envio\37\Anexos\" />
@@ -6414,6 +6416,7 @@
     <Folder Include="Imagens\1\Usuario\99\Anexos\" />
     <Folder Include="Imagens\1\Usuario\99\Fotos\" />
     <Folder Include="Imagens\1\Video\" />
+    <Folder Include="Imagens\35\AreaPaciente\" />
     <Folder Include="Imagens\35\Empresa\18\Anexos\" />
     <Folder Include="Imagens\35\Envio\" />
     <Folder Include="Imagens\35\Exames\79\Anexos\" />
@@ -6468,6 +6471,7 @@
     <Folder Include="Imagens\35\Usuario\99\Anexos\" />
     <Folder Include="Imagens\35\Usuario\99\Fotos\" />
     <Folder Include="Imagens\35\Video\" />
+    <Folder Include="Imagens\36\AreaPaciente\" />
     <Folder Include="Imagens\36\Exames\" />
     <Folder Include="Imagens\36\Locacao\" />
     <Folder Include="Imagens\36\Medico\" />
@@ -6476,6 +6480,7 @@
     <Folder Include="Imagens\36\Pagamento\" />
     <Folder Include="Imagens\36\Recebimento\" />
     <Folder Include="Imagens\36\TemplatesHTML\" />
+    <Folder Include="Imagens\85\AreaPaciente\" />
     <Folder Include="Imagens\85\Empresa\60\Anexos\" />
     <Folder Include="Imagens\85\Exames\" />
     <Folder Include="Imagens\85\Mensagem\" />
@@ -6484,6 +6489,7 @@
     <Folder Include="Imagens\85\Recebimento\" />
     <Folder Include="Imagens\85\TemplatesHTML\" />
     <Folder Include="Imagens\85\Usuario\116\Anexos\" />
+    <Folder Include="Imagens\86\AreaPaciente\" />
     <Folder Include="Imagens\86\Empresa\61\Anexos\" />
     <Folder Include="Imagens\86\Envio\" />
     <Folder Include="Imagens\86\Exames\" />
@@ -6497,6 +6503,7 @@
     <Folder Include="Imagens\86\TemplatesHTML\" />
     <Folder Include="Imagens\86\Usuario\121\Anexos\" />
     <Folder Include="Imagens\86\Videos\" />
+    <Folder Include="Imagens\87\AreaPaciente\" />
     <Folder Include="Imagens\87\Empresa\62\Anexos\" />
     <Folder Include="Imagens\87\Envio\" />
     <Folder Include="Imagens\87\Exames\" />
@@ -6510,6 +6517,7 @@
     <Folder Include="Imagens\87\TemplatesHTML\" />
     <Folder Include="Imagens\87\Usuario\122\Anexos\" />
     <Folder Include="Imagens\87\Videos\" />
+    <Folder Include="Imagens\88\AreaPaciente\" />
     <Folder Include="Imagens\88\Empresa\63\Anexos\" />
     <Folder Include="Imagens\88\Envio\" />
     <Folder Include="Imagens\88\Exames\" />
