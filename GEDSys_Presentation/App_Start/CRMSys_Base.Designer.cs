@@ -6422,5 +6422,59 @@ namespace GEDSys_Presentation.App_Start {
                 return ResourceManager.GetString("M0728", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Consulta uma cadeia de caracteres localizada semelhante a As informações da consultas tem que ser informadas.
+        /// </summary>
+        internal static string M0729 {
+            get {
+                return ResourceManager.GetString("M0729", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Consulta uma cadeia de caracteres localizada semelhante a As informações do documento devem ser fornecidas.
+        /// </summary>
+        internal static string M0730 {
+            get {
+                return ResourceManager.GetString("M0730", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Consulta uma cadeia de caracteres localizada semelhante a Nenhum tipo de documento selecionado.
+        /// </summary>
+        internal static string M0731 {
+            get {
+                return ResourceManager.GetString("M0731", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Consulta uma cadeia de caracteres localizada semelhante a O nome do documento deve ser informado.
+        /// </summary>
+        internal static string M0732 {
+            get {
+                return ResourceManager.GetString("M0732", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Consulta uma cadeia de caracteres localizada semelhante a Nenhum tipo de exame selecionado.
+        /// </summary>
+        internal static string M0733 {
+            get {
+                return ResourceManager.GetString("M0733", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Consulta uma cadeia de caracteres localizada semelhante a Nenhuma locação selecionada.
+        /// </summary>
+        internal static string M0734 {
+            get {
+                return ResourceManager.GetString("M0734", resourceCulture);
+            }
+        }
     }
 }

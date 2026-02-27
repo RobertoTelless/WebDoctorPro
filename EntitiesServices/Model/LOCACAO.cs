@@ -22,6 +22,7 @@ namespace EntitiesServices.Model
             this.LOCACAO_HISTORICO = new HashSet<LOCACAO_HISTORICO>();
             this.LOCACAO_PARCELA = new HashSet<LOCACAO_PARCELA>();
             this.LOCACAO_OCORRENCIA = new HashSet<LOCACAO_OCORRENCIA>();
+            this.AREA_PACIENTE = new HashSet<AREA_PACIENTE>();
         }
     
         public int LOCA_CD_ID { get; set; }
@@ -92,5 +93,7 @@ namespace EntitiesServices.Model
         public virtual CONTRATO_LOCACAO CONTRATO_LOCACAO { get; set; }
         public virtual CONTRATO_LOCACAO CONTRATO_LOCACAO1 { get; set; }
         public virtual CONTRATO_LOCACAO CONTRATO_LOCACAO2 { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<AREA_PACIENTE> AREA_PACIENTE { get; set; }
     }
 }

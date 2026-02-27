@@ -18,6 +18,7 @@ namespace EntitiesServices.Model
         public LABORATORIO()
         {
             this.PACIENTE_EXAMES = new HashSet<PACIENTE_EXAMES>();
+            this.AREA_PACIENTE = new HashSet<AREA_PACIENTE>();
         }
     
         public int LABS_CD_ID { get; set; }
@@ -32,5 +33,7 @@ namespace EntitiesServices.Model
         public virtual UF UF { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<PACIENTE_EXAMES> PACIENTE_EXAMES { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<AREA_PACIENTE> AREA_PACIENTE { get; set; }
     }
 }

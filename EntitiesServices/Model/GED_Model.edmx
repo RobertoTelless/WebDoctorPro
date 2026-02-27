@@ -143,6 +143,13 @@
           <Property Name="AREA_NM_TITULO" Type="varchar" MaxLength="500" />
           <Property Name="AREA_TX_CONTEUDO" Type="text" />
           <Property Name="AREA_GU_IDENTIFICADOR" Type="varchar" MaxLength="50" />
+          <Property Name="AREA_NM_EXAME" Type="varchar" MaxLength="250" />
+          <Property Name="TIEX_CD_ID" Type="int" />
+          <Property Name="AREA_IN_TIPO_EXAME" Type="int" />
+          <Property Name="AREA_DT_DATA_EXAME" Type="date" />
+          <Property Name="LABS_CD_ID" Type="int" />
+          <Property Name="AREA_TX_COMENTARIOS_DOCUMENTO" Type="varchar" MaxLength="5000" />
+          <Property Name="LOCA_CD_ID" Type="int" />
         </EntityType>
         <EntityType Name="AREA_PACIENTE_ANEXO">
           <Key>
@@ -3779,6 +3786,7 @@
           <Property Name="NOTC_IN_ATIVO" Type="int" />
           <Property Name="NOTC_AQ_FOTO" Type="varchar" MaxLength="550" />
           <Property Name="NOTC_NM_ORIGEM" Type="varchar" MaxLength="250" />
+          <Property Name="NOTC_IN_SISTEMA" Type="int" />
         </EntityType>
         <EntityType Name="NOTICIA_COMENTARIO">
           <Key>
@@ -7376,6 +7384,30 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_AREA_PACIENTE_LABORATORIO">
+          <End Role="LABORATORIO" Type="Self.LABORATORIO" Multiplicity="0..1" />
+          <End Role="AREA_PACIENTE" Type="Self.AREA_PACIENTE" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="LABORATORIO">
+              <PropertyRef Name="LABS_CD_ID" />
+            </Principal>
+            <Dependent Role="AREA_PACIENTE">
+              <PropertyRef Name="LABS_CD_ID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_AREA_PACIENTE_LOCACAO">
+          <End Role="LOCACAO" Type="Self.LOCACAO" Multiplicity="0..1" />
+          <End Role="AREA_PACIENTE" Type="Self.AREA_PACIENTE" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="LOCACAO">
+              <PropertyRef Name="LOCA_CD_ID" />
+            </Principal>
+            <Dependent Role="AREA_PACIENTE">
+              <PropertyRef Name="LOCA_CD_ID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_AREA_PACIENTE_PACIENTE">
           <End Role="PACIENTE" Type="Self.PACIENTE" Multiplicity="0..1" />
           <End Role="AREA_PACIENTE" Type="Self.AREA_PACIENTE" Multiplicity="*" />
@@ -7385,6 +7417,18 @@
             </Principal>
             <Dependent Role="AREA_PACIENTE">
               <PropertyRef Name="PACI_CD_ID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_AREA_PACIENTE_TIPO_EXAME">
+          <End Role="TIPO_EXAME" Type="Self.TIPO_EXAME" Multiplicity="0..1" />
+          <End Role="AREA_PACIENTE" Type="Self.AREA_PACIENTE" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="TIPO_EXAME">
+              <PropertyRef Name="TIEX_CD_ID" />
+            </Principal>
+            <Dependent Role="AREA_PACIENTE">
+              <PropertyRef Name="TIEX_CD_ID" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -16840,8 +16884,20 @@
             <End Role="AREA_PACIENTE" EntitySet="AREA_PACIENTE" />
             <End Role="AREA_PACIENTE_ANEXO" EntitySet="AREA_PACIENTE_ANEXO" />
           </AssociationSet>
+          <AssociationSet Name="FK_AREA_PACIENTE_LABORATORIO" Association="Self.FK_AREA_PACIENTE_LABORATORIO">
+            <End Role="LABORATORIO" EntitySet="LABORATORIO" />
+            <End Role="AREA_PACIENTE" EntitySet="AREA_PACIENTE" />
+          </AssociationSet>
+          <AssociationSet Name="FK_AREA_PACIENTE_LOCACAO" Association="Self.FK_AREA_PACIENTE_LOCACAO">
+            <End Role="LOCACAO" EntitySet="LOCACAO" />
+            <End Role="AREA_PACIENTE" EntitySet="AREA_PACIENTE" />
+          </AssociationSet>
           <AssociationSet Name="FK_AREA_PACIENTE_PACIENTE" Association="Self.FK_AREA_PACIENTE_PACIENTE">
             <End Role="PACIENTE" EntitySet="PACIENTE" />
+            <End Role="AREA_PACIENTE" EntitySet="AREA_PACIENTE" />
+          </AssociationSet>
+          <AssociationSet Name="FK_AREA_PACIENTE_TIPO_EXAME" Association="Self.FK_AREA_PACIENTE_TIPO_EXAME">
+            <End Role="TIPO_EXAME" EntitySet="TIPO_EXAME" />
             <End Role="AREA_PACIENTE" EntitySet="AREA_PACIENTE" />
           </AssociationSet>
           <AssociationSet Name="FK_AREA_PACIENTE_USUARIO" Association="Self.FK_AREA_PACIENTE_USUARIO">
@@ -23427,6 +23483,7 @@
           <Property Name="LABS_IN_ATIVO" Type="Int32" Nullable="false" />
           <NavigationProperty Name="UF" Relationship="Self.FK_LABORATORIO_UF" FromRole="LABORATORIO" ToRole="UF" />
           <NavigationProperty Name="PACIENTE_EXAMES" Relationship="Self.FK_PACIENTE_EXAMES_LABORATORIO" FromRole="LABORATORIO" ToRole="PACIENTE_EXAMES" />
+          <NavigationProperty Name="AREA_PACIENTE" Relationship="CRMSysDBModel.FK_AREA_PACIENTE_LABORATORIO" FromRole="LABORATORIO" ToRole="AREA_PACIENTE" />
         </EntityType>
         <EntityType Name="LINGUA">
           <Key>
@@ -24011,6 +24068,7 @@
           <Property Name="NOTC_AQ_FOTO" Type="String" MaxLength="550" FixedLength="false" Unicode="false" />
           <Property Name="NOTC_NM_ORIGEM" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
           <NavigationProperty Name="NOTICIA_COMENTARIO" Relationship="Self.FK_NOTICIA_COMENTARIO_NOTICIA" FromRole="NOTICIA" ToRole="NOTICIA_COMENTARIO" />
+          <Property Name="NOTC_IN_SISTEMA" Type="Int32" />
         </EntityType>
         <EntityType Name="NOTICIA_COMENTARIO">
           <Key>
@@ -27016,6 +27074,7 @@
           <NavigationProperty Name="PACIENTE_EXAMES" Relationship="Self.FK_PACIENTE_EXAMES_TIPO_EXAME" FromRole="TIPO_EXAME" ToRole="PACIENTE_EXAMES" />
           <NavigationProperty Name="PACIENTE_SOLICITACAO" Relationship="Self.FK_PACIENTE_SOLICITACAO_TIPO_EXAME" FromRole="TIPO_EXAME" ToRole="PACIENTE_SOLICITACAO" />
           <NavigationProperty Name="SOLICITACAO" Relationship="Self.FK_SOLICITACAO_TIPO_EXAME" FromRole="TIPO_EXAME" ToRole="SOLICITACAO" />
+          <NavigationProperty Name="AREA_PACIENTE" Relationship="CRMSysDBModel.FK_AREA_PACIENTE_TIPO_EXAME" FromRole="TIPO_EXAME" ToRole="AREA_PACIENTE" />
         </EntityType>
         <EntityType Name="TIPO_FOLLOW">
           <Key>
@@ -39811,6 +39870,18 @@
             <End Role="AREA_PACIENTE" EntitySet="AREA_PACIENTE" />
             <End Role="AREA_PACIENTE_ANEXO" EntitySet="AREA_PACIENTE_ANEXO" />
           </AssociationSet>
+          <AssociationSet Name="FK_AREA_PACIENTE_LABORATORIO" Association="CRMSysDBModel.FK_AREA_PACIENTE_LABORATORIO">
+            <End Role="LABORATORIO" EntitySet="LABORATORIO" />
+            <End Role="AREA_PACIENTE" EntitySet="AREA_PACIENTE" />
+          </AssociationSet>
+          <AssociationSet Name="FK_AREA_PACIENTE_TIPO_EXAME" Association="CRMSysDBModel.FK_AREA_PACIENTE_TIPO_EXAME">
+            <End Role="TIPO_EXAME" EntitySet="TIPO_EXAME" />
+            <End Role="AREA_PACIENTE" EntitySet="AREA_PACIENTE" />
+          </AssociationSet>
+          <AssociationSet Name="FK_AREA_PACIENTE_LOCACAO" Association="CRMSysDBModel.FK_AREA_PACIENTE_LOCACAO">
+            <End Role="LOCACAO" EntitySet="LOCACAO" />
+            <End Role="AREA_PACIENTE" EntitySet="AREA_PACIENTE" />
+          </AssociationSet>
         </EntityContainer>
         <EntityType Name="PACIENTE_DADOS_EXAME_FISICO">
           <Key>
@@ -40504,6 +40575,7 @@
           <NavigationProperty Name="CONTRATO_LOCACAO1" Relationship="CRMSysDBModel.FK_LOCACAO_CONTRATO_LOCACAO1" FromRole="LOCACAO" ToRole="CONTRATO_LOCACAO" />
           <NavigationProperty Name="CONTRATO_LOCACAO2" Relationship="CRMSysDBModel.FK_LOCACAO_CONTRATO_LOCACAO2" FromRole="LOCACAO" ToRole="CONTRATO_LOCACAO" />
           <Property Name="LOCA_IN_CONTRATO_ASSINA" Type="Int32" />
+          <NavigationProperty Name="AREA_PACIENTE" Relationship="CRMSysDBModel.FK_AREA_PACIENTE_LOCACAO" FromRole="LOCACAO" ToRole="AREA_PACIENTE" />
         </EntityType>
         <EntityType Name="LOCACAO_ANEXO">
           <Key>
@@ -41166,6 +41238,16 @@
           <NavigationProperty Name="USUARIO" Relationship="CRMSysDBModel.FK_AREA_PACIENTE_USUARIO" FromRole="AREA_PACIENTE" ToRole="USUARIO" />
           <Property Name="AREA_GU_IDENTIFICADOR" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
           <NavigationProperty Name="AREA_PACIENTE_ANEXO" Relationship="CRMSysDBModel.FK_AREA_PACIENTE_ANEXO_AREA_PACIENTE" FromRole="AREA_PACIENTE" ToRole="AREA_PACIENTE_ANEXO" />
+          <Property Name="AREA_NM_EXAME" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
+          <Property Name="TIEX_CD_ID" Type="Int32" />
+          <Property Name="AREA_IN_TIPO_EXAME" Type="Int32" />
+          <Property Name="AREA_DT_DATA_EXAME" Type="DateTime" Precision="0" />
+          <Property Name="LABS_CD_ID" Type="Int32" />
+          <Property Name="AREA_TX_COMENTARIOS_DOCUMENTO" Type="String" MaxLength="5000" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="LABORATORIO" Relationship="CRMSysDBModel.FK_AREA_PACIENTE_LABORATORIO" FromRole="AREA_PACIENTE" ToRole="LABORATORIO" />
+          <NavigationProperty Name="TIPO_EXAME" Relationship="CRMSysDBModel.FK_AREA_PACIENTE_TIPO_EXAME" FromRole="AREA_PACIENTE" ToRole="TIPO_EXAME" />
+          <Property Name="LOCA_CD_ID" Type="Int32" />
+          <NavigationProperty Name="LOCACAO" Relationship="CRMSysDBModel.FK_AREA_PACIENTE_LOCACAO" FromRole="AREA_PACIENTE" ToRole="LOCACAO" />
         </EntityType>
         <Association Name="FK_AREA_PACIENTE_PACIENTE">
           <End Type="CRMSysDBModel.PACIENTE" Role="PACIENTE" Multiplicity="0..1" />
@@ -41214,6 +41296,42 @@
             </Principal>
             <Dependent Role="AREA_PACIENTE_ANEXO">
               <PropertyRef Name="AREA_CD_ID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_AREA_PACIENTE_LABORATORIO">
+          <End Type="CRMSysDBModel.LABORATORIO" Role="LABORATORIO" Multiplicity="0..1" />
+          <End Type="CRMSysDBModel.AREA_PACIENTE" Role="AREA_PACIENTE" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="LABORATORIO">
+              <PropertyRef Name="LABS_CD_ID" />
+            </Principal>
+            <Dependent Role="AREA_PACIENTE">
+              <PropertyRef Name="LABS_CD_ID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_AREA_PACIENTE_TIPO_EXAME">
+          <End Type="CRMSysDBModel.TIPO_EXAME" Role="TIPO_EXAME" Multiplicity="0..1" />
+          <End Type="CRMSysDBModel.AREA_PACIENTE" Role="AREA_PACIENTE" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="TIPO_EXAME">
+              <PropertyRef Name="TIEX_CD_ID" />
+            </Principal>
+            <Dependent Role="AREA_PACIENTE">
+              <PropertyRef Name="TIEX_CD_ID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_AREA_PACIENTE_LOCACAO">
+          <End Type="CRMSysDBModel.LOCACAO" Role="LOCACAO" Multiplicity="0..1" />
+          <End Type="CRMSysDBModel.AREA_PACIENTE" Role="AREA_PACIENTE" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="LOCACAO">
+              <PropertyRef Name="LOCA_CD_ID" />
+            </Principal>
+            <Dependent Role="AREA_PACIENTE">
+              <PropertyRef Name="LOCA_CD_ID" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -44785,6 +44903,7 @@
           <EntitySetMapping Name="NOTICIA">
             <EntityTypeMapping TypeName="CRMSysDBModel.NOTICIA">
               <MappingFragment StoreEntitySet="NOTICIA">
+                <ScalarProperty Name="NOTC_IN_SISTEMA" ColumnName="NOTC_IN_SISTEMA" />
                 <ScalarProperty Name="NOTC_CD_ID" ColumnName="NOTC_CD_ID" />
                 <ScalarProperty Name="ASSI_CD_ID" ColumnName="ASSI_CD_ID" />
                 <ScalarProperty Name="NOTC_DT_EMISSAO" ColumnName="NOTC_DT_EMISSAO" />
@@ -48739,6 +48858,13 @@
           <EntitySetMapping Name="AREA_PACIENTE">
             <EntityTypeMapping TypeName="CRMSysDBModel.AREA_PACIENTE">
               <MappingFragment StoreEntitySet="AREA_PACIENTE">
+                <ScalarProperty Name="LOCA_CD_ID" ColumnName="LOCA_CD_ID" />
+                <ScalarProperty Name="AREA_TX_COMENTARIOS_DOCUMENTO" ColumnName="AREA_TX_COMENTARIOS_DOCUMENTO" />
+                <ScalarProperty Name="LABS_CD_ID" ColumnName="LABS_CD_ID" />
+                <ScalarProperty Name="AREA_DT_DATA_EXAME" ColumnName="AREA_DT_DATA_EXAME" />
+                <ScalarProperty Name="AREA_IN_TIPO_EXAME" ColumnName="AREA_IN_TIPO_EXAME" />
+                <ScalarProperty Name="TIEX_CD_ID" ColumnName="TIEX_CD_ID" />
+                <ScalarProperty Name="AREA_NM_EXAME" ColumnName="AREA_NM_EXAME" />
                 <ScalarProperty Name="AREA_GU_IDENTIFICADOR" ColumnName="AREA_GU_IDENTIFICADOR" />
                 <ScalarProperty Name="AREA_TX_CONTEUDO" ColumnName="AREA_TX_CONTEUDO" />
                 <ScalarProperty Name="AREA_NM_TITULO" ColumnName="AREA_NM_TITULO" />

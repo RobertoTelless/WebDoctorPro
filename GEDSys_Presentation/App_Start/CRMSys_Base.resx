@@ -2238,4 +2238,22 @@
   <data name="M0728" xml:space="preserve">
     <value>Esse contrato não está associado ao paciente</value>
   </data>
+  <data name="M0729" xml:space="preserve">
+    <value>As informações da consultas tem que ser informadas</value>
+  </data>
+  <data name="M0730" xml:space="preserve">
+    <value>As informações do documento devem ser fornecidas</value>
+  </data>
+  <data name="M0731" xml:space="preserve">
+    <value>Nenhum tipo de documento selecionado</value>
+  </data>
+  <data name="M0732" xml:space="preserve">
+    <value>O nome do documento deve ser informado</value>
+  </data>
+  <data name="M0733" xml:space="preserve">
+    <value>Nenhum tipo de exame selecionado</value>
+  </data>
+  <data name="M0734" xml:space="preserve">
+    <value>Nenhuma locação selecionada</value>
+  </data>
 </root>

@@ -267,174 +267,386 @@
                         </div>
                     }                    
 
-                    @*Consultas*@
-                    <div class="col-lg-6 col-md-6 col-xs-12">
-                        <div class="col-lg-12 col-md-12 col-xs-12 ibox float-e-margins" style="border-bottom: solid; border-bottom-color: darkblue; border-bottom-width: 2px; border-left: solid; border-left-color: darkblue; border-left-width: 1px; border-right: solid; border-right-color: darkblue; border-right-width: 1px; border-top: solid; border-top-color: darkblue; border-top-width: 1px">
-                            <div class="ibox-title">
-                                <h4>Consultas</h4>
-                            </div>
-                            <div class="ibox-content">
-                                <div class="row">
+                    @*Dashboard*@
+                    <div class="row">
+                        @*Consultas*@
+                        <div class="col-lg-6 col-md-6 col-xs-12">
+                            <div class="col-lg-12 col-md-12 col-xs-12 ibox float-e-margins" style="border-bottom: solid; border-bottom-color: darkblue; border-bottom-width: 2px; border-left: solid; border-left-color: darkblue; border-left-width: 1px; border-right: solid; border-right-color: darkblue; border-right-width: 1px; border-top: solid; border-top-color: darkblue; border-top-width: 1px">
+                                <div class="ibox-title">
+                                    <h4>Consultas</h4>
+                                </div>
+                                <div class="ibox-content">
+                                    <div class="row">
 
-                                    <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
-                                        <div class="col-lg-12 col-md-12 col-xs-12">
-                                            <a href="@Url.Action("MarcarConsulta", "AreaPaciente")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Abre a página de marcação de consultas" id="emp" class="btn btn-sm btn-primary btn-loading1" OnClick = "Fade()">Solicitar Marcação de Consulta</a>                
-                                            <a href="@Url.Action("ExibirHoje", "AreaPaciente")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Exibir apenas as consultas marcadas para hoje" id="emp" class="btn btn-sm btn-warning btn-loading1" OnClick = "Fade()">Exibir Hoje</a>                
-                                            <a href="@Url.Action("ExibirFuturas", "AreaPaciente")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Exibir apenas as consultas marcadas para uma data futura" id="emp" class="btn btn-sm btn-warning btn-loading1" OnClick = "Fade()">Exibir Futuras</a>                
-                                            <a href="@Url.Action("ExibirTodas", "AreaPaciente")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Exibir todas as consultas do paciente" id="emp" class="btn btn-sm btn-warning btn-loading1" OnClick = "Fade()">Exibir Todas</a>                
+                                        <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                            <div class="col-lg-12 col-md-12 col-xs-12">
+                                                <a href="@Url.Action("MarcarConsulta", "AreaPaciente")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Abre a página de marcação de consultas" id="emp" class="btn btn-sm btn-primary btn-loading1" OnClick = "Fade()">Solicitar Marcação de Consulta</a>                
+                                                <a href="@Url.Action("ExibirHoje", "AreaPaciente")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Exibir apenas as consultas marcadas para hoje" id="emp" class="btn btn-sm btn-warning btn-loading1" OnClick = "Fade()">Exibir Hoje</a>                
+                                                <a href="@Url.Action("ExibirFuturas", "AreaPaciente")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Exibir apenas as consultas marcadas para uma data futura" id="emp" class="btn btn-sm btn-warning btn-loading1" OnClick = "Fade()">Exibir Futuras</a>                
+                                                <a href="@Url.Action("ExibirTodas", "AreaPaciente")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Exibir todas as consultas do paciente" id="emp" class="btn btn-sm btn-warning btn-loading1" OnClick = "Fade()">Exibir Todas</a>                
+                                            </div>
                                         </div>
+                                            <br /><br />
+                                        @if (ViewBag.Consultas != null && (ViewBag.Consultas as List<EntitiesServices.Model.PACIENTE_CONSULTA>).Count > 0)
+                                        {
+                                            <table class="table table-striped table-bordered table-hover dataTables-consulta">
+                                                <thead style="background-color:lightsteelblue">
+                                                    <tr>
+                                                        <th style="width: auto">Data</th>
+                                                        <th style="width: auto">Início</th>
+                                                        <th style="width: auto">Término</th>
+                                                        <th style="width: auto">Situação</th>
+                                                        <th style="width: auto">Profissional</th>
+                                                        <th class="td-one-action">Ações</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @foreach (var cond in (ViewBag.Consultas as List<EntitiesServices.Model.PACIENTE_CONSULTA>).OrderByDescending(p => p.PACO_DT_CONSULTA.Date).ThenBy(p => p.PACO_HR_INICIO))
+                                                    {   
+                                                        if (cond.PACO_DT_CONSULTA > DateTime.Today.Date)
+                                                        {
+                                                            <tr  style="background-color: gainsboro">
+                                                                <td>
+                                                                    <span style="display:none; width: auto">@cond.PACO_DT_CONSULTA.ToString("yyyyMMdd")</span>
+                                                                    @cond.PACO_DT_CONSULTA.ToString("dd/MM/yyyy")
+                                                                </td>
+                                                                <td style="width: auto">@cond.PACO_HR_INICIO.ToString()</td>
+                                                                <td style="width: auto">@cond.PACO_HR_FINAL.ToString()</td>
+                                                                @if (cond.PACO_IN_CONFIRMADA == 1)
+                                                                {
+                                                                    <td style="width: auto"><span class="badge badge-primary">Confirmada</span></td>
+                                                                }
+                                                                else if (cond.PACO_IN_CONFIRMADA == 2)
+                                                                {
+                                                                    <td style="width: auto"><span class="badge badge-danger">Cancelada</span></td>
+                                                                }
+                                                                else if (cond.PACO_IN_CONFIRMADA == 0)
+                                                                {
+                                                                    <td style="width: auto"><span class="badge badge-warning">Pendente</span></td>
+                                                                }
+                                                                else if (cond.PACO_IN_CONFIRMADA == 3)
+                                                                {
+                                                                    <td style="width: auto"><span class="badge badge-success">Encerrada</span></td>
+                                                                }
+                                                                <td style="width: auto">@cond.USUARIO.USUA_NM_NOME</td>
+                                                                <td style="width: auto" class="td-one-action">
+                                                                    @if (cond.PACO_IN_ATIVO == 1 & cond.PACO_IN_CONFIRMADA == 0)
+                                                                    {
+                                                                        <span style="color: #337ab7; cursor:pointer;" alt="Confirmar" class="tbl-link fa-lg fa fa-check" onclick="ShowModalConfirmar('/AreaPaciente/ConfirmarConsulta/@cond.PACO_CD_ID')" title="Confirmar Consulta"></span>
+                                                                    }
+                                                                    @if (cond.PACO_IN_ATIVO == 1 & cond.PACO_IN_CONFIRMADA < 2)
+                                                                    {
+                                                                        <span style="color: #337ab7; cursor:pointer;" alt="Cancelar" class="tbl-link fa-lg fa fa-times" onclick="ShowModalCancelar('/AreaPaciente/CancelarConsulta/@cond.PACO_CD_ID')" title="Cancelar Consulta"></span>
+                                                                    }
+                                                                    @Html.TableLinkDetails(cond.PACO_CD_ID, "EnviarInformacaoConsulta", "fa-send", "Enviar Informações")
+                                                                </td>
+                                                            </tr>
+                                                        }
+                                                        else if (cond.PACO_DT_CONSULTA < DateTime.Today.Date)
+                                                        {
+                                                            <tr style="background-color: aliceblue">
+                                                                <td>
+                                                                    <span style="display:none; width: auto">@cond.PACO_DT_CONSULTA.ToString("yyyyMMdd")</span>
+                                                                    @cond.PACO_DT_CONSULTA.ToString("dd/MM/yyyy")
+                                                                </td>
+                                                                <td style="width: auto">@cond.PACO_HR_INICIO.ToString()</td>
+                                                                <td style="width: auto">@cond.PACO_HR_FINAL.ToString()</td>
+                                                                @if (cond.PACO_IN_CONFIRMADA == 1)
+                                                                {
+                                                                    <td style="width: auto"><span class="badge badge-primary">Confirmada</span></td>
+                                                                }
+                                                                else if (cond.PACO_IN_CONFIRMADA == 2)
+                                                                {
+                                                                    <td style="width: auto"><span class="badge badge-danger">Cancelada</span></td>
+                                                                }
+                                                                else if (cond.PACO_IN_CONFIRMADA == 0)
+                                                                {
+                                                                    <td style="width: auto"><span class="badge badge-warning">Pendente</span></td>
+                                                                }
+                                                                else if (cond.PACO_IN_CONFIRMADA == 3)
+                                                                {
+                                                                    <td style="width: auto"><span class="badge badge-success">Encerrada</span></td>
+                                                                }
+                                                                <td style="width: auto">@cond.USUARIO.USUA_NM_NOME</td>
+                                                                <td style="width: auto" class="td-one-action">
+                                                                </td>
+                                                            </tr>
+                                                        }
+                                                        else
+                                                        {
+                                                            <tr style="background-color: beige; color: darkgreen; font-weight: bold">
+                                                                <td>
+                                                                    <span style="display:none; width: auto">@cond.PACO_DT_CONSULTA.ToString("yyyyMMdd")</span>
+                                                                    @cond.PACO_DT_CONSULTA.ToString("dd/MM/yyyy")
+                                                                </td>
+                                                                <td style="width: auto">@cond.PACO_HR_INICIO.ToString()</td>
+                                                                <td style="width: auto">@cond.PACO_HR_FINAL.ToString()</td>
+                                                                @if (cond.PACO_IN_CONFIRMADA == 1)
+                                                                {
+                                                                    <td style="width: auto"><span class="badge badge-primary">Confirmada</span></td>
+                                                                }
+                                                                else if (cond.PACO_IN_CONFIRMADA == 2)
+                                                                {
+                                                                    <td style="width: auto"><span class="badge badge-danger">Cancelada</span></td>
+                                                                }
+                                                                else if (cond.PACO_IN_CONFIRMADA == 0)
+                                                                {
+                                                                    <td style="width: auto"><span class="badge badge-warning">Pendente</span></td>
+                                                                }
+                                                                else if (cond.PACO_IN_CONFIRMADA == 3)
+                                                                {
+                                                                    <td style="width: auto"><span class="badge badge-success">Encerrada</span></td>
+                                                                }
+                                                                <td style="width: auto; color: green; font-weight: bold">@cond.USUARIO.USUA_NM_NOME</td>
+                                                                <td style="width: auto" class="td-one-action">
+                                                                    @if (cond.PACO_IN_ATIVO == 1 & cond.PACO_IN_CONFIRMADA == 0)
+                                                                    {
+                                                                        <span style="color: #337ab7; cursor:pointer;" alt="Confirmar" class="tbl-link fa-lg fa fa-check" onclick="ShowModalConfirmar('/AreaPaciente/ConfirmarConsulta/@cond.PACO_CD_ID')" title="Confirmar Consulta"></span>
+                                                                    }
+                                                                    @if (cond.PACO_IN_ATIVO == 1 & cond.PACO_IN_CONFIRMADA < 2)
+                                                                    {
+                                                                        <span style="color: #337ab7; cursor:pointer;" alt="Cancelar" class="tbl-link fa-lg fa fa-times" onclick="ShowModalCancelar('/AreaPaciente/CancelarConsulta/@cond.PACO_CD_ID')" title="Cancelar Consulta"></span>
+                                                                    }
+                                                                    @Html.TableLinkDetails(cond.PACO_CD_ID, "EnviarInformacaoConsulta", "fa-send", "Enviar Informações")
+                                                                </td>
+                                                            </tr>
+                                                        }
+                                                    }
+                                                </tbody>
+                                            </table>
+                                        }
+                                        else
+                                        {
+                                            <div class="row">
+                                                <div class="col-lg-1 col-md-1 col-xs-12">
+                                                </div>
+                                                <div style="border: 5px solid #F6A54A; padding: 10px; border-radius: 8px 8px; " class="col-lg-10 col-md-10 col-xs-8">
+                                                    <h4 style="font-weight: bold">Nenhuma consulta agendada para este paciente na seleção especificada</h4>
+                                                </div>
+                                                <div class="col-lg-1 col-md-1 col-xs-12">
+                                                </div>
+                                            </div>
+                                        }
+                                        <span id="loadingIndicator1" style="display: none; margin-left: 10px; color: #007bff;">
+                                            <i class="fa fa-spinner fa-spin"></i> Processando...
+                                        </span>
+
                                     </div>
-                                        <br /><br />
-                                    @if (ViewBag.Consultas != null && (ViewBag.Consultas as List<EntitiesServices.Model.PACIENTE_CONSULTA>).Count > 0)
-                                    {
-                                        <table class="table table-striped table-bordered table-hover dataTables-consulta">
-                                            <thead style="background-color:lightsteelblue">
-                                                <tr>
-                                                    <th style="width: auto">Data</th>
-                                                    <th style="width: auto">Início</th>
-                                                    <th style="width: auto">Término</th>
-                                                    <th style="width: auto">Situação</th>
-                                                    <th style="width: auto">Profissional</th>
-                                                    <th class="td-one-action">Ações</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                @foreach (var cond in (ViewBag.Consultas as List<EntitiesServices.Model.PACIENTE_CONSULTA>).OrderByDescending(p => p.PACO_DT_CONSULTA.Date).ThenBy(p => p.PACO_HR_INICIO))
-                                                {   
-                                                    if (cond.PACO_DT_CONSULTA > DateTime.Today.Date)
-                                                    {
-                                                        <tr  style="background-color: gainsboro">
-                                                            <td>
-                                                                <span style="display:none; width: auto">@cond.PACO_DT_CONSULTA.ToString("yyyyMMdd")</span>
-                                                                @cond.PACO_DT_CONSULTA.ToString("dd/MM/yyyy")
-                                                            </td>
-                                                            <td style="width: auto">@cond.PACO_HR_INICIO.ToString()</td>
-                                                            <td style="width: auto">@cond.PACO_HR_FINAL.ToString()</td>
-                                                            @if (cond.PACO_IN_CONFIRMADA == 1)
-                                                            {
-                                                                <td style="width: auto"><span class="badge badge-primary">Confirmada</span></td>
-                                                            }
-                                                            else if (cond.PACO_IN_CONFIRMADA == 2)
-                                                            {
-                                                                <td style="width: auto"><span class="badge badge-danger">Cancelada</span></td>
-                                                            }
-                                                            else if (cond.PACO_IN_CONFIRMADA == 0)
-                                                            {
-                                                                <td style="width: auto"><span class="badge badge-warning">Pendente</span></td>
-                                                            }
-                                                            else if (cond.PACO_IN_CONFIRMADA == 3)
-                                                            {
-                                                                <td style="width: auto"><span class="badge badge-success">Encerrada</span></td>
-                                                            }
-                                                            <td style="width: auto">@cond.USUARIO.USUA_NM_NOME</td>
-                                                            <td style="width: auto" class="td-one-action">
-                                                                @if (cond.PACO_IN_ATIVO == 1 & cond.PACO_IN_CONFIRMADA == 0)
-                                                                {
-                                                                    <span style="color: #337ab7; cursor:pointer;" alt="Confirmar" class="tbl-link fa-lg fa fa-check" onclick="ShowModalConfirmar('/AreaPaciente/ConfirmarConsulta/@cond.PACO_CD_ID')" title="Confirmar Consulta"></span>
-                                                                }
-                                                                @if (cond.PACO_IN_ATIVO == 1 & cond.PACO_IN_CONFIRMADA < 2)
-                                                                {
-                                                                    <span style="color: #337ab7; cursor:pointer;" alt="Cancelar" class="tbl-link fa-lg fa fa-times" onclick="ShowModalCancelar('/AreaPaciente/CancelarConsulta/@cond.PACO_CD_ID')" title="Cancelar Consulta"></span>
-                                                                }
-                                                                @Html.TableLinkDetails(cond.PACO_CD_ID, "EnviarInformacaoConsulta", "fa-send", "Enviar Informações")
-                                                            </td>
-                                                        </tr>
-                                                    }
-                                                    else if (cond.PACO_DT_CONSULTA < DateTime.Today.Date)
-                                                    {
-                                                        <tr style="background-color: aliceblue">
-                                                            <td>
-                                                                <span style="display:none; width: auto">@cond.PACO_DT_CONSULTA.ToString("yyyyMMdd")</span>
-                                                                @cond.PACO_DT_CONSULTA.ToString("dd/MM/yyyy")
-                                                            </td>
-                                                            <td style="width: auto">@cond.PACO_HR_INICIO.ToString()</td>
-                                                            <td style="width: auto">@cond.PACO_HR_FINAL.ToString()</td>
-                                                            @if (cond.PACO_IN_CONFIRMADA == 1)
-                                                            {
-                                                                <td style="width: auto"><span class="badge badge-primary">Confirmada</span></td>
-                                                            }
-                                                            else if (cond.PACO_IN_CONFIRMADA == 2)
-                                                            {
-                                                                <td style="width: auto"><span class="badge badge-danger">Cancelada</span></td>
-                                                            }
-                                                            else if (cond.PACO_IN_CONFIRMADA == 0)
-                                                            {
-                                                                <td style="width: auto"><span class="badge badge-warning">Pendente</span></td>
-                                                            }
-                                                            else if (cond.PACO_IN_CONFIRMADA == 3)
-                                                            {
-                                                                <td style="width: auto"><span class="badge badge-success">Encerrada</span></td>
-                                                            }
-                                                            <td style="width: auto">@cond.USUARIO.USUA_NM_NOME</td>
-                                                            <td style="width: auto" class="td-one-action">
-                                                            </td>
-                                                        </tr>
-                                                    }
-                                                    else
-                                                    {
-                                                        <tr style="background-color: beige; color: darkgreen; font-weight: bold">
-                                                            <td>
-                                                                <span style="display:none; width: auto">@cond.PACO_DT_CONSULTA.ToString("yyyyMMdd")</span>
-                                                                @cond.PACO_DT_CONSULTA.ToString("dd/MM/yyyy")
-                                                            </td>
-                                                            <td style="width: auto">@cond.PACO_HR_INICIO.ToString()</td>
-                                                            <td style="width: auto">@cond.PACO_HR_FINAL.ToString()</td>
-                                                            @if (cond.PACO_IN_CONFIRMADA == 1)
-                                                            {
-                                                                <td style="width: auto"><span class="badge badge-primary">Confirmada</span></td>
-                                                            }
-                                                            else if (cond.PACO_IN_CONFIRMADA == 2)
-                                                            {
-                                                                <td style="width: auto"><span class="badge badge-danger">Cancelada</span></td>
-                                                            }
-                                                            else if (cond.PACO_IN_CONFIRMADA == 0)
-                                                            {
-                                                                <td style="width: auto"><span class="badge badge-warning">Pendente</span></td>
-                                                            }
-                                                            else if (cond.PACO_IN_CONFIRMADA == 3)
-                                                            {
-                                                                <td style="width: auto"><span class="badge badge-success">Encerrada</span></td>
-                                                            }
-                                                            <td style="width: auto; color: green; font-weight: bold">@cond.USUARIO.USUA_NM_NOME</td>
-                                                            <td style="width: auto" class="td-one-action">
-                                                                @if (cond.PACO_IN_ATIVO == 1 & cond.PACO_IN_CONFIRMADA == 0)
-                                                                {
-                                                                    <span style="color: #337ab7; cursor:pointer;" alt="Confirmar" class="tbl-link fa-lg fa fa-check" onclick="ShowModalConfirmar('/AreaPaciente/ConfirmarConsulta/@cond.PACO_CD_ID')" title="Confirmar Consulta"></span>
-                                                                }
-                                                                @if (cond.PACO_IN_ATIVO == 1 & cond.PACO_IN_CONFIRMADA < 2)
-                                                                {
-                                                                    <span style="color: #337ab7; cursor:pointer;" alt="Cancelar" class="tbl-link fa-lg fa fa-times" onclick="ShowModalCancelar('/AreaPaciente/CancelarConsulta/@cond.PACO_CD_ID')" title="Cancelar Consulta"></span>
-                                                                }
-                                                                @Html.TableLinkDetails(cond.PACO_CD_ID, "EnviarInformacaoConsulta", "fa-send", "Enviar Informações")
-                                                            </td>
-                                                        </tr>
-                                                    }
-                                                }
-                                            </tbody>
-                                        </table>
-                                    }
-                                    else
-                                    {
-                                        <div class="row">
-                                            <div class="col-lg-1 col-md-1 col-xs-12">
-                                            </div>
-                                            <div style="border: 5px solid #F6A54A; padding: 10px; border-radius: 8px 8px; " class="col-lg-10 col-md-10 col-xs-8">
-                                                <h4 style="font-weight: bold">Nenhuma consulta agendada para este paciente na seleção especificada</h4>
-                                            </div>
-                                            <div class="col-lg-1 col-md-1 col-xs-12">
-                                            </div>
-                                        </div>
-                                    }
-                                    <span id="loadingIndicator1" style="display: none; margin-left: 10px; color: #007bff;">
-                                        <i class="fa fa-spinner fa-spin"></i> Processando...
-                                    </span>
-
                                 </div>
                             </div>
-                        </div>
-                    </div>                          
-                            
+                        </div>                          
+  
+                        @*Atestados*@
+                        <div class="col-lg-6 col-md-6 col-xs-12">
+                            <div class="col-lg-12 col-md-12 col-xs-12 ibox float-e-margins" style="border-bottom: solid; border-bottom-color: darkblue; border-bottom-width: 2px; border-left: solid; border-left-color: darkblue; border-left-width: 1px; border-right: solid; border-right-color: darkblue; border-right-width: 1px; border-top: solid; border-top-color: darkblue; border-top-width: 1px">
+                                <div class="ibox-title">
+                                    <h4>Atestados</h4>
+                                </div>
+                                <div class="ibox-content">
+                                    <div class="row">
 
+                                        <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                            <div class="col-lg-12 col-md-12 col-xs-12">
+                                                <a href="@Url.Action("ExibirAtestadoHoje", "AreaPaciente")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Exibir os atestados emitidos no ano corrente" id="emp" class="btn btn-sm btn-warning btn-loading2" OnClick = "Fade()">Ano Corrente</a>                
+                                                <a href="@Url.Action("ExibirAtestadoAnterior", "AreaPaciente")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Exibir os atestados emitidos nos anos anteriores" id="emp" class="btn btn-sm btn-warning btn-loading2" OnClick = "Fade()">Anos Anteriores</a>                
+                                                <a href="@Url.Action("ExibirAtestadosTodos", "AreaPaciente")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Exibir todos os  atestados" id="emp" class="btn btn-sm btn-warning btn-loading2" OnClick = "Fade()">Exibir Todos</a>                
+                                            </div>
+                                        </div>
+                                        <br /><br />
+                                        @if (ViewBag.Atestados != null && (ViewBag.Atestados as List<EntitiesServices.Model.PACIENTE_ATESTADO>).Count > 0) 
+                                        {
+                                            <table class="table table-striped table-bordered table-hover dataTables-atestado">
+                                                <thead style="background-color:lightsteelblue">
+                                                    <tr>
+                                                        <th style="width: auto">Data</th>
+                                                        <th style="width: auto">Tipo</th>
+                                                        <th style="width: auto">Título</th>
+                                                        <th style="width: auto">Identificador</th>
+                                                        <th class="td-one-action">Ações</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @foreach (var cond in (ViewBag.Atestados as List<EntitiesServices.Model.PACIENTE_ATESTADO>).OrderByDescending(p => p.PAAT_DT_DATA.Value.Date).ThenBy(p => p.PAAT_NM_TITULO))
+                                                    {   
+                                                        <tr  style="background-color: gainsboro">
+                                                            <td>
+                                                                <span style="display:none; width: auto">@cond.PAAT_DT_DATA.Value.ToString("yyyyMMdd")</span>
+                                                                @cond.PAAT_DT_DATA.Value.ToString("dd/MM/yyyy")
+                                                            </td>
+                                                            <td style="width: auto">@cond.TIPO_ATESTADO.TIAT_NM_NOME</td>
+                                                            <td style="width: auto">@cond.PAAT_NM_TITULO</td>
+                                                            <td style="width: auto">@cond.PAAT_GU_GUID</td>
+                                                            <td style="width: auto" class="td-one-action">
+                                                                @Html.TableLinkDetails(cond.PAAT_CD_ID, "SelecionarImprimirAtestado", "fa-print", "Imprimir/Baixar Atestado")
+                                                            </td>
+                                                        </tr>
+                                                    }
+                                                </tbody>
+                                            </table>
+                                        }
+                                        else
+                                        {
+                                            <div class="row">
+                                                <div class="col-lg-1 col-md-1 col-xs-12">
+                                                </div>
+                                                <div style="border: 5px solid #F6A54A; padding: 10px; border-radius: 8px 8px; " class="col-lg-10 col-md-10 col-xs-8">
+                                                    <h4 style="font-weight: bold">Nenhum atestado emitido para este paciente na seleção especificada</h4>
+                                                </div>
+                                                <div class="col-lg-1 col-md-1 col-xs-12">
+                                                </div>
+                                            </div>
+                                        }
+                                        <span id="loadingIndicator2" style="display: none; margin-left: 10px; color: #007bff;">
+                                            <i class="fa fa-spinner fa-spin"></i> Processando...
+                                        </span>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>                          
+                    </div>
+
+                    <div class="row">
+                        @*Solicitacoes*@
+                        <div class="col-lg-6 col-md-6 col-xs-12">
+                            <div class="col-lg-12 col-md-12 col-xs-12 ibox float-e-margins" style="border-bottom: solid; border-bottom-color: darkblue; border-bottom-width: 2px; border-left: solid; border-left-color: darkblue; border-left-width: 1px; border-right: solid; border-right-color: darkblue; border-right-width: 1px; border-top: solid; border-top-color: darkblue; border-top-width: 1px">
+                                <div class="ibox-title">
+                                    <h4>Solicitações de Exames</h4>
+                                </div>
+                                <div class="ibox-content">
+                                    <div class="row">
+
+                                        <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                            <div class="col-lg-12 col-md-12 col-xs-12">
+                                                <a href="@Url.Action("ExibirSolicitacaoHoje", "AreaPaciente")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Exibir as solicitações de exames emitidas no ano corrente" id="emp" class="btn btn-sm btn-warning btn-loading3" OnClick = "Fade()">Ano Corrente</a>                
+                                                <a href="@Url.Action("ExibirSolicitacaoAnterior", "AreaPaciente")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Exibir as solicitações de exames emitidas nos anos anteriores" id="emp" class="btn btn-sm btn-warning btn-loading3" OnClick = "Fade()">Anos Anteriores</a>                
+                                                <a href="@Url.Action("ExibirSolicitacaoTodos", "AreaPaciente")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Exibir todas as solicitações de exames" id="emp" class="btn btn-sm btn-warning btn-loading3" OnClick = "Fade()">Exibir Todas</a>                
+                                            </div>
+                                        </div>de exames
+                                        <br /><br />
+                                        @if (ViewBag.Solicitacoes != null && (ViewBag.Solicitacoes as List<EntitiesServices.Model.PACIENTE_SOLICITACAO>).Count > 0) 
+                                        {
+                                            <table class="table table-striped table-bordered table-hover dataTables-solicitacao">
+                                                <thead style="background-color:lightsteelblue">
+                                                    <tr>
+                                                        <th style="width: auto">Data</th>
+                                                        <th style="width: auto">Tipo</th>
+                                                        <th style="width: auto">Nome do Exame</th>
+                                                        <th style="width: auto">Identificador</th>
+                                                        <th class="td-one-action">Ações</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @foreach (var cond in (ViewBag.Solicitacoes as List<EntitiesServices.Model.PACIENTE_SOLICITACAO>).OrderByDescending(p => p.PASO_DT_EMISSAO_COMPLETA.Value.Date).ThenBy(p => p.TIEX_CD_ID))
+                                                    {   
+                                                        <tr  style="background-color: gainsboro">
+                                                            <td>
+                                                                <span style="display:none; width: auto">@cond.PASO_DT_EMISSAO_COMPLETA.Value.ToString("yyyyMMdd")</span>
+                                                                @cond.PASO_DT_EMISSAO_COMPLETA.Value.ToString("dd/MM/yyyy")
+                                                            </td>
+                                                            <td style="width: auto">@cond.TIPO_EXAME.TIEX_NM_NOME</td>
+                                                            <td style="width: auto">@cond.PASO_NM_TITULO</td>
+                                                            <td style="width: auto">@cond.PASO_GU_GUID</td>
+                                                            <td style="width: auto" class="td-one-action">
+                                                                @Html.TableLinkDetails(cond.PASO_CD_ID, "SelecionarImprimirSolicitacao", "fa-print", "Imprimir/Baixar Solicitação")
+                                                            </td>
+                                                        </tr>
+                                                    }
+                                                </tbody>
+                                            </table>
+                                        }
+                                        else
+                                        {
+                                            <div class="row">
+                                                <div class="col-lg-1 col-md-1 col-xs-12">
+                                                </div>
+                                                <div style="border: 5px solid #F6A54A; padding: 10px; border-radius: 8px 8px; " class="col-lg-10 col-md-10 col-xs-8">
+                                                    <h4 style="font-weight: bold">Nenhuma solicitação de exame emitida para este paciente na seleção especificada</h4>
+                                                </div>
+                                                <div class="col-lg-1 col-md-1 col-xs-12">
+                                                </div>
+                                            </div>
+                                        }
+                                        <span id="loadingIndicator3" style="display: none; margin-left: 10px; color: #007bff;">
+                                            <i class="fa fa-spinner fa-spin"></i> Processando...
+                                        </span>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>                          
+
+                        <div class="col-lg-6 col-md-6 col-xs-12">
+                            <div class="col-lg-12 col-md-12 col-xs-12 ibox float-e-margins" style="border-bottom: solid; border-bottom-color: darkblue; border-bottom-width: 2px; border-left: solid; border-left-color: darkblue; border-left-width: 1px; border-right: solid; border-right-color: darkblue; border-right-width: 1px; border-top: solid; border-top-color: darkblue; border-top-width: 1px">
+                                <div class="ibox-title">
+                                    <h4>Prescrições</h4>
+                                </div>
+                                <div class="ibox-content">
+                                    <div class="row">
+
+                                        <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                            <div class="col-lg-12 col-md-12 col-xs-12">
+                                                <a href="@Url.Action("ExibirPrescricaoHoje", "AreaPaciente")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Exibir as prescrições emitidas no ano corrente" id="emp" class="btn btn-sm btn-warning btn-loading4" OnClick = "Fade()">Ano Corrente</a>                
+                                                <a href="@Url.Action("ExibirPrescricaoAnterior", "AreaPaciente")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Exibir as prescrições emitidas nos anos anteriores" id="emp" class="btn btn-sm btn-warning btn-loading4" OnClick = "Fade()">Anos Anteriores</a>                
+                                                <a href="@Url.Action("ExibirPrescricaoTodos", "AreaPaciente")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Exibir todas as prescrições" id="emp" class="btn btn-sm btn-warning btn-loading4" OnClick = "Fade()">Exibir Todas</a>                
+                                            </div>
+                                        </div>de exames
+                                        <br /><br />
+                                        @if (ViewBag.Prescricoes != null && (ViewBag.Prescricoes as List<EntitiesServices.Model.PACIENTE_PRESCRICAO>).Count > 0) 
+                                        {
+                                            <table class="table table-striped table-bordered table-hover dataTables-prescricao">
+                                                <thead style="background-color:lightsteelblue">
+                                                    <tr>
+                                                        <th style="width: auto">Data</th>
+                                                        <th style="width: auto">Tipo</th>
+                                                        <th style="width: auto">Identificador</th>
+                                                        <th style="width: auto">Num.Itens</th>
+                                                        <th class="td-one-action">Ações</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @foreach (var cond in (ViewBag.Prescricoes as List<EntitiesServices.Model.PACIENTE_PRESCRICAO>).OrderByDescending(p => p.PAPR_DT_EMISSAO_COMPLETA.Value.Date))
+                                                    {   
+                                                        <tr  style="background-color: gainsboro">
+                                                            <td>
+                                                                <span style="display:none; width: auto">@cond.PAPR_DT_EMISSAO_COMPLETA.Value.ToString("yyyyMMdd")</span>
+                                                                @cond.PAPR_DT_EMISSAO_COMPLETA.Value.ToString("dd/MM/yyyy")
+                                                            </td>
+                                                            <td style="width: auto">@cond.TIPO_CONTROLE.TICO_NM_NOME</td>
+                                                            <td style="width: auto">@cond.PAPR_GU_GUID</td>
+                                                            <td style="width: auto">@cond.PACIENTE_PRESCRICAO_ITEM.Count()</td>
+                                                            <td style="width: auto" class="td-one-action">
+                                                                @if (cond.TICO_CD_ID == 1 || cond.TICO_CD_ID == 2)
+                                                                {
+                                                                    @Html.TableLinkDetails(cond.PAPR_CD_ID, "SelecionarImprimirPrescricao", "fa-print", "Imprimir/Baixar Prescrição")
+                                                                }
+                                                            </td>
+                                                        </tr>
+                                                    }
+                                                </tbody>
+                                            </table>
+                                        }
+                                        else
+                                        {
+                                            <div class="row">
+                                                <div class="col-lg-1 col-md-1 col-xs-12">
+                                                </div>
+                                                <div style="border: 5px solid #F6A54A; padding: 10px; border-radius: 8px 8px; " class="col-lg-10 col-md-10 col-xs-8">
+                                                    <h4 style="font-weight: bold">Nenhuma prescrição emitida para este paciente na seleção especificada</h4>
+                                                </div>
+                                                <div class="col-lg-1 col-md-1 col-xs-12">
+                                                </div>
+                                            </div>
+                                        }
+                                        <span id="loadingIndicator4" style="display: none; margin-left: 10px; color: #007bff;">
+                                            <i class="fa fa-spinner fa-spin"></i> Processando...
+                                        </span>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>                          
+                    </div>
                 </div>
             </div>
         </div>
@@ -527,6 +739,62 @@
             });
         });
     </script>
+    <script type="text/javascript">
+        $(document).ready(function () { 
+            $('.btn-loading2').on('click', function (e) {            
+                $(this).prop('disabled', true);
+                $(this).addClass('disabled');
+                $('#loadingIndicator2').show();
+                var tagName = $(this).prop('tagName').toLowerCase();
+                if (tagName === 'a') {
+                    e.preventDefault(); 
+                    var targetUrl = $(this).attr('href');
+                    window.location.href = targetUrl;
+
+                } else if (tagName === 'button' || tagName === 'input') {
+                    $(this).closest('form').submit();
+                }
+            });
+        });
+    </script>
+    <script type="text/javascript">
+        $(document).ready(function () { 
+            $('.btn-loading3').on('click', function (e) {            
+                $(this).prop('disabled', true);
+                $(this).addClass('disabled');
+                $('#loadingIndicator3').show();
+                var tagName = $(this).prop('tagName').toLowerCase();
+                if (tagName === 'a') {
+                    e.preventDefault(); 
+                    var targetUrl = $(this).attr('href');
+                    window.location.href = targetUrl;
+
+                } else if (tagName === 'button' || tagName === 'input') {
+                    $(this).closest('form').submit();
+                }
+            });
+        });
+    </script>
+    <script type="text/javascript">
+        $(document).ready(function () { 
+            $('.btn-loading4').on('click', function (e) {            
+                $(this).prop('disabled', true);
+                $(this).addClass('disabled');
+                $('#loadingIndicator4').show();
+                var tagName = $(this).prop('tagName').toLowerCase();
+                if (tagName === 'a') {
+                    e.preventDefault(); 
+                    var targetUrl = $(this).attr('href');
+                    window.location.href = targetUrl;
+
+                } else if (tagName === 'button' || tagName === 'input') {
+                    $(this).closest('form').submit();
+                }
+            });
+        });
+    </script>
+
+
     <script>
         $(function () {
             limpaModal();
@@ -551,36 +819,6 @@
             $('#modal').modal('show');
         }
     </script>
-
-    @*<script type="text/javascript">
-        $(document).ready(function () {
-
-            $('.dataTables-consulta').DataTable({
-                pageLength: 10,
-                dom: '<"html5buttons"B>lTfgitp',
-                columnDefs: [
-                    {
-                        "type": "date-eu", 
-                        "targets": 0 
-                    }
-                ],
-                buttons: [
-                    { extend: 'excel', title: 'Consultas_Planilha' },
-                    {
-                        extend: 'print',
-                        customize: function (win) {
-                            $(win.document.body).addClass('white-bg');
-                            $(win.document.body).css('font-size', '10px');
-
-                            $(win.document.body).find('table')
-                                    .addClass('compact')
-                                    .css('font-size', 'inherit');
-                        }
-                    }
-                ]
-            });          
-        });
-    </script>*@
 
     <script type="text/javascript">
         $(document).ready(function () {
@@ -615,6 +853,104 @@
         });   
      </script>
 
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('.dataTables-atestado').DataTable({
+                "pageLength": 5,          // Define o padrão de 5 linhas
+                "lengthChange": false,    // Remove o seletoc de "Mostrar X registros"
+                "searching": false,       // Remove a caixa de pesquisa
+                "dom": 'rtp',             // 'r' (processing), 't' (table), 'p' (pagination)
+                                          // Note que removemos o 'B' (buttons), 'f' (filter) e 'l' (length)
+                "columnDefs": [
+                    {
+                        "type": "date-eu", 
+                        "targets": 0 
+                    }
+                ],
+                // Os botões podem permanecer definidos, mas como removemos o 'B' do 'dom', 
+                // eles não serão renderizados na tela.
+                "buttons": [
+                    { extend: 'excel', title: 'Atestados_Planilha' },
+                    {
+                        extend: 'print',
+                        customize: function (win) {
+                            $(win.document.body).addClass('white-bg');
+                            $(win.document.body).css('font-size', '10px');
+                            $(win.document.body).find('table')
+                                .addClass('compact')
+                                .css('font-size', 'inherit');
+                        }
+                    }
+                ]
+            });          
+        });   
+     </script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('.dataTables-solicitacao').DataTable({
+                "pageLength": 5,          // Define o padrão de 5 linhas
+                "lengthChange": false,    // Remove o seletoc de "Mostrar X registros"
+                "searching": false,       // Remove a caixa de pesquisa
+                "dom": 'rtp',             // 'r' (processing), 't' (table), 'p' (pagination)
+                                          // Note que removemos o 'B' (buttons), 'f' (filter) e 'l' (length)
+                "columnDefs": [
+                    {
+                        "type": "date-eu", 
+                        "targets": 0 
+                    }
+                ],
+                // Os botões podem permanecer definidos, mas como removemos o 'B' do 'dom', 
+                // eles não serão renderizados na tela.
+                "buttons": [
+                    { extend: 'excel', title: 'Solicitacoes_Planilha' },
+                    {
+                        extend: 'print',
+                        customize: function (win) {
+                            $(win.document.body).addClass('white-bg');
+                            $(win.document.body).css('font-size', '10px');
+                            $(win.document.body).find('table')
+                                .addClass('compact')
+                                .css('font-size', 'inherit');
+                        }
+                    }
+                ]
+            });          
+        });   
+     </script>
+
+        <script type="text/javascript">
+        $(document).ready(function () {
+            $('.dataTables-prescricao').DataTable({
+                "pageLength": 5,          // Define o padrão de 5 linhas
+                "lengthChange": false,    // Remove o seletoc de "Mostrar X registros"
+                "searching": false,       // Remove a caixa de pesquisa
+                "dom": 'rtp',             // 'r' (processing), 't' (table), 'p' (pagination)
+                                          // Note que removemos o 'B' (buttons), 'f' (filter) e 'l' (length)
+                "columnDefs": [
+                    {
+                        "type": "date-eu", 
+                        "targets": 0 
+                    }
+                ],
+                // Os botões podem permanecer definidos, mas como removemos o 'B' do 'dom', 
+                // eles não serão renderizados na tela.
+                "buttons": [
+                    { extend: 'excel', title: 'Prescricoes_Planilha' },
+                    {
+                        extend: 'print',
+                        customize: function (win) {
+                            $(win.document.body).addClass('white-bg');
+                            $(win.document.body).css('font-size', '10px');
+                            $(win.document.body).find('table')
+                                .addClass('compact')
+                                .css('font-size', 'inherit');
+                        }
+                    }
+                ]
+            });          
+        });   
+     </script>
 
     <!-- Handler de fechamento do browser -->
     <script type="text/javascript">

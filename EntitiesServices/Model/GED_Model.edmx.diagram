@@ -1164,6 +1164,9 @@
         <AssociationConnector Association="CRMSysDBModel.FK_AREA_PACIENTE_USUARIO" />
         <EntityTypeShape EntityType="CRMSysDBModel.AREA_PACIENTE_ANEXO" Width="1.5" PointX="36.25" PointY="570.375" />
         <AssociationConnector Association="CRMSysDBModel.FK_AREA_PACIENTE_ANEXO_AREA_PACIENTE" />
+        <AssociationConnector Association="CRMSysDBModel.FK_AREA_PACIENTE_LABORATORIO" />
+        <AssociationConnector Association="CRMSysDBModel.FK_AREA_PACIENTE_TIPO_EXAME" />
+        <AssociationConnector Association="CRMSysDBModel.FK_AREA_PACIENTE_LOCACAO" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

@@ -13,7 +13,7 @@
                 <a href="@Url.Action("MontarTelaAreaPaciente", "AreaPaciente")">Dashboard</a>
             </li>
             <li class="active">
-                <strong>Envio de Informações para Consulta</strong>
+                <strong>Envio de Documentos</strong>
             </li>
         </ol>
         <br />
@@ -24,11 +24,11 @@
             <div class="col-lg-12 col-md-12 col-xs-12 ibox float-e-margins">
                 <div class="ibox-title">
                     <div style="text-align: center;" class="col-lg-12 col-md-12 col-xs-12">
-                        <h5>Envio de Informações para Consulta</h5>
+                        <h5>Envio de Documentos</h5>
                         <span style="color:green; font-weight: 500; font-size: 20px;">@ViewBag.NomePaciente</span>
                     </div>
                 </div>
-                @using (Html.BeginForm("EnviarInformacaoConsulta", "AreaPaciente", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal", @id="pwd-container1" }))
+                @using (Html.BeginForm("MontarTelaEnvioDocumento", "AreaPaciente", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal", @id="pwd-container1" }))
                 {
                     @Html.AntiForgeryToken()
                     <div class="ibox-content">
@@ -53,21 +53,61 @@
                                     Nome do Profissional
                                     @Html.TextBoxFor(m => m.NOME_PROFISSIONAL, new { @class = "form-control", @readonly="readonly", @style = "color: green; font-weight: bold" })
                                 </div>
-                                <div class="col-lg-2 col-md-2 col-xs-12">
-                                    Data da Consulta
-                                    @Html.TextBoxFor(m => m.AREA_DT_CONSULTA, new { @class = "form-control", @readonly="readonly" })
-                                </div>
-                                <div class="col-lg-3 col-md-3 col-xs-12">
-                                    Horário
-                                    @Html.TextBoxFor(m => m.HORARIO, new { @class = "form-control", @readonly="readonly" })
-                                </div>
                             </div>
-                            <div class="form-group" style=" margin-left: 0px; margin-right: 0px;"> 
+                            <div class="row">
                                 <div class="col-lg-6 col-md-6 col-xs-12">
-                                    Informações Prévias para a Consulta*
-                                    @Html.TextAreaFor(m => m.AREA_TX_CONTEUDO, new { @class = "form-control", style = "width: 100%; height: 400px; overflow:auto;", autofocus = true, @id = "texto" })
-                                    @Html.ValidationMessageFor(m => m.AREA_TX_CONTEUDO, "", new { @style = "color:red" })
+                                    <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">                
+                                        <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Informações do Documento</h4>
+                                        <div class="col-lg-4 col-md-4 col-xs-12">
+                                            Tipo de Documento*
+                                            @Html.DropDownListFor(m => m.AREA_IN_TIPO_EXAME, (SelectList)ViewBag.Tipo, "Selecionar", new { @class = "form-control", data_toggle = "popover", data_content = "Selecione o tipo de documento a ser enviado", data_trigger="hover", data_placement="top", autofocus = true, @id = "tipo", onchange = "ValidaTipo($(this).val())"  })
+                                            @Html.ValidationMessageFor(m => m.AREA_IN_TIPO_EXAME, "", new { @style = "color:red" })
+                                        </div>
+                                        <div class="col-lg-8 col-md-8 col-xs-12">
+                                            Nome do Documento*
+                                            @Html.TextBoxFor(m => m.AREA_NM_EXAME, new { @class = "form-control", autofocus = true, @id = "nomeDoc", data_toggle = "popover", data_content = "Informe o nome do documento a ser enviado", data_trigger="hover", data_placement="top" })
+                                            @Html.ValidationMessageFor(m => m.AREA_NM_EXAME, "", new { @style = "color:red" })
+                                        </div>
+                                    </div>
+                                    <div class="form-group" style=" margin-left: -15px; margin-right: -15px;"  id="dadosEx">                
+                                        <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Informações do Exame</h4>
+                                        <div class="col-lg-4 col-md-4 col-xs-12">
+                                            Tipo de Exame*
+                                            @Html.DropDownListFor(m => m.TIEX_CD_ID, (SelectList)ViewBag.TipoExame, "Selecionar", new { @class = "form-control", data_toggle = "popover", data_content = "Selecione o tipo de exame a ser enviado", data_trigger="hover", data_placement="top", autofocus = true, @id = "tipoExame"  })
+                                            @Html.ValidationMessageFor(m => m.TIEX_CD_ID, "", new { @style = "color:red" })
+                                        </div>
+                                        <div class="col-lg-3 col-md-3 col-xs-12">
+                                            Data do Exame
+                                            @Html.TextBoxFor(m => m.AREA_DT_DATA_EXAME, "{0:dd/MM/yyyy}", new { @class = "form-control date-picker", autofocus = true, @id = "dn", data_toggle = "popover", data_content = "Informe a data de realização do exame a ser enviado", data_trigger="hover", data_placement="top" })
+                                            @Html.ValidationMessageFor(m => m.AREA_DT_DATA_EXAME, "", new { @style = "color:red" })
+                                        </div>
+                                        <div class="col-lg-4 col-md-4 col-xs-12">
+                                            Laboratório
+                                            @Html.DropDownListFor(m => m.LABS_CD_ID, (SelectList)ViewBag.Labs, "Selecionar", new { @class = "form-control", data_toggle = "popover", data_content = "Selecione o laboratório onde o exame a ser enviado foi executado", data_trigger="hover", data_placement="top", autofocus = true, @id = "tipoExame"  })
+                                            @Html.ValidationMessageFor(m => m.LABS_CD_ID, "", new { @style = "color:red" })
+                                        </div>
+                                    </div>
+                                    <div class="form-group" style=" margin-left: -15px; margin-right: -15px;"  id="dadosLoca">                
+                                        <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Informações da Locação</h4>
+                                        <div class="col-lg-8 col-md-8 col-xs-12">
+                                            Locação*
+                                            @Html.DropDownListFor(m => m.LOCA_CD_ID, (SelectList)ViewBag.Locacao, "Selecionar", new { @class = "form-control", data_toggle = "popover", data_content = "Selecione a locação referente ao documento a ser enviado", data_trigger="hover", data_placement="top", autofocus = true, @id = "loca", onchange = "GetLocacao($(this).val())"   })
+                                            @Html.ValidationMessageFor(m => m.LOCA_CD_ID, "", new { @style = "color:red" })
+                                        </div>
+                                        <div style="display: none;" id="situacao" class="col-lg-4 col-md-4 col-xs-12">
+                                            Situação
+                                            <input class="form-control" type="text" readonly="readonly" tabindex="-1"/>
+                                        </div>
+                                    </div>
+                                    <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">                
+                                        <div class="col-lg-12 col-md-12 col-xs-12">
+                                            Informações do documento sendo enviado*
+                                            @Html.TextAreaFor(m => m.AREA_TX_CONTEUDO, new { @class = "form-control", style = "width: 100%; height: 400px; overflow:auto;", autofocus = true, @id = "texto" })
+                                            @Html.ValidationMessageFor(m => m.AREA_TX_CONTEUDO, "", new { @style = "color:red" })
+                                        </div>
+                                    </div>
                                 </div>
+
                                 <div class="col-lg-6 col-md-6 col-xs-12">
                                     <h4 style="margin-left: -15px; color:green; background-color: beige; font-weight:bold">Anexos</h4>
                                     <input class="btn btn-sm btn-warning" style="margin-left: -15px;" id="inputFile" type="file" multiple data-toggle="popover" data-trigger="hover" data-placement="top" data-content="ATENÇÃO - Antes de anexar arquivos certifique-se de que eles estejam livres de vírus e outras ameaças.  "/>
@@ -90,9 +130,10 @@
                                 </div>
                             </div>
                         </div>
+
                         <div class="form-group">
                             @Html.ButtonActionSubmit(text: "BtnSubmit", htmlAttributes: new { id = "submit", style = "display: none;" })
-                            <button style="margin-left: 15px;" class="btnSubmit btn btn-sm btn-success btn-loading1" id="basictoast" type="button">Confirmar Envio das Informações</button>
+                            <button style="margin-left: 15px;" class="btnSubmit btn btn-sm btn-success btn-loading1" id="basictoast" type="button">Confirmar Envio do Documento</button>
                             @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaAreaPaciente", controller: "Paciente", htmlAttributes: new { @class = "btn-loading" })
                             <span id="loadingIndicator" style="display: none; margin-left: 10px; color: #007bff;">
                                 <i class="fa fa-spinner fa-spin"></i> Processando...
@@ -167,6 +208,43 @@
                 }
             });
         });
+    </script>
+
+    <script type="text/javascript">
+        function ValidaTipo(valNac) {
+            if (valNac == '3') {
+                $("#dadosEx").show();
+                $("#dadosLoca").hide();
+            } else if (valNac == '4') {
+                $("#dadosEx").hide();
+                $("#dadosLoca").hide();
+            } else {
+                $("#dadosEx").hide();
+                $("#dadosLoca").show();
+            }
+        }
+        $(document).ready(function () {
+            ValidaTipo($('#tipo').val());
+        });
+    </script>
+
+    <script>
+        function GetLocacao(id) {
+            var data = {
+                id: id
+            }
+            var solicitacao = $('select#loca');
+
+            $.ajax({
+                url: '../Locacao/GetLocacaoArea'
+                , type: 'POST'
+                , data: data
+                , success: function (r) {
+                    $('#situacao > input').val(r.situacao);
+                    $('#situacao').show();
+                }
+            });
+        }
     </script>
 
     <script type="text/javascript">

@@ -122,6 +122,7 @@ namespace Presentation.Start
             kernel.Bind<ILocacaoAppService>().To<LocacaoAppService>();
             kernel.Bind<IAcessoSiteAppService>().To<AcessoSiteAppService>();
             kernel.Bind<IAreaPacienteAppService>().To<AreaPacienteAppService>();
+            kernel.Bind<INoticiaAppService>().To<NoticiaAppService>();
 
             kernel.Bind(typeof(IServiceBase<>)).To(typeof(ServiceBase<>));
             kernel.Bind<IUsuarioService>().To<UsuarioService>();
@@ -178,6 +179,7 @@ namespace Presentation.Start
             kernel.Bind<ILocacaoService>().To<LocacaoService>();
             kernel.Bind<IAcessoSiteService>().To<AcessoSiteService>();
             kernel.Bind<IAreaPacienteService>().To<AreaPacienteService>();
+            kernel.Bind<INoticiaService>().To<NoticiaService>();
 
             kernel.Bind(typeof(IRepositoryBase<>)).To(typeof(RepositoryBase<>));
             kernel.Bind<IConfiguracaoRepository>().To<ConfiguracaoRepository>();
@@ -331,6 +333,8 @@ namespace Presentation.Start
             kernel.Bind<IPacienteConsultaMaterialRepository>().To<PacienteConsultaMaterialRepository>();
             kernel.Bind<IAcessoSiteRepository>().To<AcessoSiteRepository>();
             kernel.Bind<IAreaPacienteRepository>().To<AreaPacienteRepository>();
+            kernel.Bind<INoticiaRepository>().To<NoticiaRepository>();
+            kernel.Bind<INoticiaComentarioRepository>().To<NoticiaComentarioRepository>();
 
 
         }

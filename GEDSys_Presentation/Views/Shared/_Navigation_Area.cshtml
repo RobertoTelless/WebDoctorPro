@@ -48,11 +48,9 @@
             <li>
                 <a href="@Url.Action("MontarTelaAreaPaciente", "AreaPaciente")"><i class="fa fa-th-large"></i> <span class="nav-label" data-i18n="nav.dashboard">Informações</span> <span class="fa arrow"></span></a>
                 <ul class="nav nav-second-level collapse @Html.IsSelected(controller: "Cadastros", cssClass: "in")">
-                    <li class="@Html.IsSelected(action: "MontarTelaConsultas")"><a href="@Url.Action("MontarTelaConsultas", "AreaPaciente")">Central de Consultas</a></li>
-                    <li class="@Html.IsSelected(action: "MontarTelaAtestados")"><a href="@Url.Action("MontarTelaAtestados", "AreaPaciente")">Central de Atestados</a></li>
-                    <li class="@Html.IsSelected(action: "MontarTelaSolicitacoes")"><a href="@Url.Action("MontarTelaSolicitacoes", "AreaPaciente")">Central de Solicitações</a></li>
-                    <li class="@Html.IsSelected(action: "MontarTelaPrescricoes")"><a href="@Url.Action("MontarTelaPrescricoes", "Paciente")">Central de Prescrições</a></li>
-                    <li class="@Html.IsSelected(action: "MontarTelaInformacoes")"><a href="@Url.Action("MontarTelaInformacoes", "Paciente")">Envio de Informações</a></li>
+                    <li class="@Html.IsSelected(action: "MarcarConsulta")"><a href="@Url.Action("MarcarConsulta", "AreaPaciente")">Solicitar Consulta</a></li>
+                    <li class="@Html.IsSelected(action: "EnviarInformacaoConsulta")"><a href="@Url.Action("EnviarInformacaoConsulta", "AreaPaciente")">Envio de Informações</a></li>
+                    <li class="@Html.IsSelected(action: "MontarTelaEnvioDocumento")"><a href="@Url.Action("MontarTelaEnvioDocumento", "AreaPaciente")">Envio de Documento</a></li>
                 </ul>
             </li>
 

@@ -100,6 +100,7 @@ namespace MvcMapping.Mappers
             CreateMap<MedicoMensagemViewModel, MEDICOS_MENSAGEM>();
             CreateMap<PacienteRespostaViewModel, RESPOSTA_CONSULTA>();
             CreateMap<AreaPacienteViewModel, AREA_PACIENTE>();
+            CreateMap<NoticiaViewModel, NOTICIA>();
 
         }
     }

@@ -103,6 +103,9 @@ namespace ERP_Condominios_Solution.Controllers
             Session["AvisosAbertos"] = 0;
             Session["ListaEstoqueBase"] = null;
             Session["VoltarMsgPaciente"] = 0;
+            Session["ListaNoticia"] = null;
+            Session["NoticiaGeral"] = null;
+            Session["NoticiaAlterada"] = 0;
 
             // Permissões
             Session["PermProntuario"] = 0;
@@ -981,6 +984,7 @@ namespace ERP_Condominios_Solution.Controllers
                 Session["PerfilSigla"] = usuario.PERFIL.PERF_SG_SIGLA;
                 Session["NomeEmpresaAssina"] = usuario.EMPRESA.EMPR_NM_GUERRA;
                 Session["Cargo"] = usuario.PERFIL.PERF_NM_NOME;
+                Session["ModoEntrada"] = 1;
 
                 // Reseta flags de permissao e totais
                 Session["PermProntuario"] = 0;

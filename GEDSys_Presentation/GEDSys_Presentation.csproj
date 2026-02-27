@@ -533,6 +533,7 @@
     <Compile Include="Controllers\MedicamentoController.cs" />
     <Compile Include="Controllers\MedicoController.cs" />
     <Compile Include="Controllers\MensagemController.cs" />
+    <Compile Include="Controllers\NoticiaController.cs" />
     <Compile Include="Controllers\Paciente2Controller.cs" />
     <Compile Include="Controllers\PacienteController.cs" />
     <Compile Include="Controllers\PerfilController.cs" />
@@ -566,6 +567,7 @@
     <Compile Include="ViewModels\LocacaoOcorrenciaViewModel.cs" />
     <Compile Include="ViewModels\LocacaoParcelaViewModel.cs" />
     <Compile Include="ViewModels\LocacaoAnotacaoViewModel.cs" />
+    <Compile Include="ViewModels\NoticiaViewModel.cs" />
     <Compile Include="ViewModels\MedicoMensagemViewModel.cs" />
     <Compile Include="ViewModels\MedicoEnvioViewModel.cs" />
     <Compile Include="ViewModels\LocacaoViewModel.cs" />
@@ -5390,6 +5392,8 @@
     <Content Include="Views\Paciente\VerAnexoExamesPaciente.cshtml" />
     <Content Include="Views\AreaPaciente\MontarTelaPerguntas.cshtml" />
     <Content Include="Views\AreaPaciente\EnviarInformacaoConsulta.cshtml" />
+    <Content Include="Views\AreaPaciente\MontarTelaEnvioDocumento.cshtml" />
+    <Content Include="Views\Noticia\MontarTelaNoticia.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

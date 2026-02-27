@@ -20093,5 +20093,34 @@ namespace GEDSys_Presentation.Controllers
             }
         }
 
+        public JsonResult GetLocacaoArea(Int32 id)
+        {
+            var locacao = baseApp.GetItemById(id);
+            Session["LocacaoGet"] = locacao;
+            String situacao = String.Empty;
+            var hash = new Hashtable();
+            if (locacao.LOCA_IN_STATUS == 0)
+            {
+                situacao = "Pendente";
+            }
+            if (locacao.LOCA_IN_STATUS == 1)
+            {
+                situacao = "Ativa";
+            }
+            if (locacao.LOCA_IN_STATUS == 2)
+            {
+                situacao = "Encerrada";
+            }
+            if (locacao.LOCA_IN_STATUS == 3)
+            {
+                situacao = "Vencida";
+            }
+            if (locacao.LOCA_IN_STATUS == 4)
+            {
+                situacao = "Cancelada";
+            }
+            hash.Add("situacao", situacao);
+            return Json(hash);
+        }
     }
 }

@@ -33,10 +33,20 @@ namespace EntitiesServices.Model
         public string AREA_NM_TITULO { get; set; }
         public string AREA_TX_CONTEUDO { get; set; }
         public string AREA_GU_IDENTIFICADOR { get; set; }
+        public string AREA_NM_EXAME { get; set; }
+        public Nullable<int> TIEX_CD_ID { get; set; }
+        public Nullable<int> AREA_IN_TIPO_EXAME { get; set; }
+        public Nullable<System.DateTime> AREA_DT_DATA_EXAME { get; set; }
+        public Nullable<int> LABS_CD_ID { get; set; }
+        public string AREA_TX_COMENTARIOS_DOCUMENTO { get; set; }
+        public Nullable<int> LOCA_CD_ID { get; set; }
     
         public virtual PACIENTE PACIENTE { get; set; }
         public virtual USUARIO USUARIO { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<AREA_PACIENTE_ANEXO> AREA_PACIENTE_ANEXO { get; set; }
+        public virtual LABORATORIO LABORATORIO { get; set; }
+        public virtual TIPO_EXAME TIPO_EXAME { get; set; }
+        public virtual LOCACAO LOCACAO { get; set; }
     }
 }

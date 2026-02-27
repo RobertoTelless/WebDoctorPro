@@ -170,6 +170,7 @@
     <Compile Include="EntitiesServices\EmpresaService.cs" />
     <Compile Include="EntitiesServices\AreaPacienteService.cs" />
     <Compile Include="EntitiesServices\LocacaoService.cs" />
+    <Compile Include="EntitiesServices\NoticiaService.cs" />
     <Compile Include="EntitiesServices\TipoHistoricoService.cs" />
     <Compile Include="EntitiesServices\VideoService.cs" />
     <Compile Include="EntitiesServices\MedicoService.cs" />
@@ -240,6 +241,8 @@
     <Compile Include="Interfaces\Repositories\IMedicoAnexoRepository.cs" />
     <Compile Include="Interfaces\Repositories\ILocacaoHistoricoRepository.cs" />
     <Compile Include="Interfaces\Repositories\ILocacaoRepository.cs" />
+    <Compile Include="Interfaces\Repositories\INoticiaComentarioRepository.cs" />
+    <Compile Include="Interfaces\Repositories\INoticiaRepository.cs" />
     <Compile Include="Interfaces\Repositories\IPacienteConsultaMaterialRepository.cs" />
     <Compile Include="Interfaces\Repositories\IValorConsultaMaterialRepository.cs" />
     <Compile Include="Interfaces\Repositories\IRespostaConsultaRepository.cs" />
@@ -375,6 +378,7 @@
     <Compile Include="Interfaces\Services\IEmpresaService.cs" />
     <Compile Include="Interfaces\Services\IAreaPacienteService.cs" />
     <Compile Include="Interfaces\Services\ILocacaoService.cs" />
+    <Compile Include="Interfaces\Services\INoticiaService.cs" />
     <Compile Include="Interfaces\Services\ITipoHistoricoService.cs" />
     <Compile Include="Interfaces\Services\IVideoService.cs" />
     <Compile Include="Interfaces\Services\IMedicoService.cs" />

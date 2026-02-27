@@ -95,7 +95,7 @@
                                     {
                                         <div class="row">
                                             <h5 style="color: green; font-weight: bold">Preencha os campos abaixo com as suas dúvidas ou sugestões.</h5>
-                                            <h5 style="color: green; font-weight: bold">Você receberá nossa resposta em seu e-mail cadastrado no WebDoctor.</h5>
+                                            <h5 style="color: green; font-weight: bold">Você receberá nossa resposta em seu e-mail cadastrado no WebDoctorPro.</h5>
                                         </div>                                   
                                         <div class="row">
                                             <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">                
@@ -124,6 +124,17 @@
                                         </div>
                                         <div class="form-group">
                                             @Html.ButtonActionSubmit(text: "Confirma Envio de E-Mail", htmlAttributes: new { id = "basictoast" })
+                                            @if ((Int32)Session["ModoEntrada"] == 1)
+                                            {
+                                                @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaPaciente", controller: "Paciente", htmlAttributes: new { @class = "btn-loading" })
+                                            }
+                                            else
+                                            {
+                                                @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaAreaPaciente", controller: "AreaPaciente", htmlAttributes: new { @class = "btn-loading" })
+                                            }
+                                            <span id="loadingIndicator" style="display: none; margin-left: 10px; color: #007bff;">
+                                                <i class="fa fa-spinner fa-spin"></i> Processando...
+                                            </span>
                                         </div>
                                     }
                                 </div>
@@ -151,7 +162,47 @@
     @Scripts.Render("~/bundles/inputmask")
     @Scripts.Render("~/plugins/jasnyBootstrap")
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.maskedinput/1.4.1/jquery.maskedinput.js"></script>    
+    <script type="text/javascript">
+        $(document).ready(function () { 
+            $('.btn-loading').on('click', function (e) {            
+                $(this).prop('disabled', true);
+                $(this).addClass('disabled');
+                $('#loadingIndicator').show();
+                var tagName = $(this).prop('tagName').toLowerCase();
+                if (tagName === 'a') {
+                    e.preventDefault(); 
+                    var targetUrl = $(this).attr('href');
+                    window.location.href = targetUrl;
 
+                } else if (tagName === 'button' || tagName === 'input') {
+                    $(this).closest('form').submit();
+                }
+            });
+        });
+    </script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('.btn-loading1').on('click', function (e) {
+            
+                var $this = $(this);
+                var tagName = $this.prop('tagName').toLowerCase();
+                $this.addClass('disabled'); 
+                $('#loadingIndicator').show();
+
+                if (tagName === 'a') {
+                    e.preventDefault();
+                
+                    var targetUrl = $this.attr('href');
+                    window.location.href = targetUrl;
+                
+                } else if (tagName === 'button' || tagName === 'input') {               
+                    $this.closest('form').submit();
+                    $this.prop('disabled', true);
+                }
+            });
+        });
+    </script>
 }
 
 @if (ViewBag.Message != null)
