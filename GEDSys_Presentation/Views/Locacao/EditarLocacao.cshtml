@@ -1289,7 +1289,7 @@
                                                     <br />
                                                     @if (Model.LOCACAO_PARCELA.Where(p => p.LOPA_IN_ATIVO == 1).ToList().Count > 0)
                                                     {
-                                                        <table class="table table-striped table-bordered table-hover dataTables-solicitacao">
+                                                        <table class="table table-striped table-bordered table-hover dataTables-parcela">
                                                             <thead style="background-color:lightsteelblue">
                                                                 <tr>
                                                                     <th style="width: auto">Parcela</th>
@@ -1303,7 +1303,6 @@
                                                                     <th style="width: auto">Valor Pago (R$)</th>
                                                                     <th style="width: auto">Status</th>
                                                                     <th style="width: auto" class="td-one-action">Ações</th>
-                                                                    <th style="width: 0.01px"></th>
                                                                 </tr>
                                                             </thead>
                                                             <tbody>
@@ -1427,7 +1426,7 @@
                                                     <br />
                                                     @if (Model.LOCACAO_PARCELA.Where(p => p.LOPA_IN_ATIVO == 1).ToList().Count > 0)
                                                     {
-                                                        <table class="table table-striped table-bordered table-hover dataTables-solicitacao">
+                                                        <table class="table table-striped table-bordered table-hover dataTables-parcela">
                                                             <thead style="background-color:lightsteelblue">
                                                                 <tr>
                                                                     <th style="width: auto">Parcela</th>
@@ -1567,7 +1566,7 @@
                                                     <br />
                                                     @if (Model.LOCACAO_OCORRENCIA.Where(p => p.LOOC_IN_ATIVO == 1).ToList().Count > 0)
                                                     {
-                                                        <table class="table table-striped table-bordered table-hover dataTables-solicitacao">
+                                                        <table class="table table-striped table-bordered table-hover dataTables-ocorrencia">
                                                             <thead style="background-color:lightsteelblue">
                                                                 <tr>
                                                                     <th style="width: auto">Data da Ocorrência</th>
@@ -1666,7 +1665,7 @@
                                                     <br />
                                                     @if (Model.LOCACAO_OCORRENCIA.Where(p => p.LOOC_IN_ATIVO == 1).ToList().Count > 0)
                                                     {
-                                                        <table class="table table-striped table-bordered table-hover dataTables-solicitacao">
+                                                        <table class="table table-striped table-bordered table-hover dataTables-ocorrencia">
                                                             <thead style="background-color:lightsteelblue">
                                                                 <tr>
                                                                     <th style="width: auto">Data da Ocorrência</th>
@@ -1978,6 +1977,71 @@
         });
     </script>
 
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('.dataTables-parcela').DataTable({
+                "pageLength": 5,          // Define o padrão de 5 linhas
+                "lengthChange": false,    // Remove o seletoc de "Mostrar X registros"
+                "searching": false,       // Remove a caixa de pesquisa
+                "dom": 'rtp',             // 'r' (processing), 't' (table), 'p' (pagination)
+                                          // Note que removemos o 'B' (buttons), 'f' (filter) e 'l' (length)
+                "columnDefs": [
+                    {
+                        "type": "date-eu", 
+                        "targets": [2, 7]
+                    }
+                ],
+                // Os botões podem permanecer definidos, mas como removemos o 'B' do 'dom', 
+                // eles não serão renderizados na tela.
+                "buttons": [
+                    { extend: 'excel', title: 'Parcela_Planilha' },
+                    {
+                        extend: 'print',
+                        customize: function (win) {
+                            $(win.document.body).addClass('white-bg');
+                            $(win.document.body).css('font-size', '10px');
+                            $(win.document.body).find('table')
+                                .addClass('compact')
+                                .css('font-size', 'inherit');
+                        }
+                    }
+                ]
+            });          
+        });   
+     </script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('.dataTables-ocorrencia').DataTable({
+                "pageLength": 5,          // Define o padrão de 5 linhas
+                "lengthChange": false,    // Remove o seletoc de "Mostrar X registros"
+                "searching": false,       // Remove a caixa de pesquisa
+                "dom": 'rtp',             // 'r' (processing), 't' (table), 'p' (pagination)
+                                          // Note que removemos o 'B' (buttons), 'f' (filter) e 'l' (length)
+                "columnDefs": [
+                    {
+                        "type": "date-eu", 
+                        "targets": 0
+                    }
+                ],
+                // Os botões podem permanecer definidos, mas como removemos o 'B' do 'dom', 
+                // eles não serão renderizados na tela.
+                "buttons": [
+                    { extend: 'excel', title: 'Ocorrencia_Planilha' },
+                    {
+                        extend: 'print',
+                        customize: function (win) {
+                            $(win.document.body).addClass('white-bg');
+                            $(win.document.body).css('font-size', '10px');
+                            $(win.document.body).find('table')
+                                .addClass('compact')
+                                .css('font-size', 'inherit');
+                        }
+                    }
+                ]
+            });          
+        });   
+     </script>
 
     @if (ViewBag.Message != null)
     {

@@ -103,7 +103,7 @@
                         <h5>Solicitações de Exames</h5>
                     </div>
                     <div class="ibox-content">
-                        <h1 class="no-margins">@ViewBag.NumSolicitacoes</h1>
+                        <h1 class="no-margins">@ViewBag.NumSolicitacao</h1>
                         <small>
                             Solicitações Emitidas
                         </small>
@@ -249,7 +249,7 @@
         <div class="row">
             <div class="ibox float-e-margins">
                 <div class="ibox-title">
-                    <h5>Informações do Paciente</h5>
+                    <h5>Conteúdo da Área do Paciente</h5>
                 </div>
                 <div class="ibox-content" style="height: 2100px">
                     @if (!ViewData.ModelState.IsValid)
@@ -434,10 +434,7 @@
                                     </div>
                                 </div>
                             </div>
-                        </div>                          
-  
-                        @*Atestados*@
-                        <div class="col-lg-6 col-md-6 col-xs-12">
+                       
                             <div class="col-lg-12 col-md-12 col-xs-12 ibox float-e-margins" style="border-bottom: solid; border-bottom-color: darkblue; border-bottom-width: 2px; border-left: solid; border-left-color: darkblue; border-left-width: 1px; border-right: solid; border-right-color: darkblue; border-right-width: 1px; border-top: solid; border-top-color: darkblue; border-top-width: 1px">
                                 <div class="ibox-title">
                                     <h4>Atestados</h4>
@@ -503,12 +500,7 @@
                                     </div>
                                 </div>
                             </div>
-                        </div>                          
-                    </div>
-
-                    <div class="row">
-                        @*Solicitacoes*@
-                        <div class="col-lg-6 col-md-6 col-xs-12">
+                        
                             <div class="col-lg-12 col-md-12 col-xs-12 ibox float-e-margins" style="border-bottom: solid; border-bottom-color: darkblue; border-bottom-width: 2px; border-left: solid; border-left-color: darkblue; border-left-width: 1px; border-right: solid; border-right-color: darkblue; border-right-width: 1px; border-top: solid; border-top-color: darkblue; border-top-width: 1px">
                                 <div class="ibox-title">
                                     <h4>Solicitações de Exames</h4>
@@ -522,7 +514,7 @@
                                                 <a href="@Url.Action("ExibirSolicitacaoAnterior", "AreaPaciente")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Exibir as solicitações de exames emitidas nos anos anteriores" id="emp" class="btn btn-sm btn-warning btn-loading3" OnClick = "Fade()">Anos Anteriores</a>                
                                                 <a href="@Url.Action("ExibirSolicitacaoTodos", "AreaPaciente")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Exibir todas as solicitações de exames" id="emp" class="btn btn-sm btn-warning btn-loading3" OnClick = "Fade()">Exibir Todas</a>                
                                             </div>
-                                        </div>de exames
+                                        </div>
                                         <br /><br />
                                         @if (ViewBag.Solicitacoes != null && (ViewBag.Solicitacoes as List<EntitiesServices.Model.PACIENTE_SOLICITACAO>).Count > 0) 
                                         {
@@ -574,9 +566,7 @@
                                     </div>
                                 </div>
                             </div>
-                        </div>                          
 
-                        <div class="col-lg-6 col-md-6 col-xs-12">
                             <div class="col-lg-12 col-md-12 col-xs-12 ibox float-e-margins" style="border-bottom: solid; border-bottom-color: darkblue; border-bottom-width: 2px; border-left: solid; border-left-color: darkblue; border-left-width: 1px; border-right: solid; border-right-color: darkblue; border-right-width: 1px; border-top: solid; border-top-color: darkblue; border-top-width: 1px">
                                 <div class="ibox-title">
                                     <h4>Prescrições</h4>
@@ -639,6 +629,170 @@
                                             </div>
                                         }
                                         <span id="loadingIndicator4" style="display: none; margin-left: 10px; color: #007bff;">
+                                            <i class="fa fa-spinner fa-spin"></i> Processando...
+                                        </span>
+
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-lg-12 col-md-12 col-xs-12 ibox float-e-margins" style="border-bottom: solid; border-bottom-color: darkblue; border-bottom-width: 2px; border-left: solid; border-left-color: darkblue; border-left-width: 1px; border-right: solid; border-right-color: darkblue; border-right-width: 1px; border-top: solid; border-top-color: darkblue; border-top-width: 1px">
+                                <div class="ibox-title">
+                                    <h4>Locações</h4>
+                                </div>
+                                <div class="ibox-content">
+                                    <div class="row">
+
+                                        <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                            <div class="col-lg-12 col-md-12 col-xs-12">
+                                                <a href="@Url.Action("ExibirLocacaoAtiva", "AreaPaciente")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Exibir as locações ativas" id="emp" class="btn btn-sm btn-warning btn-loading5" OnClick = "Fade()">Locações Ativas</a>                
+                                                <a href="@Url.Action("ExibirLocacaoTodos", "AreaPaciente")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Exibir todas as locações" id="emp" class="btn btn-sm btn-warning btn-loading5" OnClick = "Fade()">Exibir Todas</a>                
+                                            </div>
+                                        </div>
+                                        <br /><br />
+                                        @if (ViewBag.Locacoes != null && (ViewBag.Locacoes as List<EntitiesServices.Model.LOCACAO>).Count > 0) 
+                                        {
+                                            <table class="table table-striped table-bordered table-hover dataTables-locacao">
+                                                <thead style="background-color:lightsteelblue">
+                                                    <tr>
+                                                        <th style="width: auto">Início</th>
+                                                        <th style="width: auto">Final</th>
+                                                        <th style="width: auto">Identificador</th>
+                                                        <th style="width: auto">Status</th>
+                                                        <th class="td-one-action">Ações</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @foreach (var cond in (ViewBag.Locacoes as List<EntitiesServices.Model.LOCACAO>).OrderByDescending(p => p.LOCA_DT_INICIO.Value.Date))
+                                                    {   
+                                                        <tr  style="background-color: gainsboro">
+                                                            <td>
+                                                                <span style="display:none; width: auto">@cond.LOCA_DT_INICIO.Value.ToString("yyyyMMdd")</span>
+                                                                @cond.LOCA_DT_INICIO.Value.ToString("dd/MM/yyyy")
+                                                            </td>
+                                                            <td>
+                                                                <span style="display:none; width: auto">@cond.LOCA_DT_FINAL.Value.ToString("yyyyMMdd")</span>
+                                                                @cond.LOCA_DT_FINAL.Value.ToString("dd/MM/yyyy")
+                                                            </td>
+                                                            <td style="width: auto">@cond.LOCA_GU_GUID</td>
+                                                            @if (cond.LOCA_IN_STATUS == 1)
+                                                            {
+                                                                <td style="width: auto"><span class="badge badge-primary">Ativa</span></td>
+
+                                                            }
+                                                            else if (cond.LOCA_IN_STATUS == 2)
+                                                            {
+                                                                <td style="width: auto"><span class="badge badge-success">Encerrada</span></td>
+
+                                                            }
+                                                            else if (cond.LOCA_IN_STATUS == 3)
+                                                            {
+                                                                <td style="width: auto"><span class="badge badge-danger">Vencida</span></td>
+
+                                                            }
+                                                            else if (cond.LOCA_IN_STATUS == 4)
+                                                            {
+                                                                <td style="width: auto"><span class="badge badge-danger">Cancelada</span></td>
+
+                                                            }
+                                                            else if (cond.LOCA_IN_STATUS == 0)
+                                                            {
+                                                                <td style="width: auto"><span class="badge badge-warning">Pendente</span></td>
+
+                                                            }
+                                                            else 
+                                                            {
+                                                                <td style="width: auto"><span class="badge badge-warning">-</span></td>
+
+                                                            }
+                                                            <td style="width: auto" class="td-one-action">
+                                                                @Html.TableLinkDetails(cond.LOCA_CD_ID, "VerLocacao", "fa-search", "Ver Locacao")
+                                                            </td>
+                                                        </tr>
+                                                    }
+                                                </tbody>
+                                            </table>
+                                        }
+                                        else
+                                        {
+                                            <div class="row">
+                                                <div class="col-lg-1 col-md-1 col-xs-12">
+                                                </div>
+                                                <div style="border: 5px solid #F6A54A; padding: 10px; border-radius: 8px 8px; " class="col-lg-10 col-md-10 col-xs-8">
+                                                    <h4 style="font-weight: bold">Nenhuma locação ativa para este paciente na seleção especificada</h4>
+                                                </div>
+                                                <div class="col-lg-1 col-md-1 col-xs-12">
+                                                </div>
+                                            </div>
+                                        }
+                                        <span id="loadingIndicator5" style="display: none; margin-left: 10px; color: #007bff;">
+                                            <i class="fa fa-spinner fa-spin"></i> Processando...
+                                        </span>
+
+                                    </div>
+                                </div>
+                            </div>
+                         </div>                          
+  
+                    </div>
+
+                    <div class="row">
+                        @*Noticias*@
+                        <div class="col-lg-6 col-md-6 col-xs-12">
+                            <div class="col-lg-12 col-md-12 col-xs-12 ibox float-e-margins" style="border-bottom: solid; border-bottom-color: darkblue; border-bottom-width: 2px; border-left: solid; border-left-color: darkblue; border-left-width: 1px; border-right: solid; border-right-color: darkblue; border-right-width: 1px; border-top: solid; border-top-color: darkblue; border-top-width: 1px">
+                                <div class="ibox-title">
+                                    <h4>Notícias</h4>
+                                </div>
+                                <div class="ibox-content">
+                                    <div class="row">
+
+                                        <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                            <div class="col-lg-12 col-md-12 col-xs-12">
+                                                <a href="@Url.Action("ExibirNoticiaHoje", "AreaPaciente")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Exibir as notícias publicadas hoje" id="emp" class="btn btn-sm btn-warning btn-loading2" OnClick = "Fade()">Publicadas Hoje</a>                
+                                                <a href="@Url.Action("ExibirNoticiaTodos", "AreaPaciente")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Exibir todas as notícias" id="emp" class="btn btn-sm btn-warning btn-loading8" OnClick = "Fade()">Exibir Todas</a>                
+                                            </div>
+                                        </div>
+                                        <br /><br />
+                                        @if (ViewBag.Noticias != null && (ViewBag.Noticias as List<EntitiesServices.Model.NOTICIA>).Count > 0) 
+                                        {
+                                            foreach (var cond in (ViewBag.Noticias as List<EntitiesServices.Model.NOTICIA>).OrderByDescending(p => p.NOTC_DT_EMISSAO.Value.Date))
+                                            {
+                                                <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                                    <div class="col-lg-12 col-md-12 col-xs-12">
+                                                        @if (!String.IsNullOrEmpty(cond.NOTC_AQ_FOTO))
+                                                        {
+                                                            <img src="@Url.Content(cond.NOTC_AQ_FOTO)" 
+                                                                    class="img-responsive thumbnail" 
+                                                                    style="max-height: 270px; max-width: 800px; margin: 0 auto;">
+                                                        }
+                                                        else
+                                                        {
+                                                            <img src="~/Images/icon_morador.png" 
+                                                                    class="img-responsive thumbnail" 
+                                                                    style="max-height: 230px; max-width: 800px; margin: 0 auto;">
+                                                        }
+                                                    </div>
+
+
+
+
+
+                                                </div>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <div class="row">
+                                                <div class="col-lg-1 col-md-1 col-xs-12">
+                                                </div>
+                                                <div style="border: 5px solid #F6A54A; padding: 10px; border-radius: 8px 8px; " class="col-lg-10 col-md-10 col-xs-8">
+                                                    <h4 style="font-weight: bold">Nenhum notícia publicada na seleção especificada</h4>
+                                                </div>
+                                                <div class="col-lg-1 col-md-1 col-xs-12">
+                                                </div>
+                                            </div>
+                                        }
+                                        <span id="loadingIndicator8" style="display: none; margin-left: 10px; color: #007bff;">
                                             <i class="fa fa-spinner fa-spin"></i> Processando...
                                         </span>
 
@@ -793,6 +947,43 @@
             });
         });
     </script>
+    <script type="text/javascript">
+        $(document).ready(function () { 
+            $('.btn-loading5').on('click', function (e) {            
+                $(this).prop('disabled', true);
+                $(this).addClass('disabled');
+                $('#loadingIndicator5').show();
+                var tagName = $(this).prop('tagName').toLowerCase();
+                if (tagName === 'a') {
+                    e.preventDefault(); 
+                    var targetUrl = $(this).attr('href');
+                    window.location.href = targetUrl;
+
+                } else if (tagName === 'button' || tagName === 'input') {
+                    $(this).closest('form').submit();
+                }
+            });
+        });
+    </script>
+
+    <script type="text/javascript">
+        $(document).ready(function () { 
+            $('.btn-loading8').on('click', function (e) {            
+                $(this).prop('disabled', true);
+                $(this).addClass('disabled');
+                $('#loadingIndicator8').show();
+                var tagName = $(this).prop('tagName').toLowerCase();
+                if (tagName === 'a') {
+                    e.preventDefault(); 
+                    var targetUrl = $(this).attr('href');
+                    window.location.href = targetUrl;
+
+                } else if (tagName === 'button' || tagName === 'input') {
+                    $(this).closest('form').submit();
+                }
+            });
+        });
+    </script>
 
 
     <script>
@@ -919,7 +1110,7 @@
         });   
      </script>
 
-        <script type="text/javascript">
+    <script type="text/javascript">
         $(document).ready(function () {
             $('.dataTables-prescricao').DataTable({
                 "pageLength": 5,          // Define o padrão de 5 linhas
@@ -937,6 +1128,39 @@
                 // eles não serão renderizados na tela.
                 "buttons": [
                     { extend: 'excel', title: 'Prescricoes_Planilha' },
+                    {
+                        extend: 'print',
+                        customize: function (win) {
+                            $(win.document.body).addClass('white-bg');
+                            $(win.document.body).css('font-size', '10px');
+                            $(win.document.body).find('table')
+                                .addClass('compact')
+                                .css('font-size', 'inherit');
+                        }
+                    }
+                ]
+            });          
+        });   
+     </script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('.dataTables-locacao').DataTable({
+                "pageLength": 5,          // Define o padrão de 5 linhas
+                "lengthChange": false,    // Remove o seletoc de "Mostrar X registros"
+                "searching": false,       // Remove a caixa de pesquisa
+                "dom": 'rtp',             // 'r' (processing), 't' (table), 'p' (pagination)
+                                          // Note que removemos o 'B' (buttons), 'f' (filter) e 'l' (length)
+                "columnDefs": [
+                    {
+                        "type": "date-eu", 
+                        "targets": [0,1]
+                    }
+                ],
+                // Os botões podem permanecer definidos, mas como removemos o 'B' do 'dom', 
+                // eles não serão renderizados na tela.
+                "buttons": [
+                    { extend: 'excel', title: 'Locacao_Planilha' },
                     {
                         extend: 'print',
                         customize: function (win) {

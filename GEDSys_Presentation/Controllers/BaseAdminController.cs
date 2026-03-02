@@ -3990,6 +3990,7 @@ namespace ERP_Condominios_Solution.Controllers
             perf.PERF_NM_NOME = "Perfil Administrador";
             perf.PERF_SG_SIGLA = "ADM";
             perf.PERF_IN_FIXO = 1;
+            perf.PERF_IN_AREA_PACIENTE = 1;
             Int32 voltaPerf = perfApp.ValidateCreate(perf);
             PERFIL perfil = perfApp.GetItemById(perf.PERF_CD_ID);
 
@@ -4076,6 +4077,9 @@ namespace ERP_Condominios_Solution.Controllers
             map = Server.MapPath(caminho);
             Directory.CreateDirectory(Server.MapPath(caminho));
             caminho = "/Imagens/" + idAss.ToString() + "/AreaPaciente/";
+            map = Server.MapPath(caminho);
+            Directory.CreateDirectory(Server.MapPath(caminho));
+            caminho = "/Imagens/" + idAss.ToString() + "/Noticias/";
             map = Server.MapPath(caminho);
             Directory.CreateDirectory(Server.MapPath(caminho));
 

@@ -284,6 +284,7 @@ namespace ERP_Condominios_Solution.ViewModels
         public Nullable<int> PERF_IN_LOCACAO__EXCLUIR { get; set; }
         public Nullable<int> PERF_IN_LOCACAO_RENOVAR { get; set; }
         public Nullable<int> PERF_IN_LOCACAO_ENCERRAR { get; set; }
+        public Nullable<int> PERF_IN_AREA_PACIENTE { get; set; }
 
         public Nullable<int> SELECIONAR_TUDO { get; set; }
         public bool SelecionarTudo
@@ -2706,6 +2707,22 @@ namespace ERP_Condominios_Solution.ViewModels
             set
             {
                 PERF_IN_LOCACAO_ENCERRAR = (value == true) ? 1 : 0;
+            }
+        }
+
+        public bool AreaPaciente
+        {
+            get
+            {
+                if (PERF_IN_AREA_PACIENTE == 1)
+                {
+                    return true;
+                }
+                return false;
+            }
+            set
+            {
+                PERF_IN_AREA_PACIENTE = (value == true) ? 1 : 0;
             }
         }
 

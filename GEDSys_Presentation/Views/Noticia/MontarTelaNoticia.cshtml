@@ -92,7 +92,7 @@
                                     @Html.ButtonActionSubmit(text: "Filtrar", htmlAttributes: new { @class = "btn-loading1" })
                                     <a href="@Url.Action("IncluirNoticia", "Noticia")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Inclusão de uma nova notícia" class="btn btn-sm btn-primary btn-loading" id="emp" OnClick = "Fade()">Nova Notícia</a>                
                                     @Html.ButtonLinkIndex(text: "Retirar Filtro", controller: "Noticia", action: "RetirarFiltroNoticiaGeral")
-                                    @Html.ButtonLinkIndex(text: "Voltar", controller: "Paciente", action: "MontarTelapaciente")
+                                    @Html.ButtonLinkIndex(text: "Voltar", controller: "Paciente", action: "MontarTelaPaciente")
                                     <span id="loadingIndicator" style="display: none; margin-left: 10px; color: #007bff;">
                                         <i class="fa fa-spinner fa-spin"></i> Processando...
                                     </span>

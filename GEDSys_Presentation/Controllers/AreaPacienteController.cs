@@ -58,6 +58,7 @@ namespace GEDSys_Presentation.Controllers
         private readonly ITemplateEMailAppService temApp;
         private readonly IMensagemEnviadaSistemaAppService meApp;
         private readonly ITemplateSMSAppService smsApp;
+        private readonly INoticiaAppService notApp;
 
         private String msg;
         private Exception exception;
@@ -72,8 +73,9 @@ namespace GEDSys_Presentation.Controllers
         private List<PACIENTE_SOLICITACAO> listaMasterSolicitacao = new List<PACIENTE_SOLICITACAO>();
         private List<PACIENTE_PRESCRICAO> listaMasterPrescricao = new List<PACIENTE_PRESCRICAO>();
         private List<LOCACAO> listaMasterLocacao = new List<LOCACAO>();
+        private List<NOTICIA> listaMasterNoticia = new List<NOTICIA>();
 
-        public AreaPacienteController(IPacienteAppService baseApps, IConfiguracaoAppService confApps, IUsuarioAppService usuApps, IAcessoMetodoAppService aceApps, IAssinanteAppService assApps, IConfiguracaoCalendarioAppService calApps, IConfiguracaoAnamneseAppService anaApps, ILogAppService logApps, ILocacaoAppService locaApps, IAreaPacienteAppService areaApps, ITemplateEMailAppService temApps, IMensagemEnviadaSistemaAppService meApps, ITemplateSMSAppService smsApps)
+        public AreaPacienteController(IPacienteAppService baseApps, IConfiguracaoAppService confApps, IUsuarioAppService usuApps, IAcessoMetodoAppService aceApps, IAssinanteAppService assApps, IConfiguracaoCalendarioAppService calApps, IConfiguracaoAnamneseAppService anaApps, ILogAppService logApps, ILocacaoAppService locaApps, IAreaPacienteAppService areaApps, ITemplateEMailAppService temApps, IMensagemEnviadaSistemaAppService meApps, ITemplateSMSAppService smsApps, INoticiaAppService notApps)
         {
             baseApp = baseApps;
             confApp = confApps;
@@ -88,6 +90,7 @@ namespace GEDSys_Presentation.Controllers
             temApp = temApps;
             meApp = meApps;
             smsApp = smsApps;
+            notApp = notApps;
         }
 
         [HttpGet]
@@ -873,7 +876,7 @@ namespace GEDSys_Presentation.Controllers
                     listaMasterPrescricao = baseApp.GetPrescricaoByCPF(cpf);
                     Session["ListaPrescricao"] = listaMasterPrescricao;
                 }
-                listaMasterPrescricao = (List<PACIENTE_PRESCRICAO>)Session["ListaPrescricao"];
+                listaMasterPrescricao = (List<  PACIENTE_PRESCRICAO>)Session["ListaPrescricao"];
                 ViewBag.NumPrescricoes = listaMasterPrescricao.Count();
                 ViewBag.Prescricoes = listaMasterPrescricao.Where(p => p.PAPR_DT_EMISSAO_COMPLETA.Value.Year == DateTime.Today.Year).ToList();
 
@@ -881,6 +884,13 @@ namespace GEDSys_Presentation.Controllers
                 listaMasterLocacao = locaApp.GetLocacaoByCPF(cpf);
                 ViewBag.NumLocacoes = listaMasterLocacao.Count();
                 Session["ListaLocacao"] = listaMasterLocacao;
+                ViewBag.Locacoes = listaMasterLocacao.Where(p => p.LOCA_IN_STATUS == 1).ToList();
+
+                // Montar listas de noticias
+                listaMasterNoticia = CarregaNoticiaGeral();
+                ViewBag.NumNoticias= listaMasterNoticia.Count();
+                Session["ListaNoticia"] = listaMasterNoticia;
+                ViewBag.Moticias = listaMasterNoticia.Where(p => p.NOTC_DT_EMISSAO.Value.Date == DateTime.Today.Date).ToList();
 
                 // Acerta estado
                 Session["MensPaciente"] = null;
@@ -4026,12 +4036,191 @@ namespace GEDSys_Presentation.Controllers
             }
         }
 
+        public List<NOTICIA> CarregaNoticiaGeral()
+        {
+            try
+            {
+                Int32 idAss = (Int32)Session["IdAssinante"];
+                List<NOTICIA> conf = new List<NOTICIA>();
+                if (Session["NoticiaGeral"] == null)
+                {
+                    conf = notApp.GetAllItens(idAss);
+                }
+                else
+                {
+                    if ((Int32)Session["NoticiaAlterada"] == 1)
+                    {
+                        conf = notApp.GetAllItens(idAss);
+                    }
+                    else
+                    {
+                        conf = (List<NOTICIA>)Session["NoticiaGeral"];
+                    }
+                }
+                Session["NoticiaGeral"] = conf;
+                Session["NoticiaAlterada"] = 0;
+                return conf;
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "AreaPaciente";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "AreaPaciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return null;
+            }
+        }
 
+        public ActionResult ExibirLocacaoAtiva()
+        {
+            try
+            {
+                if ((String)Session["Ativa"] == null)
+                {
+                    return RedirectToAction("LogoutAreaPaciente", "AreaPaciente");
+                }
+                PACIENTE usuario = (PACIENTE)Session["UserCredentials"];
+                List<LOCACAO> listaLocacao = locaApp.GetLocacaoByCPF(usuario.PACI_NR_CPF);
+                listaMasterLocacao = listaLocacao.Where(p => p.LOCA_IN_STATUS == 1).ToList();
+                Session["ListaLocacao"] = listaMasterLocacao;
+                return RedirectToAction("MontarTelaAreaPaciente");
+            }
+            catch (Exception ex)
+            {
+                Session["MensagemLogin"] = 100;
+                Session["MensagemErro"] = ex.Message;
+                Session["Excecao"] = ex;
+                Session["TipoVolta"] = 2;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                Session["VoltaExcecao"] = "AreaPaciente";
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Exceção", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return RedirectToAction("ErroGeralAreaPaciente", "AreaPaciente");
+            }
+        }
 
+        public ActionResult ExibirLocacaoTodos()
+        {
+            try
+            {
+                if ((String)Session["Ativa"] == null)
+                {
+                    return RedirectToAction("LogoutAreaPaciente", "AreaPaciente");
+                }
+                PACIENTE usuario = (PACIENTE)Session["UserCredentials"];
+                List<LOCACAO> listaLocacao = locaApp.GetLocacaoByCPF(usuario.PACI_NR_CPF);
+                listaMasterLocacao = listaLocacao.ToList();
+                Session["ListaLocacao"] = listaMasterLocacao;
+                return RedirectToAction("MontarTelaAreaPaciente");
+            }
+            catch (Exception ex)
+            {
+                Session["MensagemLogin"] = 100;
+                Session["MensagemErro"] = ex.Message;
+                Session["Excecao"] = ex;
+                Session["TipoVolta"] = 2;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                Session["VoltaExcecao"] = "AreaPaciente";
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "AreaPaciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return RedirectToAction("ErroGeralAreaPaciente", "AreaPaciente");
+            }
+        }
 
+        [HttpGet]
+        public ActionResult VerLocacao(Int32 id)
+        {
+            try
+            {
+                // Verifica se tem usuario logado
+                if ((String)Session["Ativa"] == null)
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+                Int32 idAss = (Int32)Session["IdAssinante"];
+                PACIENTE paciente = (PACIENTE)Session["UserCredentials"];
+                USUARIO usuario = usuApp.GetItemById(paciente.USUA_CD_ID.Value);
 
+                // Configuração
+                CONFIGURACAO conf = confApp.GetItemById(paciente.ASSI_CD_ID);
 
+                // Prepara view
+                LOCACAO item = locaApp.GetItemById(id);
+                LocacaoViewModel vm = Mapper.Map<LOCACAO, LocacaoViewModel>(item);
+                Session["IdLocacao"] = item.LOCA_CD_ID;
+                Session["Locacao"] = item;
+                Session["IdPaciente"] = paciente.PACI__CD_ID;
 
+                // Grava Acesso
+                ControleAcessoMetodo grava = new ControleAcessoMetodo(aceApp);
+                Int32 voltaX = grava.GravaAcesso(usuario.USUA_CD_ID, paciente.ASSI_CD_ID, "LOCACAO_VER", "AreaPaciente", "VerLocacao");
+                return View(vm);
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "AreaPaciente";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "AreaPaciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return RedirectToAction("TrataExcecao", "BaseAdmin");
+            }
+        }
+
+        public ActionResult ImprimirContratoLocacaoDireto()
+        {
+            LOCACAO loca = locaApp.GetItemById((Int32)Session["IdLocacao"]);
+            Session["VoltaContrato"] = 2;
+            if (loca.LOCA_IN_ASSINADO_DIGITAL == 1)
+            {
+                return RedirectToAction("GerarContratoPDFAssina", "Locacao");
+            }
+            return RedirectToAction("GerarContratoPDF", "Locacao");
+        }
+
+        public ActionResult VoltarAnexoAreaPaciente()
+        {
+            if ((String)Session["Ativa"] == null)
+            {
+                return RedirectToAction("Logout", "ControleAcesso");
+            }
+            Session["VoltaTela"] = 1;
+            return RedirectToAction("VerLocacao", new { id = (Int32)Session["IdLocacao"] });
+        }
+
+        public ActionResult ImprimirDistratoLocacaoDireto()
+        {
+            LOCACAO loca = locaApp.GetItemById((Int32)Session["IdLocacao"]);
+            Session["VoltaContrato"] = 2;
+            if (loca.LOCA_IN_ASSINADO_DIGITAL == 1)
+            {
+                return RedirectToAction("GerarDistratoPDFAssina", "Locacao");
+            }
+            return RedirectToAction("GerarDistratoPDF", "Locacao");
+        }
+
+        public ActionResult ImprimirEncerraLocacaoDireto()
+        {
+            LOCACAO loca = locaApp.GetItemById((Int32)Session["IdLocacao"]);
+            Session["VoltaContrato"] = 2;
+            if (loca.LOCA_IN_ASSINADO_DIGITAL == 1)
+            {
+                return RedirectToAction("GerarEncerraPDFAssina", "Locacao");
+            }
+            return RedirectToAction("GerarEncerraPDF", "Locacao");
+        }
+
+        public ActionResult CarregarContratoDireto()
+        {
+            LOCACAO loca = locaApp.GetItemById((Int32)Session["IdLocacao"]);
+            Session["VoltaContrato"] = 2;
+            return RedirectToAction("CarregarContrato", "Locacao");
+        }
 
     }
 }

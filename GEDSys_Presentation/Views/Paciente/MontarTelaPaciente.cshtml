@@ -159,21 +159,11 @@
                     {
                         <a href="@Url.Action("MontarTelaHistoricoGeral", "Paciente")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acesso aos históricos de todos os pacientes" class="btn btn-sm btn-warning btn-loading" id="emp" OnClick = "Fade()">Histórico dos Pacientes</a>                
                     }
-                    @*@if ((Int32)Session["PermFinanceiro"] == 1)
+                    @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_AREA_PACIENTE == 1)
                     {
-                        if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_ACESSO_FINANCEIRO == 1)
-                        {
-                            <a href="@Url.Action("MontarTelaFinanceiro", "Financeiro")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acesso ao Dashboard Financeiro" class="btn btn-sm btn-primary btn-loading" id="emp" OnClick = "Fade()">Financeiro</a>                
-                        }
+                        <a href="@Url.Action("MontarTelaAreaVerPaciente", "AreaPaciente")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acesso às informações da área do paciente" class="btn btn-sm btn-success btn-loading" id="emp" OnClick = "Fade()">Histórico dos Pacientes</a>                
                     }
-                    @if ((Int32)Session["PermMensageria"] == 1)
-                    {
-                        if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_ACESSO_MENSAGEM == 1)
-                        {
-                            <a href="@Url.Action("MontarTelaMensagemEMail", "Mensagem")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acesso ao Dashboard de Mensagens de e-mail" class="btn btn-sm btn-primary" id="emp" OnClick = "Fade()">Mensageria</a>                
-                        }
-                    }*@
-                    <a href="@Url.Action((String)Session["AjudaNivel"])"  class="btn btn-sm btn-danger" target="_blank" >Ajuda</a>                
+                    <a href="@Url.Action((String)Session["AjudaNivel"])"  class="btn btn-sm btn-danger" target="_blank" >Ajuda</a>               
                     <span id="loadingIndicator" style="display: none; margin-left: 10px; color: #007bff;">
                         <i class="fa fa-spinner fa-spin"></i> Processando...
                     </span>

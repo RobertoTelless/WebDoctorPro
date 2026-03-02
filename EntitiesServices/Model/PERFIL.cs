@@ -291,6 +291,7 @@ namespace EntitiesServices.Model
         public Nullable<int> PERF_IN_LOCACAO__EXCLUIR { get; set; }
         public Nullable<int> PERF_IN_LOCACAO_RENOVAR { get; set; }
         public Nullable<int> PERF_IN_LOCACAO_ENCERRAR { get; set; }
+        public Nullable<int> PERF_IN_AREA_PACIENTE { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<USUARIO> USUARIO { get; set; }

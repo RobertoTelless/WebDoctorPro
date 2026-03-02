@@ -5078,6 +5078,7 @@
           <Property Name="PERF_IN_LOCACAO__EXCLUIR" Type="int" />
           <Property Name="PERF_IN_LOCACAO_RENOVAR" Type="int" />
           <Property Name="PERF_IN_LOCACAO_ENCERRAR" Type="int" />
+          <Property Name="PERF_IN_AREA_PACIENTE" Type="int" />
         </EntityType>
         <EntityType Name="PERIODICIDADE">
           <Key>
@@ -25486,6 +25487,7 @@
           <Property Name="PERF_IN_LOCACAO__EXCLUIR" Type="Int32" />
           <Property Name="PERF_IN_LOCACAO_RENOVAR" Type="Int32" />
           <Property Name="PERF_IN_LOCACAO_ENCERRAR" Type="Int32" />
+          <Property Name="PERF_IN_AREA_PACIENTE" Type="Int32" />
         </EntityType>
         <EntityType Name="PERIODICIDADE">
           <Key>
@@ -45925,6 +45927,7 @@
           <EntitySetMapping Name="PERFIL">
             <EntityTypeMapping TypeName="CRMSysDBModel.PERFIL">
               <MappingFragment StoreEntitySet="PERFIL">
+                <ScalarProperty Name="PERF_IN_AREA_PACIENTE" ColumnName="PERF_IN_AREA_PACIENTE" />
                 <ScalarProperty Name="PERF_IN_LOCACAO_ENCERRAR" ColumnName="PERF_IN_LOCACAO_ENCERRAR" />
                 <ScalarProperty Name="PERF_IN_LOCACAO_RENOVAR" ColumnName="PERF_IN_LOCACAO_RENOVAR" />
                 <ScalarProperty Name="PERF_IN_LOCACAO__EXCLUIR" ColumnName="PERF_IN_LOCACAO__EXCLUIR" />

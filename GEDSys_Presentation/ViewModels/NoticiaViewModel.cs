@@ -24,11 +24,13 @@ namespace ERP_Condominios_Solution.ViewModels
         [Required(ErrorMessage = "Campo AUTOR obrigatorio")]
         [StringLength(500, MinimumLength = 1, ErrorMessage = "O AUTOR deve ter no minimo 1 caractere e no máximo 500.")]
         public string NOTC_NM_AUTOR { get; set; }
+        [DataType(DataType.Date, ErrorMessage = "DATA DE AUTORIA Deve ser uma data válida")]
         public Nullable<System.DateTime> NOTC_DT_DATA_AUTOR { get; set; }
         public string NOTC_TX_TEXTO { get; set; }
         [StringLength(250, ErrorMessage = "O NOME DO ARQUIVO deve ter máximo 250 caracteres.")]
         public string NOTC_AQ_ARQUIVO { get; set; }
         [StringLength(250, ErrorMessage = "O NOME DO LINK deve ter máximo 250 caracteres.")]
+        [RegularExpression(@"^(https?|ftp):\/\/[^\s\/$.?#].[^\s]*$", ErrorMessage = "URL inválida")]
         public string NOTC_LK_LINK { get; set; }
         public Nullable<int> NOTC_NR_ACESSO { get; set; }
         public Nullable<int> NOTC_IN_ATIVO { get; set; }

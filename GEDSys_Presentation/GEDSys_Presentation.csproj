@@ -5394,6 +5394,9 @@
     <Content Include="Views\AreaPaciente\EnviarInformacaoConsulta.cshtml" />
     <Content Include="Views\AreaPaciente\MontarTelaEnvioDocumento.cshtml" />
     <Content Include="Views\Noticia\MontarTelaNoticia.cshtml" />
+    <Content Include="Views\Noticia\IncluirNoticia.cshtml" />
+    <Content Include="Views\Noticia\EditarNoticia.cshtml" />
+    <Content Include="Views\AreaPaciente\VerLocacao.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -5579,6 +5582,7 @@
     <Folder Include="Imagens\1\Mensagem\458\Anexos\" />
     <Folder Include="Imagens\1\Mensagem\493\Anexos\" />
     <Folder Include="Imagens\1\Mensagem\494\Anexos\" />
+    <Folder Include="Imagens\1\Noticias\" />
     <Folder Include="Imagens\1\Pacientes\106\Atestado\" />
     <Folder Include="Imagens\1\Pacientes\106\Consultas\" />
     <Folder Include="Imagens\1\Pacientes\106\Exames\" />
@@ -6428,6 +6432,7 @@
     <Folder Include="Imagens\35\Locacao\" />
     <Folder Include="Imagens\35\Medico\35\Anexos\" />
     <Folder Include="Imagens\35\Mensagem\" />
+    <Folder Include="Imagens\35\Noticias\" />
     <Folder Include="Imagens\35\Pacientes\46\Atestado\" />
     <Folder Include="Imagens\35\Pacientes\46\Consultas\" />
     <Folder Include="Imagens\35\Pacientes\46\Exames\" />
@@ -6480,6 +6485,7 @@
     <Folder Include="Imagens\36\Locacao\" />
     <Folder Include="Imagens\36\Medico\" />
     <Folder Include="Imagens\36\Mensagem\" />
+    <Folder Include="Imagens\36\Noticias\" />
     <Folder Include="Imagens\36\Pacientes\" />
     <Folder Include="Imagens\36\Pagamento\" />
     <Folder Include="Imagens\36\Recebimento\" />
@@ -6488,6 +6494,7 @@
     <Folder Include="Imagens\85\Empresa\60\Anexos\" />
     <Folder Include="Imagens\85\Exames\" />
     <Folder Include="Imagens\85\Mensagem\" />
+    <Folder Include="Imagens\85\Noticias\" />
     <Folder Include="Imagens\85\Pacientes\" />
     <Folder Include="Imagens\85\Pagamento\" />
     <Folder Include="Imagens\85\Recebimento\" />
@@ -6500,6 +6507,7 @@
     <Folder Include="Imagens\86\Locacao\" />
     <Folder Include="Imagens\86\Medico\" />
     <Folder Include="Imagens\86\Mensagem\" />
+    <Folder Include="Imagens\86\Noticias\" />
     <Folder Include="Imagens\86\Pacientes\" />
     <Folder Include="Imagens\86\Pagamento\" />
     <Folder Include="Imagens\86\Produto\" />
@@ -6514,6 +6522,7 @@
     <Folder Include="Imagens\87\Locacao\" />
     <Folder Include="Imagens\87\Medico\" />
     <Folder Include="Imagens\87\Mensagem\" />
+    <Folder Include="Imagens\87\Noticias\" />
     <Folder Include="Imagens\87\Pacientes\" />
     <Folder Include="Imagens\87\Pagamento\" />
     <Folder Include="Imagens\87\Produto\" />
@@ -6528,6 +6537,7 @@
     <Folder Include="Imagens\88\Locacao\" />
     <Folder Include="Imagens\88\Medico\" />
     <Folder Include="Imagens\88\Mensagem\" />
+    <Folder Include="Imagens\88\Noticias\" />
     <Folder Include="Imagens\88\Pacientes\" />
     <Folder Include="Imagens\88\Pagamento\" />
     <Folder Include="Imagens\88\Produto\" />

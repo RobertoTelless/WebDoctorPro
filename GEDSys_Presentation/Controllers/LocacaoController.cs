@@ -241,6 +241,7 @@ namespace GEDSys_Presentation.Controllers
                 Session["TipoSolicitacao"] = 98;
                 Session["VoltaProduto"] = 71;
                 Session["VoltarLocacaoBase"] = 5;
+                Session["VoltaContrato"] = 1;
 
                 objeto = new LOCACAO();
                 return View(objeto);
@@ -1717,6 +1718,7 @@ namespace GEDSys_Presentation.Controllers
                 Session["MensProduto"] = null;
                 Session["MensLocacao"] = null;
                 Session["VoltaLocacaoParcela"] = 1;
+                Session["VoltaContrato"] = 1;
 
                 LOCACAO item = baseApp.GetItemById(id);
                 Session["IdPaciente"] = item.PACI_CD_ID;
@@ -7171,9 +7173,6 @@ namespace GEDSys_Presentation.Controllers
         {
             try
             {
-                Int32 idAss = (Int32)Session["IdAssinante"];
-                USUARIO usuario = (USUARIO)Session["UserCredentials"];
-
                 // Prepara geração
                 CONFIGURACAO conf = CarregaConfiguracaoGeral();
                 String data = DateTime.Today.Date.ToShortDateString();
@@ -7185,7 +7184,9 @@ namespace GEDSys_Presentation.Controllers
                 PACIENTE paciente = pacApp.GetItemById(locacao.PACI_CD_ID);
                 PRODUTO produto = prodApp.GetItemById(locacao.PROD_CD_ID);
                 String nomeRel = "Contrato_Locacao" + paciente.PACI_NM_NOME + "_" + locacao.LOCA_GU_GUID + ".pdf";
-                
+                USUARIO usuario = usuApp.GetItemById(paciente.USUA_CD_ID.Value);
+                Int32 idAss = paciente.ASSI_CD_ID;
+
                 EMPRESA empresa = empApp.GetItemById(usuario.EMPR_CD_ID.Value);
                 String token = locacao.LOCA_TK_TOKEN;
 
@@ -7911,6 +7912,10 @@ namespace GEDSys_Presentation.Controllers
                 Response.Write(pdfDoc);
                 Response.End();
 
+                if ((Int32)Session["VoltaContrato"] == 2)
+                {
+                    return RedirectToAction("VoltarAnexoAreaPaciente", "AreaPaciente");
+                }
                 if ((Int32)Session["VoltaPrintLocacao"] == 2)
                 {
                     return RedirectToAction("VoltarAnexoProduto", "Produto");
@@ -7934,9 +7939,6 @@ namespace GEDSys_Presentation.Controllers
         {
             try
             {
-                Int32 idAss = (Int32)Session["IdAssinante"];
-                USUARIO usuario = (USUARIO)Session["UserCredentials"];
-
                 // Prepara geração
                 CONFIGURACAO conf = CarregaConfiguracaoGeral();
                 String data = DateTime.Today.Date.ToShortDateString();
@@ -7948,7 +7950,9 @@ namespace GEDSys_Presentation.Controllers
                 PACIENTE paciente = pacApp.GetItemById(locacao.PACI_CD_ID);
                 PRODUTO produto = prodApp.GetItemById(locacao.PROD_CD_ID);
                 String nomeRel = "Contrato_Locacao" + paciente.PACI_NM_NOME + "_" + locacao.LOCA_GU_GUID + ".pdf";
-                
+                USUARIO usuario = usuApp.GetItemById(paciente.USUA_CD_ID.Value);
+                Int32 idAss = paciente.ASSI_CD_ID;
+
                 EMPRESA empresa = empApp.GetItemById(usuario.EMPR_CD_ID.Value);
                 String token = locacao.LOCA_TK_TOKEN;
 
@@ -8691,6 +8695,10 @@ namespace GEDSys_Presentation.Controllers
                 Response.Cache.SetCacheability(HttpCacheability.NoCache);
                 Response.Write(pdfDoc);
                 Response.End();
+                if ((Int32)Session["VoltaContrato"] == 2)
+                {
+                    return RedirectToAction("VoltarAnexoAreaPaciente", "AreaPaciente");
+                }
                 return RedirectToAction("VoltarAnexoLocacao");
             }
             catch (Exception ex)
@@ -8731,6 +8739,8 @@ namespace GEDSys_Presentation.Controllers
         public ActionResult ImprimirContratoLocacaoDireto()
         {
             LOCACAO loca = baseApp.GetItemById((Int32)Session["IdLocacao"]);
+            Session["VoltaContrato"] = 1;
+
             if (loca.LOCA_IN_ASSINADO_DIGITAL == 1)
             {
                 return RedirectToAction("GerarContratoPDFAssina");
@@ -9143,9 +9153,6 @@ namespace GEDSys_Presentation.Controllers
         {
             try
             {
-                Int32 idAss = (Int32)Session["IdAssinante"];
-                USUARIO usuario = (USUARIO)Session["UserCredentials"];
-
                 // Prepara geração
                 CONFIGURACAO conf = CarregaConfiguracaoGeral();
                 String data = DateTime.Today.Date.ToShortDateString();
@@ -9157,7 +9164,9 @@ namespace GEDSys_Presentation.Controllers
                 PACIENTE paciente = pacApp.GetItemById(locacao.PACI_CD_ID);
                 PRODUTO produto = prodApp.GetItemById(locacao.PROD_CD_ID);
                 String nomeRel = "Distrato_Locacao" + paciente.PACI_NM_NOME + "_" + locacao.LOCA_GU_GUID + ".pdf";
-                
+                USUARIO usuario = usuApp.GetItemById(paciente.USUA_CD_ID.Value);
+                Int32 idAss = paciente.ASSI_CD_ID;
+
                 EMPRESA empresa = empApp.GetItemById(usuario.EMPR_CD_ID.Value);
                 String token = locacao.LOCA_TK_TOKEN;
 
@@ -9738,6 +9747,10 @@ namespace GEDSys_Presentation.Controllers
                 Response.Write(pdfDoc);
                 Response.End();
 
+                if ((Int32)Session["VoltaContrato"] == 2)
+                {
+                    return RedirectToAction("VoltarAnexoAreaPaciente", "AreaPaciente");
+                }
                 if ((Int32)Session["VoltaPrintLocacao"] == 2)
                 {
                     return RedirectToAction("VoltarAnexoProduto", "Produto");
@@ -9761,9 +9774,6 @@ namespace GEDSys_Presentation.Controllers
         {
             try
             {
-                Int32 idAss = (Int32)Session["IdAssinante"];
-                USUARIO usuario = (USUARIO)Session["UserCredentials"];
-
                 // Prepara geração
                 CONFIGURACAO conf = CarregaConfiguracaoGeral();
                 String data = DateTime.Today.Date.ToShortDateString();
@@ -9775,7 +9785,9 @@ namespace GEDSys_Presentation.Controllers
                 PACIENTE paciente = pacApp.GetItemById(locacao.PACI_CD_ID);
                 PRODUTO produto = prodApp.GetItemById(locacao.PROD_CD_ID);
                 String nomeRel = "Distrato_Locacao" + paciente.PACI_NM_NOME + "_" + locacao.LOCA_GU_GUID + ".pdf";
-                
+                USUARIO usuario = usuApp.GetItemById(paciente.USUA_CD_ID.Value);
+                Int32 idAss = paciente.ASSI_CD_ID;
+
                 EMPRESA empresa = empApp.GetItemById(usuario.EMPR_CD_ID.Value);
                 String token = locacao.LOCA_TK_TOKEN;
 
@@ -10374,6 +10386,10 @@ namespace GEDSys_Presentation.Controllers
                 Response.Write(pdfDoc);
                 Response.End();
 
+                if ((Int32)Session["VoltaContrato"] == 2)
+                {
+                    return RedirectToAction("VoltarAnexoAreaPaciente", "AreaPaciente");
+                }
                 if ((Int32)Session["VoltaPrintLocacao"] == 2)
                 {
                     return RedirectToAction("VoltarAnexoProduto", "Produto");
@@ -13459,9 +13475,6 @@ namespace GEDSys_Presentation.Controllers
         {
             try
             {
-                Int32 idAss = (Int32)Session["IdAssinante"];
-                USUARIO usuario = (USUARIO)Session["UserCredentials"];
-
                 // Prepara geração
                 CONFIGURACAO conf = CarregaConfiguracaoGeral();
                 String data = DateTime.Today.Date.ToShortDateString();
@@ -13473,7 +13486,9 @@ namespace GEDSys_Presentation.Controllers
                 PACIENTE paciente = pacApp.GetItemById(locacao.PACI_CD_ID);
                 PRODUTO produto = prodApp.GetItemById(locacao.PROD_CD_ID);
                 String nomeRel = "Encerra_Locacao" + paciente.PACI_NM_NOME + "_" + locacao.LOCA_GU_GUID + ".pdf";
-                
+                USUARIO usuario = usuApp.GetItemById(paciente.USUA_CD_ID.Value);
+                Int32 idAss = paciente.ASSI_CD_ID;
+
                 EMPRESA empresa = empApp.GetItemById(usuario.EMPR_CD_ID.Value);
                 String token = locacao.LOCA_TK_TOKEN;
 
@@ -14054,6 +14069,10 @@ namespace GEDSys_Presentation.Controllers
                 Response.Write(pdfDoc);
                 Response.End();
 
+                if ((Int32)Session["VoltaContrato"] == 2)
+                {
+                    return RedirectToAction("VoltarAnexoAreaPaciente", "AreaPaciente");
+                }
                 if ((Int32)Session["VoltaPrintLocacao"] == 2)
                 {
                     return RedirectToAction("VoltarAnexoProduto", "Produto");
@@ -14077,9 +14096,6 @@ namespace GEDSys_Presentation.Controllers
         {
             try
             {
-                Int32 idAss = (Int32)Session["IdAssinante"];
-                USUARIO usuario = (USUARIO)Session["UserCredentials"];
-
                 // Prepara geração
                 CONFIGURACAO conf = CarregaConfiguracaoGeral();
                 String data = DateTime.Today.Date.ToShortDateString();
@@ -14091,7 +14107,9 @@ namespace GEDSys_Presentation.Controllers
                 PACIENTE paciente = pacApp.GetItemById(locacao.PACI_CD_ID);
                 PRODUTO produto = prodApp.GetItemById(locacao.PROD_CD_ID);
                 String nomeRel = "Encerra_Locacao" + paciente.PACI_NM_NOME + "_" + locacao.LOCA_GU_GUID + ".pdf";
-                
+                USUARIO usuario = usuApp.GetItemById(paciente.USUA_CD_ID.Value);
+                Int32 idAss = paciente.ASSI_CD_ID;
+
                 EMPRESA empresa = empApp.GetItemById(usuario.EMPR_CD_ID.Value);
                 String token = locacao.LOCA_TK_TOKEN;
 
@@ -14690,6 +14708,10 @@ namespace GEDSys_Presentation.Controllers
                 Response.Write(pdfDoc);
                 Response.End();
 
+                if ((Int32)Session["VoltaContrato"] == 2)
+                {
+                    return RedirectToAction("VoltarAnexoAreaPaciente", "AreaPaciente");
+                }
                 if ((Int32)Session["VoltaPrintLocacao"] == 2)
                 {
                     return RedirectToAction("VoltarAnexoProduto", "Produto");
@@ -16187,34 +16209,17 @@ namespace GEDSys_Presentation.Controllers
             try
             {
                 // Verifica se tem usuario logado
-                USUARIO usuario = new USUARIO();
                 if ((String)Session["Ativa"] == null)
                 {
                     return RedirectToAction("Logout", "ControleAcesso");
                 }
-                if ((USUARIO)Session["UserCredentials"] != null)
-                {
-                    usuario = (USUARIO)Session["UserCredentials"];
-
-                    // Verfifica permissão
-                    if (usuario.PERFIL.PERF_IN_LOCACAO__EXCLUIR == 0)
-                    {
-                        Session["MensPermissao"] = 2;
-                        Session["ModuloPermissao"] = "Locação - Contrato";
-                        return RedirectToAction("VoltarAnexoLocacao");
-                    }
-                }
-                else
-                {
-                    return RedirectToAction("Logout", "ControleAcesso");
-                }
-                Int32 idAss = (Int32)Session["IdAssinante"];
-                USUARIO usuarioLogado = (USUARIO)Session["UserCredentials"];
 
                 // Recupera informações
                 LOCACAO item = baseApp.GetItemById((Int32)Session["IdLocacao"] );
                 PACIENTE pac = pacApp.GetItemById((Int32)Session["IdPaciente"]);
                 ViewBag.NomePaciente = pac.PACI_NM_NOME;
+                USUARIO usuario = usuApp.GetItemById(pac.USUA_CD_ID.Value);
+                Int32 idAss = pac.ASSI_CD_ID;
 
                 if (Session["MensLocacao"] != null)
                 {
@@ -16278,7 +16283,7 @@ namespace GEDSys_Presentation.Controllers
                 // Recupera dados
                 LOCACAO item = baseApp.GetItemById(idNot);
                 PACIENTE pac = pacApp.GetItemById(idPac);
-                USUARIO usu = (USUARIO)Session["UserCredentials"];
+                USUARIO usu = usuApp.GetItemById(pac.USUA_CD_ID.Value);
 
                 // Criticas
                 if (file == null)
@@ -16338,6 +16343,10 @@ namespace GEDSys_Presentation.Controllers
                 // Finaliza
                 Session["NivelLocacao"] = 1;
                 Session["LocacaoAlterada"] = 1;
+                if ((Int32)Session["VoltaContrato"] == 2)
+                {
+                    return RedirectToAction("VoltarAnexoAreaPaciente", "AreaPaciente");
+                }
                 return RedirectToAction("VoltarEditarLocacao");
             }
             catch (Exception ex)
