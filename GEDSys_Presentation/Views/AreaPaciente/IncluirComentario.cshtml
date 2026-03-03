@@ -1,0 +1,164 @@
+﻿@using Presentation.Extensions
+@model ERP_Condominios_Solution.ViewModels.NoticiaComentarioViewModel
+@{
+    Layout = "~/Views/Shared/_Layout_Area.cshtml";
+    ViewBag.Title = "WebDoctor - Locacao - Anotação";
+    ViewBag.MetaDescription = "WebDoctor - Locacao - Incluir anotação na locacao";
+    ViewBag.MetaKeywords = "WebDoctor, locacao, anotacao";
+}
+
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="page-title"> 
+        <h3 class="title">Área do Paciente</h3> 
+        <br />
+        <ol class="breadcrumb">
+            <li>
+                <a href="@Url.Action("MonterTelaAreaPaciente", "AreaPaciente")">Dashboard</a>
+            </li>
+            <li>
+                <a href="@Url.Action("VoltarVerNoticia", "AreaPaciente")">Notícia - Visualização</a>
+            </li>
+            <li class="active">
+                <strong>Notícia - Comentários</strong>
+            </li>
+        </ol>
+        <br />
+    </div>
+
+    <div class="row">
+        <div class="col-lg-12 col-md-12 col-xs-12">
+            <div class="col-lg-12 col-md-12 col-xs-12 ibox float-e-margins">
+                <div class="ibox-title">
+                    <div style="text-align: center;" class="col-lg-12 col-md-12 col-xs-12">
+                        <h5>Notícia - Comentário</h5>
+                        <span style="color:green; font-weight: 500; font-size: 20px;">@ViewBag.NomePaciente</span>
+                    </div>
+                </div>
+                @using (Html.BeginForm("IncluirComentario", "AreaPaciente", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal", @id="pwd-container1" }))
+                {
+                    <div class="ibox-content">
+                        @Html.AntiForgeryToken()
+                        @if (!ViewData.ModelState.IsValid)
+                        {
+                            <div class="alert alert-danger">
+                                <button type="button" class="close" data-dismiss="alert">Fechar</button>
+                                @Html.ValidationSummary(false, "Erros Encontrados:", new { @class = "text-danger" })
+                            </div>
+                        }
+                        <div class="form-group">
+                            @Html.ButtonActionSubmit(text: "Confirma Novo Comentário", htmlAttributes: new { @class = "btn-loading1" })
+                            @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarVerNoticia", controller: "AreaPaciente", htmlAttributes: new { @class = "btn-loading" })
+                            <span id="loadingIndicator" style="display: none; margin-left: 10px; color: #007bff;">
+                                <i class="fa fa-spinner fa-spin"></i> Processando...
+                            </span>
+                        </div>
+                        <div class="row">
+                            <div class="form-group">
+                                <div class="col-lg-12 col-md-12 col-sm-12">
+                                    <br />
+                                    @if (!String.IsNullOrEmpty(Model.PACIENTE.PACI_AQ_FOTO))
+	                                {
+                                        <img src="@Url.Content(Model.PACIENTE.PACI_AQ_FOTO)" style = "width: auto; height: auto; max-height: 110px; max-width: 90px;">
+                                    }
+                                    else
+                                    {
+                                        <img src="~/Imagens/Base/icone_morador.png" style = "width: auto; height: auto; max-height: 110px; max-width: 90px;">
+                                    }
+                                </div>                       
+                            </div>
+                            <div class="form-group">
+                                <div class="col-lg-12 col-md-12 col-sm-12">
+                                    <div class="col-lg-2 col-md-2 col-sm-12">
+                                        @Html.HiddenFor(m => m.NOCO_IN_ATIVO)
+                                        @Html.HiddenFor(m => m.NOTC_CD_ID)
+                                        @Html.HiddenFor(m => m.USUA_CD_ID)
+                                        @Html.HiddenFor(m => m.PACI_CD_ID)
+                                        Data
+                                        @Html.TextBoxFor(m => m.NOCO_DT_COMENTARIO, "{0:dd/MM/yyyy HH:mm}", new { @class = "form-control", @tabindex = "-1", @readonly="readonly"})
+                                    </div>
+                                    <div class="col-lg-5 col-md-5 col-sm-12">
+                                        Nome 
+                                        @Html.TextBoxFor(m => m.PACIENTE.PACI_NM_NOME, new { @class = "form-control", @tabindex = "-1", @readonly="readonly"})
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group" style=" margin-left: -15px; margin-right: -15px;"> 
+                                <div class="col-lg-12 col-md-12 col-xs-12">
+                                    Texto do Comentário*
+                                    @Html.TextAreaFor(m => m.NOCO_DS_COMENTARIO, new { @class = "form-control", style = "width: 100%; height: 200px; overflow:auto;", autofocus = true })
+                                    @Html.ValidationMessageFor(m => m.NOCO_DS_COMENTARIO, "", new { @style = "color:red" })
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+         </div>
+    </div>
+</div>
+
+@section Styles {
+    <link href="~/Content/themes/base/jquery-ui.min.css" rel="stylesheet" />
+    <link href="~/Content/themes/base/all.css" rel="stylesheet" />  
+    @Styles.Render("~/plugins/jasnyBootstrapStyles")
+    @Styles.Render("~/Content/plugins/iCheck/iCheckStyles")
+}
+@section Scripts {
+   
+    <script src="~/Scripts/jquery-3.1.1.min.js"></script>
+    <script src="~/Scripts/jquery-ui-1.12.1.min.js"></script>
+    @Scripts.Render("~/bundles/inputmask")
+    @Scripts.Render("~/plugins/jasnyBootstrap")
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.maskedinput/1.4.1/jquery.maskedinput.js"></script>  
+
+    <script type="text/javascript">
+        $(document).ready(function () { 
+            $('.btn-loading').on('click', function (e) {            
+                $(this).prop('disabled', true);
+                $(this).addClass('disabled');
+                $('#loadingIndicator').show();
+                var tagName = $(this).prop('tagName').toLowerCase();
+                if (tagName === 'a') {
+                    e.preventDefault(); 
+                    var targetUrl = $(this).attr('href');
+                    window.location.href = targetUrl;
+
+                } else if (tagName === 'button' || tagName === 'input') {
+                    $(this).closest('form').submit();
+                }
+            });
+        });
+    </script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('.btn-loading1').on('click', function (e) {
+            
+                var $this = $(this);
+                var tagName = $this.prop('tagName').toLowerCase();
+                $this.addClass('disabled'); 
+                $('#loadingIndicator').show();
+
+                if (tagName === 'a') {
+                    e.preventDefault();
+                
+                    var targetUrl = $this.attr('href');
+                    window.location.href = targetUrl;
+                
+                } else if (tagName === 'button' || tagName === 'input') {               
+                    $this.closest('form').submit();
+                    $this.prop('disabled', true);
+                }
+            });
+        });
+    </script>
+
+    @if (ViewBag.Message != null)
+    {
+        <script type="text/javascript">
+            window.onload = function () {
+                  alert("@ViewBag.Message");
+            };
+        </script>
+    }
+}

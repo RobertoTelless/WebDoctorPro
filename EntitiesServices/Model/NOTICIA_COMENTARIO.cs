@@ -20,8 +20,10 @@ namespace EntitiesServices.Model
         public Nullable<System.DateTime> NOCO_DT_COMENTARIO { get; set; }
         public string NOCO_DS_COMENTARIO { get; set; }
         public Nullable<int> NOCO_IN_ATIVO { get; set; }
+        public Nullable<int> PACI_CD_ID { get; set; }
     
         public virtual NOTICIA NOTICIA { get; set; }
         public virtual USUARIO USUARIO { get; set; }
+        public virtual PACIENTE PACIENTE { get; set; }
     }
 }

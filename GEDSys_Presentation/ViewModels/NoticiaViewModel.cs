@@ -37,6 +37,7 @@ namespace ERP_Condominios_Solution.ViewModels
         [StringLength(250, ErrorMessage = "O NOME DO ARQUIVO deve ter máximo 250 caracteres.")]
         public string NOTC_AQ_FOTO { get; set; }
         public string NOTC_NM_ORIGEM { get; set; }
+        public Nullable<int> NOTC_IN_SISTEMA { get; set; }
 
         public virtual ASSINANTE ASSINANTE { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]

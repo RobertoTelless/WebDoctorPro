@@ -82,6 +82,7 @@
                                     @Html.HiddenFor(m => m.ASSI_CD_ID)
                                     @Html.HiddenFor(m => m.NOTC_IN_ATIVO)
                                     @Html.HiddenFor(m => m.NOTC_NR_ACESSO)
+                                    @Html.HiddenFor(m => m.NOTC_IN_SISTEMA)
                                     @Html.HiddenFor(m => m.NOTC_AQ_FOTO)
                                     Título*
                                     @Html.TextBoxFor(m => m.NOTC_NM_TITULO, new { @class = "form-control", autofocus = true, data_toggle = "popover", data_content = "Informe o título da notícia", data_trigger="hover", data_placement="top" })
@@ -97,22 +98,29 @@
                                 <div class="col-lg-2 col-md-2 col-xs-12">
                                     Data de Emissão*
                                     @Html.TextBoxFor(m => m.NOTC_DT_EMISSAO, "{0:dd/MM/yyyy}", new { @class = "form-control date-picker", @id = "dn", autofocus = true, data_toggle = "popover", data_content = "Informe a data de publicação da notícia", data_trigger="hover", data_placement="top" })
-                                    @Html.ValidationMessageFor(m => m.NOTC_DT_EMISSAO, "", new { @style = "color:red" })
+                                    @Html.ValidationMessageFor(m => m.NOTC_DT_EMISSAO, "",new { @style="color:red" })
                                 </div>
                                 <div class="col-lg-2 col-md-2 col-xs-12">
                                     Data de Validade*
                                     @Html.TextBoxFor(m => m.NOTC_DT_VALIDADE, "{0:dd/MM/yyyy}", new { @class = "form-control date-picker", @id = "dn1", autofocus = true, data_toggle = "popover", data_content = "Informe a data limite de validade da notícia", data_trigger="hover", data_placement="top" })
-                                    @Html.ValidationMessageFor(m => m.NOTC_DT_VALIDADE, "", new { @style = "color:red" })
+                                    @Html.ValidationMessageFor(m => m.NOTC_DT_VALIDADE, "",new { @style="color:red" })
                                 </div>
                                 <div class="col-lg-2 col-md-2 col-xs-12">
                                     Data de Autoria
                                     @Html.TextBoxFor(m => m.NOTC_DT_DATA_AUTOR, "{0:dd/MM/yyyy}", new { @class = "form-control date-picker", @id = "dn2", autofocus = true, data_toggle = "popover", data_content = "Informe a data da autoria da notícia", data_trigger="hover", data_placement="top" })
-                                    @Html.ValidationMessageFor(m => m.NOTC_DT_DATA_AUTOR, "", new { @style = "color:red" })
+                                    @Html.ValidationMessageFor(m => m.NOTC_DT_DATA_AUTOR, "",new { @style="color:red" })
                                 </div>
+                                <div class="col-lg-6 col-md-6 col-xs-12">
+                                    Origem
+                                    @Html.TextBoxFor(m => m.NOTC_NM_ORIGEM, new { @class = "form-control", autofocus = true, data_toggle = "popover", data_content = "Informe a origem da notícia, caso seja externa", data_trigger="hover", data_placement="top" })
+                                    @Html.ValidationMessageFor(m => m.NOTC_NM_ORIGEM, "",new { @style="color:red" })
+                                </div>
+                            </div>
+                            <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">                
                                 <div class="col-lg-6 col-md-6 col-xs-12">
                                     Link Externo
                                     @Html.TextBoxFor(m => m.NOTC_LK_LINK, new { @class = "form-control", autofocus = true, data_toggle = "popover", data_content = "Informe o link (URL) para o site original da notícia", data_trigger="hover", data_placement="top" })
-                                    @Html.ValidationMessageFor(m => m.NOTC_LK_LINK, "", new { @style = "color:red" })
+                                    @Html.ValidationMessageFor(m => m.NOTC_LK_LINK, "",new { @style="color:red" })
                                 </div>
                             </div>
                             <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">                

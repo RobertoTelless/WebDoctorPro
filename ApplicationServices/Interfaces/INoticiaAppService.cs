@@ -21,6 +21,7 @@ namespace ApplicationServices.Interfaces
         Tuple<Int32, List<NOTICIA>, Boolean> ExecuteFilter(String titulo, String autor, DateTime? data, String texto, String link, Int32 idAss);
         List<NOTICIA> GetAllItensValidos(Int32 idAss);
         NOTICIA_COMENTARIO GetComentarioById(Int32 id);
+        Int32 ValidateEditComentario(NOTICIA_COMENTARIO item);
 
     }
 }

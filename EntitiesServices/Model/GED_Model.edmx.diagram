@@ -1167,6 +1167,7 @@
         <AssociationConnector Association="CRMSysDBModel.FK_AREA_PACIENTE_LABORATORIO" />
         <AssociationConnector Association="CRMSysDBModel.FK_AREA_PACIENTE_TIPO_EXAME" />
         <AssociationConnector Association="CRMSysDBModel.FK_AREA_PACIENTE_LOCACAO" />
+        <AssociationConnector Association="CRMSysDBModel.FK_NOTICIA_COMENTARIO_PACIENTE" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

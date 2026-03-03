@@ -3798,6 +3798,7 @@
           <Property Name="NOCO_DT_COMENTARIO" Type="datetime" />
           <Property Name="NOCO_DS_COMENTARIO" Type="varchar" MaxLength="5000" />
           <Property Name="NOCO_IN_ATIVO" Type="int" />
+          <Property Name="PACI_CD_ID" Type="int" />
         </EntityType>
         <EntityType Name="NOTIFICACAO">
           <Key>
@@ -12665,6 +12666,18 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_NOTICIA_COMENTARIO_PACIENTE">
+          <End Role="PACIENTE" Type="Self.PACIENTE" Multiplicity="0..1" />
+          <End Role="NOTICIA_COMENTARIO" Type="Self.NOTICIA_COMENTARIO" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="PACIENTE">
+              <PropertyRef Name="PACI__CD_ID" />
+            </Principal>
+            <Dependent Role="NOTICIA_COMENTARIO">
+              <PropertyRef Name="PACI_CD_ID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_NOTICIA_COMENTARIO_USUARIO">
           <End Role="USUARIO" Type="Self.USUARIO" Multiplicity="1" />
           <End Role="NOTICIA_COMENTARIO" Type="Self.NOTICIA_COMENTARIO" Multiplicity="*" />
@@ -18645,6 +18658,10 @@
             <End Role="NOTICIA" EntitySet="NOTICIA" />
             <End Role="NOTICIA_COMENTARIO" EntitySet="NOTICIA_COMENTARIO" />
           </AssociationSet>
+          <AssociationSet Name="FK_NOTICIA_COMENTARIO_PACIENTE" Association="Self.FK_NOTICIA_COMENTARIO_PACIENTE">
+            <End Role="PACIENTE" EntitySet="PACIENTE" />
+            <End Role="NOTICIA_COMENTARIO" EntitySet="NOTICIA_COMENTARIO" />
+          </AssociationSet>
           <AssociationSet Name="FK_NOTICIA_COMENTARIO_USUARIO" Association="Self.FK_NOTICIA_COMENTARIO_USUARIO">
             <End Role="USUARIO" EntitySet="USUARIO" />
             <End Role="NOTICIA_COMENTARIO" EntitySet="NOTICIA_COMENTARIO" />
@@ -24083,6 +24100,8 @@
           <Property Name="NOCO_IN_ATIVO" Type="Int32" />
           <NavigationProperty Name="NOTICIA" Relationship="Self.FK_NOTICIA_COMENTARIO_NOTICIA" FromRole="NOTICIA_COMENTARIO" ToRole="NOTICIA" />
           <NavigationProperty Name="USUARIO" Relationship="Self.FK_NOTICIA_COMENTARIO_USUARIO" FromRole="NOTICIA_COMENTARIO" ToRole="USUARIO" />
+          <Property Name="PACI_CD_ID" Type="Int32" />
+          <NavigationProperty Name="PACIENTE" Relationship="CRMSysDBModel.FK_NOTICIA_COMENTARIO_PACIENTE" FromRole="NOTICIA_COMENTARIO" ToRole="PACIENTE" />
         </EntityType>
         <EntityType Name="NOTIFICACAO">
           <Key>
@@ -24383,6 +24402,7 @@
           <NavigationProperty Name="RACA" Relationship="CRMSysDBModel.FK_PACIENTE_RACA" FromRole="PACIENTE" ToRole="RACA" />
           <NavigationProperty Name="RESPOSTA_CONSULTA" Relationship="CRMSysDBModel.FK_RESPOSTA_CONSULTA_PACIENTE" FromRole="PACIENTE" ToRole="RESPOSTA_CONSULTA" />
           <NavigationProperty Name="AREA_PACIENTE" Relationship="CRMSysDBModel.FK_AREA_PACIENTE_PACIENTE" FromRole="PACIENTE" ToRole="AREA_PACIENTE" />
+          <NavigationProperty Name="NOTICIA_COMENTARIO" Relationship="CRMSysDBModel.FK_NOTICIA_COMENTARIO_PACIENTE" FromRole="PACIENTE" ToRole="NOTICIA_COMENTARIO" />
         </EntityType>
         <EntityType Name="PACIENTE_ANAMNESE">
           <Key>
@@ -39884,6 +39904,10 @@
             <End Role="LOCACAO" EntitySet="LOCACAO" />
             <End Role="AREA_PACIENTE" EntitySet="AREA_PACIENTE" />
           </AssociationSet>
+          <AssociationSet Name="FK_NOTICIA_COMENTARIO_PACIENTE" Association="CRMSysDBModel.FK_NOTICIA_COMENTARIO_PACIENTE">
+            <End Role="PACIENTE" EntitySet="PACIENTE" />
+            <End Role="NOTICIA_COMENTARIO" EntitySet="NOTICIA_COMENTARIO" />
+          </AssociationSet>
         </EntityContainer>
         <EntityType Name="PACIENTE_DADOS_EXAME_FISICO">
           <Key>
@@ -41334,6 +41358,18 @@
             </Principal>
             <Dependent Role="AREA_PACIENTE">
               <PropertyRef Name="LOCA_CD_ID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_NOTICIA_COMENTARIO_PACIENTE">
+          <End Type="CRMSysDBModel.PACIENTE" Role="PACIENTE" Multiplicity="0..1" />
+          <End Type="CRMSysDBModel.NOTICIA_COMENTARIO" Role="NOTICIA_COMENTARIO" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="PACIENTE">
+              <PropertyRef Name="PACI__CD_ID" />
+            </Principal>
+            <Dependent Role="NOTICIA_COMENTARIO">
+              <PropertyRef Name="PACI_CD_ID" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -44926,6 +44962,7 @@
           <EntitySetMapping Name="NOTICIA_COMENTARIO">
             <EntityTypeMapping TypeName="CRMSysDBModel.NOTICIA_COMENTARIO">
               <MappingFragment StoreEntitySet="NOTICIA_COMENTARIO">
+                <ScalarProperty Name="PACI_CD_ID" ColumnName="PACI_CD_ID" />
                 <ScalarProperty Name="NOCO_CD_ID" ColumnName="NOCO_CD_ID" />
                 <ScalarProperty Name="NOTC_CD_ID" ColumnName="NOTC_CD_ID" />
                 <ScalarProperty Name="USUA_CD_ID" ColumnName="USUA_CD_ID" />

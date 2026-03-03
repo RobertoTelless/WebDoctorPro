@@ -159,5 +159,27 @@ namespace ModelServices.EntitiesServices
                 }
             }
         }
+
+        public Int32 EditComentario(NOTICIA_COMENTARIO item)
+        {
+            using (DbContextTransaction transaction = Db.Database.BeginTransaction(IsolationLevel.ReadCommitted))
+            {
+                try
+                {
+                    item.USUARIO = null;
+                    NOTICIA_COMENTARIO obj = _comRepository.GetById(item.NOCO_CD_ID);
+                    _comRepository.Detach(obj);
+                    _comRepository.Update(item);
+                    transaction.Commit();
+                    return 0;
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    throw ex;
+                }
+            }
+        }
+
     }
 }

@@ -52,6 +52,7 @@ namespace EntitiesServices.Model
             this.LOCACAO = new HashSet<LOCACAO>();
             this.RESPOSTA_CONSULTA = new HashSet<RESPOSTA_CONSULTA>();
             this.AREA_PACIENTE = new HashSet<AREA_PACIENTE>();
+            this.NOTICIA_COMENTARIO = new HashSet<NOTICIA_COMENTARIO>();
         }
     
         public int PACI__CD_ID { get; set; }
@@ -203,5 +204,7 @@ namespace EntitiesServices.Model
         public virtual ICollection<RESPOSTA_CONSULTA> RESPOSTA_CONSULTA { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<AREA_PACIENTE> AREA_PACIENTE { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<NOTICIA_COMENTARIO> NOTICIA_COMENTARIO { get; set; }
     }
 }

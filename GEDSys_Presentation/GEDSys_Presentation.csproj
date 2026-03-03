@@ -571,6 +571,7 @@
     <Compile Include="ViewModels\MedicoMensagemViewModel.cs" />
     <Compile Include="ViewModels\MedicoEnvioViewModel.cs" />
     <Compile Include="ViewModels\LocacaoViewModel.cs" />
+    <Compile Include="ViewModels\NoticiaComentarioViewModel.cs" />
     <Compile Include="ViewModels\PacienteRespostaViewModel.cs" />
     <Compile Include="ViewModels\QuestionarioBangViewModel.cs" />
     <Compile Include="ViewModels\QuestionarioEpworthViewModel.cs" />
@@ -1275,6 +1276,10 @@
     <Content Include="Imagens\1\Locacao\88\QRCode\Contrato_QRCode_d5ttl5kn000b3260bopg.png" />
     <Content Include="Imagens\1\Locacao\89\QRCode\Contrato_QRCode_d615194n0008vh0av0kg.png" />
     <Content Include="Imagens\1\Locacao\90\QRCode\Contrato_QRCode_d61o6csn000b5u06f8m0.png" />
+    <Content Include="Imagens\1\Locacao\91\QRCode\Contrato_QRCode_d6est2kn000afj2ifpmg.png" />
+    <Content Include="Imagens\1\Locacao\92\QRCode\Contrato_QRCode_d6esvesn000afj2ifpsg.png" />
+    <Content Include="Imagens\1\Locacao\94\QRCode\Contrato_QRCode_d6et22cn000afj2ifq40.png" />
+    <Content Include="Imagens\1\Locacao\95\QRCode\Contrato_QRCode_d6f03l4n000afj2ifqeg.png" />
     <Content Include="Imagens\1\Mensagem\237\Anexos\Cydia_3_Nova.jpg" />
     <Content Include="Imagens\1\Mensagem\239\Anexos\SysMkt_Image_2.jpg" />
     <Content Include="Imagens\1\Mensagem\259\Anexos\bz.jpg" />
@@ -1346,6 +1351,7 @@
     <Content Include="Imagens\1\Mensagem\485\Anexos\Caramelo.jpg" />
     <Content Include="Imagens\1\Mensagem\486\Anexos\comoda frente.jpg" />
     <Content Include="Imagens\1\Mensagem\492\Anexos\jeannie.jpg" />
+    <Content Include="Imagens\1\Noticias\15\Fotos\149538416_10158234366607151_5002183375713967439_n.jpg" />
     <Content Include="Imagens\1\Pacientes\106\Fotos\louca.jpg" />
     <Content Include="Imagens\1\Pacientes\108\Fotos\louca.jpg" />
     <Content Include="Imagens\1\Pacientes\10\Anexos\estoque_icone.png" />
@@ -2818,6 +2824,7 @@
     <Content Include="Images\Prontuario\WebDoctor_Consulta_Info_1.png" />
     <Content Include="Images\Prontuario\WebDoctor_Consulta_Info_3.png" />
     <Content Include="Images\Prontuario\WebDoctor_Display_2_Final.jpg" />
+    <Content Include="Images\Prontuario\WebDoctor_Display_2_Final_Area.jpg" />
     <Content Include="Images\Prontuario\WebDoctor_Documento_Info_1.png" />
     <Content Include="Images\Prontuario\WebDoctor_Estoque_Info_1.png" />
     <Content Include="Images\Prontuario\WebDoctor_Financeiro_Info_1.png" />
@@ -3986,6 +3993,17 @@
     <Content Include="Imagens\1\Locacao\89\Contrato\Contrato_LocacaoCunegundes Bazófica Encerada_d615194n0008vh0av0kg.pdf" />
     <Content Include="Imagens\1\Locacao\90\Contrato\Contrato_LocacaoJeaanie Geniosa Genial_d61o6csn000b5u06f8m0.pdf" />
     <Content Include="ConteudoSite\Versao\Versao_2_0_0_0.pdf" />
+    <Content Include="Imagens\1\Noticias\16\Fotos\rembrandt.webp" />
+    <Content Include="Imagens\1\Noticias\17\Fotos\dubai.webp" />
+    <Content Include="Imagens\1\Locacao\91\Assinado\Contrato_LocacaoANINHA TRESLOUCADA ESCOVADA_d6est2kn000afj2ifpmg.pdf" />
+    <Content Include="Imagens\1\Locacao\91\Contrato\Contrato_LocacaoAninha Tresloucada Escovada_d6est2kn000afj2ifpmg.pdf" />
+    <Content Include="Imagens\1\Locacao\91\Distrato\Distrato_LocacaoAninha Tresloucada Escovada_d6est2kn000afj2ifpmg.pdf" />
+    <Content Include="Imagens\1\Locacao\92\Contrato\Contrato_LocacaoAntonio Curie Einstein Da Vinci_d6esvesn000afj2ifpsg.pdf" />
+    <Content Include="Imagens\1\Locacao\92\Distrato\Distrato_LocacaoAntonio Curie Einstein Da Vinci_d6esvesn000afj2ifpsg.pdf" />
+    <Content Include="Imagens\1\Locacao\94\Assinado\Contrato_LocacaoAPÓSTROFO METAFOSFÓRICO HÍGIDO_d6et22cn000afj2ifq40.pdf" />
+    <Content Include="Imagens\1\Locacao\94\Contrato\Contrato_LocacaoApóstrofo Metafosfórico Hígido_d6et22cn000afj2ifq40.pdf" />
+    <Content Include="Imagens\1\Locacao\95\Assinado\Contrato_LocacaoÁLVARO VAN BEETHOVEN_d6f03l4n000afj2ifqeg.pdf" />
+    <Content Include="Imagens\1\Locacao\95\Contrato\Contrato_LocacaoÁlvaro Van Beethoven_d6f03l4n000afj2ifqeg.pdf" />
     <None Include="Properties\PublishProfiles\eprontuario - FTP.pubxml" />
     <None Include="Properties\PublishProfiles\eprontuario - FTP1.pubxml" />
     <None Include="Properties\PublishProfiles\eprontuario - Web Deploy.pubxml" />
@@ -5397,6 +5415,9 @@
     <Content Include="Views\Noticia\IncluirNoticia.cshtml" />
     <Content Include="Views\Noticia\EditarNoticia.cshtml" />
     <Content Include="Views\AreaPaciente\VerLocacao.cshtml" />
+    <Content Include="Views\AreaPaciente\VerNoticia.cshtml" />
+    <Content Include="Views\Noticia\IncluirComentario.cshtml" />
+    <Content Include="Views\AreaPaciente\IncluirComentario.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -5529,6 +5550,18 @@
     <Folder Include="Imagens\1\Locacao\90\Anexos\" />
     <Folder Include="Imagens\1\Locacao\90\Assinado\" />
     <Folder Include="Imagens\1\Locacao\90\Distrato\" />
+    <Folder Include="Imagens\1\Locacao\91\Anexos\" />
+    <Folder Include="Imagens\1\Locacao\92\Anexos\" />
+    <Folder Include="Imagens\1\Locacao\92\Assinado\" />
+    <Folder Include="Imagens\1\Locacao\93\Anexos\" />
+    <Folder Include="Imagens\1\Locacao\93\Assinado\" />
+    <Folder Include="Imagens\1\Locacao\93\Contrato\" />
+    <Folder Include="Imagens\1\Locacao\93\Distrato\" />
+    <Folder Include="Imagens\1\Locacao\93\QRCode\" />
+    <Folder Include="Imagens\1\Locacao\94\Anexos\" />
+    <Folder Include="Imagens\1\Locacao\94\Distrato\" />
+    <Folder Include="Imagens\1\Locacao\95\Anexos\" />
+    <Folder Include="Imagens\1\Locacao\95\Distrato\" />
     <Folder Include="Imagens\1\Medico\1\Anexos\" />
     <Folder Include="Imagens\1\Medico\2\Anexos\" />
     <Folder Include="Imagens\1\Medico\3\Anexos\" />
@@ -5582,7 +5615,6 @@
     <Folder Include="Imagens\1\Mensagem\458\Anexos\" />
     <Folder Include="Imagens\1\Mensagem\493\Anexos\" />
     <Folder Include="Imagens\1\Mensagem\494\Anexos\" />
-    <Folder Include="Imagens\1\Noticias\" />
     <Folder Include="Imagens\1\Pacientes\106\Atestado\" />
     <Folder Include="Imagens\1\Pacientes\106\Consultas\" />
     <Folder Include="Imagens\1\Pacientes\106\Exames\" />

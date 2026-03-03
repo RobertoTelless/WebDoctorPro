@@ -53,6 +53,13 @@
                 @Html.ValidationSummary(false, "", new { @class = "text-danger" })
             </div>
         }
+        @if (TempData["TemMensagem"] != null)
+        {
+            <div class="alert alert-success">
+                <button type="button" class="close" data-dismiss="alert">Fechar</button>
+                <span>@TempData["MensagemAcerto"]</span>
+            </div>
+        }                    
         <div class="row">
             <div class="col-lg-2">
                 <div class="ibox float-e-margins">
@@ -145,10 +152,9 @@
             <div class="form-group">
                 <div class="col-lg-12 col-md-12 col-xs-12">
                     <a href="@Url.Action("AlterarDadosCadastrais", "AreaPaciente")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Alteração de dados cadastrais do paciente" class="btn btn-sm btn-success btn-loading" id="emp" OnClick = "Fade()">Dados Cadastrais</a>                
-                    <a href="@Url.Action("MontarTelaPerguntas", "AreaPaciente")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Faça uma pergunta para a equipe de suporte do WebDoctorPro" class="btn btn-sm btn-success btn-loading" id="emp" OnClick = "Fade()">Fale Conosco</a>                
                     <a href="@Url.Action("MontarTelaEnvioDocumento", "AreaPaciente")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Envie documentos para a eqiupe do WebDoctorPro" class="btn btn-sm btn-success btn-loading" id="emp" OnClick = "Fade()">Envio de Documentos</a>                
+                    <a href="@Url.Action("MontarTelaPerguntas", "AreaPaciente")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Faça uma pergunta para a equipe de suporte do WebDoctorPro" class="btn btn-sm btn-success btn-loading" id="emp" OnClick = "Fade()">Fale Conosco</a>                
                     <a href="@Url.Action("CarregarLandingPage", "BaseAdmin")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Retornar  ao Site" class="btn btn-sm btn-warning btn-loading" id="emp" OnClick = "Fade()">Retornar ao Site do WebDoctorPro</a>                
-                    <a href="@Url.Action((String)Session["AjudaNivel"])"  class="btn btn-sm btn-danger" target="_blank" >Ajuda</a>                
                     <span id="loadingIndicator" style="display: none; margin-left: 10px; color: #007bff;">
                         <i class="fa fa-spinner fa-spin"></i> Processando...
                     </span>
@@ -252,20 +258,6 @@
                     <h5>Conteúdo da Área do Paciente</h5>
                 </div>
                 <div class="ibox-content" style="height: 2100px">
-                    @if (!ViewData.ModelState.IsValid)
-                    {
-                        <div class="alert alert-danger">
-                            <button type="button" class="close" data-dismiss="alert">Fechar</button>
-                            @Html.ValidationSummary(false, "", new { @class = "text-danger" })
-                        </div>
-                    }
-                    @if (TempData["TemMensagem"] != null)
-                    {
-                        <div class="alert alert-success">
-                            <button type="button" class="close" data-dismiss="alert">Fechar</button>
-                            <span>@TempData["MensagemAcerto"]</span>
-                        </div>
-                    }                    
 
                     @*Dashboard*@
                     <div class="row">
@@ -465,7 +457,7 @@
                                                 <tbody>
                                                     @foreach (var cond in (ViewBag.Atestados as List<EntitiesServices.Model.PACIENTE_ATESTADO>).OrderByDescending(p => p.PAAT_DT_DATA.Value.Date).ThenBy(p => p.PAAT_NM_TITULO))
                                                     {   
-                                                        <tr  style="background-color: gainsboro">
+                                                        <tr>
                                                             <td>
                                                                 <span style="display:none; width: auto">@cond.PAAT_DT_DATA.Value.ToString("yyyyMMdd")</span>
                                                                 @cond.PAAT_DT_DATA.Value.ToString("dd/MM/yyyy")
@@ -531,7 +523,7 @@
                                                 <tbody>
                                                     @foreach (var cond in (ViewBag.Solicitacoes as List<EntitiesServices.Model.PACIENTE_SOLICITACAO>).OrderByDescending(p => p.PASO_DT_EMISSAO_COMPLETA.Value.Date).ThenBy(p => p.TIEX_CD_ID))
                                                     {   
-                                                        <tr  style="background-color: gainsboro">
+                                                        <tr>
                                                             <td>
                                                                 <span style="display:none; width: auto">@cond.PASO_DT_EMISSAO_COMPLETA.Value.ToString("yyyyMMdd")</span>
                                                                 @cond.PASO_DT_EMISSAO_COMPLETA.Value.ToString("dd/MM/yyyy")
@@ -597,7 +589,7 @@
                                                 <tbody>
                                                     @foreach (var cond in (ViewBag.Prescricoes as List<EntitiesServices.Model.PACIENTE_PRESCRICAO>).OrderByDescending(p => p.PAPR_DT_EMISSAO_COMPLETA.Value.Date))
                                                     {   
-                                                        <tr  style="background-color: gainsboro">
+                                                        <tr>
                                                             <td>
                                                                 <span style="display:none; width: auto">@cond.PAPR_DT_EMISSAO_COMPLETA.Value.ToString("yyyyMMdd")</span>
                                                                 @cond.PAPR_DT_EMISSAO_COMPLETA.Value.ToString("dd/MM/yyyy")
@@ -665,7 +657,7 @@
                                                 <tbody>
                                                     @foreach (var cond in (ViewBag.Locacoes as List<EntitiesServices.Model.LOCACAO>).OrderByDescending(p => p.LOCA_DT_INICIO.Value.Date))
                                                     {   
-                                                        <tr  style="background-color: gainsboro">
+                                                        <tr>
                                                             <td>
                                                                 <span style="display:none; width: auto">@cond.LOCA_DT_INICIO.Value.ToString("yyyyMMdd")</span>
                                                                 @cond.LOCA_DT_INICIO.Value.ToString("dd/MM/yyyy")
@@ -734,9 +726,6 @@
                             </div>
                          </div>                          
   
-                    </div>
-
-                    <div class="row">
                         @*Noticias*@
                         <div class="col-lg-6 col-md-6 col-xs-12">
                             <div class="col-lg-12 col-md-12 col-xs-12 ibox float-e-margins" style="border-bottom: solid; border-bottom-color: darkblue; border-bottom-width: 2px; border-left: solid; border-left-color: darkblue; border-left-width: 1px; border-right: solid; border-right-color: darkblue; border-right-width: 1px; border-top: solid; border-top-color: darkblue; border-top-width: 1px">
@@ -772,12 +761,35 @@
                                                                     style="max-height: 230px; max-width: 800px; margin: 0 auto;">
                                                         }
                                                     </div>
-
-
-
-
-
                                                 </div>
+                                                <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                                    <div class="col-lg-12 col-md-12 col-xs-12">
+                                                        Título
+                                                        <a href="@Url.Action("VerNoticia", new { id = cond.NOTC_CD_ID })" 
+                                                           class="link-noticia-textarea">
+                                                            @cond.NOTC_NM_TITULO
+                                                        </a>
+                                                        @*<a href="@Url.Action("VerNoticia", new { id = cond.NOTC_CD_ID })" class="form-control link-noticia-custom">@cond.NOTC_NM_TITULO</a>*@                                                    
+                                                    </div>
+                                                </div>
+                                                <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">                
+                                                    <div class="col-lg-12 col-md-12 col-xs-12">
+                                                        Autor(es)
+                                                        @Html.TextBoxFor(m => cond.NOTC_NM_AUTOR, new { @class = "form-control", @tabindex = "-1", @readonly = "readonly" })
+                                                    </div>
+                                                </div>
+                                                <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">                
+                                                    <div class="col-lg-12 col-md-12 col-xs-12">
+                                                        Origem
+                                                        @Html.TextBoxFor(m => cond.NOTC_NM_ORIGEM, new { @class = "form-control", @tabindex = "-1", @readonly = "readonly" })
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-lg-12">
+                                                        <hr style="width: 50%; border-top: 2px solid #28a745; margin: 20px auto;" />
+                                                    </div>
+                                                </div>
+
                                             }
                                         }
                                         else
@@ -801,6 +813,7 @@
                             </div>
                         </div>                          
                     </div>
+
                 </div>
             </div>
         </div>
@@ -814,6 +827,56 @@
     @Styles.Render("~/Content/plugins/dataTables/dataTablesStyles")
     @Styles.Render("~/plugins/jasnyBootstrapStyles")
     @Styles.Render("~/plugins/toastrStyles")
+
+    <style>
+        .link-noticia-custom {
+            display: block;
+            background-color: #f9f9f9;
+            font-weight: bold;
+            color: #28a745; /* Verde padrão */
+            text-decoration: underline;
+            transition: all 0.3s ease; /* Suaviza a transição de cor */
+        }
+
+        /* O efeito de Hover */
+        .link-noticia-custom:hover {
+            color: #1e7e34; /* Um verde mais escuro ao passar o mouse */
+            background-color: #f1f1f1; /* Muda levemente o fundo */
+            text-decoration: none; /* Opcional: remove o underline ao passar o mouse */
+        }
+    </style>
+
+    <style>
+        .link-noticia-textarea {
+            display: block;
+            width: 100%;
+            min-height: 50px; /* Altura simulando textarea */
+            padding: 6px 12px;
+            background-color: #f9f9f9;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        
+            /* Tipografia */
+            font-weight: bold;
+            color: #28a745;
+            text-decoration: underline;
+        
+            /* Comportamento de texto */
+            white-space: normal; /* Permite que o título quebre linha */
+            word-wrap: break-word;
+        
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .link-noticia-textarea:hover {
+            color: #1e7e34;
+            background-color: #f1f1f1;
+            border-color: #28a745; /* Realce na borda ao passar o mouse */
+            text-decoration: none;
+        }
+    </style>
+
 }
 
 @section Scripts {

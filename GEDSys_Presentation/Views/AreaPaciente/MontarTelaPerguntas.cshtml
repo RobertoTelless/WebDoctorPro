@@ -2,7 +2,7 @@
 @using CrossCutting;
 @model ERP_Condominios_Solution.ViewModels.FaleConoscoViewModel
 @{
-    Layout = "~/Views/Shared/_Layout_Admin.cshtml";
+    Layout = "~/Views/Shared/_Layout_Area.cshtml";
     ViewBag.Title = "WebDoctor - Fale Conosco";
     ViewBag.MetaDescription = "WebDoctor - Fale Conosco - Formulário";
     ViewBag.MetaKeywords = "WebDoctor, contato, suporte";
@@ -30,6 +30,13 @@
                 <div class="ibox-title">
                     <h3>Fale Conosco</h3>
                 </div>
+                @if (TempData["TemMensagem"] != null)
+                {
+                    <div class="alert alert-success">
+                        <button type="button" class="close" data-dismiss="alert">Fechar</button>
+                        <span>@TempData["MensagemAcerto"]</span>
+                    </div>
+                }                    
                 <br />
                 <div class="form-group">
                     @Html.ButtonLinkIndex(text: "Voltar", controller: "AreaPaciente", action: "MontarTelaAreaPaciente", htmlAttributes: new { @class = "btn-loading" })
@@ -52,7 +59,7 @@
                         </div>
                     }
                     <div class="col-lg-5 col-md-5 col-xs-12">
-                        <img src="~/Images/Prontuario/WebDoctor_Display_2_Final.jpg" style="width: 100%; height: 100%; max-height: 1400px; max-width: 1400px;">
+                        <img src="~/Images/Prontuario/WebDoctor_Display_2_Final_Area.jpg" style="width: 100%; height: 100%; max-height: 1400px; max-width: 1400px;">
                     </div>             
                     
                     <div class="col-lg-7 col-md-7 col-xs-12">
@@ -101,17 +108,19 @@
                                         </div>                                   
                                         <div class="row">
                                             <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">                
-                                                <div class="col-lg-3 col-md-3 col-xs-12">
+                                                <div class="col-lg-12 col-md-12 col-xs-12">
                                                     @Html.HiddenFor(m => m.Telefone)
                                                     @Html.HiddenFor(m => m.EMail)
-                                                    Assinante
+                                                    Paciente
                                                     @Html.TextBoxFor(m => m.Nome, new { @class = "form-control", @readonly="readonly" })
                                                 </div>
-                                                <div class="col-lg-5 col-md-5 col-xs-12">
+                                            </div>
+                                            <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">                
+                                                <div class="col-lg-6 col-md-6 col-xs-12">
                                                     E-Mail
                                                     @Html.TextBoxFor(m => m.Resposta, new { @class = "form-control", @readonly="readonly" })
                                                 </div>
-                                                <div class="col-lg-4 col-md-4 col-xs-12">
+                                                <div class="col-lg-6 col-md-6 col-xs-12">
                                                     Assunto (Selecione um deles)*
                                                     @Html.DropDownListFor(m => m.Assunto, (SelectList)ViewBag.Assunto, "Selecionar", new { @class = "form-control", autofocus = true })
                                                 </div>
@@ -125,7 +134,7 @@
                                             </div>
                                         </div>
                                         <div class="form-group">
-                                            @Html.ButtonActionSubmit(text: "Confirma Envio de E-Mail", htmlAttributes: new { id = "basictoast", @class = "btn-loading" })
+                                            @Html.ButtonActionSubmit(text: "Confirma Envio de E-Mail", htmlAttributes: new { id = "basictoast" })
                                         </div>
                                     }
                                 </div>

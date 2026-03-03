@@ -136,7 +136,6 @@
                                                     <span style="display:none; width: auto">@cond.NOTC_DT_VALIDADE.Value.ToString("yyyyMMdd")</span>
                                                     @cond.NOTC_DT_VALIDADE.Value.ToString("dd/MM/yyyy")
                                                 </td>
-                                                <td style="width: auto">@cond.NOTC_DT_VALIDADE.Value.ToShortDateString()</td>
                                                 <td style="width: auto; cursor: pointer; text-decoration: underline;"><a href="@Url.Action("EditarNoticia", "Noticia", new { id = cond.NOTC_CD_ID })" class="btn-loading" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Alterar/Consultar notícia"/>@cond.NOTC_NM_TITULO</td>
                                                 <td style="width: auto">@cond.NOTC_NM_AUTOR</td>
                                                 <td style="width: auto">@cond.NOTC_NR_ACESSO</td>

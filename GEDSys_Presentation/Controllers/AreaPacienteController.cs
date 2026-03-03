@@ -318,6 +318,9 @@ namespace GEDSys_Presentation.Controllers
                 Session["Paciente"] = paciente;
                 Session["IdAssinante"] = paciente.ASSI_CD_ID;
 
+                USUARIO usu = usuApp.GetItemById(paciente.USUA_CD_ID.Value);
+                Session["UsuarioArea"] = usu;
+
                 // Configuraçoes de escopo de dados
                 CONFIGURACAO conf = CarregaConfiguracaoGeral();
                 if (conf ==  null)
@@ -407,9 +410,11 @@ namespace GEDSys_Presentation.Controllers
                 Session["UsuarioProf"] = null;
                 Session["Consultas"] = null;
                 Session["ModoEntrada"] = 2;
-
+                Session["ListaLocacao"] = null;
                 Session["ListaAtestados"] = null;
                 Session["ListaSolicitacao"] = null;
+                Session["ListaPrescricao"] = null;
+                Session["ListaNoticia"] = null;
 
                 // Grava login no historico
                 PACIENTE_LOGIN login = new PACIENTE_LOGIN();
@@ -445,7 +450,7 @@ namespace GEDSys_Presentation.Controllers
                 Session["ExcecaoTipo"] = ex.GetType().ToString();
                 Session["VoltaExcecao"] = "AreaPaciente";
                 GravaLogExcecao grava = new GravaLogExcecao(usuApp);
-                Int32 voltaX = grava.GravarLogExcecao(ex, "Exceção", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Exceção", "WebDoctor", 1, (USUARIO)Session["UsuarioArea"]);
                 return RedirectToAction("ErroGeralAreaPaciente", "AreaPaciente");
             }
         }
@@ -484,7 +489,7 @@ namespace GEDSys_Presentation.Controllers
                 Session["TipoVolta"] = 2;
                 Session["ExcecaoTipo"] = ex.GetType().ToString();
                 GravaLogExcecao grava = new GravaLogExcecao(usuApp);
-                Int32 voltaX = grava.GravarLogExcecao(ex, "Exceção", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Exceção", "WebDoctor", 1, (USUARIO)Session["UsuarioArea"]);
                 return null;
             }
         }
@@ -559,7 +564,7 @@ namespace GEDSys_Presentation.Controllers
                 Session["ExcecaoTipo"] = ex.GetType().ToString();
                 Session["VoltaExcecao"] = "AreaPaciente";
                 GravaLogExcecao grava = new GravaLogExcecao(usuApp);
-                Int32 voltaX = grava.GravarLogExcecao(ex, "Exceção", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Exceção", "WebDoctor", 1, (USUARIO)Session["UsuarioArea"]);
                 return RedirectToAction("ErroGeralAreaPaciente", "AreaPaciente");
             }
         }
@@ -598,7 +603,7 @@ namespace GEDSys_Presentation.Controllers
                 Session["ExcecaoTipo"] = ex.GetType().ToString();
                 Session["VoltaExcecao"] = "AreaPaciente";
                 GravaLogExcecao grava = new GravaLogExcecao(usuApp);
-                Int32 voltaX = grava.GravarLogExcecao(ex, "Exceção", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Exceção", "WebDoctor", 1, (USUARIO)Session["UsuarioArea"]);
                 return RedirectToAction("ErroGeralAreaPaciente", "AreaPaciente");
             }
         }
@@ -671,7 +676,7 @@ namespace GEDSys_Presentation.Controllers
                 Session["ExcecaoTipo"] = ex.GetType().ToString();
                 Session["VoltaExcecao"] = "AreaPaciente";
                 GravaLogExcecao grava = new GravaLogExcecao(usuApp);
-                Int32 voltaX = grava.GravarLogExcecao(ex, "Exceção", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Exceção", "WebDoctor", 1, (USUARIO)Session["UsuarioArea"]);
                 return RedirectToAction("ErroGeralAreaPaciente", "AreaPaciente");
             }
         }
@@ -781,7 +786,7 @@ namespace GEDSys_Presentation.Controllers
                 Session["ExcecaoTipo"] = ex.GetType().ToString();
                 Session["VoltaExcecao"] = "AreaPaciente";
                 GravaLogExcecao grava = new GravaLogExcecao(usuApp);
-                Int32 voltaX = grava.GravarLogExcecao(ex, "Exceção", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Exceção", "WebDoctor", 1, (USUARIO)Session["UsuarioArea"]);
                 return RedirectToAction("ErroGeralAreaPaciente", "AreaPaciente");
             }
         }
@@ -853,7 +858,7 @@ namespace GEDSys_Presentation.Controllers
                 }
                 listaMasterAtestado = (List<PACIENTE_ATESTADO>)Session["ListaAtestados"];
                 ViewBag.NumAtestados = listaMasterAtestado.Count();
-                ViewBag.Atestados = listaMasterAtestado.Where(p => p.PAAT_DT_DATA.Value.Year == DateTime.Today.Year).ToList();
+                ViewBag.Atestados = listaMasterAtestado;
 
                 // Montar listas de exames
                 listaMasterExame = baseApp.GetExamesByCPF(cpf);
@@ -868,7 +873,7 @@ namespace GEDSys_Presentation.Controllers
                 }
                 listaMasterSolicitacao = (List<PACIENTE_SOLICITACAO>)Session["ListaSolicitacao"];
                 ViewBag.NumSolicitacao = listaMasterSolicitacao.Count();
-                ViewBag.Solicitacoes = listaMasterSolicitacao.Where(p => p.PASO_DT_EMISSAO_COMPLETA.Value.Year == DateTime.Today.Year).ToList();
+                ViewBag.Solicitacoes = listaMasterSolicitacao;
 
                 // Montar listas de prescricoes
                 if (Session["ListaPrescricao"] == null)
@@ -878,19 +883,27 @@ namespace GEDSys_Presentation.Controllers
                 }
                 listaMasterPrescricao = (List<  PACIENTE_PRESCRICAO>)Session["ListaPrescricao"];
                 ViewBag.NumPrescricoes = listaMasterPrescricao.Count();
-                ViewBag.Prescricoes = listaMasterPrescricao.Where(p => p.PAPR_DT_EMISSAO_COMPLETA.Value.Year == DateTime.Today.Year).ToList();
+                ViewBag.Prescricoes = listaMasterPrescricao;
 
                 // Montar listas de locações
-                listaMasterLocacao = locaApp.GetLocacaoByCPF(cpf);
+                if (Session["ListaLocacao"] == null)
+                {
+                    listaMasterLocacao = locaApp.GetLocacaoByCPF(cpf).Where(p => p.LOCA_IN_STATUS == 1).ToList();
+                    Session["ListaLocacao"] = listaMasterLocacao;
+                }
+                listaMasterLocacao = (List<LOCACAO>)Session["ListaLocacao"];
                 ViewBag.NumLocacoes = listaMasterLocacao.Count();
-                Session["ListaLocacao"] = listaMasterLocacao;
-                ViewBag.Locacoes = listaMasterLocacao.Where(p => p.LOCA_IN_STATUS == 1).ToList();
+                ViewBag.Locacoes = listaMasterLocacao;
 
                 // Montar listas de noticias
-                listaMasterNoticia = CarregaNoticiaGeral();
-                ViewBag.NumNoticias= listaMasterNoticia.Count();
-                Session["ListaNoticia"] = listaMasterNoticia;
-                ViewBag.Moticias = listaMasterNoticia.Where(p => p.NOTC_DT_EMISSAO.Value.Date == DateTime.Today.Date).ToList();
+                if (Session["ListaNoticia"] == null)
+                {
+                    listaMasterNoticia = CarregaNoticiaGeral();
+                    Session["ListaNoticia"] = listaMasterNoticia;
+                }
+                listaMasterNoticia = (List<NOTICIA>)Session["ListaNoticia"];
+                ViewBag.NumNoticias = listaMasterNoticia.Count();
+                ViewBag.Noticias = listaMasterNoticia;
 
                 // Acerta estado
                 Session["MensPaciente"] = null;
@@ -910,7 +923,7 @@ namespace GEDSys_Presentation.Controllers
                 Session["ExcecaoTipo"] = ex.GetType().ToString();
                 Session["VoltaExcecao"] = "AreaPaciente";
                 GravaLogExcecao grava = new GravaLogExcecao(usuApp);
-                Int32 voltaX = grava.GravarLogExcecao(ex, "Exceção", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Exceção", "WebDoctor", 1, (USUARIO)Session["UsuarioArea"]);
                 return RedirectToAction("ErroGeralAreaPaciente", "AreaPaciente");
             }
         }
@@ -938,7 +951,7 @@ namespace GEDSys_Presentation.Controllers
                 Session["ExcecaoTipo"] = ex.GetType().ToString();
                 Session["VoltaExcecao"] = "AreaPaciente";
                 GravaLogExcecao grava = new GravaLogExcecao(usuApp);
-                Int32 voltaX = grava.GravarLogExcecao(ex, "Exceção", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Exceção", "WebDoctor", 1, (USUARIO)Session["UsuarioArea"]);
                 return RedirectToAction("ErroGeralAreaPaciente", "AreaPaciente");
             }
         }
@@ -966,7 +979,7 @@ namespace GEDSys_Presentation.Controllers
                 Session["ExcecaoTipo"] = ex.GetType().ToString();
                 Session["VoltaExcecao"] = "AreaPaciente";
                 GravaLogExcecao grava = new GravaLogExcecao(usuApp);
-                Int32 voltaX = grava.GravarLogExcecao(ex, "Exceção", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Exceção", "WebDoctor", 1, (USUARIO)Session["UsuarioArea"]);
                 return RedirectToAction("ErroGeralAreaPaciente", "AreaPaciente");
             }
         }
@@ -994,7 +1007,7 @@ namespace GEDSys_Presentation.Controllers
                 Session["ExcecaoTipo"] = ex.GetType().ToString();
                 Session["VoltaExcecao"] = "AreaPaciente";
                 GravaLogExcecao grava = new GravaLogExcecao(usuApp);
-                Int32 voltaX = grava.GravarLogExcecao(ex, "Exceção", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Exceção", "WebDoctor", 1, (USUARIO)Session["UsuarioArea"]);
                 return RedirectToAction("ErroGeralAreaPaciente", "AreaPaciente");
             }
         }
@@ -1031,7 +1044,7 @@ namespace GEDSys_Presentation.Controllers
                 Session["ExcecaoTipo"] = ex.GetType().ToString();
                 Session["VoltaExcecao"] = "AreaPaciente";
                 GravaLogExcecao grava = new GravaLogExcecao(usuApp);
-                Int32 voltaX = grava.GravarLogExcecao(ex, "Exceção", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Exceção", "WebDoctor", 1, (USUARIO)Session["UsuarioArea"]);
                 return RedirectToAction("ErroGeralAreaPaciente", "AreaPaciente");
             }
         }
@@ -1088,6 +1101,10 @@ namespace GEDSys_Presentation.Controllers
                     paciente = baseApp.GetItemByCPF((String)Session["PacienteCPF"]);
                     Session["UserCredentials"] = paciente;
 
+                    // Mensagem do CRUD
+                    Session["MsgCRUD"] = "Os dados cadastrais de " + item.PACI_NM_NOME.ToUpper() + " foram alterados com sucesso";
+                    Session["MensArea"] = 61;
+
                     // Trata retorno
                     return RedirectToAction("MontarTelaAreaPaciente");
                 }
@@ -1100,7 +1117,7 @@ namespace GEDSys_Presentation.Controllers
                     Session["ExcecaoTipo"] = ex.GetType().ToString();
                     Session["VoltaExcecao"] = "AreaPaciente";
                     GravaLogExcecao grava = new GravaLogExcecao(usuApp);
-                    Int32 voltaX = grava.GravarLogExcecao(ex, "Exceção", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                    Int32 voltaX = grava.GravarLogExcecao(ex, "Exceção", "WebDoctor", 1, (USUARIO)Session["UsuarioArea"]);
                     return RedirectToAction("ErroGeralAreaPaciente", "AreaPaciente");
                 }
             }
@@ -1136,7 +1153,7 @@ namespace GEDSys_Presentation.Controllers
                 Session["ExcecaoTipo"] = ex.GetType().ToString();
                 Session["VoltaExcecao"] = "AreaPaciente";
                 GravaLogExcecao grava = new GravaLogExcecao(usuApp);
-                Int32 voltaX = grava.GravarLogExcecao(ex, "Exceção", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Exceção", "WebDoctor", 1, (USUARIO)Session["UsuarioArea"]);
                 return null;
             }
         }
@@ -1159,7 +1176,7 @@ namespace GEDSys_Presentation.Controllers
                 Session["ExcecaoTipo"] = ex.GetType().ToString();
                 Session["VoltaExcecao"] = "AreaPaciente";
                 GravaLogExcecao grava = new GravaLogExcecao(usuApp);
-                Int32 voltaX = grava.GravarLogExcecao(ex, "Exceção", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Exceção", "WebDoctor", 1, (USUARIO)Session["UsuarioArea"]);
                 return null;
             }
         }
@@ -1183,7 +1200,7 @@ namespace GEDSys_Presentation.Controllers
                 Session["ExcecaoTipo"] = ex.GetType().ToString();
                 Session["VoltaExcecao"] = "AreaPaciente";
                 GravaLogExcecao grava = new GravaLogExcecao(usuApp);
-                Int32 voltaX = grava.GravarLogExcecao(ex, "Exceção", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Exceção", "WebDoctor", 1, (USUARIO)Session["UsuarioArea"]);
                 return null;
             }
         }
@@ -1296,7 +1313,7 @@ namespace GEDSys_Presentation.Controllers
                 Session["ExcecaoTipo"] = ex.GetType().ToString();
                 Session["VoltaExcecao"] = "AreaPaciente";
                 GravaLogExcecao grava = new GravaLogExcecao(usuApp);
-                Int32 voltaX = grava.GravarLogExcecao(ex, "Exceção", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Exceção", "WebDoctor", 1, (USUARIO)Session["UsuarioArea"]);
                 return RedirectToAction("ErroGeralAreaPaciente", "AreaPaciente");
             }
         }
@@ -1455,7 +1472,7 @@ namespace GEDSys_Presentation.Controllers
                     Session["ExcecaoTipo"] = ex.GetType().ToString();
                     Session["VoltaExcecao"] = "AreaPaciente";
                     GravaLogExcecao grava = new GravaLogExcecao(usuApp);
-                    Int32 voltaX = grava.GravarLogExcecao(ex, "Exceção", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                    Int32 voltaX = grava.GravarLogExcecao(ex, "Exceção", "WebDoctor", 1, (USUARIO)Session["UsuarioArea"]);
                     return RedirectToAction("ErroGeralAreaPaciente", "AreaPaciente");
                 }
             }
@@ -1485,7 +1502,7 @@ namespace GEDSys_Presentation.Controllers
                 Session["ExcecaoTipo"] = ex.GetType().ToString();
                 Session["VoltaExcecao"] = "AreaPaciente";
                 GravaLogExcecao grava = new GravaLogExcecao(usuApp);
-                Int32 voltaX = grava.GravarLogExcecao(ex, "Exceção", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Exceção", "WebDoctor", 1, (USUARIO)Session["UsuarioArea"]);
                 return null;
             }
         }
@@ -1509,7 +1526,7 @@ namespace GEDSys_Presentation.Controllers
                 Session["ExcecaoTipo"] = ex.GetType().ToString();
                 Session["VoltaExcecao"] = "AreaPaciente";
                 GravaLogExcecao grava = new GravaLogExcecao(usuApp);
-                Int32 voltaX = grava.GravarLogExcecao(ex, "Exceção", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Exceção", "WebDoctor", 1, (USUARIO)Session["UsuarioArea"]);
                 return null;
             }
         }
@@ -1538,7 +1555,7 @@ namespace GEDSys_Presentation.Controllers
                 Session["ExcecaoTipo"] = ex.GetType().ToString();
                 Session["VoltaExcecao"] = "AreaPaciente";
                 GravaLogExcecao grava = new GravaLogExcecao(usuApp);
-                Int32 voltaX = grava.GravarLogExcecao(ex, "Exceção", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Exceção", "WebDoctor", 1, (USUARIO)Session["UsuarioArea"]);
                 return null;
             }
         }
@@ -1589,13 +1606,14 @@ namespace GEDSys_Presentation.Controllers
                 // Configuração
                 CONFIGURACAO conf = confApp.GetItemById(usuario.ASSI_CD_ID);
 
-                // Mensagem
-                if (Session["MensFC"] != null)
+                // Trata mensagens
+                if (Session["MensArea"] != null)
                 {
-                    if ((Int32)Session["MensFC"] == 100)
+                    // Mensagem
+                    if ((Int32)Session["MensArea"] == 61)
                     {
-                        String frase = CRMSys_Base.ResourceManager.GetString("M0256", CultureInfo.CurrentCulture) + " ID do envio: " + (String)Session["IdMail"];
-                        ModelState.AddModelError("", frase);
+                        TempData["MensagemAcerto"] = (String)Session["MsgCRUD"];
+                        TempData["TemMensagem"] = 1;
                     }
                 }
 
@@ -1631,7 +1649,7 @@ namespace GEDSys_Presentation.Controllers
                 Session["ExcecaoTipo"] = ex.GetType().ToString();
                 Session["VoltaExcecao"] = "AreaPaciente";
                 GravaLogExcecao grava = new GravaLogExcecao(usuApp);
-                Int32 voltaX = grava.GravarLogExcecao(ex, "Exceção", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Exceção", "WebDoctor", 1, (USUARIO)Session["UsuarioArea"]);
                 return RedirectToAction("ErroGeralAreaPaciente", "AreaPaciente");
             }
         }
@@ -1681,10 +1699,15 @@ namespace GEDSys_Presentation.Controllers
                         mens.MENS_NM_NOME = "Área do Paciente - Pergunta";
                         mens.MENS_NM_CAMPANHA = assuntoDesc;
                         await ProcessaEnvioEMailPergunta(mens, usuario);
+
+                        // Mensagem do CRUD
+                        Session["MsgCRUD"] = "A mensagem para o suporte do WebDoctorPro foi enviada com sucesso";
+                        Session["MensArea"] = 61;
+
                     }
 
                     // Sucesso
-                    return RedirectToAction("MontarTelaAreaPaciente");
+                    return RedirectToAction("MontarTelaPerguntas");
                 }
                 catch (Exception ex)
                 {
@@ -1695,7 +1718,7 @@ namespace GEDSys_Presentation.Controllers
                     Session["ExcecaoTipo"] = ex.GetType().ToString();
                     Session["VoltaExcecao"] = "AreaPaciente";
                     GravaLogExcecao grava = new GravaLogExcecao(usuApp);
-                    Int32 voltaX = grava.GravarLogExcecao(ex, "Exceção", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                    Int32 voltaX = grava.GravarLogExcecao(ex, "Exceção", "WebDoctor", 1, (USUARIO)Session["UsuarioArea"]);
                     return RedirectToAction("ErroGeralAreaPaciente", "AreaPaciente");
                 }
             }
@@ -1713,16 +1736,15 @@ namespace GEDSys_Presentation.Controllers
 
             // Prepara corpo do e-mail e trata link
             CONFIGURACAO conf = confApp.GetItemById(usuario.ASSI_CD_ID);
-            String corpo = vm.MENS_TX_TEXTO + "<br /><br />";
-            corpo = corpo.Replace("\r\n", "<br />");
-
-            // Monta mensagem
             ASSINANTE assi = assApp.GetItemById(idAss);
+            String corpo = String.Empty;
+            corpo = corpo + "<b style='color:darkblue'>Paciente:</b> " + usuario.PACI_NM_NOME + "<br />";
+            corpo = corpo + "<b style='color:darkblue'>Id.Paciente:</b> " + usuario.PACI__CD_ID.ToString() + "<br />";
+            corpo = corpo + "<b style='color:darkblue'>CPF:</b> " + usuario.PACI_NR_CPF + "<br />";
             corpo = corpo + "<b style='color:darkblue'>Assinante:</b> " + assi.ASSI_NM_NOME + "<br />";
-            corpo = corpo + "<b style='color:darkblue'>Num.Assinante:</b> " + assi.ASSI_CD_ID.ToString() + "<br />";
-            corpo = corpo + "<b style='color:darkblue'>Usuário:</b> " + usuario.USUARIO.USUA_NM_NOME + "<br />";
-            corpo = corpo + "<b style='color:darkblue'>CPF/CNPJ:</b> " + (assi.TIPE_CD_ID == 1 ? assi.ASSI_NR_CPF : assi.ASSI_NR_CNPJ) + "<br />";
-            corpo = corpo + "<b style='color:darkblue'>Data Assinatura:</b> " + assi.ASSI_DT_INICIO.Value.ToShortDateString() + "<br />";
+            corpo = corpo + "<b style='color:darkblue'>Motivo:</b> " + vm.MENS_NM_CAMPANHA + "<br /><br />";
+            corpo += vm.MENS_TX_TEXTO + "<br /><br />";
+            corpo = corpo.Replace("\r\n", "<br />");
 
             String status = "Succeeded";
             String iD = "xyz";
@@ -1761,9 +1783,6 @@ namespace GEDSys_Presentation.Controllers
                 throw;
             }
 
-            // Mensagem deenvio
-            Session["MsgCRUD"] = "E-Mail para " + usuario.USUARIO.USUA_NM_NOME + " foi enviado com sucesso.";
-            Session["MensFC"] = 61;
             return 0;
         }
 
@@ -1911,7 +1930,7 @@ namespace GEDSys_Presentation.Controllers
                 Session["ExcecaoTipo"] = ex.GetType().ToString();
                 Session["VoltaExcecao"] = "AreaPaciente";
                 GravaLogExcecao grava = new GravaLogExcecao(usuApp);
-                Int32 voltaX = grava.GravarLogExcecao(ex, "Exceção", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Exceção", "WebDoctor", 1, (USUARIO)Session["UsuarioArea"]);
                 return RedirectToAction("ErroGeralAreaPaciente", "AreaPaciente");
             }
         }
@@ -2330,7 +2349,7 @@ namespace GEDSys_Presentation.Controllers
                     Session["ExcecaoTipo"] = ex.GetType().ToString();
                     Session["VoltaExcecao"] = "AreaPaciente";
                     GravaLogExcecao grava = new GravaLogExcecao(usuApp);
-                    Int32 voltaX = grava.GravarLogExcecao(ex, "Exceção", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                    Int32 voltaX = grava.GravarLogExcecao(ex, "Exceção", "WebDoctor", 1, (USUARIO)Session["UsuarioArea"]);
                     return 0;
                 }
 
@@ -2374,7 +2393,7 @@ namespace GEDSys_Presentation.Controllers
                 Session["ExcecaoTipo"] = ex.GetType().ToString();
                 Session["VoltaExcecao"] = "AreaPaciente";
                 GravaLogExcecao grava = new GravaLogExcecao(usuApp);
-                Int32 voltaX = grava.GravarLogExcecao(ex, "Exceção", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Exceção", "WebDoctor", 1, (USUARIO)Session["UsuarioArea"]);
                 return 1;
             }
         }
@@ -2530,7 +2549,7 @@ namespace GEDSys_Presentation.Controllers
                 Session["ExcecaoTipo"] = ex.GetType().ToString();
                 Session["VoltaExcecao"] = "AreaPaciente";
                 GravaLogExcecao grava = new GravaLogExcecao(usuApp);
-                Int32 voltaX = grava.GravarLogExcecao(ex, "Exceção", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Exceção", "WebDoctor", 1, (USUARIO)Session["UsuarioArea"]);
                 return 1;
             }
         }
@@ -2633,7 +2652,7 @@ namespace GEDSys_Presentation.Controllers
                 Session["ExcecaoTipo"] = ex.GetType().ToString();
                 Session["VoltaExcecao"] = "AreaPaciente";
                 GravaLogExcecao grava = new GravaLogExcecao(usuApp);
-                Int32 voltaX = grava.GravarLogExcecao(ex, "Exceção", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Exceção", "WebDoctor", 1, (USUARIO)Session["UsuarioArea"]);
                 return RedirectToAction("ErroGeralAreaPaciente", "AreaPaciente");
             }
         }
@@ -2704,7 +2723,7 @@ namespace GEDSys_Presentation.Controllers
                 Session["ExcecaoTipo"] = ex.GetType().ToString();
                 Session["VoltaExcecao"] = "AreaPaciente";
                 GravaLogExcecao grava = new GravaLogExcecao(usuApp);
-                Int32 voltaX = grava.GravarLogExcecao(ex, "Exceção", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Exceção", "WebDoctor", 1, (USUARIO)Session["UsuarioArea"]);
                 return RedirectToAction("ErroGeralAreaPaciente", "AreaPaciente");
             }
         }
@@ -2804,7 +2823,7 @@ namespace GEDSys_Presentation.Controllers
                     Session["ExcecaoTipo"] = ex.GetType().ToString();
                     Session["VoltaExcecao"] = "AreaPaciente";
                     GravaLogExcecao grava = new GravaLogExcecao(usuApp);
-                    Int32 voltaX = grava.GravarLogExcecao(ex, "Exceção", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                    Int32 voltaX = grava.GravarLogExcecao(ex, "Exceção", "WebDoctor", 1, (USUARIO)Session["UsuarioArea"]);
                     return RedirectToAction("ErroGeralAreaPaciente", "AreaPaciente");
                 }
             }
@@ -2960,7 +2979,7 @@ namespace GEDSys_Presentation.Controllers
                 Session["ExcecaoTipo"] = ex.GetType().ToString();
                 Session["VoltaExcecao"] = "AreaPaciente";
                 GravaLogExcecao grava = new GravaLogExcecao(usuApp);
-                Int32 voltaX = grava.GravarLogExcecao(ex, "Exceção", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Exceção", "WebDoctor", 1, (USUARIO)Session["UsuarioArea"]);
                 return 0;
             }
         }
@@ -3137,7 +3156,7 @@ namespace GEDSys_Presentation.Controllers
                 Session["ExcecaoTipo"] = ex.GetType().ToString();
                 Session["VoltaExcecao"] = "AreaPaciente";
                 GravaLogExcecao grava = new GravaLogExcecao(usuApp);
-                Int32 voltaX = grava.GravarLogExcecao(ex, "Exceção", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Exceção", "WebDoctor", 1, (USUARIO)Session["UsuarioArea"]);
                 return 1;
             }
         }
@@ -3229,7 +3248,7 @@ namespace GEDSys_Presentation.Controllers
                 Session["ExcecaoTipo"] = ex.GetType().ToString();
                 Session["VoltaExcecao"] = "AreaPaciente";
                 GravaLogExcecao grava = new GravaLogExcecao(usuApp);
-                Int32 voltaX = grava.GravarLogExcecao(ex, "Exceção", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Exceção", "WebDoctor", 1, (USUARIO)Session["UsuarioArea"]);
                 return RedirectToAction("ErroGeralAreaPaciente", "AreaPaciente");
             }
         }
@@ -3368,7 +3387,7 @@ namespace GEDSys_Presentation.Controllers
                     Session["ExcecaoTipo"] = ex.GetType().ToString();
                     Session["VoltaExcecao"] = "AreaPaciente";
                     GravaLogExcecao grava = new GravaLogExcecao(usuApp);
-                    Int32 voltaX = grava.GravarLogExcecao(ex, "Exceção", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                    Int32 voltaX = grava.GravarLogExcecao(ex, "Exceção", "WebDoctor", 1, (USUARIO)Session["UsuarioArea"]);
                     return RedirectToAction("ErroGeralAreaPaciente", "AreaPaciente");
                 }
             }
@@ -3412,7 +3431,7 @@ namespace GEDSys_Presentation.Controllers
                 Session["ExcecaoTipo"] = ex.GetType().ToString();
                 Session["VoltaExcecao"] = "AreaPaciente";
                 GravaLogExcecao grava = new GravaLogExcecao(usuApp);
-                Int32 voltaX = grava.GravarLogExcecao(ex, "Exceção", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Exceção", "WebDoctor", 1, (USUARIO)Session["UsuarioArea"]);
                 return null;
             }
         }
@@ -3451,7 +3470,7 @@ namespace GEDSys_Presentation.Controllers
                 Session["ExcecaoTipo"] = ex.GetType().ToString();
                 Session["VoltaExcecao"] = "AreaPaciente";
                 GravaLogExcecao grava = new GravaLogExcecao(usuApp);
-                Int32 voltaX = grava.GravarLogExcecao(ex, "Exceção", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Exceção", "WebDoctor", 1, (USUARIO)Session["UsuarioArea"]);
                 return null;
             }
         }
@@ -3490,7 +3509,7 @@ namespace GEDSys_Presentation.Controllers
                 Session["ExcecaoTipo"] = ex.GetType().ToString();
                 Session["VoltaExcecao"] = "AreaPaciente";
                 GravaLogExcecao grava = new GravaLogExcecao(usuApp);
-                Int32 voltaX = grava.GravarLogExcecao(ex, "Exceção", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Exceção", "WebDoctor", 1, (USUARIO)Session["UsuarioArea"]);
                 return null;
             }
         }
@@ -3560,7 +3579,7 @@ namespace GEDSys_Presentation.Controllers
                 Session["ExcecaoTipo"] = ex.GetType().ToString();
                 Session["ExcecaoTipo"] = ex.GetType().ToString();
                 GravaLogExcecao grava = new GravaLogExcecao(usuApp);
-                Int32 voltaX = grava.GravarLogExcecao(ex, "Exceção", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Exceção", "WebDoctor", 1, (USUARIO)Session["UsuarioArea"]);
                 return RedirectToAction("MontaTelaAreaPaciente", "AreaPaciente");
             }
         }
@@ -3664,7 +3683,7 @@ namespace GEDSys_Presentation.Controllers
                 Session["Excecao"] = ex;
                 Session["ExcecaoTipo"] = ex.GetType().ToString();
                 GravaLogExcecao grava = new GravaLogExcecao(usuApp);
-                Int32 voltaX = grava.GravarLogExcecao(ex, "Suporte", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Suporte", "WebDoctor", 1, (USUARIO)Session["UsuarioArea"]);
                 return 0;
             }
             return 0;
@@ -3693,7 +3712,7 @@ namespace GEDSys_Presentation.Controllers
                 Session["ExcecaoTipo"] = ex.GetType().ToString();
                 Session["VoltaExcecao"] = "AreaPaciente";
                 GravaLogExcecao grava = new GravaLogExcecao(usuApp);
-                Int32 voltaX = grava.GravarLogExcecao(ex, "Exceção", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Exceção", "WebDoctor", 1, (USUARIO)Session["UsuarioArea"]);
                 return RedirectToAction("ErroGeralAreaPaciente", "AreaPaciente");
             }
         }
@@ -3721,7 +3740,7 @@ namespace GEDSys_Presentation.Controllers
                 Session["ExcecaoTipo"] = ex.GetType().ToString();
                 Session["VoltaExcecao"] = "AreaPaciente";
                 GravaLogExcecao grava = new GravaLogExcecao(usuApp);
-                Int32 voltaX = grava.GravarLogExcecao(ex, "Exceção", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Exceção", "WebDoctor", 1, (USUARIO)Session["UsuarioArea"]);
                 return RedirectToAction("ErroGeralAreaPaciente", "AreaPaciente");
             }
         }
@@ -3749,7 +3768,7 @@ namespace GEDSys_Presentation.Controllers
                 Session["ExcecaoTipo"] = ex.GetType().ToString();
                 Session["VoltaExcecao"] = "AreaPaciente";
                 GravaLogExcecao grava = new GravaLogExcecao(usuApp);
-                Int32 voltaX = grava.GravarLogExcecao(ex, "Exceção", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Exceção", "WebDoctor", 1, (USUARIO)Session["UsuarioArea"]);
                 return RedirectToAction("ErroGeralAreaPaciente", "AreaPaciente");
             }
         }
@@ -3782,7 +3801,7 @@ namespace GEDSys_Presentation.Controllers
                 Session["ExcecaoTipo"] = ex.GetType().ToString();
                 Session["VoltaExcecao"] = "AreaPaciente";
                 GravaLogExcecao grava = new GravaLogExcecao(usuApp);
-                Int32 voltaX = grava.GravarLogExcecao(ex, "Exceção", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Exceção", "WebDoctor", 1, (USUARIO)Session["UsuarioArea"]);
                 return RedirectToAction("ErroGeralAreaPaciente", "AreaPaciente");
             }
         }
@@ -3810,7 +3829,7 @@ namespace GEDSys_Presentation.Controllers
                 Session["ExcecaoTipo"] = ex.GetType().ToString();
                 Session["VoltaExcecao"] = "AreaPaciente";
                 GravaLogExcecao grava = new GravaLogExcecao(usuApp);
-                Int32 voltaX = grava.GravarLogExcecao(ex, "Exceção", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Exceção", "WebDoctor", 1, (USUARIO)Session["UsuarioArea"]);
                 return RedirectToAction("ErroGeralAreaPaciente", "AreaPaciente");
             }
         }
@@ -3838,7 +3857,7 @@ namespace GEDSys_Presentation.Controllers
                 Session["ExcecaoTipo"] = ex.GetType().ToString();
                 Session["VoltaExcecao"] = "AreaPaciente";
                 GravaLogExcecao grava = new GravaLogExcecao(usuApp);
-                Int32 voltaX = grava.GravarLogExcecao(ex, "Exceção", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Exceção", "WebDoctor", 1, (USUARIO)Session["UsuarioArea"]);
                 return RedirectToAction("ErroGeralAreaPaciente", "AreaPaciente");
             }
         }
@@ -3866,7 +3885,7 @@ namespace GEDSys_Presentation.Controllers
                 Session["ExcecaoTipo"] = ex.GetType().ToString();
                 Session["VoltaExcecao"] = "AreaPaciente";
                 GravaLogExcecao grava = new GravaLogExcecao(usuApp);
-                Int32 voltaX = grava.GravarLogExcecao(ex, "Exceção", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Exceção", "WebDoctor", 1, (USUARIO)Session["UsuarioArea"]);
                 return RedirectToAction("ErroGeralAreaPaciente", "AreaPaciente");
             }
         }
@@ -3899,7 +3918,7 @@ namespace GEDSys_Presentation.Controllers
                 Session["ExcecaoTipo"] = ex.GetType().ToString();
                 Session["VoltaExcecao"] = "AreaPaciente";
                 GravaLogExcecao grava = new GravaLogExcecao(usuApp);
-                Int32 voltaX = grava.GravarLogExcecao(ex, "Exceção", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Exceção", "WebDoctor", 1, (USUARIO)Session["UsuarioArea"]);
                 return RedirectToAction("ErroGeralAreaPaciente", "AreaPaciente");
             }
         }
@@ -3927,7 +3946,7 @@ namespace GEDSys_Presentation.Controllers
                 Session["ExcecaoTipo"] = ex.GetType().ToString();
                 Session["VoltaExcecao"] = "AreaPaciente";
                 GravaLogExcecao grava = new GravaLogExcecao(usuApp);
-                Int32 voltaX = grava.GravarLogExcecao(ex, "Exceção", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Exceção", "WebDoctor", 1, (USUARIO)Session["UsuarioArea"]);
                 return RedirectToAction("ErroGeralAreaPaciente", "AreaPaciente");
             }
         }
@@ -3955,7 +3974,7 @@ namespace GEDSys_Presentation.Controllers
                 Session["ExcecaoTipo"] = ex.GetType().ToString();
                 Session["VoltaExcecao"] = "AreaPaciente";
                 GravaLogExcecao grava = new GravaLogExcecao(usuApp);
-                Int32 voltaX = grava.GravarLogExcecao(ex, "Exceção", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Exceção", "WebDoctor", 1, (USUARIO)Session["UsuarioArea"]);
                 return RedirectToAction("ErroGeralAreaPaciente", "AreaPaciente");
             }
         }
@@ -3983,7 +4002,7 @@ namespace GEDSys_Presentation.Controllers
                 Session["ExcecaoTipo"] = ex.GetType().ToString();
                 Session["VoltaExcecao"] = "AreaPaciente";
                 GravaLogExcecao grava = new GravaLogExcecao(usuApp);
-                Int32 voltaX = grava.GravarLogExcecao(ex, "Exceção", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Exceção", "WebDoctor", 1, (USUARIO)Session["UsuarioArea"]);
                 return RedirectToAction("ErroGeralAreaPaciente", "AreaPaciente");
             }
         }
@@ -4031,7 +4050,7 @@ namespace GEDSys_Presentation.Controllers
                 Session["ExcecaoTipo"] = ex.GetType().ToString();
                 Session["VoltaExcecao"] = "AreaPaciente";
                 GravaLogExcecao grava = new GravaLogExcecao(usuApp);
-                Int32 voltaX = grava.GravarLogExcecao(ex, "Exceção", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Exceção", "WebDoctor", 1, (USUARIO)Session["UsuarioArea"]);
                 return RedirectToAction("ErroGeralAreaPaciente", "AreaPaciente");
             }
         }
@@ -4042,7 +4061,7 @@ namespace GEDSys_Presentation.Controllers
             {
                 Int32 idAss = (Int32)Session["IdAssinante"];
                 List<NOTICIA> conf = new List<NOTICIA>();
-                if (Session["NoticiaGeral"] == null)
+                if (Session["ListaNoticia"] == null)
                 {
                     conf = notApp.GetAllItens(idAss);
                 }
@@ -4054,10 +4073,10 @@ namespace GEDSys_Presentation.Controllers
                     }
                     else
                     {
-                        conf = (List<NOTICIA>)Session["NoticiaGeral"];
+                        conf = (List<NOTICIA>)Session["ListaNoticia"];
                     }
                 }
-                Session["NoticiaGeral"] = conf;
+                Session["ListaNoticia"] = conf;
                 Session["NoticiaAlterada"] = 0;
                 return conf;
             }
@@ -4069,7 +4088,7 @@ namespace GEDSys_Presentation.Controllers
                 Session["Excecao"] = ex;
                 Session["ExcecaoTipo"] = ex.GetType().ToString();
                 GravaLogExcecao grava = new GravaLogExcecao(usuApp);
-                Int32 voltaX = grava.GravarLogExcecao(ex, "AreaPaciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "AreaPaciente", "WebDoctor", 1, (USUARIO)Session["UsuarioArea"]);
                 return null;
             }
         }
@@ -4097,7 +4116,7 @@ namespace GEDSys_Presentation.Controllers
                 Session["ExcecaoTipo"] = ex.GetType().ToString();
                 Session["VoltaExcecao"] = "AreaPaciente";
                 GravaLogExcecao grava = new GravaLogExcecao(usuApp);
-                Int32 voltaX = grava.GravarLogExcecao(ex, "Exceção", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Exceção", "WebDoctor", 1, (USUARIO)Session["UsuarioArea"]);
                 return RedirectToAction("ErroGeralAreaPaciente", "AreaPaciente");
             }
         }
@@ -4125,7 +4144,7 @@ namespace GEDSys_Presentation.Controllers
                 Session["ExcecaoTipo"] = ex.GetType().ToString();
                 Session["VoltaExcecao"] = "AreaPaciente";
                 GravaLogExcecao grava = new GravaLogExcecao(usuApp);
-                Int32 voltaX = grava.GravarLogExcecao(ex, "AreaPaciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "AreaPaciente", "WebDoctor", 1, (USUARIO)Session["UsuarioArea"]);
                 return RedirectToAction("ErroGeralAreaPaciente", "AreaPaciente");
             }
         }
@@ -4167,7 +4186,7 @@ namespace GEDSys_Presentation.Controllers
                 Session["Excecao"] = ex;
                 Session["ExcecaoTipo"] = ex.GetType().ToString();
                 GravaLogExcecao grava = new GravaLogExcecao(usuApp);
-                Int32 voltaX = grava.GravarLogExcecao(ex, "AreaPaciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "AreaPaciente", "WebDoctor", 1, (USUARIO)Session["UsuarioArea"]);
                 return RedirectToAction("TrataExcecao", "BaseAdmin");
             }
         }
@@ -4220,6 +4239,226 @@ namespace GEDSys_Presentation.Controllers
             LOCACAO loca = locaApp.GetItemById((Int32)Session["IdLocacao"]);
             Session["VoltaContrato"] = 2;
             return RedirectToAction("CarregarContrato", "Locacao");
+        }
+
+        public ActionResult ExibirNoticiaHoje()
+        {
+            try
+            {
+                if ((String)Session["Ativa"] == null)
+                {
+                    return RedirectToAction("LogoutAreaPaciente", "AreaPaciente");
+                }
+                PACIENTE usuario = (PACIENTE)Session["UserCredentials"];
+                List<NOTICIA> lista = notApp.GetAllItens(usuario.ASSI_CD_ID);
+                listaMasterNoticia = lista.Where(p => p.NOTC_DT_EMISSAO.Value.Date == DateTime.Today.Date).ToList();
+                Session["ListaNoticia"] = listaMasterNoticia;
+                return RedirectToAction("MontarTelaAreaPaciente");
+            }
+            catch (Exception ex)
+            {
+                Session["MensagemLogin"] = 100;
+                Session["MensagemErro"] = ex.Message;
+                Session["Excecao"] = ex;
+                Session["TipoVolta"] = 2;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                Session["VoltaExcecao"] = "AreaPaciente";
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Exceção", "WebDoctor", 1, (USUARIO)Session["UsuarioArea"]);
+                return RedirectToAction("ErroGeralAreaPaciente", "AreaPaciente");
+            }
+        }
+
+        public ActionResult ExibirNoticiaTodos()
+        {
+            try
+            {
+                if ((String)Session["Ativa"] == null)
+                {
+                    return RedirectToAction("LogoutAreaPaciente", "AreaPaciente");
+                }
+                PACIENTE usuario = (PACIENTE)Session["UserCredentials"];
+                List<NOTICIA> lista = notApp.GetAllItens(usuario.ASSI_CD_ID);
+                listaMasterNoticia = lista;
+                Session["ListaNoticia"] = listaMasterNoticia;
+                return RedirectToAction("MontarTelaAreaPaciente");
+            }
+            catch (Exception ex)
+            {
+                Session["MensagemLogin"] = 100;
+                Session["MensagemErro"] = ex.Message;
+                Session["Excecao"] = ex;
+                Session["TipoVolta"] = 2;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                Session["VoltaExcecao"] = "AreaPaciente";
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Exceção", "WebDoctor", 1, (USUARIO)Session["UsuarioArea"]);
+                return RedirectToAction("ErroGeralAreaPaciente", "AreaPaciente");
+            }
+        }
+
+        public ActionResult VerNoticia(Int32 id)
+        {
+            if ((String)Session["Ativa"] == null)
+            {
+                return RedirectToAction("Logout", "ControleAcesso");
+            }
+            PACIENTE pac = (PACIENTE)Session["UserCredentials"];
+            ViewBag.NomePaciente = pac.PACI_NM_NOME;
+
+            Session["IdNoticia"] = id;
+            NOTICIA item = notApp.GetItemById(id);
+            item.NOTC_NR_ACESSO = ++item.NOTC_NR_ACESSO;
+            Int32 volta = notApp.ValidateEdit(item, item);
+
+            NoticiaViewModel vm = Mapper.Map<NOTICIA, NoticiaViewModel>(item);
+            return View(vm);
+        }
+
+        public ActionResult IncluirComentario()
+        {
+            try
+            {
+                // Verifica se tem usuario logado
+                if ((String)Session["Ativa"] == null)
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+                Int32 idAss = (Int32)Session["IdAssinante"];
+
+                NOTICIA item = notApp.GetItemById((Int32)Session["IdNoticia"]);
+                PACIENTE pac = (PACIENTE)Session["UserCredentials"];
+                USUARIO usu = usuApp.GetItemById(pac.USUA_CD_ID.Value);
+                ViewBag.NomePaciente = pac.PACI_NM_NOME;
+
+                NOTICIA_COMENTARIO coment = new NOTICIA_COMENTARIO();
+                NoticiaComentarioViewModel vm = Mapper.Map<NOTICIA_COMENTARIO, NoticiaComentarioViewModel>(coment);
+                vm.NOCO_DT_COMENTARIO = DateTime.Now;
+                vm.NOCO_IN_ATIVO = 1;
+                vm.NOTC_CD_ID = item.NOTC_CD_ID;
+                vm.USUARIO = usu;
+                vm.USUA_CD_ID = usu.USUA_CD_ID;
+                vm.PACI_CD_ID = pac.PACI__CD_ID;
+                ViewBag.NomePaciente = pac.PACI_NM_NOME;
+
+                // Grava Acesso
+                ControleAcessoMetodo grava = new ControleAcessoMetodo(aceApp);
+                Int32 voltaX = grava.GravaAcesso(usu.USUA_CD_ID, usu.ASSI_CD_ID, "NOTICIA_COMENTARIO_INCLUIR", "AreaPaciente", "IncluirComentario");
+                return View(vm);
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "AreaPaciente";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Paciente", "AreaPaciente", 1, (USUARIO)Session["UsuarioArea"]);
+                return RedirectToAction("TrataExcecao", "BaseAdmin");
+            }
+        }
+
+        [HttpPost]
+        public ActionResult IncluirComentario(NoticiaComentarioViewModel vm)
+        {
+            if ((String)Session["Ativa"] == null)
+            {
+                return RedirectToAction("Logout", "ControleAcesso");
+            }
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    // Sanitização
+                    vm.NOCO_DS_COMENTARIO = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(vm.NOCO_DS_COMENTARIO);
+
+                    // Executa a operação
+                    NOTICIA_COMENTARIO item = Mapper.Map<NoticiaComentarioViewModel, NOTICIA_COMENTARIO>(vm);
+                    USUARIO usuarioLogado = (USUARIO)Session["UserCredentials"];
+                    NOTICIA not = notApp.GetItemById((Int32)Session["IdNoticia"]);
+                    String json = JsonConvert.SerializeObject(item);
+
+                    item.USUARIO = null;
+                    not.NOTICIA_COMENTARIO.Add(item);
+                    Int32 volta = notApp.ValidateEdit(not, not, usuarioLogado);
+
+                    // Monta Log
+                    LOG log = new LOG
+                    {
+                        LOG_DT_DATA = DateTime.Now,
+                        ASSI_CD_ID = usuarioLogado.ASSI_CD_ID,
+                        USUA_CD_ID = usuarioLogado.USUA_CD_ID,
+                        LOG_NM_OPERACAO = "Notícia - Comentário - Inclusão",
+                        LOG_IN_ATIVO = 1,
+                        LOG_TX_REGISTRO = json,
+                        LOG_IN_SISTEMA = 6
+                    };
+                    Int32 volta1 = logApp.ValidateCreate(log);
+
+                    // Sucesso
+                    return RedirectToAction("VoltarVerNoticia");
+                }
+                catch (Exception ex)
+                {
+                    ViewBag.Message = ex.Message;
+                    Session["TipoVolta"] = 2;
+                    Session["VoltaExcecao"] = "Paciente";
+                    Session["Excecao"] = ex;
+                    Session["ExcecaoTipo"] = ex.GetType().ToString();
+                    GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                    Int32 voltaX = grava.GravarLogExcecao(ex, "Paciente", "WebDoctor", 1, (USUARIO)Session["UsuarioArea"]);
+                    return RedirectToAction("TrataExcecao", "BaseAdmin");
+                }
+            }
+            else
+            {
+                return View(vm);
+            }
+        }
+
+        public ActionResult VoltarVerNoticia()
+        {
+            if ((String)Session["Ativa"] == null)
+            {
+                return RedirectToAction("Logout", "ControleAcesso");
+            }
+            Session["VoltaTela"] = 1;
+            return RedirectToAction("VerNoticia", new { id = (Int32)Session["IdNoticia"] });
+        }
+
+        [HttpGet]
+        public ActionResult ExcluirAnotacaoNoticia(Int32 id)
+        {
+            try
+            {
+                // Verifica se tem usuario logado
+                if ((String)Session["Ativa"] == null)
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+
+                PACIENTE pac = (PACIENTE)Session["UserCredentials"];
+                USUARIO usu = usuApp.GetItemById(pac.USUA_CD_ID.Value);
+
+                NOTICIA_COMENTARIO item = notApp.GetComentarioById(id);
+                item.NOCO_IN_ATIVO = 0;
+                Int32 volta = notApp.ValidateEditComentario(item);
+                Session["NoticiaAlterada"] = 1;
+
+                return RedirectToAction("VoltarVerNoticia");
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "AreaPaciente";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "AreaPaciente", "WebDoctor", 1, (USUARIO)Session["UsuarioArea"]);
+                return RedirectToAction("TrataExcecao", "BaseAdmin");
+            }
         }
 
     }

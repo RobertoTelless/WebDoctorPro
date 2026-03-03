@@ -268,6 +268,7 @@ namespace GEDSys_Presentation.Controllers
             vm.NOTC_IN_ATIVO = 1;
             vm.NOTC_DT_VALIDADE = DateTime.Today.Date.AddDays(30);
             vm.NOTC_NR_ACESSO = 0;
+            vm.NOTC_IN_SISTEMA = 6;           
             return View(vm);
         }
 
@@ -778,7 +779,6 @@ namespace GEDSys_Presentation.Controllers
                 return null;
             }
         }
-
 
     }
 }

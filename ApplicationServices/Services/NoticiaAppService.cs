@@ -204,5 +204,19 @@ namespace ApplicationServices.Services
                 throw;
             }
         }
+
+        public Int32 ValidateEditComentario(NOTICIA_COMENTARIO item)
+        {
+            try
+            {
+                // Persiste
+                return _baseService.EditComentario(item);
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
     }
 }
