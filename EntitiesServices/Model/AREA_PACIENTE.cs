@@ -40,6 +40,10 @@ namespace EntitiesServices.Model
         public Nullable<int> LABS_CD_ID { get; set; }
         public string AREA_TX_COMENTARIOS_DOCUMENTO { get; set; }
         public Nullable<int> LOCA_CD_ID { get; set; }
+        public Nullable<int> AREA_IN_TIPO_CONSULTA { get; set; }
+        public Nullable<int> AREA_IN_VISTA { get; set; }
+        public Nullable<int> AREA_IN_PROCESSADA { get; set; }
+        public Nullable<System.DateTime> AREA_DT_PROCESSO { get; set; }
     
         public virtual PACIENTE PACIENTE { get; set; }
         public virtual USUARIO USUARIO { get; set; }

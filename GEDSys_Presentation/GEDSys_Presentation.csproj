@@ -1236,6 +1236,7 @@
     <Content Include="Global.asax" />
     <Content Include="Content\Site.css" />
     <Content Include="google4d9e96e20f00fae4.html" />
+    <Content Include="Imagens\1\AreaPaciente\5\Anexos\trump_babaca.jpg" />
     <Content Include="Imagens\1\Empresa\3\Anexos\bz.jpg" />
     <Content Include="Imagens\1\Empresa\3\Logo\Logo_RTI.png" />
     <Content Include="Imagens\1\Envio\25\Anexos\genio.jpg" />
@@ -4004,6 +4005,14 @@
     <Content Include="Imagens\1\Locacao\94\Contrato\Contrato_LocacaoApóstrofo Metafosfórico Hígido_d6et22cn000afj2ifq40.pdf" />
     <Content Include="Imagens\1\Locacao\95\Assinado\Contrato_LocacaoÁLVARO VAN BEETHOVEN_d6f03l4n000afj2ifqeg.pdf" />
     <Content Include="Imagens\1\Locacao\95\Contrato\Contrato_LocacaoÁlvaro Van Beethoven_d6f03l4n000afj2ifqeg.pdf" />
+    <Content Include="Imagens\1\AreaPaciente\3\Anexos\guia extinta excesso partilha.pdf" />
+    <Content Include="Imagens\1\AreaPaciente\4\Anexos\darj divorcio odayr e palmyra nova.pdf" />
+    <Content Include="Imagens\1\AreaPaciente\4\Anexos\guia extinta excesso partilha.pdf" />
+    <Content Include="Imagens\1\AreaPaciente\5\Anexos\guia extinta excesso partilha.pdf" />
+    <Content Include="Imagens\1\AreaPaciente\6\Anexos\01039710919948190001-8.pdf" />
+    <Content Include="Imagens\1\AreaPaciente\7\Anexos\Power_System_Analysis.pdf" />
+    <Content Include="Imagens\1\AreaPaciente\7\Anexos\WebDoctorPro.pptx" />
+    <Content Include="Imagens\1\AreaPaciente\8\Anexos\darj divorcio odayr e palmyra nova.pdf" />
     <None Include="Properties\PublishProfiles\eprontuario - FTP.pubxml" />
     <None Include="Properties\PublishProfiles\eprontuario - FTP1.pubxml" />
     <None Include="Properties\PublishProfiles\eprontuario - Web Deploy.pubxml" />
@@ -5418,11 +5427,12 @@
     <Content Include="Views\AreaPaciente\VerNoticia.cshtml" />
     <Content Include="Views\Noticia\IncluirComentario.cshtml" />
     <Content Include="Views\AreaPaciente\IncluirComentario.cshtml" />
+    <Content Include="Views\AreaPaciente\ErroGeralAreaPaciente.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="Filters\" />
-    <Folder Include="Imagens\1\AreaPaciente\" />
+    <Folder Include="Imagens\1\AreaPaciente\10\Anexos\" />
     <Folder Include="Imagens\1\Envio\34\Anexos\" />
     <Folder Include="Imagens\1\Envio\35\Anexos\" />
     <Folder Include="Imagens\1\Envio\37\Anexos\" />

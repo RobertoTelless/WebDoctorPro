@@ -25811,6 +25811,10 @@ namespace GEDSys_Presentation.Controllers
                 tipo.Add(new SelectListItem() { Text = "Anamese", Value = "8" });
                 tipo.Add(new SelectListItem() { Text = "Exame Físico", Value = "9" });
                 tipo.Add(new SelectListItem() { Text = "Consulta", Value = "10" });
+                tipo.Add(new SelectListItem() { Text = "Pagamento", Value = "11" });
+                tipo.Add(new SelectListItem() { Text = "Recebimento", Value = "12" });
+                tipo.Add(new SelectListItem() { Text = "Mensagem", Value = "13" });
+                tipo.Add(new SelectListItem() { Text = "Envio de Documento", Value = "14" });
                 ViewBag.Tipos = new SelectList(tipo, "Value", "Text");
                 ViewBag.Perfil = usuario.PERFIL.PERF_SG_SIGLA;
 
@@ -25908,6 +25912,7 @@ namespace GEDSys_Presentation.Controllers
                 tipo.Add(new SelectListItem() { Text = "Pagamento", Value = "11" });
                 tipo.Add(new SelectListItem() { Text = "Recebimento", Value = "12" });
                 tipo.Add(new SelectListItem() { Text = "Mensagem", Value = "13" });
+                tipo.Add(new SelectListItem() { Text = "Envio de Documento", Value = "14" });
                 ViewBag.Tipos = new SelectList(tipo, "Value", "Text");
                 List<PACIENTE> pacs = CarregaPaciente();
                 if (usuario.PERFIL.PERF_SG_SIGLA != "ADM" & usuario.PERFIL.PERF_IN_VISAO_GERAL == 0)

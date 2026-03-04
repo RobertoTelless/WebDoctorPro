@@ -78,32 +78,20 @@
                             <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Profissional</h4>
                             <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
                                 <div class="col-lg-4 col-md-4 col-xs-12">
-                                    Assinante*
-                                    @Html.DropDownListFor(m => m.ASSI_CD_ID, (SelectList)ViewBag.Assinantes, "Selecionar", new { @class = "form-control", autofocus = true, onchange = "FiltrarProfissional($(this).val())", id = "assinante" })
-                                    @Html.ValidationMessageFor(m => m.ASSI_CD_ID, "", new { @style = "color:red" })
+                                    Profissional
+                                    @Html.TextBoxFor(m => m.USUARIO.USUA_NM_NOME, new { @class = "form-control", @readonly = "readonly" })
                                 </div>
-                                <div class="col-lg-4 col-md-4 col-xs-12">
-                                    Profissional*
-                                    @Html.DropDownListFor(m => m.USUA_CD_ID, (SelectList)ViewBag.Profissionais, "Selecionar", new { @class = "form-control", autofocus = true, id = "prof", onchange = "GetProfissional($(this).val())"})
-                                    @Html.ValidationMessageFor(m => m.USUA_CD_ID, "", new { @style = "color:red" })
-                                </div>
-                            </div>
-                            <div class="form-group" style=" margin-left: -15px; margin-right: -15px; display:none" id="dadosProf">
-                                <div style="display: none;" id="nome" class="col-lg-4 col-md-4 col-xs-12">
-                                    Nome
-                                    <input class="form-control" type="text" readonly="readonly" tabindex="-1"/>
-                                </div>
-                                <div style="display: none;" id="espec" class="col-lg-2 col-md-2 col-xs-12">
+                                <div class="col-lg-2 col-md-22 col-xs-12">
                                     Especialidade
-                                    <input class="form-control" type="text" readonly="readonly" tabindex="-1"/>
+                                    @Html.TextBoxFor(m => m.USUARIO.ESPECIALIDADE.ESPE_NM_NOME, new { @class = "form-control", @readonly = "readonly" })
                                 </div>
-                                <div style="display: none;" id="cpf" class="col-lg-2 col-md-2 col-xs-12">
+                                <div class="col-lg-2 col-md-22 col-xs-12">
                                     CPF
-                                    <input class="form-control" type="text" readonly="readonly" tabindex="-1"/>
+                                    @Html.TextBoxFor(m => m.USUARIO.USUA_NR_CPF, new { @class = "form-control", @readonly = "readonly" })
                                 </div>
-                                <div style="display: none;" id="classe" class="col-lg-2 col-md-2 col-xs-12">
+                                <div class="col-lg-2 col-md-22 col-xs-12">
                                     Cart.Classe
-                                    <input class="form-control" type="text" readonly="readonly" tabindex="-1"/>
+                                    @Html.TextBoxFor(m => m.USUARIO.USUA_NR_CLASSE, new { @class = "form-control", @readonly = "readonly" })
                                 </div>
                             </div>
                         </div>
@@ -121,6 +109,8 @@
 
                         <div class="row">
                             <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                <h4 style="margin-left: 15px; color:brown; background-color: beige; font-weight:bold; margin-right: 15px">Informe a data e a hora da consulta que deseja marcar com o profissional acima.</h4>
+                                <h4 style="margin-left: 15px; color:brown; background-color: beige; font-weight:bold; margin-right: 15px">Esta é apenas uma solicitação de marcação. A disponibiliade do horário será verificada. Você receberá a resposta em seu e-mail cadastrado no WebDoctorPro </h4>
                                 <div class="col-lg-3 col-md-2 col-xs-12">
                                     Tipo de Consulta*
                                     @Html.DropDownListFor(m => m.PACO_IN_TIPO, (SelectList)ViewBag.Tipo, "Selecionar", new { @class = "form-control", autofocus = true, @id="tipoCons" })
@@ -132,20 +122,10 @@
                                     @Html.ValidationMessageFor(m => m.PACO_DT_CONSULTA, "", new { @style = "color:red" })
                                 </div>
                                 <div class="col-lg-2 col-md-2 col-xs-12">
-                                    Início*
+                                    Horário da Consulta*
                                     <div class='input-group date' id='datetimepicker3'>
                                         @Html.TextBoxFor(m => m.PACO_HR_INICIO, new { @class = "form-control time-picker", autofocus = true, @id = "hora" })
                                         @Html.ValidationMessageFor(m => m.PACO_HR_INICIO, "", new { @style = "color:red" })
-                                        <span class="input-group-addon">
-                                            <span style="cursor: pointer;" class="glyphicon glyphicon-time"></span>
-                                        </span>
-                                    </div>
-                                </div>
-                                <div class="col-lg-2 col-md-2 col-xs-12">
-                                    Término*
-                                    <div class='input-group date' id='datetimepicker3'>
-                                        @Html.TextBoxFor(m => m.PACO_HR_FINAL, new { @class = "form-control time-picker1", autofocus = true, @id = "hora1" })
-                                        @Html.ValidationMessageFor(m => m.PACO_HR_FINAL, "", new { @style = "color:red" })
                                         <span class="input-group-addon">
                                             <span style="cursor: pointer;" class="glyphicon glyphicon-time"></span>
                                         </span>

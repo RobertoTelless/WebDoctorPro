@@ -1275,7 +1275,9 @@ namespace GEDSys_Presentation.Controllers
                 Session["VoltaConfCalendario"] = 2;
                 Session["VoltaBloqueio"] = 3;
                 Session["VoltaInfoConsulta"] = 1;
-                Session["AjudaNivel"] = "../BaseAdmin/Ajuda/5/Ajuda5_1.pdf";
+
+                USUARIO usu = usuApp.GetItemById(paciente.USUA_CD_ID.Value);
+
                 PACIENTE_CONSULTA item = new PACIENTE_CONSULTA();
                 PacienteConsultaViewModel vm = Mapper.Map<PACIENTE_CONSULTA, PacienteConsultaViewModel>(item);
                 vm.PACI_CD_ID = paciente.PACI__CD_ID;
@@ -1302,6 +1304,7 @@ namespace GEDSys_Presentation.Controllers
                 vm.DOMINGO = 0;
                 vm.PACO_IN_RECORRENTE = 0;
                 vm.PACO_IN_RECEBE = 0;
+                vm.USUARIO = usu;
                 return View(vm);
             }
             catch (Exception ex)
@@ -1340,99 +1343,25 @@ namespace GEDSys_Presentation.Controllers
                 {
                     // Critica dia util
                     Int32 idAss = usuario.ASSI_CD_ID;
-                    CONFIGURACAO_CALENDARIO confCal = CarregaConfiguracaoCalendario();
-                    DateTime dataCons = vm.PACO_DT_CONSULTA;
-                    Int32 dia = (Int32)dataCons.DayOfWeek;
-                    Int32 voltaCal = VerificacaoDataCalendario.ValidaDiaUtil(dia, confCal);
-                    if (voltaCal == 1)
-                    {
-                        Session["MensArea"] = 800;
-                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0551", CultureInfo.CurrentCulture));
-                        return View(vm);
-                    }
-
-                    // Critica de horario util
-                    Int32 voltaUtil = VerificacaoDataCalendario.ValidaHoraUtil(dia, vm, confCal);
-                    if (voltaUtil == 1)
-                    {
-                        Session["MensArea"] = 801;
-                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0552", CultureInfo.CurrentCulture));
-                        return View(vm);
-                    }
-                    if (voltaUtil == 2)
-                    {
-                        Session["MensArea"] = 802;
-                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0553", CultureInfo.CurrentCulture));
-                        return View(vm);
-                    }
+                    Session["UsuarioProf"] = usuario.USUA_CD_ID;
 
                     //Criticas
-                    if (vm.PACO_HR_INICIO == null || vm.PACO_HR_FINAL == null)
+                    if (vm.PACO_HR_INICIO == null)
                     {
                         Session["MensArea"] = 504;
                         ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0545", CultureInfo.CurrentCulture));
+                        return View(vm);
+                    }
+                    if (vm.PACO_DT_CONSULTA == null)
+                    {
+                        Session["MensArea"] = 504;
+                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0737", CultureInfo.CurrentCulture));
                         return View(vm);
                     }
                     if (vm.PACO_DT_CONSULTA.Date < DateTime.Today.Date)
                     {
                         Session["MensArea"] = 501;
                         ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0526", CultureInfo.CurrentCulture));
-                        return View(vm);
-                    }
-                    if (vm.PACO_HR_INICIO == vm.PACO_HR_FINAL)
-                    {
-                        Session["MensArea"] = 502;
-                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0529", CultureInfo.CurrentCulture));
-                        return View(vm);
-                    }
-                    if (vm.PACO_HR_INICIO > vm.PACO_HR_FINAL)
-                    {
-                        Session["MensArea"] = 503;
-                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0530", CultureInfo.CurrentCulture));
-                        return View(vm);
-                    }
-
-                    // Critica de horario
-                    List<PACIENTE_CONSULTA> lista = baseApp.GetAllConsultas(idAss).Where(p => p.USUA_CD_ID == vm.USUA_CD_ID & p.PACO_DT_CONSULTA.Date == vm.PACO_DT_CONSULTA.Date & p.PACO_IN_ATIVO == 1 & p.PACO_IN_CONFIRMADA < 2).ToList();
-                    List<PACIENTE_CONSULTA> lista1 = lista.Where(p => p.PACO_HR_INICIO >= vm.PACO_HR_INICIO & p.PACO_HR_FINAL >= vm.PACO_HR_FINAL & p.PACO_HR_INICIO < vm.PACO_HR_FINAL).ToList();
-                    List<PACIENTE_CONSULTA> lista2 = lista.Where(p => p.PACO_HR_INICIO <= vm.PACO_HR_INICIO & p.PACO_HR_FINAL >= vm.PACO_HR_FINAL).ToList();
-                    List<PACIENTE_CONSULTA> lista3 = lista.Where(p => p.PACO_HR_INICIO <= vm.PACO_HR_INICIO & p.PACO_HR_FINAL <= vm.PACO_HR_FINAL & p.PACO_HR_FINAL > vm.PACO_HR_INICIO).ToList();
-                    List<PACIENTE_CONSULTA> lista4 = lista.Where(p => p.PACO_HR_INICIO >= vm.PACO_HR_INICIO & p.PACO_HR_FINAL <= vm.PACO_HR_FINAL).ToList();
-                    if (lista1.Count > 0 || lista2.Count > 0 || lista3.Count > 0 || lista4.Count > 0)
-                    {
-                        Session["MensArea"] = 500;
-                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0524", CultureInfo.CurrentCulture));
-                        return View(vm);
-                    }
-
-                    // Verifica bloqueios
-                    List<CONFIGURACAO_CALENDARIO> confs = calApp.GetAllItems(idAss);
-                    CONFIGURACAO_CALENDARIO cal = null;
-                    cal = confs.Where(p => p.USUA_CD_ID == vm.USUA_CD_ID).FirstOrDefault();
-                    List<CONFIGURACAO_CALENDARIO_BLOQUEIO> bloqs = cal.CONFIGURACAO_CALENDARIO_BLOQUEIO.Where(p => p.COCB_IN_ATIVO == 1).ToList();
-                    Int32 bloqFlag = 0;
-                    foreach (CONFIGURACAO_CALENDARIO_BLOQUEIO bloq in bloqs)
-                    {
-                        if (vm.PACO_DT_CONSULTA >= bloq.COCB_DT_BLOQUEIO_INICIO & vm.PACO_DT_CONSULTA <= bloq.COCB_DT_BLOQUEIO_FINAL)
-                        {
-                            if (bloq.COCB_HR_INICIO == null || bloq.COCB_HR_FINAL == null)
-                            {
-                                bloqFlag = 1;
-                            }
-                            else
-                            {
-                                if (vm.PACO_HR_INICIO >= bloq.COCB_HR_INICIO & vm.PACO_HR_FINAL <= bloq.COCB_HR_FINAL)
-                                {
-                                    bloqFlag = 1;
-                                }
-                            }
-                        }
-                    }
-
-                    if (bloqFlag > 0)
-                    {
-                        Session["MensArea"] = 500;
-                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0565", CultureInfo.CurrentCulture));
                         return View(vm);
                     }
 
@@ -1448,17 +1377,24 @@ namespace GEDSys_Presentation.Controllers
                     area.USUA_CD_ID = usuario.USUA_CD_ID;
                     area.AREA_IN_TIPO = 1;
                     area.AREA_IN_ATIVO = 1;
+                    area.AREA_IN_PROCESSADA = 0;
+                    area.AREA_IN_VISTA = 0;
                     area.AREA_DT_CONSULTA = vm.PACO_DT_CONSULTA;
                     area.AREA_HR_INICIO = vm.PACO_HR_INICIO;
-                    area.AREA_HR_FINAL = vm.PACO_HR_FINAL;
+                    area.AREA_IN_TIPO_CONSULTA = vm.PACO_IN_TIPO;
                     area.AREA_GU_IDENTIFICADOR = Xid.NewXid().ToString();
                     area.AREA_NM_TITULO = "Solicitação de marcação de consulta";
                     area.AREA_TX_CONTEUDO = "Solicitação de marcação de consulta de " + usuario.PACI_NM_NOME.ToUpper() + " com o profissional " + usuario.USUARIO.USUA_NM_NOME.ToUpper() + " para o dia " + vm.PACO_DT_CONSULTA.ToShortDateString() + " - " + vm.PACO_HR_INICIO.ToString() + " até " + vm.PACO_HR_FINAL.ToString();
                     Int32 volta = areaApp.ValidateCreate(area);
 
+                    // Cria pastas
+                    String caminho = "/Imagens/" + idAss.ToString() + "/AreaPaciente/" + area.AREA_CD_ID.ToString() + "/Anexos/";
+                    String map = Server.MapPath(caminho);
+                    Directory.CreateDirectory(Server.MapPath(caminho));
+
                     // Mensagem
-                    Session["MsgCRUD"] = "A solicitação de marcação de consulta de " + usuario.PACI_NM_NOME.ToUpper() + " com o profissional " + usuario.USUARIO.USUA_NM_NOME.ToUpper() + " para o dia " + vm.PACO_DT_CONSULTA.ToShortDateString() + " - " + vm.PACO_HR_INICIO.ToString() + " até " + vm.PACO_HR_FINAL.ToString() + " foi enviada com sucesso. Você receberá a confirmação de sua conaulta em seu e-mail cadastrado no WebDoctorPro";
-                    Session["MensFC"] = 61;
+                    Session["MsgCRUD"] = "A solicitação de marcação de consulta de " + usuario.PACI_NM_NOME.ToUpper() + " com o profissional " + usuario.USUARIO.USUA_NM_NOME.ToUpper() + " para o dia " + vm.PACO_DT_CONSULTA.ToShortDateString() + " - " + vm.PACO_HR_INICIO.ToString() + " até " + vm.PACO_HR_FINAL.ToString() + " foi enviada com sucesso. Você receberá a confirmação de sua consulta em seu e-mail cadastrado no WebDoctorPro";
+                    Session["MensArea"] = 61;
 
                     // Retorno
                     return RedirectToAction("MontarTelaAreaPaciente");
@@ -2554,8 +2490,8 @@ namespace GEDSys_Presentation.Controllers
             }
         }
 
-        [HttpGet]
-        public async Task<ActionResult> CancelarConsulta(Int32 id)
+        [HttpPost]
+        public async Task<ActionResult> CancelarConsulta(Int32 id, String justificativa)
         {
             try
             {
@@ -2574,16 +2510,13 @@ namespace GEDSys_Presentation.Controllers
                     return RedirectToAction("LogoutAreaPaciente", "AreaPaciente");
                 }
 
-                // Recupera dados
-                CONFIGURACAO conf = CarregaConfiguracaoGeral();
-                PACIENTE_CONSULTA item = baseApp.GetConsultaById(id);
-
-                // Recupera paciente
-                PACIENTE pac1 = baseApp.GetItemById(paciente.PACI__CD_ID);
-                USUARIO usuarioLogado = usuApp.GetItemById(pac1.USUA_CD_ID.Value);
-
                 // Processa cancelamento
+                CONFIGURACAO conf = CarregaConfiguracaoGeral();
+                USUARIO usuarioLogado = usuApp.GetItemById(paciente.USUA_CD_ID.Value);
+                PACIENTE_CONSULTA item = baseApp.GetConsultaById(id);
+                objetoAntes = (PACIENTE)Session["Paciente"];
                 item.PACO_IN_CONFIRMADA = 2;
+                item.PACO_TX_JUSTIFICATIVA_CANCELA = justificativa;
                 Int32 volta = baseApp.ValidateEditConsultaConfirma(item);
 
                 // Acerta estado
@@ -2597,7 +2530,16 @@ namespace GEDSys_Presentation.Controllers
                 // Recupera paciente
                 PACIENTE pac = baseApp.GetItemById(item.PACI_CD_ID);
 
+                // Configura serilização
+                JsonSerializerSettings settings = new JsonSerializerSettings
+                {
+                    ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+                    NullValueHandling = NullValueHandling.Ignore
+                };
+
                 // Monta Log
+                DTO_Paciente_Consulta dto = MontarPacienteConsultaDTOObj(item);
+                String json = JsonConvert.SerializeObject(dto, settings);
                 LOG log = new LOG
                 {
                     LOG_DT_DATA = DateTime.Now,
@@ -2605,7 +2547,7 @@ namespace GEDSys_Presentation.Controllers
                     USUA_CD_ID = usuarioLogado.USUA_CD_ID,
                     LOG_NM_OPERACAO = "Paciente - Consulta - Cancelamento",
                     LOG_IN_ATIVO = 1,
-                    LOG_TX_REGISTRO = "Paciente: " + pac.PACI_NM_NOME + " | Data: " + item.PACO_DT_CONSULTA,
+                    LOG_TX_REGISTRO = json,
                     LOG_IN_SISTEMA = 6
                 };
                 Int32 volta1 = logApp.ValidateCreate(log);
@@ -2619,41 +2561,272 @@ namespace GEDSys_Presentation.Controllers
                 hist.PAHI_IN_TIPO = 10;
                 hist.PAHI_IN_CHAVE = item.PACO_CD_ID;
                 hist.PAHI_NM_OPERACAO = "Paciente - Cancelamento de Consulta";
-                hist.PAHI_DS_DESCRICAO = "Paciente " + pac.PACI_NM_NOME + " - Consulta cancelada " + item.PACO_DT_CONSULTA.ToShortDateString();
+                hist.PAHI_DS_DESCRICAO = "Paciente " + pac.PACI_NM_NOME + " - Consulta cancelada " + item.PACO_DT_CONSULTA.ToShortDateString() + " - Justificativa: " + justificativa;
                 Int32 voltaHist = baseApp.ValidateCreateHistorico(hist);
+                Session["ListaConsultasGeral"] = null;
+                Session["ConsultasAlterada"] = 1;
 
                 // Mensagem do CRUD
                 Session["MsgCRUD"] = "A consulta do(a) paciente " + pac.PACI_NM_NOME.ToUpper() + " marcada para " + item.PACO_DT_CONSULTA.ToLongDateString() + " foi cancelada com sucesso";
-                Session["MensPaciente"] = 61;
+                Session["MensPaciente"] = 888;
 
                 // Envia mensagem
                 if (pac.PACI_NM_EMAIL != null)
                 {
-                    Int32 voltaCons = await EnviarEMailConsulta(item, 4);
+                    Int32 voltaCons = await EnviarEMailConsultaEspecial(item, 4);
                 }
                 if (pac.PACI_NR_CELULAR != null)
                 {
-                    Int32 voltaCons = EnviarSMSConsulta(item, 4);
+                    Int32 voltaCons = await EnviarEMailConsultaEspecial(item, 4);
                 }
                 if (usuarioLogado.USUA_NM_EMAIL != null)
                 {
-                    Int32 voltaCons = await EnviarEMailConsulta(item, 7);
+                    Int32 voltaCons = await EnviarEMailConsultaEspecial(item, 7);
                 }
 
                 // Retorno
-                return RedirectToAction("MontarTelaAreaPaciente");
+                Session["Consultas"] = null;
+                if ((Int32)Session["TipoSolicitacao"] == 1)
+                {
+                    if ((Int32)Session["VoltaAtestado"] == 1)
+                    {
+                        return RedirectToAction("MontarTelaPaciente", "Paciente");
+                    }
+                    return RedirectToAction("VoltarAnexoPaciente");
+                }
+                if ((Int32)Session["VoltaTelaEncerra"] == 1)
+                {
+                    return RedirectToAction("MontarTelaEncerrarConsulta", "Financeiro");
+                }
+                if ((Int32)Session["VoltaConfirmar"] == 1)
+                {
+                    return RedirectToAction("ConfirmarCancelarConsulta", "Paciente");
+                }
+                if ((Int32)Session["VoltaCalendario"] == 1)
+                {
+                    return RedirectToAction("VerCalendarioConsulta");
+                }
+                return RedirectToAction("MontarTelaConsultas", "Paciente");
             }
             catch (Exception ex)
             {
-                Session["MensagemLogin"] = 100;
-                Session["MensagemErro"] = ex.Message;
-                Session["Excecao"] = ex;
+                ViewBag.Message = ex.Message;
                 Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Paciente";
+                Session["Excecao"] = ex;
                 Session["ExcecaoTipo"] = ex.GetType().ToString();
-                Session["VoltaExcecao"] = "AreaPaciente";
                 GravaLogExcecao grava = new GravaLogExcecao(usuApp);
-                Int32 voltaX = grava.GravarLogExcecao(ex, "Exceção", "WebDoctor", 1, (USUARIO)Session["UsuarioArea"]);
-                return RedirectToAction("ErroGeralAreaPaciente", "AreaPaciente");
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Paciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return RedirectToAction("TrataExcecao", "BaseAdmin");
+            }
+        }
+
+        public async Task<Int32> EnviarEMailConsultaEspecial(PACIENTE_CONSULTA consulta, Int32 tipo)
+        {
+            // Recupera informações
+            Int32 idAss = (Int32)Session["IdAssinante"];
+            USUARIO usuario = (USUARIO)Session["UserCredentials"];
+            PACIENTE paciente = baseApp.GetItemById(consulta.PACI_CD_ID);
+            CONFIGURACAO conf = CarregaConfiguracaoGeral();
+
+            // Processo
+            try
+            {
+                // Recupera Template
+                TEMPLATE_EMAIL template = null;
+                if (tipo == 1)
+                {
+                    template = temApp.GetByCode("CRIACONS", idAss);
+                }
+                else if (tipo == 2)
+                {
+                    template = temApp.GetByCode("ALTCONS", idAss);
+                }
+                else if (tipo == 3)
+                {
+                    template = temApp.GetByCode("CONFCONS", idAss);
+                }
+                else if (tipo == 4)
+                {
+                    template = temApp.GetByCode("CANCCONS", idAss);
+                }
+                else if (tipo == 5)
+                {
+                    template = temApp.GetByCode("CRMEDCONS", idAss);
+                }
+                else if (tipo == 6)
+                {
+                    template = temApp.GetByCode("CFMEDCONS", idAss);
+                }
+                else if (tipo == 7)
+                {
+                    template = temApp.GetByCode("CCMEDCONS", idAss);
+                }
+
+                // Prepara cabeçalho
+                String cab = template.TEEM_TX_CABECALHO;
+                String cor = template.TEEM_TX_CORPO;
+                if (tipo < 5)
+                {
+                    if (cab.Contains("{nome}"))
+                    {
+                        cab = cab.Replace("{nome}", paciente.PACI_NM_NOME);
+                    }
+                }
+                else
+                {
+                    if (cab.Contains("{medico}"))
+                    {
+                        cab = cab.Replace("{medico}", usuario.USUA_NM_NOME);
+                    }
+                }
+
+                // Prepara assinatura
+                String assinatura = String.Empty;
+                if (tipo < 5)
+                {
+                    String classe = String.Empty;
+                    if (usuario.TIPO_CARTEIRA_CLASSE != null)
+                    {
+                        classe = usuario.TIPO_CARTEIRA_CLASSE.TICL_NM_NOME + ": " + usuario.USUA_NR_CLASSE;
+                    }
+                    assinatura = "<b>" + usuario.USUA_NM_NOME + "</b><br />";
+                    if (usuario.ESPECIALIDADE != null)
+                    {
+                        assinatura += usuario.ESPECIALIDADE.ESPE_NM_NOME + "<br />";
+                    }
+                    else
+                    {
+                        assinatura += usuario.USUA_NM_ESPECIALIDADE + "<br />";
+                    }
+                    assinatura += classe + "  CPF: " + usuario.USUA_NR_CPF + "<br />";
+                }
+                else
+                {
+                    assinatura = "Enviado por <b>WebDoctor</b><br />";
+                }
+
+                // Prepara corpo da mensagem
+                String texto = template.TEEM_TX_CORPO;
+                if (texto.Contains("{medico}"))
+                {
+                    texto = texto.Replace("{medico}", usuario.USUA_NM_NOME);
+                }
+                if (texto.Contains("{nome}"))
+                {
+                    texto = texto.Replace("{nome}", paciente.PACI_NM_NOME);
+                }
+                if (texto.Contains("{data}"))
+                {
+                    texto = texto.Replace("{data}", consulta.PACO_DT_CONSULTA.ToLongDateString());
+                }
+                if (texto.Contains("{inicio}"))
+                {
+                    texto = texto.Replace("{inicio}", consulta.PACO_HR_INICIO.ToString());
+                }
+                if (texto.Contains("{final}"))
+                {
+                    texto = texto.Replace("{final}", consulta.PACO_HR_FINAL.ToString());
+                }
+                if (texto.Contains("{paciente}"))
+                {
+                    texto = texto.Replace("{paciente}", paciente.PACI_NM_NOME);
+                }
+                if (texto.Contains("{justificativa}"))
+                {
+                    texto = texto.Replace("{justificativa}", consulta.PACO_TX_JUSTIFICATIVA_CANCELA);
+                }
+                String emailBody = cab + "<br />" + texto + "<br /><br />" + assinatura;
+
+                // Decriptografa chaves
+                String emissor = CrossCutting.Cryptography.Decrypt(conf.CONF_NM_EMISSOR_AZURE_CRIP);
+                String conn = CrossCutting.Cryptography.Decrypt(conf.CONF_CS_CONNECTION_STRING_AZURE_CRIP);
+                List<AttachmentModel> models = new List<AttachmentModel>();
+
+                // Monta e-mail
+                NetworkCredential net = new NetworkCredential(conf.CONF_NM_SENDGRID_LOGIN, conf.CONF_NM_SENDGRID_PWD);
+                EmailAzure mensagem = new EmailAzure();
+                if (tipo < 5)
+                {
+                    mensagem.ASSUNTO = "Envio de Mensagem para Paciente - " + paciente.PACI_NM_NOME + " - " + DateTime.Now.ToString();
+                }
+                else
+                {
+                    mensagem.ASSUNTO = "Envio de Mensagem para Médico - " + usuario.USUA_NM_NOME + " - " + DateTime.Now.ToString();
+                }
+                mensagem.ASSUNTO = "Paciente - " + paciente.PACI_NM_NOME + " - Consulta";
+                mensagem.CORPO = emailBody;
+                mensagem.DEFAULT_CREDENTIALS = false;
+                mensagem.EMAIL_TO_DESTINO = paciente.PACI_NM_EMAIL;
+                mensagem.NOME_EMISSOR_AZURE = emissor;
+                mensagem.ENABLE_SSL = true;
+                mensagem.NOME_EMISSOR = usuario.USUA_NM_NOME;
+                mensagem.PORTA = conf.CONF_NM_PORTA_SMTP;
+                mensagem.PRIORIDADE = System.Net.Mail.MailPriority.High;
+                mensagem.SENHA_EMISSOR = conf.CONF_NM_SENDGRID_PWD;
+                mensagem.SMTP = conf.CONF_NM_HOST_SMTP;
+                mensagem.IS_HTML = true;
+                mensagem.NETWORK_CREDENTIAL = net;
+                mensagem.ConnectionString = conn;
+
+                // Envia mensagem
+                try
+                {
+                    await CrossCutting.CommunicationAzurePackage.SendMailAsync(mensagem, models);
+                }
+                catch (Exception ex)
+                {
+                    ViewBag.Message = ex.Message;
+                    Session["TipoVolta"] = 2;
+                    Session["VoltaExcecao"] = "Paciente";
+                    Session["Excecao"] = ex;
+                    Session["ExcecaoTipo"] = ex.GetType().ToString();
+                    GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                    Int32 voltaX = grava.GravarLogExcecao(ex, "Paciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                    return 0;
+                }
+
+                // Grava mensagem enviada
+                MensagemViewModel mens = new MensagemViewModel();
+                mens.NOME = paciente.PACI_NM_NOME;
+                mens.ID = paciente.PACI__CD_ID;
+                if (tipo < 5)
+                {
+                    mens.MODELO = paciente.PACI_NM_EMAIL;
+                    mens.MENS_DT_CRIACAO = DateTime.Today.Date;
+                    mens.MENS_IN_TIPO = 1;
+                    mens.MENS_NM_CAMPANHA = paciente.PACI_NM_EMAIL;
+                    mens.MENS_NM_NOME = "Mensagem para Paciente - Consulta: " + paciente.PACI_NM_NOME;
+                    mens.PACI_CD_ID = paciente.PACI__CD_ID;
+                }
+                else
+                {
+                    mens.MODELO = usuario.USUA_NM_EMAIL;
+                    mens.MENS_DT_CRIACAO = DateTime.Today.Date;
+                    mens.MENS_IN_TIPO = 1;
+                    mens.MENS_NM_CAMPANHA = usuario.USUA_NM_EMAIL;
+                    mens.MENS_NM_NOME = "Mensagem para Médico - Consulta: " + usuario.USUA_NM_NOME;
+                    mens.PACI_CD_ID = null;
+                }
+                mens.MENS_TX_TEXTO = emailBody;
+
+                EnvioEMailGeralBase envio = new EnvioEMailGeralBase(usuApp, confApp, meApp);
+                String guid = Xid.NewXid().ToString();
+                Int32 volta1 = envio.GravarMensagemEnviada(mens, usuario, mens.MENS_TX_TEXTO, "Succeeded", guid, null, "Confirmação de Consulta de Paciente - " + paciente.PACI_NM_NOME);
+
+                // Sucesso
+                return 1;
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Paciente";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Paciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return 1;
             }
         }
 
@@ -2702,6 +2875,8 @@ namespace GEDSys_Presentation.Controllers
                 vm.AREA_HR_INICIO = cons.PACO_HR_INICIO;
                 vm.AREA_IN_ATIVO = 1;
                 vm.AREA_IN_TIPO = 2;
+                vm.AREA_IN_PROCESSADA = 0;
+                vm.AREA_IN_VISTA = 0;
                 vm.AREA_GU_IDENTIFICADOR = Xid.NewXid().ToString();
                 vm.AREA_NM_TITULO = "Envio de informações de consulta - " + "Paciente: " + cont.PACI_NM_NOME.ToUpper();
                 vm.ASSI_CD_ID = cont.ASSI_CD_ID;
@@ -3036,6 +3211,7 @@ namespace GEDSys_Presentation.Controllers
             Int32 idAss = cont.ASSI_CD_ID;
             CONFIGURACAO conf = CarregaConfiguracaoGeral();
             AREA_PACIENTE area = areaApp.GetItemById((Int32)Session["IdArea"]);
+            USUARIO usu = usuApp.GetItemById(cont.USUA_CD_ID.Value);
 
             // Processo
             try
@@ -3053,9 +3229,13 @@ namespace GEDSys_Presentation.Controllers
 
                 // Prepara cabeçalho
                 String cab = template.TEEM_TX_CABECALHO;
+                if (cab.Contains("{usuario}"))
+                {
+                    cab = cab.Replace("{usuario}", usu.USUA_NM_NOME.ToUpper());
+                }
                 if (cab.Contains("{nome}"))
                 {
-                    cab = cab.Replace("{nome}", paciente.USUA_NM_NOME);
+                    cab = cab.Replace("{nome}", usu.USUA_NM_NOME.ToUpper());
                 }
 
                 // Prepara corpo da mensagem
@@ -3063,7 +3243,7 @@ namespace GEDSys_Presentation.Controllers
                 String rodape = template.TEEM_TX_DADOS;
                 if (texto.Contains("{paciente}"))
                 {
-                    texto = texto.Replace("{paciente}", cont.PACI_NM_NOME);
+                    texto = texto.Replace("{paciente}", cont.PACI_NM_NOME.ToUpper());
                 }
                 if (texto.Contains("{data}"))
                 {
@@ -3071,7 +3251,7 @@ namespace GEDSys_Presentation.Controllers
                 }
                 if (texto.Contains("{nomeDoc}"))
                 {
-                    texto = texto.Replace("{nomeDoc}", area.AREA_NM_EXAME);
+                    texto = texto.Replace("{nomeDoc}", area.AREA_NM_EXAME.ToUpper());
                 }
                 String emailBody = cab + "<br />" + texto + "<br /><br />" + rodape;
 
@@ -3087,7 +3267,7 @@ namespace GEDSys_Presentation.Controllers
                 {
                     mensagem.ASSUNTO = "Paciente - " + cont.PACI_NM_NOME.ToUpper() + " - Envio de Informações Relevantes";
                 }
-                if (tipo == 1)
+                if (tipo == 2)
                 {
                     mensagem.ASSUNTO = "Paciente - " + cont.PACI_NM_NOME.ToUpper() + " - Envio de Documento";
                 }
@@ -3133,7 +3313,7 @@ namespace GEDSys_Presentation.Controllers
                 {
                     mens.MENS_NM_NOME = "Mensagem para Profissional - Envio de Informações do Paciente: " + cont.PACI_NM_NOME.ToUpper();
                 }
-                if (tipo == 1)
+                if (tipo == 2)
                 {
                     mens.MENS_NM_NOME = "Mensagem para Profissional - Envio de Documento: " + area.AREA_NM_EXAME.ToUpper() + " do paciente: " + cont.PACI_NM_NOME.ToUpper();
                 }
@@ -3175,6 +3355,7 @@ namespace GEDSys_Presentation.Controllers
                 PACIENTE cont = (PACIENTE)Session["UserCredentials"];
                 USUARIO usuario = usuApp.GetItemById(cont.USUA_CD_ID.Value);
                 Session["Paciente"] = cont;
+                Session["IdPaciente"] = cont.PACI__CD_ID;
                 ViewBag.Paciente = cont;
                 ViewBag.NomePaciente = cont.PACI_NM_NOME;
                 ViewBag.Profissional = cont.USUARIO.USUA_NM_NOME;
@@ -3213,6 +3394,10 @@ namespace GEDSys_Presentation.Controllers
                     {
                         ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0734", CultureInfo.CurrentCulture));
                     }
+                    if ((Int32)Session["MensArea"] == 8)
+                    {
+                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0735", CultureInfo.CurrentCulture));
+                    }
                 }
 
                 // Grava Acesso
@@ -3227,6 +3412,8 @@ namespace GEDSys_Presentation.Controllers
                 vm.AREA_HR_INICIO = null;
                 vm.AREA_IN_ATIVO = 1;
                 vm.AREA_IN_TIPO = 3;
+                area.AREA_IN_PROCESSADA = 0;
+                area.AREA_IN_VISTA = 0;
                 vm.AREA_GU_IDENTIFICADOR = Xid.NewXid().ToString();
                 vm.AREA_NM_TITULO = "Envio de Documentos - " + "Paciente: " + cont.PACI_NM_NOME.ToUpper();
                 vm.ASSI_CD_ID = cont.ASSI_CD_ID;
@@ -3236,6 +3423,7 @@ namespace GEDSys_Presentation.Controllers
                 vm.NOME_PROFISSIONAL = cont.USUARIO.USUA_NM_NOME;
                 vm.EMAIL_PROFISSIONAL = cont.USUARIO.USUA_NM_EMAIL;
                 vm.HORARIO = null;
+                vm.AREA_IN_TIPO_EXAME = 0;
 
                 return View(vm);
             }
@@ -3286,6 +3474,7 @@ namespace GEDSys_Presentation.Controllers
                     if (vm.AREA_TX_CONTEUDO == null)
                     {
                         Session["MensArea"] = 3;
+                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0730", CultureInfo.CurrentCulture));
                         return View(vm);
                     }
 
@@ -3293,11 +3482,13 @@ namespace GEDSys_Presentation.Controllers
                     if (vm.AREA_IN_TIPO_EXAME == 0 || vm.AREA_IN_TIPO_EXAME == null)
                     {
                         Session["MensArea"] = 4;
+                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0731", CultureInfo.CurrentCulture));
                         return View(vm);
                     }
                     if (vm.AREA_NM_EXAME == null)
                     {
                         Session["MensArea"] = 5;
+                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0732", CultureInfo.CurrentCulture));
                         return View(vm);
                     }
                     if (vm.AREA_IN_TIPO_EXAME == 3)
@@ -3305,16 +3496,30 @@ namespace GEDSys_Presentation.Controllers
                         if (vm.TIEX_CD_ID == 0 || vm.TIEX_CD_ID == null)
                         {
                             Session["MensArea"] = 6;
+                            ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0733", CultureInfo.CurrentCulture));
+                            return View(vm);
+                        }
+                        if (vm.AREA_DT_DATA_EXAME.Value.Date > DateTime.Today.Date)
+                        {
+                            Session["MensArea"] = 9;
+                            ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0736", CultureInfo.CurrentCulture));
                             return View(vm);
                         }
                     }
-                    if (vm.AREA_IN_TIPO_EXAME == 2 || vm.AREA_IN_TIPO_EXAME == 3)
+                    if (vm.AREA_IN_TIPO_EXAME == 2 || vm.AREA_IN_TIPO_EXAME == 1)
                     {
                         if (vm.LOCA_CD_ID == 0 || vm.LOCA_CD_ID == null)
                         {
                             Session["MensArea"] = 7;
+                            ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0734", CultureInfo.CurrentCulture));
                             return View(vm);
                         }
+                    }
+                    if (Session["FileQueueAreaPaciente"] == null)
+                    {
+                        Session["MensArea"] = 8;
+                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0735", CultureInfo.CurrentCulture));
+                        return View(vm);
                     }
 
                     // Monta Area
@@ -3330,9 +3535,9 @@ namespace GEDSys_Presentation.Controllers
                     Directory.CreateDirectory(Server.MapPath(caminho));
 
                     // Trata anexos
-                    if (Session["FileQueueArea"] != null)
+                    if (Session["FileQueueAreaPaciente"] != null)
                     {
-                        List<FileQueue> fq = (List<FileQueue>)Session["FileQueueArea"];
+                        List<FileQueue> fq = (List<FileQueue>)Session["FileQueueAreaPaciente"];
                         foreach (var file in fq)
                         {
                             if (file.Profile == null)
@@ -3340,30 +3545,21 @@ namespace GEDSys_Presentation.Controllers
                                 Int32 volta1 = UploadFileQueueArea(file);
                             }
                         }
-                        Session["FileQueueArea"] = null;
+                        Session["FileQueueAreaPaciente"] = null;
                     }
 
-                    // Configura serilização
-                    JsonSerializerSettings settings = new JsonSerializerSettings
-                    {
-                        ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
-                        NullValueHandling = NullValueHandling.Ignore
-                    };
-
-                    // Monta Log
-                    DTO_Area_Paciente dto = MontarAreaPacienteDTOObj(item);
-                    String json = JsonConvert.SerializeObject(dto, settings);
-                    LOG log = new LOG
-                    {
-                        LOG_DT_DATA = DateTime.Now,
-                        ASSI_CD_ID = usuario.ASSI_CD_ID,
-                        USUA_CD_ID = usuario.USUA_CD_ID,
-                        LOG_NM_OPERACAO = "Paciente - Envio de Documento",
-                        LOG_IN_ATIVO = 1,
-                        LOG_TX_REGISTRO = json,
-                        LOG_IN_SISTEMA = 6
-                    };
-                    Int32 volta2 = logApp.ValidateCreate(log);
+                    // Grava historico
+                    PACIENTE_HISTORICO hist = new PACIENTE_HISTORICO();
+                    PACIENTE pac1 = baseApp.GetItemById(vm.PACI_CD_ID.Value);
+                    hist.ASSI_CD_ID = usuario.ASSI_CD_ID;
+                    hist.USUA_CD_ID = usuario.USUA_CD_ID;
+                    hist.PACI_CD_ID = item.PACI_CD_ID;
+                    hist.PAHI_DT_DATA = DateTime.Now;
+                    hist.PAHI_IN_TIPO = 14;
+                    hist.PAHI_IN_CHAVE = item.AREA_CD_ID;
+                    hist.PAHI_NM_OPERACAO = "Paciente - Envio de Documento";
+                    hist.PAHI_DS_DESCRICAO = "Documento: " + item.AREA_NM_EXAME.ToUpper() + " - Paciente: " + pac1.PACI_NM_NOME + " - Enviado em: " + item.AREA_DT_ENTRADA.Value.ToShortDateString();
+                    Int32 voltaHist = baseApp.ValidateCreateHistorico(hist);
 
                     // Mensagem de aviso
                     if (usuario.USUA_NM_EMAIL != null)
@@ -3373,7 +3569,7 @@ namespace GEDSys_Presentation.Controllers
 
                     // Mensagem
                     Session["MsgCRUD"] = "O documento " + vm.AREA_NM_EXAME.ToUpper() + " do paciente " + cont.PACI_NM_NOME.ToUpper() + " para o profissional " + usuario.USUA_NM_NOME.ToUpper() + " foi enviado com sucesso. Identificador do envio: " + item.AREA_GU_IDENTIFICADOR;
-                    Session["MensFC"] = 61;
+                    Session["MensArea"] = 61;
 
                     // Retorno
                     return RedirectToAction("MontarTelaAreaPaciente");

@@ -150,6 +150,10 @@
           <Property Name="LABS_CD_ID" Type="int" />
           <Property Name="AREA_TX_COMENTARIOS_DOCUMENTO" Type="varchar" MaxLength="5000" />
           <Property Name="LOCA_CD_ID" Type="int" />
+          <Property Name="AREA_IN_TIPO_CONSULTA" Type="int" />
+          <Property Name="AREA_IN_VISTA" Type="int" />
+          <Property Name="AREA_IN_PROCESSADA" Type="int" />
+          <Property Name="AREA_DT_PROCESSO" Type="datetime" />
         </EntityType>
         <EntityType Name="AREA_PACIENTE_ANEXO">
           <Key>
@@ -41274,6 +41278,10 @@
           <NavigationProperty Name="TIPO_EXAME" Relationship="CRMSysDBModel.FK_AREA_PACIENTE_TIPO_EXAME" FromRole="AREA_PACIENTE" ToRole="TIPO_EXAME" />
           <Property Name="LOCA_CD_ID" Type="Int32" />
           <NavigationProperty Name="LOCACAO" Relationship="CRMSysDBModel.FK_AREA_PACIENTE_LOCACAO" FromRole="AREA_PACIENTE" ToRole="LOCACAO" />
+          <Property Name="AREA_IN_TIPO_CONSULTA" Type="Int32" />
+          <Property Name="AREA_IN_VISTA" Type="Int32" />
+          <Property Name="AREA_IN_PROCESSADA" Type="Int32" />
+          <Property Name="AREA_DT_PROCESSO" Type="DateTime" Precision="3" />
         </EntityType>
         <Association Name="FK_AREA_PACIENTE_PACIENTE">
           <End Type="CRMSysDBModel.PACIENTE" Role="PACIENTE" Multiplicity="0..1" />
@@ -48898,6 +48906,10 @@
           <EntitySetMapping Name="AREA_PACIENTE">
             <EntityTypeMapping TypeName="CRMSysDBModel.AREA_PACIENTE">
               <MappingFragment StoreEntitySet="AREA_PACIENTE">
+                <ScalarProperty Name="AREA_DT_PROCESSO" ColumnName="AREA_DT_PROCESSO" />
+                <ScalarProperty Name="AREA_IN_PROCESSADA" ColumnName="AREA_IN_PROCESSADA" />
+                <ScalarProperty Name="AREA_IN_VISTA" ColumnName="AREA_IN_VISTA" />
+                <ScalarProperty Name="AREA_IN_TIPO_CONSULTA" ColumnName="AREA_IN_TIPO_CONSULTA" />
                 <ScalarProperty Name="LOCA_CD_ID" ColumnName="LOCA_CD_ID" />
                 <ScalarProperty Name="AREA_TX_COMENTARIOS_DOCUMENTO" ColumnName="AREA_TX_COMENTARIOS_DOCUMENTO" />
                 <ScalarProperty Name="LABS_CD_ID" ColumnName="LABS_CD_ID" />

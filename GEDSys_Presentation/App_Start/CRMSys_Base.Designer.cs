@@ -6476,5 +6476,32 @@ namespace GEDSys_Presentation.App_Start {
                 return ResourceManager.GetString("M0734", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Consulta uma cadeia de caracteres localizada semelhante a Nenhum documento anexado para envio.
+        /// </summary>
+        internal static string M0735 {
+            get {
+                return ResourceManager.GetString("M0735", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Consulta uma cadeia de caracteres localizada semelhante a A data do exme não pode ser superior a data corrente.
+        /// </summary>
+        internal static string M0736 {
+            get {
+                return ResourceManager.GetString("M0736", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Consulta uma cadeia de caracteres localizada semelhante a Data da consulta não informada.
+        /// </summary>
+        internal static string M0737 {
+            get {
+                return ResourceManager.GetString("M0737", resourceCulture);
+            }
+        }
     }
 }

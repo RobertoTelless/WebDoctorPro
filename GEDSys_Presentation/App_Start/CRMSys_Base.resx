@@ -2256,4 +2256,13 @@
   <data name="M0734" xml:space="preserve">
     <value>Nenhuma locação selecionada</value>
   </data>
+  <data name="M0735" xml:space="preserve">
+    <value>Nenhum documento anexado para envio</value>
+  </data>
+  <data name="M0736" xml:space="preserve">
+    <value>A data do exme não pode ser superior a data corrente</value>
+  </data>
+  <data name="M0737" xml:space="preserve">
+    <value>Data da consulta não informada</value>
+  </data>
 </root>

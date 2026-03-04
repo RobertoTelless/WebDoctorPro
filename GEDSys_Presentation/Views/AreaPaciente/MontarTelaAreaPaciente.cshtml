@@ -16,14 +16,62 @@
     "description": "Cadastramento de novo paciente"
   }
 </script>
+    <style>
+        .link-noticia-custom {
+            display: block;
+            background-color: #f9f9f9;
+            font-weight: bold;
+            color: #28a745; /* Verde padrão */
+            text-decoration: underline;
+            transition: all 0.3s ease; /* Suaviza a transição de cor */
+        }
 
-<div id="content" class="wraper container-fluid">
+        /* O efeito de Hover */
+        .link-noticia-custom:hover {
+            color: #1e7e34; /* Um verde mais escuro ao passar o mouse */
+            background-color: #f1f1f1; /* Muda levemente o fundo */
+            text-decoration: none; /* Opcional: remove o underline ao passar o mouse */
+        }
+    </style>
+
+    <style>
+        .link-noticia-textarea {
+            display: block;
+            width: 100%;
+            min-height: 50px; /* Altura simulando textarea */
+            padding: 6px 12px;
+            background-color: #f9f9f9;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        
+            /* Tipografia */
+            font-weight: bold;
+            color: #28a745;
+            text-decoration: underline;
+        
+            /* Comportamento de texto */
+            white-space: normal; /* Permite que o título quebre linha */
+            word-wrap: break-word;
+        
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .link-noticia-textarea:hover {
+            color: #1e7e34;
+            background-color: #f1f1f1;
+            border-color: #28a745; /* Realce na borda ao passar o mouse */
+            text-decoration: none;
+        }
+    </style>
+
+<div class="wrapper wrapper-content animated fadeInRight">
     <div class="modalContainer">
         <div id="modal" class="modal" tabindex="-1" role="dialog">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
-                        @*Titulo gerado dinamicamente*@
+                        @*titulo gerado dinamicamente*@
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
@@ -32,12 +80,36 @@
                         @*Gerado dinamicamente*@
                     </div>
                     <div class="modal-footer">
-                        <button onclick="limpaModal()" type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+    <div class="modal fade" id="modalCancelar" tabindex="-1" role="dialog" aria-labelledby="modalCancelarLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalCancelarLabel">Justificar Cancelamento</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Fechar">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="textoJustificativa">Justificativa do Cancelamento:</label>
+                        <textarea class="form-control" id="textoJustificativa" rows="5" required></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
+                    <button type="button" class="btn btn-danger" id="btnConfirmarCancelamento">Confirmar Cancelamento</button>
+                </div>
+            </div>
+        </div>
+    </div>    
+
+    <div class="row">
     <div class="col-lg-12 col-md-12 col-sm-12">
         @*Atalhos*@
         <div class="row">
@@ -297,7 +369,7 @@
                                                     {   
                                                         if (cond.PACO_DT_CONSULTA > DateTime.Today.Date)
                                                         {
-                                                            <tr  style="background-color: gainsboro">
+                                                            <tr  style="background-color: aliceblue">
                                                                 <td>
                                                                     <span style="display:none; width: auto">@cond.PACO_DT_CONSULTA.ToString("yyyyMMdd")</span>
                                                                     @cond.PACO_DT_CONSULTA.ToString("dd/MM/yyyy")
@@ -324,19 +396,30 @@
                                                                 <td style="width: auto" class="td-one-action">
                                                                     @if (cond.PACO_IN_ATIVO == 1 & cond.PACO_IN_CONFIRMADA == 0)
                                                                     {
-                                                                        <span style="color: #337ab7; cursor:pointer;" alt="Confirmar" class="tbl-link fa-lg fa fa-check" onclick="ShowModalConfirmar('/AreaPaciente/ConfirmarConsulta/@cond.PACO_CD_ID')" title="Confirmar Consulta"></span>
+                                                                        <span style="color:#337ab7;cursor:pointer;"
+                                                                              class="tbl-link fa-lg fa fa-check"
+                                                                              onclick="ShowModalConfirmar('@Url.Action("ConfirmarConsulta","AreaPaciente", new { id = cond.PACO_CD_ID })')"
+                                                                              title="Confirmar Consulta">
+                                                                        </span>
                                                                     }
                                                                     @if (cond.PACO_IN_ATIVO == 1 & cond.PACO_IN_CONFIRMADA < 2)
                                                                     {
-                                                                        <span style="color: #337ab7; cursor:pointer;" alt="Cancelar" class="tbl-link fa-lg fa fa-times" onclick="ShowModalCancelar('/AreaPaciente/CancelarConsulta/@cond.PACO_CD_ID')" title="Cancelar Consulta"></span>
+                                                                        <span style="color:#337ab7;cursor:pointer;"
+                                                                              class="tbl-link fa-lg fa fa-times"
+                                                                              onclick="ShowModalCancelar('@Url.Action("CancelarConsulta","AreaPaciente", new { id = cond.PACO_CD_ID })')"
+                                                                              title="Confirmar Consulta">
+                                                                        </span>
                                                                     }
-                                                                    @Html.TableLinkDetails(cond.PACO_CD_ID, "EnviarInformacaoConsulta", "fa-send", "Enviar Informações")
+                                                                    @if (cond.PACO_IN_ATIVO == 1 & cond.PACO_IN_CONFIRMADA < 2)
+                                                                    {
+                                                                        @Html.TableLinkDetails(cond.PACO_CD_ID, "EnviarInformacaoConsulta", "fa-send", "Enviar Informações")
+                                                                    }
                                                                 </td>
                                                             </tr>
                                                         }
                                                         else if (cond.PACO_DT_CONSULTA < DateTime.Today.Date)
                                                         {
-                                                            <tr style="background-color: aliceblue">
+                                                            <tr>
                                                                 <td>
                                                                     <span style="display:none; width: auto">@cond.PACO_DT_CONSULTA.ToString("yyyyMMdd")</span>
                                                                     @cond.PACO_DT_CONSULTA.ToString("dd/MM/yyyy")
@@ -399,7 +482,10 @@
                                                                     {
                                                                         <span style="color: #337ab7; cursor:pointer;" alt="Cancelar" class="tbl-link fa-lg fa fa-times" onclick="ShowModalCancelar('/AreaPaciente/CancelarConsulta/@cond.PACO_CD_ID')" title="Cancelar Consulta"></span>
                                                                     }
-                                                                    @Html.TableLinkDetails(cond.PACO_CD_ID, "EnviarInformacaoConsulta", "fa-send", "Enviar Informações")
+                                                                    @if (cond.PACO_IN_ATIVO == 1 & cond.PACO_IN_CONFIRMADA < 2)
+                                                                    {
+                                                                        @Html.TableLinkDetails(cond.PACO_CD_ID, "EnviarInformacaoConsulta", "fa-send", "Enviar Informações")
+                                                                    }
                                                                 </td>
                                                             </tr>
                                                         }
@@ -818,6 +904,8 @@
             </div>
         </div>
     </div>
+    </div>
+
 </div>
 
 
@@ -828,54 +916,6 @@
     @Styles.Render("~/plugins/jasnyBootstrapStyles")
     @Styles.Render("~/plugins/toastrStyles")
 
-    <style>
-        .link-noticia-custom {
-            display: block;
-            background-color: #f9f9f9;
-            font-weight: bold;
-            color: #28a745; /* Verde padrão */
-            text-decoration: underline;
-            transition: all 0.3s ease; /* Suaviza a transição de cor */
-        }
-
-        /* O efeito de Hover */
-        .link-noticia-custom:hover {
-            color: #1e7e34; /* Um verde mais escuro ao passar o mouse */
-            background-color: #f1f1f1; /* Muda levemente o fundo */
-            text-decoration: none; /* Opcional: remove o underline ao passar o mouse */
-        }
-    </style>
-
-    <style>
-        .link-noticia-textarea {
-            display: block;
-            width: 100%;
-            min-height: 50px; /* Altura simulando textarea */
-            padding: 6px 12px;
-            background-color: #f9f9f9;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-        
-            /* Tipografia */
-            font-weight: bold;
-            color: #28a745;
-            text-decoration: underline;
-        
-            /* Comportamento de texto */
-            white-space: normal; /* Permite que o título quebre linha */
-            word-wrap: break-word;
-        
-            transition: all 0.3s ease;
-            cursor: pointer;
-        }
-
-        .link-noticia-textarea:hover {
-            color: #1e7e34;
-            background-color: #f1f1f1;
-            border-color: #28a745; /* Realce na borda ao passar o mouse */
-            text-decoration: none;
-        }
-    </style>
 
 }
 
@@ -1060,18 +1100,60 @@
         }
 
         function ShowModalConfirmar(url) {
-            $('#modal').find('.modal-footer').prepend('<a id="btnModal" alt="Desativar" class="btn btn-primary" href="' + url + '" target="_self" title="Desativar">Confirmar</a>');
+            $('#modal').find('.modal-footer').prepend('<a id="btnModal" alt="Desativar" class="btn btn-primary btn-loading1" href="' + url + '" target="_self" title="Desativar">Confirmar</a>');
             $('#modal').find('.modal-body').html('Confirma marcação de consulta?');
             $('#modal').find('.modal-header').prepend('<h5 id="modalTitle" class="modal-title">Confimar Marcação</h5>');
             $('#modal').modal('show');
         }
 
+    </script>
+
+    <script type="text/javascript">
+        var urlDeCancelamento; // Variável global para armazenar a URL de cancelamento
+
+        // Função chamada no evento onclick do <span>
         function ShowModalCancelar(url) {
-            $('#modal').find('.modal-footer').prepend('<a id="btnModal" alt="Reativar" class="btn btn-primary" href="' + url + '" target="_self" title="Reativar">Confirmar</a>');
-            $('#modal').find('.modal-body').html('Confirma cancelamento da consulta?');
-            $('#modal').find('.modal-header').prepend('<h5 id="modalTitle" class="modal-title">Confimar Cancelamento</h5>');
-            $('#modal').modal('show');
+            urlDeCancelamento = url; // Armazena a URL com o ID do paciente
+            $('#modalCancelar').modal('show');
         }
+
+        $(document).ready(function () {
+            // Lógica para o botão de confirmação dentro da modal
+            $('#btnConfirmarCancelamento').click(function () {
+                var justificativa = $('#textoJustificativa').val();
+                
+                if (justificativa.trim() === "") {
+                    alert("Por favor, digite uma justificativa para o cancelamento.");
+                    return;
+                }
+
+                $.ajax({
+                    url: urlDeCancelamento,
+                    type: 'POST',
+                    data: { justificativa: justificativa }, // Alterado para enviar como form data
+                    success: function (response) {
+                        $('#modalCancelar').modal('hide');
+                        if (response.success) {
+                            //alert("Consulta cancelada com sucesso!");
+                            // Recarrega a página ou atualiza a tabela para refletir a mudança
+                            window.location.reload(); 
+                        } else {
+                            //alert("Erro ao cancelar a consulta: " + response.message);
+                            window.location.reload(); 
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        $('#modalCancelar').modal('hide');
+                    //    alert("Ocorreu um erro na requisição AJAX: " + error);
+                    }
+                });
+            });
+
+            // Limpa o textarea quando a modal é fechada
+            $('#modalCancelar').on('hidden.bs.modal', function () {
+                $('#textoJustificativa').val('');
+            });
+        });
     </script>
 
     <script type="text/javascript">

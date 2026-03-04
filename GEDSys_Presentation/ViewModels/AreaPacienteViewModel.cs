@@ -37,6 +37,11 @@ namespace ERP_Condominios_Solution.ViewModels
         [StringLength(5000, ErrorMessage = "Os COMENTÁRIOS devem conter no máximo 5000 caracteres.")]
         public string AREA_TX_COMENTARIOS_DOCUMENTO { get; set; }
         public Nullable<int> LOCA_CD_ID { get; set; }
+        public Nullable<int> AREA_IN_TIPO_CONSULTA { get; set; }
+        public Nullable<int> AREA_IN_VISTA { get; set; }
+        public Nullable<int> AREA_IN_PROCESSADA { get; set; }
+        [DataType(DataType.Date, ErrorMessage = "DATA DE PROCESSAMENTO Deve ser uma data válida")]
+        public Nullable<System.DateTime> AREA_DT_PROCESSO { get; set; }
 
         public string NOME_PACIENTE { get; set; }
         public string NOME_PROFISSIONAL { get; set; }

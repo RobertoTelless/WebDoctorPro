@@ -20131,5 +20131,34 @@ namespace GEDSys_Presentation.Controllers
             hash.Add("situacao", situacao);
             return Json(hash);
         }
+
+        public JsonResult GetLocacoesArea(Int32 id)
+        {
+            Int32 idPac = (Int32)Session["IdPaciente"];
+            if (id == 1)
+            {
+                var listaLocacoes = CarregarLocacao()
+                        .Where(p => p.PACI_CD_ID == idPac & (p.LOCA_IN_STATUS == 0 || p.LOCA_IN_STATUS == 1))
+                        .Select(l => new
+                        {
+                            Value = l.LOCA_CD_ID,
+                            Text = l.LOCA_NM_TITULO
+                        }).ToList();
+                return Json(listaLocacoes, JsonRequestBehavior.AllowGet);
+            }
+            if (id == 2)
+            {
+                var listaLocacoes = CarregarLocacao()
+                        .Where(p => p.PACI_CD_ID == idPac & (p.LOCA_IN_STATUS == 2 || p.LOCA_IN_STATUS == 4))
+                        .Select(l => new
+                        {
+                            Value = l.LOCA_CD_ID,
+                            Text = l.LOCA_NM_TITULO
+                        }).ToList();
+                return Json(listaLocacoes, JsonRequestBehavior.AllowGet);
+            }
+            return null;
+        }
+
     }
 }
