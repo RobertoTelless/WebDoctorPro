@@ -42,6 +42,9 @@ namespace ERP_Condominios_Solution.ViewModels
         public Nullable<int> AREA_IN_PROCESSADA { get; set; }
         [DataType(DataType.Date, ErrorMessage = "DATA DE PROCESSAMENTO Deve ser uma data válida")]
         public Nullable<System.DateTime> AREA_DT_PROCESSO { get; set; }
+        public string AREA_NM_PACIENTE_DUMMY { get; set; }
+        [DataType(DataType.Date, ErrorMessage = "DATA DE PROCESSAMENTO Deve ser uma data válida")]
+        public Nullable<System.DateTime> AREA_DT_DUMMY { get; set; }
 
         public string NOME_PACIENTE { get; set; }
         public string NOME_PROFISSIONAL { get; set; }

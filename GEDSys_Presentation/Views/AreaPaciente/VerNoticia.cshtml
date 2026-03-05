@@ -55,9 +55,9 @@
                             <i class="fa fa-spinner fa-spin"></i> Processando...
                         </span>
                     </div>
-                    <div class="form-group" allign="center">
+                    <div class="form-group text-center">
                         <br />
-                        <img src="@Url.Content(Model.NOTC_AQ_FOTO)" style="width: auto; height: auto; max-height: 500px; max-width: 700px;" allign="middle"  >
+                        <img src="@Url.Content(Model.NOTC_AQ_FOTO)" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Clique Ctrl+Ctrl para ampliar a fotografia" style="width: auto; height: auto; max-height: 500px; max-width: 700px;" allign="middle"  >
                     </div>
                     <div class="text-center article-title">
                         <span class="text-muted"><i class="fa fa-clock-o"></i> @Model.NOTC_DT_DATA_AUTOR.Value.ToLongDateString()</span>
@@ -81,7 +81,7 @@
                         <div class="col-md-6">
                             <div class="small text-right">
                                 <br />
-                                <h5>Stats:</h5>
+                                <h5>Resumo:</h5>
                                 <div> <i class="fa fa-comments-o"> </i> @Model.NOTICIA_COMENTARIO.Count comentários </div>
                                 <i class="fa fa-eye"> </i> @Model.NOTC_NR_ACESSO visualizações
                             </div>
@@ -89,7 +89,7 @@
                     </div>
                     <div class="row">
                         <br />
-                        @Html.ButtonLinkIndex(text: "Novo Comentário", action: "IncluirComentario", controller: "Noticia")
+                        @Html.ButtonLinkIndex(text: "Novo Comentário", action: "IncluirComentario", controller: "AreaPaciente")
                         <br />
                     </div>
                     <div class="row">

@@ -150,12 +150,9 @@
                         }
                         @if (Model.LOCA_IN_STATUS == 0)
                         {
-                            if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_LOCACAO_ALTERAR == 1)
+                            if (Model.LOCA_IN_CONTRATO_ASSINA == 0)
                             {
-                                if (Model.LOCA_IN_CONTRATO_ASSINA == 0)
-                                {
-                                    <a href="@Url.Action("CarregarContratoDireto", "Locacao")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Inclui o contrato de locação assinado" class="btn btn-sm btn-primary btn-loading" id="emp" OnClick = "Fade()">Contrato Assinado</a>                
-                                }
+                                <a href="@Url.Action("CarregarContratoDireto", "AreaPaciente")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Envia o contrato de locação assinado" class="btn btn-sm btn-primary btn-loading" id="emp" OnClick = "Fade()">Enviar Contrato Assinado</a>                
                             }
                         }
                         @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaAreaPaciente", controller: "AreaPaciente", htmlAttributes: new { @class = "btn-loading" })

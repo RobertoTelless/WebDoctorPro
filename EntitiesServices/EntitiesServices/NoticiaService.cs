@@ -105,7 +105,7 @@ namespace ModelServices.EntitiesServices
             using (DbContextTransaction transaction = Db.Database.BeginTransaction(IsolationLevel.ReadCommitted))
             {
                 try
-                {
+                {                   
                     NOTICIA obj = _baseRepository.GetById(item.NOTC_CD_ID);
                     _baseRepository.Detach(obj);
                     _logRepository.Add(log);

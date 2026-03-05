@@ -154,6 +154,8 @@
           <Property Name="AREA_IN_VISTA" Type="int" />
           <Property Name="AREA_IN_PROCESSADA" Type="int" />
           <Property Name="AREA_DT_PROCESSO" Type="datetime" />
+          <Property Name="AREA_NM_PACIENTE_DUMMY" Type="varchar" MaxLength="150" />
+          <Property Name="AREA_DT_DUMMY" Type="datetime" />
         </EntityType>
         <EntityType Name="AREA_PACIENTE_ANEXO">
           <Key>
@@ -41282,6 +41284,8 @@
           <Property Name="AREA_IN_VISTA" Type="Int32" />
           <Property Name="AREA_IN_PROCESSADA" Type="Int32" />
           <Property Name="AREA_DT_PROCESSO" Type="DateTime" Precision="3" />
+          <Property Name="AREA_NM_PACIENTE_DUMMY" Type="String" MaxLength="150" FixedLength="false" Unicode="false" />
+          <Property Name="AREA_DT_DUMMY" Type="DateTime" Precision="3" />
         </EntityType>
         <Association Name="FK_AREA_PACIENTE_PACIENTE">
           <End Type="CRMSysDBModel.PACIENTE" Role="PACIENTE" Multiplicity="0..1" />
@@ -48906,6 +48910,8 @@
           <EntitySetMapping Name="AREA_PACIENTE">
             <EntityTypeMapping TypeName="CRMSysDBModel.AREA_PACIENTE">
               <MappingFragment StoreEntitySet="AREA_PACIENTE">
+                <ScalarProperty Name="AREA_DT_DUMMY" ColumnName="AREA_DT_DUMMY" />
+                <ScalarProperty Name="AREA_NM_PACIENTE_DUMMY" ColumnName="AREA_NM_PACIENTE_DUMMY" />
                 <ScalarProperty Name="AREA_DT_PROCESSO" ColumnName="AREA_DT_PROCESSO" />
                 <ScalarProperty Name="AREA_IN_PROCESSADA" ColumnName="AREA_IN_PROCESSADA" />
                 <ScalarProperty Name="AREA_IN_VISTA" ColumnName="AREA_IN_VISTA" />

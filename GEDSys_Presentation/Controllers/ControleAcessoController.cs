@@ -106,6 +106,9 @@ namespace ERP_Condominios_Solution.Controllers
             Session["ListaNoticia"] = null;
             Session["NoticiaGeral"] = null;
             Session["NoticiaAlterada"] = 0;
+            Session["AreaPacienteAlterada"] = 0;
+            Session["AreaPacientes"] = null;
+            Session["ListaAreaPaciente"] = null;
 
             // Permissões
             Session["PermProntuario"] = 0;

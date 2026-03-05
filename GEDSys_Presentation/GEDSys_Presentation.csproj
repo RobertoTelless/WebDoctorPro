@@ -1281,6 +1281,7 @@
     <Content Include="Imagens\1\Locacao\92\QRCode\Contrato_QRCode_d6esvesn000afj2ifpsg.png" />
     <Content Include="Imagens\1\Locacao\94\QRCode\Contrato_QRCode_d6et22cn000afj2ifq40.png" />
     <Content Include="Imagens\1\Locacao\95\QRCode\Contrato_QRCode_d6f03l4n000afj2ifqeg.png" />
+    <Content Include="Imagens\1\Locacao\96\QRCode\Contrato_QRCode_d6kt26kn00099h0pk02g.png" />
     <Content Include="Imagens\1\Mensagem\237\Anexos\Cydia_3_Nova.jpg" />
     <Content Include="Imagens\1\Mensagem\239\Anexos\SysMkt_Image_2.jpg" />
     <Content Include="Imagens\1\Mensagem\259\Anexos\bz.jpg" />
@@ -4013,6 +4014,8 @@
     <Content Include="Imagens\1\AreaPaciente\7\Anexos\Power_System_Analysis.pdf" />
     <Content Include="Imagens\1\AreaPaciente\7\Anexos\WebDoctorPro.pptx" />
     <Content Include="Imagens\1\AreaPaciente\8\Anexos\darj divorcio odayr e palmyra nova.pdf" />
+    <Content Include="Imagens\1\AreaPaciente\18\Anexos\Boleto_eFaturamento_11_02_2026 00_36_59.pdf" />
+    <Content Include="Imagens\1\Locacao\96\Assinado\Contrato_LocacaoANINHA TRESLOUCADA ESCOVADA_d6kt26kn00099h0pk02g.pdf" />
     <None Include="Properties\PublishProfiles\eprontuario - FTP.pubxml" />
     <None Include="Properties\PublishProfiles\eprontuario - FTP1.pubxml" />
     <None Include="Properties\PublishProfiles\eprontuario - Web Deploy.pubxml" />
@@ -5428,11 +5431,20 @@
     <Content Include="Views\Noticia\IncluirComentario.cshtml" />
     <Content Include="Views\AreaPaciente\IncluirComentario.cshtml" />
     <Content Include="Views\AreaPaciente\ErroGeralAreaPaciente.cshtml" />
+    <Content Include="Views\AreaPaciente\CarregarContrato.cshtml" />
+    <Content Include="Views\AreaPaciente\MontarTelaAreaPacienteVer.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="Filters\" />
     <Folder Include="Imagens\1\AreaPaciente\10\Anexos\" />
+    <Folder Include="Imagens\1\AreaPaciente\12\Anexos\" />
+    <Folder Include="Imagens\1\AreaPaciente\13\Anexos\" />
+    <Folder Include="Imagens\1\AreaPaciente\14\Anexos\" />
+    <Folder Include="Imagens\1\AreaPaciente\15\Anexos\" />
+    <Folder Include="Imagens\1\AreaPaciente\16\Anexos\" />
+    <Folder Include="Imagens\1\AreaPaciente\17\Anexos\" />
+    <Folder Include="Imagens\1\AreaPaciente\19\Anexos\" />
     <Folder Include="Imagens\1\Envio\34\Anexos\" />
     <Folder Include="Imagens\1\Envio\35\Anexos\" />
     <Folder Include="Imagens\1\Envio\37\Anexos\" />
@@ -5572,6 +5584,9 @@
     <Folder Include="Imagens\1\Locacao\94\Distrato\" />
     <Folder Include="Imagens\1\Locacao\95\Anexos\" />
     <Folder Include="Imagens\1\Locacao\95\Distrato\" />
+    <Folder Include="Imagens\1\Locacao\96\Anexos\" />
+    <Folder Include="Imagens\1\Locacao\96\Contrato\" />
+    <Folder Include="Imagens\1\Locacao\96\Distrato\" />
     <Folder Include="Imagens\1\Medico\1\Anexos\" />
     <Folder Include="Imagens\1\Medico\2\Anexos\" />
     <Folder Include="Imagens\1\Medico\3\Anexos\" />

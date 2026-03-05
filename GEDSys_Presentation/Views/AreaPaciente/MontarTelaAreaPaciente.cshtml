@@ -837,7 +837,7 @@
                                                         @if (!String.IsNullOrEmpty(cond.NOTC_AQ_FOTO))
                                                         {
                                                             <img src="@Url.Content(cond.NOTC_AQ_FOTO)" 
-                                                                    class="img-responsive thumbnail" 
+                                                                    class="img-responsive thumbnail" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Clique Ctrl+Ctrl para ampliar a fotografia" 
                                                                     style="max-height: 270px; max-width: 800px; margin: 0 auto;">
                                                         }
                                                         else
@@ -855,7 +855,6 @@
                                                            class="link-noticia-textarea">
                                                             @cond.NOTC_NM_TITULO
                                                         </a>
-                                                        @*<a href="@Url.Action("VerNoticia", new { id = cond.NOTC_CD_ID })" class="form-control link-noticia-custom">@cond.NOTC_NM_TITULO</a>*@                                                    
                                                     </div>
                                                 </div>
                                                 <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">                
@@ -871,8 +870,18 @@
                                                     </div>
                                                 </div>
                                                 <div class="row">
+                                                    <div class="col-md-6">
+                                                        <div class="small text-right">
+                                                            <br />
+                                                            <h5>Resumo:</h5>
+                                                            <div> <i class="fa fa-comments-o"> </i> @cond.NOTICIA_COMENTARIO.Count comentários </div>
+                                                            <i class="fa fa-eye"> </i> @cond.NOTC_NR_ACESSO visualizações
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
                                                     <div class="col-lg-12">
-                                                        <hr style="width: 50%; border-top: 2px solid #28a745; margin: 20px auto;" />
+                                                        <hr style="width: 80%; border-top: 2px solid #28a745; margin: 20px auto;" />
                                                     </div>
                                                 </div>
 
@@ -961,6 +970,12 @@
 
     <script type="text/javascript">
         $(document).ready(function () { 
+    // --- 1. LÓGICA DE RESTAURAÇÃO (Executa ao carregar a página) ---
+            var scrollPos = localStorage.getItem('scrollPosition');
+            if (scrollPos) {
+                window.scrollTo(0, scrollPos);
+                localStorage.removeItem('scrollPosition'); // Limpa para não rolar em cliques comuns depois
+            }
             $('.btn-loading').on('click', function (e) {            
                 $(this).prop('disabled', true);
                 $(this).addClass('disabled');
@@ -980,7 +995,15 @@
 
     <script type="text/javascript">
         $(document).ready(function () { 
-            $('.btn-loading1').on('click', function (e) {            
+            // --- 1. LÓGICA DE RESTAURAÇÃO (Executa ao carregar a página) ---
+            var scrollPos = localStorage.getItem('scrollPosition');
+            if (scrollPos) {
+                window.scrollTo(0, scrollPos);
+                localStorage.removeItem('scrollPosition'); // Limpa para não rolar em cliques comuns depois
+            }
+            $('.btn-loading1').on('click', function (e) { 
+                // SALVA A POSIÇÃO AQUI
+                localStorage.setItem('scrollPosition', window.scrollY);           
                 $(this).prop('disabled', true);
                 $(this).addClass('disabled');
                 $('#loadingIndicator1').show();
@@ -998,7 +1021,15 @@
     </script>
     <script type="text/javascript">
         $(document).ready(function () { 
+    // --- 1. LÓGICA DE RESTAURAÇÃO (Executa ao carregar a página) ---
+            var scrollPos = localStorage.getItem('scrollPosition');
+            if (scrollPos) {
+                window.scrollTo(0, scrollPos);
+                localStorage.removeItem('scrollPosition'); // Limpa para não rolar em cliques comuns depois
+            }
             $('.btn-loading2').on('click', function (e) {            
+                // SALVA A POSIÇÃO AQUI
+                localStorage.setItem('scrollPosition', window.scrollY);           
                 $(this).prop('disabled', true);
                 $(this).addClass('disabled');
                 $('#loadingIndicator2').show();
@@ -1016,7 +1047,15 @@
     </script>
     <script type="text/javascript">
         $(document).ready(function () { 
+    // --- 1. LÓGICA DE RESTAURAÇÃO (Executa ao carregar a página) ---
+            var scrollPos = localStorage.getItem('scrollPosition');
+            if (scrollPos) {
+                window.scrollTo(0, scrollPos);
+                localStorage.removeItem('scrollPosition'); // Limpa para não rolar em cliques comuns depois
+            }
             $('.btn-loading3').on('click', function (e) {            
+                // SALVA A POSIÇÃO AQUI
+                localStorage.setItem('scrollPosition', window.scrollY);           
                 $(this).prop('disabled', true);
                 $(this).addClass('disabled');
                 $('#loadingIndicator3').show();
@@ -1034,7 +1073,15 @@
     </script>
     <script type="text/javascript">
         $(document).ready(function () { 
+    // --- 1. LÓGICA DE RESTAURAÇÃO (Executa ao carregar a página) ---
+            var scrollPos = localStorage.getItem('scrollPosition');
+            if (scrollPos) {
+                window.scrollTo(0, scrollPos);
+                localStorage.removeItem('scrollPosition'); // Limpa para não rolar em cliques comuns depois
+            }
             $('.btn-loading4').on('click', function (e) {            
+                // SALVA A POSIÇÃO AQUI
+                localStorage.setItem('scrollPosition', window.scrollY);           
                 $(this).prop('disabled', true);
                 $(this).addClass('disabled');
                 $('#loadingIndicator4').show();
@@ -1052,7 +1099,15 @@
     </script>
     <script type="text/javascript">
         $(document).ready(function () { 
+    // --- 1. LÓGICA DE RESTAURAÇÃO (Executa ao carregar a página) ---
+            var scrollPos = localStorage.getItem('scrollPosition');
+            if (scrollPos) {
+                window.scrollTo(0, scrollPos);
+                localStorage.removeItem('scrollPosition'); // Limpa para não rolar em cliques comuns depois
+            }
             $('.btn-loading5').on('click', function (e) {            
+                // SALVA A POSIÇÃO AQUI
+                localStorage.setItem('scrollPosition', window.scrollY);           
                 $(this).prop('disabled', true);
                 $(this).addClass('disabled');
                 $('#loadingIndicator5').show();
@@ -1071,7 +1126,15 @@
 
     <script type="text/javascript">
         $(document).ready(function () { 
+    // --- 1. LÓGICA DE RESTAURAÇÃO (Executa ao carregar a página) ---
+            var scrollPos = localStorage.getItem('scrollPosition');
+            if (scrollPos) {
+                window.scrollTo(0, scrollPos);
+                localStorage.removeItem('scrollPosition'); // Limpa para não rolar em cliques comuns depois
+            }
             $('.btn-loading8').on('click', function (e) {            
+                // SALVA A POSIÇÃO AQUI
+                localStorage.setItem('scrollPosition', window.scrollY);           
                 $(this).prop('disabled', true);
                 $(this).addClass('disabled');
                 $('#loadingIndicator8').show();

@@ -690,20 +690,7 @@ namespace GEDSys_Presentation.Controllers
             Int32 idNot = (Int32)Session["IdVolta"];
             return RedirectToAction("EditarNoticia", new { id = idNot });
         }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+       
         public List<NOTICIA> CarregaNoticiaGeral()
         {
             try

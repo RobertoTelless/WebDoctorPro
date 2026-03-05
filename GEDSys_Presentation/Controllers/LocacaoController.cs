@@ -16337,15 +16337,16 @@ namespace GEDSys_Presentation.Controllers
                 Int32 volta = baseApp.ValidateEdit(item, item, usu);
 
                 // Mensagem do CRUD
-                Session["MsgCRUD"] = "O contrato de locação de " + pac.PACI_NM_NOME.ToUpper() + " foi incluído com sucesso";
+                Session["MsgCRUD"] = "O contrato de locação assinado de " + pac.PACI_NM_NOME.ToUpper() + " foi anexado com sucesso";
                 Session["MensLocacao"] = 91;
+                Session["MensArea"] = 61;
 
                 // Finaliza
                 Session["NivelLocacao"] = 1;
                 Session["LocacaoAlterada"] = 1;
                 if ((Int32)Session["VoltaContrato"] == 2)
                 {
-                    return RedirectToAction("VoltarAnexoAreaPaciente", "AreaPaciente");
+                    return RedirectToAction("VoltarVerLocacao", "AreaPaciente");
                 }
                 return RedirectToAction("VoltarEditarLocacao");
             }
