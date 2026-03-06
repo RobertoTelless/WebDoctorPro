@@ -18,16 +18,16 @@
                 }
             </li>
             <li>
-                @if ((Int32)Session["AvisosAbertos"] > 0)
+                @if ((Int32)Session["AreasAbertos"] > 0)
                 {
-                    <a href="@Url.Action("VerAvisoAberto", "Aviso")" class="pisca" style="color: brown; font-weight: bold; margin-right: 50px">
-                        <i class="fa fa-bell"></i> Você tem avisos pendentes
+                    <a href="@Url.Action("MontarTelaAreaPacienteVer", "AreaPaciente")" class="pisca" style="color: brown; font-weight: bold; margin-right: 50px">
+                        <i class="fa fa-bell"></i> Você tem solicitações pendentes
                     </a>
                 }
                 else
                 {
-                    <a href="@Url.Action("VerAvisoAberto", "Aviso")" style="margin-right: 50px">
-                        <i class="fa fa-bell"></i> Nenhum aviso pendente
+                    <a href="@Url.Action("MontarTelaAreaPacienteVer", "AreaPaciente")" style="margin-right: 50px">
+                        <i class="fa fa-bell"></i> Nenhuma solicitação pendente
                     </a>
                 }
 

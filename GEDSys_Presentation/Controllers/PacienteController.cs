@@ -68,6 +68,7 @@ namespace GEDSys_Presentation.Controllers
         private readonly IAcessoMetodoAppService aceApp;
         private readonly IProdutoAppService prodApp;
         private readonly ILocacaoAppService locApp;
+        private readonly IAreaPacienteAppService areaApp;
 
 #pragma warning disable CS0169 // O campo "PacienteController.msg" nunca é usado
         private String msg;
@@ -102,7 +103,7 @@ namespace GEDSys_Presentation.Controllers
         private List<PACIENTE_CONSULTA> listaMasterCalendarioMarcacao = new List<PACIENTE_CONSULTA>();
         private String extensao;
 
-        public PacienteController(IPacienteAppService baseApps, ILogAppService logApps, ITipoPessoaAppService tpApps, IUsuarioAppService usuApps, IConfiguracaoAppService confApps, IGrupoAppService gruApps, IMensagemEnviadaSistemaAppService meApps, IEmpresaAppService empApps, IAssinanteAppService assApps, IControleMensagemAppService cmApps, IRecursividadeAppService recuApps, IMensagemAppService mensApps, ITipoPacienteAppService tpaApps, ILaboratorioAppService labApps, ITemplateEMailAppService temApps, IMedicamentoAppService medApps, ITemplateSMSAppService smsApps, IConfiguracaoAnamneseAppService anaApps, IAvisoLembreteAppService aviApps, IConfiguracaoCalendarioAppService calApps, ISolicitacaoAppService solApps, IValorConsultaAppService vcApps, IAcessoMetodoAppService aceApps, IProdutoAppService prodApps, ILocacaoAppService locApps)
+        public PacienteController(IPacienteAppService baseApps, ILogAppService logApps, ITipoPessoaAppService tpApps, IUsuarioAppService usuApps, IConfiguracaoAppService confApps, IGrupoAppService gruApps, IMensagemEnviadaSistemaAppService meApps, IEmpresaAppService empApps, IAssinanteAppService assApps, IControleMensagemAppService cmApps, IRecursividadeAppService recuApps, IMensagemAppService mensApps, ITipoPacienteAppService tpaApps, ILaboratorioAppService labApps, ITemplateEMailAppService temApps, IMedicamentoAppService medApps, ITemplateSMSAppService smsApps, IConfiguracaoAnamneseAppService anaApps, IAvisoLembreteAppService aviApps, IConfiguracaoCalendarioAppService calApps, ISolicitacaoAppService solApps, IValorConsultaAppService vcApps, IAcessoMetodoAppService aceApps, IProdutoAppService prodApps, ILocacaoAppService locApps, IAreaPacienteAppService areaApps)
         {
             baseApp = baseApps;
             logApp = logApps;
@@ -129,6 +130,7 @@ namespace GEDSys_Presentation.Controllers
             aceApp = aceApps;
             prodApp = prodApps;
             locApp = locApps;
+            areaApp = areaApps;
         }
 
         [HttpGet]
@@ -522,6 +524,10 @@ namespace GEDSys_Presentation.Controllers
                 List<AVISO_LEMBRETE> avisos = CarregarAviso().Where(p => p.AVIS_IN_CIENTE == 0 & p.AVIS_DT_AVISO.Value.Date <= DateTime.Today.Date).ToList();
                 Session["AvisosAbertos"] = avisos.Count;
 
+                // Area Paciente
+                List<AREA_PACIENTE> areas = CarregarAreaPaciente().Where(p => p.USUA_CD_ID == usuario.USUA_CD_ID & p.AREA_IN_ATIVO == 1 & p.AREA_IN_VISTA == 0).ToList();
+                Session["AreasAbertos"] = areas.Count;
+
                 // Cria Sitemap
                 //Int32 volta = CriarSitemap();
 
@@ -588,6 +594,7 @@ namespace GEDSys_Presentation.Controllers
                 Session["ListaHistoricoGeral"] = null;
                 Session["VoltaEncerra"] = 1;
                 Session["TemEncerra"] = 0;
+                Session["IncluirConsultaArea"] = 1;
                 if (confAna.COAN_IN_BLOCO_COMUM == 0 || confAna.COAN_IN_BLOCO_COMUM == null)
                 {
                     Session["BlocoAnamnese"] = 1;
@@ -4672,6 +4679,10 @@ namespace GEDSys_Presentation.Controllers
                     Session["MensPaciente"] = 61;
 
                     // Trata retorno
+                    if ((Int32)Session["IncluirConsultaArea"] == 2)
+                    {
+                        return RedirectToAction("MontarTelaAreaPacienteVer", "AreaPaciente");
+                    }
                     if ((Int32)Session["VoltarProceder"] == 1)
                     {
                         return RedirectToAction("VoltarProcederConsulta");
@@ -10525,7 +10536,7 @@ namespace GEDSys_Presentation.Controllers
                 Int32 idNot = (Int32)Session["IdPaciente"];
                 Int32 idAss = (Int32)Session["IdAssinante"];
 
-                // Recupera cliente
+                // Recupera paciente
                 PACIENTE item = baseApp.GetItemById(idNot);
                 USUARIO usu = (USUARIO)Session["UserCredentials"];
 
@@ -17853,7 +17864,7 @@ namespace GEDSys_Presentation.Controllers
                 if ((Int32)Session["TipoSolicitacao"] == 1)
                 {
                     PACIENTE pac = baseApp.GetItemById((Int32)Session["IdPaciente"]);
-                    vm.PACI_CD_ID = (Int32)Session["IdPaciente"];
+                    vm.PACI_CD_ID = pac.PACI__CD_ID;
                     vm.PACIENTE = pac;
                     vm.VACO_CD_ID = pac.VACO_CD_ID;
                     ViewBag.NomePaciente = pac.PACI_NM_NOME;
@@ -17865,10 +17876,21 @@ namespace GEDSys_Presentation.Controllers
                     ViewBag.NomePaciente = String.Empty;
                 }
                 vm.PACO_IN_ATIVO = 1;
-                vm.PACO_DT_CONSULTA = DateTime.Today.Date;
+                if ((Int32)Session["IncluirConsultaArea"] == 2)
+                {
+                    AREA_PACIENTE area = (AREA_PACIENTE)Session["AreaPaciente"];
+                    vm.PACO_DT_CONSULTA = area.AREA_DT_CONSULTA.Value.Date;
+                    vm.PACO_IN_TIPO = area.AREA_IN_TIPO_CONSULTA;
+                    vm.PACO_HR_INICIO = area.AREA_HR_INICIO;
+                    vm.PACO_HR_FINAL = area.AREA_HR_INICIO.Value.Add(TimeSpan.FromHours(1));
+                }
+                else
+                {
+                    vm.PACO_DT_CONSULTA = DateTime.Today.Date;
+                    vm.PACO_IN_TIPO = 1;
+                }
                 vm.USUA_CD_ID = usuario.USUA_CD_ID;
                 vm.ASSI_CD_ID = idAss;
-                vm.PACO_IN_TIPO = 1;
                 vm.PACO_IN_ENCERRADA = 0;
                 vm.PACO_IN_NOVO_PACIENTE = 2;
                 vm.PACO_IN_CONFIRMADA = 0;
@@ -18429,6 +18451,20 @@ namespace GEDSys_Presentation.Controllers
                     }
 
                     // Retorno
+                    if ((Int32)Session["IncluirConsultaArea"] == 2)
+                    {
+                        AREA_PACIENTE area = areaApp.GetItemById(((AREA_PACIENTE)Session["AreaPaciente"]).AREA_CD_ID);
+                        area.AREA_IN_VISTA = 1;
+                        area.AREA_IN_PROCESSADA = 1;
+                        area.AREA_DT_PROCESSO = DateTime.Now;
+                        Int32 volta = areaApp.ValidateEdit(area);
+                        Session["MsgCRUD"] = "A consulta do(a) paciente " + area.PACIENTE.PACI_NM_NOME.ToUpper() + " foi marcada com sucesso para " + area.AREA_DT_CONSULTA.Value.ToLongDateString() + " às " + area.AREA_HR_INICIO.ToString();
+                        Session["MensArea"] = 61;
+                        Session["ListaAreaPaciente"] = null;
+                        Session["AreaPacienteAlterada"] = 1;
+                        Session["AreaPacientes"] = null;
+                        return RedirectToAction("MontarTelaAreaPacienteVer", "AreaPaciente");
+                    }
                     if ((Int32)Session["VoltarProceder"] == 1)
                     {
                         return RedirectToAction("VoltarProcederConsulta");
@@ -39387,6 +39423,47 @@ namespace GEDSys_Presentation.Controllers
                 GravaLogExcecao grava = new GravaLogExcecao(usuApp);
                 Int32 voltaX = grava.GravarLogExcecao(ex, "Paciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
                 return RedirectToAction("TrataExcecao", "BaseAdmin");
+            }
+        }
+
+        public List<AREA_PACIENTE> CarregarAreaPaciente()
+        {
+            try
+            {
+                USUARIO usuario = (USUARIO)Session["UserCredentials"];
+                Int32 idAss = (Int32)Session["IdAssinante"];
+                List<AREA_PACIENTE> conf = new List<AREA_PACIENTE>();
+                if (Session["AreaPacientes"] == null)
+                {
+                    conf = areaApp.GetAllItens(idAss);
+                }
+                else
+                {
+                    if ((Int32)Session["AreaPacienteAlterada"] == 1)
+                    {
+                        conf = areaApp.GetAllItens(idAss);
+                    }
+                    else
+                    {
+                        conf = (List<AREA_PACIENTE>)Session["AreaPacientes"];
+                    }
+                }
+                conf = conf.Where(p => p.USUA_CD_ID == usuario.USUA_CD_ID).ToList();
+                Session["AreaPacienteAlterada"] = 0;
+                Session["AreaPacientes"] = conf;
+                return conf;
+            }
+            catch (Exception ex)
+            {
+                Session["MensagemLogin"] = 100;
+                Session["MensagemErro"] = ex.Message;
+                Session["Excecao"] = ex;
+                Session["TipoVolta"] = 2;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                Session["VoltaExcecao"] = "AreaPaciente";
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Exceção", "WebDoctor", 1, (USUARIO)Session["UsuarioArea"]);
+                return null;
             }
         }
 

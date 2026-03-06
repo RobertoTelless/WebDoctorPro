@@ -5433,6 +5433,9 @@
     <Content Include="Views\AreaPaciente\ErroGeralAreaPaciente.cshtml" />
     <Content Include="Views\AreaPaciente\CarregarContrato.cshtml" />
     <Content Include="Views\AreaPaciente\MontarTelaAreaPacienteVer.cshtml" />
+    <Content Include="Views\AreaPaciente\AreaPacienteItemVer.cshtml" />
+    <Content Include="Views\AreaPaciente\ProcessarMarcacaoConsulta.cshtml" />
+    <Content Include="Views\AreaPaciente\ProcessarInfoConsulta.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

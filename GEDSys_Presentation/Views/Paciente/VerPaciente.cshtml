@@ -92,6 +92,11 @@
                         }
                         else
                         {
+                            if ((Int32)Session["IncluirConsultaArea"] == 2)
+                            {
+                                @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaAreaPacienteVer", controller: "AreaPaciente",  htmlAttributes: new { @class = "btn-loading" })
+                            }
+
                             if ((Int32)Session["TipoSolicitacao"] == 2)
                             {
                                 @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaSolicitacoes", controller: "Paciente")

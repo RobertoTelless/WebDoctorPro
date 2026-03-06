@@ -34,6 +34,30 @@ namespace ApplicationServices.Services
             return item;
         }
 
+        public Tuple<Int32, List<AREA_PACIENTE>, Boolean> ExecuteFilter(String paciente, DateTime? inicio, DateTime? final, Int32? tipo, Int32 idAss)
+        {
+            try
+            {
+                List<AREA_PACIENTE> objeto = new List<AREA_PACIENTE>();
+                Int32 volta = 0;
+
+                // Processa filtro
+                objeto = _baseService.ExecuteFilter(paciente, inicio, final, tipo, idAss);
+                if (objeto.Count == 0)
+                {
+                    volta = 1;
+                }
+
+                // Monta tupla
+                var tupla = Tuple.Create(volta, objeto, true);
+                return tupla;
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
         public Int32 ValidateCreate(AREA_PACIENTE item, USUARIO usuario)
         {
             Db.Configuration.LazyLoadingEnabled = false;

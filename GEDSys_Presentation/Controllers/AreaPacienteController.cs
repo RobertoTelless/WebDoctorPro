@@ -1275,7 +1275,7 @@ namespace GEDSys_Presentation.Controllers
                 }
 
                 // Prepara view
-                Session["MensPaciente"] = null;
+                Session["MensArea"] = null;
                 Session["VoltaConfCalendario"] = 2;
                 Session["VoltaBloqueio"] = 3;
                 Session["VoltaInfoConsulta"] = 1;
@@ -3690,6 +3690,7 @@ namespace GEDSys_Presentation.Controllers
         {
             try
             {
+                USUARIO usuario = (USUARIO)Session["UserCredentials"];
                 Int32 idAss = (Int32)Session["IdAssinante"];
                 List<AREA_PACIENTE> conf = new List<AREA_PACIENTE>();
                 if (Session["AreaPacientes"] == null)
@@ -3707,6 +3708,7 @@ namespace GEDSys_Presentation.Controllers
                         conf = (List<AREA_PACIENTE>)Session["AreaPacientes"];
                     }
                 }
+                conf = conf.Where(p => p.USUA_CD_ID == usuario.USUA_CD_ID).ToList();
                 Session["AreaPacienteAlterada"] = 0;
                 Session["AreaPacientes"] = conf;
                 return conf;
@@ -9276,12 +9278,6 @@ namespace GEDSys_Presentation.Controllers
                     usuario = (USUARIO)Session["UserCredentials"];
 
                     // Verfifica permissão
-                    if (usuario.PERFIL.PERF_IN_AREA_PACIENTE == 1)
-                    {
-                        Session["MensPermissao"] = 2;
-                        Session["ModuloPermissao"] = "AreaPaciente";
-                        return RedirectToAction("MontarTelaPaciente", "Paciente");
-                    }
                 }
                 else
                 {
@@ -9292,7 +9288,7 @@ namespace GEDSys_Presentation.Controllers
 
                 // Carrega listas
                 List<AREA_PACIENTE> areas = new List<AREA_PACIENTE>();
-                if ((List<LOCACAO>)Session["ListaAreaPaciente"] == null)
+                if (Session["ListaAreaPaciente"] == null)
                 {
                     areas = CarregarAreaPaciente();
                     listaMasterArea = areas.OrderByDescending(p => p.AREA_DT_ENTRADA).ThenBy(p => p.AREA_IN_TIPO).ToList();
@@ -9339,9 +9335,590 @@ namespace GEDSys_Presentation.Controllers
                 // Abre view
                 Session["MensArea"] = null;
                 Session["VoltaAreaVer"] = 1;
+                Session["IncluirConsultaArea"] = 2;
 
                 objetoArea = new AREA_PACIENTE();
                 return View(objetoArea);
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "AreaPaciente";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "AreaPaciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return RedirectToAction("TrataExcecao", "BaseAdmin");
+            }
+        }
+
+        [HttpPost]
+        public ActionResult FiltrarAreaPaciente(AREA_PACIENTE item)
+        {
+            try
+            {
+                if ((String)Session["Ativa"] == null)
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+                Int32 idAss = (Int32)Session["IdAssinante"];
+
+                // Executa a operação
+                List<AREA_PACIENTE> listaObj = new List<AREA_PACIENTE>();
+                Tuple<Int32, List<AREA_PACIENTE>, Boolean> volta = areaApp.ExecuteFilter(item.AREA_NM_PACIENTE_DUMMY, item.AREA_DT_ENTRADA, item.AREA_DT_DUMMY, item.AREA_IN_TIPO, idAss);
+
+                // Verifica retorno
+                if (volta.Item1 == 1)
+                {
+                    Session["MensArea"] = 1;
+                    return RedirectToAction("MontarTelaAreaPacienteVer");
+                }
+
+                // Sucesso
+                Session["MensArea"] = null;
+                listaMasterArea = volta.Item2;
+                Session["ListaAreaPaciente"] = volta.Item2;
+                return RedirectToAction("MontarTelaAreaPacienteVer");
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "AreaPaciente";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "AreaPaciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return RedirectToAction("TrataExcecao", "BaseAdmin");
+            }
+
+        }
+
+        public ActionResult RetirarFiltroAreaPaciente()
+        {
+            try
+            {
+                if ((String)Session["Ativa"] == null)
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+                Int32 idAss = (Int32)Session["IdAssinante"];
+                Session["ListaAreaPaciente"] = null;
+                return RedirectToAction("MontarTelaAreaPacienteVer");
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "AreaPaciente";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "AreaPaciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return RedirectToAction("TrataExcecao", "BaseAdmin");
+            }
+        }
+
+        [HttpGet]
+        public ActionResult AreaPacienteItemVer(Int32 id)
+        {
+            try
+            {
+                // Verifica se tem usuario logado
+                USUARIO usuario = new USUARIO();
+                if ((String)Session["Ativa"] == null)
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+                if ((USUARIO)Session["UserCredentials"] != null)
+                {
+                    usuario = (USUARIO)Session["UserCredentials"];
+
+                    // Verfifica permissão
+                }
+                else
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+                Int32 idAss = (Int32)Session["IdAssinante"];
+
+                // Prepara view
+
+                AREA_PACIENTE item = areaApp.GetItemById(id);
+                PACIENTE pac = baseApp.GetItemById(item.PACI_CD_ID.Value);
+
+                AreaPacienteViewModel vm = Mapper.Map<AREA_PACIENTE, AreaPacienteViewModel>(item);
+                Session["IdAreaPaciente"] = item.AREA_CD_ID;
+                Session["AreaPaciente"] = item;
+                Session["IdPaciente"] = item.PACI_CD_ID;
+
+                // Grava Acesso
+                ControleAcessoMetodo grava = new ControleAcessoMetodo(aceApp);
+                Int32 voltaX = grava.GravaAcesso(usuario.USUA_CD_ID, usuario.ASSI_CD_ID, "AREA_PACIENTE_VER", "AreaPaciente", "AreaPacienteItemVer");
+                return View(vm);
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "AreaPaciente";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "AreaPaciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return RedirectToAction("TrataExcecao", "BaseAdmin");
+            }
+        }
+
+        public ActionResult VoltarAreaPacienteVer()
+        {
+            if ((String)Session["Ativa"] == null)
+            {
+                return RedirectToAction("Logout", "ControleAcesso");
+            }
+
+            AREA_PACIENTE velha = (AREA_PACIENTE)Session["AreaPaciente"];
+            AREA_PACIENTE area = areaApp.GetItemById(velha.AREA_CD_ID);
+            area.AREA_IN_VISTA = 1;
+            Int32 volta = areaApp.ValidateEdit(area);
+            Session["ListaAreaPaciente"] = null;
+            Session["AreaPacienteAlterada"] = 1;
+            Session["AreaPacientes"] = null;
+            return RedirectToAction("MontarTelaAreaPacienteVer");
+        }
+
+
+        public ActionResult ProcessarMarcacaoConsultaPlano()
+        {
+            if ((String)Session["Ativa"] == null)
+            {
+                return RedirectToAction("Logout", "ControleAcesso");
+            }
+            try
+            {
+                Session["VoltaTela"] = 1;
+                Session["TipoSolicitacao"] = 1;
+                Session["IncluirConsultaArea"] = 2;
+                return RedirectToAction("IncluirConsulta", "Paciente");
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "AreaPaciente";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "AreaPaciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return RedirectToAction("TrataExcecao", "BaseAdmin");
+            }
+        }
+
+        [HttpGet]
+        public ActionResult ProcessarMarcacaoConsulta(Int32 id)
+        {
+            try
+            {
+                // Verifica se tem usuario logado
+                USUARIO usuario = new USUARIO();
+                if ((String)Session["Ativa"] == null)
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+                if ((USUARIO)Session["UserCredentials"] != null)
+                {
+                    usuario = (USUARIO)Session["UserCredentials"];
+
+                    // Verfifica permissão
+                }
+                else
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+                Int32 idAss = (Int32)Session["IdAssinante"];
+                Session["ModuloAtual"] = "AreaPaciente";
+
+                // Carrega Area
+                AREA_PACIENTE area = areaApp.GetItemById(id);
+
+                // Mensagem
+                if (Session["MensArea"] != null)
+                {
+                    if ((Int32)Session["MensArea"] == 61)
+                    {
+                        TempData["MensagemAcerto"] = (String)Session["MsgCRUD"];
+                        TempData["TemMensagem"] = 1;
+                    }
+                }
+
+                // Prepara view
+                Session["MensArea"] = null;
+                Session["AreaPaciente"] = area;
+                Session["IdPaciente"] = area.PACI_CD_ID;
+                return View(area);
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "AreaPaciente";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "AreaPaciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return RedirectToAction("TrataExcecao", "BaseAdmin");
+            }
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult ProcessarMarcacaoConsulta(AREA_PACIENTE area)
+        {
+            if ((String)Session["Ativa"] == null)
+            {
+                return RedirectToAction("Logout", "ControleAcesso");
+            }
+            try
+            {
+                Session["AreaPaciente"] = area;
+                Session["IdPaciente"] = area.PACI_CD_ID;
+                Session["TipoSolicitacao"] = 1;
+                Session["IncluirConsultaArea"] = 2;
+                return RedirectToAction("IncluirConsulta", "Paciente");
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "AreaPaciente";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "AreaPaciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return RedirectToAction("TrataExcecao", "BaseAdmin");
+            }
+        }
+
+        public ActionResult FecharMarcacaoConsulta()
+        {
+            if ((String)Session["Ativa"] == null)
+            {
+                return RedirectToAction("Logout", "ControleAcesso");
+            }
+            try
+            {
+                AREA_PACIENTE area = (AREA_PACIENTE)Session["AreaPaciente"];
+                area.AREA_IN_VISTA = 1;
+                area.AREA_IN_PROCESSADA = 1;
+                area.AREA_DT_PROCESSO = DateTime.Now;
+                Int32 volta = areaApp.ValidateEdit(area);
+                Session["ListaAreaPaciente"] = null;
+                return RedirectToAction("MontarTelaAreaPacienteVer", "AreaPaciente");
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "AreaPaciente";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "AreaPaciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return RedirectToAction("TrataExcecao", "BaseAdmin");
+            }
+        }
+
+        public ActionResult ProcessarInfoConsultaPlano()
+        {
+            if ((String)Session["Ativa"] == null)
+            {
+                return RedirectToAction("Logout", "ControleAcesso");
+            }
+            try
+            {
+                // Processa informação
+                AREA_PACIENTE area = (AREA_PACIENTE)Session["AreaPaciente"];
+                PACIENTE pac = baseApp.GetItemById(area.PACI_CD_ID.Value);
+                String dataHoje = DateTime.Today.Date.ToLongDateString();
+                PACIENTE_ANAMNESE ana = pac.PACIENTE_ANAMNESE.Where(p => p.PAAM_IN_ATIVO == 1).FirstOrDefault();
+                PACIENTE_ANAMNESE anam = RemontarAnamnese(ana);
+                if (area.AREA_TX_CONTEUDO != null)
+                {
+                    String velho = anam.PAAM_TX_TEXTO_LIVRE;
+                    String novo = "=== Informação Prévia de Consulta === " + Environment.NewLine + area.AREA_TX_CONTEUDO;
+                    if (velho == null & novo != String.Empty)
+                    {
+                        anam.PAAM_TX_TEXTO_LIVRE = dataHoje + "\r\n" + novo;
+                    }
+                    if (velho != null & novo != String.Empty)
+                    {
+                        String tripa = velho.Substring(velho.Length - 4, 4);
+                        if (tripa == "\r\n")
+                        {
+                            velho = velho.Substring(0, velho.Length - 4);
+                        }
+                        anam.PAAM_TX_TEXTO_LIVRE = velho + "\r\n\r\n" + dataHoje + "\r\n" + novo;
+                    }
+                }
+                Int32 voltaAna = baseApp.ValidateEditAnamnesePrevia(anam);
+
+                // Trata anexos
+                if (area.AREA_PACIENTE_ANEXO.Count > 0)
+                {
+                    foreach (AREA_PACIENTE_ANEXO item in area.AREA_PACIENTE_ANEXO)
+                    {
+                        Int32 volta1 = UploadFilePaciente(pac, item);
+                    }
+                }
+
+                // Atualiza area do paciente
+                area.AREA_IN_VISTA = 1;
+                area.AREA_IN_PROCESSADA = 1;
+                area.AREA_DT_PROCESSO = DateTime.Now;
+                Int32 volta = areaApp.ValidateEdit(area);
+
+                Session["MsgCRUD"] = "As informações de consulta do(a) paciente " + area.PACIENTE.PACI_NM_NOME.ToUpper() + " foram atualizadas com sucesso no prontuário";
+                Session["MensArea"] = 61;
+                Session["ListaAreaPaciente"] = null;
+                Session["AreaPacienteAlterada"] = 1;
+                Session["AreaPacientes"] = null;
+                return RedirectToAction("MontarTelaAreaPacienteVer", "AreaPaciente");
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "AreaPaciente";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "AreaPaciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return RedirectToAction("TrataExcecao", "BaseAdmin");
+            }
+        }
+
+        [HttpPost]
+        public Int32 UploadFilePaciente(PACIENTE pac, AREA_PACIENTE_ANEXO item)
+        {
+            try
+            {
+                // Inicializa
+                Int32 idNot = (Int32)Session["IdPaciente"];
+                Int32 idAss = (Int32)Session["IdAssinante"];
+
+                // Recupera paciente
+                USUARIO usu = (USUARIO)Session["UserCredentials"];
+
+
+                // Copia arquivo
+                String extensao = Path.GetExtension(item.APAN_NM_TITULO);
+                String caminhoOrigem = "/Imagens/" + item.ASSI_CD_ID.ToString() + "/AreaPaciente/" + item.AREA_CD_ID.ToString() + "/Anexos/";
+                String pathOrigem = Path.Combine(Server.MapPath(caminhoOrigem), item.APAN_NM_TITULO);
+                String caminhoDest = "/Imagens/" + item.ASSI_CD_ID.ToString() + "/Pacientes/" + pac.PACI__CD_ID.ToString() + "/Anexos/";
+                String pathDest = Path.Combine(Server.MapPath(caminhoDest), item.APAN_NM_TITULO);
+                System.IO.File.Copy(pathOrigem, pathDest, true);
+
+                // Gravar registro
+                PACIENTE_ANEXO foto = new PACIENTE_ANEXO();
+                foto.PAAX_AQ_ARQUIVO = item.APAN_AQ_ARQUIVO;
+                foto.PAAX_DT_ANEXO = DateTime.Today;
+                foto.PAAX_IN_ATIVO = 1;
+                Int32 tipo = 3;
+                if (extensao.ToUpper() == ".JPG" || extensao.ToUpper() == ".GIF" || extensao.ToUpper() == ".PNG" || extensao.ToUpper() == ".JPEG")
+                {
+                    tipo = 1;
+                }
+                else if (extensao.ToUpper() == ".MP4" || extensao.ToUpper() == ".AVI" || extensao.ToUpper() == ".MPEG")
+                {
+                    tipo = 2;
+                }
+                else if (extensao.ToUpper() == ".PDF")
+                {
+                    tipo = 3;
+                }
+                else if (extensao.ToUpper() == ".MP3" || extensao.ToUpper() == ".MPEG")
+                {
+                    tipo = 4;
+                }
+                else if (extensao.ToUpper() == ".DOCX" || extensao.ToUpper() == ".DOC" || extensao.ToUpper() == ".ODT")
+                {
+                    tipo = 5;
+                }
+                else if (extensao.ToUpper() == ".XLSX" || extensao.ToUpper() == ".XLS" || extensao.ToUpper() == ".ODS")
+                {
+                    tipo = 6;
+                }
+                else
+                {
+                    tipo = 7;
+                }
+                foto.PAAX_IN_TIPO = tipo;
+                foto.PAAX_NM_TITULO = item.APAN_NM_TITULO;
+                foto.PACI_CD_ID = pac.PACI__CD_ID;
+                pac.PACIENTE_ANEXO.Add(foto);
+                Int32 volta = baseApp.ValidateEdit(pac, pac);
+
+                // Configura serilização
+                JsonSerializerSettings settings = new JsonSerializerSettings
+                {
+                    ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+                    NullValueHandling = NullValueHandling.Ignore
+                };
+
+                // Monta Log
+                DTO_Paciente_Anexo dto = MontarPacienteAnexoDTOObj(foto);
+                String json = JsonConvert.SerializeObject(dto, settings);
+                LOG log = new LOG
+                {
+                    LOG_DT_DATA = DateTime.Now,
+                    ASSI_CD_ID = usu.ASSI_CD_ID,
+                    USUA_CD_ID = usu.USUA_CD_ID,
+                    LOG_NM_OPERACAO = "Paciente - Anexo - Inclusão",
+                    LOG_IN_ATIVO = 1,
+                    LOG_TX_REGISTRO = json,
+                    LOG_IN_SISTEMA = 6
+                };
+                Int32 volta1 = logApp.ValidateCreate(log);
+
+                Session["PacienteAlterada"] = 1;
+                return 0;
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Paciente";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Paciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return 0;
+            }
+        }
+
+        public DTO_Paciente_Anexo MontarPacienteAnexoDTOObj(PACIENTE_ANEXO l)
+        {
+            using (var context = new CRMSysDBEntities())
+            {
+                var mediDTO = new DTO_Paciente_Anexo()
+                {
+                    PAAX_CD_ID = l.PAAX_CD_ID,
+                    PAAX_AQ_ARQUIVO = l.PAAX_AQ_ARQUIVO,
+                    PAAX_DT_ANEXO = l.PAAX_DT_ANEXO,
+                    PAAX_IN_ATIVO = l.PAAX_IN_ATIVO,
+                    PACI_CD_ID = l.PACI_CD_ID,
+                    PAAX_IN_TIPO = l.PAAX_IN_TIPO,
+                    PAAX_NM_TITULO = l.PAAX_NM_TITULO,
+                };
+                return mediDTO;
+            }
+
+        }
+
+        [HttpGet]
+        public ActionResult ProcessarInfoConsulta(Int32 id)
+        {
+            try
+            {
+                // Verifica se tem usuario logado
+                USUARIO usuario = new USUARIO();
+                if ((String)Session["Ativa"] == null)
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+                if ((USUARIO)Session["UserCredentials"] != null)
+                {
+                    usuario = (USUARIO)Session["UserCredentials"];
+
+                    // Verfifica permissão
+                }
+                else
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+                Int32 idAss = (Int32)Session["IdAssinante"];
+                Session["ModuloAtual"] = "AreaPaciente";
+
+                // Carrega Area
+                AREA_PACIENTE area = areaApp.GetItemById(id);
+
+                // Mensagem
+                if (Session["MensArea"] != null)
+                {
+                    if ((Int32)Session["MensArea"] == 61)
+                    {
+                        TempData["MensagemAcerto"] = (String)Session["MsgCRUD"];
+                        TempData["TemMensagem"] = 1;
+                    }
+                }
+
+                // Prepara view
+                Session["MensArea"] = null;
+                Session["AreaPaciente"] = area;
+                Session["IdPaciente"] = area.PACI_CD_ID;
+                return View(area);
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "AreaPaciente";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "AreaPaciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return RedirectToAction("TrataExcecao", "BaseAdmin");
+            }
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult ProcessarInfoConsulta(AREA_PACIENTE area)
+        {
+            if ((String)Session["Ativa"] == null)
+            {
+                return RedirectToAction("Logout", "ControleAcesso");
+            }
+            try
+            {
+                // Processa informação
+                PACIENTE pac = baseApp.GetItemById(area.PACI_CD_ID.Value);
+                String dataHoje = DateTime.Today.Date.ToLongDateString();
+                PACIENTE_ANAMNESE ana = pac.PACIENTE_ANAMNESE.Where(p => p.PAAM_IN_ATIVO == 1).FirstOrDefault();
+                PACIENTE_ANAMNESE anam = RemontarAnamnese(ana);
+                if (area.AREA_TX_CONTEUDO != null)
+                {
+                    String velho = anam.PAAM_TX_TEXTO_LIVRE;
+                    String novo = "=== Informação Prévia de Consulta === " + Environment.NewLine + area.AREA_TX_CONTEUDO;
+                    if (velho == null & novo != String.Empty)
+                    {
+                        anam.PAAM_TX_TEXTO_LIVRE = dataHoje + "\r\n" + novo;
+                    }
+                    if (velho != null & novo != String.Empty)
+                    {
+                        String tripa = velho.Substring(velho.Length - 4, 4);
+                        if (tripa == "\r\n")
+                        {
+                            velho = velho.Substring(0, velho.Length - 4);
+                        }
+                        anam.PAAM_TX_TEXTO_LIVRE = velho + "\r\n\r\n" + dataHoje + "\r\n" + novo;
+                    }
+                }
+                Int32 voltaAna = baseApp.ValidateEditAnamnesePrevia(anam);
+
+                // Atualiza area do paciente
+                area.AREA_IN_VISTA = 1;
+                area.AREA_IN_PROCESSADA = 1;
+                area.AREA_DT_PROCESSO = DateTime.Now;
+                Int32 volta = areaApp.ValidateEdit(area);
+
+                Session["MsgCRUD"] = "As informações de consulta do(a) paciente " + area.PACIENTE.PACI_NM_NOME.ToUpper() + " foram atualizadas com sucesso no prontuário";
+                Session["MensArea"] = 61;
+                Session["ListaAreaPaciente"] = null;
+                Session["AreaPacienteAlterada"] = 1;
+                Session["AreaPacientes"] = null;
+                return RedirectToAction("MontarTelaAreaPacienteVer", "AreaPaciente");
             }
             catch (Exception ex)
             {

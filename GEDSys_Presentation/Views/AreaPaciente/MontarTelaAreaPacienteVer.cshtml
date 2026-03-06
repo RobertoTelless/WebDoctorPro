@@ -83,7 +83,7 @@
     </div>
 
     <div class="row">
-        <div class="col-lg-10 col-md-10 col-xs-12">
+        <div class="col-lg-12 col-md-12 col-xs-12">
             <div class="col-lg-12 col-md-12 col-xs-12 ibox float-e-margins">
                 <div class="ibox-title">
                     <h5>Filtros</h5>
@@ -93,7 +93,7 @@
                 {
                     <div class="ibox-content">
                         <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
-                            <div class="col-lg-3 col-md-3 col-xs-12">
+                            <div class="col-lg-5 col-md-5 col-xs-12">
                                 Paciente
                                 @Html.TextBoxFor(m => m.AREA_NM_PACIENTE_DUMMY, new { @class = "form-control", autofocus = true, @id = "txtNomePaciente", data_toggle = "popover", data_content = "Informe o nome do paciente", data_trigger="hover", data_placement="top" })
                             </div>
@@ -105,7 +105,7 @@
                                 Data Final
                                 @Html.TextBoxFor(m => m.AREA_DT_DUMMY, new { @class = "form-control", autofocus = true, @id = "dn1", data_toggle = "popover", data_content = "Informe a data final da faixa de datas a ser pesquisada", data_trigger="hover", data_placement="top" })
                             </div>
-                            <div class="col-lg-2 col-md-2 col-xs-12">
+                            <div class="col-lg-3 col-md-3 col-xs-12">
                                 Tipo
                                 @Html.DropDownListFor(m => m.AREA_IN_TIPO, (SelectList)ViewBag.Tipo, "Selecionar", new { @class = "form-control", autofocus = true, data_toggle = "popover", data_content = "Selecione o tipo de transação", data_trigger="hover", data_placement="top" })
                             </div>
@@ -113,16 +113,8 @@
                         <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
                             <div class="col-lg-12 col-md-12 col-xs-12">
                                 @Html.ButtonActionSubmit(text: "Filtrar", htmlAttributes: new { @class = "btn-loading1" })
-                                <a href="@Url.Action("RetirarFiltroLocacao", "Locacao")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Retorna a exibição padrão das locações" class="btn btn-sm btn-warning btn-loading" id="emp" OnClick = "Fade()">Retirar Filtro</a>                
-                                <a href="@Url.Action("MostrarTudoLocacao", "Locacao")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Exibe todas as locações" class="btn btn-sm btn-warning btn-loading" id="emp" OnClick = "Fade()">Exibir Todas</a>                
-                                @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_LOCACAO_INCLUIR == 1)
-                                {
-                                    <a href="@Url.Action("IncluirLocacao", "Locacao")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessa a página de criação de locações" class="btn btn-sm btn-primary btn-loading" id="emp" OnClick = "Fade()">Nova Locação</a>                
-                                }
-                                <a href="@Url.Action("VerHistoricoLocacoes", "Locacao")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Ver o histórico de todas as locações" class="btn btn-sm btn-warning btn-loading" id="emp" OnClick = "Fade()">Histórico</a>                
-                                <a href="@Url.Action("VerParcelasLocacoes", "Locacao")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Ver as parcelas de todas as locações" class="btn btn-sm btn-warning btn-loading" id="emp" OnClick = "Fade()">Parcelas</a>                
-                                <a href="@Url.Action("MontarTelaContratoLocacao", "Locacao")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acesso a página de contratos de locação e afins" class="btn btn-sm btn-warning btn-loading" id="emp" OnClick = "Fade()">Contratos</a>                
-                                <a href="@Url.Action("MontarTelaDashboardLocacao", "Locacao")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acesso ao dashboard de locações" class="btn btn-sm btn-primary btn-loading" id="emp" OnClick = "Fade()">Dashboard</a>                
+                                <a href="@Url.Action("RetirarFiltroAreaPaciente", "AreaPaciente")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Retorna a exibição padrão da área do paciente" class="btn btn-sm btn-warning btn-loading" id="emp" OnClick = "Fade()">Retirar Filtro</a>                
+                                <a href="@Url.Action("EnviarMensagemPaciente", "AreaPaciente")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Envia mensagem para o paciente" class="btn btn-sm btn-warning btn-loading" id="emp" OnClick = "Fade()">Enviar Mensagem</a>                
                                 @Html.ButtonLinkIndex(text: "Voltar", controller: "Paciente", action: "MontarTelaPaciente", htmlAttributes: new { @class = "btn-loading" })
                                 <span id="loadingIndicator" style="display: none; margin-left: 10px; color: #007bff;">
                                     <i class="fa fa-spinner fa-spin"></i> Processando...
@@ -133,33 +125,13 @@
                 }
             </div>
         </div>
-
-        <div class="col-lg-2 col-md-2 col-xs-12">
-            <div class="ibox float-e-margins">
-                <div class="ibox-title"  style="background-color: cornsilk; color:darkgreen">
-                    <h5>Relatórios</h5>
-                </div>
-                <div class="ibox-content">
-                    @using (Html.BeginForm("ProcessaRelatorioLocacao", "Locacao", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal", autofocus = true }))
-                    {
-                        @Html.DropDownList("TIPO_RELATORIO", (SelectList)ViewBag.Relatorio, "Selecionar", new { @class = "form-control", autofocus = true })
-                        <small>Selecione o Relatório</small>
-                        <br />
-                        <small>(*) Sensivel ao filtro especificado</small>
-                        <br />
-                        <br />
-                        @Html.ButtonActionSubmit(text: "Gerar Relatório")
-                    }
-                </div>
-            </div>
-        </div>
     </div>
 
     <div class="row">
         <div class="col-lg-12 col-md-12 col-xs-12" id="central">
             <div class="col-lg-12 col-md-12 col-xs-12 ibox float-e-margins">
                 <div class="ibox-title">
-                    <h5>Locações</h5>
+                    <h5>Área do Paciente - Itens</h5>
                 </div>
                 <div class="ibox-content">
                         @if (!ViewData.ModelState.IsValid)
@@ -176,26 +148,24 @@
                             </div>
                         }                    
                         <div class="row">
-                            @if (ViewBag.Listas != null && (ViewBag.Listas as List<EntitiesServices.Model.LOCACAO>).Count > 0)
+                            @if (ViewBag.Listas != null && (ViewBag.Listas as List<EntitiesServices.Model.AREA_PACIENTE>).Count > 0)
                             {
                                 <table class="table table-striped table-bordered table-hover dataTables-example">
                                     <thead style="background-color:lightsteelblue">
                                         <tr>
                                             <th style="width: auto">Paciente</th>
-                                            <th style="width: auto">Produto</th>
-                                            <th style="width: auto">Início</th>
-                                            <th style="width: auto">Final</th>
-                                            <th style="width: auto">Parcela (R$)</th>
-                                            <th style="width: auto">Quantidade</th>
-                                            <th style="width: auto">Dia do Vencimento</th>
-                                            <th style="width: auto">Status</th>
-                                            <th style="width: auto">Responsável</th>
-                                            <th style="width: auto"></th>
+                                            <th style="width: auto">Data de Entrada</th>
+                                            <th style="width: auto">Tipo de Entrada</th>
+                                            <th style="width: auto">Tipo de Documento</th>
+                                            <th style="width: auto">Descrição</th>
+                                            <th style="width: auto">Vista</th>
+                                            <th style="width: auto">Processada</th>
+                                            <th style="width: auto">Processamento</th>
                                             <th style="width: auto" class="td-one-action">Ações</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @foreach (var cond in (ViewBag.Listas as List<EntitiesServices.Model.LOCACAO>))
+                                        @foreach (var cond in (ViewBag.Listas as List<EntitiesServices.Model.AREA_PACIENTE>))
                                         {
                                             <tr>
                                                 @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_ALTERAR_PACIENTE == 1)
@@ -206,140 +176,114 @@
                                                 {
                                                     <td style="width: auto; cursor: pointer; text-decoration: underline;"><a href="@Url.Action("ConsultarPaciente", "Paciente", new { id = cond.PACI_CD_ID })" class="btn-loading" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Consultar paciente"/>@cond.PACIENTE.PACI_NM_NOME</td>
                                                 }
-                                                @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_EDITAR_PRODUTO == 1)
+
+                                                <td>
+                                                    <span style="display:none; width: auto">@cond.AREA_DT_ENTRADA.Value.ToString("yyyyMMdd")</span>
+                                                    @cond.AREA_DT_ENTRADA.Value.ToString("dd/MM/yyyy")
+                                                </td>
+
+                                                @if (cond.AREA_IN_TIPO == 1)
                                                 {
-                                                    <td style="width: auto; cursor: pointer; text-decoration: underline;"><a href="@Url.Action("EditarProduto", "Produto", new { id = cond.PROD_CD_ID })" class="btn-loading" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Editar/Consultar Produto"/>@cond.PRODUTO.PROD_NM_NOME</td>
+                                                    <td style="width: auto"><span class="badge badge-primary">Marcação de Consulta</span></td>
+                                                }
+                                                else if (cond.AREA_IN_TIPO == 2)
+                                                {
+                                                    <td style="width: auto"><span class="badge badge-success">Informações de Consulta</span></td>
+                                                }
+                                                else if (cond.AREA_IN_TIPO == 3)
+                                                {
+                                                    <td style="width: auto"><span class="badge badge-warning">Envio de Documento</span></td>
+                                                }
+
+                                                @if (cond.AREA_IN_TIPO == 3)
+                                                {
+                                                    if (cond.AREA_IN_TIPO_EXAME == 1)
+                                                    {
+                                                        <td style="width: auto"><span class="badge badge-primary">Contrato de Locação</span></td>
+                                                    }
+                                                    else if (cond.AREA_IN_TIPO_EXAME == 2)
+                                                    {
+                                                        <td style="width: auto"><span class="badge badge-primary">Distrato de Locação</span></td>
+                                                    }
+                                                    else if (cond.AREA_IN_TIPO_EXAME == 3)
+                                                    {
+                                                        <td style="width: auto"><span class="badge badge-success">Resultado de Exame</span></td>
+                                                    }
+                                                    else if (cond.AREA_IN_TIPO_EXAME == 4)
+                                                    {
+                                                        <td style="width: auto"><span class="badge badge-warning">Documento</span></td>
+                                                    }
                                                 }
                                                 else
                                                 {
-                                                    <td style="width: auto; cursor: pointer; text-decoration: underline;"><a href="@Url.Action("ConsultarProduto", "Produto", new { id = cond.PROD_CD_ID })" class="btn-loading" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Consultar Produto"/>@cond.PRODUTO.PROD_NM_NOME</td>
+                                                    <td style="width: auto">-</td>
                                                 }
 
-                                                <td>
-                                                    <span style="display:none; width: auto">@cond.LOCA_DT_INICIO.Value.ToString("yyyyMMdd")</span>
-                                                    @cond.LOCA_DT_INICIO.Value.ToString("dd/MM/yyyy")
-                                                </td>
-                                                <td>
-                                                    <span style="display:none; width: auto">@cond.LOCA_DT_FINAL.Value.ToString("yyyyMMdd")</span>
-                                                    @cond.LOCA_DT_FINAL.Value.ToString("dd/MM/yyyy")
-                                                </td>
+                                                <td style="width: auto">@cond.AREA_NM_TITULO</td>
 
-                                                <td style="width: auto">@CrossCutting.Formatters.DecimalFormatter(cond.LOCA_VL_PARCELA.Value)</td>
-                                                <td style="width: auto">@cond.LOCA_IN_QUANTIDADE</td>
-                                                <td style="width: auto">@cond.LOCA_NR_DIA</td>
-                                                @if (cond.LOCA_IN_STATUS == 1)
+                                                @if (cond.AREA_IN_VISTA == 1)
                                                 {
-                                                    <td style="width: auto"><span class="badge badge-primary">Ativa</span></td>
-
-                                                }
-                                                else if (cond.LOCA_IN_STATUS == 2)
-                                                {
-                                                    <td style="width: auto"><span class="badge badge-success">Encerrada</span></td>
-
-                                                }
-                                                else if (cond.LOCA_IN_STATUS == 3)
-                                                {
-                                                    <td style="width: auto"><span class="badge badge-danger">Vencida</span></td>
-
-                                                }
-                                                else if (cond.LOCA_IN_STATUS == 4)
-                                                {
-                                                    <td style="width: auto"><span class="badge badge-danger">Cancelada</span></td>
-
-                                                }
-                                                else if (cond.LOCA_IN_STATUS == 0)
-                                                {
-                                                    <td style="width: auto"><span class="badge badge-warning">Pendente</span></td>
-
-                                                }
-                                                else 
-                                                {
-                                                    <td style="width: auto"><span class="badge badge-warning">-</span></td>
-
-                                                }
-                                                <td style="width: auto">@cond.USUARIO.USUA_NM_NOME</td>
-                                                @if (!String.IsNullOrEmpty(cond.PRODUTO.PROD_AQ_FOTO))
-                                                {
-                                                    <td style="width: auto"><img src="@Url.Content(cond.PRODUTO.PROD_AQ_FOTO)" style="width: auto; height: auto; max-height: 75px; max-width: 65px;" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Clique Ctrl+Ctrl para ampliar a fotografia"></td>
+                                                    <td style="width: auto"><span class="badge badge-primary">Sim</span></td>
                                                 }
                                                 else
                                                 {
-                                                    <td style="width: auto"><img src="~/Images/icone_imagem.png" style="width: auto; height: auto; max-height: 65px; max-width: 55px;"  ></td>
+                                                    <td style="width: auto"><span class="badge badge-danger">Não</span></td>
+                                                }
+
+                                                @if (cond.AREA_IN_PROCESSADA == 1)
+                                                {
+                                                    <td style="width: auto"><span class="badge badge-primary">Sim</span></td>
+                                                }
+                                                else
+                                                {
+                                                    <td style="width: auto"><span class="badge badge-danger">Não</span></td>
+                                                }
+
+                                                @if (cond.AREA_DT_PROCESSO != null)
+                                                {
+                                                    <td>
+                                                        <span style="display:none; width: auto">@cond.AREA_DT_PROCESSO.Value.ToString("yyyyMMdd")</span>
+                                                        @cond.AREA_DT_PROCESSO.Value.ToString("dd/MM/yyyy")
+                                                    </td>
+                                                }
+                                                else
+                                                {
+                                                    <td style="width: auto">-</td>
                                                 }
 
                                                 <td style="width: auto" class="td-one-action">
-                                                    @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_LOCACAO_ALTERAR == 1)
+                                                    @Html.TableLinkDetails(cond.AREA_CD_ID, "AreaPacienteItemVer", "fa-search", "Ver Item")
+                                                    @if (cond.AREA_IN_TIPO == 1 & cond.AREA_IN_PROCESSADA == 0)
                                                     {
-                                                        @Html.TableLinkDetails(cond.LOCA_CD_ID, "EditarLocacao", "fa-edit btn-loading", "Editar")
-                                                    }
-                                                    @if (cond.LOCA_IN_ATIVO == 1)
-                                                    {
-                                                        if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_LOCACAO__EXCLUIR == 1)
+                                                        if (cond.AREA_DT_CONSULTA.Value.Date >= DateTime.Today.Date)
                                                         {
-                                                            if (cond.LOCA_IN_STATUS == 0)
-                                                            {
-                                                                <span style="color: #337ab7; cursor:pointer;" alt="Desativar" class="tbl-link fa-lg fa fa-trash-o btn-loading" onclick="ShowModalExcluir('/Locacao/ExcluirLocacao/@cond.LOCA_CD_ID')" title="Excluir"></span>
-                                                            }
+                                                            @Html.TableLinkDetails(cond.AREA_CD_ID, "ProcessarMarcacaoConsulta", "fa-gears", "Processar Consulta")
                                                         }
                                                     }
-                                                    @if (cond.LOCA_IN_ATIVO == 1)
+                                                    @if (cond.AREA_IN_TIPO == 2 & cond.AREA_IN_PROCESSADA == 0)
                                                     {
-                                                        @Html.TableLinkDetails(cond.LOCA_CD_ID, "ImprimirContratoLocacao", "fa-print", "Imprimir Contrato de Locação")
-                                                    }
-                                                    @if (cond.LOCA_IN_ATIVO == 1 & cond.LOCA_IN_STATUS == 4)
-                                                    {
-                                                        @Html.TableLinkDetails(cond.LOCA_CD_ID, "ImprimirDistratoLocacao", "fa-thumbs-down", "Imprimir Distrato de Locação")
-                                                    }
-                                                    @if (cond.LOCA_IN_ATIVO == 1 & cond.LOCA_IN_STATUS == 2)
-                                                    {
-                                                        @Html.TableLinkDetails(cond.LOCA_CD_ID, "ImprimirEncerraLocacao", "fa-check-square-o", "Imprimir Encerramento")
-                                                    }
-                                                    @if (cond.LOCA_IN_ATIVO == 1)
-                                                    {
-                                                        @Html.TableLinkDetails(cond.LOCA_CD_ID, "VerHistoricoLocacao", "fa-line-chart btn-loading", "Histórico")
-                                                    }
-                                                    @if (cond.LOCA_IN_ATIVO == 1)
-                                                    {
-                                                        @Html.TableLinkDetails(cond.LOCA_CD_ID, "VerParcelasLocacao", "fa-calendar-o btn-loading", "Parcelas")
-                                                    }
-                                                    @if (cond.LOCA_IN_ATIVO == 1)
-                                                    {
-                                                        if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_LOCACAO_ALTERAR == 1)
+                                                        if (cond.AREA_DT_CONSULTA.Value.Date >= DateTime.Today.Date)
                                                         {
-                                                            if (cond.LOCA_IN_STATUS == 1 || cond.LOCA_IN_STATUS == 3 || cond.LOCA_IN_STATUS == 0)
-                                                            {
-                                                                @Html.TableLinkDetails(cond.LOCA_CD_ID, "CancelarLocacao", "fa-times btn-loading", "Cancelar")
-                                                            }
+                                                            @Html.TableLinkDetails(cond.AREA_CD_ID, "ProcessarInfoConsultaPlano", "fa-gears", "Processar Informação")
                                                         }
                                                     }
-                                                    @if (cond.LOCA_IN_ATIVO == 1)
+                                                    @if (cond.AREA_IN_TIPO == 3 & cond.AREA_IN_PROCESSADA == 0)
                                                     {
-                                                        if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_LOCACAO_ALTERAR == 1)
+                                                        if (cond.AREA_IN_TIPO_EXAME == 1)
                                                         {
-                                                            if (cond.LOCA_IN_STATUS == 0)
-                                                            {
-                                                                @Html.TableLinkDetails(cond.LOCA_CD_ID, "AprovarLocacao", "fa-check btn-loading", "Aprovar")
-                                                            }
+                                                            @Html.TableLinkDetails(cond.AREA_CD_ID, "ProcessarContratoLocacao", "fa-gears", "Processar Contrato")
                                                         }
-                                                    }
-                                                    @if (cond.LOCA_IN_ATIVO == 1)
-                                                    {
-                                                        if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_LOCACAO_ALTERAR == 1)
+                                                        else if (cond.AREA_IN_TIPO_EXAME == 2)
                                                         {
-                                                            if (cond.LOCA_IN_STATUS == 3)
-                                                            {
-                                                                @Html.TableLinkDetails(cond.LOCA_CD_ID, "RenovarLocacao", "fa-refresh btn-loading", "Renovar")
-                                                            }
+                                                            @Html.TableLinkDetails(cond.AREA_CD_ID, "ProcessarDistratoLocacao", "fa-gears", "Processar Distrato")
                                                         }
-                                                    }
-                                                    @if (cond.LOCA_IN_ATIVO == 1)
-                                                    {
-                                                        if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_LOCACAO_ALTERAR == 1)
+                                                        else if (cond.AREA_IN_TIPO_EXAME == 3)
                                                         {
-                                                            if (cond.LOCA_IN_STATUS == 1 || cond.LOCA_IN_STATUS == 3)
-                                                            {
-                                                                @Html.TableLinkDetails(cond.LOCA_CD_ID, "EncerrarLocacao", "fa-minus btn-loading", "Encerrar")
-                                                            }
+                                                            @Html.TableLinkDetails(cond.AREA_CD_ID, "ProcessarResultadoExame", "fa-gears", "Processar Resultado")
+                                                        }
+                                                        else if (cond.AREA_IN_TIPO_EXAME == 4)
+                                                        {
+                                                            @Html.TableLinkDetails(cond.AREA_CD_ID, "ProcessarDocumento", "fa-gears", "Processar Documento")
                                                         }
                                                     }
                                                 </td>
@@ -355,8 +299,8 @@
 
                                     </div>
                                     <div style="border: 5px solid #F6A54A; padding: 10px; border-radius: 8px 8px; " class="col-lg-8 col-md-8 col-xs-8">
-                                        <h2 style="font-weight: bold">Nenhuma locação cadastrada ou sua pesquisa não retornou nenhum resultado</h2>
-                                        @Html.ButtonLinkIndex(text: "Retirar Filtro", controller: "Locacao", action: "RetirarFiltroLocacao", htmlAttributes: new { @class = "btn-loading" })
+                                        <h2 style="font-weight: bold">Nenhum item de área de paciente disponível ou sua pesquisa não retornou nenhum resultado</h2>
+                                        @Html.ButtonLinkIndex(text: "Retirar Filtro", controller: "AreaPaciente", action: "RetirarFiltroAreaPaciente", htmlAttributes: new { @class = "btn-loading" })
                                     </div>
                                     <div class="col-lg-2 col-md-2 col-xs-2">
 
@@ -495,30 +439,6 @@
 
     <script type="text/javascript">
         $(document).ready(function () {
-            $('#txtNomeProduto').autocomplete({
-                minLength: 2, 
-                source: function (request, response) {
-                    $.ajax({
-                        url: '@Url.Action("GetProdutoNomeLocacao", "Produto")', 
-                        type: 'POST',
-                        dataType: 'json',
-                        data: {
-                            term: request.term 
-                        },
-                        success: function (data) {
-                            response(data); 
-                        },
-                        error: function () {
-                            console.log("Erro ao buscar dados para autocomplete.");
-                        }
-                    });
-                }
-            });
-        });
-    </script>
-
-    <script type="text/javascript">
-        $(document).ready(function () {
 
             $('.dataTables-example').DataTable({
                 pageLength: 25,
@@ -527,12 +447,12 @@
                 columnDefs: [
                     {
                          "type": "date-eu", 
-                        "targets": [2, 3] 
+                        "targets": [1, 7] 
                     }
                 ],
                 // ---------------------------------       
                 buttons: [
-                    { extend: 'excel', title: 'Locacao_Planilha' },
+                    { extend: 'excel', title: 'AreaPaciente_Planilha' },
 
                     {
                         extend: 'print',
@@ -548,24 +468,6 @@
                 ]
             });         
         });
-    </script>
-
-    <script>
-        $(function () {
-            limpaModal();
-        });
-
-        function limpaModal() {
-            $('#btnModal').remove();
-            $('#modalTitle').remove();
-        }
-
-        function ShowModalExcluir(url) {
-            $('#modal').find('.modal-footer').prepend('<a id="btnModal" alt="Desativar" class="btn btn-primary btn-loading" href="' + url + '" target="_self" title="Desativar">Confirmar</a>');
-            $('#modal').find('.modal-body').html('Confirma exclusão de Locação?');
-            $('#modal').find('.modal-header').prepend('<h5 id="modalTitle" class="modal-title">Confimar Exclusão</h5>');
-            $('#modal').modal('show');
-        }
     </script>
 
     <script type="text/javascript" language="javascript">

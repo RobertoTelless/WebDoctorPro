@@ -51,6 +51,40 @@ namespace ERP_Condominios_Solution.ViewModels
         public string HORARIO { get; set; }
         public string EMAIL_PROFISSIONAL { get; set; }
 
+        public string Vista
+        {
+            get
+            {
+                if (AREA_IN_VISTA == 1)
+                {
+                    return "Sim";
+                }
+                return "Não";
+            }
+        }
+        public string Processada
+        {
+            get
+            {
+                if (AREA_IN_PROCESSADA == 1)
+                {
+                    return "Sim";
+                }
+                return "Não";
+            }
+        }
+        public string TipoConsulta
+        {
+            get
+            {
+                if (AREA_IN_TIPO_CONSULTA == 1)
+                {
+                    return "Presencial";
+                }
+                return "Remota";
+            }
+        }
+
         public virtual PACIENTE PACIENTE { get; set; }
         public virtual USUARIO USUARIO { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]

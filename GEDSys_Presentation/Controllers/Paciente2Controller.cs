@@ -20186,7 +20186,6 @@ namespace GEDSys_Presentation.Controllers
                     Int32? anamnese = vm.RECO_IN_ANAMNESE;
                     USUARIO usuarioLogado = (USUARIO)Session["UserCredentials"];
                     RESPOSTA_CONSULTA item = Mapper.Map<PacienteRespostaViewModel, RESPOSTA_CONSULTA>(vm);
-                    //PACIENTE pac = (PACIENTE)Session["Paciente"];
                     PACIENTE pac = baseApp.GetItemById(item.PACI_CD_ID.Value);
                     Int32 volta = baseApp.ValidateEditResposta(item);
 
@@ -20831,6 +20830,123 @@ namespace GEDSys_Presentation.Controllers
 
         }
 
+        [HttpPost]
+        public Int32 UploadFilePaciente(PACIENTE pac, AREA_PACIENTE_ANEXO item)
+        {
+            try
+            {
+                // Inicializa
+                Int32 idNot = (Int32)Session["IdPaciente"];
+                Int32 idAss = (Int32)Session["IdAssinante"];
+
+                // Recupera paciente
+                USUARIO usu = (USUARIO)Session["UserCredentials"];
+
+
+                // Copia arquivo
+                extensao = Path.GetExtension(item.APAN_NM_TITULO);
+                String caminhoOrigem = "/Imagens/" + item.ASSI_CD_ID.ToString() + "/AreaPaciente/" + item.AREA_CD_ID.ToString() + "/Anexos/";
+                String pathOrigem = Path.Combine(Server.MapPath(caminhoOrigem), item.APAN_NM_TITULO);
+                String caminhoDest = "/Imagens/" + item.ASSI_CD_ID.ToString() + "/Pacientes/" + pac.PACI__CD_ID.ToString() + "/Anexos/";
+                String pathDest = Path.Combine(Server.MapPath(caminhoDest), item.APAN_NM_TITULO);
+                System.IO.File.Copy(pathOrigem, pathDest, true);
+
+                // Gravar registro
+                PACIENTE_ANEXO foto = new PACIENTE_ANEXO();
+                foto.PAAX_AQ_ARQUIVO = item.APAN_AQ_ARQUIVO;
+                foto.PAAX_DT_ANEXO = DateTime.Today;
+                foto.PAAX_IN_ATIVO = 1;
+                Int32 tipo = 3;
+                if (extensao.ToUpper() == ".JPG" || extensao.ToUpper() == ".GIF" || extensao.ToUpper() == ".PNG" || extensao.ToUpper() == ".JPEG")
+                {
+                    tipo = 1;
+                }
+                else if (extensao.ToUpper() == ".MP4" || extensao.ToUpper() == ".AVI" || extensao.ToUpper() == ".MPEG")
+                {
+                    tipo = 2;
+                }
+                else if (extensao.ToUpper() == ".PDF")
+                {
+                    tipo = 3;
+                }
+                else if (extensao.ToUpper() == ".MP3" || extensao.ToUpper() == ".MPEG")
+                {
+                    tipo = 4;
+                }
+                else if (extensao.ToUpper() == ".DOCX" || extensao.ToUpper() == ".DOC" || extensao.ToUpper() == ".ODT")
+                {
+                    tipo = 5;
+                }
+                else if (extensao.ToUpper() == ".XLSX" || extensao.ToUpper() == ".XLS" || extensao.ToUpper() == ".ODS")
+                {
+                    tipo = 6;
+                }
+                else
+                {
+                    tipo = 7;
+                }
+                foto.PAAX_IN_TIPO = tipo;
+                foto.PAAX_NM_TITULO = item.APAN_NM_TITULO;
+                foto.PACI_CD_ID = pac.PACI__CD_ID;
+                pac.PACIENTE_ANEXO.Add(foto);
+                Int32 volta = baseApp.ValidateEdit(pac, pac);
+
+                // Configura serilização
+                JsonSerializerSettings settings = new JsonSerializerSettings
+                {
+                    ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+                    NullValueHandling = NullValueHandling.Ignore
+                };
+
+                // Monta Log
+                DTO_Paciente_Anexo dto = MontarPacienteAnexoDTOObj(foto);
+                String json = JsonConvert.SerializeObject(dto, settings);
+                LOG log = new LOG
+                {
+                    LOG_DT_DATA = DateTime.Now,
+                    ASSI_CD_ID = usu.ASSI_CD_ID,
+                    USUA_CD_ID = usu.USUA_CD_ID,
+                    LOG_NM_OPERACAO = "Paciente - Anexo - Inclusão",
+                    LOG_IN_ATIVO = 1,
+                    LOG_TX_REGISTRO = json,
+                    LOG_IN_SISTEMA = 6
+                };
+                Int32 volta1 = logApp.ValidateCreate(log);
+
+                Session["PacienteAlterada"] = 1;
+                return 0;
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Paciente";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Paciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return 0;
+            }
+        }
+
+        public DTO_Paciente_Anexo MontarPacienteAnexoDTOObj(PACIENTE_ANEXO l)
+        {
+            using (var context = new CRMSysDBEntities())
+            {
+                var mediDTO = new DTO_Paciente_Anexo()
+                {
+                    PAAX_CD_ID = l.PAAX_CD_ID,
+                    PAAX_AQ_ARQUIVO = l.PAAX_AQ_ARQUIVO,
+                    PAAX_DT_ANEXO = l.PAAX_DT_ANEXO,
+                    PAAX_IN_ATIVO = l.PAAX_IN_ATIVO,
+                    PACI_CD_ID = l.PACI_CD_ID,
+                    PAAX_IN_TIPO = l.PAAX_IN_TIPO,
+                    PAAX_NM_TITULO = l.PAAX_NM_TITULO,
+                };
+                return mediDTO;
+            }
+
+        }
 
     }
 }
