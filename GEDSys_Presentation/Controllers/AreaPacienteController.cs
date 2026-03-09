@@ -2816,7 +2816,7 @@ namespace GEDSys_Presentation.Controllers
         }
 
         [HttpGet]
-        public ActionResult EnviarInformacaoConsulta(Int32 id)
+        public ActionResult EnviarInformacaoConsulta()
         {
             try
             {
@@ -2834,12 +2834,6 @@ namespace GEDSys_Presentation.Controllers
                 ViewBag.Profissional = cont.USUARIO.USUA_NM_NOME;
                 ViewBag.EMail = cont.USUARIO.USUA_NM_EMAIL;
 
-                // Recupera Consulta
-                PACIENTE_CONSULTA cons = baseApp.GetConsultaById(id);
-                ViewBag.Data = cons.PACO_DT_CONSULTA.ToShortDateString();
-                ViewBag.Inicio = cons.PACO_HR_INICIO.ToString();
-                ViewBag.Final = cons.PACO_HR_FINAL.ToString();
-
                 if (Session["MensArea"] != null)
                 {
                     if ((Int32)Session["MensArea"] == 3)
@@ -2854,10 +2848,10 @@ namespace GEDSys_Presentation.Controllers
                 
                 AREA_PACIENTE area = new AREA_PACIENTE();
                 AreaPacienteViewModel vm = Mapper.Map<AREA_PACIENTE, AreaPacienteViewModel>(area);
-                vm.AREA_DT_CONSULTA = cons.PACO_DT_CONSULTA;
+                vm.AREA_DT_CONSULTA = null;
                 vm.AREA_DT_ENTRADA = DateTime.Now;
-                vm.AREA_HR_FINAL = cons.PACO_HR_FINAL;
-                vm.AREA_HR_INICIO = cons.PACO_HR_INICIO;
+                vm.AREA_HR_FINAL = null;
+                vm.AREA_HR_INICIO = null;
                 vm.AREA_IN_ATIVO = 1;
                 vm.AREA_IN_TIPO = 2;
                 vm.AREA_IN_PROCESSADA = 0;
@@ -2870,7 +2864,6 @@ namespace GEDSys_Presentation.Controllers
                 vm.NOME_PACIENTE = cont.PACI_NM_NOME;
                 vm.NOME_PROFISSIONAL = cont.USUARIO.USUA_NM_NOME;
                 vm.EMAIL_PROFISSIONAL = cont.USUARIO.USUA_NM_EMAIL;
-                vm.HORARIO = cons.PACO_HR_INICIO.ToString() + " até " + cons.PACO_HR_FINAL.ToString();
 
                 return View(vm);
             }
@@ -2960,7 +2953,7 @@ namespace GEDSys_Presentation.Controllers
 
                     // Mensagem
                     Session["MsgCRUD"] = "O envio de informações de " + cont.PACI_NM_NOME.ToUpper() + " para o profissional " + usuario.USUA_NM_NOME.ToUpper() + " foi realizado com sucesso. Identificador do envio: " + item.AREA_GU_IDENTIFICADOR;
-                    Session["MensFC"] = 61;
+                    Session["MensArea"] = 61;
 
                     // Retorno
                     return RedirectToAction("MontarTelaAreaPaciente");
@@ -9287,15 +9280,13 @@ namespace GEDSys_Presentation.Controllers
                 Session["ModuloAtual"] = "AreaPaciente";
 
                 // Carrega listas
-                List<AREA_PACIENTE> areas = new List<AREA_PACIENTE>();
                 if (Session["ListaAreaPaciente"] == null)
                 {
-                    areas = CarregarAreaPaciente();
+                    List<AREA_PACIENTE> areas = CarregarAreaPaciente();
                     listaMasterArea = areas.OrderByDescending(p => p.AREA_DT_ENTRADA).ThenBy(p => p.AREA_IN_TIPO).ToList();
                     Session["ListaAreaPaciente"] = listaMasterArea;
                 }
-                areas = (List<AREA_PACIENTE>)Session["ListaAreaPaciente"];
-                ViewBag.Listas = areas;
+                ViewBag.Listas = (List<AREA_PACIENTE>)Session["ListaAreaPaciente"];
 
                 List<SelectListItem> tipo = new List<SelectListItem>();
                 tipo.Add(new SelectListItem() { Text = "Solicitação de Marcação de Consulta", Value = "1" });
@@ -9306,9 +9297,10 @@ namespace GEDSys_Presentation.Controllers
                 ViewBag.Perfil = usuario.PERFIL.PERF_SG_SIGLA;
 
                 // Widgets
-                Int32? areaConsulta = areas.Where(p => p.AREA_IN_TIPO == 1).Count();
-                Int32? areaInfo = areas.Where(p => p.AREA_IN_TIPO == 2).Count();
-                Int32? areaDoc = areas.Where(p => p.AREA_IN_TIPO == 3).Count();
+                List<AREA_PACIENTE> areas1 = (List<AREA_PACIENTE>)Session["ListaAreaPaciente"];
+                Int32? areaConsulta = areas1.Where(p => p.AREA_IN_TIPO == 1).Count();
+                Int32? areaInfo = areas1.Where(p => p.AREA_IN_TIPO == 2).Count();
+                Int32? areaDoc = areas1.Where(p => p.AREA_IN_TIPO == 3).Count();
 
                 ViewBag.AreaConsulta = areaConsulta;
                 ViewBag.AreaInfo = areaInfo;
@@ -9629,7 +9621,7 @@ namespace GEDSys_Presentation.Controllers
             }
         }
 
-        public ActionResult ProcessarInfoConsultaPlano()
+        public ActionResult ProcessarInfoConsultaPlano(Int32 id)
         {
             if ((String)Session["Ativa"] == null)
             {
@@ -9638,8 +9630,9 @@ namespace GEDSys_Presentation.Controllers
             try
             {
                 // Processa informação
-                AREA_PACIENTE area = (AREA_PACIENTE)Session["AreaPaciente"];
+                AREA_PACIENTE area = areaApp.GetItemById(id);
                 PACIENTE pac = baseApp.GetItemById(area.PACI_CD_ID.Value);
+                Session["IdPaciente"] = pac.PACI__CD_ID;
                 String dataHoje = DateTime.Today.Date.ToLongDateString();
                 PACIENTE_ANAMNESE ana = pac.PACIENTE_ANAMNESE.Where(p => p.PAAM_IN_ATIVO == 1).FirstOrDefault();
                 PACIENTE_ANAMNESE anam = RemontarAnamnese(ana);
@@ -9707,15 +9700,15 @@ namespace GEDSys_Presentation.Controllers
                 Int32 idNot = (Int32)Session["IdPaciente"];
                 Int32 idAss = (Int32)Session["IdAssinante"];
 
-                // Recupera paciente
+                // Recupera usuario
                 USUARIO usu = (USUARIO)Session["UserCredentials"];
 
 
                 // Copia arquivo
                 String extensao = Path.GetExtension(item.APAN_NM_TITULO);
-                String caminhoOrigem = "/Imagens/" + item.ASSI_CD_ID.ToString() + "/AreaPaciente/" + item.AREA_CD_ID.ToString() + "/Anexos/";
+                String caminhoOrigem = "/Imagens/" + pac.ASSI_CD_ID.ToString() + "/AreaPaciente/" + item.AREA_CD_ID.ToString() + "/Anexos/";
                 String pathOrigem = Path.Combine(Server.MapPath(caminhoOrigem), item.APAN_NM_TITULO);
-                String caminhoDest = "/Imagens/" + item.ASSI_CD_ID.ToString() + "/Pacientes/" + pac.PACI__CD_ID.ToString() + "/Anexos/";
+                String caminhoDest = "/Imagens/" + pac.ASSI_CD_ID.ToString() + "/Pacientes/" + pac.PACI__CD_ID.ToString() + "/Anexos/";
                 String pathDest = Path.Combine(Server.MapPath(caminhoDest), item.APAN_NM_TITULO);
                 System.IO.File.Copy(pathOrigem, pathDest, true);
 
@@ -9906,6 +9899,69 @@ namespace GEDSys_Presentation.Controllers
                     }
                 }
                 Int32 voltaAna = baseApp.ValidateEditAnamnesePrevia(anam);
+
+                // Atualiza area do paciente
+                area.AREA_IN_VISTA = 1;
+                area.AREA_IN_PROCESSADA = 1;
+                area.AREA_DT_PROCESSO = DateTime.Now;
+                Int32 volta = areaApp.ValidateEdit(area);
+
+                Session["MsgCRUD"] = "As informações de consulta do(a) paciente " + area.PACIENTE.PACI_NM_NOME.ToUpper() + " foram atualizadas com sucesso no prontuário";
+                Session["MensArea"] = 61;
+                Session["ListaAreaPaciente"] = null;
+                Session["AreaPacienteAlterada"] = 1;
+                Session["AreaPacientes"] = null;
+                return RedirectToAction("MontarTelaAreaPacienteVer", "AreaPaciente");
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "AreaPaciente";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "AreaPaciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return RedirectToAction("TrataExcecao", "BaseAdmin");
+            }
+        }
+
+        public ActionResult ProcessarContratoLocacao(Int32 id)
+        {
+            if ((String)Session["Ativa"] == null)
+            {
+                return RedirectToAction("Logout", "ControleAcesso");
+            }
+            try
+            {
+                // Recupera area e paciente e locação
+                AREA_PACIENTE area = areaApp.GetItemById(id);
+                PACIENTE pac = baseApp.GetItemById(area.PACI_CD_ID.Value);
+                LOCACAO loca = locaApp.GetItemById(area.LOCA_CD_ID.Value);
+
+                // Verifica exatidão do nome
+                String nome = "Contrato_Locacao" + pac.PACI_NM_NOME + "_" + loca.LOCA_GU_GUID + ".pdf";
+                if (fileName.ToUpper() != nome.ToUpper())
+                {
+                    Session["MensLocacao"] = 9;
+                    return RedirectToAction("CarregarContrato");
+                }
+
+                // Copia arquivo
+                // Copia arquivo
+                String extensao = Path.GetExtension(item.APAN_NM_TITULO);
+                String caminhoOrigem = "/Imagens/" + pac.ASSI_CD_ID.ToString() + "/AreaPaciente/" + item.AREA_CD_ID.ToString() + "/Anexos/";
+                String pathOrigem = Path.Combine(Server.MapPath(caminhoOrigem), item.APAN_NM_TITULO);
+                String caminhoDest = "/Imagens/" + pac.ASSI_CD_ID.ToString() + "/Pacientes/" + pac.PACI__CD_ID.ToString() + "/Anexos/";
+                String pathDest = Path.Combine(Server.MapPath(caminhoDest), item.APAN_NM_TITULO);
+                System.IO.File.Copy(pathOrigem, pathDest, true);
+
+                // Atualiza locacao
+                item.LOCA_IN_CONTRATO_ASSINA = 1;
+                Int32 volta = baseApp.ValidateEdit(item, item, usu);
+
+
+
 
                 // Atualiza area do paciente
                 area.AREA_IN_VISTA = 1;

@@ -158,6 +158,7 @@ namespace ERP_Condominios_Solution.Controllers
             Int32 voltaX = grava.GravaAcesso("BaseAdmin", "Site", ip);
 
             Session["CompraState"] = null;
+            Session["MensagemLogin"] = null;
             return View();
         }
 

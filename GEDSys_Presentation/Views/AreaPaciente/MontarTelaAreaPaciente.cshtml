@@ -224,7 +224,8 @@
             <div class="form-group">
                 <div class="col-lg-12 col-md-12 col-xs-12">
                     <a href="@Url.Action("AlterarDadosCadastrais", "AreaPaciente")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Alteração de dados cadastrais do paciente" class="btn btn-sm btn-success btn-loading" id="emp" OnClick = "Fade()">Dados Cadastrais</a>                
-                    <a href="@Url.Action("MontarTelaEnvioDocumento", "AreaPaciente")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Envie documentos para a eqiupe do WebDoctorPro" class="btn btn-sm btn-success btn-loading" id="emp" OnClick = "Fade()">Envio de Documentos</a>                
+                    <a href="@Url.Action("MontarTelaEnvioDocumento", "AreaPaciente")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Envie documentos para a equipe do WebDoctorPro" class="btn btn-sm btn-success btn-loading" id="emp" OnClick = "Fade()">Envio de Documentos</a>                
+                    <a href="@Url.Action("EnviarInformacaoConsulta", "AreaPaciente")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Envie informações relavantes para as próximas consultas" class="btn btn-sm btn-success btn-loading" id="emp" OnClick = "Fade()">Envio de Informações para Consultas</a>                
                     <a href="@Url.Action("MontarTelaPerguntas", "AreaPaciente")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Faça uma pergunta para a equipe de suporte do WebDoctorPro" class="btn btn-sm btn-success btn-loading" id="emp" OnClick = "Fade()">Fale Conosco</a>                
                     <a href="@Url.Action("CarregarLandingPage", "BaseAdmin")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Retornar  ao Site" class="btn btn-sm btn-warning btn-loading" id="emp" OnClick = "Fade()">Retornar ao Site do WebDoctorPro</a>                
                     <span id="loadingIndicator" style="display: none; margin-left: 10px; color: #007bff;">
@@ -409,10 +410,6 @@
                                                                               onclick="ShowModalCancelar('@Url.Action("CancelarConsulta","AreaPaciente", new { id = cond.PACO_CD_ID })')"
                                                                               title="Confirmar Consulta">
                                                                         </span>
-                                                                    }
-                                                                    @if (cond.PACO_IN_ATIVO == 1 & cond.PACO_IN_CONFIRMADA < 2)
-                                                                    {
-                                                                        @Html.TableLinkDetails(cond.PACO_CD_ID, "EnviarInformacaoConsulta", "fa-send", "Enviar Informações")
                                                                     }
                                                                 </td>
                                                             </tr>

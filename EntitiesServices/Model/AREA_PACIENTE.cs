@@ -46,6 +46,7 @@ namespace EntitiesServices.Model
         public Nullable<System.DateTime> AREA_DT_PROCESSO { get; set; }
         public string AREA_NM_PACIENTE_DUMMY { get; set; }
         public Nullable<System.DateTime> AREA_DT_DUMMY { get; set; }
+        public string AREA_NM_CONTRATO { get; set; }
     
         public virtual PACIENTE PACIENTE { get; set; }
         public virtual USUARIO USUARIO { get; set; }

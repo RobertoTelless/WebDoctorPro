@@ -170,14 +170,6 @@
                             }
                         }
 
-                        @*@if (Model.LOCA_IN_STATUS == 3)
-                        {
-                            if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_LOCACAO_ALTERAR == 1)
-                            {
-                                @Html.ButtonLinkIndex(text: "Renovar Locação", action: "RenovarLocacaoForm", controller: "Locacao", htmlAttributes: new { @class = "btn-loading" })
-                            }
-
-                        }*@
                         @Html.ButtonLinkIndex(text: "Histórico", action: "VerHistoricoLocacaoForm", controller: "Locacao", htmlAttributes: new { @class = "btn-loading" })
                         @if (Model.LOCA_IN_STATUS == 0 || Model.LOCA_IN_STATUS == 1 || Model.LOCA_IN_STATUS == 3)
                         {

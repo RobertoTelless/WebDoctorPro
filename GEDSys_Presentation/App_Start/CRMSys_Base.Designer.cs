@@ -6503,5 +6503,14 @@ namespace GEDSys_Presentation.App_Start {
                 return ResourceManager.GetString("M0737", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Consulta uma cadeia de caracteres localizada semelhante a CPF do assinante inválido.
+        /// </summary>
+        internal static string M0738 {
+            get {
+                return ResourceManager.GetString("M0738", resourceCulture);
+            }
+        }
     }
 }

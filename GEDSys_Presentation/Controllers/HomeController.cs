@@ -36,7 +36,7 @@ namespace CRMPresentation.Controllers
             Session["AssinantePendente"] = 0;
             Session["TemCookie"] = 0;
             Session["ModoEntrada"] = 0;
-
+            Session["AreasAbertos"] = 0;
             // Recupera informações
             if (!CookieManager.JaRegistradoNestaSessao())
             {

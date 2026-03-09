@@ -2265,4 +2265,7 @@
   <data name="M0737" xml:space="preserve">
     <value>Data da consulta não informada</value>
   </data>
+  <data name="M0738" xml:space="preserve">
+    <value>CPF do assinante inválido</value>
+  </data>
 </root>

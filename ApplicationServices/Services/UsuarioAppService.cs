@@ -980,6 +980,10 @@ namespace ApplicationServices.Services
                         else
                         {
                             assi = _assService.GetAllItens().Where(p => p.ASSI_NR_CPF == usu.USUA_NR_TELEFONE).FirstOrDefault();
+                            if (assi == null)
+                            {
+                                return 33;
+                            }
                         }
                         idAss = assi.ASSI_CD_ID;
                     }
@@ -992,6 +996,10 @@ namespace ApplicationServices.Services
                         else
                         {
                             assi = _assService.GetAllItens().Where(p => p.ASSI_NR_CNPJ == usu.USUA_NR_TELEFONE).FirstOrDefault();
+                            if (assi == null)
+                            {
+                                return 33;
+                            }
                         }
                         idAss = assi.ASSI_CD_ID;
                     }
@@ -2069,7 +2077,8 @@ namespace ApplicationServices.Services
                 }
                 else
                 {
-                    assi = _assService.GetAllItens().Where(p => p.ASSI_NR_CNPJ == usu.USUA_NR_TELEFONE).FirstOrDefault();
+                    List<ASSINANTE> ass = _assService.GetAllItens();
+                    assi = ass.Where(p => p.ASSI_CD_ID == 35).FirstOrDefault();
                 }
             }
             else

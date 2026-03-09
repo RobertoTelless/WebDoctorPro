@@ -23,6 +23,32 @@
             </div>
         </div>
     </div>
+    <div class="modal inmodal fade" id="modalConfirmacaoInfo" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header" style="position: relative; padding: 30px 15px;">
+                    <img src="@Url.Content("~/Images/Prontuario/prontuario_icon_3.png?v=1.1")" 
+                         style="position: absolute; left: 15px; top: 15px; width: 40px; height: auto;" 
+                         alt="Ícone" />
+
+                    <i class="fa fa-check-circle modal-icon text-primary" style="display: block;"></i>
+                    <h4 class="modal-title">Informações para Consultas</h4>
+                    <small class="font-bold">WebDoctorPro - Área do Paciente</small>
+                </div>
+            
+                <div class="modal-body text-center">
+                    <h3>Tem certeza que deseja incluir essas informações no prontuário do paciente?</h3>
+                    <p>Esta ação não poderá ser desfeita e os registros serão atualizados no sistema.</p>
+                </div>
+            
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-white" data-dismiss="modal">Voltar</button>
+                    <button type="button" class="btn btn-primary" id="btnConfirmarSubmit">Confirmar Informações</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="page-title">
         <h3 class="title">Área do Paciente</h3>
         <br />
@@ -91,6 +117,7 @@
 
                 @using (Html.BeginForm("FiltrarAreaPaciente", "AreaPaciente", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal" }))
                 {
+                    <input type="hidden" name="id" id="hiddenIdLocacao" value="" />
                     <div class="ibox-content">
                         <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
                             <div class="col-lg-5 col-md-5 col-xs-12">
@@ -262,10 +289,14 @@
                                                     }
                                                     @if (cond.AREA_IN_TIPO == 2 & cond.AREA_IN_PROCESSADA == 0)
                                                     {
-                                                        if (cond.AREA_DT_CONSULTA.Value.Date >= DateTime.Today.Date)
-                                                        {
-                                                            @Html.TableLinkDetails(cond.AREA_CD_ID, "ProcessarInfoConsultaPlano", "fa-gears", "Processar Informação")
-                                                        }
+                                                        <button type="button" 
+                                                                class="btn btn-xs btn-link btn-disparar-modal-tabela" 
+                                                                data-id="@cond.AREA_CD_ID" 
+                                                                title="Processar Informação"
+                                                                id="btnConfirmarSubmit"
+                                                                style="padding: 1; color: #337ab7;">
+                                                                <i class="fa fa-gears" style="font-size: 17px; margin-left: -5px;"></i>
+                                                        </button>
                                                     }
                                                     @if (cond.AREA_IN_TIPO == 3 & cond.AREA_IN_PROCESSADA == 0)
                                                     {
@@ -499,6 +530,86 @@
             $("#dn1").mask("99/99/9999");
         });
     </script>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        var $modal = $('#modalConfirmacaoInfo');
+        var $form = $('#pwd-container1');
+        var $hiddenId = $('#hiddenIdLocacao');
+
+        // 1. Captura o clique nos botões DENTRO da tabela
+        // Usamos delegação (.on) caso a tabela seja dinâmica (DataTables)
+        $('body').on('click', '.btn-disparar-modal-tabela', function () {
+            var idDaLinha = $(this).data('id');
+            $hiddenId.val(idDaLinha);
+            $modal.modal('show');
+        });
+
+        // 2. Ação de confirmar DENTRO da modal (Mantivemos sua lógica, apenas ajustamos o submit)
+        $('#btnConfirmarSubmit').click(function (e) {
+            e.preventDefault();
+
+            var $btn = $(this);
+
+            // Feedback visual no botão da modal
+            $btn.prop('disabled', true).addClass('disabled');
+            $btn.html('<i class="fa fa-spinner fa-spin"></i> Processando...');
+
+            // Esconde a modal
+            $modal.modal('hide');
+
+            // 3. Limpeza e Submit
+            setTimeout(function () {
+                // Limpeza de resíduos do template
+                $('.modal-backdrop').remove();
+                $('body').removeClass('modal-open').css('padding-right', '');
+                
+                // Submit via DOM puro do formulário que agora contém o ID correto
+                document.getElementById('pwd-container1').submit();
+            }, 400);
+        });
+
+        // Segurança: limpa resíduos se fechar no "X" ou clicar fora
+        $modal.on('hidden.bs.modal', function () {
+            // Opcional: Limpa o ID se a pessoa desistir
+            $hiddenId.val(''); 
+            
+            $('.modal-backdrop').remove();
+            $('body').removeClass('modal-open');
+        });
+    });
+
+    $('#btnConfirmarSubmit').click(function (e) {
+        e.preventDefault();
+    
+        var $btn = $(this);
+        var idLocacao = $('#hiddenIdLocacao').val(); // O ID que capturamos da tabela
+
+        // 1. Feedback visual
+        $btn.prop('disabled', true).addClass('disabled');
+        $btn.html('<i class="fa fa-spinner fa-spin"></i> Processando...');
+
+        // 2. Chamada AJAX para o Controller
+        $.ajax({
+            url: '@Url.Action("ProcessarInfoConsultaPlano", "AreaPaciente")',
+            type: 'POST',
+            data: { id: idLocacao },
+            success: function (response) {
+                $modal.modal('hide');
+            
+                // 3. Feedback de sucesso e recarregamento
+                // Se você usar Toastr: toastr.success("Processado com sucesso!");
+                setTimeout(function () {
+                    window.location.reload(); 
+                }, 500);
+            },
+            error: function (xhr, status, error) {
+                $btn.prop('disabled', false).removeClass('disabled').html('Confirmar Informações');
+                alert("Erro ao processar: " + error);
+            }
+        });
+    });
+</script>
 }
 
 @if (ViewBag.Message != null)

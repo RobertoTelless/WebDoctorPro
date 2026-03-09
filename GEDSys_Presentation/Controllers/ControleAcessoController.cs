@@ -750,7 +750,7 @@ namespace ERP_Condominios_Solution.Controllers
             MontaSessao();
             Session["Close"] = false;
             Session["MensSenha"] = null;
-            Session["MensagemLogin"] = 0;
+            Session["MensagemLogin"] = null;
             Session["UserCredentials"] = null;
             USUARIO item = new USUARIO();
             UsuarioLoginViewModel vm = Mapper.Map<USUARIO, UsuarioLoginViewModel>(item);
@@ -1913,6 +1913,11 @@ namespace ERP_Condominios_Solution.Controllers
                     ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0656", CultureInfo.CurrentCulture));
                     return View(vm);
                 }
+                if (volta == 33)
+                {
+                    ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0738", CultureInfo.CurrentCulture));
+                    return View(vm);
+                }
 
                 // Retorno
                 Session["MensSenha"] = 10;
@@ -1977,7 +1982,7 @@ namespace ERP_Condominios_Solution.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> TrocarSenhaCodigoInicio(USUARIO vm)
+        public async Task<ActionResult> TrocarSenhaCodigoInicio(UsuarioLoginViewModel vm)
         {
             try
             {
@@ -1989,7 +1994,8 @@ namespace ERP_Condominios_Solution.Controllers
                 vm.USUA_NR_MATRICULA = CrossCutting.UtilitariosGeral.CleanStringDocto(vm.USUA_NR_MATRICULA);
 
                 // Processa
-                Int32 volta = await baseApp.ValidateChangePasswordFinal(vm);
+                USUARIO item = Mapper.Map<UsuarioLoginViewModel, USUARIO>(vm);
+                Int32 volta = await baseApp.ValidateChangePasswordFinal(item);
 
                 // mensagens
                 if (volta == 1)
