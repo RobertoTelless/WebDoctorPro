@@ -112,6 +112,7 @@
 
                                     <div class="form-group" style=" margin-left: -15px; margin-right: -15px;"  id="dadosLoca">                
                                         <h4 style="margin-left: 15px; color:green; background-color: beige; font-weight:bold; margin-right: 15px;">Informações da Locação</h4>
+                                        <h4 style="margin-left: 15px; color:brown; background-color: beige; font-weight:bold; margin-right: 15px;">ATENÇÃO: Verifique se o contrato/distrato a ser enviado tem nome no format correto</h4>
                                         <div class="col-lg-8 col-md-8 col-xs-12">
                                             Locação*
                                             @Html.DropDownListFor(m => m.LOCA_CD_ID, (SelectList)ViewBag.Locacoes, "Selecionar", new { @class = "form-control", data_toggle = "popover", data_content = "Selecione a locação referente ao documento a ser enviado", data_trigger="hover", data_placement="top", autofocus = true, @id = "loca", onchange = "GetLocacao($(this).val())"   })
@@ -121,6 +122,9 @@
                                             Situação
                                             <input class="form-control" type="text" readonly="readonly" tabindex="-1"/>
                                         </div>
+                                        <a href="#" class="text-navy" data-toggle="modal" data-target="#modalNomeContrato">
+                                            <i class="fa fa-external-link"></i> Clique aqui as regras para os nomes de arquivos para contratos e distratos
+                                        </a>
                                     </div>
                                     <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">                
                                         <div class="col-lg-12 col-md-12 col-xs-12">
@@ -388,6 +392,38 @@
 
         });
     </script>
+
+    <!-- Estrutura do Modal (Pode ser colocado no final do arquivo .cshtml) -->
+    <div class="modal inmodal fade" id="modalNomeContrato" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Fechar</span></button>
+                    <i class="fa fa-shield modal-icon"></i>
+                    <h4 class="modal-title">Regas de Nomenclatura</h4>
+                    <small class="font-bold">WebDoctorPro - Nomenclatura de Contratos e Distratos</small>
+                </div>
+                <div class="modal-body" style="background-color: #fff; color: #676a6c;">
+                    <h3>1. Os contratos e distratos são enviados ao paciente via e-mail SEMPRE com o mesmo formato de nome: Contrato_LocacaoNomePaciente_IdLocação</h3>
+                    <p>Exemplo de nome de contrato de locação: Contrato_LocacaoZe Mané_d4gcr4sn000c5t6n159g.pdf</p>
+                    <p>Exemplo de nome de distrato de locação: Distrato_LocacaoZe Mané_d4gcr4sn000c5t6n159g.pdf</p>
+                
+                    <h3>2. Contrato/Distrato Assinado</h3>
+                    <p>Um contrato/distrato assinado deverá ter o sufixo <b>_Assinado</b> após o nome inicial: Contrato_LocacaoZe Mané_d4gcr4sn000c5t6n159g_Assinado.pdf</p>
+                
+                    <h3>3. Condições de Processamento</h3>
+                    <p>Um contrato/distrato enviado que NÃO atenda aos requisitos de nomenclatura <b>NÃO será processado</b>.</p>
+                
+                    <h3>4. Aviso ao Paciente</h3>
+                    <p>caso o contrato/distrato enviado seja recusado, o paciente será informado via e-mail.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-white" data-dismiss="modal" style="border-radius: 4px;">Fechar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
 
     @if (ViewBag.Message != null)
     {

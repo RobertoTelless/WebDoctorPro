@@ -3495,6 +3495,8 @@ namespace GEDSys_Presentation.Controllers
                     AREA_PACIENTE item = Mapper.Map<AreaPacienteViewModel, AREA_PACIENTE>(vm);
 
                     // Executa criação
+                    item.AREA_IN_VISTA = 0;
+                    item.AREA_IN_PROCESSADA = 0;
                     Int32 volta = areaApp.ValidateCreate(item, usuario);
                     Session["IdArea"] = item.AREA_CD_ID;
 
@@ -9318,8 +9320,13 @@ namespace GEDSys_Presentation.Controllers
                         TempData["MensagemAcerto"] = (String)Session["MsgCRUD"];
                         TempData["TemMensagem"] = 1;
                     }
+                    if ((Int32)Session["MensArea"] == 80)
+                    {
+                        String frase = (String)Session["MensagemErro"];
+                        ModelState.AddModelError("", frase);
+                    }
                 }
-               
+
                 // Grava Acesso
                 ControleAcessoMetodo grava = new ControleAcessoMetodo(aceApp);
                 Int32 voltaX = grava.GravaAcesso(usuario.USUA_CD_ID, usuario.ASSI_CD_ID, "AREA_PACIENTE", "AreaPaciente", "MontarTelaAreaPacienteVer");
@@ -9926,7 +9933,7 @@ namespace GEDSys_Presentation.Controllers
             }
         }
 
-        public ActionResult ProcessarContratoLocacao(Int32 id)
+        public async Task<ActionResult> ProcessarContratoLocacao(Int32 id)
         {
             if ((String)Session["Ativa"] == null)
             {
@@ -9938,30 +9945,57 @@ namespace GEDSys_Presentation.Controllers
                 AREA_PACIENTE area = areaApp.GetItemById(id);
                 PACIENTE pac = baseApp.GetItemById(area.PACI_CD_ID.Value);
                 LOCACAO loca = locaApp.GetItemById(area.LOCA_CD_ID.Value);
+                USUARIO usu = usuApp.GetItemById(area.USUA_CD_ID.Value);
 
-                // Verifica exatidão do nome
-                String nome = "Contrato_Locacao" + pac.PACI_NM_NOME + "_" + loca.LOCA_GU_GUID + ".pdf";
-                if (fileName.ToUpper() != nome.ToUpper())
+                // Recupera documentos
+                List<AREA_PACIENTE_ANEXO> docs = area.AREA_PACIENTE_ANEXO.Where(p => p.APAN_IN_ATIVO == 1).ToList();
+
+                // Percorre documentos
+                foreach (AREA_PACIENTE_ANEXO item in docs)
                 {
-                    Session["MensLocacao"] = 9;
-                    return RedirectToAction("CarregarContrato");
+                    // Verifica se é contrato
+                    Int32 falha = 0;
+                    String nome_obriga = item.APAN_NM_TITULO.Substring(0,16);
+                    if (nome_obriga.ToUpper() != "CONTRATO_LOCACAO")
+                    {
+                        falha = 1;
+                    }
+
+                    // Verifica exatidão do nome
+                    String nome_certo = "Contrato_Locacao" + pac.PACI_NM_NOME + "_" + loca.LOCA_GU_GUID + "_Assinado.pdf";
+                    if (item.APAN_NM_TITULO.ToUpper() != nome_certo.ToUpper())
+                    {
+                        falha = 2;
+                    }
+
+                    // Verifica falha
+                    if (falha > 0)
+                    {
+                        Int32 voltaMens = await ProcessaEnvioEMailPaciente(1, item.APAN_NM_TITULO, pac, loca, usu);
+                        if (falha == 1)
+                        {
+                            Session["MensagemErro"] = "O documento " + item.APAN_NM_TITULO.ToUpper() + " aparentemente não é um contrato de locação válido. Documento não processado";
+                        }
+                        else
+                        {
+                            Session["MensagemErro"] = "O documento " + item.APAN_NM_TITULO.ToUpper() + " não é um contrato de locação válido pata o paciente " + pac.PACI_NM_NOME.ToUpper() + " e a locação " + loca.LOCA_GU_GUID + ". Documento não processado";
+                        }
+                        Session["MensArea"] = 80;
+                        return RedirectToAction("MontarTelaAreaPacienteVer");
+                    }
+
+                    // Copia arquivo
+                    String extensao = Path.GetExtension(item.APAN_NM_TITULO);
+                    String caminhoOrigem = "/Imagens/" + pac.ASSI_CD_ID.ToString() + "/AreaPaciente/" + item.AREA_CD_ID.ToString() + "/Anexos/";
+                    String pathOrigem = Path.Combine(Server.MapPath(caminhoOrigem), item.APAN_NM_TITULO);
+                    String caminhoDest = "/Imagens/" + pac.ASSI_CD_ID.ToString() + "/Locacao/" + loca.LOCA_CD_ID.ToString() + "/Assinado/";
+                    String pathDest = Path.Combine(Server.MapPath(caminhoDest), item.APAN_NM_TITULO);
+                    System.IO.File.Copy(pathOrigem, pathDest, true);
+
+                    // Atualiza locacao
+                    loca.LOCA_IN_CONTRATO_ASSINA = 1;
+                    Int32 volta1 = locaApp.ValidateEdit(loca, loca, usu);
                 }
-
-                // Copia arquivo
-                // Copia arquivo
-                String extensao = Path.GetExtension(item.APAN_NM_TITULO);
-                String caminhoOrigem = "/Imagens/" + pac.ASSI_CD_ID.ToString() + "/AreaPaciente/" + item.AREA_CD_ID.ToString() + "/Anexos/";
-                String pathOrigem = Path.Combine(Server.MapPath(caminhoOrigem), item.APAN_NM_TITULO);
-                String caminhoDest = "/Imagens/" + pac.ASSI_CD_ID.ToString() + "/Pacientes/" + pac.PACI__CD_ID.ToString() + "/Anexos/";
-                String pathDest = Path.Combine(Server.MapPath(caminhoDest), item.APAN_NM_TITULO);
-                System.IO.File.Copy(pathOrigem, pathDest, true);
-
-                // Atualiza locacao
-                item.LOCA_IN_CONTRATO_ASSINA = 1;
-                Int32 volta = baseApp.ValidateEdit(item, item, usu);
-
-
-
 
                 // Atualiza area do paciente
                 area.AREA_IN_VISTA = 1;
@@ -9969,7 +10003,7 @@ namespace GEDSys_Presentation.Controllers
                 area.AREA_DT_PROCESSO = DateTime.Now;
                 Int32 volta = areaApp.ValidateEdit(area);
 
-                Session["MsgCRUD"] = "As informações de consulta do(a) paciente " + area.PACIENTE.PACI_NM_NOME.ToUpper() + " foram atualizadas com sucesso no prontuário";
+                Session["MsgCRUD"] = "O contrato assinado da locação " + loca.LOCA_GU_GUID + " do(a) paciente " + pac.PACI_NM_NOME.ToUpper() + " foram anexado com sucesso";
                 Session["MensArea"] = 61;
                 Session["ListaAreaPaciente"] = null;
                 Session["AreaPacienteAlterada"] = 1;
@@ -9987,6 +10021,109 @@ namespace GEDSys_Presentation.Controllers
                 Int32 voltaX = grava.GravarLogExcecao(ex, "AreaPaciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
                 return RedirectToAction("TrataExcecao", "BaseAdmin");
             }
+        }
+
+        [ValidateInput(false)]
+        public async Task<Int32> ProcessaEnvioEMailPaciente(Int32 tipo, String doc, PACIENTE pac, LOCACAO loca, USUARIO usuario)
+        {
+            // Recupera dados
+            Int32 idAss = (Int32)Session["IdAssinante"];
+            String erro = null;
+            String status = "Succeeded";
+            String iD = Xid.NewXid().ToString();
+
+            // Configuração
+            CONFIGURACAO conf = CarregaConfiguracaoGeral();
+
+            // Recupera Template
+            TEMPLATE_EMAIL template = temApp.GetByCode("ENCOLOCA", idAss);
+
+            // Prepara cabeçalho
+            String cab = "Prezado(a) " + pac.PACI_NM_NOME.ToUpper();
+
+            // Prepara assinatura
+            String assinatura = String.Empty;
+            EMPRESA emp = empApp.GetItemById(usuario.EMPR_CD_ID.Value);
+            assinatura = "<b>" + emp.EMPR_NM_NOME + "</b><br />";
+            assinatura += "<b>CNPJ: </b>" + emp.EMPR_NR_CNPJ + "<br />";
+            assinatura += "Enviado por <b>WebDoctorPro</b><br />";
+
+            // Prepara corpo da mensagem
+            String texto = "<br /><br />O documento <b>" + doc.ToUpper() + "</b> não pode ser processado e anexado à sua locação pois não atendeu ao padrão de formação do nome.<br />";
+            texto += "Verifique se você enviou exatamente o contrato que você recebeu por e-mail na contratação da locação, mantendo o seu nome original, acrescentando <b>_Assinado</b> ao final do nome.<br /><br />";
+            String emailBody = cab +  texto + assinatura;
+
+            // Incluir PDF como anexo
+            List<AttachmentModel> models = new List<AttachmentModel>();
+
+            // Decriptografa chaves
+            String emissor = CrossCutting.Cryptography.Decrypt(conf.CONF_NM_EMISSOR_AZURE_CRIP);
+            String conn = CrossCutting.Cryptography.Decrypt(conf.CONF_CS_CONNECTION_STRING_AZURE_CRIP);
+
+            // Monta e-mail
+            NetworkCredential net = new NetworkCredential(conf.CONF_NM_SENDGRID_LOGIN, conf.CONF_NM_SENDGRID_PWD);
+            EmailAzure mensagem = new EmailAzure();
+            mensagem.ASSUNTO = "Locação - " + loca.LOCA_NM_TITULO.ToUpper();
+            mensagem.CORPO = emailBody;
+            mensagem.DEFAULT_CREDENTIALS = false;
+            mensagem.EMAIL_TO_DESTINO = pac.PACI_NM_EMAIL;
+            mensagem.NOME_EMISSOR_AZURE = emissor;
+            mensagem.ENABLE_SSL = true;
+            mensagem.NOME_EMISSOR = usuario.USUA_NM_NOME;
+            mensagem.PORTA = conf.CONF_NM_PORTA_SMTP;
+            mensagem.PRIORIDADE = System.Net.Mail.MailPriority.High;
+            mensagem.SENHA_EMISSOR = conf.CONF_NM_SENDGRID_PWD;
+            mensagem.SMTP = conf.CONF_NM_HOST_SMTP;
+            mensagem.IS_HTML = true;
+            mensagem.NETWORK_CREDENTIAL = net;
+            mensagem.ConnectionString = conn;
+
+            // Envia mensagem
+            try
+            {
+                await CrossCutting.CommunicationAzurePackage.SendMailAsync(mensagem, models);
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "AreaPaciente";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "AreaPaciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return 0;
+            }
+
+            // Grava envio
+            if (status == "Succeeded")
+            {
+                MensagemViewModel mens = new MensagemViewModel();
+                mens.NOME = pac.PACI_NM_NOME;
+                mens.ID = null;
+                mens.MODELO = pac.PACI_NM_EMAIL;
+                mens.MENS_DT_CRIACAO = DateTime.Today.Date;
+                mens.MENS_IN_TIPO = 1;
+                mens.MENS_NM_CAMPANHA = pac.PACI_NM_EMAIL;
+                mens.MENS_NM_NOME = "Envio de Contrato de Locação - Falha: " + pac.PACI_NM_NOME;
+                mens.MENS_GU_GUID = loca.LOCA_GU_GUID;
+                mens.MENS_DT_AGENDAMENTO = loca.LOCA_DT_EMISSAO;
+                mens.MENS_DT_ENVIO = DateTime.Today.Date;
+                mens.MENS_NM_CABECALHO = pac.PACI_NR_CPF;
+                mens.MENS_NR_REPETICOES = 0;
+                mens.MENS_NM_ASSINATURA = usuario.USUA_NM_NOME;
+                mens.MENS_NM_RODAPE = String.Empty;
+                mens.CELULAR = pac.PACI_NR_CELULAR;
+                mens.TELEFONE = pac.PACI_NR_TELEFONE;
+                mens.MENS_IN_TIPO_EMAIL = 1;
+                mens.TIPO_ENVIO = 1;
+                mens.MENS_TX_TEXTO = texto;
+
+                EnvioEMailGeralBase envio = new EnvioEMailGeralBase(usuApp, confApp, meApp);
+                Int32 voltaX = envio.GravarMensagemEnviada(mens, usuario, emailBody, status, iD, erro, "Area Paciente - Envio Contrato - Falha");
+                Session["IdMail"] = iD;
+            }
+            return 0;
         }
 
     }
