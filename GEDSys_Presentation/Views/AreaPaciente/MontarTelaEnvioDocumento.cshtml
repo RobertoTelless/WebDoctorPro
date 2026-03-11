@@ -48,6 +48,15 @@
                         }                   
 
                         <div class="row">
+                            <div class="form-group">
+                                @Html.ButtonActionSubmit(text: "BtnSubmit", htmlAttributes: new { id = "submit", style = "display: none;" })
+                                <button style="margin-left: 15px;" class="btnSubmit btn btn-sm btn-success btn-loading1" id="basictoast" type="button">Confirmar Envio do Documento</button>
+                                @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaAreaPaciente", controller: "AreaPaciente", htmlAttributes: new { @class = "btn-loading" })
+                                <span id="loadingIndicator" style="display: none; margin-left: 10px; color: #007bff;">
+                                    <i class="fa fa-spinner fa-spin"></i> Processando...
+                                </span>
+                            </div>
+
                             <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">                
                                 <div class="col-lg-3 col-md-3 col-xs-12">
                                     @Html.HiddenFor(m => m.AREA_DT_CONSULTA)
@@ -122,8 +131,10 @@
                                             Situação
                                             <input class="form-control" type="text" readonly="readonly" tabindex="-1"/>
                                         </div>
-                                        <a href="#" class="text-navy" data-toggle="modal" data-target="#modalNomeContrato">
-                                            <i class="fa fa-external-link"></i> Clique aqui as regras para os nomes de arquivos para contratos e distratos
+                                    </div>
+                                    <div class="form-group" style=" margin-left: 0px; margin-right: 0px;"  id="dadosLoca1">                
+                                        <a href="javascript:void(0);" class="text-navy" data-target="#modalNomeContrato">
+                                            <i class="fa fa-external-link"></i> Clique aqui para ver as regras dos nomes de arquivos de contratos e distratos
                                         </a>
                                     </div>
                                     <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">                
@@ -180,8 +191,8 @@
     @Styles.Render("~/plugins/toastrStyles")
 }
 @section Scripts {
-    <script type="text/javascript" src="~/Scripts/moment.min.js"></script>
-    <script type="text/javascript" src="~/Scripts/bootstrap.min.js"></script>
+<script type="text/javascript" src="~/Scripts/moment.min.js"></script>
+    @* O bootstrap.min.js DEVE ser removido daqui se já estiver no Layout *@
     @Scripts.Render("~/plugins/toastr")
     <script src="~/Scripts/jquery-ui-1.12.1.min.js"></script>
     @Scripts.Render("~/plugins/dataTables")
@@ -195,48 +206,126 @@
     </script>
 
     <script type="text/javascript">
-        $(document).ready(function () { 
-            $('.btn-loading').on('click', function (e) {            
-                $(this).prop('disabled', true);
-                $(this).addClass('disabled');
+        $(document).ready(function () {
+            // --- 1. CONFIGURAÇÃO DA MODAL ---
+            // Removemos o 'data-toggle' do HTML e abrimos via JS para evitar o pisca
+            $(document).on('click', '[data-target="#modalNomeContrato"]', function (e) {
+                e.preventDefault();
+                e.stopPropagation();
+                $('#modalNomeContrato').modal('show');
+            });
+
+            // Limpeza de segurança
+            $('#modalNomeContrato').on('hidden.bs.modal', function () {
+                $('.modal-backdrop').remove();
+                $('body').removeClass('modal-open');
+            });
+
+            // --- 2. LÓGICA DE LOADING (UNIFICADA) ---
+            // Usamos filtros para garantir que links de MODAL não ativem o loading
+            $('.btn-loading, .btn-loading1').on('click', function (e) {
+                var $this = $(this);
+                
+                // Se o elemento abre uma modal, não fazemos nada aqui
+                if ($this.data('target') || $this.attr('data-target')) {
+                    return; 
+                }
+
                 $('#loadingIndicator').show();
+                $this.addClass('disabled').prop('disabled', true);
+
+                var tagName = $this.prop('tagName').toLowerCase();
+                if (tagName === 'a') {
+                    e.preventDefault();
+                    window.location.href = $this.attr('href');
+                } else {
+                    $this.closest('form').submit();
+                }
+            });
+
+            // --- 3. TOASTR ---
+            $('#basictoast').click(function () {
+                toastr.success('Envio em andamento!');
+            });
+        });
+
+        // --- 4. FUNÇÕES GLOBAIS (FORA DO READY) ---
+        function ValidaTipo(valNac) {
+            $("#dadosEx, #dadosEx1, #dadosLoca, #dadosLoca1").hide();
+            if (valNac == '3') {
+                $("#dadosEx, #dadosEx1").show();
+            } else if (valNac == '1' || valNac == '2') {
+                $("#dadosLoca").show();
+                $("#dadosLoca1").show();
+                $('#loca').empty().append('<option>Selecionar</option>');
+                $.getJSON('@Url.Action("GetLocacoesArea", "Locacao")', { id: valNac }, function (data) {
+                    var items = '<option value="">Selecionar</option>';
+                    $.each(data, function (i, locacao) {
+                        items += "<option value='" + locacao.Value + "'>" + locacao.Text + "</option>";
+                    });
+                    $('#loca').html(items);
+                });
+            }
+        }
+
+        function GetLocacao(id) {
+            $.post('../Locacao/GetLocacaoArea', { id: id }, function (r) {
+                $('#situacao > input').val(r.situacao);
+                $('#situacao').show();
+            });
+        }
+    </script>
+
+    <!--<script type="text/javascript" src="~/Scripts/moment.min.js"></script>-->
+    @*<script type="text/javascript" src="~/Scripts/bootstrap.min.js"></script>*@
+    <!--@Scripts.Render("~/plugins/toastr")
+    <script src="~/Scripts/jquery-ui-1.12.1.min.js"></script>
+    @Scripts.Render("~/plugins/dataTables")
+    @Scripts.Render("~/bundles/inputmask")
+    @Scripts.Render("~/plugins/jasnyBootstrap")
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.maskedinput/1.4.1/jquery.maskedinput.js"></script>    
+    <script src="~/Scripts/uploadAnexo.js"></script>
+
+    <script>
+        SendFilesV2('imgCliente', 'AreaPaciente', 'UploadFileToSession');
+    </script>-->
+
+    @*<script type="text/javascript">
+        $(document).ready(function () { 
+            // 1. Lógica para botões de navegação (evita o pisca na modal)
+            $('.btn-loading').on('click', function (e) {            
+                $(this).prop('disabled', true).addClass('disabled');
+                $('#loadingIndicator').show();
+                
                 var tagName = $(this).prop('tagName').toLowerCase();
                 if (tagName === 'a') {
                     e.preventDefault(); 
-                    var targetUrl = $(this).attr('href');
-                    window.location.href = targetUrl;
-
-                } else if (tagName === 'button' || tagName === 'input') {
+                    window.location.href = $(this).attr('href');
+                } else {
                     $(this).closest('form').submit();
                 }
             });
-        });
-    </script>
 
-    <script type="text/javascript">
-        $(document).ready(function () {
+            // 2. Lógica para o botão de SUBMIT do formulário
             $('.btn-loading1').on('click', function (e) {
-            
                 var $this = $(this);
-                var tagName = $this.prop('tagName').toLowerCase();
-                $this.addClass('disabled'); 
-                $('#loadingIndicator').show();
-
-                if (tagName === 'a') {
-                    e.preventDefault();
-                
-                    var targetUrl = $this.attr('href');
-                    window.location.href = targetUrl;
-                
-                } else if (tagName === 'button' || tagName === 'input') {               
+                // Validação simples: se for botão de submit, só processa se o form for válido
+                if ($this.closest('form').valid()) {
+                    $this.addClass('disabled').prop('disabled', true);
+                    $('#loadingIndicator').show();
                     $this.closest('form').submit();
-                    $this.prop('disabled', true);
                 }
             });
-        });
-    </script>
 
-    <script type="text/javascript">
+            // 3. Limpeza de segurança para Modais (apenas se travar)
+            $(document).on('hidden.bs.modal', '.modal', function () {
+                $('.modal-backdrop').remove();
+                $('body').removeClass('modal-open');
+            });
+        });
+    </script>*@
+
+    @*<script type="text/javascript">
         function ValidaTipo(valNac) {
             if (valNac == '3') {
                 $("#dadosEx").show();
@@ -289,7 +378,7 @@
                 }
             });
         }
-    </script>
+    </script>*@
 
     <script type="text/javascript">
         $(document).ready(function () {
@@ -400,19 +489,21 @@
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Fechar</span></button>
                     <i class="fa fa-shield modal-icon"></i>
-                    <h4 class="modal-title">Regas de Nomenclatura</h4>
+                    <h4 class="modal-title">Regas de Nomenclatura de Documentos</h4>
                     <small class="font-bold">WebDoctorPro - Nomenclatura de Contratos e Distratos</small>
                 </div>
                 <div class="modal-body" style="background-color: #fff; color: #676a6c;">
-                    <h3>1. Os contratos e distratos são enviados ao paciente via e-mail SEMPRE com o mesmo formato de nome: Contrato_LocacaoNomePaciente_IdLocação</h3>
+                    <h3>1. Os contratos e distratos de locação são enviados ao paciente via e-mail <span class="text-danger font-bold">SEMPRE</span> com o mesmo formato de nome:</h3> 
+                    <p><span class="label label-primary" style="font-size: 14px;">Contrato_LocacaoNomePaciente_IdLocação</span></p>
                     <p>Exemplo de nome de contrato de locação: Contrato_LocacaoZe Mané_d4gcr4sn000c5t6n159g.pdf</p>
                     <p>Exemplo de nome de distrato de locação: Distrato_LocacaoZe Mané_d4gcr4sn000c5t6n159g.pdf</p>
                 
                     <h3>2. Contrato/Distrato Assinado</h3>
-                    <p>Um contrato/distrato assinado deverá ter o sufixo <b>_Assinado</b> após o nome inicial: Contrato_LocacaoZe Mané_d4gcr4sn000c5t6n159g_Assinado.pdf</p>
+                    <p>Um contrato/distrato assinado deverá ter o sufixo <span class="text-danger font-bold">_Assinado</span> após o nome inicial:</p>
+                    <p><span class="label label-primary" style="font-size: 14px;">Contrato_LocacaoZe Mané_d4gcr4sn000c5t6n159g_Assinado.pdf</span></p>
                 
                     <h3>3. Condições de Processamento</h3>
-                    <p>Um contrato/distrato enviado que NÃO atenda aos requisitos de nomenclatura <b>NÃO será processado</b>.</p>
+                    <p>Um contrato/distrato enviado que NÃO atenda aos requisitos de nomenclatura <span class="text-danger font-bold">NÃO SERÁ PROCESSADO</span>.</p>
                 
                     <h3>4. Aviso ao Paciente</h3>
                     <p>caso o contrato/distrato enviado seja recusado, o paciente será informado via e-mail.</p>
@@ -424,6 +515,12 @@
         </div>
     </div>
 
+    <script>
+        $('#modalNomeContrato').on('hidden.bs.modal', function () {
+            $('.modal-backdrop').remove();
+            $('body').removeClass('modal-open');
+        });
+    </script>
 
     @if (ViewBag.Message != null)
     {

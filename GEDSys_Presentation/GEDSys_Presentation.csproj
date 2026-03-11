@@ -1283,6 +1283,8 @@
     <Content Include="Imagens\1\Locacao\95\QRCode\Contrato_QRCode_d6f03l4n000afj2ifqeg.png" />
     <Content Include="Imagens\1\Locacao\96\QRCode\Contrato_QRCode_d6kt26kn00099h0pk02g.png" />
     <Content Include="Imagens\1\Locacao\97\QRCode\Contrato_QRCode_d6o92fcn00093c3segdg.png" />
+    <Content Include="Imagens\1\Locacao\98\QRCode\Contrato_QRCode_d6oa88sn0009ii72alm0.png" />
+    <Content Include="Imagens\1\Locacao\99\QRCode\Contrato_QRCode_d6oqu84n0005jn2ldtig.png" />
     <Content Include="Imagens\1\Mensagem\237\Anexos\Cydia_3_Nova.jpg" />
     <Content Include="Imagens\1\Mensagem\239\Anexos\SysMkt_Image_2.jpg" />
     <Content Include="Imagens\1\Mensagem\259\Anexos\bz.jpg" />
@@ -4026,6 +4028,10 @@
     <Content Include="Imagens\1\AreaPaciente\27\Anexos\carta de sentença.pdf" />
     <Content Include="Imagens\1\Pacientes\33\Anexos\carta de sentença.pdf" />
     <Content Include="Imagens\1\AreaPaciente\28\Anexos\Contrato_LocacaoROWAN ATKINSON_d6o92fcn00093c3segdg_Assinado.pdf" />
+    <Content Include="Imagens\1\AreaPaciente\29\Anexos\Contrato_LocacaoROWAN ATKINSON_d6oqu84n0005jn2ldtig_Assinado.pdf" />
+    <Content Include="Imagens\1\Locacao\98\Contrato\Contrato_LocacaoElliot Stabler_d6oa88sn0009ii72alm0.pdf" />
+    <Content Include="Imagens\1\Locacao\99\Contrato\Contrato_LocacaoRowan Atkinson_d6oqu84n0005jn2ldtig.pdf" />
+    <Content Include="Imagens\1\Locacao\99\Assinado\Contrato_LocacaoROWAN ATKINSON_d6oqu84n0005jn2ldtig_Assinado.pdf" />
     <None Include="Properties\PublishProfiles\eprontuario - FTP.pubxml" />
     <None Include="Properties\PublishProfiles\eprontuario - FTP1.pubxml" />
     <None Include="Properties\PublishProfiles\eprontuario - Web Deploy.pubxml" />
@@ -5606,6 +5612,11 @@
     <Folder Include="Imagens\1\Locacao\97\Assinado\" />
     <Folder Include="Imagens\1\Locacao\97\Contrato\" />
     <Folder Include="Imagens\1\Locacao\97\Distrato\" />
+    <Folder Include="Imagens\1\Locacao\98\Anexos\" />
+    <Folder Include="Imagens\1\Locacao\98\Assinado\" />
+    <Folder Include="Imagens\1\Locacao\98\Distrato\" />
+    <Folder Include="Imagens\1\Locacao\99\Anexos\" />
+    <Folder Include="Imagens\1\Locacao\99\Distrato\" />
     <Folder Include="Imagens\1\Medico\1\Anexos\" />
     <Folder Include="Imagens\1\Medico\2\Anexos\" />
     <Folder Include="Imagens\1\Medico\3\Anexos\" />

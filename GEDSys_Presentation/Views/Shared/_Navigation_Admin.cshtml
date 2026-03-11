@@ -148,7 +148,7 @@
             {
                 @*Locação*@
                 <li>
-                    <a href="@Url.Action("MontarTelaPaciente", "BaseAdmin")"><i class="fa fa-th-large"></i> <span class="nav-label" data-i18n="nav.dashboard">Locação & Venda</span> <span class="fa arrow"></span></a>
+                    <a href="@Url.Action("MontarTelaPaciente", "BaseAdmin")"><i class="fa fa-th-large"></i> <span class="nav-label" data-i18n="nav.dashboard">Locação</span> <span class="fa arrow"></span></a>
                     <ul class="nav nav-second-level collapse @Html.IsSelected(controller: "Cadastros", cssClass: "in")">
                         @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_ACESSO_FINANCEIRO == 1)
                         {

@@ -3483,6 +3483,13 @@ namespace GEDSys_Presentation.Controllers
                             ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0734", CultureInfo.CurrentCulture));
                             return View(vm);
                         }
+                        List<FileQueue> fq = (List<FileQueue>)Session["FileQueueAreaPaciente"];
+                        if (fq.Count > 1)
+                        {
+                            Session["MensArea"] = 9;
+                            ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0735", CultureInfo.CurrentCulture));
+                            return View(vm);
+                        }
                     }
                     if (Session["FileQueueAreaPaciente"] == null)
                     {
@@ -9317,7 +9324,8 @@ namespace GEDSys_Presentation.Controllers
                     }
                     if ((Int32)Session["MensArea"] == 61)
                     {
-                        TempData["MensagemAcerto"] = (String)Session["MsgCRUD"];
+                        String frase = (String)Session["MsgCRUD"];
+                        TempData["MensagemAcerto"] = frase;
                         TempData["TemMensagem"] = 1;
                     }
                     if ((Int32)Session["MensArea"] == 80)
@@ -10124,6 +10132,92 @@ namespace GEDSys_Presentation.Controllers
                 Session["IdMail"] = iD;
             }
             return 0;
+        }
+
+        public async Task<ActionResult> ProcessarDistratoLocacao(Int32 id)
+        {
+            if ((String)Session["Ativa"] == null)
+            {
+                return RedirectToAction("Logout", "ControleAcesso");
+            }
+            try
+            {
+                // Recupera area e paciente e locação
+                AREA_PACIENTE area = areaApp.GetItemById(id);
+                PACIENTE pac = baseApp.GetItemById(area.PACI_CD_ID.Value);
+                LOCACAO loca = locaApp.GetItemById(area.LOCA_CD_ID.Value);
+                USUARIO usu = usuApp.GetItemById(area.USUA_CD_ID.Value);
+
+                // Recupera documentos
+                List<AREA_PACIENTE_ANEXO> docs = area.AREA_PACIENTE_ANEXO.Where(p => p.APAN_IN_ATIVO == 1).ToList();
+
+                // Percorre documentos
+                foreach (AREA_PACIENTE_ANEXO item in docs)
+                {
+                    // Verifica se é contrato
+                    Int32 falha = 0;
+                    String nome_obriga = item.APAN_NM_TITULO.Substring(0, 16);
+                    if (nome_obriga.ToUpper() != "DISTRATO_LOCACAO")
+                    {
+                        falha = 1;
+                    }
+
+                    // Verifica exatidão do nome
+                    String nome_certo = "Distrato_Locacao" + pac.PACI_NM_NOME + "_" + loca.LOCA_GU_GUID + "_Assinado.pdf";
+                    if (item.APAN_NM_TITULO.ToUpper() != nome_certo.ToUpper())
+                    {
+                        falha = 2;
+                    }
+
+                    // Verifica falha
+                    if (falha > 0)
+                    {
+                        Int32 voltaMens = await ProcessaEnvioEMailPaciente(1, item.APAN_NM_TITULO, pac, loca, usu);
+                        if (falha == 1)
+                        {
+                            Session["MensagemErro"] = "O documento " + item.APAN_NM_TITULO.ToUpper() + " aparentemente não é um distrato de locação válido. Documento não processado";
+                        }
+                        else
+                        {
+                            Session["MensagemErro"] = "O documento " + item.APAN_NM_TITULO.ToUpper() + " não é um distrato de locação válido pata o paciente " + pac.PACI_NM_NOME.ToUpper() + " e a locação " + loca.LOCA_GU_GUID + ". Documento não processado";
+                        }
+                        Session["MensArea"] = 80;
+                        return RedirectToAction("MontarTelaAreaPacienteVer");
+                    }
+
+                    // Copia arquivo
+                    String extensao = Path.GetExtension(item.APAN_NM_TITULO);
+                    String caminhoOrigem = "/Imagens/" + pac.ASSI_CD_ID.ToString() + "/AreaPaciente/" + item.AREA_CD_ID.ToString() + "/Anexos/";
+                    String pathOrigem = Path.Combine(Server.MapPath(caminhoOrigem), item.APAN_NM_TITULO);
+                    String caminhoDest = "/Imagens/" + pac.ASSI_CD_ID.ToString() + "/Locacao/" + loca.LOCA_CD_ID.ToString() + "/Assinado/";
+                    String pathDest = Path.Combine(Server.MapPath(caminhoDest), item.APAN_NM_TITULO);
+                    System.IO.File.Copy(pathOrigem, pathDest, true);
+                }
+
+                // Atualiza area do paciente
+                area.AREA_IN_VISTA = 1;
+                area.AREA_IN_PROCESSADA = 1;
+                area.AREA_DT_PROCESSO = DateTime.Now;
+                Int32 volta = areaApp.ValidateEdit(area);
+
+                Session["MsgCRUD"] = "O distrato assinado da locação " + loca.LOCA_GU_GUID + " do(a) paciente " + pac.PACI_NM_NOME.ToUpper() + " foram anexado com sucesso";
+                Session["MensArea"] = 61;
+                Session["ListaAreaPaciente"] = null;
+                Session["AreaPacienteAlterada"] = 1;
+                Session["AreaPacientes"] = null;
+                return RedirectToAction("MontarTelaAreaPacienteVer", "AreaPaciente");
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "AreaPaciente";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "AreaPaciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return RedirectToAction("TrataExcecao", "BaseAdmin");
+            }
         }
 
     }

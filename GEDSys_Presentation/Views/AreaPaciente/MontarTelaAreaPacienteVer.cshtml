@@ -62,8 +62,35 @@
                 </div>
             
                 <div class="modal-body text-center">
-                    <h3>Tem certeza que deseja anexar esse contrato à locação contratada pelo paciente?</h3>
-                    <p>Esta ação não poderá ser desfeita e os registros serão atualizados no sistema.</p>
+                    <h3><span class="text-danger font-bold">ATENÇÃO:</span> Visualize o documento antes de anexar para verificar se está realmente assinado</h3>
+                    <h4>Tem certeza que deseja anexar esse contrato à locação contratada pelo paciente?</h4>
+                    <p>Esta ação não poderá ser desfeita e os registros serão atualizados no sistema.</span></p>
+                </div>
+            
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-white" data-dismiss="modal">Voltar</button>
+                    <button type="button" class="btn btn-primary" id="btnAnexarSubmit">Confirmar Anexação</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal inmodal fade" id="modalConfirmacaoDistrato" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header" style="position: relative; padding: 30px 15px;">
+                    <img src="@Url.Content("~/Images/Prontuario/prontuario_icon_3.png?v=1.1")" 
+                         style="position: absolute; left: 15px; top: 15px; width: 40px; height: auto;" 
+                         alt="Ícone" />
+
+                    <i class="fa fa-check-circle modal-icon text-primary" style="display: block;"></i>
+                    <h4 class="modal-title">Distrato de Locação</h4>
+                    <small class="font-bold">WebDoctorPro - Área do Paciente</small>
+                </div>
+            
+                <div class="modal-body text-center">
+                    <h3><span class="text-danger font-bold">ATENÇÃO:</span> Visualize o documento antes de anexar para verificar se está realmente assinado</h3>
+                    <h4>Tem certeza que deseja anexar esse distrato à locação contratada pelo paciente?</h4>
+                    <p>Esta ação não poderá ser desfeita e os registros serão atualizados no sistema.</span></p>
                 </div>
             
                 <div class="modal-footer">
@@ -86,6 +113,21 @@
             </li>
         </ol>
         <br />
+    </div>
+    <div class="row">
+        @if (!ViewData.ModelState.IsValid)
+        {
+            <div class="alert alert-danger">
+                <button type="button" class="close" data-dismiss="alert">Fechar</button>
+                @Html.ValidationSummary(false, "", new { @class = "text-danger" })
+            </div>}
+        @if (TempData["TemMensagem"] != null)
+        {
+            <div class="alert alert-success">
+                <button type="button" class="close" data-dismiss="alert">Fechar</button>
+                <span>@TempData["MensagemAcerto"]</span>
+            </div>
+        }                    
     </div>
 
     <div class="row">
@@ -186,19 +228,6 @@
                     <h5>Área do Paciente - Itens</h5>
                 </div>
                 <div class="ibox-content">
-                        @if (!ViewData.ModelState.IsValid)
-                        {
-                            <div class="alert alert-danger">
-                                <button type="button" class="close" data-dismiss="alert">Fechar</button>
-                                @Html.ValidationSummary(false, "", new { @class = "text-danger" })
-                            </div>}
-                        @if (TempData["TemMensagem"] != null)
-                        {
-                            <div class="alert alert-success">
-                                <button type="button" class="close" data-dismiss="alert">Fechar</button>
-                                <span>@TempData["MensagemAcerto"]</span>
-                            </div>
-                        }                    
                         <div class="row">
                             @if (ViewBag.Listas != null && (ViewBag.Listas as List<EntitiesServices.Model.AREA_PACIENTE>).Count > 0)
                             {
@@ -322,31 +351,52 @@
                                                                 <i class="fa fa-gears" style="font-size: 17px; margin-left: -5px;"></i>
                                                         </button>
                                                     }
-                                                    @if (cond.AREA_IN_TIPO == 3 & cond.AREA_IN_PROCESSADA == 0)
+                                                    @if (cond.AREA_IN_TIPO == 3)
                                                     {
-                                                        if (cond.AREA_IN_TIPO_EXAME == 1)
+                                                        if (cond.AREA_IN_PROCESSADA == 0)
                                                         {
-                                                            @*@Html.TableLinkDetails(cond.AREA_CD_ID, "ProcessarContratoLocacao", "fa-gears", "Processar Contrato")*@
-                                                            <button type="button" 
-                                                                    class="btn btn-xs btn-link btn-disparar-modal-tabela_1" 
-                                                                    data-id="@cond.AREA_CD_ID" 
-                                                                    title="Processar Contrato"
-                                                                    id="btnAnexarSubmit"
-                                                                    style="padding: 1; color: #337ab7;">
-                                                                    <i class="fa fa-gears" style="font-size: 17px; margin-left: -5px;"></i>
-                                                            </button>
+                                                            if (cond.AREA_IN_TIPO_EXAME == 1)
+                                                            {
+                                                                <button type="button" 
+                                                                        class="btn btn-xs btn-link btn-disparar-modal-tabela_1" 
+                                                                        data-id="@cond.AREA_CD_ID" 
+                                                                        title="Processar Contrato"
+                                                                        id="btnAnexarSubmit"
+                                                                        style="padding: 1; color: #337ab7;">
+                                                                        <i class="fa fa-gears" style="font-size: 17px; margin-left: -5px;"></i>
+                                                                </button>
+                                                            }
+                                                            else if (cond.AREA_IN_TIPO_EXAME == 2)
+                                                            {
+                                                                <button type="button" 
+                                                                        class="btn btn-xs btn-link btn-disparar-modal-tabela_2" 
+                                                                        data-id="@cond.AREA_CD_ID" 
+                                                                        title="Processar Distrato"
+                                                                        id="btnDistratoSubmit"
+                                                                        style="padding: 1; color: #337ab7;">
+                                                                        <i class="fa fa-gears" style="font-size: 17px; margin-left: -5px;"></i>
+                                                                </button>
+                                                            }
+                                                            else if (cond.AREA_IN_TIPO_EXAME == 3)
+                                                            {
+                                                                @Html.TableLinkDetails(cond.AREA_CD_ID, "ProcessarResultadoExame", "fa-gears", "Processar Resultado")
+                                                            }
+                                                            else if (cond.AREA_IN_TIPO_EXAME == 4)
+                                                            {
+                                                                @Html.TableLinkDetails(cond.AREA_CD_ID, "ProcessarDocumento", "fa-gears", "Processar Documento")
+                                                            }
                                                         }
-                                                        else if (cond.AREA_IN_TIPO_EXAME == 2)
+
+                                                        if (cond.AREA_PACIENTE_ANEXO != null && cond.AREA_PACIENTE_ANEXO.Any())
                                                         {
-                                                            @Html.TableLinkDetails(cond.AREA_CD_ID, "ProcessarDistratoLocacao", "fa-gears", "Processar Distrato")
-                                                        }
-                                                        else if (cond.AREA_IN_TIPO_EXAME == 3)
-                                                        {
-                                                            @Html.TableLinkDetails(cond.AREA_CD_ID, "ProcessarResultadoExame", "fa-gears", "Processar Resultado")
-                                                        }
-                                                        else if (cond.AREA_IN_TIPO_EXAME == 4)
-                                                        {
-                                                            @Html.TableLinkDetails(cond.AREA_CD_ID, "ProcessarDocumento", "fa-gears", "Processar Documento")
+                                                            var arquivoPath = cond.AREA_PACIENTE_ANEXO.First().APAN_AQ_ARQUIVO.Replace("~", "");    
+                                                            <a href="@Url.Content("~/PdfViewer/web/viewer.html?file=" + arquivoPath + "&ReturnUrl=" + Request.Url.AbsolutePath)" 
+                                                               target="_blank" 
+                                                               class="btn btn-xs btn-link" 
+                                                               title="Ver Documento"
+                                                               style="padding: 3px; color: #337ab7; text-decoration: none;">
+                                                                <i class="fa fa-file-o" style="font-size: 17px; margin-left: -5px;"></i>
+                                                            </a>
                                                         }
                                                     }
                                                 </td>
@@ -723,7 +773,85 @@
     });
 </script>
 
+<script type="text/javascript">
+    $(document).ready(function () {
+        var $modal = $('#modalConfirmacaoDistrato');
+        var $form = $('#pwd-container1');
+        var $hiddenId = $('#hiddenIdLocacao');
 
+        // 1. Captura o clique nos botões DENTRO da tabela
+        // Usamos delegação (.on) caso a tabela seja dinâmica (DataTables)
+        $('body').on('click', '.btn-disparar-modal-tabela_2', function () {
+            var idDaLinha = $(this).data('id');
+            $hiddenId.val(idDaLinha);
+            $modal.modal('show');
+        });
+
+        // 2. Ação de confirmar DENTRO da modal (Mantivemos sua lógica, apenas ajustamos o submit)
+        $('#btnDistratoSubmit').click(function (e) {
+            e.preventDefault();
+
+            var $btn = $(this);
+
+            // Feedback visual no botão da modal
+            $btn.prop('disabled', true).addClass('disabled');
+            $btn.html('<i class="fa fa-spinner fa-spin"></i> Processando...');
+
+            // Esconde a modal
+            $modal.modal('hide');
+
+            // 3. Limpeza e Submit
+            setTimeout(function () {
+                // Limpeza de resíduos do template
+                $('.modal-backdrop').remove();
+                $('body').removeClass('modal-open').css('padding-right', '');
+                
+                // Submit via DOM puro do formulário que agora contém o ID correto
+                document.getElementById('pwd-container1').submit();
+            }, 400);
+        });
+
+        // Segurança: limpa resíduos se fechar no "X" ou clicar fora
+        $modal.on('hidden.bs.modal', function () {
+            // Opcional: Limpa o ID se a pessoa desistir
+            $hiddenId.val(''); 
+            
+            $('.modal-backdrop').remove();
+            $('body').removeClass('modal-open');
+        });
+    });
+
+    $('#btnDistratoSubmit').click(function (e) {
+        e.preventDefault();
+    
+        var $btn = $(this);
+        var idLocacao = $('#hiddenIdLocacao').val(); // O ID que capturamos da tabela
+
+        // 1. Feedback visual
+        $btn.prop('disabled', true).addClass('disabled');
+        $btn.html('<i class="fa fa-spinner fa-spin"></i> Processando...');
+
+        // 2. Chamada AJAX para o Controller
+        $.ajax({
+            url: '@Url.Action("ProcessarDistratoLocacao", "AreaPaciente")',
+            type: 'POST',
+            data: { id: idLocacao },
+            success: function (response) {
+                $modal.modal('hide');
+            
+                // 3. Feedback de sucesso e recarregamento
+                // Se você usar Toastr: toastr.success("Processado com sucesso!");
+                setTimeout(function () {
+                    window.location.reload(); 
+                }, 500);
+            },
+            error: function (xhr, status, error) {
+                $btn.prop('disabled', false).removeClass('disabled').html('Confirmar Informações');
+                alert("Erro ao processar: " + error);
+            }
+        });
+    });
+</script>
 
 
 
