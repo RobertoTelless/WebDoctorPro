@@ -4002,7 +4002,6 @@
     <Content Include="Imagens\1\Noticias\17\Fotos\dubai.webp" />
     <Content Include="Imagens\1\Locacao\91\Assinado\Contrato_LocacaoANINHA TRESLOUCADA ESCOVADA_d6est2kn000afj2ifpmg.pdf" />
     <Content Include="Imagens\1\Locacao\91\Contrato\Contrato_LocacaoAninha Tresloucada Escovada_d6est2kn000afj2ifpmg.pdf" />
-    <Content Include="Imagens\1\Locacao\91\Distrato\Distrato_LocacaoAninha Tresloucada Escovada_d6est2kn000afj2ifpmg.pdf" />
     <Content Include="Imagens\1\Locacao\92\Contrato\Contrato_LocacaoAntonio Curie Einstein Da Vinci_d6esvesn000afj2ifpsg.pdf" />
     <Content Include="Imagens\1\Locacao\92\Distrato\Distrato_LocacaoAntonio Curie Einstein Da Vinci_d6esvesn000afj2ifpsg.pdf" />
     <Content Include="Imagens\1\Locacao\94\Assinado\Contrato_LocacaoAPÓSTROFO METAFOSFÓRICO HÍGIDO_d6et22cn000afj2ifq40.pdf" />
@@ -4032,6 +4031,9 @@
     <Content Include="Imagens\1\Locacao\98\Contrato\Contrato_LocacaoElliot Stabler_d6oa88sn0009ii72alm0.pdf" />
     <Content Include="Imagens\1\Locacao\99\Contrato\Contrato_LocacaoRowan Atkinson_d6oqu84n0005jn2ldtig.pdf" />
     <Content Include="Imagens\1\Locacao\99\Assinado\Contrato_LocacaoROWAN ATKINSON_d6oqu84n0005jn2ldtig_Assinado.pdf" />
+    <Content Include="Imagens\1\Locacao\97\Assinado\Contrato_LocacaoROWAN ATKINSON_d6o92fcn00093c3segdg_Assinado.pdf" />
+    <Content Include="Docs\AreaPaciente\ProcessarDistratoLocacao.md" />
+    <Content Include="Docs\mintlify.json" />
     <None Include="Properties\PublishProfiles\eprontuario - FTP.pubxml" />
     <None Include="Properties\PublishProfiles\eprontuario - FTP1.pubxml" />
     <None Include="Properties\PublishProfiles\eprontuario - Web Deploy.pubxml" />
@@ -5594,6 +5596,7 @@
     <Folder Include="Imagens\1\Locacao\90\Assinado\" />
     <Folder Include="Imagens\1\Locacao\90\Distrato\" />
     <Folder Include="Imagens\1\Locacao\91\Anexos\" />
+    <Folder Include="Imagens\1\Locacao\91\Distrato\" />
     <Folder Include="Imagens\1\Locacao\92\Anexos\" />
     <Folder Include="Imagens\1\Locacao\92\Assinado\" />
     <Folder Include="Imagens\1\Locacao\93\Anexos\" />
@@ -5609,7 +5612,6 @@
     <Folder Include="Imagens\1\Locacao\96\Contrato\" />
     <Folder Include="Imagens\1\Locacao\96\Distrato\" />
     <Folder Include="Imagens\1\Locacao\97\Anexos\" />
-    <Folder Include="Imagens\1\Locacao\97\Assinado\" />
     <Folder Include="Imagens\1\Locacao\97\Contrato\" />
     <Folder Include="Imagens\1\Locacao\97\Distrato\" />
     <Folder Include="Imagens\1\Locacao\98\Anexos\" />

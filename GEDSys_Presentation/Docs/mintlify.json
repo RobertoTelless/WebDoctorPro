@@ -1,0 +1,9 @@
+{
+  "name": "WebDoctorPro",
+  "navigation": [
+    {
+      "group": "Área do Paciente",
+      "pages": ["ProcessarDistratoLocacao"]
+    }
+  ]
+}
