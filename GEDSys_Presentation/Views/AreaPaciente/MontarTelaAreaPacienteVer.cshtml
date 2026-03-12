@@ -95,7 +95,33 @@
             
                 <div class="modal-footer">
                     <button type="button" class="btn btn-white" data-dismiss="modal">Voltar</button>
-                    <button type="button" class="btn btn-primary" id="btnAnexarSubmit">Confirmar Anexação</button>
+                    <button type="button" class="btn btn-primary" id="btnDistratoSubmit">Confirmar Anexação</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal inmodal fade" id="modalConfirmacaoDocumento" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header" style="position: relative; padding: 30px 15px;">
+                    <img src="@Url.Content("~/Images/Prontuario/prontuario_icon_3.png?v=1.1")" 
+                         style="position: absolute; left: 15px; top: 15px; width: 40px; height: auto;" 
+                         alt="Ícone" />
+
+                    <i class="fa fa-check-circle modal-icon text-primary" style="display: block;"></i>
+                    <h4 class="modal-title">Anexação de Documentos ao Paciente</h4>
+                    <small class="font-bold">WebDoctorPro - Área do Paciente</small>
+                </div>
+            
+                <div class="modal-body text-center">
+                    <h4>Tem certeza que deseja anexar esse(s) documento(s) ao paciente?</h4>
+                    <p>Esta ação não poderá ser desfeita e os registros serão atualizados no sistema.</span></p>
+                </div>
+            
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-white" data-dismiss="modal">Voltar</button>
+                    <button type="button" class="btn btn-primary" id="btnDocumentoSubmit">Confirmar Anexação</button>
                 </div>
             </div>
         </div>
@@ -347,7 +373,7 @@
                                                                 data-id="@cond.AREA_CD_ID" 
                                                                 title="Processar Informação"
                                                                 id="btnConfirmarSubmit"
-                                                                style="padding: 1; color: #337ab7;">
+                                                                style="padding: 3px; color: #337ab7;">
                                                                 <i class="fa fa-gears" style="font-size: 17px; margin-left: -5px;"></i>
                                                         </button>
                                                     }
@@ -362,7 +388,7 @@
                                                                         data-id="@cond.AREA_CD_ID" 
                                                                         title="Processar Contrato"
                                                                         id="btnAnexarSubmit"
-                                                                        style="padding: 1; color: #337ab7;">
+                                                                        style="padding: 3px; color: #337ab7;">
                                                                         <i class="fa fa-gears" style="font-size: 17px; margin-left: -5px;"></i>
                                                                 </button>
                                                             }
@@ -373,7 +399,7 @@
                                                                         data-id="@cond.AREA_CD_ID" 
                                                                         title="Processar Distrato"
                                                                         id="btnDistratoSubmit"
-                                                                        style="padding: 1; color: #337ab7;">
+                                                                        style="padding: 3px; color: #337ab7;">
                                                                         <i class="fa fa-gears" style="font-size: 17px; margin-left: -5px;"></i>
                                                                 </button>
                                                             }
@@ -383,11 +409,18 @@
                                                             }
                                                             else if (cond.AREA_IN_TIPO_EXAME == 4)
                                                             {
-                                                                @Html.TableLinkDetails(cond.AREA_CD_ID, "ProcessarDocumento", "fa-gears", "Processar Documento")
+                                                                <button type="button" 
+                                                                        class="btn btn-xs btn-link btn-disparar-modal-tabela_3" 
+                                                                        data-id="@cond.AREA_CD_ID" 
+                                                                        title="Processar Documento"
+                                                                        id="btnDocumentoSubmit"
+                                                                        style="padding: 3px; color: #337ab7;">
+                                                                        <i class="fa fa-gears" style="font-size: 17px; margin-left: -5px;"></i>
+                                                                </button>
                                                             }
                                                         }
 
-                                                        if (cond.AREA_PACIENTE_ANEXO != null && cond.AREA_PACIENTE_ANEXO.Any())
+                                                        if (((cond.AREA_IN_TIPO_EXAME == 1 || cond.AREA_IN_TIPO_EXAME == 2) & cond.AREA_PACIENTE_ANEXO != null) && cond.AREA_PACIENTE_ANEXO.Any())
                                                         {
                                                             var arquivoPath = cond.AREA_PACIENTE_ANEXO.First().APAN_AQ_ARQUIVO.Replace("~", "");    
                                                             <a href="@Url.Content("~/PdfViewer/web/viewer.html?file=" + arquivoPath + "&ReturnUrl=" + Request.Url.AbsolutePath)" 
@@ -766,7 +799,7 @@
                 }, 500);
             },
             error: function (xhr, status, error) {
-                $btn.prop('disabled', false).removeClass('disabled').html('Confirmar Informações');
+                $btn.prop('disabled', false).removeClass('disabled').html('Confirmar Anexação');
                 alert("Erro ao processar: " + error);
             }
         });
@@ -846,14 +879,92 @@
                 }, 500);
             },
             error: function (xhr, status, error) {
-                $btn.prop('disabled', false).removeClass('disabled').html('Confirmar Informações');
+                $btn.prop('disabled', false).removeClass('disabled').html('Confirmar Anexação');
                 alert("Erro ao processar: " + error);
             }
         });
     });
 </script>
 
+<script type="text/javascript">
+    $(document).ready(function () {
+        var $modal = $('#modalConfirmacaoDocumento');
+        var $form = $('#pwd-container1');
+        var $hiddenId = $('#hiddenIdLocacao');
 
+        // 1. Captura o clique nos botões DENTRO da tabela
+        // Usamos delegação (.on) caso a tabela seja dinâmica (DataTables)
+        $('body').on('click', '.btn-disparar-modal-tabela_3', function () {
+            var idDaLinha = $(this).data('id');
+            $hiddenId.val(idDaLinha);
+            $modal.modal('show');
+        });
+
+        // 2. Ação de confirmar DENTRO da modal (Mantivemos sua lógica, apenas ajustamos o submit)
+        $('#btnDocumentoSubmit').click(function (e) {
+            e.preventDefault();
+
+            var $btn = $(this);
+
+            // Feedback visual no botão da modal
+            $btn.prop('disabled', true).addClass('disabled');
+            $btn.html('<i class="fa fa-spinner fa-spin"></i> Processando...');
+
+            // Esconde a modal
+            $modal.modal('hide');
+
+            // 3. Limpeza e Submit
+            setTimeout(function () {
+                // Limpeza de resíduos do template
+                $('.modal-backdrop').remove();
+                $('body').removeClass('modal-open').css('padding-right', '');
+                
+                // Submit via DOM puro do formulário que agora contém o ID correto
+                document.getElementById('pwd-container1').submit();
+            }, 400);
+        });
+
+        // Segurança: limpa resíduos se fechar no "X" ou clicar fora
+        $modal.on('hidden.bs.modal', function () {
+            // Opcional: Limpa o ID se a pessoa desistir
+            $hiddenId.val(''); 
+            
+            $('.modal-backdrop').remove();
+            $('body').removeClass('modal-open');
+        });
+    });
+
+    $('#btnDocumentoSubmit').click(function (e) {
+        e.preventDefault();
+    
+        var $btn = $(this);
+        var idLocacao = $('#hiddenIdLocacao').val(); // O ID que capturamos da tabela
+
+        // 1. Feedback visual
+        $btn.prop('disabled', true).addClass('disabled');
+        $btn.html('<i class="fa fa-spinner fa-spin"></i> Processando...');
+
+        // 2. Chamada AJAX para o Controller
+        $.ajax({
+            url: '@Url.Action("ProcessarDocumento", "AreaPaciente")',
+            type: 'POST',
+            data: { id: idLocacao },
+            success: function (response) {
+                $modal.modal('hide');
+            
+                // 3. Feedback de sucesso e recarregamento
+                // Se você usar Toastr: toastr.success("Processado com sucesso!");
+                setTimeout(function () {
+                    window.location.reload(); 
+                }, 500);
+            },
+            error: function (xhr, status, error) {
+                $btn.prop('disabled', false).removeClass('disabled').html('Confirmar Anexação');
+                alert("Erro ao processar: " + error);
+            }
+        });
+    });
+</script>
 
 }
 

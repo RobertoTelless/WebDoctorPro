@@ -19,6 +19,7 @@ namespace ModelServices.Interfaces.EntitiesServices
         List<AREA_PACIENTE> GetAllItens(Int32 idAss);
         AREA_PACIENTE GetItemById(Int32 id);
         List<AREA_PACIENTE> ExecuteFilter(String paciente, DateTime? inicio, DateTime? final, Int32? tipo, Int32 idAss);
+        AREA_PACIENTE_ANEXO GetAreaAnexoById(Int32 id);
 
     }
 }

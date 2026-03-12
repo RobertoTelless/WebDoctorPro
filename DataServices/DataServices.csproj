@@ -237,6 +237,7 @@
     <Compile Include="Repositories\ConfiguracaoCalendarioRepository.cs" />
     <Compile Include="Repositories\ConfiguracaoRepository.cs" />
     <Compile Include="Repositories\AreaPacienteRepository.cs" />
+    <Compile Include="Repositories\AreaPacienteAnexoRepository.cs" />
     <Compile Include="Repositories\MedicoMensagemRepository.cs" />
     <Compile Include="Repositories\ControleMensagemRepository.cs" />
     <Compile Include="Repositories\ControleVersaoRepository.cs" />

@@ -335,6 +335,7 @@ namespace Presentation.Start
             kernel.Bind<IAreaPacienteRepository>().To<AreaPacienteRepository>();
             kernel.Bind<INoticiaRepository>().To<NoticiaRepository>();
             kernel.Bind<INoticiaComentarioRepository>().To<NoticiaComentarioRepository>();
+            kernel.Bind<IAreaPacienteAnexoRepository>().To<AreaPacienteAnexoRepository>();
 
 
         }

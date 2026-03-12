@@ -229,6 +229,7 @@
     <Compile Include="Interfaces\Repositories\IConfiguracaoCalendarioRepository.cs" />
     <Compile Include="Interfaces\Repositories\IConfiguracaoRepository.cs" />
     <Compile Include="Interfaces\Repositories\IAreaPacienteRepository.cs" />
+    <Compile Include="Interfaces\Repositories\IAreaPacienteAnexoRepository.cs" />
     <Compile Include="Interfaces\Repositories\IMedicoMensagemRepository.cs" />
     <Compile Include="Interfaces\Repositories\IControleMensagemRepository.cs" />
     <Compile Include="Interfaces\Repositories\IControleVersaoRepository.cs" />

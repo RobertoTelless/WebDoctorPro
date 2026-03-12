@@ -1252,6 +1252,7 @@
     <Content Include="Imagens\1\Filial\24\Logo\kalunga-logo.png" />
     <Content Include="Imagens\1\Filial\2\Logo\favicon_SystemBR.jpg" />
     <Content Include="Imagens\1\Filial\3\Logo\bz.jpg" />
+    <Content Include="Imagens\1\Locacao\100\QRCode\Contrato_QRCode_d6phm84n0005107j8g7g.png" />
     <Content Include="Imagens\1\Locacao\74\QRCode\Contrato_QRCode_d4gcnhkn000c5t6n1560.png" />
     <Content Include="Imagens\1\Locacao\75\QRCode\Contrato_QRCode_d4gcr4sn000c5t6n159g.png" />
     <Content Include="Imagens\1\Locacao\76\Anexos\haddock_1.jpg" />
@@ -4034,6 +4035,10 @@
     <Content Include="Imagens\1\Locacao\97\Assinado\Contrato_LocacaoROWAN ATKINSON_d6o92fcn00093c3segdg_Assinado.pdf" />
     <Content Include="Docs\AreaPaciente\ProcessarDistratoLocacao.md" />
     <Content Include="Docs\mintlify.json" />
+    <Content Include="Imagens\1\AreaPaciente\30\Anexos\Distrato_LocacaoROWAN ATKINSON_d6phm84n0005107j8g7g_Assinado.pdf" />
+    <Content Include="Imagens\1\Locacao\100\Contrato\Contrato_LocacaoRowan Atkinson_d6phm84n0005107j8g7g.pdf" />
+    <Content Include="Imagens\1\Locacao\100\Distrato\Distrato_LocacaoRowan Atkinson_d6phm84n0005107j8g7g.pdf" />
+    <Content Include="Imagens\1\Locacao\100\Assinado\Distrato_LocacaoROWAN ATKINSON_d6phm84n0005107j8g7g_Assinado.pdf" />
     <None Include="Properties\PublishProfiles\eprontuario - FTP.pubxml" />
     <None Include="Properties\PublishProfiles\eprontuario - FTP1.pubxml" />
     <None Include="Properties\PublishProfiles\eprontuario - Web Deploy.pubxml" />
@@ -5454,6 +5459,8 @@
     <Content Include="Views\AreaPaciente\AreaPacienteItemVer.cshtml" />
     <Content Include="Views\AreaPaciente\ProcessarMarcacaoConsulta.cshtml" />
     <Content Include="Views\AreaPaciente\ProcessarInfoConsulta.cshtml" />
+    <Content Include="Views\AreaPaciente\VerAnexoArea.cshtml" />
+    <Content Include="Views\AreaPaciente\VerAnexoAreaAudio.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -5554,6 +5561,7 @@
     <Folder Include="Imagens\1\Exames\97\Anexos\" />
     <Folder Include="Imagens\1\Exames\98\Anexos\" />
     <Folder Include="Imagens\1\Exames\99\Anexos\" />
+    <Folder Include="Imagens\1\Locacao\100\Anexos\" />
     <Folder Include="Imagens\1\Locacao\74\Anexos\" />
     <Folder Include="Imagens\1\Locacao\74\Assinado\" />
     <Folder Include="Imagens\1\Locacao\74\Contrato\" />

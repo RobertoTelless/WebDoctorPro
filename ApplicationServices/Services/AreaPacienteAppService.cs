@@ -21,6 +21,11 @@ namespace ApplicationServices.Services
             _baseService = baseService;
         }
 
+        public AREA_PACIENTE_ANEXO GetAreaAnexoById(Int32 id)
+        {
+            AREA_PACIENTE_ANEXO lista = _baseService.GetAreaAnexoById(id);
+            return lista;
+        }
 
         public List<AREA_PACIENTE> GetAllItens(Int32 idAss)
         {

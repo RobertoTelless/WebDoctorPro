@@ -11,11 +11,13 @@ namespace ModelServices.EntitiesServices
     public class AreaPacienteService : ServiceBase<AREA_PACIENTE>, IAreaPacienteService
     {
         private readonly IAreaPacienteRepository _baseRepository;
+        private readonly IAreaPacienteAnexoRepository _aneRepository;
         protected CRMSysDBEntities Db = new CRMSysDBEntities();
 
-        public AreaPacienteService(IAreaPacienteRepository baseRepository) : base(baseRepository)
+        public AreaPacienteService(IAreaPacienteRepository baseRepository, IAreaPacienteAnexoRepository aneRepository) : base(baseRepository)
         {
             _baseRepository = baseRepository;
+            _aneRepository = aneRepository;
         }
 
         public AREA_PACIENTE GetItemById(Int32 id)
@@ -33,6 +35,11 @@ namespace ModelServices.EntitiesServices
         {
             return _baseRepository.ExecuteFilter(paciente, inicio, final, tipo, idAss);
 
+        }
+
+        public AREA_PACIENTE_ANEXO GetAreaAnexoById(Int32 id)
+        {
+            return _aneRepository.GetItemById(id);
         }
 
         public Int32 Create(AREA_PACIENTE item, LOG log)

@@ -15,5 +15,6 @@ namespace ApplicationServices.Interfaces
         List<AREA_PACIENTE> GetAllItens(Int32 idAss);
         AREA_PACIENTE GetItemById(Int32 id);
         Tuple<Int32, List<AREA_PACIENTE>, Boolean> ExecuteFilter(String paciente, DateTime? inicio, DateTime? final, Int32? tipo, Int32 idAss);
+        AREA_PACIENTE_ANEXO GetAreaAnexoById(Int32 id);
     }
 }

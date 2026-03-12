@@ -267,6 +267,8 @@ namespace ERP_Condominios_Solution.ViewModels
         public virtual CONTRATO_LOCACAO CONTRATO_LOCACAO { get; set; }
         public virtual CONTRATO_LOCACAO CONTRATO_LOCACAO1 { get; set; }
         public virtual CONTRATO_LOCACAO CONTRATO_LOCACAO2 { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<AREA_PACIENTE> AREA_PACIENTE { get; set; }
 
 
     }
