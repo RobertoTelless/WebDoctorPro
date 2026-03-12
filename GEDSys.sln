@@ -27,6 +27,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GEDSys_Presentation", "GEDS
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CrossCutting", "CrossCutting\CrossCutting.csproj", "{A33AA06B-E254-478E-A15C-86EBE681A589}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Docs", "Docs", "{7195900A-AC2B-45A4-82A7-3E86F6854F99}"
+	ProjectSection(SolutionItems) = preProject
+		GEDSys_Presentation\Docs\mintlify.json = GEDSys_Presentation\Docs\mintlify.json
+		GEDSys_Presentation\Docs\AreaPaciente\ProcessarDistratoLocacao.md = GEDSys_Presentation\Docs\AreaPaciente\ProcessarDistratoLocacao.md
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
