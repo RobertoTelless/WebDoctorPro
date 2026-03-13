@@ -3695,6 +3695,9 @@ namespace GEDSys_Presentation.Controllers
                 USUARIO usuario = (USUARIO)Session["UserCredentials"];
                 Int32 idAss = (Int32)Session["IdAssinante"];
                 List<AREA_PACIENTE> conf = new List<AREA_PACIENTE>();
+
+                List<AREA_PACIENTE> antes = (List<AREA_PACIENTE>)Session["AreaPacientes"];
+
                 if (Session["AreaPacientes"] == null)
                 {
                     conf = areaApp.GetAllItens(idAss);
@@ -9301,11 +9304,15 @@ namespace GEDSys_Presentation.Controllers
                 // Carrega listas
                 if (Session["ListaAreaPaciente"] == null)
                 {
+                    Session["AreaPacientes"] = null;
                     List<AREA_PACIENTE> areas = CarregarAreaPaciente();
-                    listaMasterArea = areas.OrderByDescending(p => p.AREA_DT_ENTRADA).ThenBy(p => p.AREA_IN_TIPO).ToList();
-                    Session["ListaAreaPaciente"] = listaMasterArea;
+                    ViewBag.ListasAreas = areas;
+                    Session["ListaAreaPaciente"] = areas;
                 }
-                ViewBag.Listas = (List<AREA_PACIENTE>)Session["ListaAreaPaciente"];
+                else
+                {
+                    ViewBag.ListasAreas = (List<AREA_PACIENTE>)Session["ListaAreaPaciente"];
+                }
 
                 List<SelectListItem> tipo = new List<SelectListItem>();
                 tipo.Add(new SelectListItem() { Text = "Solicitação de Marcação de Consulta", Value = "1" });
@@ -9334,7 +9341,7 @@ namespace GEDSys_Presentation.Controllers
                     }
                     if ((Int32)Session["MensArea"] == 61)
                     {
-                        String frase = (String)Session["MsgCRUD"];
+                        String frase = (String) Session["MsgCRUD"];
                         TempData["MensagemAcerto"] = frase;
                         TempData["TemMensagem"] = 1;
                     }
@@ -10253,7 +10260,7 @@ namespace GEDSys_Presentation.Controllers
                     String extensao = Path.GetExtension(item.APAN_NM_TITULO);
                     String caminhoOrigem = "/Imagens/" + pac.ASSI_CD_ID.ToString() + "/AreaPaciente/" + item.AREA_CD_ID.ToString() + "/Anexos/";
                     String pathOrigem = Path.Combine(Server.MapPath(caminhoOrigem), item.APAN_NM_TITULO);
-                    String caminhoDest = "/Imagens/" + pac.ASSI_CD_ID.ToString() + "/Paciente/" + pac.PACI__CD_ID.ToString() + "/Anexos/";
+                    String caminhoDest = "/Imagens/" + pac.ASSI_CD_ID.ToString() + "/Pacientes/" + pac.PACI__CD_ID.ToString() + "/Anexos/";
                     String pathDest = Path.Combine(Server.MapPath(caminhoDest), item.APAN_NM_TITULO);
                     System.IO.File.Copy(pathOrigem, pathDest, true);
                 }
@@ -10266,9 +10273,11 @@ namespace GEDSys_Presentation.Controllers
 
                 Session["MsgCRUD"] = "Os documentos enviados pelo(a) paciente " + pac.PACI_NM_NOME.ToUpper() + " foram anexados com sucesso";
                 Session["MensArea"] = 61;
+                TempData["TemMensagem"] = 1;
                 Session["ListaAreaPaciente"] = null;
                 Session["AreaPacienteAlterada"] = 1;
                 Session["AreaPacientes"] = null;
+
                 return RedirectToAction("MontarTelaAreaPacienteVer", "AreaPaciente");
             }
             catch (Exception ex)
