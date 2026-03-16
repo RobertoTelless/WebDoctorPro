@@ -595,6 +595,8 @@ namespace GEDSys_Presentation.Controllers
                 Session["VoltaEncerra"] = 1;
                 Session["TemEncerra"] = 0;
                 Session["IncluirConsultaArea"] = 1;
+                Session["MensArea"] = null;
+
                 if (confAna.COAN_IN_BLOCO_COMUM == 0 || confAna.COAN_IN_BLOCO_COMUM == null)
                 {
                     Session["BlocoAnamnese"] = 1;

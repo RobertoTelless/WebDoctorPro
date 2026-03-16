@@ -9350,6 +9350,10 @@ namespace GEDSys_Presentation.Controllers
                         String frase = (String)Session["MensagemErro"];
                         ModelState.AddModelError("", frase);
                     }
+                    if ((Int32)Session["MensArea"] == 400)
+                    {
+                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0351", CultureInfo.CurrentCulture));
+                    }
                 }
 
                 // Grava Acesso
@@ -9357,7 +9361,6 @@ namespace GEDSys_Presentation.Controllers
                 Int32 voltaX = grava.GravaAcesso(usuario.USUA_CD_ID, usuario.ASSI_CD_ID, "AREA_PACIENTE", "AreaPaciente", "MontarTelaAreaPacienteVer");
 
                 // Abre view
-                Session["MensArea"] = null;
                 Session["VoltaAreaVer"] = 1;
                 Session["IncluirConsultaArea"] = 2;
 
@@ -10030,6 +10033,7 @@ namespace GEDSys_Presentation.Controllers
 
                 Session["MsgCRUD"] = "O contrato assinado da locação " + loca.LOCA_GU_GUID + " do(a) paciente " + pac.PACI_NM_NOME.ToUpper() + " foram anexado com sucesso";
                 Session["MensArea"] = 61;
+                TempData["TemMensagem"] = 1;
                 Session["ListaAreaPaciente"] = null;
                 Session["AreaPacienteAlterada"] = 1;
                 Session["AreaPacientes"] = null;
@@ -10273,7 +10277,6 @@ namespace GEDSys_Presentation.Controllers
 
                 Session["MsgCRUD"] = "Os documentos enviados pelo(a) paciente " + pac.PACI_NM_NOME.ToUpper() + " foram anexados com sucesso";
                 Session["MensArea"] = 61;
-                TempData["TemMensagem"] = 1;
                 Session["ListaAreaPaciente"] = null;
                 Session["AreaPacienteAlterada"] = 1;
                 Session["AreaPacientes"] = null;
@@ -10361,6 +10364,825 @@ namespace GEDSys_Presentation.Controllers
                 GravaLogExcecao grava = new GravaLogExcecao(usuApp);
                 Int32 voltaX = grava.GravarLogExcecao(ex, "AreaPaciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
                 return RedirectToAction("TrataExcecao", "BaseAdmin");
+            }
+        }
+
+        [HttpGet]
+        public ActionResult EnviarEMailPaciente()
+        {
+            try
+            {
+                // Verifica se tem usuario logado
+                USUARIO usuario = new USUARIO();
+                if ((String)Session["Ativa"] == null)
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+                if ((USUARIO)Session["UserCredentials"] != null)
+                {
+                    usuario = (USUARIO)Session["UserCredentials"];
+
+                    // Verfifica permissão
+                    if (usuario.PERFIL.PAERF_IN_PACIENTE_MENSAGEM == 0)
+                    {
+                        Session["MensPermissao"] = 2;
+                        Session["ModuloPermissao"] = "Paciente - Contatos - Mensagem";
+                        return RedirectToAction("VoltarAnexoPaciente");
+                    }
+                }
+                else
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+                Int32 idAss = (Int32)Session["IdAssinante"];
+                Session["ModuloAtual"] = "Paciente - Envio de E-Mail";
+
+                // Verifica possibilidade
+                Session["NivelPaciente"] = 10;
+                Int32 num = CarregaMensagemEnviada().Where(p => p.MEEN_DT_DATA_ENVIO.Value.Month == DateTime.Today.Date.Month & p.MEEN_DT_DATA_ENVIO.Value.Year == DateTime.Today.Date.Year & p.MEEN_IN_TIPO == 1).ToList().Count;
+                if ((Int32)Session["NumEMail"] <= num)
+                {
+                    Session["MensArea"] = 400;
+                    return RedirectToAction("MontarTelaAreaPacienteVer");
+                }
+
+                // Recupera contato
+                List<PACIENTE> lp = CarregaPaciente();
+                ViewBag.Pacientes = new SelectList(lp, "PACI__CD_ID", "PACI_NM_NOME");
+
+                MensagemViewModel mens = new MensagemViewModel();
+                mens.MENS_DT_CRIACAO = DateTime.Today.Date;
+                mens.MENS_IN_TIPO = 1;
+                mens.MENS_IN_TIPO_EMAIL = 1;
+                mens.TIPO_ENVIO = 1;
+                mens.MENS_NM_NOME = "Mensagem para Paciente";
+                return View(mens);
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "AreaPaciente";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "AreaPaciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return RedirectToAction("TrataExcecao", "BaseAdmin");
+            }
+        }
+
+
+        [HttpPost]
+        [ValidateInput(false)]
+        public async Task<ActionResult> EnviarEMailPaciente(MensagemViewModel vm)
+        {
+            if ((String)Session["Ativa"] == null)
+            {
+                return RedirectToAction("Logout", "ControleAcesso");
+            }
+            Int32 idAss = (Int32)Session["IdAssinante"];
+            USUARIO usuario = (USUARIO)Session["UserCredentials"];
+            CONFIGURACAO conf = CarregaConfiguracaoGeral();
+            ViewBag.Pacientes = new SelectList(CarregaPaciente(), "PACI__CD_ID", "PACI_NM_NOME");
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    // Sanitização e carga
+                    vm.MENS_TX_TEXTO = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(vm.MENS_TX_TEXTO);
+
+                    // Recuoera paciente
+                    PACIENTE pac = baseApp.GetItemById(vm.PACI_CD_ID.Value);
+
+                    // Monta Mensagem
+                    vm.NOME = pac.PACI_NM_NOME;
+                    vm.ID = pac.PACI__CD_ID;
+                    vm.MODELO = pac.PACI_NM_EMAIL;
+                    vm.MENS_DT_CRIACAO = DateTime.Today.Date;
+                    vm.MENS_IN_TIPO = 1;
+                    vm.MENS_IN_TIPO_EMAIL = 1;
+                    vm.TIPO_ENVIO = 1;
+                    vm.MENS_NM_CAMPANHA = pac.PACI_NM_EMAIL;
+                    vm.MENS_NM_NOME = "Mensagem para Paciente: " + pac.PACI_NM_NOME;
+
+                    // Prepara cabeçalho
+                    String cab = "Prezado Sr(a). <b>" + pac.PACI_NM_NOME + "</b><br />";
+
+                    // Prepara rodape
+                    String classe = String.Empty;
+                    if (usuario.TIPO_CARTEIRA_CLASSE != null)
+                    {
+                        classe = usuario.TIPO_CARTEIRA_CLASSE.TICL_NM_NOME + ": " + usuario.USUA_NR_CLASSE;
+                    }
+                    String rod = "<b>" + usuario.USUA_NM_NOME + "</b><br />";
+                    rod += usuario.USUA_NM_ESPECIALIDADE + "<br />";
+                    rod += classe + "  CPF: " + usuario.USUA_NR_CPF;
+
+                    // Prepara corpo do e-mail e trata link
+                    String corpo = vm.MENS_TX_TEXTO;
+                    StringBuilder str = new StringBuilder();
+                    str.AppendLine(corpo);
+                    String body = str.ToString();
+                    body = body.Replace("\r\n", "<br />");
+                    String emailBody = cab + "<br />" + body + "<br />" + rod;
+
+                    List<AttachmentModel> models = new List<AttachmentModel>();
+
+                    // Decriptografa chaves
+                    String emissor = CrossCutting.Cryptography.Decrypt(conf.CONF_NM_EMISSOR_AZURE_CRIP);
+                    String conn = CrossCutting.Cryptography.Decrypt(conf.CONF_CS_CONNECTION_STRING_AZURE_CRIP);
+
+                    // Monta e-mail
+                    NetworkCredential net = new NetworkCredential(conf.CONF_NM_SENDGRID_LOGIN, conf.CONF_NM_SENDGRID_PWD);
+                    EmailAzure mensagem = new EmailAzure();
+                    mensagem.ASSUNTO = "Mensagem para Paciente - " + pac.PACI_NM_NOME;
+                    mensagem.CORPO = emailBody;
+                    mensagem.DEFAULT_CREDENTIALS = false;
+                    mensagem.EMAIL_TO_DESTINO = pac.PACI_NM_EMAIL;
+                    mensagem.NOME_EMISSOR_AZURE = emissor;
+                    mensagem.ENABLE_SSL = true;
+                    mensagem.NOME_EMISSOR = usuario.USUA_NM_NOME;
+                    mensagem.PORTA = conf.CONF_NM_PORTA_SMTP;
+                    mensagem.PRIORIDADE = System.Net.Mail.MailPriority.High;
+                    mensagem.SENHA_EMISSOR = conf.CONF_NM_SENDGRID_PWD;
+                    mensagem.SMTP = conf.CONF_NM_HOST_SMTP;
+                    mensagem.IS_HTML = true;
+                    mensagem.NETWORK_CREDENTIAL = net;
+                    mensagem.ConnectionString = conn;
+
+                    // Envia mensagem
+                    try
+                    {
+                        await CrossCutting.CommunicationAzurePackage.SendMailAsync(mensagem, models);
+                    }
+                    catch (Exception ex)
+                    {
+                        ViewBag.Message = ex.Message;
+                        Session["TipoVolta"] = 2;
+                        Session["VoltaExcecao"] = "AreaPaciente";
+                        Session["Excecao"] = ex;
+                        Session["ExcecaoTipo"] = ex.GetType().ToString();
+                        GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                        Int32 voltaX = grava.GravarLogExcecao(ex, "AreaPaciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                        return RedirectToAction("TrataExcecao", "BaseAdmin");
+                    }
+
+                    // Grava envio
+                    EnvioEMailGeralBase envio = new EnvioEMailGeralBase(usuApp, confApp, meApp);
+                    String guid = Xid.NewXid().ToString();
+                    Int32 volta1 = envio.GravarMensagemEnviada(vm, usuario, vm.MENS_TX_TEXTO, "Success", guid, null, "Mensagem E-Mail para Paciente");
+
+                    // Grava historico
+                    PACIENTE_HISTORICO hist = new PACIENTE_HISTORICO();
+                    hist.ASSI_CD_ID = usuario.ASSI_CD_ID;
+                    hist.USUA_CD_ID = usuario.USUA_CD_ID;
+                    hist.PACI_CD_ID = pac.PACI__CD_ID;
+                    hist.PAHI_DT_DATA = DateTime.Now;
+                    hist.PAHI_IN_TIPO = 2;
+                    hist.PAHI_IN_CHAVE = null;
+                    hist.PAHI_NM_OPERACAO = "Paciente - Envio de Mensagem E-Mail";
+                    hist.PAHI_DS_DESCRICAO = "Mensagem para Paciente " + pac.PACI_NM_NOME;
+                    Int32 voltaHist = baseApp.ValidateCreateHistorico(hist);
+
+                    // Mensagem do CRUD
+                    Session["MsgCRUD"] = "Foi enviada mensagem de e-mail para o paciente " + pac.PACI_NM_NOME.ToUpper();
+                    Session["MensArea"] = 61;
+
+                    // Sucesso
+                    return RedirectToAction("MontarTelaAreaPacienteVer");
+                }
+                catch (Exception ex)
+                {
+                    ViewBag.Message = ex.Message;
+                    Session["TipoVolta"] = 2;
+                    Session["VoltaExcecao"] = "AreaPaciente";
+                    Session["Excecao"] = ex;
+                    Session["ExcecaoTipo"] = ex.GetType().ToString();
+                    GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                    Int32 voltaX = grava.GravarLogExcecao(ex, "AreaPaciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                    return RedirectToAction("TrataExcecao", "BaseAdmin");
+                }
+            }
+            else
+            {
+                return View(vm);
+            }
+        }
+
+        public List<MENSAGENS_ENVIADAS_SISTEMA> CarregaMensagemEnviada()
+        {
+            try
+            {
+                Int32 idAss = (Int32)Session["IdAssinante"];
+                List<MENSAGENS_ENVIADAS_SISTEMA> conf = new List<MENSAGENS_ENVIADAS_SISTEMA>();
+                if (Session["MensagensEnviadas"] == null)
+                {
+                    conf = meApp.GetAllItens(idAss);
+                }
+                else
+                {
+                    if ((Int32)Session["MensagensEnviadaAlterada"] == 1)
+                    {
+                        conf = meApp.GetAllItens(idAss);
+                    }
+                    else
+                    {
+                        conf = (List<MENSAGENS_ENVIADAS_SISTEMA>)Session["MensagensEnviadas"];
+                    }
+                }
+                conf = conf.Where(p => p.MEEN_IN_SISTEMA == 6).ToList();
+                Session["CatAgendas"] = conf;
+                Session["MensagensEnviadaAlterada"] = 0;
+                return conf;
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "AreaPaciente";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "AreaPaciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return null;
+            }
+        }
+
+        public List<PACIENTE> CarregaPaciente()
+        {
+            try
+            {
+                Int32 idAss = (Int32)Session["IdAssinante"];
+                List<PACIENTE> conf = new List<PACIENTE>();
+                if (Session["Pacientes"] == null)
+                {
+                    conf = baseApp.GetAllItens(idAss);
+                }
+                else
+                {
+                    if ((Int32)Session["PacienteAlterada"] == 1)
+                    {
+                        conf = baseApp.GetAllItens(idAss);
+                    }
+                    else
+                    {
+                        conf = (List<PACIENTE>)Session["Pacientes"];
+                    }
+                }
+                Session["Pacientes"] = conf;
+                Session["PacienteAlterada"] = 0;
+                return conf;
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "AreaPaciente";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "AreaPaciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return null;
+            }
+        }
+
+        public async Task<ActionResult> ProcessarResultadoExame(Int32 id)
+        {
+            if ((String)Session["Ativa"] == null)
+            {
+                return RedirectToAction("Logout", "ControleAcesso");
+            }
+            try
+            {
+                // Recupera area e paciente
+                AREA_PACIENTE area = areaApp.GetItemById(id);
+                PACIENTE pac = baseApp.GetItemById(area.PACI_CD_ID.Value);
+                USUARIO usu = usuApp.GetItemById(area.USUA_CD_ID.Value);
+                Int32 idAss = (Int32)Session["IdAssinante"];
+
+                // Monta exame
+                PACIENTE_EXAMES exame = new PACIENTE_EXAMES();
+                exame.ASSI_CD_ID = pac.ASSI_CD_ID;
+                exame.LABS_CD_ID = area.LABS_CD_ID;
+                exame.PACI_CD_ID = pac.PACI__CD_ID;
+                exame.PAEX_DS_COMENTARIOS = area.AREA_TX_CONTEUDO;
+                exame.PAEX_DT_DATA = area.AREA_DT_DATA_EXAME;
+                exame.PAEX_IN_ATIVO = 1;
+                exame.PAEX_NM_NOME = area.AREA_NM_EXAME;
+                exame.TIEX_CD_ID = area.TIEX_CD_ID;
+                exame.USUA_CD_ID = usu.USUA_CD_ID;
+
+                // Grava exame
+                Int32 volta1 = baseApp.ValidateCreateExame(exame);
+
+                // Atualiza exame fisico
+                PACIENTE_EXAME_FISICOS fisico = pac.PACIENTE_EXAME_FISICOS.FirstOrDefault();
+
+                // Grava fisico
+                PACIENTE_EXAME_FISICOS fisicoG = baseApp.GetExameFisicoById(fisico.PAEF_CD_ID);
+                String frase = "===== ENTRADA GERADA AUTOMATICAMENTE =====";
+                if (fisicoG.PAEF_TX_RESULTADOS == null)
+                {
+                    fisicoG.PAEF_TX_RESULTADOS += frase + "\r\n" + "*** " + area.AREA_DT_DATA_EXAME.Value.ToLongDateString() + " ***" + "\r\n";
+                }
+                else
+                {
+                    fisicoG.PAEF_TX_RESULTADOS += "\r\n\r\n" + frase + "\r\n" + "*** " + area.AREA_DT_DATA_EXAME.Value.ToLongDateString() + " ***" + "\r\n";
+                }
+                fisicoG.PAEF_TX_RESULTADOS += ">>" + area.AREA_NM_EXAME + "<<" + "\r\n";
+                fisicoG.PAEF_TX_RESULTADOS += area.AREA_TX_CONTEUDO;
+                Int32 voltaF = baseApp.ValidateEditExameFisico(fisicoG);
+
+                // Grava historico
+                PACIENTE_HISTORICO hist = new PACIENTE_HISTORICO();
+                hist.ASSI_CD_ID = usu.ASSI_CD_ID;
+                hist.USUA_CD_ID = usu.USUA_CD_ID;
+                hist.PACI_CD_ID = pac.PACI__CD_ID;
+                hist.PAHI_DT_DATA = DateTime.Now;
+                hist.PAHI_IN_TIPO = 7;
+                hist.PAHI_IN_CHAVE = exame.PAEX_CD_ID;
+                hist.PAHI_NM_OPERACAO = "Paciente - Inclusão de Resultado de Exame";
+                hist.PAHI_DS_DESCRICAO = "Paciente " + pac.PACI_NM_NOME + " - Resultado de Exame incluído " + exame.PAEX_NM_NOME;
+                Int32 voltaHist = baseApp.ValidateCreateHistorico(hist);
+
+                // Atualiza prontuário
+                PACIENTE_ANAMNESE ana = pac.PACIENTE_ANAMNESE.Where(p => p.PAAM_IN_ATIVO == 1).FirstOrDefault();
+                PACIENTE_ANAMNESE anan = RemontarAnamnese(ana);
+
+                String velho = anan.PAAM_TX_TEXTO_LIVRE;
+                String novo = "Resultado de Exames - " + exame.PAEX_NM_NOME.ToUpper() + "\r\n";
+                novo += exame.PAEX_DS_COMENTARIOS;
+
+                String dataHoje = DateTime.Today.Date.ToLongDateString();
+                dataHoje = "*** Informado em [" + dataHoje + "] ***";
+                if (anan.PAAM_TX_TEXTO_LIVRE != null)
+                {
+                    String anot = dataHoje + "\r\n" + novo;
+                    if (velho == null & novo != String.Empty)
+                    {
+                        anan.PAAM_TX_TEXTO_LIVRE = dataHoje + "\r\n" + novo;
+                    }
+                    if (velho != null & novo != String.Empty)
+                    {
+                        String tripa = velho.Substring(velho.Length - 4, 4);
+                        if (tripa == "\r\n")
+                        {
+                            velho = velho.Substring(0, velho.Length - 4);
+                        }
+                        anan.PAAM_TX_TEXTO_LIVRE = velho + "\r\n\r\n" + dataHoje + "\r\n" + novo;
+                    }
+                }
+                else
+                {
+                    velho = anan.PAAM_TX_TEXTO_LIVRE;
+                    anan.PAAM_TX_TEXTO_LIVRE = velho;
+                }
+
+                // Configura serilização
+                JsonSerializerSettings settings = new JsonSerializerSettings
+                {
+                    ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+                    NullValueHandling = NullValueHandling.Ignore
+                };
+
+                // Monta Log
+                DTO_Paciente_Exame dto = MontarExameDTOObj(exame);
+                String json = JsonConvert.SerializeObject(dto, settings);
+                LOG log = new LOG
+                {
+                    LOG_DT_DATA = DateTime.Now,
+                    ASSI_CD_ID = usu.ASSI_CD_ID,
+                    USUA_CD_ID = usu.USUA_CD_ID,
+                    LOG_NM_OPERACAO = "Paciente - Resultado de Exame - Inclusão",
+                    LOG_IN_ATIVO = 1,
+                    LOG_TX_REGISTRO = json,
+                    LOG_IN_SISTEMA = 6
+                };
+                Int32 volta5 = logApp.ValidateCreate(log);
+
+                // Recupera documentos
+                List<AREA_PACIENTE_ANEXO> docs = area.AREA_PACIENTE_ANEXO.Where(p => p.APAN_IN_ATIVO == 1).ToList();
+
+                // Percorre documentos
+                foreach (AREA_PACIENTE_ANEXO item in docs)
+                {
+                    // Critica tamanho nome
+                    if (item.APAN_NM_TITULO.Length > 250)
+                    {
+                        Session["MensArea"] = 91;
+                        return RedirectToAction("MontarTelaAreaPacienteVer");
+                    }
+
+                    //Recupera tipo de arquivo
+                    String extensao = Path.GetExtension(item.APAN_NM_TITULO);
+                    if (!((String)Session["ExtensoesPossiveis"]).Contains(extensao.ToUpper()))
+                    {
+                        Session["MensArea"] = 92;
+                        return RedirectToAction("MontarTelaAreaPacienteVer");
+                    }
+
+                    // Copia arquivo
+                    String caminhoOrigem = "/Imagens/" + pac.ASSI_CD_ID.ToString() + "/AreaPaciente/" + item.AREA_CD_ID.ToString() + "/Anexos/";
+                    String pathOrigem = Path.Combine(Server.MapPath(caminhoOrigem), item.APAN_NM_TITULO);
+                    String caminhoDest = "/Imagens/" + pac.ASSI_CD_ID.ToString() + "/Pacientes/" + pac.PACI__CD_ID.ToString() + "/Exames/";
+                    String pathDest = Path.Combine(Server.MapPath(caminhoDest), item.APAN_NM_TITULO);
+                    System.IO.File.Copy(pathOrigem, pathDest, true);
+
+                    // Gravar registro
+                    PACIENTE_EXAME_ANEXO foto = new PACIENTE_EXAME_ANEXO();
+                    foto.PAEO_AQ_ARQUIVO = "~" + caminhoDest + item.APAN_NM_TITULO;
+                    foto.PAEO_DT_ANEXO = DateTime.Today;
+                    foto.PAEO_IN_ATIVO = 1;
+                    Int32 tipo = 3;
+                    if (extensao.ToUpper() == ".JPG" || extensao.ToUpper() == ".GIF" || extensao.ToUpper() == ".PNG" || extensao.ToUpper() == ".JPEG")
+                    {
+                        tipo = 1;
+                    }
+                    else if (extensao.ToUpper() == ".MP4" || extensao.ToUpper() == ".AVI" || extensao.ToUpper() == ".MPEG")
+                    {
+                        tipo = 2;
+                    }
+                    else if (extensao.ToUpper() == ".PDF")
+                    {
+                        tipo = 3;
+                    }
+                    else if (extensao.ToUpper() == ".MP3" || extensao.ToUpper() == ".MPEG")
+                    {
+                        tipo = 4;
+                    }
+                    else if (extensao.ToUpper() == ".DOCX" || extensao.ToUpper() == ".DOC" || extensao.ToUpper() == ".ODT")
+                    {
+                        tipo = 5;
+                    }
+                    else if (extensao.ToUpper() == ".XLSX" || extensao.ToUpper() == ".XLS" || extensao.ToUpper() == ".ODS")
+                    {
+                        tipo = 6;
+                    }
+                    else
+                    {
+                        tipo = 7;
+                    }
+                    foto.PAEO_IN_TIPO = tipo;
+                    foto.PAEO_NM_TITULO = item.APAN_NM_TITULO;
+                    foto.PAEX_CD_ID = exame.PAEX_CD_ID;
+                    foto.PACI_CD_ID = pac.PACI__CD_ID;
+
+                    exame.PACIENTE_EXAME_ANEXO.Add(foto);
+                    Int32 volta2 = await baseApp.ValidateEditExameAsync(exame);
+                }
+
+                // Atualiza area do paciente
+                area.AREA_IN_VISTA = 1;
+                area.AREA_IN_PROCESSADA = 1;
+                area.AREA_DT_PROCESSO = DateTime.Now;
+                Int32 volta = areaApp.ValidateEdit(area);
+
+                Session["MsgCRUD"] = "O resultado de exame enviado pelo(a) paciente " + pac.PACI_NM_NOME.ToUpper() + " foi anexado com sucesso";
+                Session["MensArea"] = 61;
+                Session["ListaAreaPaciente"] = null;
+                Session["AreaPacienteAlterada"] = 1;
+                Session["AreaPacientes"] = null;
+
+                return RedirectToAction("MontarTelaAreaPacienteVer", "AreaPaciente");
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "AreaPaciente";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "AreaPaciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return RedirectToAction("TrataExcecao", "BaseAdmin");
+            }
+        }
+
+        public DTO_Paciente_Exame MontarExameDTOObj(PACIENTE_EXAMES l)
+        {
+            using (var context = new CRMSysDBEntities())
+            {
+                var mediDTO = new DTO_Paciente_Exame()
+                {
+                    ASSI_CD_ID = l.ASSI_CD_ID,
+                    LABS_CD_ID = l.LABS_CD_ID,
+                    PACO_CD_ID = l.PACO_CD_ID,
+                    PAEX_AQ_ARQUIVO = l.PAEX_AQ_ARQUIVO,
+                    PAEX_CD_ID = l.PAEX_CD_ID,
+                    PAEX_DS_COMENTARIOS = l.PAEX_DS_COMENTARIOS,
+                    PAEX_DS_DIAGNOSTICO = l.PAEX_DS_DIAGNOSTICO,
+                    PAEX_DT_DATA = l.PAEX_DT_DATA,
+                    PAEX_DT_DUMMY = l.PAEX_DT_DUMMY,
+                    PAEX_IN_ATIVO = l.PAEX_IN_ATIVO,
+                    PAEX_IN_TIPO = l.PAEX_IN_TIPO,
+                    PAEX_NM_NOME = l.PAEX_NM_NOME,
+                    PASO_CD_ID = l.PASO_CD_ID,
+                    TIEX_CD_ID = l.TIEX_CD_ID,
+                    USUA_CD_ID = l.USUA_CD_ID,
+                    PACI_CD_ID = l.PACI_CD_ID,
+                };
+                return mediDTO;
+            }
+
+        }
+
+        [HttpGet]
+        public ActionResult ProcessarResultadoExameTela(Int32 id)
+        {
+            try
+            {
+                // Verifica se tem usuario logado
+                USUARIO usuario = new USUARIO();
+                if ((String)Session["Ativa"] == null)
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+                if ((USUARIO)Session["UserCredentials"] != null)
+                {
+                    usuario = (USUARIO)Session["UserCredentials"];
+
+                    // Verfifica permissão
+                    if (usuario.PERFIL.PERF_IN_EXAME_ALTERAR == 0)
+                    {
+                        Session["MensPermissao"] = 2;
+                        Session["ModuloPermissao"] = "Paciente - Exames - Edição";
+                        return RedirectToAction("VoltarAnexoPaciente");
+                    }
+                }
+                else
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+                Int32 idAss = (Int32)Session["IdAssinante"];
+                Session["ModuloAtual"] = "Exames - Edição";
+
+                // Recupera area e paciente
+                AREA_PACIENTE area = areaApp.GetItemById(id);
+                PACIENTE pac = baseApp.GetItemById(area.PACI_CD_ID.Value);
+                USUARIO usu = usuApp.GetItemById(area.USUA_CD_ID.Value);
+
+                // Trata mensagens
+                if (Session["MensArea"] != null)
+                {
+                    // Mensagem
+                    if ((Int32)Session["MensArea"] == 5)
+                    {
+                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0535", CultureInfo.CurrentCulture));
+                    }
+                    if ((Int32)Session["MensArea"] == 6)
+                    {
+                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0024", CultureInfo.CurrentCulture));
+                    }
+                    if ((Int32)Session["MensArea"] == 7)
+                    {
+                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0431", CultureInfo.CurrentCulture));
+                    }
+                    if ((Int32)Session["MensArea"] == 12)
+                    {
+                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0535", CultureInfo.CurrentCulture));
+                    }
+                    if ((Int32)Session["MensArea"] == 69)
+                    {
+                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0539", CultureInfo.CurrentCulture));
+                    }
+                    if ((Int32)Session["MensArea"] == 70)
+                    {
+                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0540", CultureInfo.CurrentCulture));
+                    }
+                    if ((Int32)Session["MensArea"] == 61)
+                    {
+                        TempData["MensagemAcerto"] = (String)Session["MsgCRUD"];
+                        TempData["TemMensagem"] = 1;
+                    }
+                }
+
+                // Prepara view
+                // Monta exame
+                PACIENTE_EXAMES exame = new PACIENTE_EXAMES();
+                exame.ASSI_CD_ID = pac.ASSI_CD_ID;
+                exame.LABS_CD_ID = area.LABS_CD_ID;
+                exame.PACI_CD_ID = pac.PACI__CD_ID;
+                exame.PAEX_DS_COMENTARIOS = area.AREA_TX_CONTEUDO;
+                exame.PAEX_DT_DATA = area.AREA_DT_DATA_EXAME;
+                exame.PAEX_IN_ATIVO = 1;
+                exame.PAEX_NM_NOME = area.AREA_NM_EXAME;
+                exame.TIEX_CD_ID = area.TIEX_CD_ID;
+                exame.USUA_CD_ID = usu.USUA_CD_ID;
+                exame.PACIENTE = pac;
+                exame.PAEX_DT_DUMMY = area.AREA_DT_ENTRADA;
+
+                // Recupera documentos
+                List<AREA_PACIENTE_ANEXO> docs = area.AREA_PACIENTE_ANEXO.Where(p => p.APAN_IN_ATIVO == 1).ToList();
+                foreach (AREA_PACIENTE_ANEXO item in docs)
+                {
+                    // Gravar registro
+                    String extensao = Path.GetExtension(item.APAN_NM_TITULO);
+                    PACIENTE_EXAME_ANEXO foto = new PACIENTE_EXAME_ANEXO();
+                    foto.PAEO_AQ_ARQUIVO = item.APAN_AQ_ARQUIVO;
+                    foto.PAEO_DT_ANEXO = DateTime.Today;
+                    foto.PAEO_IN_ATIVO = 1;
+                    Int32 tipo = 3;
+                    if (extensao.ToUpper() == ".JPG" || extensao.ToUpper() == ".GIF" || extensao.ToUpper() == ".PNG" || extensao.ToUpper() == ".JPEG")
+                    {
+                        tipo = 1;
+                    }
+                    else if (extensao.ToUpper() == ".MP4" || extensao.ToUpper() == ".AVI" || extensao.ToUpper() == ".MPEG")
+                    {
+                        tipo = 2;
+                    }
+                    else if (extensao.ToUpper() == ".PDF")
+                    {
+                        tipo = 3;
+                    }
+                    else if (extensao.ToUpper() == ".MP3" || extensao.ToUpper() == ".MPEG")
+                    {
+                        tipo = 4;
+                    }
+                    else if (extensao.ToUpper() == ".DOCX" || extensao.ToUpper() == ".DOC" || extensao.ToUpper() == ".ODT")
+                    {
+                        tipo = 5;
+                    }
+                    else if (extensao.ToUpper() == ".XLSX" || extensao.ToUpper() == ".XLS" || extensao.ToUpper() == ".ODS")
+                    {
+                        tipo = 6;
+                    }
+                    else
+                    {
+                        tipo = 7;
+                    }
+                    foto.PAEO_IN_TIPO = tipo;
+                    foto.PAEO_NM_TITULO = item.APAN_NM_TITULO;
+                    foto.PAEX_CD_ID = exame.PAEX_CD_ID;
+                    foto.PACI_CD_ID = pac.PACI__CD_ID;
+                    exame.PACIENTE_EXAME_ANEXO.Add(foto);
+                }
+
+                Session["IdPaciente"] = pac.PACI__CD_ID;
+                PacienteExameViewModel vm = Mapper.Map<PACIENTE_EXAMES, PacienteExameViewModel>(exame);
+
+                // Grava Acesso
+                ControleAcessoMetodo grava = new ControleAcessoMetodo(aceApp);
+                Int32 voltaX = grava.GravaAcesso(usuario.USUA_CD_ID, usuario.ASSI_CD_ID, "PACIENTE_EXAME_EDITAR", "Paciente", "EditarExame");
+                return View(vm);
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "AreaPaciente";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "AreaPaciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return RedirectToAction("TrataExcecao", "BaseAdmin");
+            }
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult EditarExame(PacienteExameViewModel vm)
+        {
+            if ((String)Session["Ativa"] == null)
+            {
+                return RedirectToAction("Logout", "ControleAcesso");
+            }
+            USUARIO usuarioLogado = (USUARIO)Session["UserCredentials"];
+            ViewBag.TipoExame = new SelectList(CarregaTipoExame(), "TIEX_CD_ID", "TIEX_NM_NOME");
+            ViewBag.Labs = new SelectList(CarregaLaboratorio(), "LABS_CD_ID", "LABS_NM_NOME");
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    // Sanitização
+                    vm.PAEX_NM_NOME = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(vm.PAEX_NM_NOME);
+                    vm.PAEX_DS_COMENTARIOS = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(vm.PAEX_DS_COMENTARIOS);
+                    vm.PAEX_DS_DIAGNOSTICO = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(vm.PAEX_DS_DIAGNOSTICO);
+
+                    // Executa a operação
+                    PACIENTE_EXAMES item = Mapper.Map<PacienteExameViewModel, PACIENTE_EXAMES>(vm);
+                    Int32 volta = baseApp.ValidateEditExame(item);
+
+                    // Acerta consulta
+                    if (item.PACO_CD_ID != null)
+                    {
+                        // Recupera consulta
+                        PACIENTE_CONSULTA consulta = baseApp.GetConsultaById(item.PACO_CD_ID.Value);
+                        Session["IdConsulta"] = consulta.PACO_CD_ID;
+
+                        // Recupera exame fisico da consulta
+                        PACIENTE paci = baseApp.GetItemById(consulta.PACI_CD_ID);
+                        PACIENTE_EXAME_FISICOS fisico = paci.PACIENTE_EXAME_FISICOS.FirstOrDefault();
+
+                        // Grava fisico
+                        PACIENTE_EXAME_FISICOS fisicoG = baseApp.GetExameFisicoById(fisico.PAEF_CD_ID);
+                        if (fisicoG.PAEF_TX_RESULTADOS == null)
+                        {
+                            fisicoG.PAEF_TX_RESULTADOS += "*** ALTERAÇÃO *** " + item.PAEX_DT_DATA.Value.ToLongDateString() + " ***" + "\r\n";
+                        }
+                        else
+                        {
+                            fisicoG.PAEF_TX_RESULTADOS += "\r\n\r\n" + "*** ALTERAÇÃO *** " + item.PAEX_DT_DATA.Value.ToLongDateString() + " ***" + "\r\n";
+                        }
+                        fisicoG.PAEF_TX_RESULTADOS += ">>" + item.PAEX_NM_NOME + "<<" + "\r\n";
+                        fisicoG.PAEF_TX_RESULTADOS += item.PAEX_DS_COMENTARIOS;
+                        Int32 voltaF = baseApp.ValidateEditExameFisico(fisicoG);
+                    }
+
+                    // Verifica retorno
+                    Session["IdExame"] = item.PAEX_CD_ID;
+                    Session["PacienteAlterada"] = 1;
+                    Session["NivelPaciente"] = 7;
+                    Session["NivelExame"] = 1;
+                    Session["ExamesAlterada"] = 1;
+                    Session["IdPaciente"] = item.PACI_CD_ID;
+                    Session["ListaExames"] = null;
+                    Session["ListaExame"] = null;
+
+                    // Configura serilização
+                    JsonSerializerSettings settings = new JsonSerializerSettings
+                    {
+                        ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+                        NullValueHandling = NullValueHandling.Ignore
+                    };
+
+                    // Monta Log
+                    DTO_Paciente_Exame dto = MontarExameDTOObj(item);
+                    String json = JsonConvert.SerializeObject(dto, settings);
+                    DTO_Paciente_Exame dtoAntes = MontarExameDTOObj((PACIENTE_EXAMES)Session["Exame"]);
+                    String jsonAntes = JsonConvert.SerializeObject(dtoAntes, settings);
+                    LOG log = new LOG
+                    {
+                        LOG_DT_DATA = DateTime.Now,
+                        ASSI_CD_ID = usuarioLogado.ASSI_CD_ID,
+                        USUA_CD_ID = usuarioLogado.USUA_CD_ID,
+                        LOG_NM_OPERACAO = "Paciente - Resultado de Exame - Alteração",
+                        LOG_IN_ATIVO = 1,
+                        LOG_TX_REGISTRO = json,
+                        LOG_TX_REGISTRO_ANTES = jsonAntes,
+                        LOG_IN_SISTEMA = 6
+                    };
+                    Int32 volta1 = logApp.ValidateCreate(log);
+
+                    // Grava historico
+                    PACIENTE_HISTORICO hist = new PACIENTE_HISTORICO();
+                    PACIENTE pac = baseApp.GetItemById(item.PACI_CD_ID);
+                    hist.ASSI_CD_ID = usuarioLogado.ASSI_CD_ID;
+                    hist.USUA_CD_ID = usuarioLogado.USUA_CD_ID;
+                    hist.PACI_CD_ID = item.PACI_CD_ID;
+                    hist.PAHI_DT_DATA = DateTime.Now;
+                    hist.PAHI_IN_TIPO = 7;
+                    hist.PAHI_IN_CHAVE = item.PAEX_CD_ID;
+                    hist.PAHI_NM_OPERACAO = "Paciente - Alteração de Resultado de Exame";
+                    hist.PAHI_DS_DESCRICAO = "Paciente " + pac.PACI_NM_NOME + " - Resultado de Exame alterado " + item.PAEX_NM_NOME;
+                    Int32 voltaHist = baseApp.ValidateCreateHistorico(hist);
+
+                    // Mensagem do CRUD
+                    Session["MsgCRUD"] = "O resultado de exame " + item.PAEX_NM_NOME.ToUpper() + " do(a) paciente " + pac.PACI_NM_NOME.ToUpper() + " foi alterado com sucesso.";
+                    Session["MensPaciente"] = 61;
+
+                    // Retorno
+                    Int32 s = (Int32)Session["VoltarPesquisa"];
+                    if ((Int32)Session["VoltarPesquisa"] == 1)
+                    {
+                        return RedirectToAction("PesquisarTudo", "BaseAdmin");
+                    }
+                    if ((Int32)Session["ModoConsulta"] == 1)
+                    {
+                        return RedirectToAction("VerListaExameConsulta");
+                    }
+                    if ((Int32)Session["VoltarExameConsulta"] == 1)
+                    {
+                        return RedirectToAction("VerListaExameConsulta");
+                    }
+                    if ((Int32)Session["TipoSolicitacao"] == 1)
+                    {
+                        if ((Int32)Session["VoltaAtestado"] == 1)
+                        {
+                            return RedirectToAction("MontarTelaCentralPaciente");
+                        }
+                        return RedirectToAction("VoltarAnexoPaciente");
+                    }
+                    if ((Int32)Session["TipoSolicitacao"] == 4)
+                    {
+                        return RedirectToAction("MontarTelaExames");
+                    }
+                    return RedirectToAction("MontarTelaExames");
+                }
+                catch (Exception ex)
+                {
+                    ViewBag.Message = ex.Message;
+                    Session["TipoVolta"] = 2;
+                    Session["VoltaExcecao"] = "Paciente";
+                    Session["Excecao"] = ex;
+                    Session["ExcecaoTipo"] = ex.GetType().ToString();
+                    GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                    Int32 voltaX = grava.GravarLogExcecao(ex, "Paciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                    return RedirectToAction("TrataExcecao", "BaseAdmin");
+                }
+            }
+            else
+            {
+                return View(vm);
             }
         }
 

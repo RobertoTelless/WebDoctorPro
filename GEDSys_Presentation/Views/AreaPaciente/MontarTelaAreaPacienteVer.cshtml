@@ -127,6 +127,32 @@
         </div>
     </div>
 
+    <div class="modal inmodal fade" id="modalConfirmacaoExame" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header" style="position: relative; padding: 30px 15px;">
+                    <img src="@Url.Content("~/Images/Prontuario/prontuario_icon_3.png?v=1.1")" 
+                         style="position: absolute; left: 15px; top: 15px; width: 40px; height: auto;" 
+                         alt="Ícone" />
+
+                    <i class="fa fa-check-circle modal-icon text-primary" style="display: block;"></i>
+                    <h4 class="modal-title">Resultado de Exames</h4>
+                    <small class="font-bold">WebDoctorPro - Área do Paciente</small>
+                </div>
+            
+                <div class="modal-body text-center">
+                    <h4>Tem certeza que deseja incluir esse resultado de exame e seus anexos ao paciente?</h4>
+                    <p>Esta ação não poderá ser desfeita e os registros serão atualizados no sistema.</span></p>
+                </div>
+            
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-white" data-dismiss="modal">Voltar</button>
+                    <button type="button" class="btn btn-primary" id="btnDocumentoSubmit">Confirmar Anexação</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="page-title">
         <h3 class="title">Área do Paciente</h3>
         <br />
@@ -218,7 +244,7 @@
                             <div class="col-lg-12 col-md-12 col-xs-12">
                                 @Html.ButtonActionSubmit(text: "Filtrar", htmlAttributes: new { @class = "btn-loading1" })
                                 <a href="@Url.Action("RetirarFiltroAreaPaciente", "AreaPaciente")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Retorna a exibição padrão da área do paciente" class="btn btn-sm btn-warning btn-loading" id="emp" OnClick = "Fade()">Retirar Filtro</a>                
-                                <a href="@Url.Action("EnviarMensagemPaciente", "AreaPaciente")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Envia mensagem para o paciente" class="btn btn-sm btn-warning btn-loading" id="emp" OnClick = "Fade()">Enviar Mensagem</a>                
+                                <a href="@Url.Action("EnviarEMailPaciente", "AreaPaciente")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Envia mensagem para o paciente" class="btn btn-sm btn-warning btn-loading" id="emp" OnClick = "Fade()">Enviar Mensagem</a>                
                                 @Html.ButtonLinkIndex(text: "Voltar", controller: "Paciente", action: "MontarTelaPaciente", htmlAttributes: new { @class = "btn-loading" })
                                 <span id="loadingIndicator" style="display: none; margin-left: 10px; color: #007bff;">
                                     <i class="fa fa-spinner fa-spin"></i> Processando...
@@ -244,13 +270,13 @@
                                 <button type="button" class="close" data-dismiss="alert">Fechar</button>
                                 @Html.ValidationSummary(false, "", new { @class = "text-danger" })
                             </div>}
-                        @if (TempData["TemMensagem"] != null)
+                        @*@if (TempData["TemMensagem"] != null)
                         {
                             <div class="alert alert-success">
                                 <button type="button" class="close" data-dismiss="alert">Fechar</button>
                                 <span>@TempData["MensagemAcerto"]</span>
                             </div>
-                        }                    
+                        }*@                    
                         <div class="row">
                             @if (ViewBag.ListasAreas != null && (ViewBag.ListasAreas as List<EntitiesServices.Model.AREA_PACIENTE>).Count > 0)
                             {
@@ -269,7 +295,7 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @foreach (var cond in (ViewBag.ListasAreas as List<EntitiesServices.Model.AREA_PACIENTE>).OrderByDescending(p => p.AREA_DT_ENTRADA))
+                                        @foreach (var cond in (ViewBag.ListasAreas as List<EntitiesServices.Model.AREA_PACIENTE>).OrderByDescending(p => p.AREA_DT_ENTRADA).ToList())
                                         {
                                             <tr>
                                                 <td>
@@ -402,7 +428,14 @@
                                                             }
                                                             else if (cond.AREA_IN_TIPO_EXAME == 3)
                                                             {
-                                                                @Html.TableLinkDetails(cond.AREA_CD_ID, "ProcessarResultadoExame", "fa-gears", "Processar Resultado")
+                                                                <button type="button" 
+                                                                        class="btn btn-xs btn-link btn-disparar-modal-tabela_4" 
+                                                                        data-id="@cond.AREA_CD_ID" 
+                                                                        title="Processar  Resultado de Exame"
+                                                                        id="btnExameSubmit"
+                                                                        style="padding: 3px; color: #337ab7;">
+                                                                        <i class="fa fa-gears" style="font-size: 17px; margin-left: -5px;"></i>
+                                                                </button>
                                                             }
                                                             else if (cond.AREA_IN_TIPO_EXAME == 4)
                                                             {
@@ -464,6 +497,35 @@
     @Styles.Render("~/Content/plugins/dataTables/dataTablesStyles")
     @Styles.Render("~/plugins/jasnyBootstrapStyles")
     @Styles.Render("~/plugins/toastrStyles")
+
+    <style>
+        /* 1. Aumenta a largura e garante o espaço interno */
+        #toast-container > .toast {
+            width: 500px !important; 
+            max-width: 500px !important;
+            opacity: 0.95 !important;
+        }
+
+        /* 2. Remove o ícone nativo do Toastr (Background Image) */
+        #toast-container > .toast-success {
+            background-image: none !important;
+        }
+
+        /* 3. Remove ícones do FontAwesome/Inspinia injetados via ::before no Título */
+        .toast-success .toast-title::before, 
+        .toast-success .toast-title::after,
+        .toast-success::before {
+            content: none !important;
+            display: none !important;
+        }
+
+        /* 4. Ajusta o recuo do texto já que removemos o ícone */
+        .toast-success .toast-title, 
+        .toast-success .toast-message {
+            padding-left: 10px !important;
+        }
+    </style>
+
 }
 @section Scripts {
     @Scripts.Render("~/plugins/toastr")
@@ -587,6 +649,7 @@
                 pageLength: 25,
                 dom: '<"html5buttons"B>lTfgitp',
                 // --- NOVO BLOCO DE CONFIGURAÇÃO ---
+                order: [[0, 'desc']],
                 columnDefs: [
                     {
                          "type": "date-eu", 
@@ -691,36 +754,30 @@
         });
     });
 
-    $('#btnConfirmarSubmit').click(function (e) {
+    $('#btnConfirmarSubmit').off('click').click(function (e) {
         e.preventDefault();
-    
         var $btn = $(this);
-        var idLocacao = $('#hiddenIdLocacao').val(); // O ID que capturamos da tabela
+        var idLocacao = $('#hiddenIdLocacao').val();
 
-        // 1. Feedback visual
         $btn.prop('disabled', true).addClass('disabled');
         $btn.html('<i class="fa fa-spinner fa-spin"></i> Processando...');
 
-        // 2. Chamada AJAX para o Controller
         $.ajax({
             url: '@Url.Action("ProcessarInfoConsultaPlano", "AreaPaciente")',
             type: 'POST',
             data: { id: idLocacao },
-            success: function (response) {
-                $modal.modal('hide');
-            
-                // 3. Feedback de sucesso e recarregamento
-                // Se você usar Toastr: toastr.success("Processado com sucesso!");
-                setTimeout(function () {
-                    window.location.reload(); 
-                }, 500);
+            success: function () {
+                $('#modalConfirmacaoInfo').modal('hide');
+                // Redireciona para garantir a atualização da Session e da lista
+                window.location.href = '@Url.Action("MontarTelaAreaPacienteVer", "AreaPaciente")';
             },
             error: function (xhr, status, error) {
                 $btn.prop('disabled', false).removeClass('disabled').html('Confirmar Informações');
-                alert("Erro ao processar: " + error);
+                alert("Erro ao processar informações: " + error);
             }
         });
     });
+
 </script>
 
 <script type="text/javascript">
@@ -771,36 +828,28 @@
         });
     });
 
-    $('#btnAnexarSubmit').click(function (e) {
-        e.preventDefault();
-    
-        var $btn = $(this);
-        var idLocacao = $('#hiddenIdLocacao').val(); // O ID que capturamos da tabela
+$('#btnAnexarSubmit').off('click').click(function (e) {
+    e.preventDefault();
+    var $btn = $(this);
+    var idLocacao = $('#hiddenIdLocacao').val();
 
-        // 1. Feedback visual
-        $btn.prop('disabled', true).addClass('disabled');
-        $btn.html('<i class="fa fa-spinner fa-spin"></i> Processando...');
+    $btn.prop('disabled', true).addClass('disabled');
+    $btn.html('<i class="fa fa-spinner fa-spin"></i> Processando...');
 
-        // 2. Chamada AJAX para o Controller
-        $.ajax({
-            url: '@Url.Action("ProcessarContratoLocacao", "AreaPaciente")',
-            type: 'POST',
-            data: { id: idLocacao },
-            success: function (response) {
-                $modal.modal('hide');
-            
-                // 3. Feedback de sucesso e recarregamento
-                // Se você usar Toastr: toastr.success("Processado com sucesso!");
-                setTimeout(function () {
-                    window.location.reload(); 
-                }, 500);
-            },
-            error: function (xhr, status, error) {
-                $btn.prop('disabled', false).removeClass('disabled').html('Confirmar Anexação');
-                alert("Erro ao processar: " + error);
-            }
-        });
+    $.ajax({
+        url: '@Url.Action("ProcessarContratoLocacao", "AreaPaciente")',
+        type: 'POST',
+        data: { id: idLocacao },
+        success: function () {
+            $('#modalConfirmacaoContrato').modal('hide');
+            window.location.href = '@Url.Action("MontarTelaAreaPacienteVer", "AreaPaciente")';
+        },
+        error: function (xhr, status, error) {
+            $btn.prop('disabled', false).removeClass('disabled').html('Confirmar Anexação');
+            alert("Erro ao processar contrato: " + error);
+        }
     });
+});
 </script>
 
 <script type="text/javascript">
@@ -851,33 +900,25 @@
         });
     });
 
-    $('#btnDistratoSubmit').click(function (e) {
+    $('#btnDistratoSubmit').off('click').click(function (e) {
         e.preventDefault();
-    
         var $btn = $(this);
-        var idLocacao = $('#hiddenIdLocacao').val(); // O ID que capturamos da tabela
+        var idLocacao = $('#hiddenIdLocacao').val();
 
-        // 1. Feedback visual
         $btn.prop('disabled', true).addClass('disabled');
         $btn.html('<i class="fa fa-spinner fa-spin"></i> Processando...');
 
-        // 2. Chamada AJAX para o Controller
         $.ajax({
             url: '@Url.Action("ProcessarDistratoLocacao", "AreaPaciente")',
             type: 'POST',
             data: { id: idLocacao },
-            success: function (response) {
-                $modal.modal('hide');
-            
-                // 3. Feedback de sucesso e recarregamento
-                // Se você usar Toastr: toastr.success("Processado com sucesso!");
-                setTimeout(function () {
-                    window.location.reload(); 
-                }, 500);
+            success: function () {
+                $('#modalConfirmacaoDistrato').modal('hide');
+                window.location.href = '@Url.Action("MontarTelaAreaPacienteVer", "AreaPaciente")';
             },
             error: function (xhr, status, error) {
                 $btn.prop('disabled', false).removeClass('disabled').html('Confirmar Anexação');
-                alert("Erro ao processar: " + error);
+                alert("Erro ao processar distrato: " + error);
             }
         });
     });
@@ -931,7 +972,7 @@
         });
     });
 
-    $('#btnDocumentoSubmit').click(function (e) {
+    @*$('#btnDocumentoSubmit').click(function (e) {
         e.preventDefault();
     
         var $btn = $(this);
@@ -960,8 +1001,193 @@
                 alert("Erro ao processar: " + error);
             }
         });
+    });*@
+
+    $('#btnDocumentoSubmit').click(function (e) {
+        e.preventDefault();
+    
+        var $btn = $(this);
+        var idLocacao = $('#hiddenIdLocacao').val(); 
+
+        // 1. Feedback visual
+        $btn.prop('disabled', true).addClass('disabled');
+        $btn.html('<i class="fa fa-spinner fa-spin"></i> Processando...');
+
+        // 2. Chamada AJAX
+        $.ajax({
+            url: '@Url.Action("ProcessarDocumento", "AreaPaciente")',
+            type: 'POST',
+            data: { id: idLocacao },
+            success: function (response) {
+                // FECHE A MODAL AQUI
+                $('#modalConfirmacaoDocumento').modal('hide');
+            
+                // IMPORTANTE: Em vez de reload, force o redirecionamento para a URL correta 
+                // para limpar o cache de POST do navegador
+                window.location.href = '@Url.Action("MontarTelaAreaPacienteVer", "AreaPaciente")';
+            },
+            error: function (xhr, status, error) {
+                $btn.prop('disabled', false).removeClass('disabled').html('Confirmar Anexação');
+                alert("Erro ao processar: " + error);
+            }
+        });
+    
+        // REMOVA OU COMENTE QUALQUER LINHA QUE DIGA: 
+        // document.getElementById('pwd-container1').submit(); 
+        // Isso é o que causa o duplo carregamento!
     });
 </script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            // Configurações globais do Toastr
+            toastr.options = {
+                "closeButton": true,
+                //"debug": false,
+                "progressBar": true,
+                "preventDuplicates": false,
+                "positionClass": "toast-top-right",
+                "onclick": null,
+                "showDuration": "400",
+                "hideDuration": "1000",
+                "timeOut": "15000",
+                "extendedTimeOut": "5000",
+                "showEasing": "swing",
+                "hideEasing": "linear",
+                "showMethod": "fadeIn",
+                "hideMethod": "fadeOut"
+            //    "iconClass": "customer-toast-info", // Se quiser remover o ícone padrão totalmente
+            //    "titleClass": "toast-title",
+            //    "messageClass": "toast-message"
+            };
+
+            // Verifica se existe mensagem de sucesso no TempData (vinda do Redirect)
+            var msgSucesso = '@TempData["MensagemAcerto"]';
+            if (msgSucesso != '') {
+                toastr.success(msgSucesso, 'Sucesso!');
+            }
+
+            // Verifica se existe mensagem de erro
+            var msgErro = '@TempData["MensagemErro"]';
+            if (msgErro != '') {
+                toastr.error(msgErro, 'Erro!');
+            }
+        });
+    </script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            var $modal = $('#modalConfirmacaoExame');
+            var $form = $('#pwd-container1');
+            var $hiddenId = $('#hiddenIdLocacao');
+
+            // 1. Captura o clique nos botões DENTRO da tabela
+            // Usamos delegação (.on) caso a tabela seja dinâmica (DataTables)
+            $('body').on('click', '.btn-disparar-modal-tabela_4', function () {
+                var idDaLinha = $(this).data('id');
+                $hiddenId.val(idDaLinha);
+                $modal.modal('show');
+            });
+
+            // 2. Ação de confirmar DENTRO da modal (Mantivemos sua lógica, apenas ajustamos o submit)
+            $('#btnExameSubmit').click(function (e) {
+                e.preventDefault();
+
+                var $btn = $(this);
+
+                // Feedback visual no botão da modal
+                $btn.prop('disabled', true).addClass('disabled');
+                $btn.html('<i class="fa fa-spinner fa-spin"></i> Processando...');
+
+                // Esconde a modal
+                $modal.modal('hide');
+
+                // 3. Limpeza e Submit
+                setTimeout(function () {
+                    // Limpeza de resíduos do template
+                    $('.modal-backdrop').remove();
+                    $('body').removeClass('modal-open').css('padding-right', '');
+                
+                    // Submit via DOM puro do formulário que agora contém o ID correto
+                    document.getElementById('pwd-container1').submit();
+                }, 400);
+            });
+
+            // Segurança: limpa resíduos se fechar no "X" ou clicar fora
+            $modal.on('hidden.bs.modal', function () {
+                // Opcional: Limpa o ID se a pessoa desistir
+                $hiddenId.val(''); 
+            
+                $('.modal-backdrop').remove();
+                $('body').removeClass('modal-open');
+            });
+        });
+
+        @*$('#btnDocumentoSubmit').click(function (e) {
+            e.preventDefault();
+    
+            var $btn = $(this);
+            var idLocacao = $('#hiddenIdLocacao').val(); // O ID que capturamos da tabela
+
+            // 1. Feedback visual
+            $btn.prop('disabled', true).addClass('disabled');
+            $btn.html('<i class="fa fa-spinner fa-spin"></i> Processando...');
+
+            // 2. Chamada AJAX para o Controller
+            $.ajax({
+                url: '@Url.Action("ProcessarDocumento", "AreaPaciente")',
+                type: 'POST',
+                data: { id: idLocacao },
+                success: function (response) {
+                    $modal.modal('hide');
+            
+                    // 3. Feedback de sucesso e recarregamento
+                    // Se você usar Toastr: toastr.success("Processado com sucesso!");
+                    setTimeout(function () {
+                        window.location.reload(); 
+                    }, 500);
+                },
+                error: function (xhr, status, error) {
+                    $btn.prop('disabled', false).removeClass('disabled').html('Confirmar Anexação');
+                    alert("Erro ao processar: " + error);
+                }
+            });
+        });*@
+
+        $('#btnExameSubmit').click(function (e) {
+            e.preventDefault();
+    
+            var $btn = $(this);
+            var idLocacao = $('#hiddenIdLocacao').val(); 
+
+            // 1. Feedback visual
+            $btn.prop('disabled', true).addClass('disabled');
+            $btn.html('<i class="fa fa-spinner fa-spin"></i> Processando...');
+
+            // 2. Chamada AJAX
+            $.ajax({
+                url: '@Url.Action("ProcessarResultadoExame", "AreaPaciente")',
+                type: 'POST',
+                data: { id: idLocacao },
+                success: function (response) {
+                    // FECHE A MODAL AQUI
+                    $('#modalConfirmacaoExame').modal('hide');
+            
+                    // IMPORTANTE: Em vez de reload, force o redirecionamento para a URL correta 
+                    // para limpar o cache de POST do navegador
+                    window.location.href = '@Url.Action("MontarTelaAreaPacienteVer", "AreaPaciente")';
+                },
+                error: function (xhr, status, error) {
+                    $btn.prop('disabled', false).removeClass('disabled').html('Confirmar Anexação');
+                    alert("Erro ao processar: " + error);
+                }
+            });
+    
+            // REMOVA OU COMENTE QUALQUER LINHA QUE DIGA: 
+            // document.getElementById('pwd-container1').submit(); 
+            // Isso é o que causa o duplo carregamento!
+        });
+    </script>
 
 }
 

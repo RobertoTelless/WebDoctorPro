@@ -22,6 +22,7 @@ namespace ERP_Condominios_Solution.ViewModels
         public Nullable<int> PETA_CD_ID { get; set; }
         public Nullable<int> PESQ_CD_ID { get; set; }
         public Nullable<int> TEPR_CD_ID { get; set; }
+        public Nullable<int> PACI__CD_ID { get; set; }
         public string MENS_GU_GUID { get; set; }
         [Required(ErrorMessage = "Campo TIPO DE MENSAGEM obrigatorio")]
         public Nullable<int> MENS_IN_TIPO { get; set; }

@@ -1254,6 +1254,7 @@
     <Content Include="Imagens\1\Filial\2\Logo\favicon_SystemBR.jpg" />
     <Content Include="Imagens\1\Filial\3\Logo\bz.jpg" />
     <Content Include="Imagens\1\Locacao\100\QRCode\Contrato_QRCode_d6phm84n0005107j8g7g.png" />
+    <Content Include="Imagens\1\Locacao\101\QRCode\Contrato_QRCode_d6s3f3sn00096v3n8s40.png" />
     <Content Include="Imagens\1\Locacao\74\QRCode\Contrato_QRCode_d4gcnhkn000c5t6n1560.png" />
     <Content Include="Imagens\1\Locacao\75\QRCode\Contrato_QRCode_d4gcr4sn000c5t6n159g.png" />
     <Content Include="Imagens\1\Locacao\76\Anexos\haddock_1.jpg" />
@@ -1440,6 +1441,7 @@
     <Content Include="Imagens\1\Pacientes\33\Anexos\EEG_2.jpg" />
     <Content Include="Imagens\1\Pacientes\33\Anexos\naps2-7.5.1-win.exe" />
     <Content Include="Imagens\1\Pacientes\33\Fotos\Severide.jpg" />
+    <Content Include="Imagens\1\Pacientes\34\Anexos\AmorinhaLinda.png" />
     <Content Include="Imagens\1\Pacientes\34\Exames\RX_Braco.jpeg" />
     <Content Include="Imagens\1\Pacientes\34\Exames\TOMO_2.jpg" />
     <Content Include="Imagens\1\Pacientes\34\Exames\US_Abdomem.jpg" />
@@ -4040,6 +4042,9 @@
     <Content Include="Imagens\1\Locacao\100\Contrato\Contrato_LocacaoRowan Atkinson_d6phm84n0005107j8g7g.pdf" />
     <Content Include="Imagens\1\Locacao\100\Distrato\Distrato_LocacaoRowan Atkinson_d6phm84n0005107j8g7g.pdf" />
     <Content Include="Imagens\1\Locacao\100\Assinado\Distrato_LocacaoROWAN ATKINSON_d6phm84n0005107j8g7g_Assinado.pdf" />
+    <Content Include="Imagens\1\Locacao\101\Assinado\Contrato_LocacaoHANK VOIGHT_d6s3f3sn00096v3n8s40_Assinado.pdf" />
+    <Content Include="Imagens\1\Locacao\101\Contrato\Contrato_LocacaoHank Voight_d6s3f3sn00096v3n8s40.pdf" />
+    <Content Include="Imagens\1\Pacientes\34\Anexos\Power_System_Protection_Lecture_Notes.pdf" />
     <None Include="Properties\PublishProfiles\eprontuario - FTP.pubxml" />
     <None Include="Properties\PublishProfiles\eprontuario - FTP1.pubxml" />
     <None Include="Properties\PublishProfiles\eprontuario - Web Deploy.pubxml" />
@@ -5462,6 +5467,8 @@
     <Content Include="Views\AreaPaciente\ProcessarInfoConsulta.cshtml" />
     <Content Include="Views\AreaPaciente\VerAnexoArea.cshtml" />
     <Content Include="Views\AreaPaciente\VerAnexoAreaAudio.cshtml" />
+    <Content Include="Views\AreaPaciente\EnviarEMailPaciente.cshtml" />
+    <Content Include="Views\AreaPaciente\ProcessarResultadoExameTela.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -5563,6 +5570,8 @@
     <Folder Include="Imagens\1\Exames\98\Anexos\" />
     <Folder Include="Imagens\1\Exames\99\Anexos\" />
     <Folder Include="Imagens\1\Locacao\100\Anexos\" />
+    <Folder Include="Imagens\1\Locacao\101\Anexos\" />
+    <Folder Include="Imagens\1\Locacao\101\Distrato\" />
     <Folder Include="Imagens\1\Locacao\74\Anexos\" />
     <Folder Include="Imagens\1\Locacao\74\Assinado\" />
     <Folder Include="Imagens\1\Locacao\74\Contrato\" />
