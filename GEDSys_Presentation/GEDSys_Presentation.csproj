@@ -1237,6 +1237,10 @@
     <Content Include="Content\Site.css" />
     <Content Include="google4d9e96e20f00fae4.html" />
     <Content Include="Imagens\1\AreaPaciente\31\Anexos\Foto_Amorinha_2.jpg" />
+    <Content Include="Imagens\1\AreaPaciente\33\Anexos\AmorinhaLinda.png" />
+    <Content Include="Imagens\1\AreaPaciente\34\Anexos\haddock_1.jpg" />
+    <Content Include="Imagens\1\AreaPaciente\35\Anexos\RX_2.jpg" />
+    <Content Include="Imagens\1\AreaPaciente\36\Anexos\RX_2.jpg" />
     <Content Include="Imagens\1\AreaPaciente\5\Anexos\trump_babaca.jpg" />
     <Content Include="Imagens\1\Empresa\3\Anexos\bz.jpg" />
     <Content Include="Imagens\1\Empresa\3\Logo\Logo_RTI.png" />
@@ -1442,6 +1446,7 @@
     <Content Include="Imagens\1\Pacientes\33\Anexos\naps2-7.5.1-win.exe" />
     <Content Include="Imagens\1\Pacientes\33\Fotos\Severide.jpg" />
     <Content Include="Imagens\1\Pacientes\34\Anexos\AmorinhaLinda.png" />
+    <Content Include="Imagens\1\Pacientes\34\Exames\RX_2.jpg" />
     <Content Include="Imagens\1\Pacientes\34\Exames\RX_Braco.jpeg" />
     <Content Include="Imagens\1\Pacientes\34\Exames\TOMO_2.jpg" />
     <Content Include="Imagens\1\Pacientes\34\Exames\US_Abdomem.jpg" />
@@ -4045,6 +4050,9 @@
     <Content Include="Imagens\1\Locacao\101\Assinado\Contrato_LocacaoHANK VOIGHT_d6s3f3sn00096v3n8s40_Assinado.pdf" />
     <Content Include="Imagens\1\Locacao\101\Contrato\Contrato_LocacaoHank Voight_d6s3f3sn00096v3n8s40.pdf" />
     <Content Include="Imagens\1\Pacientes\34\Anexos\Power_System_Protection_Lecture_Notes.pdf" />
+    <Content Include="Imagens\1\AreaPaciente\32\Anexos\Contrato_LocacaoHANK VOIGHT_d6s3f3sn00096v3n8s40_Assinado.pdf" />
+    <Content Include="Imagens\1\AreaPaciente\33\Anexos\Power_System_Protection_Lecture_Notes.pdf" />
+    <Content Include="Imagens\1\AreaPaciente\34\Anexos\Molhos para saladas.pdf" />
     <None Include="Properties\PublishProfiles\eprontuario - FTP.pubxml" />
     <None Include="Properties\PublishProfiles\eprontuario - FTP1.pubxml" />
     <None Include="Properties\PublishProfiles\eprontuario - Web Deploy.pubxml" />
@@ -5469,6 +5477,8 @@
     <Content Include="Views\AreaPaciente\VerAnexoAreaAudio.cshtml" />
     <Content Include="Views\AreaPaciente\EnviarEMailPaciente.cshtml" />
     <Content Include="Views\AreaPaciente\ProcessarResultadoExameTela.cshtml" />
+    <Content Include="Views\AreaPaciente\VerAnexoExamePaciente.cshtml" />
+    <Content Include="Views\AreaPaciente\VerAnexoExamePacienteAudio.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -5518,6 +5528,7 @@
     <Folder Include="Imagens\1\Exames\124\Anexos\" />
     <Folder Include="Imagens\1\Exames\125\Anexos\" />
     <Folder Include="Imagens\1\Exames\126\Anexos\" />
+    <Folder Include="Imagens\1\Exames\127\Anexos\" />
     <Folder Include="Imagens\1\Exames\46\Anexos\" />
     <Folder Include="Imagens\1\Exames\47\Anexos\" />
     <Folder Include="Imagens\1\Exames\48\Anexos\" />

@@ -768,7 +768,11 @@ namespace ModelServices.EntitiesServices
             {
                 try
                 {
-                    Int32 pac = item.PACO_CD_ID.Value;
+                    Int32? pac = null;
+                    if (item.PACO_CD_ID != null)
+                    {
+                        pac = item.PACO_CD_ID.Value;
+                    }
 
                     item.PACIENTE = null;
                     item.TIPO_EXAME = null;

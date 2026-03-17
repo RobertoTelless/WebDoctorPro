@@ -147,7 +147,7 @@
             
                 <div class="modal-footer">
                     <button type="button" class="btn btn-white" data-dismiss="modal">Voltar</button>
-                    <button type="button" class="btn btn-primary" id="btnDocumentoSubmit">Confirmar Anexação</button>
+                    <button type="button" class="btn btn-primary" id="btnExameSubmit">Confirmar Anexação</button>
                 </div>
             </div>
         </div>
@@ -431,7 +431,7 @@
                                                                 <button type="button" 
                                                                         class="btn btn-xs btn-link btn-disparar-modal-tabela_4" 
                                                                         data-id="@cond.AREA_CD_ID" 
-                                                                        title="Processar  Resultado de Exame"
+                                                                        title="Processar Resultado de Exame"
                                                                         id="btnExameSubmit"
                                                                         style="padding: 3px; color: #337ab7;">
                                                                         <i class="fa fa-gears" style="font-size: 17px; margin-left: -5px;"></i>
@@ -1078,117 +1078,44 @@ $('#btnAnexarSubmit').off('click').click(function (e) {
     <script type="text/javascript">
         $(document).ready(function () {
             var $modal = $('#modalConfirmacaoExame');
-            var $form = $('#pwd-container1');
             var $hiddenId = $('#hiddenIdLocacao');
 
-            // 1. Captura o clique nos botões DENTRO da tabela
-            // Usamos delegação (.on) caso a tabela seja dinâmica (DataTables)
+            // 1. Captura o clique no botão da tabela (Delegação para DataTables)
             $('body').on('click', '.btn-disparar-modal-tabela_4', function () {
                 var idDaLinha = $(this).data('id');
                 $hiddenId.val(idDaLinha);
                 $modal.modal('show');
             });
 
-            // 2. Ação de confirmar DENTRO da modal (Mantivemos sua lógica, apenas ajustamos o submit)
-            $('#btnExameSubmit').click(function (e) {
+            // 2. Ação de confirmar DENTRO da modal
+            $('#btnExameSubmit').off('click').click(function (e) {
                 e.preventDefault();
-
                 var $btn = $(this);
+                var idLocacao = $hiddenId.val();
 
-                // Feedback visual no botão da modal
+                // Feedback visual
                 $btn.prop('disabled', true).addClass('disabled');
-                $btn.html('<i class="fa fa-spinner fa-spin"></i> Processando...');
+                $btn.html('<i class="fa fa-spinner fa-spin"></i> Abrindo Tela...');
 
-                // Esconde a modal
+                // 3. Redirecionamento Direto
+                // Isso chama o seu método GET no Controller e carrega a nova página
+                var url = '@Url.Action("ProcessarResultadoExameTela", "AreaPaciente")' + '?id=' + idLocacao;
+            
+                // Pequeno delay apenas para fechar a modal visualmente antes de mudar de página
                 $modal.modal('hide');
-
-                // 3. Limpeza e Submit
                 setTimeout(function () {
-                    // Limpeza de resíduos do template
-                    $('.modal-backdrop').remove();
-                    $('body').removeClass('modal-open').css('padding-right', '');
-                
-                    // Submit via DOM puro do formulário que agora contém o ID correto
-                    document.getElementById('pwd-container1').submit();
-                }, 400);
+                    window.location.href = url;
+                }, 300);
             });
 
-            // Segurança: limpa resíduos se fechar no "X" ou clicar fora
+            // Limpeza ao fechar modal
             $modal.on('hidden.bs.modal', function () {
-                // Opcional: Limpa o ID se a pessoa desistir
-                $hiddenId.val(''); 
-            
-                $('.modal-backdrop').remove();
-                $('body').removeClass('modal-open');
+                $hiddenId.val('');
+                // Restaura o botão caso o usuário tenha cancelado
+                $('#btnExameSubmit').prop('disabled', false).removeClass('disabled').html('Confirmar Anexação');
             });
-        });
-
-        @*$('#btnDocumentoSubmit').click(function (e) {
-            e.preventDefault();
-    
-            var $btn = $(this);
-            var idLocacao = $('#hiddenIdLocacao').val(); // O ID que capturamos da tabela
-
-            // 1. Feedback visual
-            $btn.prop('disabled', true).addClass('disabled');
-            $btn.html('<i class="fa fa-spinner fa-spin"></i> Processando...');
-
-            // 2. Chamada AJAX para o Controller
-            $.ajax({
-                url: '@Url.Action("ProcessarDocumento", "AreaPaciente")',
-                type: 'POST',
-                data: { id: idLocacao },
-                success: function (response) {
-                    $modal.modal('hide');
-            
-                    // 3. Feedback de sucesso e recarregamento
-                    // Se você usar Toastr: toastr.success("Processado com sucesso!");
-                    setTimeout(function () {
-                        window.location.reload(); 
-                    }, 500);
-                },
-                error: function (xhr, status, error) {
-                    $btn.prop('disabled', false).removeClass('disabled').html('Confirmar Anexação');
-                    alert("Erro ao processar: " + error);
-                }
-            });
-        });*@
-
-        $('#btnExameSubmit').click(function (e) {
-            e.preventDefault();
-    
-            var $btn = $(this);
-            var idLocacao = $('#hiddenIdLocacao').val(); 
-
-            // 1. Feedback visual
-            $btn.prop('disabled', true).addClass('disabled');
-            $btn.html('<i class="fa fa-spinner fa-spin"></i> Processando...');
-
-            // 2. Chamada AJAX
-            $.ajax({
-                url: '@Url.Action("ProcessarResultadoExame", "AreaPaciente")',
-                type: 'POST',
-                data: { id: idLocacao },
-                success: function (response) {
-                    // FECHE A MODAL AQUI
-                    $('#modalConfirmacaoExame').modal('hide');
-            
-                    // IMPORTANTE: Em vez de reload, force o redirecionamento para a URL correta 
-                    // para limpar o cache de POST do navegador
-                    window.location.href = '@Url.Action("MontarTelaAreaPacienteVer", "AreaPaciente")';
-                },
-                error: function (xhr, status, error) {
-                    $btn.prop('disabled', false).removeClass('disabled').html('Confirmar Anexação');
-                    alert("Erro ao processar: " + error);
-                }
-            });
-    
-            // REMOVA OU COMENTE QUALQUER LINHA QUE DIGA: 
-            // document.getElementById('pwd-container1').submit(); 
-            // Isso é o que causa o duplo carregamento!
         });
     </script>
-
 }
 
 @if (ViewBag.Message != null)

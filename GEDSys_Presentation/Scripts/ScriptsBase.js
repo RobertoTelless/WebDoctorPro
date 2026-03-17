@@ -31,6 +31,40 @@ $(function () {
     });
 });
 
+function ExibirMensagem(tipo, mensagem, titulo) {
+    titulo = titulo || 'WebDoctor';
+    
+    // Configurações detalhadas para bater com o comportamento desejado
+    toastr.options = {
+        "closeButton": true,
+        "progressBar": true,
+        "preventDuplicates": false,
+        "positionClass": "toast-top-right",
+        "onclick": null,
+        "showDuration": "400",
+        "hideDuration": "1000",
+        "timeOut": "15000",       // 15 segundos na tela
+        "extendedTimeOut": "5000", // +5 segundos se o mouse passar por cima
+        "showEasing": "swing",
+        "hideEasing": "linear",
+        "showMethod": "fadeIn",
+        "hideMethod": "fadeOut"
+    };
+
+    // Mapeamento de tipos (aceita string ou número vindo do banco/C#)
+    if (tipo === 'sucesso' || tipo === 1) {
+        toastr.success(mensagem, titulo);
+    } else if (tipo === 'erro' || tipo === 2) {
+        // Para erros, você pode opcionalmente travar na tela (timeOut 0)
+        // mas aqui mantivemos os 15s conforme solicitado
+        toastr.error(mensagem, titulo);
+    } else if (tipo === 'aviso' || tipo === 3) {
+        toastr.warning(mensagem, titulo);
+    } else {
+        toastr.info(mensagem, titulo);
+    }
+}
+
 $(document).ready(function () {
     $.fn.dataTable.moment('DD/MM/YYYY');
 

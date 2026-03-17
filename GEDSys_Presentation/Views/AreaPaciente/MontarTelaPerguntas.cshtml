@@ -30,13 +30,13 @@
                 <div class="ibox-title">
                     <h3>Fale Conosco</h3>
                 </div>
-                @if (TempData["TemMensagem"] != null)
-                {
-                    <div class="alert alert-success">
-                        <button type="button" class="close" data-dismiss="alert">Fechar</button>
-                        <span>@TempData["MensagemAcerto"]</span>
-                    </div>
-                }                    
+                    @*@if (TempData["TemMensagem"] != null)
+                    {
+                        <div class="alert alert-success">
+                            <button type="button" class="close" data-dismiss="alert">Fechar</button>
+                            <span>@TempData["MensagemAcerto"]</span>
+                        </div>
+                    }*@  
                 <br />
                 <div class="form-group">
                     @Html.ButtonLinkIndex(text: "Voltar", controller: "AreaPaciente", action: "MontarTelaAreaPaciente", htmlAttributes: new { @class = "btn-loading" })
@@ -153,6 +153,35 @@
     @Styles.Render("~/plugins/jasnyBootstrapStyles")
     @Styles.Render("~/plugins/toastrStyles")
     @Styles.Render("~/plugins/jasnyBootstrapStyles")
+
+        <style>
+        /* 1. Aumenta a largura e garante o espaço interno */
+        #toast-container > .toast {
+            width: 500px !important; 
+            max-width: 500px !important;
+            opacity: 0.95 !important;
+        }
+
+        /* 2. Remove o ícone nativo do Toastr (Background Image) */
+        #toast-container > .toast-success {
+            background-image: none !important;
+        }
+
+        /* 3. Remove ícones do FontAwesome/Inspinia injetados via ::before no Título */
+        .toast-success .toast-title::before, 
+        .toast-success .toast-title::after,
+        .toast-success::before {
+            content: none !important;
+            display: none !important;
+        }
+
+        /* 4. Ajusta o recuo do texto já que removemos o ícone */
+        .toast-success .toast-title, 
+        .toast-success .toast-message {
+            padding-left: 10px !important;
+        }
+    </style>
+
 }
 @section Scripts {
     <script type="text/javascript" src="~/Scripts/moment.min.js"></script>
@@ -163,6 +192,61 @@
     @Scripts.Render("~/plugins/jasnyBootstrap")
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.maskedinput/1.4.1/jquery.maskedinput.js"></script>    
 
+    <script type="text/javascript">
+        $(document).ready(function () { 
+            $('.btn-loading').on('click', function (e) {            
+                $(this).prop('disabled', true);
+                $(this).addClass('disabled');
+                $('#loadingIndicator').show();
+                var tagName = $(this).prop('tagName').toLowerCase();
+                if (tagName === 'a') {
+                    e.preventDefault(); 
+                    var targetUrl = $(this).attr('href');
+                    window.location.href = targetUrl;
+
+                } else if (tagName === 'button' || tagName === 'input') {
+                    $(this).closest('form').submit();
+                }
+            });
+        });
+    </script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            // Configurações globais do Toastr
+            toastr.options = {
+                "closeButton": true,
+                //"debug": false,
+                "progressBar": true,
+                "preventDuplicates": false,
+                "positionClass": "toast-top-right",
+                "onclick": null,
+                "showDuration": "400",
+                "hideDuration": "1000",
+                "timeOut": "15000",
+                "extendedTimeOut": "5000",
+                "showEasing": "swing",
+                "hideEasing": "linear",
+                "showMethod": "fadeIn",
+                "hideMethod": "fadeOut"
+            //    "iconClass": "customer-toast-info", // Se quiser remover o ícone padrão totalmente
+            //    "titleClass": "toast-title",
+            //    "messageClass": "toast-message"
+            };
+
+            // Verifica se existe mensagem de sucesso no TempData (vinda do Redirect)
+            var msgSucesso = '@TempData["MensagemAcerto"]';
+            if (msgSucesso != '') {
+                toastr.success(msgSucesso, 'Sucesso!');
+            }
+
+            // Verifica se existe mensagem de erro
+            var msgErro = '@TempData["MensagemErro"]';
+            if (msgErro != '') {
+                toastr.error(msgErro, 'Erro!');
+            }
+        });
+    </script>
 }
 
     <script type="text/javascript">
