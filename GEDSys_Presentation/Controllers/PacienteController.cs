@@ -38,6 +38,7 @@ using Image = iTextSharp.text.Image;
 using Humanizer;
 using Newtonsoft.Json;
 using EntitiesServices.Work_Classes;
+using System.Windows.Input;
 
 namespace GEDSys_Presentation.Controllers
 {
@@ -3954,6 +3955,8 @@ namespace GEDSys_Presentation.Controllers
                 Session["ListaLocacao"] = listaLocacao;
                 List<RESPOSTA_CONSULTA> listaResposta= item.RESPOSTA_CONSULTA.Where(p => p.RECO_IN_ATIVO == 1).ToList();
                 Session["ListaResposta"] = listaResposta;
+                List<PACIENTE_VACINA> listaVacina= item.PACIENTE_VACINA.Where(p => p.PAVI_IN_ATIVO == 1).ToList();
+                Session["ListaVacina"] = listaVacina;
 
                 // Verifica consulta a encerrar
                 List<PACIENTE_CONSULTA> cons = item.PACIENTE_CONSULTA.Where(p => p.PACO_IN_ATIVO == 1).ToList();
@@ -25853,6 +25856,7 @@ namespace GEDSys_Presentation.Controllers
                 tipo.Add(new SelectListItem() { Text = "Recebimento", Value = "12" });
                 tipo.Add(new SelectListItem() { Text = "Mensagem", Value = "13" });
                 tipo.Add(new SelectListItem() { Text = "Envio de Documento", Value = "14" });
+                tipo.Add(new SelectListItem() { Text = "Vacina", Value = "15" });
                 ViewBag.Tipos = new SelectList(tipo, "Value", "Text");
                 ViewBag.Perfil = usuario.PERFIL.PERF_SG_SIGLA;
 
@@ -25951,6 +25955,7 @@ namespace GEDSys_Presentation.Controllers
                 tipo.Add(new SelectListItem() { Text = "Recebimento", Value = "12" });
                 tipo.Add(new SelectListItem() { Text = "Mensagem", Value = "13" });
                 tipo.Add(new SelectListItem() { Text = "Envio de Documento", Value = "14" });
+                tipo.Add(new SelectListItem() { Text = "Vacina", Value = "15" });
                 ViewBag.Tipos = new SelectList(tipo, "Value", "Text");
                 List<PACIENTE> pacs = CarregaPaciente();
                 if (usuario.PERFIL.PERF_SG_SIGLA != "ADM" & usuario.PERFIL.PERF_IN_VISAO_GERAL == 0)
@@ -39466,6 +39471,497 @@ namespace GEDSys_Presentation.Controllers
                 GravaLogExcecao grava = new GravaLogExcecao(usuApp);
                 Int32 voltaX = grava.GravarLogExcecao(ex, "Exceção", "WebDoctor", 1, (USUARIO)Session["UsuarioArea"]);
                 return null;
+            }
+        }
+
+        public ActionResult IncluirVacinaForm()
+        {
+            if ((String)Session["Ativa"] == null)
+            {
+                return RedirectToAction("Logout", "ControleAcesso");
+            }
+            Session["IdConsultaCria"] = 0;
+            return RedirectToAction("IncluirVacina");
+        }
+
+        [HttpGet]
+        public ActionResult IncluirVacina()
+        {
+            try
+            {
+                // Verifica se tem usuario logado
+                USUARIO usuario = new USUARIO();
+                if ((String)Session["Ativa"] == null)
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+                if ((USUARIO)Session["UserCredentials"] != null)
+                {
+                    usuario = (USUARIO)Session["UserCredentials"];
+
+                    // Verfifica permissão
+                }
+                else
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+                Int32 idAss = (Int32)Session["IdAssinante"];
+                Session["ModuloAtual"] = "Vacinas - Inclusão";
+                CONFIGURACAO conf = CarregaConfiguracaoGeral();
+
+                // Prepara view
+                ViewBag.Vacina = new SelectList(CarregaVacinas(), "VACI_CD_ID", "VACI_NM_NOME");
+                ViewBag.Perfil = usuario.PERFIL.PERF_SG_SIGLA;
+                 
+                Session["NivelPaciente"] = 18;
+                PACIENTE_VACINA item = new PACIENTE_VACINA();
+                PacienteVacinaViewModel vm = Mapper.Map<PACIENTE_VACINA, PacienteVacinaViewModel>(item);
+                PACIENTE pac = baseApp.GetItemById((Int32)Session["IdPaciente"]);
+                vm.PACI_CD_ID = (Int32)Session["IdPaciente"];
+                vm.PAVI_IN_ATIVO = 1;
+                vm.PAVI_DT_DATA = DateTime.Today.Date;
+                vm.USUA_CD_ID = usuario.USUA_CD_ID;
+                vm.ASSI_CD_ID = idAss;
+
+                // Grava Acesso
+                ControleAcessoMetodo grava = new ControleAcessoMetodo(aceApp);
+                Int32 voltaX = grava.GravaAcesso(usuario.USUA_CD_ID, usuario.ASSI_CD_ID, "PACIENTE_VACINA_INCLUIR", "Paciente", "IncluirVacina");
+
+                return View(vm);
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Paciente";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Paciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return RedirectToAction("TrataExcecao", "BaseAdmin");
+            }
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult IncluirVacina(PacienteVacinaViewModel vm)
+        {
+            if ((String)Session["Ativa"] == null)
+            {
+                return RedirectToAction("Logout", "ControleAcesso");
+            }
+            USUARIO usuarioLogado = (USUARIO)Session["UserCredentials"];
+            ViewBag.Vacina = new SelectList(CarregaVacinas(), "VACI_CD_ID", "VACI_NM_NOME");
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    // Sanitização
+                    vm.PAVI_DS_DESCRICAO = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(vm.PAVI_DS_DESCRICAO);
+
+                    // Critica
+                    if (vm.PAVI_DT_DATA.Value.Date > DateTime.Today.Date)
+                    {
+                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0719", CultureInfo.CurrentCulture));
+                        return View(vm);
+                    }
+
+                    // Calcula proxima
+                    VACINA vac = baseApp.GetVacinasById(vm.VACI_CD_ID.Value);
+                    DateTime prox = vm.PAVI_DT_DATA.Value.AddMonths(vac.VACI_NR_PERIODO.Value);
+                    vm.PAVI_DT_PROXIMA = prox;
+
+                    // Executa a operação
+                    CONFIGURACAO conf = CarregaConfiguracaoGeral();
+                    PACIENTE pac = baseApp.GetItemById(vm.PACI_CD_ID);
+                    PACIENTE_VACINA item = Mapper.Map<PacienteVacinaViewModel, PACIENTE_VACINA>(vm);
+                    Int32 volta = baseApp.ValidateCreateVacina(item);
+
+                    // Verifica retorno
+                    Session["IdVacina"] = item.PAVI_CD_ID;
+                    Session["PacienteAlterada"] = 1;
+                    Session["NivelPaciente"] = 18;
+                    Session["IdPaciente"] = item.PACI_CD_ID;
+
+                    // Configura serilização
+                    JsonSerializerSettings settings = new JsonSerializerSettings
+                    {
+                        ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+                        NullValueHandling = NullValueHandling.Ignore
+                    };
+
+                    // Monta Log
+                    DTO_Paciente_Vacina dto = MontarPacienteVacinaDTOObj(item);
+                    String json = JsonConvert.SerializeObject(dto, settings);
+                    LOG log = new LOG
+                    {
+                        LOG_DT_DATA = DateTime.Now,
+                        ASSI_CD_ID = usuarioLogado.ASSI_CD_ID,
+                        USUA_CD_ID = usuarioLogado.USUA_CD_ID,
+                        LOG_NM_OPERACAO = "Paciente - Vacina - Inclusão",
+                        LOG_IN_ATIVO = 1,
+                        LOG_TX_REGISTRO = json,
+                        LOG_IN_SISTEMA = 6
+                    };
+                    Int32 volta1 = logApp.ValidateCreate(log);
+
+                    // Grava historico
+                    PACIENTE_HISTORICO hist = new PACIENTE_HISTORICO();
+                    PACIENTE pac1 = baseApp.GetItemById(vm.PACI_CD_ID);
+                    hist.ASSI_CD_ID = usuarioLogado.ASSI_CD_ID;
+                    hist.USUA_CD_ID = usuarioLogado.USUA_CD_ID;
+                    hist.PACI_CD_ID = item.PACI_CD_ID;
+                    hist.PAHI_DT_DATA = DateTime.Now;
+                    hist.PAHI_IN_TIPO = 15;
+                    hist.PAHI_IN_CHAVE = item.PAVI_CD_ID;
+                    hist.PAHI_NM_OPERACAO = "Paciente - Inclusão de vacina";
+                    hist.PAHI_DS_DESCRICAO = "Paciente: " + pac1.PACI_NM_NOME + " - Vacina: " + item.VACINA.VACI_NM_NOME;
+                    Int32 voltaHist = baseApp.ValidateCreateHistorico(hist);
+
+                    // Atualiza prontuário
+                    if (conf.CONF_IN_DOC_PRONTUARIO == 1)
+                    {
+                        PACIENTE_ANAMNESE ana = pac1.PACIENTE_ANAMNESE.Where(p => p.PAAM_IN_ATIVO == 1).FirstOrDefault();
+                        PACIENTE_ANAMNESE anan = RemontarAnamnese(ana);
+                        String velho = anan.PAAM_TX_TEXTO_LIVRE;
+                        String novo = "Informação de Vacina " + item.VACINA.VACI_NM_NOME.ToUpper();
+                        String dataHoje = DateTime.Today.Date.ToLongDateString();
+                        dataHoje = "*** Informado em [" + dataHoje + "] ***";
+                        if (anan.PAAM_TX_TEXTO_LIVRE != null)
+                        {
+                            String anot = dataHoje + "\r\n" + novo;
+                            if (velho == null & novo != String.Empty)
+                            {
+                                anan.PAAM_TX_TEXTO_LIVRE = dataHoje + "\r\n" + novo;
+                            }
+                            if (velho != null & novo != String.Empty)
+                            {
+                                String tripa = velho.Substring(velho.Length - 4, 4);
+                                if (tripa == "\r\n")
+                                {
+                                    velho = velho.Substring(0, velho.Length - 4);
+                                }
+                                anan.PAAM_TX_TEXTO_LIVRE = velho + "\r\n\r\n" + dataHoje + "\r\n" + novo;
+                            }
+                        }
+                        else
+                        {
+                            velho = anan.PAAM_TX_TEXTO_LIVRE;
+                            anan.PAAM_TX_TEXTO_LIVRE = velho;
+                        }
+
+                        // Executa a operação
+                        anan.PAAM_IN_ALTERADA = 1;
+                        Int32 voltaW = baseApp.ValidateEditAnamnese(anan);
+                    }
+
+                    // Mensagem do CRUD
+                    Session["MsgCRUD"] = "A vacina " + item.VACINA.VACI_NM_NOME.ToUpper() + "foi informada para o(a) paciente " + pac1.PACI_NM_NOME.ToUpper();
+                    Session["MensPaciente"] = 61;
+                    Session["NivelPaciente"] = 18;
+
+                    // Retorno
+                    return RedirectToAction("VoltarAnexoPaciente");
+                }
+                catch (Exception ex)
+                {
+                    ViewBag.Message = ex.Message;
+                    Session["TipoVolta"] = 2;
+                    Session["VoltaExcecao"] = "Paciente";
+                    Session["Excecao"] = ex;
+                    Session["ExcecaoTipo"] = ex.GetType().ToString();
+                    GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                    Int32 voltaX = grava.GravarLogExcecao(ex, "Paciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                    return RedirectToAction("TrataExcecao", "BaseAdmin");
+                }
+            }
+            else
+            {
+                return View(vm);
+            }
+        }
+
+        public List<VACINA> CarregaVacinas()
+        {
+            try
+            {
+                Int32 idAss = (Int32)Session["IdAssinante"];
+                List<VACINA> conf = new List<VACINA>();
+                conf = baseApp.GetAllVacinas(idAss);
+                return conf;
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Paciente";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Paciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return null;
+            }
+        }
+
+        public DTO_Paciente_Vacina MontarPacienteVacinaDTOObj(PACIENTE_VACINA l)
+        {
+            using (var context = new CRMSysDBEntities())
+            {
+                var mediDTO = new DTO_Paciente_Vacina()
+                {
+                    PAVI_CD_ID = l.PAVI_CD_ID,
+                    PAVI_DS_DESCRICAO = l.PAVI_DS_DESCRICAO,
+                    PAVI_DT_DATA = l.PAVI_DT_DATA,
+                    PAVI_DT_PROXIMA = l.PAVI_DT_PROXIMA,
+                    PACI_CD_ID = l.PACI_CD_ID,
+                    PAVI_IN_ATIVO = l.PAVI_IN_ATIVO,
+                    ASSI_CD_ID = l.ASSI_CD_ID,
+                    USUA_CD_ID = l.USUA_CD_ID,
+                    VACI_CD_ID = l.VACI_CD_ID,
+                };
+                return mediDTO;
+            }
+
+        }
+
+        [HttpGet]
+        public ActionResult ExcluirVacina(Int32 id)
+        {
+            try
+            {
+                // Verifica se tem usuario logado
+                USUARIO usuario = new USUARIO();
+                if ((String)Session["Ativa"] == null)
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+                if ((USUARIO)Session["UserCredentials"] != null)
+                {
+                    usuario = (USUARIO)Session["UserCredentials"];
+
+                    // Verfifica permissão
+                }
+                else
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+                Int32 idAss = (Int32)Session["IdAssinante"];
+
+                USUARIO usuarioLogado = (USUARIO)Session["UserCredentials"];
+                PACIENTE_VACINA item = baseApp.GetVacinaById(id);
+                item.PAVI_IN_ATIVO = 0;
+                Int32 volta = baseApp.ValidateEditVacina(item);
+
+                Session["PacienteAlterada"] = 1;
+                Session["NivelPaciente"] = 18;
+                Session["Pacientes"] = null;
+
+                // Configura serilização
+                JsonSerializerSettings settings = new JsonSerializerSettings
+                {
+                    ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+                    NullValueHandling = NullValueHandling.Ignore
+                };
+
+                // Monta Log
+                DTO_Paciente_Vacina dto = MontarPacienteVacinaDTOObj(item);
+                String json = JsonConvert.SerializeObject(dto, settings);
+                LOG log = new LOG
+                {
+                    LOG_DT_DATA = DateTime.Now,
+                    ASSI_CD_ID = usuarioLogado.ASSI_CD_ID,
+                    USUA_CD_ID = usuarioLogado.USUA_CD_ID,
+                    LOG_NM_OPERACAO = "Paciente - Vacina - Exclusão",
+                    LOG_IN_ATIVO = 1,
+                    LOG_TX_REGISTRO = json,
+                    LOG_IN_SISTEMA = 6
+                };
+                Int32 volta1 = logApp.ValidateCreate(log);
+
+                // Grava historico
+                PACIENTE_HISTORICO hist = new PACIENTE_HISTORICO();
+                PACIENTE pac = baseApp.GetItemById(item.PACI_CD_ID);
+                hist.ASSI_CD_ID = usuarioLogado.ASSI_CD_ID;
+                hist.USUA_CD_ID = usuarioLogado.USUA_CD_ID;
+                hist.PACI_CD_ID = item.PACI_CD_ID;
+                hist.PAHI_DT_DATA = DateTime.Now;
+                hist.PAHI_IN_TIPO = 15;
+                hist.PAHI_IN_CHAVE = item.PAVI_CD_ID;
+                hist.PAHI_NM_OPERACAO = "Paciente - Exclusão de Vacina";
+                hist.PAHI_DS_DESCRICAO = "Paciente: " + pac.PACI_NM_NOME + " - Vacina excluída: " + item.VACINA.VACI_NM_NOME;
+                Int32 voltaHist = baseApp.ValidateCreateHistorico(hist);
+
+                // Mensagem do CRUD
+                Session["MsgCRUD"] = "A vacina " + item.VACINA.VACI_NM_NOME.ToUpper() + " do(a) paciente " + pac.PACI_NM_NOME.ToUpper() + " foi excluída com sucesso.";
+                Session["MensPaciente"] = 61;
+
+                // Retorno
+                return RedirectToAction("VoltarAnexoPaciente");
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Paciente";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Paciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return RedirectToAction("TrataExcecao", "BaseAdmin");
+            }
+        }
+
+        [HttpGet]
+        public ActionResult EditarVacina(Int32 id)
+        {
+            try
+            {
+                // Verifica se tem usuario logado
+                USUARIO usuario = new USUARIO();
+                if ((String)Session["Ativa"] == null)
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+                if ((USUARIO)Session["UserCredentials"] != null)
+                {
+                    usuario = (USUARIO)Session["UserCredentials"];
+
+                    // Verfifica permissão
+                }
+                else
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+                Int32 idAss = (Int32)Session["IdAssinante"];
+                Session["ModuloAtual"] = "Vacinas - Edição";
+
+                // Prepara view
+                ViewBag.Vacina = new SelectList(CarregaVacinas(), "VACI_CD_ID", "VACI_NM_NOME");
+                Session["NivelPaciente"] = 18;
+                ViewBag.Perfil = usuario.PERFIL.PERF_SG_SIGLA;
+
+                PACIENTE_VACINA item = baseApp.GetVacinaById(id);
+                Session["IdPaciente"] = item.PACI_CD_ID;
+                Session["IdVacina"] = item.PAVI_CD_ID;
+                PacienteVacinaViewModel vm = Mapper.Map<PACIENTE_VACINA, PacienteVacinaViewModel>(item);
+                Session["Vacina"] = item;
+                Session["VoltarPesquisa"] = 0;
+
+                // Grava Acesso
+                ControleAcessoMetodo grava = new ControleAcessoMetodo(aceApp);
+                Int32 voltaX = grava.GravaAcesso(usuario.USUA_CD_ID, usuario.ASSI_CD_ID, "PACIENTE_VACINA_EDITAR", "Paciente", "EditarVacina");
+                return View(vm);
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Paciente";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Paciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return RedirectToAction("TrataExcecao", "BaseAdmin");
+            }
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [ValidateInput(false)]
+        public ActionResult EditarVacina(PacienteVacinaViewModel vm)
+        {
+            if ((String)Session["Ativa"] == null)
+            {
+                return RedirectToAction("Logout", "ControleAcesso");
+            }
+            USUARIO usuarioLogado = (USUARIO)Session["UserCredentials"];
+            ViewBag.Vacina = new SelectList(CarregaVacinas(), "VACI_CD_ID", "VACI_NM_NOME");
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    // Sanitização
+                    vm.PAVI_DS_DESCRICAO = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(vm.PAVI_DS_DESCRICAO);
+
+                    // Critica
+                    if (vm.PAVI_DT_DATA.Value.Date > DateTime.Today.Date)
+                    {
+                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0719", CultureInfo.CurrentCulture));
+                        return View(vm);
+                    }
+
+                    // Calcula proxima
+                    VACINA vac = baseApp.GetVacinasById(vm.VACI_CD_ID.Value);
+                    DateTime prox = vm.PAVI_DT_DATA.Value.AddMonths(vac.VACI_NR_PERIODO.Value);
+                    vm.PAVI_DT_PROXIMA = prox;
+
+                    // Executa a operação
+                    PACIENTE_VACINA item = Mapper.Map<PacienteVacinaViewModel, PACIENTE_VACINA>(vm);
+                    Int32 volta = baseApp.ValidateEditVacina(item);
+
+                    // Verifica retorno
+                    Session["IdVacina"] = item.PAVI_CD_ID;
+                    Session["PacienteAlterada"] = 1;
+                    Session["NivelPaciente"] = 18;
+                    Session["IdPaciente"] = item.PACI_CD_ID;
+
+                    // Configura serilização
+                    JsonSerializerSettings settings = new JsonSerializerSettings
+                    {
+                        ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+                        NullValueHandling = NullValueHandling.Ignore
+                    };
+
+                    // Monta Log
+                    DTO_Paciente_Vacina dto = MontarPacienteVacinaDTOObj(item);
+                    String json = JsonConvert.SerializeObject(dto, settings);
+                    LOG log = new LOG
+                    {
+                        LOG_DT_DATA = DateTime.Now,
+                        ASSI_CD_ID = usuarioLogado.ASSI_CD_ID,
+                        USUA_CD_ID = usuarioLogado.USUA_CD_ID,
+                        LOG_NM_OPERACAO = "Paciente - Vacina - Alteração",
+                        LOG_IN_ATIVO = 1,
+                        LOG_TX_REGISTRO = json,
+                        LOG_IN_SISTEMA = 6
+                    };
+                    Int32 volta1 = logApp.ValidateCreate(log);
+
+                    // Grava historico
+                    PACIENTE_HISTORICO hist = new PACIENTE_HISTORICO();
+                    PACIENTE pac = baseApp.GetItemById(item.PACI_CD_ID);
+                    hist.ASSI_CD_ID = usuarioLogado.ASSI_CD_ID;
+                    hist.USUA_CD_ID = usuarioLogado.USUA_CD_ID;
+                    hist.PACI_CD_ID = item.PACI_CD_ID;
+                    hist.PAHI_DT_DATA = DateTime.Now;
+                    hist.PAHI_IN_TIPO = 15;
+                    hist.PAHI_IN_CHAVE = item.PAVI_CD_ID;
+                    hist.PAHI_NM_OPERACAO = "Paciente - Alteração de Vacina";
+                    hist.PAHI_DS_DESCRICAO = "Paciente: " + pac.PACI_NM_NOME + " - Vacina alterada: " + item.VACINA.VACI_NM_NOME;
+                    Int32 voltaHist = baseApp.ValidateCreateHistorico(hist);
+
+                    // Mensagem do CRUD
+                    Session["MsgCRUD"] = "A vacina " + item.VACINA.VACI_NM_NOME.ToUpper() + " do(a) paciente " + pac.PACI_NM_NOME.ToUpper() + " foi alterada com sucesso.";
+                    Session["MensPaciente"] = 61;
+
+                    // Retorno
+                    return RedirectToAction("VoltarAnexoPaciente");
+                }
+                catch (Exception ex)
+                {
+                    ViewBag.Message = ex.Message;
+                    Session["TipoVolta"] = 2;
+                    Session["VoltaExcecao"] = "Paciente";
+                    Session["Excecao"] = ex;
+                    Session["ExcecaoTipo"] = ex.GetType().ToString();
+                    GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                    Int32 voltaX = grava.GravarLogExcecao(ex, "Paciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                    return RedirectToAction("TrataExcecao", "BaseAdmin");
+                }
+            }
+            else
+            {
+                return View(vm);
             }
         }
 

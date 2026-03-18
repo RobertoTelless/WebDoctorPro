@@ -168,6 +168,11 @@ namespace ModelServices.Interfaces.EntitiesServices
         Int32 CreateConsultaMaterial(PACIENTE_CONSULTA_MATERIAL item);
         List<PACIENTE_CONSULTA_MATERIAL> GetAllConsultaMaterial(Int32 idAss);
 
-
+        PACIENTE_VACINA GetVacinaById(Int32 id);
+        Int32 EditVacina(PACIENTE_VACINA item);
+        Int32 CreateVacina(PACIENTE_VACINA item);
+        List<PACIENTE_VACINA> GetAllVacina(Int32 idAss);
+        List<VACINA> GetAllVacinas(Int32 idAss);
+        VACINA GetVacinasById(Int32 id);
     }
 }

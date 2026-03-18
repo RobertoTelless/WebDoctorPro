@@ -426,6 +426,7 @@ namespace GEDSys_Presentation.Controllers
                 List<PACIENTE_SOLICITACAO> listaSolicitacao = new List<PACIENTE_SOLICITACAO>();
                 List<PACIENTE_PRESCRICAO> listaPrescricao = new List<PACIENTE_PRESCRICAO>();
                 List<PACIENTE_PRESCRICAO_ITEM> listaRemedio = new List<PACIENTE_PRESCRICAO_ITEM>();
+                List<PACIENTE_VACINA> listaVacina = new List<PACIENTE_VACINA>();
 
                 if (tipo == 1)
                 {
@@ -434,6 +435,7 @@ namespace GEDSys_Presentation.Controllers
                     listaSolicitacao = paciente.PACIENTE_SOLICITACAO.Where(p => p.PASO_IN_ATIVO == 1).ToList();
                     listaPrescricao = paciente.PACIENTE_PRESCRICAO.Where(p => p.PAPR_IN_ATIVO == 1).ToList();
                     listaRemedio = paciente.PACIENTE_PRESCRICAO_ITEM.Where(p => p.PAPI_IN_ATIVO == 1).ToList();
+                    listaVacina = paciente.PACIENTE_VACINA.Where(p => p.PAVI_IN_ATIVO == 1).ToList();
                 }
                 if (tipo == 2)
                 {
@@ -441,7 +443,7 @@ namespace GEDSys_Presentation.Controllers
                     listaAtestado = consulta.PACIENTE_ATESTADO.Where(p => p.PAAT_IN_ATIVO == 1).ToList();
                     listaSolicitacao = consulta.PACIENTE_SOLICITACAO.Where(p => p.PASO_IN_ATIVO == 1).ToList();
                     listaPrescricao = consulta.PACIENTE_PRESCRICAO.Where(p => p.PAPR_IN_ATIVO == 1).ToList();
-                    //listaRemedio = consulta.PACIENTE_PRESCRICAO_ITEM.Where(p => p.PAPI_IN_ATIVO == 1).ToList();
+                    listaVacina = paciente.PACIENTE_VACINA.Where(p => p.PAVI_IN_ATIVO == 1).ToList();
                 }
 
                 // Monta nome
@@ -3134,6 +3136,113 @@ namespace GEDSys_Presentation.Controllers
                         }
                         pdfDoc.Add(table);
                     }
+                }
+
+                // Vacinas
+                if (listaVacina.Count > 0)
+                {
+                    line1 = new Paragraph(new Chunk(new iTextSharp.text.pdf.draw.LineSeparator(0.0F, 100.0F, BaseColor.BLACK, Element.ALIGN_LEFT, 1)));
+                    pdfDoc.Add(line1);
+                    chunk3 = new Chunk("Vacinas", FontFactory.GetFont("Arial", 13, Font.NORMAL, BaseColor.BLACK));
+                    paragraph = new Paragraph(chunk3);
+                    paragraph.Alignment = Element.ALIGN_LEFT;
+                    pdfDoc.Add(paragraph);
+
+                    line1 = new Paragraph("  ");
+                    pdfDoc.Add(line1);
+
+                    // Grid
+                    table = new PdfPTable(new float[] { 60f, 110f, 120f, 60f });
+                    table.WidthPercentage = 100;
+                    table.HorizontalAlignment = 0;
+                    table.SpacingBefore = 1f;
+                    table.SpacingAfter = 1f;
+
+                    cell = new PdfPCell(new Paragraph("Data", meuFont))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    cell.Colspan = 1;
+                    cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                    table.AddCell(cell);
+                    cell = new PdfPCell(new Paragraph("Vacina", meuFont))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    cell.Colspan = 1;
+                    cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                    table.AddCell(cell);
+                    cell = new PdfPCell(new Paragraph("Fabricante", meuFont))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    cell.Colspan = 1;
+                    cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                    table.AddCell(cell);
+                    cell = new PdfPCell(new Paragraph("Próxima Vacinação", meuFont))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    cell.Colspan = 1;
+                    cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                    table.AddCell(cell);
+
+                    foreach (PACIENTE_VACINA item in listaVacina)
+                    {
+                        if (item.PAVI_DT_DATA != null)
+                        {
+                            cell = new PdfPCell(new Paragraph(item.PAVI_DT_DATA.Value.ToShortDateString(), meuFont))
+                            {
+                                VerticalAlignment = Element.ALIGN_MIDDLE,
+                                HorizontalAlignment = Element.ALIGN_LEFT
+                            };
+                            table.AddCell(cell);
+                        }
+                        else
+                        {
+                            cell = new PdfPCell(new Paragraph("-", meuFont))
+                            {
+                                VerticalAlignment = Element.ALIGN_MIDDLE,
+                                HorizontalAlignment = Element.ALIGN_LEFT
+                            };
+                            table.AddCell(cell);
+                        }
+                        cell = new PdfPCell(new Paragraph(item.VACINA.VACI_NM_NOME, meuFont))
+                        {
+                            VerticalAlignment = Element.ALIGN_MIDDLE,
+                            HorizontalAlignment = Element.ALIGN_LEFT
+                        };
+                        table.AddCell(cell);
+                        cell = new PdfPCell(new Paragraph(item.VACINA.VACI_NM_FABRICANTE, meuFont))
+                        {
+                            VerticalAlignment = Element.ALIGN_MIDDLE,
+                            HorizontalAlignment = Element.ALIGN_LEFT
+                        };
+                        table.AddCell(cell);
+                        if (item.PAVI_DT_PROXIMA != null)
+                        {
+                            cell = new PdfPCell(new Paragraph(item.PAVI_DT_PROXIMA.Value.ToShortDateString(), meuFont))
+                            {
+                                VerticalAlignment = Element.ALIGN_MIDDLE,
+                                HorizontalAlignment = Element.ALIGN_LEFT
+                            };
+                            table.AddCell(cell);
+                        }
+                        else
+                        {
+                            cell = new PdfPCell(new Paragraph("-", meuFont))
+                            {
+                                VerticalAlignment = Element.ALIGN_MIDDLE,
+                                HorizontalAlignment = Element.ALIGN_LEFT
+                            };
+                            table.AddCell(cell);
+                        }
+                    }
+                    pdfDoc.Add(table);
                 }
 
                 // Finaliza

@@ -4634,6 +4634,20 @@
           <Property Name="PASO_IN_DENUNCIA" Type="int" />
           <Property Name="PASO_DT_DENUNCIA" Type="datetime" />
         </EntityType>
+        <EntityType Name="PACIENTE_VACINA">
+          <Key>
+            <PropertyRef Name="PAVI_CD_ID" />
+          </Key>
+          <Property Name="PAVI_CD_ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="ASSI_CD_ID" Type="int" Nullable="false" />
+          <Property Name="PACI_CD_ID" Type="int" Nullable="false" />
+          <Property Name="USUA_CD_ID" Type="int" Nullable="false" />
+          <Property Name="VACI_CD_ID" Type="int" />
+          <Property Name="PAVI_DT_DATA" Type="date" />
+          <Property Name="PAVI_IN_ATIVO" Type="int" />
+          <Property Name="PAVI_DS_DESCRICAO" Type="varchar" MaxLength="500" />
+          <Property Name="PAVI_DT_PROXIMA" Type="date" />
+        </EntityType>
         <EntityType Name="PAGAMENTO_ANEXO">
           <Key>
             <PropertyRef Name="PAAN_CD_ID" />
@@ -6945,6 +6959,18 @@
           <Property Name="USLO_TM_DURACAO" Type="varchar" MaxLength="50" />
           <Property Name="USLO_TM_DURACAO_SPAN" Type="time" Precision="7" />
           <Property Name="USLO_NM_MODULO" Type="varchar" MaxLength="150" />
+        </EntityType>
+        <EntityType Name="VACINA">
+          <Key>
+            <PropertyRef Name="VACI_CD_ID" />
+          </Key>
+          <Property Name="VACI_CD_ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="ASSI_CD_ID" Type="int" Nullable="false" />
+          <Property Name="VACI_NM_NOME" Type="varchar" MaxLength="250" />
+          <Property Name="VACI_NM_FABRICANTE" Type="varchar" MaxLength="250" />
+          <Property Name="VACI_NR_PERIODO" Type="int" />
+          <Property Name="VACI_IN_ATIVO" Type="int" />
+          <Property Name="VACI_DS_DESCRICAO" Type="varchar" MaxLength="500" />
         </EntityType>
         <EntityType Name="VALOR_CONSULTA">
           <Key>
@@ -13789,6 +13815,42 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_PACIENTE_VACINA_PACIENTE">
+          <End Role="PACIENTE" Type="Self.PACIENTE" Multiplicity="1" />
+          <End Role="PACIENTE_VACINA" Type="Self.PACIENTE_VACINA" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="PACIENTE">
+              <PropertyRef Name="PACI__CD_ID" />
+            </Principal>
+            <Dependent Role="PACIENTE_VACINA">
+              <PropertyRef Name="PACI_CD_ID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_PACIENTE_VACINA_USUARIO">
+          <End Role="USUARIO" Type="Self.USUARIO" Multiplicity="1" />
+          <End Role="PACIENTE_VACINA" Type="Self.PACIENTE_VACINA" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="USUARIO">
+              <PropertyRef Name="USUA_CD_ID" />
+            </Principal>
+            <Dependent Role="PACIENTE_VACINA">
+              <PropertyRef Name="USUA_CD_ID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_PACIENTE_VACINA_VACINA">
+          <End Role="VACINA" Type="Self.VACINA" Multiplicity="0..1" />
+          <End Role="PACIENTE_VACINA" Type="Self.PACIENTE_VACINA" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="VACINA">
+              <PropertyRef Name="VACI_CD_ID" />
+            </Principal>
+            <Dependent Role="PACIENTE_VACINA">
+              <PropertyRef Name="VACI_CD_ID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_PACIENTE_VALOR_CONSULTA">
           <End Role="VALOR_CONSULTA" Type="Self.VALOR_CONSULTA" Multiplicity="0..1" />
           <End Role="PACIENTE" Type="Self.PACIENTE" Multiplicity="*" />
@@ -16680,6 +16742,7 @@
           <EntitySet Name="PACIENTE_PRESCRICAO" EntityType="Self.PACIENTE_PRESCRICAO" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="PACIENTE_PRESCRICAO_ITEM" EntityType="Self.PACIENTE_PRESCRICAO_ITEM" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="PACIENTE_SOLICITACAO" EntityType="Self.PACIENTE_SOLICITACAO" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="PACIENTE_VACINA" EntityType="Self.PACIENTE_VACINA" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="PAGAMENTO_ANEXO" EntityType="Self.PAGAMENTO_ANEXO" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="PAGAMENTO_ANOTACAO" EntityType="Self.PAGAMENTO_ANOTACAO" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="PAGAMENTO_NOTA_FISCAL" EntityType="Self.PAGAMENTO_NOTA_FISCAL" Schema="dbo" store:Type="Tables" />
@@ -16816,6 +16879,7 @@
           <EntitySet Name="USUARIO_ANEXO" EntityType="Self.USUARIO_ANEXO" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="USUARIO_ANOTACAO" EntityType="Self.USUARIO_ANOTACAO" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="USUARIO_LOGIN" EntityType="Self.USUARIO_LOGIN" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="VACINA" EntityType="Self.VACINA" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="VALOR_CONSULTA" EntityType="Self.VALOR_CONSULTA" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="VALOR_CONSULTA_MATERIAL" EntityType="Self.VALOR_CONSULTA_MATERIAL" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="VALOR_CONVENIO" EntityType="Self.VALOR_CONVENIO" Schema="dbo" store:Type="Tables" />
@@ -19036,6 +19100,18 @@
           <AssociationSet Name="FK_PACIENTE_USUARIO" Association="Self.FK_PACIENTE_USUARIO">
             <End Role="USUARIO" EntitySet="USUARIO" />
             <End Role="PACIENTE" EntitySet="PACIENTE" />
+          </AssociationSet>
+          <AssociationSet Name="FK_PACIENTE_VACINA_PACIENTE" Association="Self.FK_PACIENTE_VACINA_PACIENTE">
+            <End Role="PACIENTE" EntitySet="PACIENTE" />
+            <End Role="PACIENTE_VACINA" EntitySet="PACIENTE_VACINA" />
+          </AssociationSet>
+          <AssociationSet Name="FK_PACIENTE_VACINA_USUARIO" Association="Self.FK_PACIENTE_VACINA_USUARIO">
+            <End Role="USUARIO" EntitySet="USUARIO" />
+            <End Role="PACIENTE_VACINA" EntitySet="PACIENTE_VACINA" />
+          </AssociationSet>
+          <AssociationSet Name="FK_PACIENTE_VACINA_VACINA" Association="Self.FK_PACIENTE_VACINA_VACINA">
+            <End Role="VACINA" EntitySet="VACINA" />
+            <End Role="PACIENTE_VACINA" EntitySet="PACIENTE_VACINA" />
           </AssociationSet>
           <AssociationSet Name="FK_PACIENTE_VALOR_CONSULTA" Association="Self.FK_PACIENTE_VALOR_CONSULTA">
             <End Role="VALOR_CONSULTA" EntitySet="VALOR_CONSULTA" />
@@ -24410,6 +24486,7 @@
           <NavigationProperty Name="RESPOSTA_CONSULTA" Relationship="CRMSysDBModel.FK_RESPOSTA_CONSULTA_PACIENTE" FromRole="PACIENTE" ToRole="RESPOSTA_CONSULTA" />
           <NavigationProperty Name="AREA_PACIENTE" Relationship="CRMSysDBModel.FK_AREA_PACIENTE_PACIENTE" FromRole="PACIENTE" ToRole="AREA_PACIENTE" />
           <NavigationProperty Name="NOTICIA_COMENTARIO" Relationship="CRMSysDBModel.FK_NOTICIA_COMENTARIO_PACIENTE" FromRole="PACIENTE" ToRole="NOTICIA_COMENTARIO" />
+          <NavigationProperty Name="PACIENTE_VACINA" Relationship="CRMSysDBModel.FK_PACIENTE_VACINA_PACIENTE" FromRole="PACIENTE" ToRole="PACIENTE_VACINA" />
         </EntityType>
         <EntityType Name="PACIENTE_ANAMNESE">
           <Key>
@@ -27684,6 +27761,7 @@
           <NavigationProperty Name="MEDICOS_MENSAGEM" Relationship="CRMSysDBModel.FK_MEDICOS_MENSAGEM_USUARIO" FromRole="USUARIO" ToRole="MEDICOS_MENSAGEM" />
           <NavigationProperty Name="RESPOSTA_CONSULTA" Relationship="CRMSysDBModel.FK_RESPOSTA_CONSULTA_USUARIO" FromRole="USUARIO" ToRole="RESPOSTA_CONSULTA" />
           <NavigationProperty Name="AREA_PACIENTE" Relationship="CRMSysDBModel.FK_AREA_PACIENTE_USUARIO" FromRole="USUARIO" ToRole="AREA_PACIENTE" />
+          <NavigationProperty Name="PACIENTE_VACINA" Relationship="CRMSysDBModel.FK_PACIENTE_VACINA_USUARIO" FromRole="USUARIO" ToRole="PACIENTE_VACINA" />
         </EntityType>
         <EntityType Name="USUARIO_ANEXO">
           <Key>
@@ -39915,6 +39993,20 @@
             <End Role="PACIENTE" EntitySet="PACIENTE" />
             <End Role="NOTICIA_COMENTARIO" EntitySet="NOTICIA_COMENTARIO" />
           </AssociationSet>
+          <EntitySet Name="PACIENTE_VACINA" EntityType="CRMSysDBModel.PACIENTE_VACINA" />
+          <EntitySet Name="VACINA" EntityType="CRMSysDBModel.VACINA" />
+          <AssociationSet Name="FK_PACIENTE_VACINA_PACIENTE" Association="CRMSysDBModel.FK_PACIENTE_VACINA_PACIENTE">
+            <End Role="PACIENTE" EntitySet="PACIENTE" />
+            <End Role="PACIENTE_VACINA" EntitySet="PACIENTE_VACINA" />
+          </AssociationSet>
+          <AssociationSet Name="FK_PACIENTE_VACINA_USUARIO" Association="CRMSysDBModel.FK_PACIENTE_VACINA_USUARIO">
+            <End Role="USUARIO" EntitySet="USUARIO" />
+            <End Role="PACIENTE_VACINA" EntitySet="PACIENTE_VACINA" />
+          </AssociationSet>
+          <AssociationSet Name="FK_PACIENTE_VACINA_VACINA" Association="CRMSysDBModel.FK_PACIENTE_VACINA_VACINA">
+            <End Role="VACINA" EntitySet="VACINA" />
+            <End Role="PACIENTE_VACINA" EntitySet="PACIENTE_VACINA" />
+          </AssociationSet>
         </EntityContainer>
         <EntityType Name="PACIENTE_DADOS_EXAME_FISICO">
           <Key>
@@ -41384,6 +41476,72 @@
             </Principal>
             <Dependent Role="NOTICIA_COMENTARIO">
               <PropertyRef Name="PACI_CD_ID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="PACIENTE_VACINA">
+          <Key>
+            <PropertyRef Name="PAVI_CD_ID" />
+          </Key>
+          <Property Name="PAVI_CD_ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="ASSI_CD_ID" Type="Int32" Nullable="false" />
+          <Property Name="PACI_CD_ID" Type="Int32" Nullable="false" />
+          <Property Name="USUA_CD_ID" Type="Int32" Nullable="false" />
+          <Property Name="VACI_CD_ID" Type="Int32" />
+          <Property Name="PAVI_DT_DATA" Type="DateTime" Precision="0" />
+          <Property Name="PAVI_IN_ATIVO" Type="Int32" />
+          <Property Name="PAVI_DS_DESCRICAO" Type="String" MaxLength="500" FixedLength="false" Unicode="false" />
+          <Property Name="PAVI_DT_PROXIMA" Type="DateTime" Precision="0" />
+          <NavigationProperty Name="PACIENTE" Relationship="CRMSysDBModel.FK_PACIENTE_VACINA_PACIENTE" FromRole="PACIENTE_VACINA" ToRole="PACIENTE" />
+          <NavigationProperty Name="USUARIO" Relationship="CRMSysDBModel.FK_PACIENTE_VACINA_USUARIO" FromRole="PACIENTE_VACINA" ToRole="USUARIO" />
+          <NavigationProperty Name="VACINA" Relationship="CRMSysDBModel.FK_PACIENTE_VACINA_VACINA" FromRole="PACIENTE_VACINA" ToRole="VACINA" />
+        </EntityType>
+        <EntityType Name="VACINA">
+          <Key>
+            <PropertyRef Name="VACI_CD_ID" />
+          </Key>
+          <Property Name="VACI_CD_ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="ASSI_CD_ID" Type="Int32" Nullable="false" />
+          <Property Name="VACI_NM_NOME" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
+          <Property Name="VACI_NM_FABRICANTE" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
+          <Property Name="VACI_NR_PERIODO" Type="Int32" />
+          <Property Name="VACI_IN_ATIVO" Type="Int32" />
+          <Property Name="VACI_DS_DESCRICAO" Type="String" MaxLength="500" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="PACIENTE_VACINA" Relationship="CRMSysDBModel.FK_PACIENTE_VACINA_VACINA" FromRole="VACINA" ToRole="PACIENTE_VACINA" />
+        </EntityType>
+        <Association Name="FK_PACIENTE_VACINA_PACIENTE">
+          <End Type="CRMSysDBModel.PACIENTE" Role="PACIENTE" Multiplicity="1" />
+          <End Type="CRMSysDBModel.PACIENTE_VACINA" Role="PACIENTE_VACINA" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="PACIENTE">
+              <PropertyRef Name="PACI__CD_ID" />
+            </Principal>
+            <Dependent Role="PACIENTE_VACINA">
+              <PropertyRef Name="PACI_CD_ID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_PACIENTE_VACINA_USUARIO">
+          <End Type="CRMSysDBModel.USUARIO" Role="USUARIO" Multiplicity="1" />
+          <End Type="CRMSysDBModel.PACIENTE_VACINA" Role="PACIENTE_VACINA" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="USUARIO">
+              <PropertyRef Name="USUA_CD_ID" />
+            </Principal>
+            <Dependent Role="PACIENTE_VACINA">
+              <PropertyRef Name="USUA_CD_ID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_PACIENTE_VACINA_VACINA">
+          <End Type="CRMSysDBModel.VACINA" Role="VACINA" Multiplicity="0..1" />
+          <End Type="CRMSysDBModel.PACIENTE_VACINA" Role="PACIENTE_VACINA" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="VACINA">
+              <PropertyRef Name="VACI_CD_ID" />
+            </Principal>
+            <Dependent Role="PACIENTE_VACINA">
+              <PropertyRef Name="VACI_CD_ID" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -48953,6 +49111,34 @@
                 <ScalarProperty Name="AREA_CD_ID" ColumnName="AREA_CD_ID" />
                 <ScalarProperty Name="ASSI_CD_ID" ColumnName="ASSI_CD_ID" />
                 <ScalarProperty Name="APAN_CD_ID" ColumnName="APAN_CD_ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="PACIENTE_VACINA">
+            <EntityTypeMapping TypeName="CRMSysDBModel.PACIENTE_VACINA">
+              <MappingFragment StoreEntitySet="PACIENTE_VACINA">
+                <ScalarProperty Name="PAVI_DT_PROXIMA" ColumnName="PAVI_DT_PROXIMA" />
+                <ScalarProperty Name="PAVI_DS_DESCRICAO" ColumnName="PAVI_DS_DESCRICAO" />
+                <ScalarProperty Name="PAVI_IN_ATIVO" ColumnName="PAVI_IN_ATIVO" />
+                <ScalarProperty Name="PAVI_DT_DATA" ColumnName="PAVI_DT_DATA" />
+                <ScalarProperty Name="VACI_CD_ID" ColumnName="VACI_CD_ID" />
+                <ScalarProperty Name="USUA_CD_ID" ColumnName="USUA_CD_ID" />
+                <ScalarProperty Name="PACI_CD_ID" ColumnName="PACI_CD_ID" />
+                <ScalarProperty Name="ASSI_CD_ID" ColumnName="ASSI_CD_ID" />
+                <ScalarProperty Name="PAVI_CD_ID" ColumnName="PAVI_CD_ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="VACINA">
+            <EntityTypeMapping TypeName="CRMSysDBModel.VACINA">
+              <MappingFragment StoreEntitySet="VACINA">
+                <ScalarProperty Name="VACI_DS_DESCRICAO" ColumnName="VACI_DS_DESCRICAO" />
+                <ScalarProperty Name="VACI_IN_ATIVO" ColumnName="VACI_IN_ATIVO" />
+                <ScalarProperty Name="VACI_NR_PERIODO" ColumnName="VACI_NR_PERIODO" />
+                <ScalarProperty Name="VACI_NM_FABRICANTE" ColumnName="VACI_NM_FABRICANTE" />
+                <ScalarProperty Name="VACI_NM_NOME" ColumnName="VACI_NM_NOME" />
+                <ScalarProperty Name="ASSI_CD_ID" ColumnName="ASSI_CD_ID" />
+                <ScalarProperty Name="VACI_CD_ID" ColumnName="VACI_CD_ID" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

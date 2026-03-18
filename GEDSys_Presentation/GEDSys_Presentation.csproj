@@ -572,6 +572,7 @@
     <Compile Include="ViewModels\MedicoEnvioViewModel.cs" />
     <Compile Include="ViewModels\LocacaoViewModel.cs" />
     <Compile Include="ViewModels\NoticiaComentarioViewModel.cs" />
+    <Compile Include="ViewModels\PacienteVacinaViewModel.cs" />
     <Compile Include="ViewModels\PacienteRespostaViewModel.cs" />
     <Compile Include="ViewModels\QuestionarioBangViewModel.cs" />
     <Compile Include="ViewModels\QuestionarioEpworthViewModel.cs" />
@@ -5479,6 +5480,8 @@
     <Content Include="Views\AreaPaciente\ProcessarResultadoExameTela.cshtml" />
     <Content Include="Views\AreaPaciente\VerAnexoExamePaciente.cshtml" />
     <Content Include="Views\AreaPaciente\VerAnexoExamePacienteAudio.cshtml" />
+    <Content Include="Views\Paciente\IncluirVacina.cshtml" />
+    <Content Include="Views\Paciente\EditarVacina.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

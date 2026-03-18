@@ -6334,7 +6334,7 @@ namespace GEDSys_Presentation.App_Start {
         }
         
         /// <summary>
-        ///   Consulta uma cadeia de caracteres localizada semelhante a A data de emissão do atestado não pode ser maior que a data corrente.
+        ///   Consulta uma cadeia de caracteres localizada semelhante a A data não pode ser maior que a data corrente.
         /// </summary>
         internal static string M0719 {
             get {

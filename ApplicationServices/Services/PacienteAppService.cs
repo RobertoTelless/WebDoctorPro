@@ -2063,5 +2063,56 @@ namespace ApplicationServices.Services
             }
         }
 
+        public List<PACIENTE_VACINA> GetAllVacina(Int32 idAss)
+        {
+            return _baseService.GetAllVacina(idAss);
+        }
+
+        public PACIENTE_VACINA GetVacinaById(Int32 id)
+        {
+            PACIENTE_VACINA lista = _baseService.GetVacinaById(id);
+            return lista;
+        }
+
+        public Int32 ValidateEditVacina(PACIENTE_VACINA item)
+        {
+            try
+            {
+                // Persiste
+                return _baseService.EditVacina(item);
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
+        public Int32 ValidateCreateVacina(PACIENTE_VACINA item)
+        {
+            try
+            {
+                item.PAVI_IN_ATIVO = 1;
+
+                // Persiste
+                Int32 volta = _baseService.CreateVacina(item);
+                return volta;
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
+        public List<VACINA> GetAllVacinas(Int32 idAss)
+        {
+            return _baseService.GetAllVacinas(idAss);
+        }
+
+        public VACINA GetVacinasById(Int32 id)
+        {
+            VACINA lista = _baseService.GetVacinasById(id);
+            return lista;
+        }
+
     }
 }

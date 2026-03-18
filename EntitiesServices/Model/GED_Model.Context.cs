@@ -416,5 +416,7 @@ namespace EntitiesServices.Model
         public virtual DbSet<PACIENTE_EXAME_ANEXO_IMAGEM> PACIENTE_EXAME_ANEXO_IMAGEM { get; set; }
         public virtual DbSet<AREA_PACIENTE> AREA_PACIENTE { get; set; }
         public virtual DbSet<AREA_PACIENTE_ANEXO> AREA_PACIENTE_ANEXO { get; set; }
+        public virtual DbSet<PACIENTE_VACINA> PACIENTE_VACINA { get; set; }
+        public virtual DbSet<VACINA> VACINA { get; set; }
     }
 }

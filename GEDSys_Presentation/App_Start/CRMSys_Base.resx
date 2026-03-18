@@ -2209,7 +2209,7 @@
     <value>O favorecido deve ser informado</value>
   </data>
   <data name="M0719" xml:space="preserve">
-    <value>A data de emissão do atestado não pode ser maior que a data corrente</value>
+    <value>A data não pode ser maior que a data corrente</value>
   </data>
   <data name="M0720" xml:space="preserve">
     <value>A data de emissão não pode ser inferior a data corrente</value>

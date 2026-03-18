@@ -167,5 +167,12 @@ namespace ApplicationServices.Interfaces
         Int32 ValidateCreateConsultaMaterial(PACIENTE_CONSULTA_MATERIAL item);
         List<PACIENTE_CONSULTA_MATERIAL> GetAllConsultaMaterial(Int32 idAss);
 
+        PACIENTE_VACINA GetVacinaById(Int32 id);
+        Int32 ValidateEditVacina(PACIENTE_VACINA item);
+        Int32 ValidateCreateVacina(PACIENTE_VACINA item);
+        List<PACIENTE_VACINA> GetAllVacina(Int32 idAss);
+        VACINA GetVacinasById(Int32 id);
+        List<VACINA> GetAllVacinas(Int32 idAss);
+
     }
 }

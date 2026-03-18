@@ -1168,6 +1168,11 @@
         <AssociationConnector Association="CRMSysDBModel.FK_AREA_PACIENTE_TIPO_EXAME" />
         <AssociationConnector Association="CRMSysDBModel.FK_AREA_PACIENTE_LOCACAO" />
         <AssociationConnector Association="CRMSysDBModel.FK_NOTICIA_COMENTARIO_PACIENTE" />
+        <EntityTypeShape EntityType="CRMSysDBModel.PACIENTE_VACINA" Width="1.5" PointX="30" PointY="571.125" />
+        <EntityTypeShape EntityType="CRMSysDBModel.VACINA" Width="1.5" PointX="27.75" PointY="594.5" />
+        <AssociationConnector Association="CRMSysDBModel.FK_PACIENTE_VACINA_PACIENTE" />
+        <AssociationConnector Association="CRMSysDBModel.FK_PACIENTE_VACINA_USUARIO" />
+        <AssociationConnector Association="CRMSysDBModel.FK_PACIENTE_VACINA_VACINA" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

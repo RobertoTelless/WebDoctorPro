@@ -244,7 +244,9 @@
     <Compile Include="Interfaces\Repositories\ILocacaoRepository.cs" />
     <Compile Include="Interfaces\Repositories\INoticiaComentarioRepository.cs" />
     <Compile Include="Interfaces\Repositories\INoticiaRepository.cs" />
+    <Compile Include="Interfaces\Repositories\IPacienteVacinaRepository.cs" />
     <Compile Include="Interfaces\Repositories\IPacienteConsultaMaterialRepository.cs" />
+    <Compile Include="Interfaces\Repositories\IVacinaRepository.cs" />
     <Compile Include="Interfaces\Repositories\IValorConsultaMaterialRepository.cs" />
     <Compile Include="Interfaces\Repositories\IRespostaConsultaRepository.cs" />
     <Compile Include="Interfaces\Repositories\IQuestionarioBangRepository.cs" />
@@ -1157,6 +1159,9 @@
     <Compile Include="Model\PACIENTE_SOLICITACAO.cs">
       <DependentUpon>GED_Model.tt</DependentUpon>
     </Compile>
+    <Compile Include="Model\PACIENTE_VACINA.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
     <Compile Include="Model\PAGAMENTO_ANEXO.cs">
       <DependentUpon>GED_Model.tt</DependentUpon>
     </Compile>
@@ -1565,6 +1570,9 @@
     <Compile Include="Model\USUARIO_LOGIN.cs">
       <DependentUpon>GED_Model.tt</DependentUpon>
     </Compile>
+    <Compile Include="Model\VACINA.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
     <Compile Include="Model\VALOR_CONSULTA.cs">
       <DependentUpon>GED_Model.tt</DependentUpon>
     </Compile>
@@ -1622,6 +1630,7 @@
     <Compile Include="WorkClasses\CEP.cs" />
     <Compile Include="WorkClasses\DTO_Area_Paciente_Anexo.cs" />
     <Compile Include="WorkClasses\DTO_GrupoPaciente.cs" />
+    <Compile Include="WorkClasses\DTO_Paciente_Vacina.cs" />
     <Compile Include="WorkClasses\DTO_ModeloEMailHTML.cs" />
     <Compile Include="WorkClasses\DTO_ModeloEMail.cs" />
     <Compile Include="WorkClasses\DTO_ModeloSMS.cs" />

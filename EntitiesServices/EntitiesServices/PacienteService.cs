@@ -59,10 +59,12 @@ namespace ModelServices.EntitiesServices
         private readonly IRacaRepository _racaRepository;
         private readonly IRespostaConsultaRepository _respRepository;
         private readonly IPacienteConsultaMaterialRepository _matRepository;
+        private readonly IPacienteVacinaRepository _vacRepository;
+        private readonly IVacinaRepository _vaciRepository;
 
         protected CRMSysDBEntities Db = new CRMSysDBEntities();
 
-        public PacienteService(IPacienteRepository baseRepository, ILogRepository logRepository, ITipoPacienteRepository tipoRepository, IPacienteAnexoRepository anexoRepository, IUsuarioRepository usuRepository, IPacienteAnotacaoRepository anoRepository, IUFRepository uFRepository, ISexoRepository sexoRepository, ICorRepository corRepository, ITipoPessoaRepository pesRepository, ILinguaRepository linRepository, INacionalidadeRepository nacRepository, IMunicipioRepository munRepository, IEstadoCivilRepository esciRepository, IConvenioRepository convRepository, IGrauRepository grauRepository, ITipoExameRepository texRepository, IPacienteConsultaRepository pconRepository, IPacienteAnamneseRepository panRepository, IPacientePrescricaoRepository presRepository, IPacienteExamesRepository pexRepository, IPacienteExameFisicoRepository pexfRepository, ITipoControleRepository tcRepository, ITipoAtestadoRepository ateRepository, IPacienteSolicitacaoRepository pasoRepository, IPacienteAtestadoRepository patRepository, IGrauParentescoRepository gpRepository, IPacienteContatoRepository pcRepository, IGrupoContatoRepository gruRepository, IPacienteExameAnexoRepository eaxRepository, IPacienteExameAnotacaoRepository eanRepository, ITipoFormaRepository tfRepository, IPacientePrescricaoItemRepository piRepository, IPacienteHistoricoRepository phRepository, ILaboratorioRepository labRepository, IControleVersaoRepository cvRepository, IPacienteFichaRepository ficRepository, IPacienteAnamneseAnotacaoRepository anaRepository, IPacienteLoginRepository loginRepository, ITemplateRepository tempRepository, IConfiguracaoRepository configuracaoRepository, IPacienteDadosExameFisicoRepository pdRepository, IQuestionarioBerlimRepository qbRepository, IQuestionarioEpworthRepository epRepository, IQuestionarioBangRepository bgRepository,IRacaRepository racaRepository, IRespostaConsultaRepository respRepository, IPacienteConsultaMaterialRepository matRepository) : base(baseRepository)
+        public PacienteService(IPacienteRepository baseRepository, ILogRepository logRepository, ITipoPacienteRepository tipoRepository, IPacienteAnexoRepository anexoRepository, IUsuarioRepository usuRepository, IPacienteAnotacaoRepository anoRepository, IUFRepository uFRepository, ISexoRepository sexoRepository, ICorRepository corRepository, ITipoPessoaRepository pesRepository, ILinguaRepository linRepository, INacionalidadeRepository nacRepository, IMunicipioRepository munRepository, IEstadoCivilRepository esciRepository, IConvenioRepository convRepository, IGrauRepository grauRepository, ITipoExameRepository texRepository, IPacienteConsultaRepository pconRepository, IPacienteAnamneseRepository panRepository, IPacientePrescricaoRepository presRepository, IPacienteExamesRepository pexRepository, IPacienteExameFisicoRepository pexfRepository, ITipoControleRepository tcRepository, ITipoAtestadoRepository ateRepository, IPacienteSolicitacaoRepository pasoRepository, IPacienteAtestadoRepository patRepository, IGrauParentescoRepository gpRepository, IPacienteContatoRepository pcRepository, IGrupoContatoRepository gruRepository, IPacienteExameAnexoRepository eaxRepository, IPacienteExameAnotacaoRepository eanRepository, ITipoFormaRepository tfRepository, IPacientePrescricaoItemRepository piRepository, IPacienteHistoricoRepository phRepository, ILaboratorioRepository labRepository, IControleVersaoRepository cvRepository, IPacienteFichaRepository ficRepository, IPacienteAnamneseAnotacaoRepository anaRepository, IPacienteLoginRepository loginRepository, ITemplateRepository tempRepository, IConfiguracaoRepository configuracaoRepository, IPacienteDadosExameFisicoRepository pdRepository, IQuestionarioBerlimRepository qbRepository, IQuestionarioEpworthRepository epRepository, IQuestionarioBangRepository bgRepository,IRacaRepository racaRepository, IRespostaConsultaRepository respRepository, IPacienteConsultaMaterialRepository matRepository, IPacienteVacinaRepository vacRepository, IVacinaRepository vaciRepository) : base(baseRepository)
         {
             _baseRepository = baseRepository;
             _logRepository = logRepository;
@@ -112,6 +114,8 @@ namespace ModelServices.EntitiesServices
             _racaRepository = racaRepository;
             _respRepository = respRepository;
             _matRepository = matRepository;
+            _vacRepository = vacRepository;
+            _vaciRepository = vaciRepository;
         }
 
         public CONFIGURACAO CarregaConfiguracao(Int32 id)
@@ -1594,6 +1598,64 @@ namespace ModelServices.EntitiesServices
                     throw ex;
                 }
             }
+        }
+
+        public PACIENTE_VACINA GetVacinaById(Int32 id)
+        {
+            return _vacRepository.GetItemById(id);
+        }
+
+        public List<PACIENTE_VACINA> GetAllVacina(Int32 idAss)
+        {
+            return _vacRepository.GetAllItens(idAss);
+        }
+
+        public Int32 EditVacina(PACIENTE_VACINA item)
+        {
+            using (DbContextTransaction transaction = Db.Database.BeginTransaction(IsolationLevel.ReadCommitted))
+            {
+                try
+                {
+                    PACIENTE_VACINA obj = _vacRepository.GetById(item.PAVI_CD_ID);
+                    _vacRepository.Detach(obj);
+                    _vacRepository.Update(item);
+                    transaction.Commit();
+                    return 0;
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    throw ex;
+                }
+            }
+        }
+
+        public Int32 CreateVacina(PACIENTE_VACINA item)
+        {
+            using (DbContextTransaction transaction = Db.Database.BeginTransaction(IsolationLevel.ReadCommitted))
+            {
+                try
+                {
+                    _vacRepository.Add(item);
+                    transaction.Commit();
+                    return 0;
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    throw ex;
+                }
+            }
+        }
+
+        public VACINA GetVacinasById(Int32 id)
+        {
+            return _vaciRepository.GetItemById(id);
+        }
+
+        public List<VACINA> GetAllVacinas(Int32 idAss)
+        {
+            return _vaciRepository.GetAllItens(idAss);
         }
 
     }

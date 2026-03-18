@@ -211,6 +211,35 @@
     @Styles.Render("~/Content/plugins/dataTables/dataTablesStyles")
     @Styles.Render("~/plugins/jasnyBootstrapStyles")
     @Styles.Render("~/plugins/toastrStyles")
+
+    <style>
+        /* 1. Aumenta a largura e garante o espaço interno */
+        #toast-container > .toast {
+            width: 500px !important; 
+            max-width: 500px !important;
+            opacity: 0.95 !important;
+        }
+
+        /* 2. Remove o ícone nativo do Toastr (Background Image) */
+        #toast-container > .toast-success {
+            background-image: none !important;
+        }
+
+        /* 3. Remove ícones do FontAwesome/Inspinia injetados via ::before no Título */
+        .toast-success .toast-title::before, 
+        .toast-success .toast-title::after,
+        .toast-success::before {
+            content: none !important;
+            display: none !important;
+        }
+
+        /* 4. Ajusta o recuo do texto já que removemos o ícone */
+        .toast-success .toast-title, 
+        .toast-success .toast-message {
+            padding-left: 10px !important;
+        }
+    </style>
+
 }
 @section Scripts {
     <script type="text/javascript" src="~/Scripts/moment.min.js"></script>
@@ -351,6 +380,79 @@
 
         });
     </script>
+
+    <script type="text/javascript">
+        // 1. FUNÇÃO GLOBAL (Define O QUE o alerta faz)
+        function ExibirMensagem(tipo, mensagem, titulo) {
+            titulo = titulo || 'WebDoctor';
+            
+            // Mapeamento de tipos (aceita nomes ou números do C#)
+            if (tipo === 'sucesso' || tipo === 1) {
+                toastr.success(mensagem, titulo);
+            } else if (tipo === 'erro' || tipo === 2) {
+                toastr.error(mensagem, titulo);
+            } else if (tipo === 'aviso' || tipo === 3) {
+                toastr.warning(mensagem, titulo);
+            } else {
+                toastr.info(mensagem, titulo);
+            }
+        }
+
+        $(document).ready(function () {
+            // 2. CONFIGURAÇÕES GLOBAIS DO TOASTR (Define COMO o alerta aparece)
+            toastr.options = {
+                "closeButton": true,
+                "progressBar": true,
+                "preventDuplicates": false,
+                "positionClass": "toast-top-right",
+                "showDuration": "400",
+                "hideDuration": "1000",
+                "timeOut": "15000",
+                "extendedTimeOut": "5000",
+                "showEasing": "swing",
+                "hideEasing": "linear",
+                "showMethod": "fadeIn",
+                "hideMethod": "fadeOut"
+            };
+
+            // 3. CAPTURA MENSAGENS DO SERVIDOR (TempData do C#)
+            var msgSucesso = '@TempData["MensagemAcerto"]';
+            if (msgSucesso != '') ExibirMensagem('sucesso', msgSucesso, 'Sucesso!');
+
+            var msgErro = '@TempData["MensagemErro"]';
+            if (msgErro != '') ExibirMensagem('erro', msgErro, 'Erro!');
+
+            // 4. VALIDAÇÃO DO ARQUIVO (Evento disparado pelo input id="file")
+            $('#file').on('change', function () {
+                var arquivo = this.files[0];
+                var limiteTamanho = 50 * 1024 * 1024; // 50MB (Conforme seu código)
+                var extensoesPermitidas = ['pdf'];
+
+                if (arquivo) {
+                    var nomeArquivo = arquivo.name;
+                    var extensao = nomeArquivo.split('.').pop().toLowerCase();
+
+                    // Validação de Extensão
+                    if ($.inArray(extensao, extensoesPermitidas) == -1) {
+                        ExibirMensagem('erro', 'A extensão .' + extensao + ' não é permitida.', 'Arquivo Inválido');
+                        $(this).val(''); 
+                        return false;
+                    }
+
+                    // Validação de Tamanho
+                    if (arquivo.size > limiteTamanho) {
+                        ExibirMensagem('aviso', 'O arquivo excede o limite de 50MB.', 'Arquivo muito pesado');
+                        $(this).val(''); 
+                        return false;
+                    }
+
+                    // Sucesso na validação local
+                    ExibirMensagem('sucesso', 'Arquivo "' + nomeArquivo + '" pronto para upload.', 'Validado');
+                }
+            });
+        });
+    </script>
+
 
     @if (ViewBag.Message != null)
     {
