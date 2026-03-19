@@ -174,5 +174,9 @@ namespace ModelServices.Interfaces.EntitiesServices
         List<PACIENTE_VACINA> GetAllVacina(Int32 idAss);
         List<VACINA> GetAllVacinas(Int32 idAss);
         VACINA GetVacinasById(Int32 id);
+
+        Int32 CreateAnexoImagem(PACIENTE_EXAME_ANEXO_IMAGEM item);
+        List<PACIENTE_EXAME_ANEXO_IMAGEM> GetPontosById(Int32 id);
+
     }
 }

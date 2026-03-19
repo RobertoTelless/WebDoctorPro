@@ -1161,6 +1161,12 @@
           <Property Name="CONF_NM_SENHA_PACIENTE" Type="varchar" MaxLength="50" />
           <Property Name="CONF_IN_RECIBO_SRF" Type="int" />
           <Property Name="CONF_IN_DOC_PRONTUARIO" Type="int" />
+          <Property Name="CONF_IN_ABA_VACINA" Type="int" />
+          <Property Name="CONF_IN_ABA_EXAME" Type="int" />
+          <Property Name="CONF_IN_ABA_ATESTADO" Type="int" />
+          <Property Name="CONF_IN_ABA_SOLICITACAO" Type="int" />
+          <Property Name="CONF_IN_ABA_PRESCRICAO" Type="int" />
+          <Property Name="CONF_IN_ABA_LOCACAO" Type="int" />
         </EntityType>
         <EntityType Name="CONFIGURACAO_ANAMNESE">
           <Key>
@@ -4390,6 +4396,8 @@
           <Property Name="PAIM_DS_TEXTO" Type="varchar" MaxLength="500" />
           <Property Name="PAIM_DT_CRIACAO" Type="date" />
           <Property Name="PAIM_IN_ATIVO" Type="int" />
+          <Property Name="PAIM_VL_X" Type="float" Nullable="false" />
+          <Property Name="PAIM_VL_Y" Type="float" Nullable="false" />
         </EntityType>
         <EntityType Name="PACIENTE_EXAME_ANOTACAO">
           <Key>
@@ -21359,6 +21367,12 @@
           <Property Name="CONF_NM_SENHA_PACIENTE" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
           <Property Name="CONF_IN_RECIBO_SRF" Type="Int32" />
           <Property Name="CONF_IN_DOC_PRONTUARIO" Type="Int32" />
+          <Property Name="CONF_IN_ABA_VACINA" Type="Int32" />
+          <Property Name="CONF_IN_ABA_EXAME" Type="Int32" />
+          <Property Name="CONF_IN_ABA_ATESTADO" Type="Int32" />
+          <Property Name="CONF_IN_ABA_SOLICITACAO" Type="Int32" />
+          <Property Name="CONF_IN_ABA_PRESCRICAO" Type="Int32" />
+          <Property Name="CONF_IN_ABA_LOCACAO" Type="Int32" />
         </EntityType>
         <EntityType Name="CONFIGURACAO_ANAMNESE">
           <Key>
@@ -41318,6 +41332,8 @@
           <Property Name="PAIM_IN_ATIVO" Type="Int32" />
           <NavigationProperty Name="PACIENTE_EXAME_ANEXO" Relationship="CRMSysDBModel.FK_PACIENTE_EXAME_ANEXO_IMAGEM_PACIENTE_EXAME_ANEXO" FromRole="PACIENTE_EXAME_ANEXO_IMAGEM" ToRole="PACIENTE_EXAME_ANEXO" />
           <NavigationProperty Name="PACIENTE_EXAMES" Relationship="CRMSysDBModel.FK_PACIENTE_EXAME_ANEXO_IMAGEM_PACIENTE_EXAMES" FromRole="PACIENTE_EXAME_ANEXO_IMAGEM" ToRole="PACIENTE_EXAMES" />
+          <Property Name="PAIM_VL_X" Type="Double" Nullable="false" />
+          <Property Name="PAIM_VL_Y" Type="Double" Nullable="false" />
         </EntityType>
         <Association Name="FK_PACIENTE_EXAME_ANEXO_IMAGEM_PACIENTE_EXAME_ANEXO">
           <End Type="CRMSysDBModel.PACIENTE_EXAME_ANEXO" Role="PACIENTE_EXAME_ANEXO" Multiplicity="0..1" />
@@ -42564,6 +42580,12 @@
           <EntitySetMapping Name="CONFIGURACAO">
             <EntityTypeMapping TypeName="CRMSysDBModel.CONFIGURACAO">
               <MappingFragment StoreEntitySet="CONFIGURACAO">
+                <ScalarProperty Name="CONF_IN_ABA_LOCACAO" ColumnName="CONF_IN_ABA_LOCACAO" />
+                <ScalarProperty Name="CONF_IN_ABA_PRESCRICAO" ColumnName="CONF_IN_ABA_PRESCRICAO" />
+                <ScalarProperty Name="CONF_IN_ABA_SOLICITACAO" ColumnName="CONF_IN_ABA_SOLICITACAO" />
+                <ScalarProperty Name="CONF_IN_ABA_ATESTADO" ColumnName="CONF_IN_ABA_ATESTADO" />
+                <ScalarProperty Name="CONF_IN_ABA_EXAME" ColumnName="CONF_IN_ABA_EXAME" />
+                <ScalarProperty Name="CONF_IN_ABA_VACINA" ColumnName="CONF_IN_ABA_VACINA" />
                 <ScalarProperty Name="CONF_IN_DOC_PRONTUARIO" ColumnName="CONF_IN_DOC_PRONTUARIO" />
                 <ScalarProperty Name="CONF_IN_RECIBO_SRF" ColumnName="CONF_IN_RECIBO_SRF" />
                 <ScalarProperty Name="CONF_NM_SENHA_PACIENTE" ColumnName="CONF_NM_SENHA_PACIENTE" />
@@ -49055,6 +49077,8 @@
           <EntitySetMapping Name="PACIENTE_EXAME_ANEXO_IMAGEM">
             <EntityTypeMapping TypeName="CRMSysDBModel.PACIENTE_EXAME_ANEXO_IMAGEM">
               <MappingFragment StoreEntitySet="PACIENTE_EXAME_ANEXO_IMAGEM">
+                <ScalarProperty Name="PAIM_VL_Y" ColumnName="PAIM_VL_Y" />
+                <ScalarProperty Name="PAIM_VL_X" ColumnName="PAIM_VL_X" />
                 <ScalarProperty Name="PAIM_IN_ATIVO" ColumnName="PAIM_IN_ATIVO" />
                 <ScalarProperty Name="PAIM_DT_CRIACAO" ColumnName="PAIM_DT_CRIACAO" />
                 <ScalarProperty Name="PAIM_DS_TEXTO" ColumnName="PAIM_DS_TEXTO" />

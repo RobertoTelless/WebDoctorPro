@@ -249,6 +249,41 @@
                                                         @Html.ValidationMessageFor(m => m.CONF_NM_SENHA_PACIENTE, "", new { @style = "color:red" })
                                                     </div>
                                                 </div>
+
+                                                <div class="form-group">
+                                                    <h4 style="margin-left: 15px; color:green; background-color: beige; font-weight:bold">Visualização de Abas na Tela de Paciente</h4>
+                                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                                        Aba de Vacinas*
+                                                        @Html.DropDownListFor(m => m.CONF_IN_ABA_VACINA, (SelectList)ViewBag.AbaVac, "Selecionar", new { @class = "form-control", autofocus = true, data_toggle = "popover", data_content = "Define se a aba de vacinas será exibida na tela principal de pacientes", data_trigger="hover", data_placement="top" })
+                                                        @Html.ValidationMessageFor(m => m.CONF_IN_ABA_VACINA, "", new { @style = "color:red" })
+                                                    </div>
+                                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                                        Aba de Atestados*
+                                                        @Html.DropDownListFor(m => m.CONF_IN_ABA_ATESTADO, (SelectList)ViewBag.AbaAt, "Selecionar", new { @class = "form-control", autofocus = true, data_toggle = "popover", data_content = "Define se a aba de atestados será exibida na tela principal de pacientes", data_trigger="hover", data_placement="top" })
+                                                        @Html.ValidationMessageFor(m => m.CONF_IN_ABA_ATESTADO, "", new { @style = "color:red" })
+                                                    </div>
+                                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                                        Aba de Solicitações*
+                                                        @Html.DropDownListFor(m => m.CONF_IN_ABA_SOLICITACAO, (SelectList)ViewBag.AbaSol, "Selecionar", new { @class = "form-control", autofocus = true, data_toggle = "popover", data_content = "Define se a aba de solicitações de exames será exibida na tela principal de pacientes", data_trigger="hover", data_placement="top" })
+                                                        @Html.ValidationMessageFor(m => m.CONF_IN_ABA_SOLICITACAO, "", new { @style = "color:red" })
+                                                    </div>
+                                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                                        Aba de Exames*
+                                                        @Html.DropDownListFor(m => m.CONF_IN_ABA_EXAME, (SelectList)ViewBag.AbaEx, "Selecionar", new { @class = "form-control", autofocus = true, data_toggle = "popover", data_content = "Define se a aba de resultados de exames será exibida na tela principal de pacientes", data_trigger="hover", data_placement="top" })
+                                                        @Html.ValidationMessageFor(m => m.CONF_IN_ABA_EXAME, "", new { @style = "color:red" })
+                                                    </div>
+                                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                                        Aba de Prescrições*
+                                                        @Html.DropDownListFor(m => m.CONF_IN_ABA_PRESCRICAO, (SelectList)ViewBag.AbaPr, "Selecionar", new { @class = "form-control", autofocus = true, data_toggle = "popover", data_content = "Define se a aba de prescrições será exibida na tela principal de pacientes", data_trigger="hover", data_placement="top" })
+                                                        @Html.ValidationMessageFor(m => m.CONF_IN_ABA_PRESCRICAO, "", new { @style = "color:red" })
+                                                    </div>
+                                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                                        Aba de Locações*
+                                                        @Html.DropDownListFor(m => m.CONF_IN_ABA_LOCACAO, (SelectList)ViewBag.AbaLoc, "Selecionar", new { @class = "form-control", autofocus = true, data_toggle = "popover", data_content = "Define se a aba de locações será exibida na tela principal de pacientes", data_trigger="hover", data_placement="top" })
+                                                        @Html.ValidationMessageFor(m => m.CONF_IN_ABA_LOCACAO, "", new { @style = "color:red" })
+                                                    </div>
+                                                </div>
+
                                                 <div class="form-group">
                                                     <h4 style="margin-left: 15px; color:green; background-color: beige; font-weight:bold">Configurações de Consultas</h4>
                                                     <div class="col-lg-2 col-md-2 col-xs-12">

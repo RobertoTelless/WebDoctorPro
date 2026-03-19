@@ -2082,31 +2082,66 @@ namespace GEDSys_Presentation.Controllers
             }
         }
 
+        //[HttpPost]
+        //public void UploadFileToSession(IEnumerable<HttpPostedFileBase> files, String profile)
+        //{
+        //    List<FileQueue> queue = new List<FileQueue>();
+        //    foreach (var file in files)
+        //    {
+        //        FileQueue f = new FileQueue();
+        //        f.Name = Path.GetFileName(file.FileName);
+        //        f.ContentType = Path.GetExtension(file.FileName);
+
+        //        MemoryStream ms = new MemoryStream();
+        //        file.InputStream.CopyTo(ms);
+        //        f.Contents = ms.ToArray();
+
+        //        if (profile != null)
+        //        {
+        //            if (file.FileName.Equals(profile))
+        //            {
+        //                f.Profile = 1;
+        //            }
+        //        }
+        //        queue.Add(f);
+        //    }
+        //    Session["FileQueuePaciente"] = queue;
+        //}
+
         [HttpPost]
-        public void UploadFileToSession(IEnumerable<HttpPostedFileBase> files, String profile)
+        public JsonResult UploadFileToSession(HttpPostedFileBase file)
         {
-            List<FileQueue> queue = new List<FileQueue>();
-            foreach (var file in files)
+            if (file != null && file.ContentLength > 0)
             {
-                FileQueue f = new FileQueue();
-                f.Name = Path.GetFileName(file.FileName);
-                f.ContentType = Path.GetExtension(file.FileName);
-
-                MemoryStream ms = new MemoryStream();
-                file.InputStream.CopyTo(ms);
-                f.Contents = ms.ToArray();
-
-                if (profile != null)
+                byte[] data;
+                using (Stream inputStream = file.InputStream)
                 {
-                    if (file.FileName.Equals(profile))
+                    MemoryStream memoryStream = inputStream as MemoryStream;
+                    if (memoryStream == null)
                     {
-                        f.Profile = 1;
+                        memoryStream = new MemoryStream();
+                        inputStream.CopyTo(memoryStream);
                     }
+                    data = memoryStream.ToArray();
                 }
-                queue.Add(f);
+
+                // Recupera a fila da sessão ou cria uma nova
+                List<FileQueue> queue = Session["FileQueuePaciente"] as List<FileQueue> ?? new List<FileQueue>();
+
+                queue.Add(new FileQueue
+                {
+                    Name = file.FileName,
+                    ContentType = file.ContentType,
+                    Contents = data,
+                    Profile = 1 
+                });
+
+                Session["FileQueuePaciente"] = queue;
+                return Json(new { Sucesso = 1 });
             }
-            Session["FileQueuePaciente"] = queue;
+            return Json(new { Sucesso = 0 });
         }
+
 
         [HttpPost]
         public void UploadFileToSessionMensagem(IEnumerable<HttpPostedFileBase> files, String profile)
@@ -4487,6 +4522,20 @@ namespace GEDSys_Presentation.Controllers
 
                 String TextoPescocoGrosso = "Para homens, o colarinho da sua camisa é de 43 cm ou mais? Para mulheres, o colarinho da sua camisa é de 41 cm ou mais?";
                 ViewBag.Pescoco = TextoPescocoGrosso;
+
+                // Verifica abas
+                Session["AbaVac"] = conf.CONF_IN_ABA_VACINA;
+                Session["AbaAt"] = conf.CONF_IN_ABA_ATESTADO;
+                Session["AbaSol"] = conf.CONF_IN_ABA_SOLICITACAO;
+                Session["AbaEx"] = conf.CONF_IN_ABA_EXAME;
+                Session["AbaPr"] = conf.CONF_IN_ABA_PRESCRICAO;
+                Session["AbaLoc"] = conf.CONF_IN_ABA_LOCACAO;
+                Session["EscondeAba"] = 0;
+
+                if (conf.CONF_IN_ABA_VACINA == 0 || conf.CONF_IN_ABA_ATESTADO == 0 ||conf.CONF_IN_ABA_SOLICITACAO == 0 ||conf.CONF_IN_ABA_EXAME == 0 ||conf.CONF_IN_ABA_PRESCRICAO == 0 ||conf.CONF_IN_ABA_LOCACAO == 0)
+                {
+                    Session["EscondeAba"] = 1;
+                }
 
                 // Grava Acesso
                 ControleAcessoMetodo grava = new ControleAcessoMetodo(aceApp);
@@ -10831,6 +10880,7 @@ namespace GEDSys_Presentation.Controllers
                 PACIENTE_EXAME_ANEXO item = baseApp.GetExameAnexoById(id);
                 Session["NivelPaciente"] = 7;
                 Session["NivelExame"] = 2;
+                Session["IdAnexoExame"] = id;
 
                 // Grava Acesso
                 ControleAcessoMetodo grava = new ControleAcessoMetodo(aceApp);
@@ -10848,6 +10898,40 @@ namespace GEDSys_Presentation.Controllers
                 Int32 voltaX = grava.GravarLogExcecao(ex, "Paciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
                 return RedirectToAction("TrataExcecao", "BaseAdmin");
             }
+        }
+
+        [HttpPost]
+        public JsonResult SalvarAnotacaoPonto(int paeoId, double x, double y, string texto)
+        {
+            try
+            {
+                var novoPonto = new PACIENTE_EXAME_ANEXO_IMAGEM
+                {
+                    PAEO_CD_ID = paeoId,
+                    PAIM_VL_X = x,
+                    PAIM_VL_Y = y,
+                    PAIM_DS_TEXTO = texto
+                };
+                Int32 volta = baseApp.ValidateCreateAnexoImagem(novoPonto);
+                return Json(new { success = true, id = novoPonto.PAIM_CD_ID }); // Retorne o ID gerado
+            }
+            catch
+            {
+                return Json(new { success = false });
+            }
+        }
+
+        [HttpGet]
+        public JsonResult ListarAnotacoesPonto(int id)
+        {
+            var pontos = baseApp.GetPontosById(id);
+
+            var lista = new List<object>();
+            foreach (var item in pontos)
+            {
+                lista.Add(item);
+            }
+            return Json(lista, JsonRequestBehavior.AllowGet);
         }
 
         [HttpGet]
@@ -20915,6 +20999,7 @@ namespace GEDSys_Presentation.Controllers
                 }
                 ViewBag.Classe = classe;
 
+
                 // Recupera consulta
                 Session["NivelPaciente"] = 1;
                 PACIENTE_CONSULTA item = baseApp.GetConsultaById(id);
@@ -20924,7 +21009,7 @@ namespace GEDSys_Presentation.Controllers
                 // Recupera paciente
                 PACIENTE pac = baseApp.GetItemById(item.PACI_CD_ID);
                 vm.PACI_IN_COMPLETADO = pac.PACI_IN_COMPLETADO;
-                ViewBag.TemFicha = pac.PACI_IN_FICHAS;
+                ViewBag.TemFicha = pac.PACIENTE_FICHA.Count() > 0 ? 1 : 0;
 
                 // Recupera nome das fichas
                 String nomeFicha = String.Empty;
@@ -39522,6 +39607,7 @@ namespace GEDSys_Presentation.Controllers
                 vm.PAVI_DT_DATA = DateTime.Today.Date;
                 vm.USUA_CD_ID = usuario.USUA_CD_ID;
                 vm.ASSI_CD_ID = idAss;
+                vm.PACIENTE = pac;
 
                 // Grava Acesso
                 ControleAcessoMetodo grava = new ControleAcessoMetodo(aceApp);
@@ -39559,10 +39645,20 @@ namespace GEDSys_Presentation.Controllers
                     // Sanitização
                     vm.PAVI_DS_DESCRICAO = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(vm.PAVI_DS_DESCRICAO);
 
-                    // Critica
+                    // Critica data
                     if (vm.PAVI_DT_DATA.Value.Date > DateTime.Today.Date)
                     {
                         ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0719", CultureInfo.CurrentCulture));
+                        return View(vm);
+                    }
+
+                    // Critica de existencia
+                    PACIENTE pac = baseApp.GetItemById(vm.PACI_CD_ID);
+                    List<PACIENTE_VACINA> vacs = pac.PACIENTE_VACINA.ToList();
+                    PACIENTE_VACINA pc = vacs.Where(p => p.VACI_CD_ID == vm.VACI_CD_ID & p.PAVI_DT_DATA.Value.Date == vm.PAVI_DT_DATA.Value.Date & p.PAVI_IN_ATIVO == 1 ).FirstOrDefault();
+                    if (pc != null)
+                    {
+                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0739", CultureInfo.CurrentCulture));
                         return View(vm);
                     }
 
@@ -39573,7 +39669,6 @@ namespace GEDSys_Presentation.Controllers
 
                     // Executa a operação
                     CONFIGURACAO conf = CarregaConfiguracaoGeral();
-                    PACIENTE pac = baseApp.GetItemById(vm.PACI_CD_ID);
                     PACIENTE_VACINA item = Mapper.Map<PacienteVacinaViewModel, PACIENTE_VACINA>(vm);
                     Int32 volta = baseApp.ValidateCreateVacina(item);
 
@@ -39581,7 +39676,6 @@ namespace GEDSys_Presentation.Controllers
                     Session["IdVacina"] = item.PAVI_CD_ID;
                     Session["PacienteAlterada"] = 1;
                     Session["NivelPaciente"] = 18;
-                    Session["IdPaciente"] = item.PACI_CD_ID;
 
                     // Configura serilização
                     JsonSerializerSettings settings = new JsonSerializerSettings
@@ -39608,6 +39702,7 @@ namespace GEDSys_Presentation.Controllers
                     // Grava historico
                     PACIENTE_HISTORICO hist = new PACIENTE_HISTORICO();
                     PACIENTE pac1 = baseApp.GetItemById(vm.PACI_CD_ID);
+                    VACINA vac1 = baseApp.GetVacinasById(item.VACI_CD_ID.Value);
                     hist.ASSI_CD_ID = usuarioLogado.ASSI_CD_ID;
                     hist.USUA_CD_ID = usuarioLogado.USUA_CD_ID;
                     hist.PACI_CD_ID = item.PACI_CD_ID;
@@ -39615,7 +39710,7 @@ namespace GEDSys_Presentation.Controllers
                     hist.PAHI_IN_TIPO = 15;
                     hist.PAHI_IN_CHAVE = item.PAVI_CD_ID;
                     hist.PAHI_NM_OPERACAO = "Paciente - Inclusão de vacina";
-                    hist.PAHI_DS_DESCRICAO = "Paciente: " + pac1.PACI_NM_NOME + " - Vacina: " + item.VACINA.VACI_NM_NOME;
+                    hist.PAHI_DS_DESCRICAO = "Paciente: " + pac1.PACI_NM_NOME + " - Vacina: " + vac1.VACI_NM_NOME;
                     Int32 voltaHist = baseApp.ValidateCreateHistorico(hist);
 
                     // Atualiza prontuário
@@ -39624,12 +39719,14 @@ namespace GEDSys_Presentation.Controllers
                         PACIENTE_ANAMNESE ana = pac1.PACIENTE_ANAMNESE.Where(p => p.PAAM_IN_ATIVO == 1).FirstOrDefault();
                         PACIENTE_ANAMNESE anan = RemontarAnamnese(ana);
                         String velho = anan.PAAM_TX_TEXTO_LIVRE;
-                        String novo = "Informação de Vacina " + item.VACINA.VACI_NM_NOME.ToUpper();
+                        String novo = "Informação de Vacina " + vac1.VACI_NM_NOME.ToUpper() + "\r\n";
+                        novo += "Fabricante: " + vac1.VACI_NM_FABRICANTE.ToUpper() + "\r\n";
+                        novo += item.PAVI_DS_DESCRICAO;
                         String dataHoje = DateTime.Today.Date.ToLongDateString();
                         dataHoje = "*** Informado em [" + dataHoje + "] ***";
+                        String anot = dataHoje + "\r\n" + novo;
                         if (anan.PAAM_TX_TEXTO_LIVRE != null)
                         {
-                            String anot = dataHoje + "\r\n" + novo;
                             if (velho == null & novo != String.Empty)
                             {
                                 anan.PAAM_TX_TEXTO_LIVRE = dataHoje + "\r\n" + novo;
@@ -39647,7 +39744,7 @@ namespace GEDSys_Presentation.Controllers
                         else
                         {
                             velho = anan.PAAM_TX_TEXTO_LIVRE;
-                            anan.PAAM_TX_TEXTO_LIVRE = velho;
+                            anan.PAAM_TX_TEXTO_LIVRE = anot;
                         }
 
                         // Executa a operação
@@ -39656,7 +39753,7 @@ namespace GEDSys_Presentation.Controllers
                     }
 
                     // Mensagem do CRUD
-                    Session["MsgCRUD"] = "A vacina " + item.VACINA.VACI_NM_NOME.ToUpper() + "foi informada para o(a) paciente " + pac1.PACI_NM_NOME.ToUpper();
+                    Session["MsgCRUD"] = "A vacina " + vac1.VACI_NM_NOME.ToUpper() + " foi informada para o(a) paciente " + pac1.PACI_NM_NOME.ToUpper();
                     Session["MensPaciente"] = 61;
                     Session["NivelPaciente"] = 18;
 
@@ -39883,18 +39980,6 @@ namespace GEDSys_Presentation.Controllers
                     // Sanitização
                     vm.PAVI_DS_DESCRICAO = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(vm.PAVI_DS_DESCRICAO);
 
-                    // Critica
-                    if (vm.PAVI_DT_DATA.Value.Date > DateTime.Today.Date)
-                    {
-                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0719", CultureInfo.CurrentCulture));
-                        return View(vm);
-                    }
-
-                    // Calcula proxima
-                    VACINA vac = baseApp.GetVacinasById(vm.VACI_CD_ID.Value);
-                    DateTime prox = vm.PAVI_DT_DATA.Value.AddMonths(vac.VACI_NR_PERIODO.Value);
-                    vm.PAVI_DT_PROXIMA = prox;
-
                     // Executa a operação
                     PACIENTE_VACINA item = Mapper.Map<PacienteVacinaViewModel, PACIENTE_VACINA>(vm);
                     Int32 volta = baseApp.ValidateEditVacina(item);
@@ -39963,6 +40048,15 @@ namespace GEDSys_Presentation.Controllers
             {
                 return View(vm);
             }
+        }
+
+        public JsonResult GetVacina(Int32 id)
+        {
+            var medic = baseApp.GetVacinasById(id);
+            var hash = new Hashtable();
+            hash.Add("meses", medic.VACI_NR_PERIODO.ToString());
+            hash.Add("fab", medic.VACI_NM_FABRICANTE);
+            return Json(hash);
         }
 
     }

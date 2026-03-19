@@ -105,7 +105,7 @@
                                     @Html.DropDownListFor(m => m.VACI_CD_ID, (SelectList)ViewBag.Vacina, "Selecionar", new { @class = "form-control", data_toggle = "popover", data_content = "Selecione a vacina a ser informada ou digite as primeiras letras do nome para acelerar a busca", data_trigger="hover", data_placement="top", autofocus = true, onchange = "GetVacina($(this).val())" })
                                     @Html.ValidationMessageFor(m => m.VACI_CD_ID, "", new { @style = "color:red" })
                                 </div>
-                                <div style="display: none;" id="period" class="col-lg-3 col-md-3 col-xs-12">
+                                <div style="display: none;" id="meses" class="col-lg-3 col-md-3 col-xs-12">
                                     Periodicidade (Meses)
                                     <input class="form-control" type="text" readonly="readonly" tabindex="-1"/>
                                 </div>

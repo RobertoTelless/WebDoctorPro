@@ -8,6 +8,7 @@
 }
 
 <div class="wrapper wrapper-content animated fadeInRight">
+    <div id="top"></div>
     @if ((String)Session["ModuloAtual"] == "Dashboard Inicial")
     {
         <div class="page-title">
@@ -230,12 +231,40 @@
                                         </div>
 
                                         <div class="row">
-                                            <div style="margin-left: 0px;" class="col-lg-6 col-md-6 col-xs-12">
+                                            @*<div style="margin-left: 0px;" class="col-lg-6 col-md-6 col-xs-12">
                                                 <div class="form-group">
                                                     <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Fotografia</h4><input type="file" accept=".jpg, .png, .jpeg, .gif|images/*" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="ATENÇÃO - Antes de anexar fotografia certifique-se de que ela esteja livre de vírus e outras ameaças.  " name="file" id="imgCliente" class="btn btn-sm btn-warning" multiple />
                                                     <br />
                                                 </div>
+                                            </div>*@
+
+                                            @* Localize a div de Fotografia e substitua por esta estrutura *@
+                                            <div style="margin-left: 0px;" class="col-lg-6 col-md-6 col-xs-12">
+                                                <div class="form-group">
+                                                    <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Fotografia do Paciente</h4>
+        
+                                                    <!-- Área de Preview da Câmera -->
+                                                    <div id="camera-area" style="display:none; margin-bottom: 10px;">
+                                                        <video id="video" width="320" height="240" autoplay style="border: 1px solid #ccc; border-radius: 5px;"></video>
+                                                        <canvas id="canvas" width="320" height="240" style="display:none;"></canvas>
+                                                        <br />
+                                                        <button type="button" class="btn btn-sm btn-primary" onclick="takeSnapshot()">Capturar Foto</button>
+                                                        <button type="button" class="btn btn-sm btn-danger" onclick="stopCamera()">Cancelar</button>
+                                                    </div>
+
+                                                    <!-- Controles de Upload/Câmera -->
+                                                    <div id="upload-controls">
+                                                        <input type="file" accept="image/*" name="file" id="imgCliente" class="btn btn-sm btn-warning" style="display:inline-block" />
+                                                        <button type="button" class="btn btn-sm btn-info" onclick="startCamera()"><i class="fa fa-camera"></i> Usar Câmera</button>
+                                                    </div>
+        
+                                                    <!-- Preview da foto capturada -->
+                                                    <div id="photo-preview" style="margin-top:10px;">
+                                                        <img id="captured-image" src="#" alt="Preview" style="display:none; width: 150px; border-radius: 5px;" />
+                                                    </div>
+                                                </div>
                                             </div>
+
                                             <div class="col-lg-6 col-md-6 col-xs-12">
                                                 <h4 style="margin-left: -15px; color:green; background-color: beige; font-weight:bold">Anexos</h4>
                                                 <input class="btn btn-sm btn-warning" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="ATENÇÃO - Antes de anexar arquivos certifique-se de que eles estejam livres de vírus e outras ameaças.  " style="margin-left: -15px;" id="inputFile" type="file" multiple />
@@ -423,9 +452,12 @@
                             <div class="form-group">
                                 <br />
                                 @Html.ButtonActionSubmit(text: "BtnSubmit", htmlAttributes: new { id = "submit", style = "display: none;" })
-                                <button style="margin-left: 15px;" class="btnSubmit btn btn-sm btn-success btn-loading" id="basictoast" type="button">Confirmar inclusão do Paciente</button>
+                                <button style="margin-left: 15px;" class="btnSubmit btn btn-sm btn-success btn-loading1" id="basictoast" type="button">Confirmar inclusão do Paciente</button>
                                 @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarBasePaciente", controller: "Paciente")
                                 <a href="@Url.Action((String)Session["AjudaNivel"])" class="btn btn-sm btn-danger" target="_blank">Ajuda</a>
+                                <span id="loadingIndicator1" style="display: none; margin-left: 10px; color: #007bff;">
+                                    <i class="fa fa-spinner fa-spin"></i> Processando...
+                                </span>
                             </div>
                         }
                     </div>
@@ -434,6 +466,10 @@
         </div>
     </div>
 </div>
+<a href="#top" class="back-to-top">
+    <i class="fa fa-chevron-up"></i>
+</a>
+
 
 @section Styles {
     <link href="~/Content/themes/base/jquery-ui.min.css" rel="stylesheet" />
@@ -442,6 +478,46 @@
     @Styles.Render("~/Content/plugins/dataTables/dataTablesStyles")
     @Styles.Render("~/plugins/jasnyBootstrapStyles")
     @Styles.Render("~/plugins/toastrStyles")
+    <style>
+        html { scroll-behavior: smooth; }
+
+        .back-to-top {
+            position: fixed !important;
+            bottom: 30px !important;
+            left: 260px !important; 
+            z-index: 999999 !important;
+            width: 50px !important;
+            height: 50px !important;
+            background-color: #1ab394 !important;
+            color: white !important;
+            border-radius: 50% !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            text-decoration: none !important;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3) !important;
+            transition: all 0.3s ease;
+        
+            /* Estado inicial: Invisível e deslocado para baixo */
+            opacity: 0 !important;
+            visibility: hidden !important;
+            transform: translateY(20px) !important;
+        }
+
+        /* Classe que o JavaScript vai adicionar ao rolar a tela */
+        .back-to-top.visible {
+            opacity: 1 !important;
+            visibility: visible !important;
+            transform: translateY(0px) !important;
+        }
+
+        .back-to-top:hover {
+            background-color: #18a689 !important;
+            color: white !important;
+            transform: scale(1.1) !important;
+        }
+    </style>
+
 
 }
 @section Scripts {
@@ -499,7 +575,24 @@
             });
         });
     </script>
+    <script type="text/javascript">
+        $(document).ready(function () { 
+            $('.btn-loading1').on('click', function (e) {            
+                $(this).prop('disabled', true);
+                $(this).addClass('disabled');
+                $('#loadingIndicator1').show();
+                var tagName = $(this).prop('tagName').toLowerCase();
+                if (tagName === 'a') {
+                    e.preventDefault(); 
+                    var targetUrl = $(this).attr('href');
+                    window.location.href = targetUrl;
 
+                } else if (tagName === 'button' || tagName === 'input') {
+                    $(this).closest('form').submit();
+                }
+            });
+        });
+    </script>
     <script type="text/javascript">
         $(document).ready(function () {
             $('#txtIndicado').autocomplete({
@@ -523,7 +616,35 @@
             });
         });
     </script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            // Função para verificar o scroll
+            function checkScroll() {
+                // Verifica o scroll tanto na janela quanto no wrapper do Inspinia
+                var scrollPos = $(window).scrollTop() || $('#page-wrapper').scrollTop();
+            
+                if (scrollPos > 300) {
+                    $('.back-to-top').addClass('visible');
+                } else {
+                    $('.back-to-top').removeClass('visible');
+                }
+            }
 
+            // Monitora o scroll em ambos os contextos possíveis no Inspinia
+            $(window).on('scroll', checkScroll);
+            $('#page-wrapper').on('scroll', checkScroll);
+
+            // Clique suave
+            $('.back-to-top').click(function (e) {
+                e.preventDefault();
+                $('html, body, #page-wrapper').animate({ scrollTop: 0 }, 600);
+                return false;
+            });
+        
+            // Executa uma vez ao carregar para garantir que comece oculto
+            checkScroll();
+        });
+    </script>
     <script type="text/javascript" language="javascript">
         $(function () {
             $('.date-picker').datepicker(
@@ -831,6 +952,84 @@
             navigator.sendBeacon('../ControleAcesso/LogSessionTime');
         }; 
     </script>
+
+    <script type="text/javascript">
+        var video = document.getElementById('video');
+        var canvas = document.getElementById('canvas');
+        var stream = null;
+
+        function startCamera() {
+            $('#camera-area').show();
+            $('#upload-controls').hide();
+        
+            navigator.mediaDevices.getUserMedia({ video: true, audio: false })
+                .then(function(s) {
+                    stream = s;
+                    video.srcObject = stream;
+                    video.play();
+                })
+                .catch(function(err) {
+                    alert("Erro ao acessar a câmera: " + err);
+                    stopCamera();
+                });
+        }
+
+        function stopCamera() {
+            if (stream) {
+                stream.getTracks().forEach(track => track.stop());
+            }
+            $('#camera-area').hide();
+            $('#upload-controls').show();
+        }
+
+        function takeSnapshot() {
+            var context = canvas.getContext('2d');
+            context.drawImage(video, 0, 0, 320, 240);
+        
+            // Converter o canvas para Blob (formato de arquivo)
+            canvas.toBlob(function(blob) {
+                // Criar um arquivo a partir do blob
+                var file = new File([blob], "foto_paciente.jpg", { type: "image/jpeg" });
+            
+                // Mostrar preview
+                var reader = new FileReader();
+                reader.onload = function(e) {
+                    $('#captured-image').attr('src', e.target.result).show();
+                };
+                reader.readAsDataURL(file);
+
+                // GATILHO IMPORTANTE:
+                // Envia para o seu método existente de Session que você já usa no input file
+                uploadCapturedPhoto(file);
+            
+                stopCamera();
+            }, 'image/jpeg');
+        }
+
+        function uploadCapturedPhoto(file) {
+            var formData = new FormData();
+            formData.append('file', file);
+
+            // Ajuste a URL conforme sua rota (Baseado no seu código: /Paciente/UploadFileToSession)
+            $.ajax({
+                url: '@Url.Action("UploadFileToSession", "Paciente")',
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function(r) {
+                    toastr.success("Foto capturada e preparada para salvar!");
+                },
+                error: function() {
+                    toastr.error("Erro ao processar captura na sessão.");
+                }
+            });
+        }
+    </script>
+
+
+
+
     @if (ViewBag.Message != null)
     {
         <script type="text/javascript">

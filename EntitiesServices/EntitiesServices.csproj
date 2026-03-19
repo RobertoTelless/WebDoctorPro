@@ -244,6 +244,7 @@
     <Compile Include="Interfaces\Repositories\ILocacaoRepository.cs" />
     <Compile Include="Interfaces\Repositories\INoticiaComentarioRepository.cs" />
     <Compile Include="Interfaces\Repositories\INoticiaRepository.cs" />
+    <Compile Include="Interfaces\Repositories\IPacienteExameAnexoImagemRepository.cs" />
     <Compile Include="Interfaces\Repositories\IPacienteVacinaRepository.cs" />
     <Compile Include="Interfaces\Repositories\IPacienteConsultaMaterialRepository.cs" />
     <Compile Include="Interfaces\Repositories\IVacinaRepository.cs" />

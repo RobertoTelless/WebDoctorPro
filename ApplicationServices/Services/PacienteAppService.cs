@@ -2114,5 +2114,27 @@ namespace ApplicationServices.Services
             return lista;
         }
 
+        public Int32 ValidateCreateAnexoImagem(PACIENTE_EXAME_ANEXO_IMAGEM item)
+        {
+            try
+            {
+                item.PAIM_IN_ATIVO = 1;
+                item.PAIM_DT_CRIACAO = DateTime.Today.Date;
+
+                // Persiste
+                Int32 volta = _baseService.CreateAnexoImagem(item);
+                return volta;
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
+        public List<PACIENTE_EXAME_ANEXO_IMAGEM> GetPontosById(Int32 id)
+        {
+            return _baseService.GetPontosById(id);
+        }
+
     }
 }

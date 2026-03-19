@@ -102,14 +102,28 @@
                             </div>
                         </div>
                         <div class="form-group">
-                            @if (Model.PAEO_IN_TIPO == 1)
+                            @*@if (Model.PAEO_IN_TIPO == 1)
                             {
                                 <div class="col-lg-12 col-md-12 col-sm-12">
                                     <div class="col-lg-12 col-md-12 col-sm-12">
                                         <img src="@Url.Content(Model.PAEO_AQ_ARQUIVO)" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Clique Ctrl+Ctrl para ampliar a fotografia" style="width: auto; height: auto; max-height: 1530px; max-width: 1530px;">
                                     </div>
                                 </div>
+                            }*@
+                            @if (Model.PAEO_IN_TIPO == 1)
+                            {
+                                <div class="col-lg-12">
+                                    <p class="alert alert-info"><i class="fa fa-info-circle"></i> Clique em qualquer lugar da imagem para adicionar uma anotação.</p>
+        
+                                    @* Container para posicionamento absoluto dos Pins *@
+                                    <div id="image-container" style="position: relative; display: inline-block; cursor: crosshair;">
+                                        <img id="img-exame" src="@Url.Content(Model.PAEO_AQ_ARQUIVO)" class="img-responsive" style="max-height: 1530px; max-width: 100%;">
+                                        @* Os pins existentes serão carregados aqui via JS *@
+                                        <div id="pins-overlay"></div>
+                                    </div>
+                                </div>
                             }
+
                             @if (Model.PAEO_IN_TIPO == 2)
                             {
                                 <div class="col-lg-12 col-md-12 col-sm-12">
@@ -162,6 +176,78 @@
             });
         });
     </script>
+
+    <script>
+    $(document).ready(function () {
+        const paeoId = @Model.PAEO_CD_ID;
+
+        // 1. Carregar pins existentes ao abrir a página
+        loadPins();
+
+        // 2. Evento de clique na imagem
+        $('#img-exame').click(function (e) {
+            const offset = $(this).offset();
+        
+            // Calcula posição percentual (X, Y) para garantir que funcione em telas de tamanhos diferentes
+            const x = ((e.pageX - offset.left) / $(this).width()) * 100;
+            const y = ((e.pageY - offset.top) / $(this).height()) * 100;
+
+            const texto = prompt("Digite a anotação para este ponto:");
+        
+            if (texto) {
+                savePin(x, y, texto);
+            }
+        });
+
+        function savePin(x, y, texto) {
+            $.post('@Url.Action("SalvarAnotacaoPonto", "Paciente")', {
+                paeoId: paeoId,
+                x: x,
+                y: y,
+                texto: texto
+            }, function (response) {
+                if (response.success) {
+                    renderPin(x, y, texto, response.id);
+                } else {
+                    alert("Erro ao salvar anotação.");
+                }
+            });
+        }
+
+        function renderPin(x, y, texto, id) {
+            const pin = $('<div class="pin" title="' + texto + '"></div>');
+            pin.css({
+                'position': 'absolute',
+                'left': x + '%',
+                'top': y + '%',
+                'width': '15px',
+                'height': '15px',
+                'background-color': 'red',
+                'border-radius': '50%',
+                'border': '2px solid white',
+                'transform': 'translate(-50%, -50%)',
+                'cursor': 'pointer',
+                'z-index': 100
+            });
+        
+            // Adiciona um popover do Bootstrap para mostrar o texto
+            pin.popover({
+                trigger: 'hover',
+                placement: 'top',
+                content: texto
+            });
+
+            $('#pins-overlay').append(pin);
+        }
+
+        function loadPins() {
+            $.getJSON('@Url.Action("ListarAnotacoesPonto", "Paciente")', { paeoId: paeoId }, function (data) {
+                data.forEach(p => renderPin(p.x, p.y, p.texto, p.id));
+            });
+        }
+    });
+    </script>
+
 
     @if (ViewBag.Message != null)
     {

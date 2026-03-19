@@ -8186,8 +8186,11 @@ namespace GEDSys_Presentation.Controllers
                 Session["Anamnese"] = ana;
                 Session["IdAnamnese"] = id;
                 Session["NivelPaciente"] = 4;
-                vm.PACO_DT_CONSULTA = vm.PACIENTE_CONSULTA.PACO_DT_CONSULTA;
-                vm.PACO_IN_ENCERRADA = vm.PACIENTE_CONSULTA.PACO_IN_ENCERRADA.Value;
+                if (vm.PACIENTE_CONSULTA != null)
+                {
+                    vm.PACO_DT_CONSULTA = vm.PACIENTE_CONSULTA.PACO_DT_CONSULTA;
+                    vm.PACO_IN_ENCERRADA = vm.PACIENTE_CONSULTA.PACO_IN_ENCERRADA.Value;
+                }
 
                 // Grava Acesso
                 ControleAcessoMetodo grava = new ControleAcessoMetodo(aceApp);

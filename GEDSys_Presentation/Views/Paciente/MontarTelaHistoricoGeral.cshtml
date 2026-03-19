@@ -109,14 +109,7 @@
                                                 @cond.PAHI_DT_DATA.Value.ToShortDateString() @cond.PAHI_DT_DATA.Value.ToShortTimeString()
                                             </td>
 
-                                            @*@if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_ACESSO_PACIENTE == 1)
-                                            {*@
-                                                <td style="width: auto"><a href="@Url.Action("EditarPacienteHistorico", "Paciente", new { id = cond.PACIENTE.PACI__CD_ID })" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página de edição de dados do paciente"/>@cond.PACIENTE.PACI_NM_NOME</td>
-                                            @*}
-                                            else
-                                            {
-                                                <td style="width: auto"><a href="@Url.Action("VerPacienteHistorico", "Paciente", new { id = cond.PACIENTE.PACI__CD_ID })" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página de visualização de dados do paciente"/>@cond.PACIENTE.PACI_NM_NOME</td>
-                                            }*@
+                                            <td style="width: auto"><a href="@Url.Action("EditarPacienteHistorico", "Paciente", new { id = cond.PACIENTE.PACI__CD_ID })" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página de edição de dados do paciente"/>@cond.PACIENTE.PACI_NM_NOME</td>
                                             @if (cond.PAHI_IN_TIPO == 1)
                                             {
                                                 <td style="width: auto"><span class="badge badge-primary">Paciente</span></td>

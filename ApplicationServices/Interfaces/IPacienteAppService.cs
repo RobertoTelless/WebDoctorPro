@@ -174,5 +174,8 @@ namespace ApplicationServices.Interfaces
         VACINA GetVacinasById(Int32 id);
         List<VACINA> GetAllVacinas(Int32 idAss);
 
+        Int32 ValidateCreateAnexoImagem(PACIENTE_EXAME_ANEXO_IMAGEM item);
+        List<PACIENTE_EXAME_ANEXO_IMAGEM> GetPontosById(Int32 id);
+
     }
 }

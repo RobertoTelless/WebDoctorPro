@@ -23,6 +23,8 @@ namespace EntitiesServices.Model
         public string PAIM_DS_TEXTO { get; set; }
         public Nullable<System.DateTime> PAIM_DT_CRIACAO { get; set; }
         public Nullable<int> PAIM_IN_ATIVO { get; set; }
+        public double PAIM_VL_X { get; set; }
+        public double PAIM_VL_Y { get; set; }
     
         public virtual PACIENTE_EXAME_ANEXO PACIENTE_EXAME_ANEXO { get; set; }
         public virtual PACIENTE_EXAMES PACIENTE_EXAMES { get; set; }

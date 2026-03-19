@@ -251,6 +251,7 @@
     <Compile Include="Repositories\LocacaoRepository.cs" />
     <Compile Include="Repositories\NoticiaComentarioRepository.cs" />
     <Compile Include="Repositories\NoticiaRepository.cs" />
+    <Compile Include="Repositories\PacienteExameAnexoImagemRepository.cs" />
     <Compile Include="Repositories\PacienteVacinaRepository.cs" />
     <Compile Include="Repositories\PacienteConsultaMaterialRepository.cs" />
     <Compile Include="Repositories\VacinaRepository.cs" />

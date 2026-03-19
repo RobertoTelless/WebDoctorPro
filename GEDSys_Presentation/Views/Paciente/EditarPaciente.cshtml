@@ -116,13 +116,13 @@
                             @Html.ValidationSummary(false, "", new { @class = "text-danger" })
                         </div>
                     }
-                    @if (TempData["TemMensagem"] != null)
+                    @*@if (TempData["TemMensagem"] != null)
                     {
                         <div class="alert alert-success">
                             <button type="button" class="close" data-dismiss="alert">Fechar</button>
                             <span>@TempData["MensagemAcerto"]</span>
                         </div>
-                    } 
+                    }*@ 
                    
                     <div class="form-group">
                         @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PAERF_IN_PACIENTE_MENSAGEM == 1)
@@ -210,6 +210,13 @@
                             <i class="fa fa-spinner fa-spin"></i> Processando...
                         </span>
                     </div>
+
+                    <div class="form-group">
+                        @if ((Int32)Session["EscondeAba"] == 1)
+	                    {
+                            <h4 style="margin-left: 0px; color:darkblue; background-color: aliceblue"><b>ATENÇÃO -</b> Algumas abas foram ocultadas na configuração do WebDoctorPro. Para exibi-las vá em <b>CONFIGURAÇÕES</b> e habilite essas abas</h4>
+	                    }
+                    </div>
                     <div class="tabs-container">
                         <ul class="nav nav-tabs">
                             @if ((Int32)Session["NivelPaciente"] == 1)
@@ -219,7 +226,10 @@
                                 {
                                     <li class=""><a data-toggle="tab" href="#tab-4">Consultas</a></li>
                                 }
-                                <li class=""><a data-toggle="tab" href="#tab-18">Vacinas</a></li>
+                                if ((Int32)Session["AbaVac"] == 1)
+	                            {
+                                    <li class=""><a data-toggle="tab" href="#tab-18">Vacinas</a></li>
+	                            }
                                 if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_ANAMNESE_ACESSO == 1)
                                 {
                                     <li class=""><a data-toggle="tab" href="#tab-5">Anamnese/Prontuário</a></li>
@@ -228,23 +238,23 @@
                                 {
                                     <li class=""><a data-toggle="tab" href="#tab-6">Exames Físicos</a></li>
                                 }
-                                if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_EXAME_ACESSO == 1)
+                                if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_EXAME_ACESSO == 1 & (Int32)Session["AbaEx"] == 1)
                                 {
                                     <li class=""><a data-toggle="tab" href="#tab-7">Resultados de Exames</a></li>
                                 }
-                                if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_PRESCRICAO_ACESSO == 1)
+                                if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_PRESCRICAO_ACESSO == 1 & (Int32)Session["AbaPr"] == 1)
                                 {
                                     <li class=""><a data-toggle="tab" href="#tab-8">Prescrições</a></li>
                                 }
-                                if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_ATESTADO_ACESSO == 1)
+                                if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_ATESTADO_ACESSO == 1 & (Int32)Session["AbaAt"] == 1)
                                 {
                                     <li class=""><a data-toggle="tab" href="#tab-10">Atestados</a></li>
                                 }
-                                if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_SOLICITACAO_ACESSO == 1)
+                                if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_SOLICITACAO_ACESSO == 1 & (Int32)Session["AbaSol"] == 1)
                                 {
                                     <li class=""><a data-toggle="tab" href="#tab-12">Solicitações</a></li>
                                 }
-                                if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_LOCACAO_ACESSO == 1)
+                                if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_LOCACAO_ACESSO == 1 & (Int32)Session["AbaLoc"] == 1)
                                 {
                                     <li class=""><a data-toggle="tab" href="#tab-17">Locações</a></li>
                                 }
@@ -252,7 +262,7 @@
                                 {
                                     <li class=""><a data-toggle="tab" href="#tab-9">Grupos</a></li>
                                 }
-                                <li class=""><a data-toggle="tab" href="#tab-2">Fotografia & Anexos</a></li>
+                                <li class=""><a data-toggle="tab" href="#tab-2">Fotografia & Anexos & Fichas</a></li>
                                 <li class=""><a data-toggle="tab" href="#tab-11">Anotações</a></li>
                                 <li class=""><a data-toggle="tab" href="#tab-3">Contatos</a></li>
                                 <li class=""><a data-toggle="tab" href="#tab-13">Acompanhamento</a></li>
@@ -270,7 +280,10 @@
                                 {
                                     <li class=""><a data-toggle="tab" href="#tab-4">Consultas</a></li>
                                 }
-                                <li class=""><a data-toggle="tab" href="#tab-18">Vacinas</a></li>
+                                if ((Int32)Session["AbaVac"] == 1)
+	                            {
+                                    <li class=""><a data-toggle="tab" href="#tab-18">Vacinas</a></li>
+	                            }
                                 if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_ANAMNESE_ACESSO == 1)
                                 {
                                     <li class=""><a data-toggle="tab" href="#tab-5">Anamnese/Prontuário</a></li>
@@ -279,23 +292,23 @@
                                 {
                                     <li class=""><a data-toggle="tab" href="#tab-6">Exames Físicos</a></li>
                                 }
-                                if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_EXAME_ACESSO == 1)
+                                if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_EXAME_ACESSO == 1 & (Int32)Session["AbaEx"] == 1)
                                 {
                                     <li class=""><a data-toggle="tab" href="#tab-7">Resultados de Exames</a></li>
                                 }
-                                if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_PRESCRICAO_ACESSO == 1)
+                                if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_PRESCRICAO_ACESSO == 1 & (Int32)Session["AbaPr"] == 1)
                                 {
                                     <li class=""><a data-toggle="tab" href="#tab-8">Prescrições</a></li>
                                 }
-                                if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_ATESTADO_ACESSO == 1)
+                                if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_ATESTADO_ACESSO == 1 & (Int32)Session["AbaAt"] == 1)
                                 {
                                     <li class=""><a data-toggle="tab" href="#tab-10">Atestados</a></li>
                                 }
-                                if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_SOLICITACAO_ACESSO == 1)
+                                if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_SOLICITACAO_ACESSO == 1 & (Int32)Session["AbaSol"] == 1)
                                 {
                                     <li class=""><a data-toggle="tab" href="#tab-12">Solicitações</a></li>
                                 }
-                                if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_LOCACAO_ACESSO == 1)
+                                if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_LOCACAO_ACESSO == 1 & (Int32)Session["AbaLoc"] == 1)
                                 {
                                     <li class=""><a data-toggle="tab" href="#tab-17">Locações</a></li>
                                 }
@@ -303,7 +316,7 @@
                                 {
                                     <li class=""><a data-toggle="tab" href="#tab-9">Grupos</a></li>
                                 }
-                                <li class="active"><a data-toggle="tab" href="#tab-2">Fotografia & Anexos</a></li>
+                                <li class="active"><a data-toggle="tab" href="#tab-2">Fotografia & Anexos & Fichas</a></li>
                                 <li class=""><a data-toggle="tab" href="#tab-11">Anotações</a></li>
                                 <li class=""><a data-toggle="tab" href="#tab-3">Contatos</a></li>
                                 <li class=""><a data-toggle="tab" href="#tab-13">Acompanhamento</a></li>
@@ -321,7 +334,10 @@
                                 {
                                     <li class=""><a data-toggle="tab" href="#tab-4">Consultas</a></li>
                                 }
-                                <li class=""><a data-toggle="tab" href="#tab-18">Vacinas</a></li>
+                                if ((Int32)Session["AbaVac"] == 1)
+	                            {
+                                    <li class=""><a data-toggle="tab" href="#tab-18">Vacinas</a></li>
+	                            }
                                 if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_ANAMNESE_ACESSO == 1)
                                 {
                                     <li class=""><a data-toggle="tab" href="#tab-5">Anamnese/Prontuário</a></li>
@@ -330,23 +346,23 @@
                                 {
                                     <li class=""><a data-toggle="tab" href="#tab-6">Exames Físicos</a></li>
                                 }
-                                if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_EXAME_ACESSO == 1)
+                                if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_EXAME_ACESSO == 1 & (Int32)Session["AbaEx"] == 1)
                                 {
                                     <li class=""><a data-toggle="tab" href="#tab-7">Resultados de Exames</a></li>
                                 }
-                                if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_PRESCRICAO_ACESSO == 1)
+                                if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_PRESCRICAO_ACESSO == 1 & (Int32)Session["AbaPr"] == 1)
                                 {
                                     <li class=""><a data-toggle="tab" href="#tab-8">Prescrições</a></li>
                                 }
-                                if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_ATESTADO_ACESSO == 1)
+                                if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_ATESTADO_ACESSO == 1 & (Int32)Session["AbaAt"] == 1)
                                 {
                                     <li class=""><a data-toggle="tab" href="#tab-10">Atestados</a></li>
                                 }
-                                if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_SOLICITACAO_ACESSO == 1)
+                                if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_SOLICITACAO_ACESSO == 1 & (Int32)Session["AbaSol"] == 1)
                                 {
                                     <li class=""><a data-toggle="tab" href="#tab-12">Solicitações</a></li>
                                 }
-                                if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_LOCACAO_ACESSO == 1)
+                                if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_LOCACAO_ACESSO == 1 & (Int32)Session["AbaLoc"] == 1)
                                 {
                                     <li class=""><a data-toggle="tab" href="#tab-17">Locações</a></li>
                                 }
@@ -354,7 +370,7 @@
                                 {
                                     <li class=""><a data-toggle="tab" href="#tab-9">Grupos</a></li>
                                 }
-                                <li class=""><a data-toggle="tab" href="#tab-2">Fotografia & Anexos</a></li>
+                                <li class=""><a data-toggle="tab" href="#tab-2">Fotografia & Anexos & Fichas</a></li>
                                 <li class="active"><a data-toggle="tab" href="#tab-11">Anotações</a></li>
                                 <li class=""><a data-toggle="tab" href="#tab-3">Contatos</a></li>
                                 <li class=""><a data-toggle="tab" href="#tab-13">Acompanhamento</a></li>
@@ -372,7 +388,10 @@
                                 {
                                     <li class=""><a data-toggle="tab" href="#tab-4">Consultas</a></li>
                                 }
-                                <li class=""><a data-toggle="tab" href="#tab-18">Vacinas</a></li>
+                                if ((Int32)Session["AbaVac"] == 1)
+	                            {
+                                    <li class=""><a data-toggle="tab" href="#tab-18">Vacinas</a></li>
+	                            }
                                 if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_ANAMNESE_ACESSO == 1)
                                 {
                                     <li class=""><a data-toggle="tab" href="#tab-5">Anamnese/Prontuário</a></li>
@@ -381,23 +400,23 @@
                                 {
                                     <li class=""><a data-toggle="tab" href="#tab-6">Exames Físicos</a></li>
                                 }
-                                if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_EXAME_ACESSO == 1)
+                                if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_EXAME_ACESSO == 1 & (Int32)Session["AbaEx"] == 1)
                                 {
                                     <li class=""><a data-toggle="tab" href="#tab-7">Resultados de Exames</a></li>
                                 }
-                                if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_PRESCRICAO_ACESSO == 1)
+                                if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_PRESCRICAO_ACESSO == 1 & (Int32)Session["AbaPr"] == 1)
                                 {
                                     <li class=""><a data-toggle="tab" href="#tab-8">Prescrições</a></li>
                                 }
-                                if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_ATESTADO_ACESSO == 1)
+                                if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_ATESTADO_ACESSO == 1 & (Int32)Session["AbaAt"] == 1)
                                 {
                                     <li class=""><a data-toggle="tab" href="#tab-10">Atestados</a></li>
                                 }
-                                if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_SOLICITACAO_ACESSO == 1)
+                                if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_SOLICITACAO_ACESSO == 1 & (Int32)Session["AbaSol"] == 1)
                                 {
                                     <li class=""><a data-toggle="tab" href="#tab-12">Solicitações</a></li>
                                 }
-                                if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_LOCACAO_ACESSO == 1)
+                                if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_LOCACAO_ACESSO == 1 & (Int32)Session["AbaLoc"] == 1)
                                 {
                                     <li class=""><a data-toggle="tab" href="#tab-17">Locações</a></li>
                                 }
@@ -405,7 +424,7 @@
                                 {
                                     <li class=""><a data-toggle="tab" href="#tab-9">Grupos</a></li>
                                 }
-                                <li class=""><a data-toggle="tab" href="#tab-2">Fotografia & Anexos</a></li>
+                                <li class=""><a data-toggle="tab" href="#tab-2">Fotografia & Anexos & Fichas</a></li>
                                 <li class=""><a data-toggle="tab" href="#tab-11">Anotações</a></li>
                                 <li class=""><a data-toggle="tab" href="#tab-3">Contatos</a></li>
                                 <li class=""><a data-toggle="tab" href="#tab-13">Acompanhamento</a></li>
@@ -423,7 +442,10 @@
                                 {
                                     <li class=""><a data-toggle="tab" href="#tab-4">Consultas</a></li>
                                 }
-                                <li class=""><a data-toggle="tab" href="#tab-18">Vacinas</a></li>
+                                if ((Int32)Session["AbaVac"] == 1)
+	                            {
+                                    <li class=""><a data-toggle="tab" href="#tab-18">Vacinas</a></li>
+	                            }
                                 if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_ANAMNESE_ACESSO == 1)
                                 {
                                     <li class=""><a data-toggle="tab" href="#tab-5">Anamnese/Prontuário</a></li>
@@ -432,23 +454,23 @@
                                 {
                                     <li class=""><a data-toggle="tab" href="#tab-6">Exames Físicos</a></li>
                                 }
-                                if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_EXAME_ACESSO == 1)
+                                if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_EXAME_ACESSO == 1 & (Int32)Session["AbaEx"] == 1)
                                 {
                                     <li class=""><a data-toggle="tab" href="#tab-7">Resultados de Exames</a></li>
                                 }
-                                if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_PRESCRICAO_ACESSO == 1)
+                                if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_PRESCRICAO_ACESSO == 1 & (Int32)Session["AbaPr"] == 1)
                                 {
                                     <li class=""><a data-toggle="tab" href="#tab-8">Prescrições</a></li>
                                 }
-                                if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_ATESTADO_ACESSO == 1)
+                                if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_ATESTADO_ACESSO == 1 & (Int32)Session["AbaAt"] == 1)
                                 {
                                     <li class=""><a data-toggle="tab" href="#tab-10">Atestados</a></li>
                                 }
-                                if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_SOLICITACAO_ACESSO == 1)
+                                if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_SOLICITACAO_ACESSO == 1 & (Int32)Session["AbaSol"] == 1)
                                 {
                                     <li class=""><a data-toggle="tab" href="#tab-12">Solicitações</a></li>
                                 }
-                                if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_LOCACAO_ACESSO == 1)
+                                if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_LOCACAO_ACESSO == 1 & (Int32)Session["AbaLoc"] == 1)
                                 {
                                     <li class=""><a data-toggle="tab" href="#tab-17">Locações</a></li>
                                 }
@@ -456,7 +478,7 @@
                                 {
                                     <li class="active"><a data-toggle="tab" href="#tab-9">Grupos</a></li>
                                 }
-                                <li class=""><a data-toggle="tab" href="#tab-2">Fotografia & Anexos</a></li>
+                                <li class=""><a data-toggle="tab" href="#tab-2">Fotografia & Anexos & Fichas</a></li>
                                 <li class=""><a data-toggle="tab" href="#tab-11">Anotações</a></li>
                                 <li class=""><a data-toggle="tab" href="#tab-3">Contatos</a></li>
                                 <li class=""><a data-toggle="tab" href="#tab-13">Acompanhamento</a></li>
@@ -474,7 +496,10 @@
                                 {
                                     <li class="active"><a data-toggle="tab" href="#tab-4">Consultas</a></li>
                                 }
-                                <li class=""><a data-toggle="tab" href="#tab-18">Vacinas</a></li>
+                                if ((Int32)Session["AbaVac"] == 1)
+	                            {
+                                    <li class=""><a data-toggle="tab" href="#tab-18">Vacinas</a></li>
+	                            }
                                 if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_ANAMNESE_ACESSO == 1)
                                 {
                                     <li class=""><a data-toggle="tab" href="#tab-5">Anamnese/Prontuário</a></li>
@@ -483,23 +508,23 @@
                                 {
                                     <li class=""><a data-toggle="tab" href="#tab-6">Exames Físicos</a></li>
                                 }
-                                if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_EXAME_ACESSO == 1)
+                                if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_EXAME_ACESSO == 1 & (Int32)Session["AbaEx"] == 1)
                                 {
                                     <li class=""><a data-toggle="tab" href="#tab-7">Resultados de Exames</a></li>
                                 }
-                                if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_PRESCRICAO_ACESSO == 1)
+                                if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_PRESCRICAO_ACESSO == 1 & (Int32)Session["AbaPr"] == 1)
                                 {
                                     <li class=""><a data-toggle="tab" href="#tab-8">Prescrições</a></li>
                                 }
-                                if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_ATESTADO_ACESSO == 1)
+                                if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_ATESTADO_ACESSO == 1 & (Int32)Session["AbaAt"] == 1)
                                 {
                                     <li class=""><a data-toggle="tab" href="#tab-10">Atestados</a></li>
                                 }
-                                if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_SOLICITACAO_ACESSO == 1)
+                                if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_SOLICITACAO_ACESSO == 1 & (Int32)Session["AbaSol"] == 1)
                                 {
                                     <li class=""><a data-toggle="tab" href="#tab-12">Solicitações</a></li>
                                 }
-                                if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_LOCACAO_ACESSO == 1)
+                                if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_LOCACAO_ACESSO == 1 & (Int32)Session["AbaLoc"] == 1)
                                 {
                                     <li class=""><a data-toggle="tab" href="#tab-17">Locações</a></li>
                                 }
@@ -507,7 +532,7 @@
                                 {
                                     <li class=""><a data-toggle="tab" href="#tab-9">Grupos</a></li>
                                 }
-                                <li class=""><a data-toggle="tab" href="#tab-2">Fotografia & Anexos</a></li>
+                                <li class=""><a data-toggle="tab" href="#tab-2">Fotografia & Anexos & Fichas</a></li>
                                 <li class=""><a data-toggle="tab" href="#tab-11">Anotações</a></li>
                                 <li class=""><a data-toggle="tab" href="#tab-3">Contatos</a></li>
                                 <li class=""><a data-toggle="tab" href="#tab-13">Acompanhamento</a></li>
@@ -525,7 +550,10 @@
                                 {
                                     <li class=""><a data-toggle="tab" href="#tab-4">Consultas</a></li>
                                 }
-                                <li class=""><a data-toggle="tab" href="#tab-18">Vacinas</a></li>
+                                if ((Int32)Session["AbaVac"] == 1)
+	                            {
+                                    <li class=""><a data-toggle="tab" href="#tab-18">Vacinas</a></li>
+	                            }
                                 if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_ANAMNESE_ACESSO == 1)
                                 {
                                     <li class="active"><a data-toggle="tab" href="#tab-5">Anamnese/Prontuário</a></li>
@@ -534,23 +562,23 @@
                                 {
                                     <li class=""><a data-toggle="tab" href="#tab-6">Exames Físicos</a></li>
                                 }
-                                if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_EXAME_ACESSO == 1)
+                                if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_EXAME_ACESSO == 1 & (Int32)Session["AbaEx"] == 1)
                                 {
                                     <li class=""><a data-toggle="tab" href="#tab-7">Resultados de Exames</a></li>
                                 }
-                                if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_PRESCRICAO_ACESSO == 1)
+                                if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_PRESCRICAO_ACESSO == 1 & (Int32)Session["AbaPr"] == 1)
                                 {
                                     <li class=""><a data-toggle="tab" href="#tab-8">Prescrições</a></li>
                                 }
-                                if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_ATESTADO_ACESSO == 1)
+                                if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_ATESTADO_ACESSO == 1 & (Int32)Session["AbaAt"] == 1)
                                 {
                                     <li class=""><a data-toggle="tab" href="#tab-10">Atestados</a></li>
                                 }
-                                if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_SOLICITACAO_ACESSO == 1)
+                                if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_SOLICITACAO_ACESSO == 1 & (Int32)Session["AbaSol"] == 1)
                                 {
                                     <li class=""><a data-toggle="tab" href="#tab-12">Solicitações</a></li>
                                 }
-                                if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_LOCACAO_ACESSO == 1)
+                                if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_LOCACAO_ACESSO == 1 & (Int32)Session["AbaLoc"] == 1)
                                 {
                                     <li class=""><a data-toggle="tab" href="#tab-17">Locações</a></li>
                                 }
@@ -576,7 +604,10 @@
                                 {
                                     <li class=""><a data-toggle="tab" href="#tab-4">Consultas</a></li>
                                 }
-                                <li class=""><a data-toggle="tab" href="#tab-18">Vacinas</a></li>
+                                if ((Int32)Session["AbaVac"] == 1)
+	                            {
+                                    <li class=""><a data-toggle="tab" href="#tab-18">Vacinas</a></li>
+	                            }
                                 if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_ANAMNESE_ACESSO == 1)
                                 {
                                     <li class=""><a data-toggle="tab" href="#tab-5">Anamnese/Prontuário</a></li>
@@ -585,23 +616,23 @@
                                 {
                                     <li class="active"><a data-toggle="tab" href="#tab-6">Exames Físicos</a></li>
                                 }
-                                if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_EXAME_ACESSO == 1)
+                                if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_EXAME_ACESSO == 1 & (Int32)Session["AbaEx"] == 1)
                                 {
                                     <li class=""><a data-toggle="tab" href="#tab-7">Resultados de Exames</a></li>
                                 }
-                                if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_PRESCRICAO_ACESSO == 1)
+                                if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_PRESCRICAO_ACESSO == 1 & (Int32)Session["AbaPr"] == 1)
                                 {
                                     <li class=""><a data-toggle="tab" href="#tab-8">Prescrições</a></li>
                                 }
-                                if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_ATESTADO_ACESSO == 1)
+                                if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_ATESTADO_ACESSO == 1 & (Int32)Session["AbaAt"] == 1)
                                 {
                                     <li class=""><a data-toggle="tab" href="#tab-10">Atestados</a></li>
                                 }
-                                if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_SOLICITACAO_ACESSO == 1)
+                                if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_SOLICITACAO_ACESSO == 1 & (Int32)Session["AbaSol"] == 1)
                                 {
                                     <li class=""><a data-toggle="tab" href="#tab-12">Solicitações</a></li>
                                 }
-                                if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_LOCACAO_ACESSO == 1)
+                                if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_LOCACAO_ACESSO == 1 & (Int32)Session["AbaLoc"] == 1)
                                 {
                                     <li class=""><a data-toggle="tab" href="#tab-17">Locações</a></li>
                                 }
@@ -609,7 +640,7 @@
                                 {
                                     <li class=""><a data-toggle="tab" href="#tab-9">Grupos</a></li>
                                 }
-                                <li class=""><a data-toggle="tab" href="#tab-2">Fotografia & Anexos</a></li>
+                                <li class=""><a data-toggle="tab" href="#tab-2">Fotografia & Anexos & Fichas</a></li>
                                 <li class=""><a data-toggle="tab" href="#tab-11">Anotações</a></li>
                                 <li class=""><a data-toggle="tab" href="#tab-3">Contatos</a></li>
                                 <li class=""><a data-toggle="tab" href="#tab-13">Acompanhamento</a></li>
@@ -627,7 +658,10 @@
                                 {
                                     <li class=""><a data-toggle="tab" href="#tab-4">Consultas</a></li>
                                 }
-                                <li class=""><a data-toggle="tab" href="#tab-18">Vacinas</a></li>
+                                if ((Int32)Session["AbaVac"] == 1)
+	                            {
+                                    <li class=""><a data-toggle="tab" href="#tab-18">Vacinas</a></li>
+	                            }
                                 if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_ANAMNESE_ACESSO == 1)
                                 {
                                     <li class=""><a data-toggle="tab" href="#tab-5">Anamnese/Prontuário</a></li>
@@ -636,23 +670,23 @@
                                 {
                                     <li class=""><a data-toggle="tab" href="#tab-6">Exames Físicos</a></li>
                                 }
-                                if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_EXAME_ACESSO == 1)
+                                if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_EXAME_ACESSO == 1 & (Int32)Session["AbaEx"] == 1)
                                 {
                                     <li class="active"><a data-toggle="tab" href="#tab-7">Resultados de Exames</a></li>
                                 }
-                                if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_PRESCRICAO_ACESSO == 1)
+                                if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_PRESCRICAO_ACESSO == 1 & (Int32)Session["AbaPr"] == 1)
                                 {
                                     <li class=""><a data-toggle="tab" href="#tab-8">Prescrições</a></li>
                                 }
-                                if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_ATESTADO_ACESSO == 1)
+                                if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_ATESTADO_ACESSO == 1 & (Int32)Session["AbaAt"] == 1)
                                 {
                                     <li class=""><a data-toggle="tab" href="#tab-10">Atestados</a></li>
                                 }
-                                if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_SOLICITACAO_ACESSO == 1)
+                                if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_SOLICITACAO_ACESSO == 1 & (Int32)Session["AbaSol"] == 1)
                                 {
                                     <li class=""><a data-toggle="tab" href="#tab-12">Solicitações</a></li>
                                 }
-                                if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_LOCACAO_ACESSO == 1)
+                                if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_LOCACAO_ACESSO == 1 & (Int32)Session["AbaLoc"] == 1)
                                 {
                                     <li class=""><a data-toggle="tab" href="#tab-17">Locações</a></li>
                                 }
@@ -660,7 +694,7 @@
                                 {
                                     <li class=""><a data-toggle="tab" href="#tab-9">Grupos</a></li>
                                 }
-                                <li class=""><a data-toggle="tab" href="#tab-2">Fotografia & Anexos</a></li>
+                                <li class=""><a data-toggle="tab" href="#tab-2">Fotografia & Anexos & Fichas</a></li>
                                 <li class=""><a data-toggle="tab" href="#tab-11">Anotações</a></li>
                                 <li class=""><a data-toggle="tab" href="#tab-3">Contatos</a></li>
                                 <li class=""><a data-toggle="tab" href="#tab-13">Acompanhamento</a></li>
@@ -678,7 +712,10 @@
                                 {
                                     <li class=""><a data-toggle="tab" href="#tab-4">Consultas</a></li>
                                 }
-                                <li class=""><a data-toggle="tab" href="#tab-18">Vacinas</a></li>
+                                if ((Int32)Session["AbaVac"] == 1)
+	                            {
+                                    <li class=""><a data-toggle="tab" href="#tab-18">Vacinas</a></li>
+	                            }
                                 if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_ANAMNESE_ACESSO == 1)
                                 {
                                     <li class=""><a data-toggle="tab" href="#tab-5">Anamnese/Prontuário</a></li>
@@ -687,23 +724,23 @@
                                 {
                                     <li class=""><a data-toggle="tab" href="#tab-6">Exames Físicos</a></li>
                                 }
-                                if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_EXAME_ACESSO == 1)
+                                if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_EXAME_ACESSO == 1 & (Int32)Session["AbaEx"] == 1)
                                 {
                                     <li class=""><a data-toggle="tab" href="#tab-7">Resultados de Exames</a></li>
                                 }
-                                if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_PRESCRICAO_ACESSO == 1)
+                                if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_PRESCRICAO_ACESSO == 1 & (Int32)Session["AbaPr"] == 1)
                                 {
                                     <li class="active"><a data-toggle="tab" href="#tab-8">Prescrições</a></li>
                                 }
-                                if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_ATESTADO_ACESSO == 1)
+                                if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_ATESTADO_ACESSO == 1 & (Int32)Session["AbaAt"] == 1)
                                 {
                                     <li class=""><a data-toggle="tab" href="#tab-10">Atestados</a></li>
                                 }
-                                if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_SOLICITACAO_ACESSO == 1)
+                                if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_SOLICITACAO_ACESSO == 1 & (Int32)Session["AbaSol"] == 1)
                                 {
                                     <li class=""><a data-toggle="tab" href="#tab-12">Solicitações</a></li>
                                 }
-                                if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_LOCACAO_ACESSO == 1)
+                                if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_LOCACAO_ACESSO == 1 & (Int32)Session["AbaLoc"] == 1)
                                 {
                                     <li class=""><a data-toggle="tab" href="#tab-17">Locações</a></li>
                                 }
@@ -711,7 +748,7 @@
                                 {
                                     <li class=""><a data-toggle="tab" href="#tab-9">Grupos</a></li>
                                 }
-                                <li class=""><a data-toggle="tab" href="#tab-2">Fotografia & Anexos</a></li>
+                                <li class=""><a data-toggle="tab" href="#tab-2">Fotografia & Anexos & Fichas</a></li>
                                 <li class=""><a data-toggle="tab" href="#tab-11">Anotações</a></li>
                                 <li class=""><a data-toggle="tab" href="#tab-3">Contatos</a></li>
                                 <li class=""><a data-toggle="tab" href="#tab-13">Acompanhamento</a></li>
@@ -729,7 +766,10 @@
                                 {
                                     <li class=""><a data-toggle="tab" href="#tab-4">Consultas</a></li>
                                 }
-                                <li class=""><a data-toggle="tab" href="#tab-18">Vacinas</a></li>
+                                if ((Int32)Session["AbaVac"] == 1)
+	                            {
+                                    <li class=""><a data-toggle="tab" href="#tab-18">Vacinas</a></li>
+	                            }
                                 if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_ANAMNESE_ACESSO == 1)
                                 {
                                     <li class=""><a data-toggle="tab" href="#tab-5">Anamnese/Prontuário</a></li>
@@ -738,23 +778,23 @@
                                 {
                                     <li class=""><a data-toggle="tab" href="#tab-6">Exames Físicos</a></li>
                                 }
-                                if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_EXAME_ACESSO == 1)
+                                if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_EXAME_ACESSO == 1 & (Int32)Session["AbaEx"] == 1)
                                 {
                                     <li class=""><a data-toggle="tab" href="#tab-7">Resultados de Exames</a></li>
                                 }
-                                if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_PRESCRICAO_ACESSO == 1)
+                                if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_PRESCRICAO_ACESSO == 1 & (Int32)Session["AbaPr"] == 1)
                                 {
                                     <li class=""><a data-toggle="tab" href="#tab-8">Prescrições</a></li>
                                 }
-                                if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_ATESTADO_ACESSO == 1)
+                                if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_ATESTADO_ACESSO == 1 & (Int32)Session["AbaAt"] == 1)
                                 {
                                     <li class="active"><a data-toggle="tab" href="#tab-10">Atestados</a></li>
                                 }
-                                if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_SOLICITACAO_ACESSO == 1)
+                                if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_SOLICITACAO_ACESSO == 1 & (Int32)Session["AbaSol"] == 1)
                                 {
                                     <li class=""><a data-toggle="tab" href="#tab-12">Solicitações</a></li>
                                 }
-                                if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_LOCACAO_ACESSO == 1)
+                                if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_LOCACAO_ACESSO == 1 & (Int32)Session["AbaLoc"] == 1)
                                 {
                                     <li class=""><a data-toggle="tab" href="#tab-17">Locações</a></li>
                                 }
@@ -762,7 +802,7 @@
                                 {
                                     <li class=""><a data-toggle="tab" href="#tab-9">Grupos</a></li>
                                 }
-                                <li class=""><a data-toggle="tab" href="#tab-2">Fotografia & Anexos</a></li>
+                                <li class=""><a data-toggle="tab" href="#tab-2">Fotografia & Anexos & Fichas</a></li>
                                 <li class=""><a data-toggle="tab" href="#tab-11">Anotações</a></li>
                                 <li class=""><a data-toggle="tab" href="#tab-3">Contatos</a></li>
                                 <li class=""><a data-toggle="tab" href="#tab-13">Acompanhamento</a></li>
@@ -780,7 +820,10 @@
                                 {
                                     <li class=""><a data-toggle="tab" href="#tab-4">Consultas</a></li>
                                 }
-                                <li class=""><a data-toggle="tab" href="#tab-18">Vacinas</a></li>
+                                if ((Int32)Session["AbaVac"] == 1)
+	                            {
+                                    <li class=""><a data-toggle="tab" href="#tab-18">Vacinas</a></li>
+	                            }
                                 if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_ANAMNESE_ACESSO == 1)
                                 {
                                     <li class=""><a data-toggle="tab" href="#tab-5">Anamnese/Prontuário</a></li>
@@ -789,23 +832,23 @@
                                 {
                                     <li class=""><a data-toggle="tab" href="#tab-6">Exames Físicos</a></li>
                                 }
-                                if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_EXAME_ACESSO == 1)
+                                if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_EXAME_ACESSO == 1 & (Int32)Session["AbaEx"] == 1)
                                 {
                                     <li class=""><a data-toggle="tab" href="#tab-7">Resultados de Exames</a></li>
                                 }
-                                if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_PRESCRICAO_ACESSO == 1)
+                                if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_PRESCRICAO_ACESSO == 1 & (Int32)Session["AbaPr"] == 1)
                                 {
                                     <li class=""><a data-toggle="tab" href="#tab-8">Prescrições</a></li>
                                 }
-                                if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_ATESTADO_ACESSO == 1)
+                                if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_ATESTADO_ACESSO == 1 & (Int32)Session["AbaAt"] == 1)
                                 {
                                     <li class=""><a data-toggle="tab" href="#tab-10">Atestados</a></li>
                                 }
-                                if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_SOLICITACAO_ACESSO == 1)
+                                if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_SOLICITACAO_ACESSO == 1 & (Int32)Session["AbaSol"] == 1)
                                 {
                                     <li class="active"><a data-toggle="tab" href="#tab-12">Solicitações</a></li>
                                 }
-                                if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_LOCACAO_ACESSO == 1)
+                                if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_LOCACAO_ACESSO == 1 & (Int32)Session["AbaLoc"] == 1)
                                 {
                                     <li class=""><a data-toggle="tab" href="#tab-17">Locações</a></li>
                                 }
@@ -813,7 +856,7 @@
                                 {
                                     <li class=""><a data-toggle="tab" href="#tab-9">Grupos</a></li>
                                 }
-                                <li class=""><a data-toggle="tab" href="#tab-2">Fotografia & Anexos</a></li>
+                                <li class=""><a data-toggle="tab" href="#tab-2">Fotografia & Anexos & Fichas</a></li>
                                 <li class=""><a data-toggle="tab" href="#tab-11">Anotações</a></li>
                                 <li class=""><a data-toggle="tab" href="#tab-3">Contatos</a></li>
                                 <li class=""><a data-toggle="tab" href="#tab-13">Acompanhamento</a></li>
@@ -831,7 +874,10 @@
                                 {
                                     <li class=""><a data-toggle="tab" href="#tab-4">Consultas</a></li>
                                 }
-                                <li class=""><a data-toggle="tab" href="#tab-18">Vacinas</a></li>
+                                if ((Int32)Session["AbaVac"] == 1)
+	                            {
+                                    <li class=""><a data-toggle="tab" href="#tab-18">Vacinas</a></li>
+	                            }
                                 if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_ANAMNESE_ACESSO == 1)
                                 {
                                     <li class=""><a data-toggle="tab" href="#tab-5">Anamnese/Prontuário</a></li>
@@ -840,23 +886,23 @@
                                 {
                                     <li class=""><a data-toggle="tab" href="#tab-6">Exames Físicos</a></li>
                                 }
-                                if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_EXAME_ACESSO == 1)
+                                if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_EXAME_ACESSO == 1 & (Int32)Session["AbaEx"] == 1)
                                 {
                                     <li class=""><a data-toggle="tab" href="#tab-7">Resultados de Exames</a></li>
                                 }
-                                if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_PRESCRICAO_ACESSO == 1)
+                                if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_PRESCRICAO_ACESSO == 1 & (Int32)Session["AbaPr"] == 1)
                                 {
                                     <li class=""><a data-toggle="tab" href="#tab-8">Prescrições</a></li>
                                 }
-                                if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_ATESTADO_ACESSO == 1)
+                                if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_ATESTADO_ACESSO == 1 & (Int32)Session["AbaAt"] == 1)
                                 {
                                     <li class=""><a data-toggle="tab" href="#tab-10">Atestados</a></li>
                                 }
-                                if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_SOLICITACAO_ACESSO == 1)
+                                if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_SOLICITACAO_ACESSO == 1 & (Int32)Session["AbaSol"] == 1)
                                 {
                                     <li class=""><a data-toggle="tab" href="#tab-12">Solicitações</a></li>
                                 }
-                                if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_LOCACAO_ACESSO == 1)
+                                if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_LOCACAO_ACESSO == 1 & (Int32)Session["AbaLoc"] == 1)
                                 {
                                     <li class=""><a data-toggle="tab" href="#tab-17">Locações</a></li>
                                 }
@@ -864,7 +910,7 @@
                                 {
                                     <li class=""><a data-toggle="tab" href="#tab-9">Grupos</a></li>
                                 }
-                                <li class=""><a data-toggle="tab" href="#tab-2">Fotografia & Anexos</a></li>
+                                <li class=""><a data-toggle="tab" href="#tab-2">Fotografia & Anexos & Fichas</a></li>
                                 <li class=""><a data-toggle="tab" href="#tab-11">Anotações</a></li>
                                 <li class="active"><a data-toggle="tab" href="#tab-3">Contatos</a></li>
                                 <li class=""><a data-toggle="tab" href="#tab-13">Acompanhamento</a></li>
@@ -882,7 +928,10 @@
                                 {
                                     <li class=""><a data-toggle="tab" href="#tab-4">Consultas</a></li>
                                 }
-                                <li class=""><a data-toggle="tab" href="#tab-18">Vacinas</a></li>
+                                if ((Int32)Session["AbaVac"] == 1)
+	                            {
+                                    <li class=""><a data-toggle="tab" href="#tab-18">Vacinas</a></li>
+	                            }
                                 if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_ANAMNESE_ACESSO == 1)
                                 {
                                     <li class=""><a data-toggle="tab" href="#tab-5">Anamnese/Prontuário</a></li>
@@ -891,23 +940,23 @@
                                 {
                                     <li class=""><a data-toggle="tab" href="#tab-6">Exames Físicos</a></li>
                                 }
-                                if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_EXAME_ACESSO == 1)
+                                if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_EXAME_ACESSO == 1 & (Int32)Session["AbaEx"] == 1)
                                 {
                                     <li class=""><a data-toggle="tab" href="#tab-7">Resultados de Exames</a></li>
                                 }
-                                if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_PRESCRICAO_ACESSO == 1)
+                                if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_PRESCRICAO_ACESSO == 1 & (Int32)Session["AbaPr"] == 1)
                                 {
                                     <li class=""><a data-toggle="tab" href="#tab-8">Prescrições</a></li>
                                 }
-                                if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_ATESTADO_ACESSO == 1)
+                                if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_ATESTADO_ACESSO == 1 & (Int32)Session["AbaAt"] == 1)
                                 {
                                     <li class=""><a data-toggle="tab" href="#tab-10">Atestados</a></li>
                                 }
-                                if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_SOLICITACAO_ACESSO == 1)
+                                if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_SOLICITACAO_ACESSO == 1 & (Int32)Session["AbaSol"] == 1)
                                 {
                                     <li class=""><a data-toggle="tab" href="#tab-12">Solicitações</a></li>
                                 }
-                                if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_LOCACAO_ACESSO == 1)
+                                if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_LOCACAO_ACESSO == 1 & (Int32)Session["AbaLoc"] == 1)
                                 {
                                     <li class=""><a data-toggle="tab" href="#tab-17">Locações</a></li>
                                 }
@@ -915,7 +964,7 @@
                                 {
                                     <li class=""><a data-toggle="tab" href="#tab-9">Grupos</a></li>
                                 }
-                                <li class=""><a data-toggle="tab" href="#tab-2">Fotografia & Anexos</a></li>
+                                <li class=""><a data-toggle="tab" href="#tab-2">Fotografia & Anexos & Fichas</a></li>
                                 <li class=""><a data-toggle="tab" href="#tab-11">Anotações</a></li>
                                 <li class=""><a data-toggle="tab" href="#tab-3">Contatos</a></li>
                                 <li class="active"><a data-toggle="tab" href="#tab-13">Acompanhamento</a></li>
@@ -935,7 +984,10 @@
                                     {
                                         <li class=""><a data-toggle="tab" href="#tab-4">Consultas</a></li>
                                     }
-                                    <li class=""><a data-toggle="tab" href="#tab-18">Vacinas</a></li>
+                                    if ((Int32)Session["AbaVac"] == 1)
+	                                {
+                                        <li class=""><a data-toggle="tab" href="#tab-18">Vacinas</a></li>
+	                                }
                                     if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_ANAMNESE_ACESSO == 1)
                                     {
                                         <li class=""><a data-toggle="tab" href="#tab-5">Anamnese/Prontuário</a></li>
@@ -944,23 +996,23 @@
                                     {
                                         <li class=""><a data-toggle="tab" href="#tab-6">Exames Físicos</a></li>
                                     }
-                                    if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_EXAME_ACESSO == 1)
+                                    if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_EXAME_ACESSO == 1 & (Int32)Session["AbaEx"] == 1)
                                     {
                                         <li class=""><a data-toggle="tab" href="#tab-7">Resultados de Exames</a></li>
                                     }
-                                    if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_PRESCRICAO_ACESSO == 1)
+                                    if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_PRESCRICAO_ACESSO == 1 & (Int32)Session["AbaPr"] == 1)
                                     {
                                         <li class=""><a data-toggle="tab" href="#tab-8">Prescrições</a></li>
                                     }
-                                    if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_ATESTADO_ACESSO == 1)
+                                    if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_ATESTADO_ACESSO == 1 & (Int32)Session["AbaAt"] == 1)
                                     {
                                         <li class=""><a data-toggle="tab" href="#tab-10">Atestados</a></li>
                                     }
-                                    if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_SOLICITACAO_ACESSO == 1)
+                                    if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_SOLICITACAO_ACESSO == 1 & (Int32)Session["AbaSol"] == 1)
                                     {
                                         <li class=""><a data-toggle="tab" href="#tab-12">Solicitações</a></li>
                                     }
-                                    if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_LOCACAO_ACESSO == 1)
+                                    if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_LOCACAO_ACESSO == 1 & (Int32)Session["AbaLoc"] == 1)
                                     {
                                         <li class=""><a data-toggle="tab" href="#tab-17">Locações</a></li>
                                     }
@@ -968,7 +1020,7 @@
                                     {
                                         <li class=""><a data-toggle="tab" href="#tab-9">Grupos</a></li>
                                     }
-                                    <li class=""><a data-toggle="tab" href="#tab-2">Fotografia & Anexos</a></li>
+                                    <li class=""><a data-toggle="tab" href="#tab-2">Fotografia & Anexos & Fichas</a></li>
                                     <li class=""><a data-toggle="tab" href="#tab-11">Anotações</a></li>
                                     <li class=""><a data-toggle="tab" href="#tab-3">Contatos</a></li>
                                     <li class=""><a data-toggle="tab" href="#tab-13">Acompanhamento</a></li>
@@ -986,7 +1038,10 @@
                                     {
                                         <li class=""><a data-toggle="tab" href="#tab-4">Consultas</a></li>
                                     }
-                                    <li class=""><a data-toggle="tab" href="#tab-18">Vacinas</a></li>
+                                    if ((Int32)Session["AbaVac"] == 1)
+	                                {
+                                        <li class=""><a data-toggle="tab" href="#tab-18">Vacinas</a></li>
+	                                }
                                     if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_ANAMNESE_ACESSO == 1)
                                     {
                                         <li class=""><a data-toggle="tab" href="#tab-5">Anamnese/Prontuário</a></li>
@@ -995,23 +1050,23 @@
                                     {
                                         <li class=""><a data-toggle="tab" href="#tab-6">Exames Físicos</a></li>
                                     }
-                                    if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_EXAME_ACESSO == 1)
+                                    if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_EXAME_ACESSO == 1 & (Int32)Session["AbaEx"] == 1)
                                     {
                                         <li class=""><a data-toggle="tab" href="#tab-7">Resultados de Exames</a></li>
                                     }
-                                    if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_PRESCRICAO_ACESSO == 1)
+                                    if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_PRESCRICAO_ACESSO == 1 & (Int32)Session["AbaPr"] == 1)
                                     {
                                         <li class=""><a data-toggle="tab" href="#tab-8">Prescrições</a></li>
                                     }
-                                    if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_ATESTADO_ACESSO == 1)
+                                    if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_ATESTADO_ACESSO == 1 & (Int32)Session["AbaAt"] == 1)
                                     {
                                         <li class=""><a data-toggle="tab" href="#tab-10">Atestados</a></li>
                                     }
-                                    if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_SOLICITACAO_ACESSO == 1)
+                                    if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_SOLICITACAO_ACESSO == 1 & (Int32)Session["AbaSol"] == 1)
                                     {
                                         <li class=""><a data-toggle="tab" href="#tab-12">Solicitações</a></li>
                                     }
-                                    if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_LOCACAO_ACESSO == 1)
+                                    if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_LOCACAO_ACESSO == 1 & (Int32)Session["AbaLoc"] == 1)
                                     {
                                         <li class=""><a data-toggle="tab" href="#tab-17">Locações</a></li>
                                     }
@@ -1019,7 +1074,7 @@
                                     {
                                         <li class=""><a data-toggle="tab" href="#tab-9">Grupos</a></li>
                                     }
-                                    <li class=""><a data-toggle="tab" href="#tab-2">Fotografia & Anexos</a></li>
+                                    <li class=""><a data-toggle="tab" href="#tab-2">Fotografia & Anexos & Fichas</a></li>
                                     <li class=""><a data-toggle="tab" href="#tab-11">Anotações</a></li>
                                     <li class=""><a data-toggle="tab" href="#tab-3">Contatos</a></li>
                                     <li class=""><a data-toggle="tab" href="#tab-13">Acompanhamento</a></li>
@@ -1037,7 +1092,10 @@
                                     {
                                         <li class=""><a data-toggle="tab" href="#tab-4">Consultas</a></li>
                                     }
-                                    <li class=""><a data-toggle="tab" href="#tab-18">Vacinas</a></li>
+                                    if ((Int32)Session["AbaVac"] == 1)
+	                                {
+                                        <li class=""><a data-toggle="tab" href="#tab-18">Vacinas</a></li>
+	                                }
                                     if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_ANAMNESE_ACESSO == 1)
                                     {
                                         <li class=""><a data-toggle="tab" href="#tab-5">Anamnese/Prontuário</a></li>
@@ -1046,23 +1104,23 @@
                                     {
                                         <li class=""><a data-toggle="tab" href="#tab-6">Exames Físicos</a></li>
                                     }
-                                    if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_EXAME_ACESSO == 1)
+                                    if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_EXAME_ACESSO == 1 & (Int32)Session["AbaEx"] == 1)
                                     {
                                         <li class=""><a data-toggle="tab" href="#tab-7">Resultados de Exames</a></li>
                                     }
-                                    if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_PRESCRICAO_ACESSO == 1)
+                                    if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_PRESCRICAO_ACESSO == 1 & (Int32)Session["AbaPr"] == 1)
                                     {
                                         <li class=""><a data-toggle="tab" href="#tab-8">Prescrições</a></li>
                                     }
-                                    if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_ATESTADO_ACESSO == 1)
+                                    if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_ATESTADO_ACESSO == 1 & (Int32)Session["AbaAt"] == 1)
                                     {
                                         <li class=""><a data-toggle="tab" href="#tab-10">Atestados</a></li>
                                     }
-                                    if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_SOLICITACAO_ACESSO == 1)
+                                    if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_SOLICITACAO_ACESSO == 1 & (Int32)Session["AbaSol"] == 1)
                                     {
                                         <li class=""><a data-toggle="tab" href="#tab-12">Solicitações</a></li>
                                     }
-                                    if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_LOCACAO_ACESSO == 1)
+                                    if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_LOCACAO_ACESSO == 1 & (Int32)Session["AbaLoc"] == 1)
                                     {
                                         <li class=""><a data-toggle="tab" href="#tab-17">Locações</a></li>
                                     }
@@ -1070,7 +1128,7 @@
                                     {
                                         <li class=""><a data-toggle="tab" href="#tab-9">Grupos</a></li>
                                     }
-                                    <li class=""><a data-toggle="tab" href="#tab-2">Fotografia & Anexos</a></li>
+                                    <li class=""><a data-toggle="tab" href="#tab-2">Fotografia & Anexos & Fichas</a></li>
                                     <li class=""><a data-toggle="tab" href="#tab-11">Anotações</a></li>
                                     <li class=""><a data-toggle="tab" href="#tab-3">Contatos</a></li>
                                     <li class=""><a data-toggle="tab" href="#tab-13">Acompanhamento</a></li>
@@ -1088,7 +1146,10 @@
                                     {
                                         <li class=""><a data-toggle="tab" href="#tab-4">Consultas</a></li>
                                     }
-                                    <li class=""><a data-toggle="tab" href="#tab-18">Vacinas</a></li>
+                                    if ((Int32)Session["AbaVac"] == 1)
+	                                {
+                                        <li class=""><a data-toggle="tab" href="#tab-18">Vacinas</a></li>
+	                                }
                                     if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_ANAMNESE_ACESSO == 1)
                                     {
                                         <li class=""><a data-toggle="tab" href="#tab-5">Anamnese/Prontuário</a></li>
@@ -1097,23 +1158,23 @@
                                     {
                                         <li class=""><a data-toggle="tab" href="#tab-6">Exames Físicos</a></li>
                                     }
-                                    if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_EXAME_ACESSO == 1)
+                                    if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_EXAME_ACESSO == 1 & (Int32)Session["AbaEx"] == 1)
                                     {
                                         <li class=""><a data-toggle="tab" href="#tab-7">Resultados de Exames</a></li>
                                     }
-                                    if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_PRESCRICAO_ACESSO == 1)
+                                    if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_PRESCRICAO_ACESSO == 1 & (Int32)Session["AbaPr"] == 1)
                                     {
                                         <li class=""><a data-toggle="tab" href="#tab-8">Prescrições</a></li>
                                     }
-                                    if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_ATESTADO_ACESSO == 1)
+                                    if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_ATESTADO_ACESSO == 1 & (Int32)Session["AbaAt"] == 1)
                                     {
                                         <li class=""><a data-toggle="tab" href="#tab-10">Atestados</a></li>
                                     }
-                                    if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_SOLICITACAO_ACESSO == 1)
+                                    if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_SOLICITACAO_ACESSO == 1 & (Int32)Session["AbaSol"] == 1)
                                     {
                                         <li class=""><a data-toggle="tab" href="#tab-12">Solicitações</a></li>
                                     }
-                                    if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_LOCACAO_ACESSO == 1)
+                                    if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_LOCACAO_ACESSO == 1 & (Int32)Session["AbaLoc"] == 1)
                                     {
                                         <li class="active"><a data-toggle="tab" href="#tab-17">Locações</a></li>
                                     }
@@ -1121,58 +1182,7 @@
                                     {
                                         <li class=""><a data-toggle="tab" href="#tab-9">Grupos</a></li>
                                     }
-                                    <li class=""><a data-toggle="tab" href="#tab-2">Fotografia & Anexos</a></li>
-                                    <li class=""><a data-toggle="tab" href="#tab-11">Anotações</a></li>
-                                    <li class=""><a data-toggle="tab" href="#tab-3">Contatos</a></li>
-                                    <li class=""><a data-toggle="tab" href="#tab-13">Acompanhamento</a></li>
-                                    if ((Int32)Session["BlocoAnamnese"] != 1)
-	                                {
-                                        <li class=""><a data-toggle="tab" href="#tab-14">Questionário Berlim</a></li>
-                                        <li class=""><a data-toggle="tab" href="#tab-15">Questionário Epworth</a></li>
-                                        <li class=""><a data-toggle="tab" href="#tab-16">Questionário Stop-Bang</a></li>
-	                                }
-                                }
-                                if ((Int32)Session["NivelPaciente"] == 18)
-                                {
-                                    <li class=""><a data-toggle="tab" href="#tab-1">Dados Pessoais</a></li>
-                                    if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_PACIENTE_CONSULTA_ACESSO == 1)
-                                    {
-                                        <li class=""><a data-toggle="tab" href="#tab-4">Consultas</a></li>
-                                    }
-                                    <li class="active"><a data-toggle="tab" href="#tab-18">Vacinas</a></li>
-                                    if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_ANAMNESE_ACESSO == 1)
-                                    {
-                                        <li class=""><a data-toggle="tab" href="#tab-5">Anamnese/Prontuário</a></li>
-                                    }
-                                    if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_FISICO_ACESSO == 1)
-                                    {
-                                        <li class=""><a data-toggle="tab" href="#tab-6">Exames Físicos</a></li>
-                                    }
-                                    if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_EXAME_ACESSO == 1)
-                                    {
-                                        <li class=""><a data-toggle="tab" href="#tab-7">Resultados de Exames</a></li>
-                                    }
-                                    if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_PRESCRICAO_ACESSO == 1)
-                                    {
-                                        <li class=""><a data-toggle="tab" href="#tab-8">Prescrições</a></li>
-                                    }
-                                    if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_ATESTADO_ACESSO == 1)
-                                    {
-                                        <li class=""><a data-toggle="tab" href="#tab-10">Atestados</a></li>
-                                    }
-                                    if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_SOLICITACAO_ACESSO == 1)
-                                    {
-                                        <li class=""><a data-toggle="tab" href="#tab-12">Solicitações</a></li>
-                                    }
-                                    if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_LOCACAO_ACESSO == 1)
-                                    {
-                                        <li class=""><a data-toggle="tab" href="#tab-17">Locações</a></li>
-                                    }
-                                    if ((Int32)Session["PermMensageria"] == 1)
-                                    {
-                                        <li class=""><a data-toggle="tab" href="#tab-9">Grupos</a></li>
-                                    }
-                                    <li class=""><a data-toggle="tab" href="#tab-2">Fotografia & Anexos</a></li>
+                                    <li class=""><a data-toggle="tab" href="#tab-2">Fotografia & Anexos & Fichas</a></li>
                                     <li class=""><a data-toggle="tab" href="#tab-11">Anotações</a></li>
                                     <li class=""><a data-toggle="tab" href="#tab-3">Contatos</a></li>
                                     <li class=""><a data-toggle="tab" href="#tab-13">Acompanhamento</a></li>
@@ -1184,6 +1194,60 @@
 	                                }
                                 }
 	                        }
+                            @if ((Int32)Session["NivelPaciente"] == 18)
+                            {
+                                <li class=""><a data-toggle="tab" href="#tab-1">Dados Pessoais</a></li>
+                                if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_PACIENTE_CONSULTA_ACESSO == 1)
+                                {
+                                    <li class=""><a data-toggle="tab" href="#tab-4">Consultas</a></li>
+                                }
+                                if ((Int32)Session["AbaVac"] == 1)
+	                            {
+                                    <li class="active"><a data-toggle="tab" href="#tab-18">Vacinas</a></li>
+	                            }
+                                if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_ANAMNESE_ACESSO == 1)
+                                {
+                                    <li class=""><a data-toggle="tab" href="#tab-5">Anamnese/Prontuário</a></li>
+                                }
+                                if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_FISICO_ACESSO == 1)
+                                {
+                                    <li class=""><a data-toggle="tab" href="#tab-6">Exames Físicos</a></li>
+                                }
+                                if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_EXAME_ACESSO == 1 & (Int32)Session["AbaEx"] == 1)
+                                {
+                                    <li class=""><a data-toggle="tab" href="#tab-7">Resultados de Exames</a></li>
+                                }
+                                if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_PRESCRICAO_ACESSO == 1 & (Int32)Session["AbaPr"] == 1)
+                                {
+                                    <li class=""><a data-toggle="tab" href="#tab-8">Prescrições</a></li>
+                                }
+                                if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_ATESTADO_ACESSO == 1 & (Int32)Session["AbaAt"] == 1)
+                                {
+                                    <li class=""><a data-toggle="tab" href="#tab-10">Atestados</a></li>
+                                }
+                                if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_SOLICITACAO_ACESSO == 1 & (Int32)Session["AbaSol"] == 1)
+                                {
+                                    <li class=""><a data-toggle="tab" href="#tab-12">Solicitações</a></li>
+                                }
+                                if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_LOCACAO_ACESSO == 1 & (Int32)Session["AbaLoc"] == 1)
+                                {
+                                    <li class=""><a data-toggle="tab" href="#tab-17">Locações</a></li>
+                                }
+                                if ((Int32)Session["PermMensageria"] == 1)
+                                {
+                                    <li class=""><a data-toggle="tab" href="#tab-9">Grupos</a></li>
+                                }
+                                <li class=""><a data-toggle="tab" href="#tab-2">Fotografia & Anexos & Fichas</a></li>
+                                <li class=""><a data-toggle="tab" href="#tab-11">Anotações</a></li>
+                                <li class=""><a data-toggle="tab" href="#tab-3">Contatos</a></li>
+                                <li class=""><a data-toggle="tab" href="#tab-13">Acompanhamento</a></li>
+                                if ((Int32)Session["BlocoAnamnese"] != 1)
+	                            {
+                                    <li class=""><a data-toggle="tab" href="#tab-14">Questionário Berlim</a></li>
+                                    <li class=""><a data-toggle="tab" href="#tab-15">Questionário Epworth</a></li>
+                                    <li class=""><a data-toggle="tab" href="#tab-16">Questionário Stop-Bang</a></li>
+	                            }
+                            }
 
                         </ul>
                         <div class="tab-content">
@@ -1986,7 +2050,7 @@
                             {
                                 <div id="tab-2" class="tab-pane active">
                                     <div class="panel-body">
-                                        <div class="row">
+                                        @*<div class="row">
                                             <div class="col-lg-3 col-md-3 col-xs-12">
                                                 <div class="form-group">
                                                     <div class="col-lg-12 col-md-12 col-sm-12">
@@ -2011,13 +2075,61 @@
                                                             <div class="col-lg-12 col-md-12 col-xs-12">
                                                                 <input style="float: left; margin-right: 5px;" type="file" accept=".jpg, .png, .jpeg, .gif|images/*" name="file" id="file" class="btn btn-sm btn-warning" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="ATENÇÃO - Antes de anexar fotografia certifique-se de que ela esteja livre de vírus e outras ameaças.  " />
                                                                 <input style="float: left; margin-right: 5px;"  type="submit" value="Incluir/Alterar Fotografia do paciente" class="btn btn-sm btn-primary" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Confirma a alteração da fotografia do paciente"/> 
-                                                                <input style="float: left;" type="button" value="Capturar imagem" class="btn btn-sm btn-primary" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Capturar a imagem do paciente pela câmera"/>
                                                             </div>
                                                         </div>
                                                     }
                                                 </div>
                                             </div>
+                                        </div>*@
+
+                                        <div class="row">
+                                            <div class="col-lg-3 col-md-3 col-xs-12">
+                                                <div class="form-group">
+                                                    <div class="col-lg-12 col-md-12 col-sm-12">
+                                                        <br />
+                                                        <div id="photo-container">
+                                                            @if (!String.IsNullOrEmpty(Model.PACI_AQ_FOTO))
+                                                            {
+                                                                <img id="img-paciente" src="@Url.Content(Model.PACI_AQ_FOTO)" style="width: auto; height: auto; max-height: 270px; max-width: 270px;" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Clique Ctrl+Ctrl para ampliar a fotografia">
+                                                            }
+                                                            else
+                                                            {
+                                                                <img id="img-paciente" src="~/Images/icon_morador.png" style="width: auto; height: auto; max-height: 270px; max-width: 270px;">
+                                                            }
+                                                        </div>
+                                                        <!-- Área da Câmera (Invisível inicialmente) -->
+                                                        <div id="camera-wrapper" style="display:none;">
+                                                            <video id="video" width="270" height="200" autoplay style="border-radius: 5px; background: #000;"></video>
+                                                            <canvas id="canvas" width="640" height="480" style="display:none;"></canvas>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-9 col-md-9 col-xs-12">
+                                                <div class="form-group">
+                                                    <h4 style="margin-left: 15px; color:green; background-color: beige; font-weight:bold">Fotografia</h4>
+                                                    <div class="col-lg-12 col-md-12 col-xs-12">
+                                                        @using (Html.BeginForm("UploadFotoPaciente", "Paciente", FormMethod.Post, new { enctype = "multipart/form-data", @id = "form-foto-arquivo" }))
+                                                        {
+                                                            <input style="float: left; margin-right: 5px;" type="file" accept="image/*" name="file" id="file" class="btn btn-sm btn-warning" />
+                                                            <input style="float: left; margin-right: 5px;" type="submit" value="Upload de Arquivo" class="btn btn-sm btn-primary" />
+                                                        }
+
+                                                        <!-- Botões da Câmera -->
+                                                        <button type="button" id="btn-iniciar-camera" class="btn btn-sm btn-info" onclick="startCamera()">
+                                                            <i class="fa fa-camera"></i> Usar Câmera
+                                                        </button>
+                                                        <button type="button" id="btn-capturar" class="btn btn-sm btn-danger" style="display:none;" onclick="takeSnapshot()">
+                                                            <i class="fa fa-circle"></i> Tirar Foto agora
+                                                        </button>
+                                                        <button type="button" id="btn-cancelar-camera" class="btn btn-sm btn-default" style="display:none;" onclick="stopCamera()">
+                                                            Cancelar
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
+
                                         <br />
                                         <div class="row">
                                             <div class="col-lg-12 col-md-12 col-xs-12">
@@ -2119,6 +2231,7 @@
                                             </div>
                                         </div>
                                         <br />
+
                                         <div class="row">
                                             <div class="col-lg-12 col-md-12 col-xs-12">
                                                 <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Fichas Digitalizadas</h4>
@@ -2197,7 +2310,7 @@
                             {
                                 <div id="tab-2" class="tab-pane">
                                     <div class="panel-body">
-                                        <div class="row">
+                                        @*<div class="row">
                                             <div class="col-lg-3 col-md-3 col-xs-12">
                                                 <div class="form-group">
                                                     <div class="col-lg-12 col-md-12 col-sm-12">
@@ -2222,13 +2335,62 @@
                                                             <div class="col-lg-12 col-md-12 col-xs-12">
                                                                 <input style="float: left; margin-right: 5px;" type="file" accept=".jpg, .png, .jpeg, .gif|images/*" name="file" id="file" class="btn btn-sm btn-warning" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="ATENÇÃO - Antes de anexar fotografia certifique-se de que ela esteja livre de vírus e outras ameaças.  " />
                                                                 <input style="float: left; margin-right: 5px;"  type="submit" value="Incluir/Alterar Fotografia do paciente" class="btn btn-sm btn-primary" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Confirma a alteração da fotografia do paciente"/> 
-                                                                <input style="float: left;" type="button" value="Capturar imagem" class="btn btn-sm btn-primary" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Capturar a imagem do paciente pela câmera"/>
                                                             </div>
                                                         </div>
                                                     }
                                                 </div>
                                             </div>
+                                        </div>*@
+
+                                        <div class="row">
+                                            <div class="col-lg-3 col-md-3 col-xs-12">
+                                                <div class="form-group">
+                                                    <div class="col-lg-12 col-md-12 col-sm-12">
+                                                        <br />
+                                                        <div id="photo-container">
+                                                            @if (!String.IsNullOrEmpty(Model.PACI_AQ_FOTO))
+                                                            {
+                                                                <img id="img-paciente" src="@Url.Content(Model.PACI_AQ_FOTO)" style="width: auto; height: auto; max-height: 270px; max-width: 270px;" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Clique Ctrl+Ctrl para ampliar a fotografia">
+                                                            }
+                                                            else
+                                                            {
+                                                                <img id="img-paciente" src="~/Images/icon_morador.png" style="width: auto; height: auto; max-height: 270px; max-width: 270px;">
+                                                            }
+                                                        </div>
+                                                        <!-- Área da Câmera (Invisível inicialmente) -->
+                                                        <div id="camera-wrapper" style="display:none;">
+                                                            <video id="video" width="270" height="200" autoplay style="border-radius: 5px; background: #000;"></video>
+                                                            <canvas id="canvas" width="640" height="480" style="display:none;"></canvas>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-9 col-md-9 col-xs-12">
+                                                <div class="form-group">
+                                                    <h4 style="margin-left: 15px; color:green; background-color: beige; font-weight:bold">Fotografia</h4>
+                                                    <div class="col-lg-12 col-md-12 col-xs-12">
+                                                        @using (Html.BeginForm("UploadFotoPaciente", "Paciente", FormMethod.Post, new { enctype = "multipart/form-data", @id = "form-foto-arquivo" }))
+                                                        {
+                                                            <input style="float: left; margin-right: 5px;" type="file" accept="image/*" name="file" id="file" class="btn btn-sm btn-warning" />
+                                                            <input style="float: left; margin-right: 5px;" type="submit" value="Upload de Arquivo" class="btn btn-sm btn-primary" />
+                                                        }
+
+                                                        <!-- Botões da Câmera -->
+                                                        <button type="button" id="btn-iniciar-camera" class="btn btn-sm btn-info" onclick="startCamera()">
+                                                            <i class="fa fa-camera"></i> Usar Câmera
+                                                        </button>
+                                                        <button type="button" id="btn-capturar" class="btn btn-sm btn-danger" style="display:none;" onclick="takeSnapshot()">
+                                                            <i class="fa fa-circle"></i> Tirar Foto agora
+                                                        </button>
+                                                        <button type="button" id="btn-cancelar-camera" class="btn btn-sm btn-default" style="display:none;" onclick="stopCamera()">
+                                                            Cancelar
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
+
+
                                         <br />
                                         <div class="row">
                                             <div class="col-lg-12 col-md-12 col-xs-12">
@@ -7610,7 +7772,7 @@
                             }
                             else
                             {
-                                <div id="tab-10" class="tab-pane">
+                                <div id="tab-18" class="tab-pane">
                                     <div class="panel-body">
                                         <div class="row">
                                             <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
@@ -8710,6 +8872,75 @@
             });
         });
     </script>
+    <script type="text/javascript">
+        var video = document.getElementById('video');
+        var canvas = document.getElementById('canvas');
+        var localStream = null;
+
+        function startCamera() {
+            $('#photo-container').hide();
+            $('#camera-wrapper').show();
+            $('#btn-iniciar-camera').hide();
+            $('#btn-capturar, #btn-cancelar-camera').show();
+
+            navigator.mediaDevices.getUserMedia({ video: true, audio: false })
+                .then(function (stream) {
+                    localStream = stream;
+                    video.srcObject = stream;
+                    video.play();
+                })
+                .catch(function (err) {
+                    toastr.error("Câmera não disponível ou permissão negada.");
+                    stopCamera();
+                });
+        }
+
+        function stopCamera() {
+            if (localStream) {
+                localStream.getTracks().forEach(track => track.stop());
+            }
+            $('#camera-wrapper').hide();
+            $('#photo-container').show();
+            $('#btn-iniciar-camera').show();
+            $('#btn-capturar, #btn-cancelar-camera').hide();
+        }
+
+        function takeSnapshot() {
+            var context = canvas.getContext('2d');
+            context.drawImage(video, 0, 0, 640, 480);
+
+            canvas.toBlob(function (blob) {
+                var file = new File([blob], "foto_camera.jpg", { type: "image/jpeg" });
+                enviarFotoCamera(file);
+            }, 'image/jpeg');
+        }
+
+        function enviarFotoCamera(file) {
+            var formData = new FormData();
+            formData.append('file', file);
+
+            $('#loadingIndicator').show();
+
+            $.ajax({
+                url: '@Url.Action("UploadFotoPaciente", "Paciente")',
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (r) {
+                    // Como o seu ActionResult original dá um Redirect, 
+                    // o AJAX vai receber o HTML da página de volta.
+                    // O ideal é recarregar para ver a foto nova.
+                    window.location.reload();
+                },
+                error: function () {
+                    toastr.error("Erro ao enviar foto da câmera.");
+                    $('#loadingIndicator').hide();
+                }
+            });
+        }
+    </script>
+
 
     @if (ViewBag.Message != null)
     {

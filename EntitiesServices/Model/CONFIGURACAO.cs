@@ -158,6 +158,12 @@ namespace EntitiesServices.Model
         public string CONF_NM_SENHA_PACIENTE { get; set; }
         public Nullable<int> CONF_IN_RECIBO_SRF { get; set; }
         public Nullable<int> CONF_IN_DOC_PRONTUARIO { get; set; }
+        public Nullable<int> CONF_IN_ABA_VACINA { get; set; }
+        public Nullable<int> CONF_IN_ABA_EXAME { get; set; }
+        public Nullable<int> CONF_IN_ABA_ATESTADO { get; set; }
+        public Nullable<int> CONF_IN_ABA_SOLICITACAO { get; set; }
+        public Nullable<int> CONF_IN_ABA_PRESCRICAO { get; set; }
+        public Nullable<int> CONF_IN_ABA_LOCACAO { get; set; }
     
         public virtual ASSINANTE ASSINANTE { get; set; }
     }

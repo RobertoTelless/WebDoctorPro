@@ -338,6 +338,7 @@ namespace Presentation.Start
             kernel.Bind<IAreaPacienteAnexoRepository>().To<AreaPacienteAnexoRepository>();
             kernel.Bind<IPacienteVacinaRepository>().To<PacienteVacinaRepository>();
             kernel.Bind<IVacinaRepository>().To<VacinaRepository>();
+            kernel.Bind<IPacienteExameAnexoImagemRepository>().To<PacienteExameAnexoImagemRepository>();
 
 
         }

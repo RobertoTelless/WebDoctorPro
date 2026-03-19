@@ -278,6 +278,30 @@ namespace ERP_Condominios_Solution.Controllers
             doc.Add(new SelectListItem() { Text = "Sim", Value = "1" });
             doc.Add(new SelectListItem() { Text = "Não", Value = "0" });
             ViewBag.Doc = new SelectList(doc, "Value", "Text");
+            var abaVac = new List<SelectListItem>();
+            abaVac.Add(new SelectListItem() { Text = "Exibir", Value = "1" });
+            abaVac.Add(new SelectListItem() { Text = "Não Exibir", Value = "0" });
+            ViewBag.AbaVac = new SelectList(abaVac, "Value", "Text");
+            var abaEx = new List<SelectListItem>();
+            abaEx.Add(new SelectListItem() { Text = "Exibir", Value = "1" });
+            abaEx.Add(new SelectListItem() { Text = "Não Exibir", Value = "0" });
+            ViewBag.AbaEx = new SelectList(abaEx, "Value", "Text");
+            var abaAt = new List<SelectListItem>();
+            abaAt.Add(new SelectListItem() { Text = "Exibir", Value = "1" });
+            abaAt.Add(new SelectListItem() { Text = "Não Exibir", Value = "0" });
+            ViewBag.AbaAt = new SelectList(abaAt, "Value", "Text");
+            var abaSol = new List<SelectListItem>();
+            abaSol.Add(new SelectListItem() { Text = "Exibir", Value = "1" });
+            abaSol.Add(new SelectListItem() { Text = "Não Exibir", Value = "0" });
+            ViewBag.AbaSol = new SelectList(abaSol, "Value", "Text");
+            var abaPr = new List<SelectListItem>();
+            abaPr.Add(new SelectListItem() { Text = "Exibir", Value = "1" });
+            abaPr.Add(new SelectListItem() { Text = "Não Exibir", Value = "0" });
+            ViewBag.AbaPr = new SelectList(abaPr, "Value", "Text");
+            var abaLoc = new List<SelectListItem>();
+            abaLoc.Add(new SelectListItem() { Text = "Exibir", Value = "1" });
+            abaLoc.Add(new SelectListItem() { Text = "Não Exibir", Value = "0" });
+            ViewBag.AbaLoc = new SelectList(abaLoc, "Value", "Text");
 
             // Indicadores
 
@@ -435,6 +459,30 @@ namespace ERP_Condominios_Solution.Controllers
             doc.Add(new SelectListItem() { Text = "Sim", Value = "1" });
             doc.Add(new SelectListItem() { Text = "Não", Value = "0" });
             ViewBag.Doc = new SelectList(doc, "Value", "Text");
+            var abaVac = new List<SelectListItem>();
+            abaVac.Add(new SelectListItem() { Text = "Exibir", Value = "1" });
+            abaVac.Add(new SelectListItem() { Text = "Não Exibir", Value = "0" });
+            ViewBag.AbaVac = new SelectList(abaVac, "Value", "Text");
+            var abaEx = new List<SelectListItem>();
+            abaEx.Add(new SelectListItem() { Text = "Exibir", Value = "1" });
+            abaEx.Add(new SelectListItem() { Text = "Não Exibir", Value = "0" });
+            ViewBag.AbaEx = new SelectList(abaEx, "Value", "Text");
+            var abaAt = new List<SelectListItem>();
+            abaAt.Add(new SelectListItem() { Text = "Exibir", Value = "1" });
+            abaAt.Add(new SelectListItem() { Text = "Não Exibir", Value = "0" });
+            ViewBag.AbaAt = new SelectList(abaAt, "Value", "Text");
+            var abaSol = new List<SelectListItem>();
+            abaSol.Add(new SelectListItem() { Text = "Exibir", Value = "1" });
+            abaSol.Add(new SelectListItem() { Text = "Não Exibir", Value = "0" });
+            ViewBag.AbaSol = new SelectList(abaSol, "Value", "Text");
+            var abaPr = new List<SelectListItem>();
+            abaPr.Add(new SelectListItem() { Text = "Exibir", Value = "1" });
+            abaPr.Add(new SelectListItem() { Text = "Não Exibir", Value = "0" });
+            ViewBag.AbaPr = new SelectList(abaPr, "Value", "Text");
+            var abaLoc = new List<SelectListItem>();
+            abaLoc.Add(new SelectListItem() { Text = "Exibir", Value = "1" });
+            abaLoc.Add(new SelectListItem() { Text = "Não Exibir", Value = "0" });
+            ViewBag.AbaLoc = new SelectList(abaLoc, "Value", "Text");
             if (ModelState.IsValid)
             {
                 try

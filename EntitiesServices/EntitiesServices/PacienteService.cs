@@ -61,10 +61,11 @@ namespace ModelServices.EntitiesServices
         private readonly IPacienteConsultaMaterialRepository _matRepository;
         private readonly IPacienteVacinaRepository _vacRepository;
         private readonly IVacinaRepository _vaciRepository;
+        private readonly IPacienteExameAnexoImagemRepository _imaRepository;
 
         protected CRMSysDBEntities Db = new CRMSysDBEntities();
 
-        public PacienteService(IPacienteRepository baseRepository, ILogRepository logRepository, ITipoPacienteRepository tipoRepository, IPacienteAnexoRepository anexoRepository, IUsuarioRepository usuRepository, IPacienteAnotacaoRepository anoRepository, IUFRepository uFRepository, ISexoRepository sexoRepository, ICorRepository corRepository, ITipoPessoaRepository pesRepository, ILinguaRepository linRepository, INacionalidadeRepository nacRepository, IMunicipioRepository munRepository, IEstadoCivilRepository esciRepository, IConvenioRepository convRepository, IGrauRepository grauRepository, ITipoExameRepository texRepository, IPacienteConsultaRepository pconRepository, IPacienteAnamneseRepository panRepository, IPacientePrescricaoRepository presRepository, IPacienteExamesRepository pexRepository, IPacienteExameFisicoRepository pexfRepository, ITipoControleRepository tcRepository, ITipoAtestadoRepository ateRepository, IPacienteSolicitacaoRepository pasoRepository, IPacienteAtestadoRepository patRepository, IGrauParentescoRepository gpRepository, IPacienteContatoRepository pcRepository, IGrupoContatoRepository gruRepository, IPacienteExameAnexoRepository eaxRepository, IPacienteExameAnotacaoRepository eanRepository, ITipoFormaRepository tfRepository, IPacientePrescricaoItemRepository piRepository, IPacienteHistoricoRepository phRepository, ILaboratorioRepository labRepository, IControleVersaoRepository cvRepository, IPacienteFichaRepository ficRepository, IPacienteAnamneseAnotacaoRepository anaRepository, IPacienteLoginRepository loginRepository, ITemplateRepository tempRepository, IConfiguracaoRepository configuracaoRepository, IPacienteDadosExameFisicoRepository pdRepository, IQuestionarioBerlimRepository qbRepository, IQuestionarioEpworthRepository epRepository, IQuestionarioBangRepository bgRepository,IRacaRepository racaRepository, IRespostaConsultaRepository respRepository, IPacienteConsultaMaterialRepository matRepository, IPacienteVacinaRepository vacRepository, IVacinaRepository vaciRepository) : base(baseRepository)
+        public PacienteService(IPacienteRepository baseRepository, ILogRepository logRepository, ITipoPacienteRepository tipoRepository, IPacienteAnexoRepository anexoRepository, IUsuarioRepository usuRepository, IPacienteAnotacaoRepository anoRepository, IUFRepository uFRepository, ISexoRepository sexoRepository, ICorRepository corRepository, ITipoPessoaRepository pesRepository, ILinguaRepository linRepository, INacionalidadeRepository nacRepository, IMunicipioRepository munRepository, IEstadoCivilRepository esciRepository, IConvenioRepository convRepository, IGrauRepository grauRepository, ITipoExameRepository texRepository, IPacienteConsultaRepository pconRepository, IPacienteAnamneseRepository panRepository, IPacientePrescricaoRepository presRepository, IPacienteExamesRepository pexRepository, IPacienteExameFisicoRepository pexfRepository, ITipoControleRepository tcRepository, ITipoAtestadoRepository ateRepository, IPacienteSolicitacaoRepository pasoRepository, IPacienteAtestadoRepository patRepository, IGrauParentescoRepository gpRepository, IPacienteContatoRepository pcRepository, IGrupoContatoRepository gruRepository, IPacienteExameAnexoRepository eaxRepository, IPacienteExameAnotacaoRepository eanRepository, ITipoFormaRepository tfRepository, IPacientePrescricaoItemRepository piRepository, IPacienteHistoricoRepository phRepository, ILaboratorioRepository labRepository, IControleVersaoRepository cvRepository, IPacienteFichaRepository ficRepository, IPacienteAnamneseAnotacaoRepository anaRepository, IPacienteLoginRepository loginRepository, ITemplateRepository tempRepository, IConfiguracaoRepository configuracaoRepository, IPacienteDadosExameFisicoRepository pdRepository, IQuestionarioBerlimRepository qbRepository, IQuestionarioEpworthRepository epRepository, IQuestionarioBangRepository bgRepository,IRacaRepository racaRepository, IRespostaConsultaRepository respRepository, IPacienteConsultaMaterialRepository matRepository, IPacienteVacinaRepository vacRepository, IVacinaRepository vaciRepository, IPacienteExameAnexoImagemRepository imaRepository) : base(baseRepository)
         {
             _baseRepository = baseRepository;
             _logRepository = logRepository;
@@ -116,6 +117,7 @@ namespace ModelServices.EntitiesServices
             _matRepository = matRepository;
             _vacRepository = vacRepository;
             _vaciRepository = vaciRepository;
+            _imaRepository = imaRepository;
         }
 
         public CONFIGURACAO CarregaConfiguracao(Int32 id)
@@ -1636,6 +1638,7 @@ namespace ModelServices.EntitiesServices
             {
                 try
                 {
+                    item.PACIENTE = null;
                     _vacRepository.Add(item);
                     transaction.Commit();
                     return 0;
@@ -1656,6 +1659,29 @@ namespace ModelServices.EntitiesServices
         public List<VACINA> GetAllVacinas(Int32 idAss)
         {
             return _vaciRepository.GetAllItens(idAss);
+        }
+
+        public Int32 CreateAnexoImagem(PACIENTE_EXAME_ANEXO_IMAGEM item)
+        {
+            using (DbContextTransaction transaction = Db.Database.BeginTransaction(IsolationLevel.ReadCommitted))
+            {
+                try
+                {
+                    _imaRepository.Add(item);
+                    transaction.Commit();
+                    return 0;
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    throw ex;
+                }
+            }
+        }
+
+        public List<PACIENTE_EXAME_ANEXO_IMAGEM> GetPontosById(Int32 id)
+        {
+            return _imaRepository.GetPontosById(id);
         }
 
     }
