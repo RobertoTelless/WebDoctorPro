@@ -1173,6 +1173,9 @@
         <AssociationConnector Association="CRMSysDBModel.FK_PACIENTE_VACINA_PACIENTE" />
         <AssociationConnector Association="CRMSysDBModel.FK_PACIENTE_VACINA_USUARIO" />
         <AssociationConnector Association="CRMSysDBModel.FK_PACIENTE_VACINA_VACINA" />
+        <EntityTypeShape EntityType="CRMSysDBModel.MENSAGEM_FABRICANTE_LIDO" Width="1.5" PointX="19" PointY="270.5" />
+        <AssociationConnector Association="CRMSysDBModel.FK__MENSAGEM___MEFA___785B2326" />
+        <AssociationConnector Association="CRMSysDBModel.FK__MENSAGEM___USUA___794F475F" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

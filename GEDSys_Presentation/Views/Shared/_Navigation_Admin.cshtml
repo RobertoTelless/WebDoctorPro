@@ -22,7 +22,7 @@
 
             @*Dashboard*@
             <li>
-                <a href="@Url.Action("MontarTelaPaciente", "BaseAdmin")"><i class="fa fa-th-large"></i> <span class="nav-label" data-i18n="nav.dashboard">Início</span> <span class="fa arrow"></span></a>
+                <a href="@Url.Action("MontarTelaPaciente", "BaseAdmin")"><i class="fa fa-dashboard"></i> <span class="nav-label" data-i18n="nav.dashboard">Início</span> <span class="fa arrow"></span></a>
                 <ul class="nav nav-second-level collapse @Html.IsSelected(controller: "Cadastros", cssClass: "in")">
                     <li class="@Html.IsSelected(action: "MontarTelaPaciente")"><a href="@Url.Action("MontarTelaPaciente", "Paciente")">Página Inicial</a></li>
                 </ul>
@@ -30,7 +30,7 @@
 
             @*Acesso*@
             <li>
-                <a href="@Url.Action("MontarTelaPaciente", "BaseAdmin")"><i class="fa fa-th-large"></i> <span class="nav-label" data-i18n="nav.dashboard">Controle de Acesso</span> <span class="fa arrow"></span></a>
+                <a href="@Url.Action("MontarTelaPaciente", "BaseAdmin")"><i class="fa fa-lock"></i> <span class="nav-label" data-i18n="nav.dashboard">Controle de Acesso</span> <span class="fa arrow"></span></a>
                 <ul class="nav nav-second-level collapse @Html.IsSelected(controller: "Cadastros", cssClass: "in")">
                     <li class="@Html.IsSelected(action: "TrocarSenha")"><a href="@Url.Action("TrocarSenha", "ControleAcesso")">Alterar Senha</a></li>
                 </ul>
@@ -38,7 +38,7 @@
 
             @*Cadastros*@
             <li>
-                <a href="@Url.Action("MontarTelaPaciente", "BaseAdmin")"><i class="fa fa-th-large"></i> <span class="nav-label" data-i18n="nav.dashboard">Cadastros</span> <span class="fa arrow"></span></a>
+                <a href="@Url.Action("MontarTelaPaciente", "BaseAdmin")"><i class="fa fa-folder-open"></i> <span class="nav-label" data-i18n="nav.dashboard">Cadastros</span> <span class="fa arrow"></span></a>
                 <ul class="nav nav-second-level collapse @Html.IsSelected(controller: "Cadastros", cssClass: "in")">
                     @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_ACESSO_PACIENTE == 1)
                     {
@@ -83,7 +83,7 @@
 
             @*Prontuario*@
             <li>
-                <a href="@Url.Action("MontarTelaPaciente", "BaseAdmin")"><i class="fa fa-th-large"></i> <span class="nav-label" data-i18n="nav.dashboard">Prontuários</span> <span class="fa arrow"></span></a>
+                <a href="@Url.Action("MontarTelaPaciente", "BaseAdmin")"><i class="fa fa-edit"></i> <span class="nav-label" data-i18n="nav.dashboard">Prontuários</span> <span class="fa arrow"></span></a>
                 <ul class="nav nav-second-level collapse @Html.IsSelected(controller: "Cadastros", cssClass: "in")">
                     @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_ACESSO_PACIENTE == 1)
                     {
@@ -129,7 +129,7 @@
             {
                 @*Financeiro*@
                 <li>
-                    <a href="@Url.Action("MontarTelaPaciente", "BaseAdmin")"><i class="fa fa-th-large"></i> <span class="nav-label" data-i18n="nav.dashboard">Financeiro</span> <span class="fa arrow"></span></a>
+                    <a href="@Url.Action("MontarTelaPaciente", "BaseAdmin")"><i class="fa fa-money"></i> <span class="nav-label" data-i18n="nav.dashboard">Financeiro</span> <span class="fa arrow"></span></a>
                     <ul class="nav nav-second-level collapse @Html.IsSelected(controller: "Cadastros", cssClass: "in")">
                         @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_ACESSO_FINANCEIRO == 1)
                         {
@@ -148,7 +148,7 @@
             {
                 @*Locação*@
                 <li>
-                    <a href="@Url.Action("MontarTelaPaciente", "BaseAdmin")"><i class="fa fa-th-large"></i> <span class="nav-label" data-i18n="nav.dashboard">Locação</span> <span class="fa arrow"></span></a>
+                    <a href="@Url.Action("MontarTelaPaciente", "BaseAdmin")"><i class="fa fa-calendar"></i> <span class="nav-label" data-i18n="nav.dashboard">Locação</span> <span class="fa arrow"></span></a>
                     <ul class="nav nav-second-level collapse @Html.IsSelected(controller: "Cadastros", cssClass: "in")">
                         @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_ACESSO_FINANCEIRO == 1)
                         {
@@ -162,7 +162,7 @@
             {
                 @*Estoque*@
                 <li>
-                    <a href="@Url.Action("MontarTelaPaciente", "BaseAdmin")"><i class="fa fa-th-large"></i> <span class="nav-label" data-i18n="nav.dashboard">Estoque</span> <span class="fa arrow"></span></a>
+                    <a href="@Url.Action("MontarTelaPaciente", "BaseAdmin")"><i class="fa fa-barcode"></i> <span class="nav-label" data-i18n="nav.dashboard">Estoque</span> <span class="fa arrow"></span></a>
                     <ul class="nav nav-second-level collapse @Html.IsSelected(controller: "Cadastros", cssClass: "in")">
                         @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_ACESSO_ESTOQUE == 1)
                         {
@@ -177,7 +177,7 @@
             {
                 @*Mensageria*@
                 <li>
-                    <a href="@Url.Action("MontarTelaPaciente", "BaseAdmin")"><i class="fa fa-th-large"></i> <span class="nav-label" data-i18n="nav.dashboard">Mensageria</span> <span class="fa arrow"></span></a>
+                    <a href="@Url.Action("MontarTelaPaciente", "BaseAdmin")"><i class="fa fa-envelope"></i> <span class="nav-label" data-i18n="nav.dashboard">Mensageria</span> <span class="fa arrow"></span></a>
                     <ul class="nav nav-second-level collapse @Html.IsSelected(controller: "Cadastros", cssClass: "in")">
                         @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_ACESSO_MENSAGEM == 1)
                         {
@@ -191,7 +191,7 @@
 
             @*Assinante*@
             <li>
-                <a href="@Url.Action("MontarTelaPaciente", "BaseAdmin")"><i class="fa fa-th-large"></i> <span class="nav-label" data-i18n="nav.dashboard">Assinante</span> <span class="fa arrow"></span></a>
+                <a href="@Url.Action("MontarTelaPaciente", "BaseAdmin")"><i class="fa fa-user"></i> <span class="nav-label" data-i18n="nav.dashboard">Assinante</span> <span class="fa arrow"></span></a>
                 <ul class="nav nav-second-level collapse @Html.IsSelected(controller: "Cadastros", cssClass: "in")">
                     <li class="@Html.IsSelected(action: "MontarTelaEmpresa")"><a href="@Url.Action("MontarTelaEmpresa", "Empresa")">Assinante</a></li>
                 </ul>
@@ -201,7 +201,7 @@
             @if (((EntitiesServices.Model.PERFIL)Session["Perfil"]).PERF_SG_SIGLA == "ADM" || ((EntitiesServices.Model.PERFIL)Session["Perfil"]).PERF_SG_SIGLA == "GER")
             {
                 <li>
-                    <a href="@Url.Action("MontarTelaPaciente", "BaseAdmin")"><i class="fa fa-th-large"></i> <span class="nav-label" data-i18n="nav.dashboard">Administração</span> <span class="fa arrow"></span></a>
+                    <a href="@Url.Action("MontarTelaPaciente", "BaseAdmin")"><i class="fa fa-tasks"></i> <span class="nav-label" data-i18n="nav.dashboard">Administração</span> <span class="fa arrow"></span></a>
                     <ul class="nav nav-second-level collapse @Html.IsSelected(controller: "Cadastros", cssClass: "in")">
                         <li class="@Html.IsSelected(action: "MontarTelaLog")"><a href="@Url.Action("MontarTelaLog", "Auditoria")">Auditoria</a></li>
                         <li class="@Html.IsSelected(action: "MontarTelaUsuario")"><a href="@Url.Action("MontarTelaUsuario", "Usuario")">Central de Usuários</a></li>
@@ -216,7 +216,7 @@
 
             @*Configuração*@
             <li>
-                <a href="@Url.Action("MontarTelaPaciente", "BaseAdmin")"><i class="fa fa-th-large"></i> <span class="nav-label" data-i18n="nav.dashboard">Configurações</span> <span class="fa arrow"></span></a>
+                <a href="@Url.Action("MontarTelaPaciente", "BaseAdmin")"><i class="fa fa-gears"></i> <span class="nav-label" data-i18n="nav.dashboard">Configurações</span> <span class="fa arrow"></span></a>
                 <ul class="nav nav-second-level collapse @Html.IsSelected(controller: "Cadastros", cssClass: "in")">
                     @if (((EntitiesServices.Model.PERFIL)Session["Perfil"]).PERF_SG_SIGLA == "ADM" || ((EntitiesServices.Model.PERFIL)Session["Perfil"]).PERF_SG_SIGLA == "GER")
                     {
@@ -230,7 +230,7 @@
 
             @*Indicações*@
             <li>
-                <a href="@Url.Action("MontarTelaPaciente", "BaseAdmin")"><i class="fa fa-th-large"></i> <span class="nav-label" data-i18n="nav.dashboard">Indicações</span> <span class="fa arrow"></span></a>
+                <a href="@Url.Action("MontarTelaPaciente", "BaseAdmin")"><i class="fa fa-check"></i> <span class="nav-label" data-i18n="nav.dashboard">Indicações</span> <span class="fa arrow"></span></a>
                 <ul class="nav nav-second-level collapse @Html.IsSelected(controller: "Cadastros", cssClass: "in")">
                     <li class="@Html.IsSelected(action: "MontarTelaIncluirIndicacao")"><a href="@Url.Action("MontarTelaIncluirIndicacao", "Usuario")">Fazer Indicação</a></li>
                     <li class="@Html.IsSelected(action: "MontarTelaIndicacao")"><a href="@Url.Action("MontarTelaIndicacao", "Usuario")">Acompanhar Indicações</a></li>
@@ -239,7 +239,7 @@
 
             @*Institucional*@
             <li>
-                <a href="@Url.Action("MontarTelaPaciente", "BaseAdmin")"><i class="fa fa-th-large"></i> <span class="nav-label" data-i18n="nav.dashboard">Institucional</span> <span class="fa arrow"></span></a>
+                <a href="@Url.Action("MontarTelaPaciente", "BaseAdmin")"><i class="fa fa-legal"></i> <span class="nav-label" data-i18n="nav.dashboard">Institucional</span> <span class="fa arrow"></span></a>
                 <ul class="nav nav-second-level collapse @Html.IsSelected(controller: "Cadastros", cssClass: "in")">
                     <li class="@Html.IsSelected(action: "MontarTelaFaleConosco")"><a href="@Url.Action("MontarTelaFaleConosco", "BaseAdmin")">Fale Conosco</a></li>
                     <li class="@Html.IsSelected(action: "MontarTelaSobre")"><a href="@Url.Action("MontarTelaSobre", "BaseAdmin")">Sobre...</a></li>

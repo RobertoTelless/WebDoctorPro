@@ -110,7 +110,7 @@
                             </div>
                         </div>
                         @*<br />*@
-                        <div class="row">
+                        @*<div class="row">
                             <h4 style="margin-left: 0px; color: green; background-color: beige; font-weight:bold">Dados da Consulta</h4>
                             <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">                
                                 <div class="col-lg-2 col-md-2 col-xs-12">
@@ -136,13 +136,13 @@
                                     @Html.TextBoxFor(m => m.PACO_HR_FINAL, new { @class = "form-control", @id = "hora1", @readonly = "readonly" })
                                 </div>
                             </div>
-                        </div>
+                        </div>*@
                         @*<br />*@
 
                         <div class="row">
                             <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
                                 <div class="col-lg-12 col-md-12 col-xs-12">
-                                    <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Atestados da Consulta</h4>
+                                    <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Atestados</h4>
                                     @*<br />*@
                                     @if (ViewBag.Atestados != null &&(ViewBag.Atestados as List<EntitiesServices.Model.PACIENTE_ATESTADO>).Count > 0)
                                     {
@@ -210,7 +210,7 @@
 
                                             </div>
                                             <div style="border: 5px solid #F6A54A; padding: 10px; border-radius: 8px 8px; " class="col-lg-6 col-md-6 col-xs-8">
-                                                <h2 style="font-weight: bold">Nenhum atestado cadastrado para esse paciente nessa consulta</h2>
+                                                <h2 style="font-weight: bold">Nenhum atestado emitido para esse paciente</h2>
                                             </div>
                                             <div class="col-lg-3 col-md-3 col-xs-2">
 
@@ -224,7 +224,7 @@
                         <div class="row">
                             <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
                                 <div class="col-lg-12 col-md-12 col-xs-12">
-                                    <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Solicitações de Exames da Consulta</h4>
+                                    <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Solicitações de Exames</h4>
                                     @*<br />*@
                                     @if (ViewBag.Solicitacoes != null &&(ViewBag.Solicitacoes as List<EntitiesServices.Model.PACIENTE_SOLICITACAO>).Count > 0)
                                     {
@@ -292,7 +292,7 @@
 
                                             </div>
                                             <div style="border: 5px solid #F6A54A; padding: 10px; border-radius: 8px 8px; " class="col-lg-8 col-md-8 col-xs-8">
-                                                <h2 style="font-weight: bold">Nenhuma Solicitacao de Exame cadastrada para esse paciente nessa consulta</h2>
+                                                <h2 style="font-weight: bold">Nenhuma Solicitacao de Exame emitida para esse paciente</h2>
                                             </div>
                                             <div class="col-lg-2 col-md-2 col-xs-2">
 
@@ -306,7 +306,7 @@
                         <div class="row">
                             <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
                                 <div class="col-lg-12 col-md-12 col-xs-12">
-                                    <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Resultados de Exames da Consulta</h4>
+                                    <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Resultados de Exames</h4>
                                     <br />
                                     @if (ViewBag.Exames != null &&(ViewBag.Exames as List<EntitiesServices.Model.PACIENTE_EXAMES>).Count > 0)
                                     {
@@ -372,7 +372,7 @@
 
                                             </div>
                                             <div style="border: 5px solid #F6A54A; padding: 10px; border-radius: 8px 8px; " class="col-lg-8 col-md-8 col-xs-8">
-                                                <h2 style="font-weight: bold">Nenhum resultado de exame cadastrado para esse paciente nessa consulta</h2>
+                                                <h2 style="font-weight: bold">Nenhum resultado de exame cadastrado para esse paciente</h2>
                                             </div>
                                             <div class="col-lg-2 col-md-2 col-xs-2">
 
@@ -384,7 +384,7 @@
                         </div>
                     
                         <div class="row">
-                            <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Prescrições da Consulta</h4>
+                            <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Prescrições</h4>
                             @if (ViewBag.Prescricoes != null &&(ViewBag.Prescricoes as List<EntitiesServices.Model.PACIENTE_PRESCRICAO>).Count > 0)
                             {
                                 <table class="table table-striped table-bordered table-hover dataTables-example">
@@ -461,7 +461,7 @@
                                     <div class="col-lg-3 col-md-3 col-xs-2">
                                     </div>
                                     <div style="border: 5px solid #F6A54A; padding: 10px; border-radius: 8px 8px; " class="col-lg-6 col-md-6 col-xs-8">
-                                        <h2 style="font-weight: bold">Nenhuma prescrição cadastrada para essa consulta</h2>
+                                        <h2 style="font-weight: bold">Nenhuma prescrição emitida para este paciente</h2>
                                     </div>
                                     <div class="col-lg-3 col-md-3 col-xs-2">
                                     </div>

@@ -7711,7 +7711,7 @@
                                                                 <tr>
                                                                     <th style="width: auto">Data da Vacina</th>
                                                                     <th style="width: auto">Vacina</th>
-                                                                    <th style="width: auto">Fabricante</th>
+                                                                    <th style="width: auto">Indicação</th>
                                                                     <th style="width: auto">Próxima Vacinação</th>
                                                                     <th style="width: auto" class="td-one-action">Ações</th>
                                                                 </tr>
@@ -7725,7 +7725,7 @@
                                                                             @cond.PAVI_DT_DATA.Value.ToShortDateString()
                                                                         </td>
                                                                         <td style="width: auto">@cond.VACINA.VACI_NM_NOME</td>
-                                                                        <td style="width: auto">@cond.VACINA.VACI_NM_FABRICANTE</td>
+                                                                        <td style="width: auto">@cond.VACINA.VACI_DS_DESCRICAO</td>
                                                                         <td>
                                                                             <span style="display:none; width: auto">@cond.PAVI_DT_PROXIMA.Value.ToString("yyyyMMdd")</span>
                                                                             @cond.PAVI_DT_PROXIMA.Value.ToShortDateString()
@@ -7762,6 +7762,7 @@
                                         <br />
                                         <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
                                             @Html.ButtonLinkIndex(text: "Nova Vacina", action: "IncluirVacinaForm", controller: "Paciente", buttonClass: "primary", htmlAttributes: new { @class = "btn-loadingVac" })
+                                            @Html.ButtonLinkIndex(text: "Imprimir Resumo", action: "GerarResumoVacina", controller: "Paciente2", buttonClass: "primary" )
                                             <a href="@Url.Action((String)Session["AjudaNivelAt"])" class="btn btn-sm btn-danger" target="_blank">Ajuda</a>
                                             <span id="loadingIndicatorVac" style="display: none; margin-left: 10px; color: #007bff;">
                                                 <i class="fa fa-spinner fa-spin"></i> Processando...
@@ -7786,7 +7787,7 @@
                                                                 <tr>
                                                                     <th style="width: auto">Data da Vacina</th>
                                                                     <th style="width: auto">Vacina</th>
-                                                                    <th style="width: auto">Fabricante</th>
+                                                                    <th style="width: auto">Indicação</th>
                                                                     <th style="width: auto">Próxima Vacinação</th>
                                                                     <th style="width: auto" class="td-one-action">Ações</th>
                                                                 </tr>
@@ -7800,7 +7801,7 @@
                                                                             @cond.PAVI_DT_DATA.Value.ToShortDateString()
                                                                         </td>
                                                                         <td style="width: auto">@cond.VACINA.VACI_NM_NOME</td>
-                                                                        <td style="width: auto">@cond.VACINA.VACI_NM_FABRICANTE</td>
+                                                                        <td style="width: auto">@cond.VACINA.VACI_DS_DESCRICAO</td>
                                                                         <td>
                                                                             <span style="display:none; width: auto">@cond.PAVI_DT_PROXIMA.Value.ToString("yyyyMMdd")</span>
                                                                             @cond.PAVI_DT_PROXIMA.Value.ToShortDateString()
@@ -7837,6 +7838,7 @@
                                         <br />
                                         <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
                                             @Html.ButtonLinkIndex(text: "Nova Vacina", action: "IncluirVacinaForm", controller: "Paciente", buttonClass: "primary", htmlAttributes: new { @class = "btn-loadingVac" })
+                                            @Html.ButtonLinkIndex(text: "Imprimir Resumo", action: "GerarResumoVacina", controller: "Paciente2", buttonClass: "primary" )
                                             <a href="@Url.Action((String)Session["AjudaNivelAt"])" class="btn btn-sm btn-danger" target="_blank">Ajuda</a>
                                             <span id="loadingIndicatorVac" style="display: none; margin-left: 10px; color: #007bff;">
                                                 <i class="fa fa-spinner fa-spin"></i> Processando...

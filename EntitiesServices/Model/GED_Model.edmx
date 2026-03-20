@@ -3480,6 +3480,15 @@
           <Property Name="MEFA_NM_LINK" Type="varchar" MaxLength="50" />
           <Property Name="MEFA_AQ_VERSAO" Type="varchar" MaxLength="250" />
         </EntityType>
+        <EntityType Name="MENSAGEM_FABRICANTE_LIDO">
+          <Key>
+            <PropertyRef Name="AVLI_CD_ID" />
+          </Key>
+          <Property Name="AVLI_CD_ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="MEFA_CD_ID" Type="int" Nullable="false" />
+          <Property Name="USUA_CD_ID" Type="int" Nullable="false" />
+          <Property Name="AVLI_DT_CIENCIA" Type="datetime" />
+        </EntityType>
         <EntityType Name="MENSAGENS">
           <Key>
             <PropertyRef Name="MENS_CD_ID" />
@@ -7211,6 +7220,30 @@
           <Property Name="PEGR_GU_GUID" Type="varchar" MaxLength="50" />
           <Property Name="PEGR_CD_PACIENTE" Type="int" />
         </EntityType>
+        <Association Name="FK__MENSAGEM___MEFA___785B2326">
+          <End Role="MENSAGEM_FABRICANTE" Type="Self.MENSAGEM_FABRICANTE" Multiplicity="1" />
+          <End Role="MENSAGEM_FABRICANTE_LIDO" Type="Self.MENSAGEM_FABRICANTE_LIDO" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="MENSAGEM_FABRICANTE">
+              <PropertyRef Name="MEFA_CD_ID" />
+            </Principal>
+            <Dependent Role="MENSAGEM_FABRICANTE_LIDO">
+              <PropertyRef Name="MEFA_CD_ID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__MENSAGEM___USUA___794F475F">
+          <End Role="USUARIO" Type="Self.USUARIO" Multiplicity="1" />
+          <End Role="MENSAGEM_FABRICANTE_LIDO" Type="Self.MENSAGEM_FABRICANTE_LIDO" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="USUARIO">
+              <PropertyRef Name="USUA_CD_ID" />
+            </Principal>
+            <Dependent Role="MENSAGEM_FABRICANTE_LIDO">
+              <PropertyRef Name="USUA_CD_ID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_ACESSO_METODO_ASSINANTE">
           <End Role="ASSINANTE" Type="Self.ASSINANTE" Multiplicity="1" />
           <End Role="ACESSO_METODO" Type="Self.ACESSO_METODO" Multiplicity="*" />
@@ -16702,6 +16735,7 @@
           <EntitySet Name="MENSAGEM_AUTOMACAO" EntityType="Self.MENSAGEM_AUTOMACAO" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="MENSAGEM_AUTOMACAO_DATAS" EntityType="Self.MENSAGEM_AUTOMACAO_DATAS" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="MENSAGEM_FABRICANTE" EntityType="Self.MENSAGEM_FABRICANTE" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="MENSAGEM_FABRICANTE_LIDO" EntityType="Self.MENSAGEM_FABRICANTE_LIDO" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="MENSAGENS" EntityType="Self.MENSAGENS" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="MENSAGENS_DESTINOS" EntityType="Self.MENSAGENS_DESTINOS" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="MENSAGENS_ENVIADAS_SISTEMA" EntityType="Self.MENSAGENS_ENVIADAS_SISTEMA" Schema="dbo" store:Type="Tables" />
@@ -16905,6 +16939,14 @@
           <EntitySet Name="VIDEO_COMENTARIO" EntityType="Self.VIDEO_COMENTARIO" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="VISUALIZACAO" EntityType="Self.VISUALIZACAO" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="VOLTA_PESQUISA" EntityType="Self.VOLTA_PESQUISA" Schema="dbo" store:Type="Tables" />
+          <AssociationSet Name="FK__MENSAGEM___MEFA___785B2326" Association="Self.FK__MENSAGEM___MEFA___785B2326">
+            <End Role="MENSAGEM_FABRICANTE" EntitySet="MENSAGEM_FABRICANTE" />
+            <End Role="MENSAGEM_FABRICANTE_LIDO" EntitySet="MENSAGEM_FABRICANTE_LIDO" />
+          </AssociationSet>
+          <AssociationSet Name="FK__MENSAGEM___USUA___794F475F" Association="Self.FK__MENSAGEM___USUA___794F475F">
+            <End Role="USUARIO" EntitySet="USUARIO" />
+            <End Role="MENSAGEM_FABRICANTE_LIDO" EntitySet="MENSAGEM_FABRICANTE_LIDO" />
+          </AssociationSet>
           <AssociationSet Name="FK_ACESSO_METODO_ASSINANTE" Association="Self.FK_ACESSO_METODO_ASSINANTE">
             <End Role="ASSINANTE" EntitySet="ASSINANTE" />
             <End Role="ACESSO_METODO" EntitySet="ACESSO_METODO" />
@@ -23774,6 +23816,7 @@
           <Property Name="MEFA_AQ_TAG" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
           <Property Name="MEFA_NM_LINK" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
           <Property Name="MEFA_AQ_VERSAO" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="MENSAGEM_FABRICANTE_LIDO" Relationship="CRMSysDBModel.FK__MENSAGEM___MEFA___785B2326" FromRole="MENSAGEM_FABRICANTE" ToRole="MENSAGEM_FABRICANTE_LIDO" />
         </EntityType>
         <EntityType Name="MENSAGENS">
           <Key>
@@ -27776,6 +27819,7 @@
           <NavigationProperty Name="RESPOSTA_CONSULTA" Relationship="CRMSysDBModel.FK_RESPOSTA_CONSULTA_USUARIO" FromRole="USUARIO" ToRole="RESPOSTA_CONSULTA" />
           <NavigationProperty Name="AREA_PACIENTE" Relationship="CRMSysDBModel.FK_AREA_PACIENTE_USUARIO" FromRole="USUARIO" ToRole="AREA_PACIENTE" />
           <NavigationProperty Name="PACIENTE_VACINA" Relationship="CRMSysDBModel.FK_PACIENTE_VACINA_USUARIO" FromRole="USUARIO" ToRole="PACIENTE_VACINA" />
+          <NavigationProperty Name="MENSAGEM_FABRICANTE_LIDO" Relationship="CRMSysDBModel.FK__MENSAGEM___USUA___794F475F" FromRole="USUARIO" ToRole="MENSAGEM_FABRICANTE_LIDO" />
         </EntityType>
         <EntityType Name="USUARIO_ANEXO">
           <Key>
@@ -40021,6 +40065,15 @@
             <End Role="VACINA" EntitySet="VACINA" />
             <End Role="PACIENTE_VACINA" EntitySet="PACIENTE_VACINA" />
           </AssociationSet>
+          <EntitySet Name="MENSAGEM_FABRICANTE_LIDO" EntityType="CRMSysDBModel.MENSAGEM_FABRICANTE_LIDO" />
+          <AssociationSet Name="FK__MENSAGEM___MEFA___785B2326" Association="CRMSysDBModel.FK__MENSAGEM___MEFA___785B2326">
+            <End Role="MENSAGEM_FABRICANTE" EntitySet="MENSAGEM_FABRICANTE" />
+            <End Role="MENSAGEM_FABRICANTE_LIDO" EntitySet="MENSAGEM_FABRICANTE_LIDO" />
+          </AssociationSet>
+          <AssociationSet Name="FK__MENSAGEM___USUA___794F475F" Association="CRMSysDBModel.FK__MENSAGEM___USUA___794F475F">
+            <End Role="USUARIO" EntitySet="USUARIO" />
+            <End Role="MENSAGEM_FABRICANTE_LIDO" EntitySet="MENSAGEM_FABRICANTE_LIDO" />
+          </AssociationSet>
         </EntityContainer>
         <EntityType Name="PACIENTE_DADOS_EXAME_FISICO">
           <Key>
@@ -41558,6 +41611,41 @@
             </Principal>
             <Dependent Role="PACIENTE_VACINA">
               <PropertyRef Name="VACI_CD_ID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="MENSAGEM_FABRICANTE_LIDO">
+          <Key>
+            <PropertyRef Name="AVLI_CD_ID" />
+          </Key>
+          <Property Name="AVLI_CD_ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="MEFA_CD_ID" Type="Int32" Nullable="false" />
+          <Property Name="USUA_CD_ID" Type="Int32" Nullable="false" />
+          <Property Name="AVLI_DT_CIENCIA" Type="DateTime" Precision="3" />
+          <NavigationProperty Name="MENSAGEM_FABRICANTE" Relationship="CRMSysDBModel.FK__MENSAGEM___MEFA___785B2326" FromRole="MENSAGEM_FABRICANTE_LIDO" ToRole="MENSAGEM_FABRICANTE" />
+          <NavigationProperty Name="USUARIO" Relationship="CRMSysDBModel.FK__MENSAGEM___USUA___794F475F" FromRole="MENSAGEM_FABRICANTE_LIDO" ToRole="USUARIO" />
+        </EntityType>
+        <Association Name="FK__MENSAGEM___MEFA___785B2326">
+          <End Type="CRMSysDBModel.MENSAGEM_FABRICANTE" Role="MENSAGEM_FABRICANTE" Multiplicity="1" />
+          <End Type="CRMSysDBModel.MENSAGEM_FABRICANTE_LIDO" Role="MENSAGEM_FABRICANTE_LIDO" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="MENSAGEM_FABRICANTE">
+              <PropertyRef Name="MEFA_CD_ID" />
+            </Principal>
+            <Dependent Role="MENSAGEM_FABRICANTE_LIDO">
+              <PropertyRef Name="MEFA_CD_ID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__MENSAGEM___USUA___794F475F">
+          <End Type="CRMSysDBModel.USUARIO" Role="USUARIO" Multiplicity="1" />
+          <End Type="CRMSysDBModel.MENSAGEM_FABRICANTE_LIDO" Role="MENSAGEM_FABRICANTE_LIDO" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="USUARIO">
+              <PropertyRef Name="USUA_CD_ID" />
+            </Principal>
+            <Dependent Role="MENSAGEM_FABRICANTE_LIDO">
+              <PropertyRef Name="USUA_CD_ID" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -49163,6 +49251,16 @@
                 <ScalarProperty Name="VACI_NM_NOME" ColumnName="VACI_NM_NOME" />
                 <ScalarProperty Name="ASSI_CD_ID" ColumnName="ASSI_CD_ID" />
                 <ScalarProperty Name="VACI_CD_ID" ColumnName="VACI_CD_ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="MENSAGEM_FABRICANTE_LIDO">
+            <EntityTypeMapping TypeName="CRMSysDBModel.MENSAGEM_FABRICANTE_LIDO">
+              <MappingFragment StoreEntitySet="MENSAGEM_FABRICANTE_LIDO">
+                <ScalarProperty Name="AVLI_DT_CIENCIA" ColumnName="AVLI_DT_CIENCIA" />
+                <ScalarProperty Name="USUA_CD_ID" ColumnName="USUA_CD_ID" />
+                <ScalarProperty Name="MEFA_CD_ID" ColumnName="MEFA_CD_ID" />
+                <ScalarProperty Name="AVLI_CD_ID" ColumnName="AVLI_CD_ID" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

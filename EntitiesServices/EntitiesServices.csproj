@@ -1016,6 +1016,9 @@
     <Compile Include="Model\MENSAGEM_FABRICANTE.cs">
       <DependentUpon>GED_Model.tt</DependentUpon>
     </Compile>
+    <Compile Include="Model\MENSAGEM_FABRICANTE_LIDO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
     <Compile Include="Model\MENSAGENS.cs">
       <DependentUpon>GED_Model.tt</DependentUpon>
     </Compile>

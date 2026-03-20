@@ -148,6 +148,7 @@ namespace EntitiesServices.Model
             this.RESPOSTA_CONSULTA = new HashSet<RESPOSTA_CONSULTA>();
             this.AREA_PACIENTE = new HashSet<AREA_PACIENTE>();
             this.PACIENTE_VACINA = new HashSet<PACIENTE_VACINA>();
+            this.MENSAGEM_FABRICANTE_LIDO = new HashSet<MENSAGEM_FABRICANTE_LIDO>();
         }
     
         public int USUA_CD_ID { get; set; }
@@ -488,5 +489,7 @@ namespace EntitiesServices.Model
         public virtual ICollection<AREA_PACIENTE> AREA_PACIENTE { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<PACIENTE_VACINA> PACIENTE_VACINA { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<MENSAGEM_FABRICANTE_LIDO> MENSAGEM_FABRICANTE_LIDO { get; set; }
     }
 }

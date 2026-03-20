@@ -3152,7 +3152,7 @@ namespace GEDSys_Presentation.Controllers
                     pdfDoc.Add(line1);
 
                     // Grid
-                    table = new PdfPTable(new float[] { 60f, 110f, 120f, 60f });
+                    table = new PdfPTable(new float[] { 60f, 130f, 300f, 60f });
                     table.WidthPercentage = 100;
                     table.HorizontalAlignment = 0;
                     table.SpacingBefore = 1f;
@@ -3174,7 +3174,7 @@ namespace GEDSys_Presentation.Controllers
                     cell.Colspan = 1;
                     cell.BackgroundColor = BaseColor.LIGHT_GRAY;
                     table.AddCell(cell);
-                    cell = new PdfPCell(new Paragraph("Fabricante", meuFont))
+                    cell = new PdfPCell(new Paragraph("Indicação", meuFont))
                     {
                         VerticalAlignment = Element.ALIGN_MIDDLE,
                         HorizontalAlignment = Element.ALIGN_LEFT
@@ -3217,7 +3217,7 @@ namespace GEDSys_Presentation.Controllers
                             HorizontalAlignment = Element.ALIGN_LEFT
                         };
                         table.AddCell(cell);
-                        cell = new PdfPCell(new Paragraph(item.VACINA.VACI_NM_FABRICANTE, meuFont))
+                        cell = new PdfPCell(new Paragraph(item.VACINA.VACI_DS_DESCRICAO, meuFont))
                         {
                             VerticalAlignment = Element.ALIGN_MIDDLE,
                             HorizontalAlignment = Element.ALIGN_LEFT
@@ -21058,6 +21058,251 @@ namespace GEDSys_Presentation.Controllers
                 return mediDTO;
             }
 
+        }
+
+        public ActionResult GerarResumoVacina()
+        {
+            try
+            {
+                if ((String)Session["Ativa"] == null)
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+
+                // Prepara geração
+                CONFIGURACAO conf = CarregaConfiguracaoGeral();
+                Int32 idAss = (Int32)Session["IdAssinante"];
+                String data = DateTime.Today.Date.ToShortDateString();
+                data = data.Substring(0, 2) + data.Substring(3, 2) + data.Substring(6, 4);
+
+                String nomeRel = "VacinaLista" + "_" + data + ".pdf";
+                PACIENTE paciente = baseApp.GetItemById((Int32)Session["IdPaciente"]);
+                List<PACIENTE_VACINA> lista = paciente.PACIENTE_VACINA.Where(p => p.PAVI_IN_ATIVO == 1).ToList();
+                lista = lista.OrderBy(p => p.PAVI_DT_DATA).ToList();
+                Font meuFont = FontFactory.GetFont("Arial", 8, iTextSharp.text.Font.NORMAL, BaseColor.BLACK);
+                Font meuFont1 = FontFactory.GetFont("Arial", 9, iTextSharp.text.Font.NORMAL, BaseColor.BLACK);
+                Font meuFont2 = FontFactory.GetFont("Arial", 14, iTextSharp.text.Font.NORMAL, BaseColor.BLACK);
+
+                // Cabeçalho
+                PdfPTable headerTable = new PdfPTable(new float[] { 20f, 700f });
+                headerTable.WidthPercentage = 100;
+                headerTable.HorizontalAlignment = 1;
+                headerTable.SpacingBefore = 1f;
+                headerTable.SpacingAfter = 1f;
+
+                if (conf.CONF_IN_LOGO_EMPRESA == 1)
+                {
+                    PdfPCell cell1 = new PdfPCell();
+                    cell1.Border = 0;
+                    cell1.Colspan = 1;
+                    Image image = null;
+                    EMPRESA empresa = empApp.GetItemByAssinante(idAss);
+                    image = Image.GetInstance(Server.MapPath(empresa.EMPR_AQ_LOGO));
+                    image.ScaleAbsolute(50, 50);
+                    cell1.AddElement(image);
+                    cell1.Border = PdfPCell.BOTTOM_BORDER;
+                    headerTable.AddCell(cell1);
+
+                    cell1 = new PdfPCell(new Paragraph("Vacinas", meuFont2))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_CENTER
+                    };
+                    cell1.Border = 0;
+                    cell1.Colspan = 1;
+                    cell1.Border = PdfPCell.BOTTOM_BORDER;
+                    headerTable.AddCell(cell1);
+                }
+                else
+                {
+                    PdfPCell cell2 = new PdfPCell(new Paragraph("Vacinas", meuFont2))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_CENTER
+                    };
+                    cell2.Border = 0;
+                    cell2.Colspan = 2;
+                    headerTable.AddCell(cell2);
+
+                    cell2 = new PdfPCell(new Paragraph(" ", meuFont))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    cell2.Colspan = 2;
+                    cell2.Border = PdfPCell.BOTTOM_BORDER;
+                    headerTable.AddCell(cell2);
+                }
+
+                // Rodape
+                PdfPTable footerTable = new PdfPTable(1);
+                footerTable.WidthPercentage = 100;
+                footerTable.HorizontalAlignment = 1;
+                footerTable.SpacingBefore = 1f;
+                footerTable.SpacingAfter = 1f;
+
+                PdfPCell cell = new PdfPCell();
+                cell.Border = PdfPCell.TOP_BORDER;
+                cell = new PdfPCell(new Paragraph("Gerado por WebDoctor 1.0 em " + DateTime.Today.Date.ToLongDateString(), meuFont));
+                footerTable.AddCell(cell);
+
+                // Cria documento
+                Document pdfDoc = new Document(PageSize.A4.Rotate(), 10, 10, 60, 40);
+                PdfWriter pdfWriter = PdfWriter.GetInstance(pdfDoc, Response.OutputStream);
+                pdfWriter.PageEvent = new CustomPageEventHelper(headerTable, footerTable);
+                pdfDoc.Open();
+
+                Paragraph line1 = new Paragraph("  ");
+                pdfDoc.Add(line1);
+
+                // Dados do paciente
+                PdfPTable table = new PdfPTable(new float[] { 120f, 120f, 120f, 120f });
+                table.WidthPercentage = 100;
+                table.HorizontalAlignment = 0;
+                table.SpacingBefore = 1f;
+                table.SpacingAfter = 1f;
+
+                cell = new PdfPCell(new Paragraph("Nome: " + paciente.PACI_NM_NOME, meuFont1));
+                cell.Border = 0;
+                cell.Colspan = 4;
+                cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph("CPF: " + paciente.PACI_NR_CPF, meuFont1));
+                cell.Border = 0;
+                cell.Colspan = 4;
+                cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph("Data Nasc.: " + paciente.PACI_DT_NASCIMENTO.Value.ToShortDateString(), meuFont1));
+                cell.Border = 0;
+                cell.Colspan = 4;
+                cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                table.AddCell(cell);
+                pdfDoc.Add(table);
+
+                // Linha Horizontal
+                line1 = new Paragraph("  ");
+                pdfDoc.Add(line1);
+
+                // Grid
+                table = new PdfPTable(new float[] { 60f, 120f, 300f, 60f });
+                table.WidthPercentage = 100;
+                table.HorizontalAlignment = 0;
+                table.SpacingBefore = 1f;
+                table.SpacingAfter = 1f;
+
+                cell = new PdfPCell(new Paragraph("Data", meuFont))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph("Vacina", meuFont))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph("Indicação", meuFont))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph("Próxima Dose", meuFont))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                table.AddCell(cell);
+
+                foreach (PACIENTE_VACINA item in lista)
+                {
+                    if (item.PAVI_DT_DATA != null)
+                    {
+                        cell = new PdfPCell(new Paragraph(item.PAVI_DT_DATA.Value.ToShortDateString(), meuFont))
+                        {
+                            VerticalAlignment = Element.ALIGN_MIDDLE,
+                            HorizontalAlignment = Element.ALIGN_LEFT
+                        };
+                        table.AddCell(cell);
+                    }
+                    else
+                    {
+                        cell = new PdfPCell(new Paragraph("-", meuFont))
+                        {
+                            VerticalAlignment = Element.ALIGN_MIDDLE,
+                            HorizontalAlignment = Element.ALIGN_LEFT
+                        };
+                        table.AddCell(cell);
+                    }
+                    cell = new PdfPCell(new Paragraph(item.VACINA.VACI_NM_NOME, meuFont))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    table.AddCell(cell);
+                    cell = new PdfPCell(new Paragraph(item.VACINA.VACI_DS_DESCRICAO, meuFont))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    table.AddCell(cell);
+                    if (item.PAVI_DT_PROXIMA != null)
+                    {
+                        cell = new PdfPCell(new Paragraph(item.PAVI_DT_PROXIMA.Value.ToShortDateString(), meuFont))
+                        {
+                            VerticalAlignment = Element.ALIGN_MIDDLE,
+                            HorizontalAlignment = Element.ALIGN_LEFT
+                        };
+                        table.AddCell(cell);
+                    }
+                    else
+                    {
+                        cell = new PdfPCell(new Paragraph("-", meuFont))
+                        {
+                            VerticalAlignment = Element.ALIGN_MIDDLE,
+                            HorizontalAlignment = Element.ALIGN_LEFT
+                        };
+                        table.AddCell(cell);
+                    }
+                }
+                pdfDoc.Add(table);
+
+                // Finaliza
+                pdfWriter.CloseStream = false;
+                pdfDoc.Close();
+                Response.Buffer = true;
+                Response.ContentType = "application/pdf";
+                Response.AddHeader("content-disposition", "attachment;filename=" + nomeRel);
+                Response.Cache.SetCacheability(HttpCacheability.NoCache);
+                Response.Write(pdfDoc);
+                Response.End();
+
+                Session["NivelPaciente"] = 18;
+                return RedirectToAction("VoltarAnexoPaciente");
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Paciente";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Paciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return RedirectToAction("TrataExcecao", "BaseAdmin");
+            }
         }
 
     }

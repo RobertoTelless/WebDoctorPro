@@ -418,5 +418,6 @@ namespace EntitiesServices.Model
         public virtual DbSet<AREA_PACIENTE_ANEXO> AREA_PACIENTE_ANEXO { get; set; }
         public virtual DbSet<PACIENTE_VACINA> PACIENTE_VACINA { get; set; }
         public virtual DbSet<VACINA> VACINA { get; set; }
+        public virtual DbSet<MENSAGEM_FABRICANTE_LIDO> MENSAGEM_FABRICANTE_LIDO { get; set; }
     }
 }

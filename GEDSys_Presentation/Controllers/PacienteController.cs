@@ -503,7 +503,7 @@ namespace GEDSys_Presentation.Controllers
                 ViewBag.MensFab = null;
                 ViewBag.MensFabPrim = null;
                 ViewBag.NumSlides = 0;
-                List<MENSAGEM_FABRICANTE> mensFab = usuApp.GetAllMensFab(idAss).OrderBy(p => p.MEFA_IN_TIPO).ThenByDescending(p => p.MEFA_DT_CADASTRO).ToList();
+                List<MENSAGEM_FABRICANTE> mensFab = usuApp.GetAllMensFab(idAss).ToList();
                 ViewBag.ListasFabricante = mensFab;
                 ViewBag.NumListasFabricante = mensFab.Count;
 
@@ -40055,7 +40055,7 @@ namespace GEDSys_Presentation.Controllers
             var medic = baseApp.GetVacinasById(id);
             var hash = new Hashtable();
             hash.Add("meses", medic.VACI_NR_PERIODO.ToString());
-            hash.Add("fab", medic.VACI_NM_FABRICANTE);
+            hash.Add("fab", medic.VACI_DS_DESCRICAO);
             return Json(hash);
         }
 

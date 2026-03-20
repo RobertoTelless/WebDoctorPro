@@ -14,6 +14,12 @@ namespace EntitiesServices.Model
     
     public partial class MENSAGEM_FABRICANTE
     {
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
+        public MENSAGEM_FABRICANTE()
+        {
+            this.MENSAGEM_FABRICANTE_LIDO = new HashSet<MENSAGEM_FABRICANTE_LIDO>();
+        }
+    
         public int MEFA_CD_ID { get; set; }
         public System.DateTime MEFA_DT_CADASTRO { get; set; }
         public System.DateTime MEFA_DT_VALIDADE { get; set; }
@@ -27,5 +33,8 @@ namespace EntitiesServices.Model
         public string MEFA_AQ_TAG { get; set; }
         public string MEFA_NM_LINK { get; set; }
         public string MEFA_AQ_VERSAO { get; set; }
+    
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<MENSAGEM_FABRICANTE_LIDO> MENSAGEM_FABRICANTE_LIDO { get; set; }
     }
 }
