@@ -2072,6 +2072,7 @@ namespace ERP_Condominios_Solution.Controllers
                 table.HorizontalAlignment = 0;
                 table.SpacingBefore = 1f;
                 table.SpacingAfter = 1f;
+                table.HeaderRows = 1;
 
                 cell = new PdfPCell(new Paragraph("Usuários selecionados pelos parametros de filtro abaixo", meuFont1))
                 {
@@ -3893,6 +3894,7 @@ namespace ERP_Condominios_Solution.Controllers
                 table.HorizontalAlignment = 0;
                 table.SpacingBefore = 1f;
                 table.SpacingAfter = 1f;
+                table.HeaderRows = 1;
 
                 cell = new PdfPCell(new Paragraph("Nome", meuFont))
                 {

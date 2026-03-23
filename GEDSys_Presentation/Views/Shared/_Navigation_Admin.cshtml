@@ -22,9 +22,9 @@
 
             @*Dashboard*@
             <li>
-                <a href="@Url.Action("MontarTelaPaciente", "BaseAdmin")"><i class="fa fa-dashboard"></i> <span class="nav-label" data-i18n="nav.dashboard">Início</span> <span class="fa arrow"></span></a>
+                <a href="@Url.Action("MontarTelaPaciente", "Paciente")"><i class="fa fa-dashboard"></i> <span class="nav-label" data-i18n="nav.dashboard">Dashboard Inicial</span> <span class="fa arrow"></span></a>
                 <ul class="nav nav-second-level collapse @Html.IsSelected(controller: "Cadastros", cssClass: "in")">
-                    <li class="@Html.IsSelected(action: "MontarTelaPaciente")"><a href="@Url.Action("MontarTelaPaciente", "Paciente")">Página Inicial</a></li>
+                    <li class="@Html.IsSelected(action: "MontarTelaPaciente")"><a href="@Url.Action("MontarTelaPaciente", "Paciente")">Dashboard Inicial</a></li>
                 </ul>
             </li>
 

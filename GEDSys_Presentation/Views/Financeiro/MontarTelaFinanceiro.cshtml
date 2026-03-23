@@ -97,6 +97,24 @@
                     </div>
                 </div>
             </div>
+            <div class="col-lg-2 col-md-2 col-xs-12">
+                <div class="ibox float-e-margins">
+                    <div class="ibox-title"  style="background-color: cornsilk; color:darkgreen">
+                        <h5>Relatórios</h5>
+                    </div>
+                    <div class="ibox-content">
+                        @using (Html.BeginForm("ProcessaRelatorioFinanceiroGeral", "Financeiro", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal", autofocus = true }))
+                        {
+                            @Html.DropDownList("TIPO_RELATORIO", (SelectList)ViewBag.Relatorio, "Selecionar", new { @class = "form-control", autofocus = true })
+                            <small>Selecione o Relatório</small>
+                            <br />
+                            <br />
+                            <br />
+                            @Html.ButtonActionSubmit(text: "Gerar Relatório")
+                        }
+                    </div>
+                </div>
+            </div>
         </div>
 
         @*Atalhos*@
@@ -584,6 +602,18 @@
     @Scripts.Render("~/bundles/inspinia")
     @Styles.Render("~/Content/css")
     @Styles.Render("~/font-awesome/css")
+
+    <style>
+        select option[disabled] {
+            border-bottom: 1px solid #e7eaec;
+            background-color: #f8f9fa;
+            color: #999;
+            height: 1px;
+            padding: 0;
+            font-size: 8px;
+            text-align: center;
+        }
+    </style>
 }
 
 @section Scripts {

@@ -5999,7 +5999,16 @@ namespace GEDSys_Presentation.Controllers
                 data = data.Substring(0, 2) + data.Substring(3, 2) + data.Substring(6, 4);
 
                 String nomeRel = "PagamentoLista" + "_" + data + ".pdf";
-                List<CONSULTA_PAGAMENTO> lista = (List<CONSULTA_PAGAMENTO>)Session["ListaPagamento"];
+                List<CONSULTA_PAGAMENTO> lista = new List<CONSULTA_PAGAMENTO>();
+                if (Session["ListaPagamento"] != null)
+                {
+                    lista = (List<CONSULTA_PAGAMENTO>)Session["ListaPagamento"];
+                }
+                else
+                {
+                    lista = CarregaPagamento().ToList();
+                }
+                lista = lista.OrderBy(p => p.COPA_DT_VENCIMENTO).ToList();
 
                 Font meuFont = FontFactory.GetFont("Arial", 8, iTextSharp.text.Font.NORMAL, BaseColor.BLACK);
                 Font meuFont1 = FontFactory.GetFont("Arial", 9, iTextSharp.text.Font.NORMAL, BaseColor.BLACK);
@@ -6083,6 +6092,7 @@ namespace GEDSys_Presentation.Controllers
                 table.HorizontalAlignment = 0;
                 table.SpacingBefore = 1f;
                 table.SpacingAfter = 1f;
+                table.HeaderRows = 1;
 
                 cell = new PdfPCell(new Paragraph("Vencimento", meuFont))
                 {
@@ -6303,7 +6313,7 @@ namespace GEDSys_Presentation.Controllers
                 data = data.Substring(0, 2) + data.Substring(3, 2) + data.Substring(6, 4);
 
                 String nomeRel = "PagamentoListaVencimentoHoje" + "_" + data + ".pdf";
-                List<CONSULTA_PAGAMENTO> lista = CarregaPagamento().Where(p => p.COPA_IN_ATIVO == 1 & p.COPA_IN_PAGO == 0 & p.USUA_CD_ID == usuario.USUA_CD_ID & p.COPA_DT_VENCIMENTO.Value.Date == DateTime.Today.Date).ToList();
+                List<CONSULTA_PAGAMENTO> lista = CarregaPagamento().Where(p => p.COPA_IN_ATIVO == 1 & p.USUA_CD_ID == usuario.USUA_CD_ID & p.COPA_DT_VENCIMENTO.Value.Date == DateTime.Today.Date).ToList();
                 Font meuFont = FontFactory.GetFont("Arial", 8, iTextSharp.text.Font.NORMAL, BaseColor.BLACK);
                 Font meuFont1 = FontFactory.GetFont("Arial", 9, iTextSharp.text.Font.NORMAL, BaseColor.BLACK);
                 Font meuFont2 = FontFactory.GetFont("Arial", 14, iTextSharp.text.Font.NORMAL, BaseColor.BLACK);
@@ -6389,6 +6399,7 @@ namespace GEDSys_Presentation.Controllers
                 table.HorizontalAlignment = 0;
                 table.SpacingBefore = 1f;
                 table.SpacingAfter = 1f;
+                table.HeaderRows = 1;
 
                 cell = new PdfPCell(new Paragraph("Vencimento", meuFont))
                 {
@@ -6667,7 +6678,7 @@ namespace GEDSys_Presentation.Controllers
 
                 String nomeRel = "PagamentoListaVenceMes" + "_" + data + ".pdf";
                 String mes = CrossCutting.UtilitariosGeral.NomeMes(DateTime.Today.Month) + " de " + DateTime.Today.Year.ToString();
-                List<CONSULTA_PAGAMENTO> lista = CarregaPagamento().Where(p => p.COPA_IN_ATIVO == 1 & p.COPA_IN_PAGO == 0 & p.USUA_CD_ID == usuario.USUA_CD_ID & p.COPA_DT_VENCIMENTO.Value.Month == DateTime.Today.Month & p.COPA_DT_VENCIMENTO.Value.Year == DateTime.Today.Year).OrderBy(p => p.COPA_DT_VENCIMENTO).ToList();
+                List<CONSULTA_PAGAMENTO> lista = CarregaPagamento().Where(p => p.COPA_IN_ATIVO == 1 & p.USUA_CD_ID == usuario.USUA_CD_ID & p.COPA_DT_VENCIMENTO.Value.Month == DateTime.Today.Month & p.COPA_DT_VENCIMENTO.Value.Year == DateTime.Today.Year).OrderBy(p => p.COPA_DT_VENCIMENTO).ToList();
                 Font meuFont = FontFactory.GetFont("Arial", 8, iTextSharp.text.Font.NORMAL, BaseColor.BLACK);
                 Font meuFont1 = FontFactory.GetFont("Arial", 9, iTextSharp.text.Font.NORMAL, BaseColor.BLACK);
                 Font meuFont2 = FontFactory.GetFont("Arial", 14, iTextSharp.text.Font.NORMAL, BaseColor.BLACK);
@@ -6753,6 +6764,7 @@ namespace GEDSys_Presentation.Controllers
                 table.HorizontalAlignment = 0;
                 table.SpacingBefore = 1f;
                 table.SpacingAfter = 1f;
+                table.HeaderRows = 1;
 
                 cell = new PdfPCell(new Paragraph("Vencimento", meuFont))
                 {
@@ -7028,7 +7040,16 @@ namespace GEDSys_Presentation.Controllers
                 data = data.Substring(0, 2) + data.Substring(3, 2) + data.Substring(6, 4);
 
                 String nomeRel = "RecebimentoLista" + "_" + data + ".pdf";
-                List<CONSULTA_RECEBIMENTO> lista = (List<CONSULTA_RECEBIMENTO>)Session["ListaRecebimento"];
+                List<CONSULTA_RECEBIMENTO> lista = new List<CONSULTA_RECEBIMENTO>();
+                if (Session["ListaRecebimento"] != null)
+                {
+                    lista = (List<CONSULTA_RECEBIMENTO>)Session["ListaRecebimento"];
+                }
+                else
+                {
+                    lista = CarregaRecebimento().ToList();
+                }
+                lista = lista.OrderBy(p => p.CORE_DT_RECEBIMENTO).ToList();
 
                 Font meuFont = FontFactory.GetFont("Arial", 8, iTextSharp.text.Font.NORMAL, BaseColor.BLACK);
                 Font meuFont1 = FontFactory.GetFont("Arial", 9, iTextSharp.text.Font.NORMAL, BaseColor.BLACK);
@@ -7113,6 +7134,7 @@ namespace GEDSys_Presentation.Controllers
                 table.HorizontalAlignment = 0;
                 table.SpacingBefore = 1f;
                 table.SpacingAfter = 1f;
+                table.HeaderRows = 1;
 
                 cell = new PdfPCell(new Paragraph("Data", meuFont))
                 {
@@ -7493,6 +7515,8 @@ namespace GEDSys_Presentation.Controllers
                     ViewBag.ListaPagtosMes = listaMes;
                     Session["ListaDatasPagtosMes"] = datasPagto;
                     Session["ListaPagtosMes"] = listaMes;
+                    Session["ListaRecebimento"] = null;
+                    Session["ListaPagamento"] = null;
                 }
                 else
                 {
@@ -7735,6 +7759,42 @@ namespace GEDSys_Presentation.Controllers
                 ViewBag.ListaRectoConsolidado = lista7;
                 ViewBag.ListaRectoConsolidadoConta = lista7.Count;
                 Session["ListaRectoConsolidado"] = lista7;
+
+                // Relatorios
+                List<SelectListItem> relat = new List<SelectListItem>();
+                relat.Add(new SelectListItem() { Text = "Lista de Pagamentos", Value = "1" });
+                relat.Add(new SelectListItem() { Text = "Pagamentos/Data", Value = "2" });
+                relat.Add(new SelectListItem() { Text = "Pagamentos/Mês", Value = "3" });
+                relat.Add(new SelectListItem() { Text = "Pagamentos/Ano", Value = "9" });
+                relat.Add(new SelectListItem() { Text = "Pagamentos/Favorecido", Value = "4" });
+                relat.Add(new SelectListItem() { Text = "Pagamentos/Tipo", Value = "10" });
+                relat.Add(new SelectListItem() { Text = "Pagtos. Vencendo Hoje", Value = "5" });
+                relat.Add(new SelectListItem() { Text = "Pagtos. Vencendo no Mês", Value = "6" });
+                relat.Add(new SelectListItem() { Text = "Pagtos. Quitados Hoje", Value = "7" });
+                relat.Add(new SelectListItem() { Text = "Pagtos. Quitados no Mês", Value = "8" });
+                relat.Add(new SelectListItem() { Text = "Lista de Recebimentos", Value = "11" });
+                relat.Add(new SelectListItem() { Text = "Recebimentos/Data", Value = "12" });
+                relat.Add(new SelectListItem() { Text = "Recebimentos/Mês", Value = "13" });
+                relat.Add(new SelectListItem() { Text = "Recebimentos/Ano", Value = "14" });
+                relat.Add(new SelectListItem() { Text = "Recebimentos/Paciente", Value = "15" });
+                relat.Add(new SelectListItem() { Text = "Recebimentos/Profissional", Value = "16" });
+                relat.Add(new SelectListItem() { Text = "Receita x Despesa/Mês", Value = "17" });
+
+                int posicaoMeio = 10;
+                relat.Insert(posicaoMeio, new SelectListItem()
+                {
+                    Text = "────────────────────",
+                    Value = "0",
+                    Disabled = true
+                });
+                posicaoMeio = 17;
+                relat.Insert(posicaoMeio, new SelectListItem()
+                {
+                    Text = "────────────────────",
+                    Value = "0",
+                    Disabled = true
+                });
+                ViewBag.Relatorio = new SelectList(relat, "Value", "Text");
 
                 // Acerta estado    
                 Session["VoltaFinanceiro"] = 1;
@@ -8589,6 +8649,7 @@ namespace GEDSys_Presentation.Controllers
                 table.HorizontalAlignment = 0;
                 table.SpacingBefore = 1f;
                 table.SpacingAfter = 1f;
+                table.HeaderRows = 1;
 
                 cell = new PdfPCell(new Paragraph("Data", meuFont))
                 {
@@ -8813,7 +8874,15 @@ namespace GEDSys_Presentation.Controllers
                 Decimal? itens = 0;
 
                 // Carrega dados
-                List<CONSULTA_PAGAMENTO> pagtos1 = (List<CONSULTA_PAGAMENTO>)Session["ListaPagamento"];
+                List<CONSULTA_PAGAMENTO> pagtos1 = new List<CONSULTA_PAGAMENTO>();
+                if (Session["ListaPagamento"] != null)
+                {
+                    pagtos1 = (List<CONSULTA_PAGAMENTO>)Session["ListaPagamento"];
+                }
+                else
+                {
+                    pagtos1 = CarregaPagamento().ToList();
+                }
                 List<CONSULTA_PAGAMENTO> pagtos = pagtos1.Where(p => p.COPA_DT_PAGAMENTO != null).ToList();
                 List<DateTime> datas = pagtos.Select(p => p.COPA_DT_PAGAMENTO.Value.Date).Distinct().ToList();
 
@@ -8914,6 +8983,7 @@ namespace GEDSys_Presentation.Controllers
                 table.HorizontalAlignment = 0;
                 table.SpacingBefore = 1f;
                 table.SpacingAfter = 1f;
+                table.HeaderRows = 1;
 
                 cell = new PdfPCell(new Paragraph("Data do Pagamento", meuFont))
                 {
@@ -9093,7 +9163,16 @@ namespace GEDSys_Presentation.Controllers
                 Decimal? itens = 0;
 
                 // Carrega dados
-                List<CONSULTA_PAGAMENTO> pagtos = (List<CONSULTA_PAGAMENTO>)Session["ListaPagamento"];
+                List<CONSULTA_PAGAMENTO> pagtos = new List<CONSULTA_PAGAMENTO>();
+                if (Session["ListaPagamento"] != null)
+                {
+                    pagtos = (List<CONSULTA_PAGAMENTO>)Session["ListaPagamento"];
+                }
+                else
+                {
+                    pagtos = CarregaPagamento().ToList();
+                }
+                pagtos = pagtos.Where(p => p.COPA_IN_PAGO == 1).ToList();
                 List<String> favs = pagtos.Select(p => p.COPA_NM_FAVORECIDO).Distinct().ToList();
                 favs.Sort((i, j) => i.CompareTo(j));
                 List<ModeloViewModel> lista = new List<ModeloViewModel>();
@@ -9113,6 +9192,7 @@ namespace GEDSys_Presentation.Controllers
                     mod.ValorDec1 = media.Value;
                     lista.Add(mod);
                 }
+                lista = lista.OrderBy(p => p.Nome).ToList();
 
                 // Cabeçalho
                 PdfPTable headerTable = new PdfPTable(new float[] { 20f, 700f });
@@ -9192,6 +9272,7 @@ namespace GEDSys_Presentation.Controllers
                 table.HorizontalAlignment = 0;
                 table.SpacingBefore = 1f;
                 table.SpacingAfter = 1f;
+                table.HeaderRows = 1;
 
                 cell = new PdfPCell(new Paragraph("Nome do Favorecido", meuFont))
                 {
@@ -9226,7 +9307,7 @@ namespace GEDSys_Presentation.Controllers
                 cell.BackgroundColor = BaseColor.LIGHT_GRAY;
                 table.AddCell(cell);
 
-                foreach (ModeloViewModel item in lista)
+                foreach (ModeloViewModel item in lista.OrderBy(p => p.Nome))
                 {
                     if (item.Nome != null)
                     {
@@ -9371,7 +9452,15 @@ namespace GEDSys_Presentation.Controllers
                 Decimal? itens = 0;
 
                 // Carrega dados
-                List<CONSULTA_PAGAMENTO> pagtos1 = (List<CONSULTA_PAGAMENTO>)Session["ListaPagamento"];
+                List<CONSULTA_PAGAMENTO> pagtos1 = new List<CONSULTA_PAGAMENTO>();
+                if (Session["ListaPagamento"] != null)
+                {
+                    pagtos1 = (List<CONSULTA_PAGAMENTO>)Session["ListaPagamento"];
+                }
+                else
+                {
+                    pagtos1 = CarregaPagamento().ToList();
+                }
                 List<CONSULTA_PAGAMENTO> pagtos = pagtos1.Where(p => p.COPA_DT_PAGAMENTO != null).ToList();
                 List<DateTime> datasPagto = pagtos.Where(p => p.COPA_DT_PAGAMENTO != null).Select(p => p.COPA_DT_PAGAMENTO.Value.Date).Distinct().ToList();
                 datasPagto.Sort((i, j) => i.Date.CompareTo(j.Date));
@@ -9396,6 +9485,7 @@ namespace GEDSys_Presentation.Controllers
                         }
                     }
                 }
+                listaMes = listaMes.OrderBy(p => p.DataEmissao).ToList();
 
                 // Cabeçalho
                 PdfPTable headerTable = new PdfPTable(new float[] { 20f, 700f });
@@ -9475,6 +9565,7 @@ namespace GEDSys_Presentation.Controllers
                 table.HorizontalAlignment = 0;
                 table.SpacingBefore = 1f;
                 table.SpacingAfter = 1f;
+                table.HeaderRows = 1;
 
                 cell = new PdfPCell(new Paragraph("Mês de Referência", meuFont))
                 {
@@ -9659,8 +9750,18 @@ namespace GEDSys_Presentation.Controllers
                 Decimal? itens = 0;
 
                 // Carrega dados
-                List<CONSULTA_RECEBIMENTO> pagtos = (List<CONSULTA_RECEBIMENTO>)Session["ListaRecebimento"];
-                List<DateTime> datas = pagtos.Where(p => p.CORE_DT_RECEBIMENTO.Value.Month == DateTime.Today.Month & p.CORE_DT_RECEBIMENTO.Value.Year == DateTime.Today.Year).Select(p => p.CORE_DT_RECEBIMENTO.Value.Date).Distinct().ToList();
+                List<CONSULTA_RECEBIMENTO> pagtos1 = new List<CONSULTA_RECEBIMENTO>();
+                if (Session["ListaRecebimento"] != null)
+                {
+                    pagtos1 = (List<CONSULTA_RECEBIMENTO>)Session["ListaRecebimento"];
+                }
+                else
+                {
+                    pagtos1 = CarregaRecebimento().ToList();
+                }
+                List<CONSULTA_RECEBIMENTO> pagtos = pagtos1.Where(p => p.CORE_DT_RECEBIMENTO != null).ToList();
+                List<DateTime> datas = pagtos.Select(p => p.CORE_DT_RECEBIMENTO.Value.Date).Distinct().ToList();
+
                 datas.Sort((i, j) => i.Date.CompareTo(j.Date));
                 List<ModeloViewModel> lista = new List<ModeloViewModel>();
                 foreach (DateTime item in datas)
@@ -9758,6 +9859,7 @@ namespace GEDSys_Presentation.Controllers
                 table.HorizontalAlignment = 0;
                 table.SpacingBefore = 1f;
                 table.SpacingAfter = 1f;
+                table.HeaderRows = 1;
 
                 cell = new PdfPCell(new Paragraph("Data do Recebimento", meuFont))
                 {
@@ -9830,10 +9932,10 @@ namespace GEDSys_Presentation.Controllers
                         HorizontalAlignment = Element.ALIGN_RIGHT
                     };
                     table.AddCell(cell);
+
                     num += item.Valor;
                     total += item.ValorDec;
                     itens++;
-
                 }
                 pdfDoc.Add(table);
 
@@ -9883,6 +9985,7 @@ namespace GEDSys_Presentation.Controllers
                 cell.Colspan = 1;
                 table1.AddCell(cell);
                 pdfDoc.Add(table1);
+
 
                 // Finaliza
                 pdfWriter.CloseStream = false;
@@ -9938,7 +10041,16 @@ namespace GEDSys_Presentation.Controllers
 
 
                 // Carrega dados
-                List<CONSULTA_RECEBIMENTO> pagtos = (List<CONSULTA_RECEBIMENTO>)Session["ListaRecebimento"];
+                List<CONSULTA_RECEBIMENTO> pagtos1 = new List<CONSULTA_RECEBIMENTO>();
+                if (Session["ListaRecebimento"] != null)
+                {
+                    pagtos1 = (List<CONSULTA_RECEBIMENTO>)Session["ListaRecebimento"];
+                }
+                else
+                {
+                    pagtos1 = CarregaRecebimento().ToList();
+                }
+                List<CONSULTA_RECEBIMENTO> pagtos = pagtos1.Where(p => p.CORE_DT_RECEBIMENTO != null).ToList();
                 List<DateTime> datasPagto = pagtos.Where(p => p.CORE_DT_RECEBIMENTO != null).Select(p => p.CORE_DT_RECEBIMENTO.Value.Date).Distinct().ToList();
                 datasPagto.Sort((i, j) => i.Date.CompareTo(j.Date));
                 List<ModeloViewModel> listaMes = new List<ModeloViewModel>();
@@ -9962,6 +10074,7 @@ namespace GEDSys_Presentation.Controllers
                         }
                     }
                 }
+                listaMes = listaMes.OrderBy(p => p.DataEmissao).ToList();
 
                 // Cabeçalho
                 PdfPTable headerTable = new PdfPTable(new float[] { 20f, 700f });
@@ -10036,11 +10149,12 @@ namespace GEDSys_Presentation.Controllers
                 pdfDoc.Add(line1);
 
                 // Grid
-                PdfPTable table = new PdfPTable(new float[] { 60f, 80f, 80f});
+                PdfPTable table = new PdfPTable(new float[] { 60f, 80f, 80f });
                 table.WidthPercentage = 100;
                 table.HorizontalAlignment = 0;
                 table.SpacingBefore = 1f;
                 table.SpacingAfter = 1f;
+                table.HeaderRows = 1;
 
                 cell = new PdfPCell(new Paragraph("Mês de Referência", meuFont))
                 {
@@ -10099,8 +10213,8 @@ namespace GEDSys_Presentation.Controllers
                         HorizontalAlignment = Element.ALIGN_RIGHT
                     };
                     table.AddCell(cell);
-                    total += item.ValorDec1;
 
+                    total += item.ValorDec1;
                 }
                 pdfDoc.Add(table);
 
@@ -10190,7 +10304,16 @@ namespace GEDSys_Presentation.Controllers
                 Decimal? itens = 0;
 
                 // Carrega dados
-                List<CONSULTA_RECEBIMENTO> pagtos = (List<CONSULTA_RECEBIMENTO>)Session["ListaRecebimento"];
+                List<CONSULTA_RECEBIMENTO> pagtos = new List<CONSULTA_RECEBIMENTO>();
+                if (Session["ListaRecebimento"] != null)
+                {
+                    pagtos = (List<CONSULTA_RECEBIMENTO>)Session["ListaRecebimento"];
+                }
+                else
+                {
+                    pagtos = CarregaRecebimento().ToList();
+                }
+                pagtos = pagtos.Where(p => p.CORE_DT_RECEBIMENTO != null).ToList();
                 List<Int32> pacs = pagtos.Select(p => p.PACI_CD_ID.Value).Distinct().ToList();
                 List<ModeloViewModel> lista = new List<ModeloViewModel>();
                 foreach (Int32 item in pacs)
@@ -10210,6 +10333,7 @@ namespace GEDSys_Presentation.Controllers
                     mod.ValorDec1 = media.Value;
                     lista.Add(mod);
                 }
+                lista = lista.OrderBy(p => p.Nome).ToList();
 
                 // Cabeçalho
                 PdfPTable headerTable = new PdfPTable(new float[] { 20f, 700f });
@@ -10290,6 +10414,7 @@ namespace GEDSys_Presentation.Controllers
                 table.HorizontalAlignment = 0;
                 table.SpacingBefore = 1f;
                 table.SpacingAfter = 1f;
+                table.HeaderRows = 1;
 
                 cell = new PdfPCell(new Paragraph("Nome do Paciente", meuFont))
                 {
@@ -10326,7 +10451,7 @@ namespace GEDSys_Presentation.Controllers
 
                 foreach (ModeloViewModel item in lista)
                 {
-                    if (item.DataEmissao != null)
+                    if (item.Nome != null)
                     {
                         cell = new PdfPCell(new Paragraph(item.Nome, meuFont))
                         {
@@ -10542,6 +10667,7 @@ namespace GEDSys_Presentation.Controllers
                 table.HorizontalAlignment = 0;
                 table.SpacingBefore = 1f;
                 table.SpacingAfter = 1f;
+                table.HeaderRows = 1;
 
                 cell = new PdfPCell(new Paragraph("Tipo de Consulta", meuFont))
                 {
@@ -10992,6 +11118,7 @@ namespace GEDSys_Presentation.Controllers
                 table.HorizontalAlignment = 0;
                 table.SpacingBefore = 1f;
                 table.SpacingAfter = 1f;
+                table.HeaderRows = 1;
 
                 cell = new PdfPCell(new Paragraph("Vencimento", meuFont))
                 {
@@ -11272,6 +11399,8 @@ namespace GEDSys_Presentation.Controllers
                 String mes = CrossCutting.UtilitariosGeral.NomeMes(DateTime.Today.Month) + " de " + DateTime.Today.Year.ToString();
                 List<CONSULTA_PAGAMENTO> lista = CarregaPagamento().Where(p => p.COPA_IN_ATIVO == 1 & p.COPA_IN_PAGO == 1 & p.USUA_CD_ID == usuario.USUA_CD_ID & p.COPA_DT_PAGAMENTO != null).ToList();
                 lista = lista.Where(p => p.COPA_DT_PAGAMENTO.Value.Month == DateTime.Today.Month & p.COPA_DT_PAGAMENTO.Value.Year == DateTime.Today.Year).OrderBy(p => p.COPA_DT_PAGAMENTO).ToList();
+                lista = lista.OrderBy(p => p.COPA_DT_PAGAMENTO).ToList();             
+                
                 Font meuFont = FontFactory.GetFont("Arial", 8, iTextSharp.text.Font.NORMAL, BaseColor.BLACK);
                 Font meuFont1 = FontFactory.GetFont("Arial", 9, iTextSharp.text.Font.NORMAL, BaseColor.BLACK);
                 Font meuFont2 = FontFactory.GetFont("Arial", 14, iTextSharp.text.Font.NORMAL, BaseColor.BLACK);
@@ -11357,6 +11486,7 @@ namespace GEDSys_Presentation.Controllers
                 table.HorizontalAlignment = 0;
                 table.SpacingBefore = 1f;
                 table.SpacingAfter = 1f;
+                table.HeaderRows = 1;
 
                 cell = new PdfPCell(new Paragraph("Vencimento", meuFont))
                 {
@@ -12154,6 +12284,7 @@ namespace GEDSys_Presentation.Controllers
                         anoFeito2 = item.Year.ToString();
                     }
                 }
+
                 // Cabeçalho
                 PdfPTable headerTable = new PdfPTable(new float[] { 20f, 700f });
                 headerTable.WidthPercentage = 100;
@@ -12232,6 +12363,7 @@ namespace GEDSys_Presentation.Controllers
                 table.HorizontalAlignment = 0;
                 table.SpacingBefore = 1f;
                 table.SpacingAfter = 1f;
+                table.HeaderRows = 1;
 
                 cell = new PdfPCell(new Paragraph("Ano de Referência", meuFont))
                 {
@@ -12376,7 +12508,15 @@ namespace GEDSys_Presentation.Controllers
                 Decimal? itens = 0;
 
                 // Carrega dados
-                List<CONSULTA_PAGAMENTO> pagtos = (List<CONSULTA_PAGAMENTO>)Session["ListaPagamento"];
+                List<CONSULTA_PAGAMENTO> pagtos = new List<CONSULTA_PAGAMENTO>();
+                if (Session["ListaPagamento"] != null)
+                {
+                    pagtos = (List<CONSULTA_PAGAMENTO>)Session["ListaPagamento"];
+                }
+                else
+                {
+                    pagtos = CarregaPagamento().ToList();
+                }
                 List<Int32?> favs = pagtos.Select(p => p.TIPA_CD_ID).Distinct().ToList();
                 List<ModeloViewModel> lista = new List<ModeloViewModel>();
                 foreach (Int32 item in favs)
@@ -12395,6 +12535,7 @@ namespace GEDSys_Presentation.Controllers
                     mod.ValorDec1 = media.Value;
                     lista.Add(mod);
                 }
+                lista = lista.OrderBy(p => p.Nome).ToList();
 
                 // Cabeçalho
                 PdfPTable headerTable = new PdfPTable(new float[] { 20f, 700f });
@@ -12474,6 +12615,7 @@ namespace GEDSys_Presentation.Controllers
                 table.HorizontalAlignment = 0;
                 table.SpacingBefore = 1f;
                 table.SpacingAfter = 1f;
+                table.HeaderRows = 1;
 
                 cell = new PdfPCell(new Paragraph("Tipo de Pagamento", meuFont))
                 {
@@ -12757,6 +12899,7 @@ namespace GEDSys_Presentation.Controllers
                 table.HorizontalAlignment = 0;
                 table.SpacingBefore = 1f;
                 table.SpacingAfter = 1f;
+                table.HeaderRows = 1;
 
                 cell = new PdfPCell(new Paragraph("Ano de Referência", meuFont))
                 {
@@ -12901,7 +13044,16 @@ namespace GEDSys_Presentation.Controllers
                 Decimal? itens = 0;
 
                 // Carrega dados
-                List<CONSULTA_RECEBIMENTO> pagtos = (List<CONSULTA_RECEBIMENTO>)Session["ListaRecebimento"];
+                List<CONSULTA_RECEBIMENTO> pagtos = new List<CONSULTA_RECEBIMENTO>();
+                if (Session["ListaRecebimento"] != null)
+                {
+                    pagtos = (List<CONSULTA_RECEBIMENTO>)Session["ListaRecebimento"];
+                }
+                else
+                {
+                    pagtos = CarregaRecebimento().ToList();
+                }
+                pagtos = pagtos.Where(p => p.CORE_DT_RECEBIMENTO != null).ToList();
                 List<Int32> pacs = pagtos.Select(p => p.USUA_CD_ID).Distinct().ToList();
                 List<ModeloViewModel> lista = new List<ModeloViewModel>();
                 foreach (Int32 item in pacs)
@@ -12921,6 +13073,7 @@ namespace GEDSys_Presentation.Controllers
                     mod.ValorDec1 = media.Value;
                     lista.Add(mod);
                 }
+                lista = lista.OrderBy(p => p.Nome).ToList();
 
                 // Cabeçalho
                 PdfPTable headerTable = new PdfPTable(new float[] { 20f, 700f });
@@ -13001,6 +13154,7 @@ namespace GEDSys_Presentation.Controllers
                 table.HorizontalAlignment = 0;
                 table.SpacingBefore = 1f;
                 table.SpacingAfter = 1f;
+                table.HeaderRows = 1;
 
                 cell = new PdfPCell(new Paragraph("Nome do Profissional", meuFont))
                 {
@@ -13037,7 +13191,7 @@ namespace GEDSys_Presentation.Controllers
 
                 foreach (ModeloViewModel item in lista)
                 {
-                    if (item.DataEmissao != null)
+                    if (item.Nome != null)
                     {
                         cell = new PdfPCell(new Paragraph(item.Nome, meuFont))
                         {
@@ -13138,6 +13292,440 @@ namespace GEDSys_Presentation.Controllers
 
                 Session["NivelPaciente"] = 1;
                 return RedirectToAction("MontarTelaRecebimento");
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Paciente";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Paciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return RedirectToAction("TrataExcecao", "BaseAdmin");
+            }
+        }
+
+        public ActionResult ProcessaRelatorioFinanceiroGeral(Int32? TIPO_RELATORIO)
+        {
+            if ((String)Session["Ativa"] == null)
+            {
+                return RedirectToAction("Login", "ControleAcesso");
+            }
+            Int32? tipoRel = TIPO_RELATORIO;
+
+            if (tipoRel == 1)
+            {
+                return RedirectToAction("GerarListagemPagamento");
+            }
+            if (tipoRel == 2)
+            {
+                return RedirectToAction("GerarListagemPagamentoTotalData");
+            }
+            if (tipoRel == 3)
+            {
+                return RedirectToAction("GerarListagemPagamentoTotalMes");
+            }
+            if (tipoRel == 4)
+            {
+                return RedirectToAction("GerarListagemPagamentoTotalFavorecido");
+            }
+            if (tipoRel == 5)
+            {
+                return RedirectToAction("GerarListagemPagamentoVenceHoje");
+            }
+            if (tipoRel == 6)
+            {
+                return RedirectToAction("GerarListagemPagamentoVenceMes");
+            }
+            if (tipoRel == 7)
+            {
+                return RedirectToAction("GerarListagemPagamentoQuitadoHoje");
+            }
+            if (tipoRel == 8)
+            {
+                return RedirectToAction("GerarListagemPagamentoQuitadoMes");
+            }
+            if (tipoRel == 9)
+            {
+                return RedirectToAction("GerarListagemPagamentoTotalAno");
+            }
+            if (tipoRel == 10)
+            {
+                return RedirectToAction("GerarListagemPagamentoTotalTipo");
+            }
+            if (tipoRel == 11)
+            {
+                return RedirectToAction("GerarListagemRecebimento");
+            }
+            if (tipoRel == 12)
+            {
+                return RedirectToAction("GerarListagemRecebimentoTotalData");
+            }
+            if (tipoRel == 13)
+            {
+                return RedirectToAction("GerarListagemRecebimentoTotalMes");
+            }
+            if (tipoRel == 15)
+            {
+                return RedirectToAction("GerarListagemRecebimentoTotalPaciente");
+            }
+            if (tipoRel == 14)
+            {
+                return RedirectToAction("GerarListagemRecebimentoTotalAno");
+            }
+            if (tipoRel == 16)
+            {
+                return RedirectToAction("GerarListagemRecebimentoTotalProfissional");
+            }
+            if (tipoRel == 17)
+            {
+                return RedirectToAction("GerarListagemPagamentoRecebimentoTotalData");
+            }
+            return RedirectToAction("MontarTelaFinanceiro");
+        }
+
+        public ActionResult GerarListagemPagamentoRecebimentoTotalData()
+        {
+            try
+            {
+                if ((String)Session["Ativa"] == null)
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+
+                // Prepara geração
+                CONFIGURACAO conf = CarregaConfiguracaoGeral();
+                Int32 idAss = (Int32)Session["IdAssinante"];
+                String data = DateTime.Today.Date.ToShortDateString();
+                data = data.Substring(0, 2) + data.Substring(3, 2) + data.Substring(6, 4);
+
+                String nomeRel = "PagamentoRecebimentoTotalDataLista" + "_" + data + ".pdf";
+                Font meuFont = FontFactory.GetFont("Arial", 8, iTextSharp.text.Font.NORMAL, BaseColor.BLACK);
+                Font meuFont1 = FontFactory.GetFont("Arial", 9, iTextSharp.text.Font.NORMAL, BaseColor.BLACK);
+                Font meuFont2 = FontFactory.GetFont("Arial", 14, iTextSharp.text.Font.NORMAL, BaseColor.BLACK);
+                Font meuFont3 = FontFactory.GetFont("Arial", 8, iTextSharp.text.Font.BOLD, BaseColor.BLUE);
+                Font meuFont4 = FontFactory.GetFont("Arial", 8, iTextSharp.text.Font.NORMAL, BaseColor.RED);
+                Font meuFont5 = FontFactory.GetFont("Arial", 8, iTextSharp.text.Font.BOLD, BaseColor.RED);
+
+                Decimal? num = 0;
+                Decimal? totalPag = 0;
+                Decimal? totalRec = 0;
+                Decimal? totalSaldo = 0;
+                Decimal? itens = 0;
+
+                // Carrega dados Pagto
+                List<CONSULTA_PAGAMENTO> pagtos1 = new List<CONSULTA_PAGAMENTO>();
+                if (Session["ListaPagamento"] != null)
+                {
+                    pagtos1 = (List<CONSULTA_PAGAMENTO>)Session["ListaPagamento"];
+                }
+                else
+                {
+                    pagtos1 = CarregaPagamento().ToList();
+                }
+                List<CONSULTA_PAGAMENTO> pagtos = pagtos1.Where(p => p.COPA_DT_PAGAMENTO != null).ToList();
+                List<DateTime> datasPag = pagtos.Select(p => p.COPA_DT_PAGAMENTO.Value.Date).Distinct().ToList();
+
+                // Carrega dados Recto
+                List<CONSULTA_RECEBIMENTO> rectos1 = new List<CONSULTA_RECEBIMENTO>();
+                if (Session["ListaRecebimento"] != null)
+                {
+                    rectos1 = (List<CONSULTA_RECEBIMENTO>)Session["ListaRecebimento"];
+                }
+                else
+                {
+                    rectos1 = CarregaRecebimento().ToList();
+                }
+                List<CONSULTA_RECEBIMENTO> rectos = rectos1.Where(p => p.CORE_DT_RECEBIMENTO != null).ToList();
+                List<DateTime> datasRec = rectos.Select(p => p.CORE_DT_RECEBIMENTO.Value.Date).Distinct().ToList();
+
+                // Merge das datas
+                List<DateTime> datas = datasPag.Union(datasRec).OrderBy(d => d).ToList();
+
+                // Monta lista final
+                datas.Sort((i, j) => i.Date.CompareTo(j.Date));
+                List<ModeloViewModel> lista = new List<ModeloViewModel>();
+                foreach (DateTime item in datas)
+                {
+                    Int32 contaPag = pagtos.Where(p => p.COPA_DT_PAGAMENTO.Value.Date == item.Date).Count();
+                    Decimal? somaPag = pagtos.Where(p => p.COPA_DT_PAGAMENTO.Value.Date == item.Date).Sum(p => p.COPA_VL_PAGO);
+
+                    Int32 contaRec = rectos.Where(p => p.CORE_DT_RECEBIMENTO.Value.Date == item.Date).Count();
+                    Decimal? somaRec = rectos.Where(p => p.CORE_DT_RECEBIMENTO.Value.Date == item.Date).Sum(p => p.CORE_VL_VALOR);
+
+                    Decimal? saldo = somaRec - somaPag;
+                    ModeloViewModel mod = new ModeloViewModel();
+                    mod.DataEmissao = item;
+                    mod.ValorDec = somaPag.Value;
+                    mod.ValorDec1 = somaRec.Value;
+                    mod.ValorDec2 = saldo.Value;
+                    lista.Add(mod);
+                }
+
+                // Cabeçalho
+                PdfPTable headerTable = new PdfPTable(new float[] { 20f, 700f });
+                headerTable.WidthPercentage = 100;
+                headerTable.HorizontalAlignment = 1;
+                headerTable.SpacingBefore = 1f;
+                headerTable.SpacingAfter = 1f;
+                table.HeaderRows = 1;
+
+                if (conf.CONF_IN_LOGO_EMPRESA == 1)
+                {
+                    PdfPCell cell1 = new PdfPCell();
+                    cell1.Border = 0;
+                    cell1.Colspan = 1;
+                    Image image = null;
+                    EMPRESA empresa = empApp.GetItemByAssinante(idAss);
+                    image = Image.GetInstance(Server.MapPath(empresa.EMPR_AQ_LOGO));
+                    image.ScaleAbsolute(50, 50);
+                    cell1.AddElement(image);
+                    cell1.Border = PdfPCell.BOTTOM_BORDER;
+                    headerTable.AddCell(cell1);
+
+                    cell1 = new PdfPCell(new Paragraph("Pagamentos x Recebimentos - Total por Data", meuFont2))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_CENTER
+                    };
+                    cell1.Border = 0;
+                    cell1.Colspan = 1;
+                    cell1.Border = PdfPCell.BOTTOM_BORDER;
+                    headerTable.AddCell(cell1);
+                }
+                else
+                {
+                    PdfPCell cell2 = new PdfPCell(new Paragraph("Pagamentos x Recebimentos - Total por Data", meuFont2))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_CENTER
+                    };
+                    cell2.Border = 0;
+                    cell2.Colspan = 2;
+                    headerTable.AddCell(cell2);
+
+                    cell2 = new PdfPCell(new Paragraph(" ", meuFont))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    cell2.Colspan = 2;
+                    cell2.Border = PdfPCell.BOTTOM_BORDER;
+                    headerTable.AddCell(cell2);
+                }
+
+                // Rodape
+                PdfPTable footerTable = new PdfPTable(1);
+                footerTable.WidthPercentage = 100;
+                footerTable.HorizontalAlignment = 1;
+                footerTable.SpacingBefore = 1f;
+                footerTable.SpacingAfter = 1f;
+
+                PdfPCell cell = new PdfPCell();
+                cell.Border = PdfPCell.TOP_BORDER;
+                cell = new PdfPCell(new Paragraph("Gerado por WebDoctor 1.0 em " + DateTime.Today.Date.ToLongDateString(), meuFont));
+                footerTable.AddCell(cell);
+
+                // Cria documento
+                Document pdfDoc = new Document(PageSize.A4.Rotate(), 10, 10, 60, 40);
+                PdfWriter pdfWriter = PdfWriter.GetInstance(pdfDoc, Response.OutputStream);
+                pdfWriter.PageEvent = new CustomPageEventHelper(headerTable, footerTable);
+                pdfDoc.Open();
+
+                Paragraph line1 = new Paragraph("  ");
+                pdfDoc.Add(line1);
+
+                // Grid
+                PdfPTable table = new PdfPTable(new float[] { 60f, 80f, 80f, 80f});
+                table.WidthPercentage = 100;
+                table.HorizontalAlignment = 0;
+                table.SpacingBefore = 1f;
+                table.SpacingAfter = 1f;
+
+                cell = new PdfPCell(new Paragraph("Data de Referência", meuFont))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph("Total de Pagamentos (R$)", meuFont))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_RIGHT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph("Total de Recebimentos (R$)", meuFont))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_RIGHT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph("Saldo (R$)", meuFont))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_RIGHT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                table.AddCell(cell);
+
+                foreach (ModeloViewModel item in lista)
+                {
+                    if (item.DataEmissao != null)
+                    {
+                        cell = new PdfPCell(new Paragraph(item.DataEmissao.ToShortDateString(), meuFont))
+                        {
+                            VerticalAlignment = Element.ALIGN_MIDDLE,
+                            HorizontalAlignment = Element.ALIGN_LEFT
+                        };
+                        table.AddCell(cell);
+                    }
+                    else
+                    {
+                        cell = new PdfPCell(new Paragraph("-", meuFont))
+                        {
+                            VerticalAlignment = Element.ALIGN_MIDDLE,
+                            HorizontalAlignment = Element.ALIGN_LEFT
+                        };
+                        table.AddCell(cell);
+                    }
+                    cell = new PdfPCell(new Paragraph(CrossCutting.Formatters.DecimalFormatter(item.ValorDec), meuFont))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_RIGHT
+                    };
+                    table.AddCell(cell);
+
+                    cell = new PdfPCell(new Paragraph(CrossCutting.Formatters.DecimalFormatter(item.ValorDec1), meuFont))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_RIGHT
+                    };
+                    table.AddCell(cell);
+
+                    if (item.ValorDec2 > 0)
+                    {
+                        cell = new PdfPCell(new Paragraph(CrossCutting.Formatters.DecimalFormatter(item.ValorDec2), meuFont))
+                        {
+                            VerticalAlignment = Element.ALIGN_MIDDLE,
+                            HorizontalAlignment = Element.ALIGN_RIGHT
+                        };
+                        table.AddCell(cell);
+                    }
+                    else if (item.ValorDec2 == 0)
+                    {
+                        cell = new PdfPCell(new Paragraph("-", meuFont))
+                        {
+                            VerticalAlignment = Element.ALIGN_MIDDLE,
+                            HorizontalAlignment = Element.ALIGN_RIGHT
+                        };
+                        table.AddCell(cell);
+                    }
+                    else if (item.ValorDec2 < 0)
+                    {
+                        cell = new PdfPCell(new Paragraph(CrossCutting.Formatters.DecimalFormatter(item.ValorDec2), meuFont4))
+                        {
+                            VerticalAlignment = Element.ALIGN_MIDDLE,
+                            HorizontalAlignment = Element.ALIGN_RIGHT
+                        };
+                        table.AddCell(cell);
+                    }
+                    totalPag += item.ValorDec;
+                    totalRec += item.ValorDec1;
+                    totalSaldo += item.ValorDec2;
+                }
+                pdfDoc.Add(table);
+
+                // Grid - TOTAIS
+                PdfPTable table1 = new PdfPTable(new float[] { 60f, 80f, 80f, 80f });
+                table1.WidthPercentage = 100;
+                table1.HorizontalAlignment = 0;
+                table1.SpacingBefore = 1f;
+                table1.SpacingAfter = 1f;
+
+
+                cell = new PdfPCell(new Paragraph("TOTAIS", meuFont))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_RIGHT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                table1.AddCell(cell);
+
+                cell = new PdfPCell(new Paragraph(CrossCutting.Formatters.DecimalFormatter(totalPag.Value), meuFont3))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_RIGHT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                table1.AddCell(cell);
+
+                cell = new PdfPCell(new Paragraph(CrossCutting.Formatters.DecimalFormatter(totalRec.Value), meuFont3))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_RIGHT
+                };
+                cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                cell.Colspan = 1;
+                table1.AddCell(cell);
+
+                if (totalSaldo > 0)
+                {
+                    cell = new PdfPCell(new Paragraph(CrossCutting.Formatters.DecimalFormatter(totalSaldo.Value), meuFont3))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_RIGHT
+                    };
+                    cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                    cell.Colspan = 1;
+                    table1.AddCell(cell);
+                }
+                else if (totalSaldo == 0)
+                {
+                    cell = new PdfPCell(new Paragraph("-", meuFont3))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_RIGHT
+                    };
+                    cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                    cell.Colspan = 1;
+                    table1.AddCell(cell);
+                }
+                else if (totalSaldo < 0)
+                {
+                    cell = new PdfPCell(new Paragraph(CrossCutting.Formatters.DecimalFormatter(totalSaldo.Value), meuFont5))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_RIGHT
+                    };
+                    cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                    cell.Colspan = 1;
+                    table1.AddCell(cell);
+                }
+                pdfDoc.Add(table1);
+
+
+                // Finaliza
+                pdfWriter.CloseStream = false;
+                pdfDoc.Close();
+                Response.Buffer = true;
+                Response.ContentType = "application/pdf";
+                Response.AddHeader("content-disposition", "attachment;filename=" + nomeRel);
+                Response.Cache.SetCacheability(HttpCacheability.NoCache);
+                Response.Write(pdfDoc);
+                Response.End();
+
+                Session["NivelPaciente"] = 1;
+                return RedirectToAction("MontarTelaPagamento");
             }
             catch (Exception ex)
             {

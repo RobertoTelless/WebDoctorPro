@@ -787,6 +787,7 @@ namespace GEDSys_Presentation.Controllers
                 table.HorizontalAlignment = 0;
                 table.SpacingBefore = 1f;
                 table.SpacingAfter = 1f;
+                table.HeaderRows = 1;
 
                 cell = new PdfPCell(new Paragraph("Tipo de Exame", meuFont))
                 {
@@ -1041,6 +1042,7 @@ namespace GEDSys_Presentation.Controllers
                 table.HorizontalAlignment = 0;
                 table.SpacingBefore = 1f;
                 table.SpacingAfter = 1f;
+                table.HeaderRows = 1;
 
                 cell = new PdfPCell(new Paragraph("Tipo de Exame", meuFont))
                 {

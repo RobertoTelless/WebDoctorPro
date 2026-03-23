@@ -2916,6 +2916,7 @@ namespace GEDSys_Presentation.Controllers
                 table.HorizontalAlignment = 0;
                 table.SpacingBefore = 1f;
                 table.SpacingAfter = 1f;
+                table.HeaderRows = 1;
 
                 cell = new PdfPCell(new Paragraph("Materiais/Produtos selecionados pelos parametros de filtro abaixo", meuFont1))
                 {
@@ -6506,6 +6507,7 @@ namespace GEDSys_Presentation.Controllers
                 table.HorizontalAlignment = 0;
                 table.SpacingBefore = 1f;
                 table.SpacingAfter = 1f;
+                table.HeaderRows = 1;
 
                 cell = new PdfPCell(new Paragraph("Produtos selecionados pelos parametros de filtro abaixo", meuFont1))
                 {
@@ -7795,6 +7797,7 @@ namespace GEDSys_Presentation.Controllers
                 table.HorizontalAlignment = 0;
                 table.SpacingBefore = 1f;
                 table.SpacingAfter = 1f;
+                table.HeaderRows = 1;
 
                 cell = new PdfPCell(new Paragraph("Produto", meuFont))
                 {
@@ -8109,6 +8112,7 @@ namespace GEDSys_Presentation.Controllers
                 table.HorizontalAlignment = 0;
                 table.SpacingBefore = 1f;
                 table.SpacingAfter = 1f;
+                table.HeaderRows = 1;
 
                 cell = new PdfPCell(new Paragraph("Produto", meuFont))
                 {
@@ -8421,6 +8425,7 @@ namespace GEDSys_Presentation.Controllers
                 table.HorizontalAlignment = 0;
                 table.SpacingBefore = 1f;
                 table.SpacingAfter = 1f;
+                table.HeaderRows = 1;
 
                 cell = new PdfPCell(new Paragraph("Produto", meuFont))
                 {
@@ -8733,6 +8738,7 @@ namespace GEDSys_Presentation.Controllers
                 table.HorizontalAlignment = 0;
                 table.SpacingBefore = 1f;
                 table.SpacingAfter = 1f;
+                table.HeaderRows = 1;
 
                 cell = new PdfPCell(new Paragraph("Produto", meuFont))
                 {
@@ -9022,6 +9028,7 @@ namespace GEDSys_Presentation.Controllers
                 table.HorizontalAlignment = 0;
                 table.SpacingBefore = 1f;
                 table.SpacingAfter = 1f;
+                table.HeaderRows = 1;
 
                 cell = new PdfPCell(new Paragraph("Local", meuFont))
                 {

@@ -29,12 +29,17 @@
             <div class="modal-body">
                 <div id="modalBodyContent"></div>
             </div>
+            @*<div class="modal-footer">
+                <button type="button" class="btn btn-white" data-dismiss="modal">Fechar</button>
+            </div>*@
             <div class="modal-footer">
+                <button type="button" class="btn btn-primary" onclick="confirmarLeitura()">Entendi, não mostrar novamente</button>
                 <button type="button" class="btn btn-white" data-dismiss="modal">Fechar</button>
             </div>
         </div>
     </div>
 </div>
+
 <div id="content" class="wraper container-fluid">
     <div class="modalContainer">
         <div id="modal" class="modal" tabindex="-1" role="dialog">
@@ -67,7 +72,7 @@
             {
                 var avisos = (List<EntitiesServices.Model.MENSAGEM_FABRICANTE>)ViewBag.ListasFabricante;
 
-                <div class="col-lg-9 col-md-9 col-sm-12 marquee-text-container"> @* Removi a classe de cor daqui *@
+                <div class="col-lg-8 col-md-8 col-sm-12 marquee-text-container"> @* Removi a classe de cor daqui *@
                     <div class="marquee-text-content">
                         @for (int i = 0; i < 2; i++)
                         {
@@ -77,14 +82,27 @@
                                 // Define o ícone baseado no tipo
                                 string iconeModal = item.MEFA_IN_TIPO == 2 ? "fa-exclamation-triangle" : "fa-info-circle";
     
-                                <a href="javascript:void(0);" class="marquee-msg @corItem" 
+                                @*<a href="javascript:void(0);" class="marquee-msg @corItem" data-id="@item.MEFA_CD_ID" 
                                    onclick="abrirModalAviso('@item.MEFA_LK_LINK', '@Html.Raw(HttpUtility.JavaScriptStringEncode(item.MEFA_TX_TEXTO))', '@iconeModal')">
                                     <i class="fa @(item.MEFA_IN_TIPO == 2 ? "fa-exclamation-triangle" : "fa-info-circle")"></i>
                                     @item.MEFA_LK_LINK
+                                </a>*@
+                                <a href="javascript:void(0);" class="marquee-msg @corItem" data-id="@item.MEFA_CD_ID" data-toggle="popover" data-trigger="hover" data-placement="left" data-content="Clique para ver detalhes deste aviso"  
+                                   onclick="abrirModalAviso('@item.MEFA_CD_ID', '@item.MEFA_LK_LINK', '@Html.Raw(HttpUtility.JavaScriptStringEncode(item.MEFA_TX_TEXTO))', '@iconeModal')">
+                                    <i class="fa @(item.MEFA_IN_TIPO == 2 ? "fa-exclamation-triangle" : "fa-info-circle")"></i>
+                                    @item.MEFA_LK_LINK
                                 </a>
+
                             }
 
                         }
+                    </div>
+                </div>
+
+                <div class="col-lg-1 col-md-1 col-sm-12" style="padding-top: 8px;"> 
+                    <div class="row">
+                        &nbsp;&nbsp;
+                        <button type="button" class="btn btn-xs btn-outline btn-info" data-toggle="popover" data-trigger="hover" data-placement="bottom" data-content="Restaura avisos marcados como lidos" onclick="limparHistoricoAvisos()"><i class="fa fa-refresh"></i> Restaurar Avisos</button>
                     </div>
                 </div>
             }
@@ -1134,7 +1152,7 @@
         });
     </script>
 
-    <script type="text/javascript">
+    @*<script type="text/javascript">
         function abrirModalAviso(titulo, detalhe, icone) {
             // 1. Define o título e o texto
             $('#modalTitle').text(titulo);
@@ -1156,7 +1174,126 @@
             // 4. Abre a modal
             $('#modalAviso').modal('show');
         }
+    </script>*@
+
+    <script type="text/javascript">
+        var idAvisoAtual = 0;
+        const COOKIE_NAME = "WebDoctor_AvisosLidos";
+
+        $(document).ready(function () {
+            filtrarAvisosLidos();
+        });
+
+        // FUNÇÃO UNIFICADA: Trata ID (Storage) e Visual (Icones/Cores)
+        function abrirModalAviso(id, titulo, detalhe, icone) {
+
+            $('#modalAviso .btn-primary').text("Entendi, não mostrar novamente").attr("onclick", "confirmarLeitura()");
+
+            // 1. Armazena o ID para a confirmação posterior
+            idAvisoAtual = id;
+
+            // 2. Define o título e o conteúdo
+            $('#modalTitle').text(titulo);
+            $('#modalBodyContent').html(detalhe);
+
+            // 3. Gerencia o Ícone e a Cor dinamicamente
+            var $iconeElemento = $('#modalIconeDinamico');
+        
+            // Limpa classes antigas
+            $iconeElemento.removeClass('fa-info-circle fa-exclamation-triangle text-primary text-warning');
+        
+            // Adiciona o novo ícone
+            $iconeElemento.addClass(icone);
+        
+            // Aplica a cor baseada no tipo de ícone
+            if (icone === 'fa-exclamation-triangle') {
+                $iconeElemento.addClass('text-warning'); // Amarelo
+            } else {
+                $iconeElemento.addClass('text-primary'); // Azul
+            }
+
+            // 4. Abre a modal
+            $('#modalAviso').modal('show');
+        }
+
+        function confirmarLeitura() {
+            if (idAvisoAtual === 0) return;
+
+            let lidos = getLidos();
+        
+            if (!lidos.includes(idAvisoAtual.toString())) {
+                lidos.push(idAvisoAtual.toString());
+            }
+
+            localStorage.setItem(COOKIE_NAME, JSON.stringify(lidos));
+
+            $('#modalAviso').modal('hide');
+            toastr.success("Aviso arquivado.");
+
+            filtrarAvisosLidos();
+        }
+
+        function getLidos() {
+            let lidos = localStorage.getItem(COOKIE_NAME);
+            return lidos ? JSON.parse(lidos) : [];
+        }
+
+        function filtrarAvisosLidos() {
+            let lidos = getLidos();
+            let possuiAvisosVisiveis = false;
+
+            $('.marquee-msg').each(function () {
+                let id = $(this).data('id').toString();
+                if (lidos.includes(id)) {
+                    $(this).remove(); 
+                } else {
+                    possuiAvisosVisiveis = true;
+                }
+            });
+
+            if (!possuiAvisosVisiveis) {
+                $('.marquee-text-container').hide();
+            }
+        }
     </script>
+    <script type="text/javascript">
+        function limparHistoricoAvisos() {
+            // 1. Prepara o conteúdo da modal para "Modo de Confirmação"
+            $('#modalTitle').text("Restaurar Avisos");
+            $('#modalBodyContent').html("<p>Deseja voltar a exibir todos os avisos que você marcou como lidos?</p>");
+        
+            // 2. Ajusta o ícone para um ponto de interrogação ou refresh
+            var $icone = $('#modalIconeDinamico');
+            $icone.removeClass().addClass('fa fa-refresh modal-icon text-warning');
+
+            // 3. Altera o botão "Entendi" para atuar como "Confirmar Restauração"
+            // Mudamos o texto e a função que ele chama
+            var btnConfirmar = $('#modalAviso .btn-primary');
+            btnConfirmar.text("Sim, Restaurar");
+            btnConfirmar.attr("onclick", "executarLimpeza()");
+
+            // 4. Abre a modal
+            $('#modalAviso').modal('show');
+        }
+
+        function executarLimpeza() {
+            // Remove os dados do LocalStorage
+            localStorage.removeItem("WebDoctor_AvisosLidos");
+
+            if (typeof toastr !== 'undefined') {
+                toastr.success("Histórico de avisos limpo com sucesso!");
+            }
+
+            // Fecha a modal e recarrega
+            $('#modalAviso').modal('hide');
+        
+            setTimeout(function() {
+                location.reload();
+            }, 800);
+        }
+    </script>
+
+
     @if (ViewBag.Message != null)
     {
         <script type="text/javascript">

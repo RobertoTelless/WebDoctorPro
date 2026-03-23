@@ -2951,6 +2951,7 @@ namespace GEDSys_Presentation.Controllers
                 table.HorizontalAlignment = 0;
                 table.SpacingBefore = 1f;
                 table.SpacingAfter = 1f;
+                table.HeaderRows = 1;
 
                 // Cabeçalho
                 cell = new PdfPCell(new Paragraph("Tipo", meuFont))
@@ -3340,6 +3341,7 @@ namespace GEDSys_Presentation.Controllers
                 table.HorizontalAlignment = 0;
                 table.SpacingBefore = 1f;
                 table.SpacingAfter = 1f;
+                table.HeaderRows = 1;
 
                 // Cabeçalho
                 cell = new PdfPCell(new Paragraph("Data", meuFont))
@@ -3695,6 +3697,7 @@ namespace GEDSys_Presentation.Controllers
                 table.HorizontalAlignment = 0;
                 table.SpacingBefore = 1f;
                 table.SpacingAfter = 1f;
+                table.HeaderRows = 1;
                 cell.Colspan = 6;
                 cell.BackgroundColor = BaseColor.LIGHT_GRAY;
                 table.AddCell(cell);
@@ -3892,6 +3895,7 @@ namespace GEDSys_Presentation.Controllers
                 table.HorizontalAlignment = 0;
                 table.SpacingBefore = 1f;
                 table.SpacingAfter = 1f;
+                table.HeaderRows = 1;
 
                 cell = new PdfPCell(new Paragraph("Movimentações selecionadas pelos parametros de filtro abaixo", meuFont1))
                 {

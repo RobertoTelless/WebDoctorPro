@@ -1260,6 +1260,7 @@
     <Content Include="Imagens\1\Filial\3\Logo\bz.jpg" />
     <Content Include="Imagens\1\Locacao\100\QRCode\Contrato_QRCode_d6phm84n0005107j8g7g.png" />
     <Content Include="Imagens\1\Locacao\101\QRCode\Contrato_QRCode_d6s3f3sn00096v3n8s40.png" />
+    <Content Include="Imagens\1\Locacao\102\QRCode\Contrato_QRCode_d6ssaf4n00032i1o0ljg.png" />
     <Content Include="Imagens\1\Locacao\74\QRCode\Contrato_QRCode_d4gcnhkn000c5t6n1560.png" />
     <Content Include="Imagens\1\Locacao\75\QRCode\Contrato_QRCode_d4gcr4sn000c5t6n159g.png" />
     <Content Include="Imagens\1\Locacao\76\Anexos\haddock_1.jpg" />
@@ -4054,6 +4055,8 @@
     <Content Include="Imagens\1\AreaPaciente\32\Anexos\Contrato_LocacaoHANK VOIGHT_d6s3f3sn00096v3n8s40_Assinado.pdf" />
     <Content Include="Imagens\1\AreaPaciente\33\Anexos\Power_System_Protection_Lecture_Notes.pdf" />
     <Content Include="Imagens\1\AreaPaciente\34\Anexos\Molhos para saladas.pdf" />
+    <Content Include="Imagens\1\Locacao\102\Anexos\Documento médico.pdf" />
+    <Content Include="Imagens\1\Locacao\102\Contrato\Contrato_LocacaoColapso Cardíaco Da Silva_d6ssaf4n00032i1o0ljg.pdf" />
     <None Include="Properties\PublishProfiles\eprontuario - FTP.pubxml" />
     <None Include="Properties\PublishProfiles\eprontuario - FTP1.pubxml" />
     <None Include="Properties\PublishProfiles\eprontuario - Web Deploy.pubxml" />
@@ -5496,6 +5499,8 @@
     <Folder Include="Imagens\1\AreaPaciente\19\Anexos\" />
     <Folder Include="Imagens\1\AreaPaciente\20\Anexos\" />
     <Folder Include="Imagens\1\AreaPaciente\21\Anexos\" />
+    <Folder Include="Imagens\1\AreaPaciente\37\Anexos\" />
+    <Folder Include="Imagens\1\AreaPaciente\38\Anexos\" />
     <Folder Include="Imagens\1\Envio\34\Anexos\" />
     <Folder Include="Imagens\1\Envio\35\Anexos\" />
     <Folder Include="Imagens\1\Envio\37\Anexos\" />
@@ -5586,6 +5591,8 @@
     <Folder Include="Imagens\1\Locacao\100\Anexos\" />
     <Folder Include="Imagens\1\Locacao\101\Anexos\" />
     <Folder Include="Imagens\1\Locacao\101\Distrato\" />
+    <Folder Include="Imagens\1\Locacao\102\Assinado\" />
+    <Folder Include="Imagens\1\Locacao\102\Distrato\" />
     <Folder Include="Imagens\1\Locacao\74\Anexos\" />
     <Folder Include="Imagens\1\Locacao\74\Assinado\" />
     <Folder Include="Imagens\1\Locacao\74\Contrato\" />
