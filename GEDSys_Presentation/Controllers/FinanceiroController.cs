@@ -13469,7 +13469,6 @@ namespace GEDSys_Presentation.Controllers
                 headerTable.HorizontalAlignment = 1;
                 headerTable.SpacingBefore = 1f;
                 headerTable.SpacingAfter = 1f;
-                table.HeaderRows = 1;
 
                 if (conf.CONF_IN_LOGO_EMPRESA == 1)
                 {
@@ -13542,6 +13541,7 @@ namespace GEDSys_Presentation.Controllers
                 table.HorizontalAlignment = 0;
                 table.SpacingBefore = 1f;
                 table.SpacingAfter = 1f;
+                table.HeaderRows = 1;
 
                 cell = new PdfPCell(new Paragraph("Data de Referência", meuFont))
                 {
