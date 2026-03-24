@@ -191,14 +191,25 @@
                                     @foreach (var cond in (ViewBag.Listas as List<EntitiesServices.Model.PRODUTO>))
                                     {
                                         <tr>
-                                            @if (cond.PROD_IN_TIPO_PRODUTO == 1)
+                                            <td style="width: auto">
+                                                @if (cond.PROD_IN_TIPO_PRODUTO == 1) // ATIVA
+                                                {
+                                                    <span class="status-badge status-active">Material</span>
+                                                }
+                                                else if (cond.PROD_IN_TIPO_PRODUTO == 2)
+                                                {
+                                                    <span class="status-badge status-finish">Produto</span>
+                                                }
+                                            </td>
+
+                                            @*@if (cond.PROD_IN_TIPO_PRODUTO == 1)
                                             {
                                                 <td style="width: auto"><span class="badge badge-primary">Material</span></td>
                                             }
                                             else if (cond.PROD_IN_TIPO_PRODUTO == 2)
                                             {
                                                 <td style="width: auto"><span class="badge badge-warning">Produto</span></td>
-                                            }
+                                            }*@
 
                                             @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_EDICAO_PROD == 1)
                                             {
@@ -342,6 +353,50 @@
             padding-left: 10px !important;
         }
     </style>
+
+    <style>
+        /* Estilo Base */
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .status-badge::before {
+            content: "";
+            display: inline-block;
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            margin-right: 6px;
+        }
+
+        /* PENDING (Gold) - Status 0 */
+        .status-pending { background-color: #fef9c3; color: #a16207; }
+        .status-pending::before { background-color: #ca8a04; }
+
+        /* ACTIVE (Green) - Status 1 */
+        .status-active { background-color: #dcfce7; color: #15803d; }
+        .status-active::before { background-color: #16a34a; }
+
+        /* CANCEL (Red) - Status 4 */
+        .status-cancel { background-color: #fee2e2; color: #b91c1c; }
+        .status-cancel::before { background-color: #dc2626; }
+
+        /* FINISH (Dark Blue) - Status 2 */
+        .status-finish { background-color: #dbeafe; color: #1e40af; }
+        .status-finish::before { background-color: #2563eb; }
+
+        /* OVERDUE (Gray) - Status 3 */
+        .status-overdue { background-color: #f3f4f6; color: #4b5563; }
+        .status-overdue::before { background-color: #6b7280; }
+    </style>
+
 
 }
 @section Scripts {

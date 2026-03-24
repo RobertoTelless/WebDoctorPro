@@ -25619,48 +25619,48 @@ namespace GEDSys_Presentation.Controllers
             }
         }
 
-        [HttpPost]
-        public JsonResult GetEventosCalendario()
-        {
-            try
-            {
-                var usuario = (USUARIO)Session["UserCredentials"];
-                Int32 idAss = (Int32)Session["IdAssinante"];
-                List<Hashtable> listaCalendario = new List<Hashtable>();
+        //[HttpPost]
+        //public JsonResult GetEventosCalendario()
+        //{
+        //    try
+        //    {
+        //        var usuario = (USUARIO)Session["UserCredentials"];
+        //        Int32 idAss = (Int32)Session["IdAssinante"];
+        //        List<Hashtable> listaCalendario = new List<Hashtable>();
 
-                Int32 id = (Int32)Session["IdMarcacao"];
-                Session["Consultas"] = null;
-                Session["ConsultasAlterada"] = 1;
-                listaMasterCalendario = CarregaConsultas().Where(p => p.USUA_CD_ID == id & p.PACO_IN_CONFIRMADA < 2).ToList();
-                Session["ListaAgenda"] = listaMasterCalendario;
+        //        Int32 id = (Int32)Session["IdMarcacao"];
+        //        Session["Consultas"] = null;
+        //        Session["ConsultasAlterada"] = 1;
+        //        listaMasterCalendario = CarregaConsultas().Where(p => p.USUA_CD_ID == id & p.PACO_IN_CONFIRMADA < 2).ToList();
+        //        Session["ListaAgenda"] = listaMasterCalendario;
 
-                foreach (var item in listaMasterCalendario)
-                {
-                    var hash = new Hashtable();
+        //        foreach (var item in listaMasterCalendario)
+        //        {
+        //            var hash = new Hashtable();
 
-                    hash.Add("id", item.PACO_CD_ID);
-                    hash.Add("title", item.PACIENTE.PACI_NM_NOME);
-                    hash.Add("start", (item.PACO_DT_CONSULTA + item.PACO_HR_INICIO).Value.ToString("yyyy-MM-dd HH:mm:ss"));
-                    hash.Add("end", (item.PACO_DT_CONSULTA + item.PACO_HR_FINAL).Value.ToString("yyyy-MM-dd HH:mm:ss"));
-                    hash.Add("description", (new DateTime() + item.PACO_HR_INICIO).Value.ToString("HH:mm") + " " + (new DateTime() + item.PACO_HR_FINAL).Value.ToString("HH:mm"));
-                    hash.Add("confirm", item.PACO_IN_CONFIRMADA == 1 ? "Sim" : "Não");
+        //            hash.Add("id", item.PACO_CD_ID);
+        //            hash.Add("title", item.PACIENTE.PACI_NM_NOME);
+        //            hash.Add("start", (item.PACO_DT_CONSULTA + item.PACO_HR_INICIO).Value.ToString("yyyy-MM-dd HH:mm:ss"));
+        //            hash.Add("end", (item.PACO_DT_CONSULTA + item.PACO_HR_FINAL).Value.ToString("yyyy-MM-dd HH:mm:ss"));
+        //            hash.Add("description", (new DateTime() + item.PACO_HR_INICIO).Value.ToString("HH:mm") + " " + (new DateTime() + item.PACO_HR_FINAL).Value.ToString("HH:mm"));
+        //            hash.Add("confirm", item.PACO_IN_CONFIRMADA == 1 ? "Sim" : "Não");
 
-                    listaCalendario.Add(hash);
-                }
-                return Json(listaCalendario);
-            }
-            catch (Exception ex)
-            {
-                ViewBag.Message = ex.Message;
-                Session["TipoVolta"] = 2;
-                Session["VoltaExcecao"] = "Consulta";
-                Session["Excecao"] = ex;
-                Session["ExcecaoTipo"] = ex.GetType().ToString();
-                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
-                Int32 voltaX = grava.GravarLogExcecao(ex, "Consulta", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
-                return null;
-            }
-        }
+        //            listaCalendario.Add(hash);
+        //        }
+        //        return Json(listaCalendario);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        ViewBag.Message = ex.Message;
+        //        Session["TipoVolta"] = 2;
+        //        Session["VoltaExcecao"] = "Consulta";
+        //        Session["Excecao"] = ex;
+        //        Session["ExcecaoTipo"] = ex.GetType().ToString();
+        //        GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+        //        Int32 voltaX = grava.GravarLogExcecao(ex, "Consulta", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+        //        return null;
+        //    }
+        //}
 
         [HttpPost]
         public JsonResult GetDetalhesEvento(Int32 id)
@@ -37041,6 +37041,30 @@ namespace GEDSys_Presentation.Controllers
             }
         }
 
+        public List<CONFIGURACAO_CALENDARIO_BLOQUEIO> CarregaBloqueios()
+        {
+            try
+            {
+                USUARIO usuario = (USUARIO)Session["UserCredentials"];
+                Int32 idAss = (Int32)Session["IdAssinante"];
+                List<CONFIGURACAO_CALENDARIO_BLOQUEIO> conf = new List<CONFIGURACAO_CALENDARIO_BLOQUEIO>();
+                conf = calApp.GetAllBloqueio(idAss).Where(p => p.USUA_CD_ID == usuario.USUA_CD_ID).ToList();
+                Session["ConfiguracaoCalendario"] = conf;
+                return conf;
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Paciente";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Paciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return null;
+            }
+        }
+
         public CONFIGURACAO_ANAMNESE CarregaConfiguracaoAnamnese()
         {
             try
@@ -40069,6 +40093,121 @@ namespace GEDSys_Presentation.Controllers
             hash.Add("meses", medic.VACI_NR_PERIODO.ToString());
             hash.Add("fab", medic.VACI_DS_DESCRICAO);
             return Json(hash);
+        }
+
+        [HttpPost]
+        public JsonResult GetEventosCalendario()
+        {
+            try
+            {
+                // 1. Contexto e Inicialização
+                var usuario = (USUARIO)Session["UserCredentials"];
+                Int32 idUser = (Int32)Session["IdMarcacao"]; // Usando o ID da marcação que parece ser o do médico/agenda
+                Int32 idAss = (Int32)Session["IdAssinante"];
+
+                List<Hashtable> listaFinalCalendario = new List<Hashtable>();
+
+                // --- PARTE 1: PROCESSAR CONSULTAS (Código existente melhorado) ---
+                Session["Consultas"] = null;
+                Session["ConsultasAlterada"] = 1;
+                // Filtro existente: consultas do usuário logado E não canceladas (PACO_IN_CONFIRMADA < 2)
+                var listaMasterConsultas = CarregaConsultas()
+                    .Where(p => p.USUA_CD_ID == idUser && p.PACO_IN_CONFIRMADA < 2)
+                    .ToList();
+                Session["ListaAgenda"] = listaMasterConsultas; // Mantendo compatibilidade com sua session
+
+                foreach (var item in listaMasterConsultas)
+                {
+                    // Validação de segurança para nulos
+                    if (item.PACO_DT_CONSULTA == null || item.PACO_HR_INICIO == null || item.PACO_HR_FINAL == null) continue;
+
+                    var hash = new Hashtable();
+                    hash.Add("id", "cons_" + item.PACO_CD_ID); // Prefixo para garantir ID único
+                    hash.Add("title", (item.PACIENTE != null ? item.PACIENTE.PACI_NM_NOME : "Paciente Não Informado"));
+            
+                    // Combinando Data e Hora corretamente
+                    DateTime dataBase = item.PACO_DT_CONSULTA.Date;
+                    TimeSpan horaInicio = item.PACO_HR_INICIO.Value;
+                    TimeSpan horaFinal = item.PACO_HR_FINAL.Value;
+
+                    hash.Add("start", dataBase.Add(horaInicio).ToString("yyyy-MM-dd HH:mm:ss"));
+                    hash.Add("end", dataBase.Add(horaFinal).ToString("yyyy-MM-dd HH:mm:ss"));
+            
+                    // Descrição formatada (pode ser simplificada se o FullCalendar já exibir a hora)
+                    hash.Add("description", horaInicio.ToString(@"hh\:mm") + " - " + horaFinal.ToString(@"hh\:mm"));
+                    hash.Add("confirm", item.PACO_IN_CONFIRMADA == 1 ? "Sim" : "Não");
+            
+                    // Identificador para o frontend saber que é consulta
+                    hash.Add("tipoEvento", "consulta"); 
+
+                    listaFinalCalendario.Add(hash);
+                }
+
+                // --- PARTE 2: PROCESSAR BLOQUEIOS (Nova Funcionalidade) ---
+
+                // TODO: Você precisa implementar o método CarregaBloqueios() no seu repositório/service
+                // O filtro deve considerar: o assinante, se está ativo, e preferencialmente o médico/usuário se a tabela tiver essa relação direta.
+                // Baseado no script SQL enviado, o filtro principal é ASSI_CD_ID e talvez USUA_CD_ID se for bloqueio por médico.
+
+                // Exemplo hipotético de busca:
+                // var listaMasterBloqueios = _bloqueioService.ListarAtivosPorAssinante(idAss);
+
+                // Para este exemplo, vou assumir que CarregaBloqueios() existe e retorna a entidade CONFIGURACAO_CALENDARIO_BLOQUEIO
+                List<CONFIGURACAO_CALENDARIO_BLOQUEIO> listaMasterBloqueios = CarregaBloqueios();
+                listaMasterBloqueios = listaMasterBloqueios.Where(b => b.ASSI_CD_ID == idAss && (b.COCB_IN_ATIVO == 1 || b.COCB_IN_ATIVO == 1)).ToList();
+
+                foreach (var bloqueio in listaMasterBloqueios)
+                {
+                    // Validações de segurança para datas e horas
+                    if (bloqueio.COCB_DT_BLOQUEIO_INICIO == null || bloqueio.COCB_HR_INICIO == null || bloqueio.COCB_HR_FINAL == null) continue;
+
+                    DateTime dataInicio = bloqueio.COCB_DT_BLOQUEIO_INICIO.Value.Date;
+                    // Se não houver data final, assume que é o mesmo dia
+                    DateTime dataFinal = bloqueio.COCB_DT_BLOQUEIO_FINAL?.Date ?? dataInicio;
+
+                    TimeSpan horaInicio = bloqueio.COCB_HR_INICIO.Value;
+                    TimeSpan horaFinal = bloqueio.COCB_HR_FINAL.Value;
+
+                    // Tratamento para bloqueios que duram múltiplos dias
+                    for (DateTime dia = dataInicio; dia <= dataFinal; dia = dia.AddDays(1))
+                    {
+                        var hashB = new Hashtable();
+                        // ID único combinando ID da tabela e a data para múltiplos dias
+                        hashB.Add("id", "bloq_" + bloqueio.COCB_CD_ID + "_" + dia.ToString("yyyyMMdd")); 
+                        hashB.Add("title", "BLOQUEIO/INDISPONÍVEL");
+                
+                        // Define início e fim para o dia específico da iteração
+                        hashB.Add("start", dia.Add(horaInicio).ToString("yyyy-MM-dd HH:mm:ss"));
+                        hashB.Add("end", dia.Add(horaFinal).ToString("yyyy-MM-dd HH:mm:ss"));
+                
+                        hashB.Add("description", "Horário bloqueado na agenda.");
+                
+                        // Propriedades cruciais para o FullCalendar e nosso JS
+                        hashB.Add("tipoEvento", "bloqueio");
+                        hashB.Add("editable", false); // Impede que o usuário arraste o bloqueio
+                
+                        // Opcional: Definir a cor direto no objeto (o FullCalendar aceita)
+                        // hashB.Add("color", "#007bff"); // Azul Bootstrap (vamos fazer via JS para manter seu padrão)
+
+                        listaFinalCalendario.Add(hashB);
+                    }
+                }
+
+                // Retorna a lista unificada (Consultas + Bloqueios)
+                return Json(listaFinalCalendario);
+            }
+            catch (Exception ex)
+            {
+                // Seu código de erro existente (mantido)
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Consulta";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                // GravaLogExcecao grava = new GravaLogExcecao(usuApp); // usuApp não estava definido no trecho enviado
+                // Int32 voltaX = grava.GravarLogExcecao(ex, "Consulta", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return Json(new { error = true, message = ex.Message }); // Retorno JSON mais amigável para erro AJAX
+            }
         }
 
     }

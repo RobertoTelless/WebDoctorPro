@@ -284,7 +284,35 @@
                                                 <td style="width: auto">@CrossCutting.Formatters.DecimalFormatter(cond.LOCA_VL_PARCELA.Value)</td>
                                                 <td style="width: auto">@cond.LOCA_IN_QUANTIDADE</td>
                                                 <td style="width: auto">@cond.LOCA_NR_DIA</td>
-                                                @if (cond.LOCA_IN_STATUS == 1)
+
+                                                <td style="width: auto">
+                                                    @if (cond.LOCA_IN_STATUS == 1) // ATIVA
+                                                    {
+                                                        <span class="status-badge status-active">Ativa</span>
+                                                    }
+                                                    else if (cond.LOCA_IN_STATUS == 2) // ENCERRADA
+                                                    {
+                                                        <span class="status-badge status-finish">Encerrada</span>
+                                                    }
+                                                    else if (cond.LOCA_IN_STATUS == 3) // VENCIDA
+                                                    {
+                                                        <span class="status-badge status-overdue">Vencida</span>
+                                                    }
+                                                    else if (cond.LOCA_IN_STATUS == 4) // CANCELADA
+                                                    {
+                                                        <span class="status-badge status-cancel">Cancelada</span>
+                                                    }
+                                                    else if (cond.LOCA_IN_STATUS == 0) // PENDENTE
+                                                    {
+                                                        <span class="status-badge status-pending">Pendente</span>
+                                                    }
+                                                    else 
+                                                    {
+                                                        <span class="status-badge status-pending">-</span>
+                                                    }
+                                                </td>
+
+                                                @*@if (cond.LOCA_IN_STATUS == 1)
                                                 {
                                                     <td style="width: auto"><span class="badge badge-primary">Ativa</span></td>
 
@@ -313,7 +341,9 @@
                                                 {
                                                     <td style="width: auto"><span class="badge badge-warning">-</span></td>
 
-                                                }
+                                                }*@
+
+
                                                 <td style="width: auto">@cond.USUARIO.USUA_NM_NOME</td>
                                                 @if (!String.IsNullOrEmpty(cond.PRODUTO.PROD_AQ_FOTO))
                                                 {
@@ -463,6 +493,48 @@
         }
     </style>
 
+    <style>
+        /* Estilo Base */
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .status-badge::before {
+            content: "";
+            display: inline-block;
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            margin-right: 6px;
+        }
+
+        /* PENDING (Gold) - Status 0 */
+        .status-pending { background-color: #fef9c3; color: #a16207; }
+        .status-pending::before { background-color: #ca8a04; }
+
+        /* ACTIVE (Green) - Status 1 */
+        .status-active { background-color: #dcfce7; color: #15803d; }
+        .status-active::before { background-color: #16a34a; }
+
+        /* CANCEL (Red) - Status 4 */
+        .status-cancel { background-color: #fee2e2; color: #b91c1c; }
+        .status-cancel::before { background-color: #dc2626; }
+
+        /* FINISH (Dark Blue) - Status 2 */
+        .status-finish { background-color: #dbeafe; color: #1e40af; }
+        .status-finish::before { background-color: #2563eb; }
+
+        /* OVERDUE (Gray) - Status 3 */
+        .status-overdue { background-color: #f3f4f6; color: #4b5563; }
+        .status-overdue::before { background-color: #6b7280; }
+    </style>
 }
 @section Scripts {
     @Scripts.Render("~/plugins/toastr")

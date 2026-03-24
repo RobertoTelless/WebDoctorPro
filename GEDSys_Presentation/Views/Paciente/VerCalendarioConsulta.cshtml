@@ -132,14 +132,19 @@
             $('#calendario').fullCalendar('removeEvents', 0);
         });
 
-        $.ajax({
+$.ajax({
             url: '../Paciente/GetEventosCalendario'
             , type: 'POST'
             , success: function (r) {
+                if (r.error) {
+                    toastr.error(r.message, "Erro ao carregar agenda");
+                    return;
+                }
+
                 $('#calendario').fullCalendar({
                     timezone: 'local',
                     events: r
-                    , editable: true
+                    , editable: true // Mantém true globalmente, mas controlaremos por evento
                     , initialView: 'agendaWeek'
                     , header: {
                         left: 'prev,next today',
@@ -147,8 +152,16 @@
                         right: 'month,agendaWeek,agendaDay'
                     }
                     , eventClick: function (event, jsEvent, view) {
-                        GetEventoDetalhe(event.id);
+                        // Só abre detalhes se NÃO for bloqueio
+                        if (event.tipoEvento !== 'bloqueio') {
+                            // Como mudamos o ID no backend (cons_XX), precisamos extrair o número
+                            var realId = event.id.toString().replace('cons_', '');
+                            GetEventoDetalhe(realId);
+                        } else {
+                            toastr.info("Este horário está bloqueado configurado como indisponível.", "Bloqueio");
+                        }
                     }
+                    // ... (suas configurações de nomes de meses e dias permanecem iguais)
                     , monthNames: ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro']
                     , monthNamesShort: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez']
                     , dayNames: ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sabado']
@@ -167,30 +180,69 @@
                         , week: 'ddd DD/MM'
                         , day: 'dddd'
                     }
+                    // --- ONDE A MÁGICA ACONTECE ---
                     , eventRender: function (event, element, view) {
+                        
+                        // Configuração padrão do Tooltip (para todos)
                         $(element).attr('data-toggle', 'tooltip');
                         $(element).attr('data-placement', 'top');
-                        $(element).attr('title', 'Confirmada: ' + event.confirm);
-                        $(element).tooltip();
+                        
+                        // Lógica baseada no Tipo de Evento
+                        if (event.tipoEvento === 'bloqueio') {
+                            // --- LÓGICA PARA BLOQUEIOS ---
+                            
+                            $(element).attr('title', 'Horário Bloqueado: ' + event.title);
+                            
+                            // Aplica a cor AZUL
+                            $(element).css({
+                                'background-color': '#d1ecf1', // Azul claro de fundo (padrão info Bootstrap)
+                                'border-color': '#bee5eb',
+                                'cursor': 'not-allowed' // Muda o mouse para indicar que não é clicável
+                            });
+                            
+                            // Muda a cor do texto para Azul Escuro
+                            $(element).find('.fc-time, .fc-title').css('color', '#0c5460');
 
-                        if (event.confirm === 'Não') {
-                            $(element).css({
-                                'background-color': '#F5E8E0', 
-                                'border-color': '#F5E8E0'      
-                            });        
-                            $(element).find('.fc-time, .fc-title').css('color', 'brown');
+                        } else {
+                            // --- SUA LÓGICA EXISTENTE PARA CONSULTAS ---
+                            
+                            $(element).attr('title', 'Confirmada: ' + event.confirm);
+
+                            if (event.confirm === 'Não') {
+                                // Pendente (Marrom/Laranja)
+                                $(element).css({
+                                    'background-color': '#F5E8E0',
+                                    'border-color': '#F5E8E0'
+                                });
+                                $(element).find('.fc-time, .fc-title').css('color', 'brown');
+                            }
+                            else {
+                                // Confirmada (Verde)
+                                $(element).css({
+                                    'background-color': '#B6D6B4',
+                                    'border-color': '#B6D6B4'
+                                });
+                                $(element).find('.fc-time, .fc-title').css('color', 'green');
+                            }
                         }
-                        else {
-                            $(element).css({
-                                'background-color': '#B6D6B4', 
-                                'border-color': '#B6D6B4'      
-                            });        
-                            $(element).find('.fc-time, .fc-title').css('color', 'green');
-                        }
+                        
+                        // Inicializa o tooltip após configurar o title
+                        $(element).tooltip();
                     }
                     , eventDrop: function (info) {
+                        // Impede arrastar se for bloqueio (segurança adicional ao frontend)
+                        if (info.tipoEvento === 'bloqueio') {
+                            toastr.warning("Não é possível alterar o horário de um bloqueio pela agenda.");
+                            location.reload(); // Recarrega para voltar o evento pro lugar
+                            return false;
+                        }
+
+                        // Sua lógica existente de Drop para consultas
+                        // Como mudamos o ID no backend (cons_XX), precisamos extrair o número
+                        var realId = info.id.toString().replace('cons_', '');
+
                         var data = {
-                            id: info.id
+                            id: realId
                             , data: info.start.toISOString()
                         }
 

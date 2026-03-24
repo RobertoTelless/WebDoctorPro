@@ -176,56 +176,69 @@
                                 <tbody>
                                     @foreach (var cond in (ViewBag.Listas as List<EntitiesServices.Model.MOVIMENTO_ESTOQUE_PRODUTO>).OrderByDescending(p => p.MOEP_DT_MOVIMENTO))
                                     {
-                                        <tr>                                            
-                                            @if (cond.MOEP_IN_TIPO_MOVIMENTO == 1)
+                                        <tr>  
+                                            <td style="width: auto">
+                                                @if (cond.MOEP_IN_TIPO_MOVIMENTO == 1) // ATIVA
+                                                {
+                                                    <span class="status-badge status-active">Entrada</span>
+                                                }
+                                                else 
+                                                {
+                                                    <span class="status-badge status-pending">Saída</span>
+                                                }
+                                            </td>
+                                          
+                                            @*@if (cond.MOEP_IN_TIPO_MOVIMENTO == 1)
                                             {
                                                 <td style="width: auto"><span class="badge badge-primary">Entrada</span></td>
                                             }
                                             else
                                             {
                                                 <td style="width: auto"><span class="badge badge-warning">Saída</span></td>
-                                            }
+                                            }*@
+                                            <td style="width: auto">
+                                                @if (cond.MOEP_IN_TIPO == 1) // ATIVA
+                                                {
+                                                    <span class="status-badge status-active">Compra</span>
+                                                }
+                                                else  if (cond.MOEP_IN_TIPO == 2)
+                                                {
+                                                    <span class="status-badge status-active">Devolução de venda</span>
+                                                }
+                                                else  if (cond.MOEP_IN_TIPO == 3)
+                                                {
+                                                    <span class="status-badge status-active">Retorno de manutenção</span>
+                                                }
+                                                else  if (cond.MOEP_IN_TIPO == 4)
+                                                {
+                                                    <span class="status-badge status-active">Acerto Manual</span>
+                                                }
+                                                else  if (cond.MOEP_IN_TIPO == 5)
+                                                {
+                                                    <span class="status-badge status-finish">Descarte</span>
+                                                }
+                                                else  if (cond.MOEP_IN_TIPO == 6)
+                                                {
+                                                    <span class="status-badge status-finish">Perda</span>
+                                                }
+                                                else  if (cond.MOEP_IN_TIPO == 7)
+                                                {
+                                                    <span class="status-badge status-finish">Envio para Manutenção</span>
+                                                }
+                                                else  if (cond.MOEP_IN_TIPO == 8)
+                                                {
+                                                    <span class="status-badge status-finish">Acerto Manual</span>
+                                                }
+                                                else  if (cond.MOEP_IN_TIPO == 9)
+                                                {
+                                                    <span class="status-badge status-finish">Material de Consulta</span>
+                                                }
+                                                else 
+                                                {
+                                                    <span class="status-badge status-overdue">-</span>
+                                                }
+                                            </td>
 
-                                            @if (cond.MOEP_IN_TIPO == 1)
-                                            {
-                                                <td style="width: auto"><span class="badge badge-primary">Compra</span></td>
-                                            }
-                                            else if (cond.MOEP_IN_TIPO == 2)
-                                            {
-                                                <td style="width: auto"><span class="badge badge-primary">Devolução de venda</span></td>
-                                            }
-                                            else if (cond.MOEP_IN_TIPO == 3)
-                                            {
-                                                <td style="width: auto"><span class="badge badge-primary">Retorno de manutenção</span></td>
-                                            }
-                                            else if (cond.MOEP_IN_TIPO == 4)
-                                            {
-                                                <td style="width: auto"><span class="badge badge-primary">Acerto Manual</span></td>
-                                            }
-                                            else if (cond.MOEP_IN_TIPO == 5)
-                                            {
-                                                <td style="width: auto"><span class="badge badge-success">Descarte</span></td>
-                                            }
-                                            else if (cond.MOEP_IN_TIPO == 6)
-                                            {
-                                                <td style="width: auto"><span class="badge badge-success">Perda</span></td>
-                                            }
-                                            else if (cond.MOEP_IN_TIPO == 7)
-                                            {
-                                                <td style="width: auto"><span class="badge badge-success">Envio para Manutenção</span></td>
-                                            }
-                                            else if (cond.MOEP_IN_TIPO == 8)
-                                            {
-                                                <td style="width: auto"><span class="badge badge-success">Acerto Manual</span></td>
-                                            }
-                                            else if (cond.MOEP_IN_TIPO == 9)
-                                            {
-                                                <td style="width: auto"><span class="badge badge-success">Material de Consulta</span></td>
-                                            }
-                                            else
-                                            {
-                                                <td style="width: auto"><span class="badge badge-warning">-</span></td>
-                                            }
                                             @*<td style="cursor: pointer; text-decoration: underline; color: #337ab7; width: auto" onclick="mostrarDesc('@cond.MOEP_DS_JUSTIFICATIVA')" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Ver a justificativa da movimentação de estoque">*@
                                             <td style="cursor: pointer; text-decoration: underline; color: #337ab7; width: auto"  onclick="mostrarDesc('@cond.MOEP_DS_JUSTIFICATIVA')" >
                                                 <span style="display:none; width: auto">@cond.MOEP_DT_MOVIMENTO.ToString("yyyyMMdd")</span>
@@ -276,6 +289,50 @@
     @Styles.Render("~/Content/plugins/dataTables/dataTablesStyles")
     @Styles.Render("~/plugins/jasnyBootstrapStyles")
     @Styles.Render("~/plugins/toastrStyles")
+
+        <style>
+        /* Estilo Base */
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .status-badge::before {
+            content: "";
+            display: inline-block;
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            margin-right: 6px;
+        }
+
+        /* PENDING (Gold) - Status 0 */
+        .status-pending { background-color: #fef9c3; color: #a16207; }
+        .status-pending::before { background-color: #ca8a04; }
+
+        /* ACTIVE (Green) - Status 1 */
+        .status-active { background-color: #dcfce7; color: #15803d; }
+        .status-active::before { background-color: #16a34a; }
+
+        /* CANCEL (Red) - Status 4 */
+        .status-cancel { background-color: #fee2e2; color: #b91c1c; }
+        .status-cancel::before { background-color: #dc2626; }
+
+        /* FINISH (Dark Blue) - Status 2 */
+        .status-finish { background-color: #dbeafe; color: #1e40af; }
+        .status-finish::before { background-color: #2563eb; }
+
+        /* OVERDUE (Gray) - Status 3 */
+        .status-overdue { background-color: #f3f4f6; color: #4b5563; }
+        .status-overdue::before { background-color: #6b7280; }
+    </style>
+
 }
 
 @section Scripts {

@@ -94,12 +94,26 @@
                                                 @Html.HiddenFor(m => m.USUA_CD_ID)
                                                 <div class="col-lg-6 col-md-6 col-xs-12">
                                                     Nome do Medicamento*
-                                                    @Html.TextAreaFor(m => m.MEDI_NM_MEDICAMENTO, new { @class = "form-control", style = "width: 100%; height: 50px; overflow:auto;", autofocus = true })
+                                                    @Html.TextAreaFor(m => m.MEDI_NM_MEDICAMENTO, new { @class = "form-control", style = "width: 100%; height: 80px; overflow:auto;", autofocus = true })
                                                     @Html.ValidationMessageFor(m => m.MEDI_NM_MEDICAMENTO, "", new { @style = "color:red" })
+
+                                                    @* --- INÍCIO DA AJUDA CONTEXTUAL --- *@
+                                                    <details class="ajuda-contextual">
+                                                        <summary><i class="fa fa-question-circle text-info"></i> Como preencher?</summary>
+                                                        <div class="well well-sm">
+                                                            <p>Informe o nome comercial completo do medicamento, incluindo a concentração e a forma farmacêutica se houver variações.</p>
+                                                            <ul>
+                                                                <li>Exemplo 1: <strong>Tylenol 750mg Comprimidos</strong></li>
+                                                                <li>Exemplo 2: <strong>Amoxicilina 500mg Cápsulas</strong></li>
+                                                            </ul>
+                                                        </div>
+                                                    </details>
+                                                    @* --- FIM DA AJUDA CONTEXTUAL --- *@
                                                 </div>
+
                                                 <div class="col-lg-6 col-md-6 col-xs-12">
                                                     Nome Genérico
-                                                    @Html.TextAreaFor(m => m.MEDI_NM_GENERICO, new { @class = "form-control", style = "width: 100%; height: 50px; overflow:auto;", autofocus = true })
+                                                    @Html.TextAreaFor(m => m.MEDI_NM_GENERICO, new { @class = "form-control", style = "width: 100%; height: 80px; overflow:auto;", autofocus = true })
                                                     @Html.ValidationMessageFor(m => m.MEDI_NM_GENERICO, "", new { @style = "color:red" })
                                                 </div>
                                             </div>
@@ -116,7 +130,7 @@
                                                 </div>
                                                 <div class="col-lg-5 col-md-5 col-xs-12">
                                                     Forma de Apresentação
-                                                    @Html.TextAreaFor(m => m.MEDI_NM_APRESENTACAO, new { @class = "form-control", style = "width: 100%; height: 50px; overflow:auto;", autofocus = true })
+                                                    @Html.TextAreaFor(m => m.MEDI_NM_APRESENTACAO, new { @class = "form-control", style = "width: 100%; height: 100px; overflow:auto;", autofocus = true })
                                                     @Html.ValidationMessageFor(m => m.MEDI_NM_APRESENTACAO, "", new { @style = "color:red" })
                                                 </div>
                                                 <div class="col-lg-3 col-md-3 col-xs-12">
@@ -125,12 +139,29 @@
                                                     @Html.ValidationMessageFor(m => m.MEDI_NM_LABORATORIO, "", new { @style = "color:red" })
                                                 </div>
                                             </div>
-                                            <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                            <div class="form-group" style=" margin-left: -15px; margin-right: -15px; scrollbar-gutter: stable; scrollbar-width: thin">
                                                 <div class="col-lg-12 col-md-12 col-xs-12">
                                                     Posologia
-                                                    @Html.TextAreaFor(m => m.MEDI_DS_POSOLOGIA, new { @class = "form-control", style = "width: 100%; height: 50px; overflow:auto;", autofocus = true })
+                                                    @Html.TextAreaFor(m => m.MEDI_DS_POSOLOGIA, new { @class = "form-control", style = "width: 100%; height: 250px; overflow:auto;", autofocus = true })
                                                     @Html.ValidationMessageFor(m => m.MEDI_DS_POSOLOGIA, "", new { @style = "color:red" })
+
+                                                    @* --- INÍCIO DA AJUDA CONTEXTUAL --- *@
+                                                    <details class="ajuda-contextual">
+                                                        <summary><i class="fa fa-info-circle text-info"></i> Orientações sobre a Posologia</summary>
+                                                        <div class="well well-sm">
+                                                            <p>Descreva detalhadamente como o paciente deve utilizar o medicamento. Inclua:</p>
+                                                            <ol>
+                                                                <li>A dose (ex: 1 comprimido, 5ml, 2 gotas).</li>
+                                                                <li>A frequência (ex: a cada 8 horas, 1 vez ao dia).</li>
+                                                                <li>A duração do tratamento (ex: por 7 dias, uso contínuo).</li>
+                                                                <li>Via de administração (ex: via oral, aplicar na pele).</li>
+                                                            </ol>
+                                                            <p><em>Exemplo: Tomar 1 comprimido via oral a cada 12 horas (8h e 20h) durante 5 dias. Não partir o comprimido.</em></p>
+                                                        </div>
+                                                    </details>
+                                                    @* --- FIM DA AJUDA CONTEXTUAL --- *@
                                                 </div>
+
                                             </div>
                                         </div>
                                     </div>
@@ -150,6 +181,35 @@
     @Styles.Render("~/Content/plugins/dataTables/dataTablesStyles")
     @Styles.Render("~/plugins/jasnyBootstrapStyles")
     @Styles.Render("~/plugins/toastrStyles")
+
+    <style type="text/css">
+        /* Espaçamento e cursor para o summary */
+        details.ajuda-contextual {
+            margin-top: 5px; /* Separa um pouco do campo acima */
+            margin-bottom: 10px;
+        }
+
+        details.ajuda-contextual summary {
+            cursor: pointer; /* Mostra a mãozinha ao passar o mouse */
+            font-weight: bold;
+            color: #31708f; /* Cor text-info do Bootstrap */
+            outline: none; /* Remove a borda de foco padrão do navegador */
+            list-style: none; /* Esconde a seta padrão se quiser usar ícones customizados */
+        }
+        
+        /* Se quiser esconder a seta padrão e usar apenas o ícone do FontAwesome */
+        details.ajuda-contextual summary::-webkit-details-marker {
+            display: none;
+        }
+
+        /* Espaçamento para o conteúdo interno da ajuda */
+        details.ajuda-contextual .well {
+            margin-top: 5px;
+            margin-bottom: 0;
+            padding: 10px;
+            font-size: 12px; /* Texto ligeiramente menor para ajuda */
+        }
+    </style>
 
 }
 @section Scripts {
