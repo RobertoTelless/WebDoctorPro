@@ -19449,7 +19449,7 @@ namespace GEDSys_Presentation.Controllers
             }
         }
 
-        [HttpGet]
+                [HttpGet]
         public async Task<ActionResult> ConfirmarConsulta(Int32 id)
         {
             try
@@ -19622,6 +19622,207 @@ namespace GEDSys_Presentation.Controllers
             }
         }
 
+        [HttpPost]
+        public async Task<JsonResult> ConfirmarConsultaJson(Int32 id)
+        {
+            try
+            {
+                // Verifica se tem usuario logado
+                USUARIO usuario = new USUARIO();
+                string urlRedirecionamento = "";
+                if ((String)Session["Ativa"] == null)
+                {
+                    urlRedirecionamento = Url.Action("Logout", "ControleAceso");
+                    return Json(new { success = true, redirectUrl = urlRedirecionamento });
+                }
+                if ((USUARIO)Session["UserCredentials"] != null)
+                {
+                    usuario = (USUARIO)Session["UserCredentials"];
+
+                    // Verfifica permissão
+                    if (usuario.PERFIL.PERF_IN_PACIENTE_CONSULTA_ALTERAR == 0)
+                    {
+                        Session["MensPermissao"] = 2;
+                        Session["ModuloPermissao"] = "Paciente - Consulta - Confirmação";
+                        urlRedirecionamento = Url.Action("MontarTelaPaciente", "Paciente");
+                        return Json(new { success = true, redirectUrl = urlRedirecionamento });
+                    }
+                }
+                else
+                {
+                    urlRedirecionamento = Url.Action("Logout", "ControleAceso");
+                    return Json(new { success = true, redirectUrl = urlRedirecionamento });
+                }
+                Int32 idAss = (Int32)Session["IdAssinante"];
+
+                // Recupera dados
+                CONFIGURACAO conf = CarregaConfiguracaoGeral();
+                USUARIO usuarioLogado = (USUARIO)Session["UserCredentials"];
+                PACIENTE_CONSULTA item = baseApp.GetConsultaById(id);
+
+                // Recupera paciente
+                PACIENTE pac = baseApp.GetItemById(item.PACI_CD_ID);
+
+                // Verifica se pode confirmar
+                List<PACIENTE_CONSULTA> cons = pac.PACIENTE_CONSULTA.Where(p => p.PACO_IN_ATIVO == 1 & p.PACO_IN_CONFIRMADA == 1 & p.PACO_IN_ENCERRADA == 0 & p.PACO_DT_CONSULTA.Date < DateTime.Today.Date).ToList();
+                if (cons.Count > 0)
+                {
+                    String frase = CRMSys_Base.ResourceManager.GetString("M0593", CultureInfo.CurrentCulture);
+                    String frase1 = CRMSys_Base.ResourceManager.GetString("M0594", CultureInfo.CurrentCulture);
+                    frase += " de " + pac.PACI_NM_NOME + " em " + item.PACO_DT_CONSULTA.ToShortDateString() + ". " + frase1;
+                    Session["MensPaciente"] = 111;
+                    Session["MsgCRUD"] = frase;
+                    urlRedirecionamento = Url.Action("MontarTelaConsulta", "Paciente");
+                    return Json(new { success = true, redirectUrl = urlRedirecionamento });
+                }
+
+                objetoAntes = (PACIENTE)Session["Paciente"];
+                item.PACO_IN_CONFIRMADA = 1;
+                Int32 volta = baseApp.ValidateEditConsultaConfirma(item);
+
+                // Acerta anamnese
+                PACIENTE_ANAMNESE anam = pac.PACIENTE_ANAMNESE.Where(p => p.PAAM_IN_ATIVO == 1).FirstOrDefault();
+                if (anam != null)
+                {
+                    PACIENTE_ANAMNESE anamnese = RemontarAnamnese(anam);
+                    anamnese.PAAM_DT_DATA = item.PACO_DT_CONSULTA;
+                    anamnese.PACO_CD_ID = item.PACO_CD_ID;
+                    Int32 voltaA = baseApp.ValidateEditAnamnese(anamnese);
+                }
+
+                // Acerta exame fisico
+                PACIENTE_EXAME_FISICOS fisi = pac.PACIENTE_EXAME_FISICOS.Where(p => p.PAEF_IN_ATIVO == 1).FirstOrDefault();
+                if (fisi != null)
+                {
+                    PACIENTE_EXAME_FISICOS fisico = RemontarFisico(fisi);
+                    fisico.PAEF_DT_DATA = item.PACO_DT_CONSULTA;
+                    fisico.PACO_CD_ID = item.PACO_CD_ID;
+                    Int32 voltaF = baseApp.ValidateEditExameFisico(fisico);
+                }
+
+                // Acerta paciente
+                PACIENTE paciente = baseApp.GetItemById(item.PACI_CD_ID);
+                paciente.PACI_DT_CONSULTA = item.PACO_DT_CONSULTA;
+                if (conf.CONF_IN_CALCULA_PROXIMA_CONSULTA == 1)
+                {
+                    paciente.PACI_DT_PREVISAO_RETORNO = item.PACO_DT_CONSULTA.AddMonths(conf.CONF_NR_MESES_RETORNO.Value);
+                }
+                Int32 voltaP = baseApp.ValidateEdit(paciente, paciente);
+
+                // Acerta estado
+                Session["PacienteAlterada"] = 1;
+                Session["NivelPaciente"] = 3;
+                Session["ListaConsultasGeral"] = null;
+                Session["ConsultasAlterada"] = 1;
+                Session["ListaConfirma"] = null;
+
+                // Configura serilização
+                JsonSerializerSettings settings = new JsonSerializerSettings
+                {
+                    ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+                    NullValueHandling = NullValueHandling.Ignore
+                };
+
+                // Monta Log
+                DTO_Paciente_Consulta dto = MontarPacienteConsultaDTOObj(item);
+                String json = JsonConvert.SerializeObject(dto, settings);
+                LOG log = new LOG
+                {
+                    LOG_DT_DATA = DateTime.Now,
+                    ASSI_CD_ID = usuarioLogado.ASSI_CD_ID,
+                    USUA_CD_ID = usuarioLogado.USUA_CD_ID,
+                    LOG_NM_OPERACAO = "Paciente - Consulta - Confirmação",
+                    LOG_IN_ATIVO = 1,
+                    LOG_TX_REGISTRO = json,
+                    LOG_IN_SISTEMA = 6
+                };
+                Int32 volta1 = logApp.ValidateCreate(log);
+
+                // Grava historico
+                PACIENTE_HISTORICO hist = new PACIENTE_HISTORICO();
+                hist.ASSI_CD_ID = usuario.ASSI_CD_ID;
+                hist.USUA_CD_ID = usuario.USUA_CD_ID;
+                hist.PACI_CD_ID = item.PACI_CD_ID;
+                hist.PAHI_DT_DATA = DateTime.Now;
+                hist.PAHI_IN_TIPO = 10;
+                hist.PAHI_IN_CHAVE = item.PACO_CD_ID;
+                hist.PAHI_NM_OPERACAO = "Paciente - Confirmação de Consulta";
+                hist.PAHI_DS_DESCRICAO = "Paciente " + paciente.PACI_NM_NOME + " - Consulta confirmada " + item.PACO_DT_CONSULTA.ToShortDateString();
+                Int32 voltaHist = baseApp.ValidateCreateHistorico(hist);
+
+                // Mensagem do CRUD
+                Session["MsgCRUD"] = "A consulta do(a) paciente " + pac.PACI_NM_NOME.ToUpper() + " marcada para " + item.PACO_DT_CONSULTA.ToLongDateString() + " foi confirmada com sucesso";
+                Session["MensPaciente"] = 888;
+
+                // Envia mensagem
+                if (pac.PACI_NM_EMAIL != null & conf.CONF_IN_ENVIA_CONFIRMACAO == 1)
+                {
+                    Int32 voltaCons = await EnviarEMailConsulta(item, 3);
+                }
+                if (pac.PACI_NR_CELULAR != null & conf.CONF_IN_ENVIA_CONFIRMACAO == 1)
+                {
+                    Int32 voltaCons = EnviarSMSConsulta(item, 3);
+                }
+                if (usuario.USUA_NM_EMAIL != null & conf.CONF_IN_ENVIA_CONFIRMACAO == 1)
+                {
+                    Int32 voltaCons = await EnviarEMailConsulta(item, 6);
+                }
+
+                // Mapeamento da lógica de retorno para URL
+                if ((Int32)Session["TipoSolicitacao"] == 1)
+                {
+                    if ((Int32)Session["VoltaAtestado"] == 1)
+                        urlRedirecionamento = Url.Action("MontarTelaPaciente", "Paciente");
+                    else
+                        urlRedirecionamento = Url.Action("VoltarAnexoPaciente", "Paciente");
+                }
+                else if ((Int32)Session["VoltaConfirmar"] == 1)
+                {
+                    urlRedirecionamento = Url.Action("ConfirmarCancelarConsulta", "Paciente");
+                }
+                else if ((Int32)Session["VoltaCalendario"] == 1)
+                {
+                    urlRedirecionamento = Url.Action("VerCalendarioConsulta", "Paciente");
+                }
+                else
+                {
+                    urlRedirecionamento = Url.Action("MontarTelaConsultas", "Paciente");
+                }
+
+                return Json(new { success = true, redirectUrl = urlRedirecionamento });
+                //// Retorno
+                //if ((Int32)Session["TipoSolicitacao"] == 1)
+                //{
+                //    if ((Int32)Session["VoltaAtestado"] == 1)
+                //    {
+                //        return RedirectToAction("MontarTelaPaciente");
+                //    }
+                //    return RedirectToAction("VoltarAnexoPaciente");
+                //}
+                //if ((Int32)Session["VoltaConfirmar"] == 1)
+                //{
+                //    return RedirectToAction("ConfirmarCancelarConsulta");
+                //}
+                //if ((Int32)Session["VoltaCalendario"] == 1)
+                //{
+                //    return RedirectToAction("VerCalendarioConsulta");
+                //}
+                //return RedirectToAction("MontarTelaConsultas");
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Paciente";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Paciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                String urlRedirecionamento1 = Url.Action("TrataExcecao", "BaseAdmin");
+                return Json(new { success = true, redirectUrl = urlRedirecionamento1 });
+            }
+        }
+
         [HttpGet]
         public async Task<ActionResult> CancelarConsulta(Int32 id)
         {
@@ -19746,6 +19947,162 @@ namespace GEDSys_Presentation.Controllers
                 GravaLogExcecao grava = new GravaLogExcecao(usuApp);
                 Int32 voltaX = grava.GravarLogExcecao(ex, "Paciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
                 return RedirectToAction("TrataExcecao", "BaseAdmin");
+            }
+        }
+
+        [HttpPost]
+        public async Task<JsonResult> CancelarConsultaJson(Int32 id, String justificativa)
+        {
+            try
+            {
+                // Verifica se tem usuario logado
+                USUARIO usuario = new USUARIO();
+                string urlRedirecionamento = "";
+                if ((String)Session["Ativa"] == null)
+                {
+                    urlRedirecionamento = Url.Action("Logout", "ControleAceso");
+                    return Json(new { success = true, redirectUrl = urlRedirecionamento });
+                }
+                if ((USUARIO)Session["UserCredentials"] != null)
+                {
+                    usuario = (USUARIO)Session["UserCredentials"];
+
+                    // Verfifica permissão
+                    if (usuario.PERFIL.PERF_IN_PACIENTE_CONSULTA_ALTERAR == 0)
+                    {
+                        Session["MensPermissao"] = 2;
+                        Session["ModuloPermissao"] = "Paciente - Consulta - Cancelamento";
+                        urlRedirecionamento = Url.Action("MontarTelaPaciente", "Paciente");
+                        return Json(new { success = true, redirectUrl = urlRedirecionamento });
+                    }
+                }
+                else
+                {
+                    urlRedirecionamento = Url.Action("Logout", "ControleAceso");
+                    return Json(new { success = true, redirectUrl = urlRedirecionamento });
+                }
+                Int32 idAss = (Int32)Session["IdAssinante"];
+
+                // Processa cancelamento
+                CONFIGURACAO conf = CarregaConfiguracaoGeral();
+                USUARIO usuarioLogado = (USUARIO)Session["UserCredentials"];
+                PACIENTE_CONSULTA item = baseApp.GetConsultaById(id);
+                objetoAntes = (PACIENTE)Session["Paciente"];
+                item.PACO_IN_CONFIRMADA = 2;
+                item.PACO_TX_JUSTIFICATIVA_CANCELA = justificativa;
+                Int32 volta = baseApp.ValidateEditConsultaConfirma(item);
+
+                // Acerta estado
+                Session["PacienteAlterada"] = 1;
+                Session["NivelPaciente"] = 3;
+                Session["ListaConsultasGeral"] = null;
+                Session["ConsultasAlterada"] = 1;
+                Session["ListaConfirma"] = null;
+                Session["ListaConsultaAberta"] = null;
+
+                // Recupera paciente
+                PACIENTE pac = baseApp.GetItemById(item.PACI_CD_ID);
+
+                // Monta Log
+                LOG log = new LOG
+                {
+                    LOG_DT_DATA = DateTime.Now,
+                    ASSI_CD_ID = usuarioLogado.ASSI_CD_ID,
+                    USUA_CD_ID = usuarioLogado.USUA_CD_ID,
+                    LOG_NM_OPERACAO = "Paciente - Consulta - Cancelamento",
+                    LOG_IN_ATIVO = 1,
+                    LOG_TX_REGISTRO = "Paciente: " + pac.PACI_NM_NOME + " | Data: " + item.PACO_DT_CONSULTA,
+                    LOG_IN_SISTEMA = 6
+                };
+                Int32 volta1 = logApp.ValidateCreate(log);
+
+                // Grava historico
+                PACIENTE_HISTORICO hist = new PACIENTE_HISTORICO();
+                hist.ASSI_CD_ID = usuario.ASSI_CD_ID;
+                hist.USUA_CD_ID = usuario.USUA_CD_ID;
+                hist.PACI_CD_ID = item.PACI_CD_ID;
+                hist.PAHI_DT_DATA = DateTime.Now;
+                hist.PAHI_IN_TIPO = 10;
+                hist.PAHI_IN_CHAVE = item.PACO_CD_ID;
+                hist.PAHI_NM_OPERACAO = "Paciente - Cancelamento de Consulta";
+                hist.PAHI_DS_DESCRICAO = "Paciente " + pac.PACI_NM_NOME + " - Consulta cancelada " + item.PACO_DT_CONSULTA.ToShortDateString();
+                Int32 voltaHist = baseApp.ValidateCreateHistorico(hist);
+
+                // Mensagem do CRUD
+                Session["MsgCRUD"] = "A consulta do(a) paciente " + pac.PACI_NM_NOME.ToUpper() + " marcada para " + item.PACO_DT_CONSULTA.ToLongDateString() + " foi cancelada com sucesso";
+                Session["MensPaciente"] = 888;
+
+                // Envia mensagem
+                if (pac.PACI_NM_EMAIL != null)
+                {
+                    Int32 voltaCons = await EnviarEMailConsulta(item, 4);
+                }
+                if (pac.PACI_NR_CELULAR != null)
+                {
+                    Int32 voltaCons = EnviarSMSConsulta(item, 4);
+                }
+                if (usuario.USUA_NM_EMAIL != null)
+                {
+                    Int32 voltaCons = await EnviarEMailConsulta(item, 7);
+                }
+
+                // Mapeamento da lógica de retorno para URL
+                if ((Int32)Session["TipoSolicitacao"] == 1)
+                {
+                    if ((Int32)Session["VoltaAtestado"] == 1)
+                        urlRedirecionamento = Url.Action("MontarTelaPaciente", "Paciente");
+                    else
+                        urlRedirecionamento = Url.Action("VoltarAnexoPaciente", "Paciente");
+                }
+                if ((Int32)Session["VoltaTelaEncerra"] == 1)
+                {
+                    urlRedirecionamento = Url.Action("MontarTelaEncerrarConsulta", "Financeiro");
+                }
+                if ((Int32)Session["VoltaConfirmar"] == 1)
+                {
+                    urlRedirecionamento = Url.Action("ConfirmarCancelarConsulta", "Paciente");
+                }
+                if ((Int32)Session["VoltaCalendario"] == 1)
+                {
+                    urlRedirecionamento = Url.Action("VerCalendarioConsulta", "Paciente");
+                }
+                urlRedirecionamento = Url.Action("MontarTelaConsultas", "Paciente");
+
+                return Json(new { success = true, redirectUrl = urlRedirecionamento });
+                //// Retorno
+                //if ((Int32)Session["TipoSolicitacao"] == 1)
+                //{
+                //    if ((Int32)Session["VoltaAtestado"] == 1)
+                //    {
+                //        return RedirectToAction("MontarTelaPaciente");
+                //    }
+                //    return RedirectToAction("VoltarAnexoPaciente");
+                //}
+                //if ((Int32)Session["VoltaTelaEncerra"] == 1)
+                //{
+                //    return RedirectToAction("MontarTelaEncerrarConsulta", "Financeiro");
+                //}
+                //if ((Int32)Session["VoltaConfirmar"] == 1)
+                //{
+                //    return RedirectToAction("ConfirmarCancelarConsulta");
+                //}
+                //if ((Int32)Session["VoltaCalendario"] == 1)
+                //{
+                //    return RedirectToAction("VerCalendarioConsulta");
+                //}
+                //return RedirectToAction("MontarTelaConsultas");
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Paciente";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Paciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                String urlRedirecionamento1 = Url.Action("TrataExcecao", "BaseAdmin");
+                return Json(new { success = true, redirectUrl = urlRedirecionamento1 });
             }
         }
 

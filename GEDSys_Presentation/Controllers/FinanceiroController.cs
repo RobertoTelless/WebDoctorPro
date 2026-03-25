@@ -8391,7 +8391,7 @@ namespace GEDSys_Presentation.Controllers
                 Session["TipoConsultaEncerra"] = tipo;
                 if (tipo.VALOR_CONSULTA_MATERIAL.Count() > 0)
                 {
-                    return RedirectToAction("MontarTelaEncerrarConsultaMaterial");
+                    return RedirectToAction("MontarTelaEncerrarConsultaMaterial", "Paciente2");
                 }
 
                 // Recuperar paciente
@@ -8519,6 +8519,165 @@ namespace GEDSys_Presentation.Controllers
                 GravaLogExcecao grava = new GravaLogExcecao(usuApp);
                 Int32 voltaX = grava.GravarLogExcecao(ex, "Paciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
                 return RedirectToAction("TrataExcecao", "BaseAdmin");
+            }
+        }
+
+        [HttpPost]
+        public JsonResult EncerrarConsultaJson(Int32 id)
+        {
+            string urlRedirecionamento = "";
+            if ((String)Session["Ativa"] == null)
+            {
+                urlRedirecionamento = Url.Action("Logout", "ControleAceso");
+                return Json(new { success = true, redirectUrl = urlRedirecionamento });
+            }
+
+            try
+            {
+                // Recuperar Consulta
+                CONFIGURACAO conf = CarregaConfiguracaoGeral();
+                USUARIO usuario = (USUARIO)Session["UserCredentials"];
+                Int32 idAss = (Int32)Session["IdAssinante"];
+                PACIENTE_CONSULTA item = baseApp.GetConsultaById(id);
+
+                // Verifica consumo de material
+                Session["ConsultaEncerra"] = item;
+                VALOR_CONSULTA tipo = vcApp.GetItemById(item.VACO_CD_ID.Value);
+                Session["TipoConsultaEncerra"] = tipo;
+                if (tipo.VALOR_CONSULTA_MATERIAL.Count() > 0)
+                {
+                    urlRedirecionamento = Url.Action("MontarTelaEncerrarConsultaMaterial", "Paciente2");
+                    return Json(new { success = true, redirectUrl = urlRedirecionamento });
+                }
+
+                // Recuperar paciente
+                PACIENTE pac = baseApp.GetItemById(item.PACI_CD_ID);
+
+                // Recupera forma de recebimento
+                List<FORMA_RECEBIMENTO> frs = recApp.GetAllForma(idAss);
+                if (frs.Count == 0)
+                {
+                    Session["MensPaciente"] = 62;
+                    urlRedirecionamento = Url.Action("MontarTelaEncerrarConsulta", "Financeiro");
+                    return Json(new { success = true, redirectUrl = urlRedirecionamento });
+                }
+                FORMA_RECEBIMENTO fr = frs.Where(p => p.FORE_IN_PADRAO == 1).FirstOrDefault();
+                if (fr == null)
+                {
+                    fr = frs.FirstOrDefault();
+                }
+
+                // Acertar consulta
+                item.PACO_IN_CONFIRMADA = 3;
+                item.PACO_IN_ENCERRADA = 1;
+                Int32 volta = baseApp.ValidateEditConsultaConfirma(item);
+
+                // Mensagem do CRUD
+                String crud = "A consulta do(a) paciente " + pac.PACI_NM_NOME.ToUpper() + " em " + item.PACO_DT_CONSULTA.ToLongDateString() + " foi encerrada com sucesso";
+
+                // Gerar recebimento
+                if (item.PACO_IN_RECEBE == 1)
+                {
+                    if ((Int32)Session["PermFinanceiro"] == 1)
+                    {
+                        PACIENTE_CONSULTA item1 = baseApp.GetConsultaById(id);
+                        List<CONSULTA_RECEBIMENTO> pagMes = CarregaRecebimento().Where(p => p.CORE_IN_ATIVO == 1 & p.USUA_CD_ID == usuario.USUA_CD_ID).ToList();
+                        Int32 num = pagMes.Where(p => p.CORE_DT_RECEBIMENTO.Value.Month == DateTime.Today.Date.Month & p.CORE_DT_RECEBIMENTO.Value.Year == DateTime.Today.Date.Year).ToList().Count;
+                        if ((Int32)Session["NumRecebimentos"] >= num)
+                        {
+                            if (conf.CONF_IN_GERA_RECEBIMENTO == 1 & fr != null)
+                            {
+                                String nome = "Recebimento de consulta de " + pac.PACI_NM_NOME.ToUpper() + " em " + item.PACO_DT_CONSULTA.ToLongDateString();
+                                CONSULTA_RECEBIMENTO rec = new CONSULTA_RECEBIMENTO();
+                                rec.CORE_IN_ATIVO = 1;
+                                rec.CORE_DT_RECEBIMENTO = DateTime.Today.Date;
+                                rec.CORE_GU_GUID = Xid.NewXid().ToString();
+                                rec.USUA_CD_ID = usuario.USUA_CD_ID;
+                                rec.ASSI_CD_ID = idAss;
+                                rec.CORE_IN_CONFERIDO = 0;
+                                rec.CORE_NM_RECEBIMENTO = nome;
+                                rec.PACI_CD_ID = pac.PACI__CD_ID;
+                                rec.PACO_CD_ID = item1.PACO_CD_ID;
+                                rec.VACO_CD_ID = item1.VACO_CD_ID;
+                                rec.CORE_VL_VALOR = item1.VALOR_CONSULTA.VACO_NR_VALOR;
+                                rec.FORE_CD_ID = fr.FORE_CD_ID;
+                                recApp.ValidateCreate(rec, usuario);
+
+                                crud += ". Um lançamento de recebimento foi gerado para esta consulta.";
+
+                                // Cria pastas
+                                String caminho = "/Imagens/" + idAss.ToString() + "/Recebimento/" + rec.CORE_CD_ID.ToString() + "/Anexos/";
+                                String map = Server.MapPath(caminho);
+                                Directory.CreateDirectory(Server.MapPath(caminho));
+                                Session["ListaRecebimento"] = null;
+                                Session["Recebimentos"] = null;
+                                Session["RecebimentoAlterada"] = 1;
+                            }
+                        }
+                        else
+                        {
+                            crud += ". O lançamento de recebimento não pode ser gerado pois o número de lançamentos do mês excedeu o limite contratado.";
+                        }
+                    }
+                }
+
+                // Mensagem do CRUD
+                Session["MsgCRUD"] = crud;
+                Session["MensPaciente"] = 63;
+                Session["ListaConsultaAberta"] = null;
+                Session["ConsultasAlterada"] = 1;
+                Session["Consultas"] = null;
+                Session["ListaConsultasGeral"] = null;
+
+                // Configura serilização
+                JsonSerializerSettings settings = new JsonSerializerSettings
+                {
+                    ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+                    NullValueHandling = NullValueHandling.Ignore
+                };
+
+                // Monta Log
+                DTO_Paciente_Consulta dto = MontarPacienteConsultaDTOObj(item);
+                String json = JsonConvert.SerializeObject(dto, settings);
+                LOG log = new LOG
+                {
+                    LOG_DT_DATA = DateTime.Now,
+                    ASSI_CD_ID = usuario.ASSI_CD_ID,
+                    USUA_CD_ID = usuario.USUA_CD_ID,
+                    LOG_NM_OPERACAO = "Paciente - Consulta - Encerramento",
+                    LOG_IN_ATIVO = 1,
+                    LOG_TX_REGISTRO = json,
+                    LOG_IN_SISTEMA = 6
+                };
+                Int32 volta1 = logApp.ValidateCreate(log);
+
+                // Grava historico
+                PACIENTE_HISTORICO hist = new PACIENTE_HISTORICO();
+                hist.ASSI_CD_ID = usuario.ASSI_CD_ID;
+                hist.USUA_CD_ID = usuario.USUA_CD_ID;
+                hist.PACI_CD_ID = item.PACI_CD_ID;
+                hist.PAHI_DT_DATA = DateTime.Now;
+                hist.PAHI_IN_TIPO = 10;
+                hist.PAHI_IN_CHAVE = item.PACO_CD_ID;
+                hist.PAHI_NM_OPERACAO = "Paciente - Encerramento de Consulta";
+                hist.PAHI_DS_DESCRICAO = "Paciente: " + pac.PACI_NM_NOME.ToUpper() + " - Consulta encerrada: " + item.PACO_DT_CONSULTA.ToShortDateString();
+                Int32 voltaHist = baseApp.ValidateCreateHistorico(hist);
+
+                // Retorno
+                urlRedirecionamento = Url.Action("MontarTelaEncerrarConsulta", "Financeiro");
+                return Json(new { success = true, redirectUrl = urlRedirecionamento });
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Paciente";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Paciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                urlRedirecionamento = Url.Action("TrataExcecao", "BaseAdmin");
+                return Json(new { success = true, redirectUrl = urlRedirecionamento });
             }
         }
 

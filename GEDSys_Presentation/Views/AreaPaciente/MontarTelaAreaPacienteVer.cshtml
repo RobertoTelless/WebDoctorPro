@@ -310,38 +310,41 @@
                                                 {
                                                     <td style="width: auto; cursor: pointer; text-decoration: underline;"><a href="@Url.Action("ConsultarPaciente", "Paciente", new { id = cond.PACI_CD_ID })" class="btn-loading" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Consultar paciente"/>@cond.PACIENTE.PACI_NM_NOME</td>
                                                 }
-
-                                                @if (cond.AREA_IN_TIPO == 1)
-                                                {
-                                                    <td style="width: auto"><span class="badge badge-primary">Marcação de Consulta</span></td>
-                                                }
-                                                else if (cond.AREA_IN_TIPO == 2)
-                                                {
-                                                    <td style="width: auto"><span class="badge badge-success">Informações de Consulta</span></td>
-                                                }
-                                                else if (cond.AREA_IN_TIPO == 3)
-                                                {
-                                                    <td style="width: auto"><span class="badge badge-warning">Envio de Documento</span></td>
-                                                }
+                                                <td style="width: auto">
+                                                    @if (cond.AREA_IN_TIPO == 1) 
+                                                    {
+                                                        <span class="status-badge status-active">Marcação de Consulta</span>
+                                                    }
+                                                    else if (cond.AREA_IN_TIPO == 2)
+                                                    {
+                                                        <span class="status-badge status-pending">Informações de Consulta</span>
+                                                    }
+                                                    else if (cond.AREA_IN_TIPO == 3)
+                                                    {
+                                                        <span class="status-badge status-finish">Envio de Documento</span>
+                                                    }
+                                                </td>
 
                                                 @if (cond.AREA_IN_TIPO == 3)
                                                 {
-                                                    if (cond.AREA_IN_TIPO_EXAME == 1)
-                                                    {
-                                                        <td style="width: auto"><span class="badge badge-primary">Contrato de Locação</span></td>
-                                                    }
-                                                    else if (cond.AREA_IN_TIPO_EXAME == 2)
-                                                    {
-                                                        <td style="width: auto"><span class="badge badge-primary">Distrato de Locação</span></td>
-                                                    }
-                                                    else if (cond.AREA_IN_TIPO_EXAME == 3)
-                                                    {
-                                                        <td style="width: auto"><span class="badge badge-success">Resultado de Exame</span></td>
-                                                    }
-                                                    else if (cond.AREA_IN_TIPO_EXAME == 4)
-                                                    {
-                                                        <td style="width: auto"><span class="badge badge-warning">Documento</span></td>
-                                                    }
+                                                    <td style="width: auto">
+                                                        @if (cond.AREA_IN_TIPO_EXAME == 1) 
+                                                        {
+                                                            <span class="status-badge status-active">Contrato de Locação</span>
+                                                        }
+                                                        else if (cond.AREA_IN_TIPO_EXAME == 2)
+                                                        {
+                                                            <span class="status-badge status-pending">Distrato de Locação</span>
+                                                        }
+                                                        else if (cond.AREA_IN_TIPO_EXAME == 3)
+                                                        {
+                                                            <span class="status-badge status-finish">Resultado de Exame</span>
+                                                        }
+                                                        else if (cond.AREA_IN_TIPO_EXAME == 4)
+                                                        {
+                                                            <span class="status-badge status-finish">Documento</span>
+                                                        }
+                                                    </td>
                                                 }
                                                 else
                                                 {

@@ -5485,6 +5485,7 @@
     <Content Include="Views\AreaPaciente\VerAnexoExamePacienteAudio.cshtml" />
     <Content Include="Views\Paciente\IncluirVacina.cshtml" />
     <Content Include="Views\Paciente\EditarVacina.cshtml" />
+    <Content Include="Views\Paciente\ProcederConsulta - Cópia %282%29.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -6297,6 +6298,12 @@
     <Folder Include="Imagens\1\Pacientes\9\QRCode\" />
     <Folder Include="Imagens\1\Pacientes\9\Solicitacao\" />
     <Folder Include="Imagens\1\Pagamento\100\NF\" />
+    <Folder Include="Imagens\1\Pagamento\105\Anexos\" />
+    <Folder Include="Imagens\1\Pagamento\105\NF\" />
+    <Folder Include="Imagens\1\Pagamento\106\Anexos\" />
+    <Folder Include="Imagens\1\Pagamento\106\NF\" />
+    <Folder Include="Imagens\1\Pagamento\107\Anexos\" />
+    <Folder Include="Imagens\1\Pagamento\107\NF\" />
     <Folder Include="Imagens\1\Pagamento\1\NF\" />
     <Folder Include="Imagens\1\Pagamento\31\Anexos\" />
     <Folder Include="Imagens\1\Pagamento\31\NF\" />
@@ -6455,6 +6462,7 @@
     <Folder Include="Imagens\1\Recebimento\18\Recibo\" />
     <Folder Include="Imagens\1\Recebimento\195\Anexos\" />
     <Folder Include="Imagens\1\Recebimento\198\Anexos\" />
+    <Folder Include="Imagens\1\Recebimento\1999\Anexos\" />
     <Folder Include="Imagens\1\Recebimento\199\Anexos\" />
     <Folder Include="Imagens\1\Recebimento\19\Anexos\" />
     <Folder Include="Imagens\1\Recebimento\19\Recibo\" />

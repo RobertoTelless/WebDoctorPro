@@ -8,7 +8,7 @@
     ViewBag.MetaKeywords = "WebDoctor, paciente, consulta";
 }
 
-<div class="wrapper wrapper-content animated fadeInRight">
+@*<div class="wrapper wrapper-content animated fadeInRight">
     <div class="modal fade" id="modalCancelar" tabindex="-1" role="dialog" aria-labelledby="modalCancelarLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
@@ -30,7 +30,90 @@
                 </div>
             </div>
         </div>
-    </div>    
+    </div>*@    
+    <div class="modal inmodal fade" id="modalConfirmacao" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header" style="position: relative; padding: 30px 15px;">
+                    <img src="@Url.Content("~/Images/Prontuario/prontuario_icon_3.png?v=1.1")" 
+                         style="position: absolute; left: 15px; top: 15px; width: 40px; height: auto;" 
+                         alt="Ícone" />
+
+                    <i class="fa fa-check-circle modal-icon text-primary" style="display: block;"></i>
+                    <h4 class="modal-title">Confirmação de Consulta</h4>
+                    <small class="font-bold">WebDoctorPro - Consultas</small>
+                </div>
+            
+                <div class="modal-body text-center">
+                    <h3>Tem certeza que deseja confirmar essa consulta?</h3>
+                    <p>Esta ação não poderá ser desfeita e os registros serão atualizados no sistema.</p>
+                </div>
+            
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-white" data-dismiss="modal">Voltar</button>
+                    <button type="button" class="btn btn-primary" id="btnConfirmarSubmit">Confirmar Consulta</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal inmodal fade" id="modalCancelar" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header" style="position: relative; padding: 30px 15px;">
+                    <img src="@Url.Content("~/Images/Prontuario/prontuario_icon_3.png?v=1.1")" 
+                         style="position: absolute; left: 15px; top: 15px; width: 40px; height: auto;" 
+                         alt="Ícone" />
+
+                    <i class="fa fa-check-circle modal-icon text-primary" style="display: block;"></i>
+                    <h4 class="modal-title">Cancelamento de Consulta</h4>
+                    <small class="font-bold">WebDoctorPro - Sistema de Gestão</small>
+                </div>
+            
+                <div class="modal-body">
+                    <div class="text-center m-b-md">
+                        <h3>Deseja cancelar esta consulta?</h3>
+                        <p>Informe abaixo uma observação ou justificativa</p>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Observação/Justificativa:</label>
+                        <textarea class="form-control" id="textoJustificativaConfirmar" rows="5" placeholder="Digite aqui..."></textarea>
+                    </div>
+                </div>
+            
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-white" data-dismiss="modal">Voltar</button>
+                    <button type="button" class="btn btn-primary" id="btnCancelarSubmit">Cancelar Consulta</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal inmodal fade" id="modalEnviarConfirmacao" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header" style="position: relative; padding: 30px 15px;">
+                    <img src="@Url.Content("~/Images/Prontuario/prontuario_icon_3.png?v=1.1")" 
+                         style="position: absolute; left: 15px; top: 15px; width: 40px; height: auto;" 
+                         alt="Ícone" />
+
+                    <i class="fa fa-mail-forward modal-icon text-primary" style="display: block;"></i>
+                    <h4 class="modal-title">Envio de Confirmação</h4>
+                    <small class="font-bold">WebDoctorPro - Comunicação com Paciente</small>
+                </div>
+            
+                <div class="modal-body text-center">
+                    <h3>Deseja enviar o e-mail de confirmação para este paciente?</h3>
+                    <p>O sistema utilizará o template padrão de confirmação e registrará o envio no histórico do paciente.</p>
+                </div>
+            
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-white" data-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" id="btnEnviarSubmit">Sim, Enviar Agora</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="modalContainer">
         <div id="modal" class="modal" tabindex="-1" role="dialog">
             <div class="modal-dialog" role="document">
@@ -195,50 +278,35 @@
                                                 <td style="width: auto">@cond.PACO_HR_INICIO.ToString()</td>
                                                 <td style="width: auto">@cond.PACO_HR_FINAL.ToString()</td>
                                                 <td style="width: auto">@cond.PACIENTE.PACI_NM_NOME</td>
-                                                @if (cond.VALOR_CONSULTA != null)
-                                                {
-                                                    <td style="width: auto"><span class="badge badge-primary">@cond.VALOR_CONSULTA.VACO_NM_NOME</span></td>
-                                                }
-                                                else
-                                                {
-                                                    <td style="width: auto"><span class="badge badge-primary">-</span></td>
-                                                }
+                                                <td style="width: auto">
+                                                    @if (cond.VALOR_CONSULTA != null)
+                                                    {
+                                                        <span class="status-badge status-finish">@cond.VALOR_CONSULTA.VACO_NM_NOME</span>
+                                                    }
+                                                    else
+                                                    {
+                                                        <span class="status-badge status-pending">Não Definido</span>
+                                                    }
+                                                </td>
 
                                                 <td style="width: auto">
-                                                    @if (cond.PACO_IN_CONFIRMADA == 1) // ATIVA
+                                                    @if (cond.PACO_IN_CONFIRMADA == 1) 
                                                     {
                                                         <span class="status-badge status-active">Confirmada</span>
                                                     }
-                                                    else if (cond.PACO_IN_CONFIRMADA == 2) // ENCERRADA
+                                                    else if (cond.PACO_IN_CONFIRMADA == 2) 
                                                     {
                                                         <span class="status-badge status-cancel">Cancelada</span>
                                                     }
-                                                    else if (cond.PACO_IN_CONFIRMADA == 0) // VENCIDA
+                                                    else if (cond.PACO_IN_CONFIRMADA == 0) 
                                                     {
-                                                        <span class="status-badge status-pending>Pendente</span>
+                                                        <span class="status-badge status-pending">Pendente</span>
                                                     }
-                                                    else if (cond.PACO_IN_CONFIRMADA == 3) // CANCELADA
+                                                    else if (cond.PACO_IN_CONFIRMADA == 3) 
                                                     {
                                                         <span class="status-badge status-finish">Encerrada</span>
                                                     }
                                                 </td>
-
-                                                @*@if (cond.PACO_IN_CONFIRMADA == 1)
-                                                {
-                                                    <td style="width: auto"><span class="badge badge-primary">Confirmada</span></td>
-                                                }
-                                                else if (cond.PACO_IN_CONFIRMADA == 2)
-                                                {
-                                                    <td style="width: auto"><span class="badge badge-danger">Cancelada</span></td>
-                                                }
-                                                else if (cond.PACO_IN_CONFIRMADA == 0)
-                                                {
-                                                    <td style="width: auto"><span class="badge badge-warning">Pendente</span></td>
-                                                }
-                                                else if (cond.PACO_IN_CONFIRMADA == 3)
-                                                {
-                                                    <td style="width: auto"><span class="badge badge-success">Encerrada</span></td>
-                                                }*@
 
                                                 <td style="width: auto; color: green; font-weight: bold">@cond.USUARIO.USUA_NM_NOME</td>
                                                 <td style="width: auto" class="td-one-action">
@@ -285,17 +353,42 @@
                                                     {
                                                         if (cond.PACO_IN_ATIVO == 1 & cond.PACO_IN_CONFIRMADA == 0)
                                                         {
-                                                            <span style="color: #337ab7; cursor:pointer;" alt="Confirmar" class="tbl-link fa-lg fa fa-check btn-loading" onclick="ShowModalConfirmar('/Paciente/ConfirmarConsulta/@cond.PACO_CD_ID')" title="Confirmar Consulta"></span>
+                                                            <button type="button" 
+                                                                    class="btn btn-xs btn-link btn-disparar-modal-confirma" 
+                                                                    data-id="@cond.PACO_CD_ID" 
+                                                                    title="Confirmar Consulta"
+                                                                    id="btnConfirmarSubmit"
+                                                                    style="padding: 3px; color: #337ab7;">
+                                                                    <i class="fa fa-check" style="font-size: 17px; margin-left: -5px;"></i>
+                                                            </button>
+
+                                                            @*<span style="color: #337ab7; cursor:pointer;" alt="Confirmar" class="tbl-link fa-lg fa fa-check btn-loading" onclick="ShowModalConfirmar('/Paciente/ConfirmarConsulta/@cond.PACO_CD_ID')" title="Confirmar Consulta"></span>*@
                                                         }
                                                         if (cond.PACO_IN_ATIVO == 1 & cond.PACO_IN_CONFIRMADA < 2)
                                                         {
-
-                                                            <span style="color: #337ab7; cursor:pointer;" alt="Mensagem" class="tbl-link fa-lg fa fa-times btn-loading" onclick="ShowModalCancelar('/Paciente2/CancelarConsulta/@cond.PACO_CD_ID')" title="Cancelar Consulta"></span>     
+                                                            <button type="button" 
+                                                                    class="btn btn-xs btn-link btn-disparar-modal-cancelar" 
+                                                                    data-id="@cond.PACO_CD_ID" 
+                                                                    title="Cancelar Consulta"
+                                                                    id="btnCancelarSubmit"
+                                                                    style="padding: 3px; color: #337ab7;">
+                                                                <i class="fa fa-times" style="font-size: 17px; margin-left: -5px;"></i>
+                                                            </button>
+                                                            @*<span style="color: #337ab7; cursor:pointer;" alt="Mensagem" class="tbl-link fa-lg fa fa-times btn-loading" onclick="ShowModalCancelar('/Paciente2/CancelarConsulta/@cond.PACO_CD_ID')" title="Cancelar Consulta"></span>*@     
                                                         }
                                                     }
                                                     @if (cond.PACO_IN_ATIVO == 1 & cond.PACO_IN_CONFIRMADA == 0)
                                                     {
-                                                        <span style="color: #337ab7; cursor:pointer;" alt="Mensagem" class="tbl-link fa-lg fa fa-mail-forward btn-loading" onclick="ShowModalEnviar('/Paciente2/EnviarEMailConfirmacao/@cond.PACO_CD_ID')" title="Enviar Confirmação"></span>
+                                                        <button type="button" 
+                                                                class="btn btn-xs btn-link btn-disparar-modal-envio" 
+                                                                data-id="@cond.PACO_CD_ID" 
+                                                                title="Enviar Mensagem de Confirmação"
+                                                                id="btnEnviarSubmit"
+                                                                style="padding: 3px; color: #337ab7;">
+                                                            <i class="fa fa-mail-forward" style="font-size: 17px; margin-left: -5px;"></i>
+                                                        </button>
+
+                                                        @*<span style="color: #337ab7; cursor:pointer;" alt="Mensagem" class="tbl-link fa-lg fa fa-mail-forward btn-loading" onclick="ShowModalEnviar('/Paciente2/EnviarEMailConfirmacao/@cond.PACO_CD_ID')" title="Enviar Confirmação"></span>*@
                                                     }
                                                 </td>
                                             </tr>
@@ -312,29 +405,31 @@
                                                 <td style="width: auto">@cond.PACO_HR_INICIO.ToString()</td>
                                                 <td style="width: auto">@cond.PACO_HR_FINAL.ToString()</td>
                                                 <td style="width: auto">@cond.PACIENTE.PACI_NM_NOME</td>
-                                                @if (cond.VALOR_CONSULTA != null)
-                                                {
-                                                    <td style="width: auto"><span class="badge badge-primary">@cond.VALOR_CONSULTA.VACO_NM_NOME</span></td>
-                                                }
-                                                else
-                                                {
-                                                    <td style="width: auto"><span class="badge badge-primary">-</span></td>
-                                                }
+                                                <td style="width: auto">
+                                                    @if (cond.VALOR_CONSULTA != null)
+                                                    {
+                                                        <span class="status-badge status-finish">@cond.VALOR_CONSULTA.VACO_NM_NOME</span>
+                                                    }
+                                                    else
+                                                    {
+                                                        <span class="status-badge status-pending">Não Definido</span>
+                                                    }
+                                                </td>
 
                                                 <td style="width: auto">
-                                                    @if (cond.PACO_IN_CONFIRMADA == 1) // ATIVA
+                                                    @if (cond.PACO_IN_CONFIRMADA == 1) 
                                                     {
                                                         <span class="status-badge status-active">Confirmada</span>
                                                     }
-                                                    else if (cond.PACO_IN_CONFIRMADA == 2) // ENCERRADA
+                                                    else if (cond.PACO_IN_CONFIRMADA == 2) 
                                                     {
                                                         <span class="status-badge status-cancel">Cancelada</span>
                                                     }
-                                                    else if (cond.PACO_IN_CONFIRMADA == 0) // VENCIDA
+                                                    else if (cond.PACO_IN_CONFIRMADA == 0) 
                                                     {
-                                                        <span class="status-badge status-pending>Pendente</span>
+                                                        <span class="status-badge status-pending">Pendente</span>
                                                     }
-                                                    else if (cond.PACO_IN_CONFIRMADA == 3) // CANCELADA
+                                                    else if (cond.PACO_IN_CONFIRMADA == 3) 
                                                     {
                                                         <span class="status-badge status-finish">Encerrada</span>
                                                     }
@@ -361,7 +456,15 @@
                                                     {
                                                         if (cond.PACO_IN_ATIVO == 1 & cond.PACO_IN_CONFIRMADA < 2 & cond.PACO_IN_ENCERRADA == 0)
                                                         {
-                                                            <span style="color: #337ab7; cursor:pointer;" alt="Mensagem" class="tbl-link fa-lg fa fa-times btn-loading" onclick="ShowModalCancelar('/Paciente2/CancelarConsulta/@cond.PACO_CD_ID')" title="Cancelar Consulta"></span>     
+                                                            <button type="button" 
+                                                                    class="btn btn-xs btn-link btn-disparar-modal-cancelar" 
+                                                                    data-id="@cond.PACO_CD_ID" 
+                                                                    title="Cancelar Consulta"
+                                                                    id="btnCancelarSubmit"
+                                                                    style="padding: 3px; color: #337ab7;">
+                                                                <i class="fa fa-times" style="font-size: 17px; margin-left: -5px;"></i>
+                                                            </button>
+                                                            @*<span style="color: #337ab7; cursor:pointer;" alt="Mensagem" class="tbl-link fa-lg fa fa-times btn-loading" onclick="ShowModalCancelar('/Paciente2/CancelarConsulta/@cond.PACO_CD_ID')" title="Cancelar Consulta"></span>*@     
                                                         }
                                                     }
                                                 </td>
@@ -398,29 +501,31 @@
                                                 <td style="width: auto">@cond.PACO_HR_INICIO.ToString()</td>
                                                 <td style="width: auto">@cond.PACO_HR_FINAL.ToString()</td>
                                                 <td style="width: auto">@cond.PACIENTE.PACI_NM_NOME</td>
-                                                @if (cond.VALOR_CONSULTA != null)
-                                                {
-                                                    <td style="width: auto"><span class="badge badge-primary">@cond.VALOR_CONSULTA.VACO_NM_NOME</span></td>
-                                                }
-                                                else
-                                                {
-                                                    <td style="width: auto"><span class="badge badge-primary">-</span></td>
-                                                }
+                                                <td style="width: auto">
+                                                    @if (cond.VALOR_CONSULTA != null)
+                                                    {
+                                                        <span class="status-badge status-finish">@cond.VALOR_CONSULTA.VACO_NM_NOME</span>
+                                                    }
+                                                    else
+                                                    {
+                                                        <span class="status-badge status-pending">Não Definido</span>
+                                                    }
+                                                </td>
 
                                                 <td style="width: auto">
-                                                    @if (cond.PACO_IN_CONFIRMADA == 1) // ATIVA
+                                                    @if (cond.PACO_IN_CONFIRMADA == 1) 
                                                     {
                                                         <span class="status-badge status-active">Confirmada</span>
                                                     }
-                                                    else if (cond.PACO_IN_CONFIRMADA == 2) // ENCERRADA
+                                                    else if (cond.PACO_IN_CONFIRMADA == 2) 
                                                     {
                                                         <span class="status-badge status-cancel">Cancelada</span>
                                                     }
-                                                    else if (cond.PACO_IN_CONFIRMADA == 0) // VENCIDA
+                                                    else if (cond.PACO_IN_CONFIRMADA == 0) 
                                                     {
-                                                        <span class="status-badge status-pending>Pendente</span>
+                                                        <span class="status-badge status-pending">Pendente</span>
                                                     }
-                                                    else if (cond.PACO_IN_CONFIRMADA == 3) // CANCELADA
+                                                    else if (cond.PACO_IN_CONFIRMADA == 3) 
                                                     {
                                                         <span class="status-badge status-finish">Encerrada</span>
                                                     }
@@ -471,15 +576,39 @@
                                                     {
                                                         if (cond.PACO_IN_ATIVO == 1 & cond.PACO_IN_CONFIRMADA == 0)
                                                         {
-                                                            <span style="color: #337ab7; cursor:pointer;" alt="Confirmar" class="tbl-link fa-lg fa fa-check btn-loading" onclick="ShowModalConfirmar('/Paciente/ConfirmarConsulta/@cond.PACO_CD_ID')" title="Confirmar Consulta"></span>
+                                                            <button type="button" 
+                                                                    class="btn btn-xs btn-link btn-disparar-modal-confirma" 
+                                                                    data-id="@cond.PACO_CD_ID" 
+                                                                    title="Confirmar Consulta"
+                                                                    id="btnConfirmarSubmit"
+                                                                    style="padding: 3px; color: #337ab7;">
+                                                                    <i class="fa fa-check" style="font-size: 17px; margin-left: -5px;"></i>
+                                                            </button>
                                                         }
                                                         if (cond.PACO_IN_ATIVO == 1 & cond.PACO_IN_CONFIRMADA < 2)
                                                         {
-                                                            <span style="color: #337ab7; cursor:pointer;" alt="Mensagem" class="tbl-link fa-lg fa fa-times btn-loading" onclick="ShowModalCancelar('/Paciente2/CancelarConsulta/@cond.PACO_CD_ID')" title="Cancelar Consulta"></span>     
+                                                            <button type="button" 
+                                                                    class="btn btn-xs btn-link btn-disparar-modal-cancelar" 
+                                                                    data-id="@cond.PACO_CD_ID" 
+                                                                    title="Cancelar Consulta"
+                                                                    id="btnCancelarSubmit"
+                                                                    style="padding: 3px; color: #337ab7;">
+                                                                <i class="fa fa-times" style="font-size: 17px; margin-left: -5px;"></i>
+                                                            </button>
+                                                            @*<span style="color: #337ab7; cursor:pointer;" alt="Mensagem" class="tbl-link fa-lg fa fa-times btn-loading" onclick="ShowModalCancelar('/Paciente2/CancelarConsulta/@cond.PACO_CD_ID')" title="Cancelar Consulta"></span>*@     
                                                         }
                                                     }
                                                     @if (cond.PACO_IN_ATIVO == 1 & cond.PACO_IN_CONFIRMADA == 0)
                                                     {
+                                                        <button type="button" 
+                                                                class="btn btn-xs btn-link btn-disparar-modal-envio" 
+                                                                data-id="@cond.PACO_CD_ID" 
+                                                                title="Enviar Mensagem de Confirmação"
+                                                                id="btnEnviarSubmit"
+                                                                style="padding: 3px; color: #337ab7;">
+                                                            <i class="fa fa-mail-forward" style="font-size: 17px; margin-left: -5px;"></i>
+                                                        </button>
+
                                                         <span style="color: #337ab7; cursor:pointer;" alt="Mensagem" class="tbl-link fa-lg fa fa-mail-forward btn-loading" onclick="ShowModalEnviar('/Paciente2/EnviarEMailConfirmacao/@cond.PACO_CD_ID')" title="Enviar Confirmação"></span>
                                                     }
                                                 </td>
@@ -875,7 +1004,228 @@
             }
         });
     </script>
+    @*<script type="text/javascript">
+        $(document).ready(function () {
+            var $modal = $('#modalConfirmacao');
+            var $form = $('#pwd-container1');
+            var $hiddenId = $('#hiddenIdLocacao');
 
+            // 1. Captura o clique nos botões DENTRO da tabela
+            // Usamos delegação (.on) caso a tabela seja dinâmica (DataTables)
+            $('body').on('click', '.btn-disparar-modal-confirma', function () {
+                var idDaLinha = $(this).data('id');
+                $hiddenId.val(idDaLinha);
+                $modal.modal('show');
+            });
+
+            // 2. Ação de confirmar DENTRO da modal (Mantivemos sua lógica, apenas ajustamos o submit)
+            $('#btnConfirmarSubmit').click(function (e) {
+                e.preventDefault();
+
+                var $btn = $(this);
+
+                // Feedback visual no botão da modal
+                $btn.prop('disabled', true).addClass('disabled');
+                $btn.html('<i class="fa fa-spinner fa-spin"></i> Processando...');
+
+                // Esconde a modal
+                $modal.modal('hide');
+
+                // 3. Limpeza e Submit
+                setTimeout(function () {
+                    // Limpeza de resíduos do template
+                    $('.modal-backdrop').remove();
+                    $('body').removeClass('modal-open').css('padding-right', '');
+                
+                    // Submit via DOM puro do formulário que agora contém o ID correto
+                    document.getElementById('pwd-container1').submit();
+                }, 400);
+            });
+
+            // Segurança: limpa resíduos se fechar no "X" ou clicar fora
+            $modal.on('hidden.bs.modal', function () {
+                // Opcional: Limpa o ID se a pessoa desistir
+                $hiddenId.val(''); 
+            
+                $('.modal-backdrop').remove();
+                $('body').removeClass('modal-open');
+            });
+        });
+
+        $('#btnConfirmarSubmit').off('click').click(function (e) {
+            e.preventDefault();
+            var $btn = $(this);
+            var idLocacao = $('#hiddenIdLocacao').val();
+
+            $btn.prop('disabled', true).addClass('disabled');
+            $btn.html('<i class="fa fa-spinner fa-spin"></i> Processando...');
+
+            $.ajax({
+                url: '@Url.Action("ConfirmarConsulta", "Paciente")',
+                type: 'POST',
+                data: { id: idLocacao },
+                success: function () {
+                    $('#modalConfirmacaoInfo').modal('hide');
+                    // Redireciona para garantir a atualização da Session e da lista
+                    window.location.href = '@Url.Action("MontarTelaConsulta", "Paciente")';
+                },
+                error: function (xhr, status, error) {
+                    $btn.prop('disabled', false).removeClass('disabled').html('Confirmar Informações');
+                    alert("Erro ao processar informações: " + error);
+                }
+            });
+        });
+
+    </script>*@
+    <script type="text/javascript">
+        $(document).ready(function () {
+            var $modal = $('#modalConfirmacao');
+            var idParaConfirmar = 0;
+
+            // 1. Captura o ID ao clicar no botão da tabela e abre a modal
+            $('body').on('click', '.btn-disparar-modal-confirma', function () {
+                idParaConfirmar = $(this).data('id');
+                $modal.modal('show');
+            });
+
+            // 2. Ação de confirmar DENTRO da modal via AJAX
+            $('#btnConfirmarSubmit').click(function (e) {
+                e.preventDefault();
+                var $btn = $(this);
+
+                // Trava o botão e mostra spinner
+                $btn.prop('disabled', true).addClass('disabled');
+                var originalText = $btn.html();
+                $btn.html('<i class="fa fa-spinner fa-spin"></i> Processando...');
+
+                $.ajax({
+                    url: '@Url.Action("ConfirmarConsultaJson", "Paciente")',
+                    type: 'POST',
+                    data: { id: idParaConfirmar },
+                    success: function (response) {
+                        if (response.success) {
+                            $modal.modal('hide');
+                            // Redireciona para a URL enviada pelo Controller baseada nas Sessions
+                            window.location.href = response.redirectUrl;
+                        } else {
+                            $btn.prop('disabled', false).removeClass('disabled').html(originalText);
+                            toastr.error(response.message, "Erro no Processamento");
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        $btn.prop('disabled', false).removeClass('disabled').html(originalText);
+                        alert("Erro crítico na comunicação com o servidor: " + error);
+                    }
+                });
+            });
+
+            // Limpeza de segurança ao fechar modal
+            $modal.on('hidden.bs.modal', function () {
+                $('.modal-backdrop').remove();
+                $('body').removeClass('modal-open');
+            });
+        });
+    </script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            var idConsultaParaConfirmar = 0;
+            var $modalJustificativa = $('#modalCancelar');
+
+            // 1. Captura o clique no botão da tabela e abre a modal
+            $('body').on('click', '.btn-disparar-modal-cancelar', function () {
+                idConsultaParaConfirmar = $(this).data('id');
+                $modalJustificativa.modal('show');
+            });
+
+            // 2. Ação de confirmar DENTRO da modal via AJAX
+            $('#btnCancelarSubmit').off('click').on('click', function (e) {
+                e.preventDefault();
+                var $btn = $(this);
+                var justificativa = $('#textoJustificativaConfirmar').val();
+
+                // Feedback visual de carregamento
+                $btn.prop('disabled', true).addClass('disabled');
+                var originalText = $btn.html();
+                $btn.html('<i class="fa fa-spinner fa-spin"></i> Processando...');
+
+                $.ajax({
+                    url: '@Url.Action("CancelarConsultaJson", "Paciente")', // Garante que a Action aceite 'id' e 'justificativa'
+                    type: 'POST',
+                    data: { 
+                        id: idConsultaParaConfirmar,
+                        justificativa: justificativa 
+                    },
+                    success: function (response) {
+                        if (response.success) {
+                            $modalJustificativa.modal('hide');
+                            // Redireciona conforme a lógica de Session do Controller
+                            window.location.href = response.redirectUrl;
+                        } else {
+                            $btn.prop('disabled', false).removeClass('disabled').html(originalText);
+                            toastr.error(response.message, "Erro no Processamento");
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        $btn.prop('disabled', false).removeClass('disabled').html(originalText);
+                        alert("Erro crítico na comunicação com o servidor: " + error);
+                    }
+                });
+            });
+
+            // 3. Limpeza ao fechar a modal (Reset do campo de texto)
+            $modalJustificativa.on('hidden.bs.modal', function () {
+                $('#textoJustificativaConfirmar').val('');
+                $('.modal-backdrop').remove();
+                $('body').removeClass('modal-open');
+            });
+        });
+    </script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            var idParaEnvio = 0;
+            var $modalEnvio = $('#modalEnviarConfirmacao');
+
+            // 1. Captura o clique e abre a modal
+            $('body').on('click', '.btn-disparar-modal-envio', function () {
+                idParaEnvio = $(this).data('id');
+                $modalEnvio.modal('show');
+            });
+
+            // 2. Ação do botão de "Sim, Enviar Agora" dentro da modal
+            $('#btnEnviarSubmit').off('click').on('click', function (e) {
+                e.preventDefault();
+                var $btn = $(this);
+
+                // Bloqueia o botão e mostra spinner
+                $btn.prop('disabled', true).addClass('disabled');
+                var originalText = $btn.html();
+                $btn.html('<i class="fa fa-spinner fa-spin"></i> Enviando...');
+
+                $.ajax({
+                    url: '@Url.Action("EnviarEMailConfirmacaoJson", "Paciente2")',
+                    type: 'POST',
+                    data: { id: idParaEnvio },
+                    success: function (response) {
+                        if (response.success) {
+                            $modalEnvio.modal('hide');
+                            // Redireciona conforme as regras de Session do seu Controller
+                            window.location.href = response.redirectUrl;
+                        } else {
+                            // Caso o Controller retorne erro (ex: paciente sem e-mail)
+                            $btn.prop('disabled', false).removeClass('disabled').html(originalText);
+                            toastr.error(response.message, "Falha no Envio");
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        $btn.prop('disabled', false).removeClass('disabled').html(originalText);
+                        alert("Erro técnico na comunicação: " + error);
+                    }
+                });
+            });
+        });
+    </script>
 }
 
 @if (ViewBag.Message != null)

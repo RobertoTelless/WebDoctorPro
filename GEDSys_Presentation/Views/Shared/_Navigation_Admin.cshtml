@@ -111,6 +111,10 @@
                         <li class="@Html.IsSelected(action: "MontarTelaExames")"><a href="@Url.Action("MontarTelaExames", "Paciente")">Central de Exames</a></li>
 
                     }
+                    @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_ACESSO_PACIENTE == 1)
+                    {
+                        <li class="@Html.IsSelected(action: "MontarTelaMedico")"><a href="@Url.Action("MontarTelaMedico", "Medico")">Repassar Informações</a></li>
+                    }
                 </ul>
             </li>
 

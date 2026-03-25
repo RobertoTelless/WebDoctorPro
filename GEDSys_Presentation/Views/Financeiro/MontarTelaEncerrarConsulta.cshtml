@@ -32,6 +32,33 @@
             </div>
         </div>
     </div>
+    <div class="modal inmodal fade" id="modalEncerramento" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header" style="position: relative; padding: 30px 15px;">
+                    <img src="@Url.Content("~/Images/Prontuario/prontuario_icon_3.png?v=1.1")" 
+                         style="position: absolute; left: 15px; top: 15px; width: 40px; height: auto;" 
+                         alt="Ícone" />
+
+                    <i class="fa fa-check-circle modal-icon text-primary" style="display: block;"></i>
+                    <h4 class="modal-title">Encerramento de Consulta</h4>
+                    <small class="font-bold">WebDoctorPro - Consultas</small>
+                </div>
+            
+                <div class="modal-body text-center">
+                    <h3>Tem certeza que deseja encerrar essa consulta?</h3>
+                    <p>Esta ação não poderá ser desfeita e os registros serão atualizados no sistema.</p>
+                </div>
+            
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-white" data-dismiss="modal">Voltar</button>
+                    <button type="button" class="btn btn-primary" id="btnEncerrarSubmit">Encerrar Consulta</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
     @if ((String)Session["ModuloAtual"] == "Consultas")
     {
         <div class="page-title">
@@ -150,50 +177,68 @@
                                             <td style="width: auto">@cond.PACO_DT_CONSULTA.ToShortDateString()</td>
                                             <td style="width: auto">@cond.PACO_HR_INICIO.ToString()</td>
                                             <td style="width: auto">@cond.PACO_HR_FINAL.ToString()</td>
-                                            @if (cond.VALOR_CONSULTA != null)
-                                            {
-                                                <td style="width: auto"><span class="badge badge-warning">@cond.VALOR_CONSULTA.VACO_NM_NOME</span></td>
-                                            }
-                                            else
-                                            {
-                                                <td style="width: auto"><span class="badge badge-warning">-</span></td>
-                                            }
-                                            @if (cond.PACO_IN_CONFIRMADA == 1)
-                                            {
-                                                <td style="width: auto"><span class="badge badge-primary">Confirmada</span></td>
-                                            }
-                                            else if (cond.PACO_IN_CONFIRMADA == 2)
-                                            {
-                                                <td style="width: auto"><span class="badge badge-danger">Cancelada</span></td>
-                                            }
-                                            else if (cond.PACO_IN_CONFIRMADA == 0)
-                                            {
-                                                <td style="width: auto"><span class="badge badge-warning">Pendente</span></td>
-                                            }
-                                            else if (cond.PACO_IN_CONFIRMADA == 3)
-                                            {
-                                                <td style="width: auto"><span class="badge badge-success">Encerrada</span></td>
-                                            }
-                                            @if (cond.PACO_IN_RECEBE == 1)
-                                            {
-                                                <td style="width: auto" ><span class="badge badge-success">Na consulta</span></td>
-                                            }
-                                            else
-                                            {
-                                                <td style="width: auto"     ><span class="badge badge-warning">Mensal</span></td>
-                                            }
+
+                                            <td style="width: auto">
+                                                @if (cond.VALOR_CONSULTA != null)
+                                                {
+                                                    <span class="status-badge status-finish">@cond.VALOR_CONSULTA.VACO_NM_NOME</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="status-badge status-pending">Não Definido</span>
+                                                }
+                                            </td>
+
+                                            <td style="width: auto">
+                                                @if (cond.PACO_IN_CONFIRMADA == 1) 
+                                                {
+                                                    <span class="status-badge status-active">Confirmada</span>
+                                                }
+                                                else if (cond.PACO_IN_CONFIRMADA == 2) 
+                                                {
+                                                    <span class="status-badge status-cancel">Cancelada</span>
+                                                }
+                                                else if (cond.PACO_IN_CONFIRMADA == 0) 
+                                                {
+                                                    <span class="status-badge status-pending">Pendente</span>
+                                                }
+                                                else if (cond.PACO_IN_CONFIRMADA == 3) 
+                                                {
+                                                    <span class="status-badge status-finish">Encerrada</span>
+                                                }
+                                            </td>
+
+                                            <td style="width: auto">
+                                                @if (cond.PACO_IN_RECEBE == 1)
+                                                {
+                                                    <span class="status-badge status-active">Na Consulta</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="status-badge status-pending">Mensal</span>
+                                                }
+                                            </td>
+
                                             <td style="width: auto" class="td-one-action">
                                                 @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_PACIENTE_CONSULTA_ALTERAR == 1)
                                                 {
                                                     if (cond.PACO_IN_ATIVO == 1 & cond.PACO_IN_CONFIRMADA == 1)
                                                     {
-                                                        <span style="color: #337ab7; cursor:pointer;" alt="Encerrar" class="tbl-link fa-lg fa fa-pull-right btn-loading" onclick="ShowModalConfirmar('/Financeiro/EncerrarConsulta/@cond.PACO_CD_ID')" title="Encerrar Consulta"></span>
+                                                        <button type="button" 
+                                                                class="btn btn-xs btn-link btn-disparar-modal-encerra" 
+                                                                data-id="@cond.PACO_CD_ID" 
+                                                                title="Encerrar Consulta"
+                                                                id="btnEncerrarSubmit"
+                                                                style="padding: 3px; color: #337ab7;">
+                                                                <i class="fa fa-check" style="font-size: 17px; margin-left: -5px;"></i>
+                                                        </button>
+                                                        @*<span style="color: #337ab7; cursor:pointer;" alt="Encerrar" class="tbl-link fa-lg fa fa-pull-right btn-loading" onclick="ShowModalConfirmar('/Financeiro/EncerrarConsulta/@cond.PACO_CD_ID')" title="Encerrar Consulta"></span>*@
                                                     }
-                                                    if (cond.PACO_IN_ATIVO == 1 & cond.PACO_IN_CONFIRMADA == 1)
+                                                    @*if (cond.PACO_IN_ATIVO == 1 & cond.PACO_IN_CONFIRMADA == 1)
                                                     {
                                                         <span style="color: #337ab7; cursor:pointer;" alt="Encerrar" class="tbl-link fa-lg fa fa-check btn-loading" onclick="ShowModalConfirmar('/Financeiro/EncerrarConsulta/@cond.PACO_CD_ID')" title="Encerrar Consulta"></span>
                                                         <span style="color: #337ab7; cursor:pointer;" alt="Cancelar" class="tbl-link fa-lg fa fa-times btn-loading" onclick="ShowModalCancelar('/Paciente/CancelarConsulta/@cond.PACO_CD_ID')" title="Cancelar Consulta"></span>
-                                                    }
+                                                    }*@
                                                     if (ViewBag.SRF != null && ViewBag.SRF == 1)
                                                     {
                                                         <a href="@urlReceita" 
@@ -264,7 +309,48 @@
             padding-left: 10px !important;
         }
     </style>
+    <style>
+        /* Estilo Base */
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
 
+        .status-badge::before {
+            content: "";
+            display: inline-block;
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            margin-right: 6px;
+        }
+
+        /* PENDING (Gold) - Status 0 */
+        .status-pending { background-color: #fef9c3; color: #a16207; }
+        .status-pending::before { background-color: #ca8a04; }
+
+        /* ACTIVE (Green) - Status 1 */
+        .status-active { background-color: #dcfce7; color: #15803d; }
+        .status-active::before { background-color: #16a34a; }
+
+        /* CANCEL (Red) - Status 4 */
+        .status-cancel { background-color: #fee2e2; color: #b91c1c; }
+        .status-cancel::before { background-color: #dc2626; }
+
+        /* FINISH (Dark Blue) - Status 2 */
+        .status-finish { background-color: #dbeafe; color: #1e40af; }
+        .status-finish::before { background-color: #2563eb; }
+
+        /* OVERDUE (Gray) - Status 3 */
+        .status-overdue { background-color: #f3f4f6; color: #4b5563; }
+        .status-overdue::before { background-color: #6b7280; }
+    </style>
 
 }
 @section Scripts {
@@ -477,6 +563,56 @@
             }
         });
     </script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            var $modal = $('#modalEncerramento');
+            var idParaConfirmar = 0;
+
+            // 1. Captura o ID ao clicar no botão da tabela e abre a modal
+            $('body').on('click', '.btn-disparar-modal-encerra', function () {
+                idParaConfirmar = $(this).data('id');
+                $modal.modal('show');
+            });
+
+            // 2. Ação de confirmar DENTRO da modal via AJAX
+            $('#btnEncerrarSubmit').click(function (e) {
+                e.preventDefault();
+                var $btn = $(this);
+
+                // Trava o botão e mostra spinner
+                $btn.prop('disabled', true).addClass('disabled');
+                var originalText = $btn.html();
+                $btn.html('<i class="fa fa-spinner fa-spin"></i> Processando...');
+
+                $.ajax({
+                    url: '@Url.Action("EncerrarConsultaJson", "Financeiro")',
+                    type: 'POST',
+                    data: { id: idParaConfirmar },
+                    success: function (response) {
+                        if (response.success) {
+                            $modal.modal('hide');
+                            // Redireciona para a URL enviada pelo Controller baseada nas Sessions
+                            window.location.href = response.redirectUrl;
+                        } else {
+                            $btn.prop('disabled', false).removeClass('disabled').html(originalText);
+                            toastr.error(response.message, "Erro no Processamento");
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        $btn.prop('disabled', false).removeClass('disabled').html(originalText);
+                        alert("Erro crítico na comunicação com o servidor: " + error);
+                    }
+                });
+            });
+
+            // Limpeza de segurança ao fechar modal
+            $modal.on('hidden.bs.modal', function () {
+                $('.modal-backdrop').remove();
+                $('body').removeClass('modal-open');
+            });
+        });
+    </script>
+
 
 }
 

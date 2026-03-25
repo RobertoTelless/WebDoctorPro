@@ -4992,6 +4992,218 @@ namespace GEDSys_Presentation.Controllers
             }
         }
 
+        public async Task<JsonResult> EnviarEMailConfirmacaoJson(Int32 id)
+        {
+            // Recupera informações
+            Int32 idAss = (Int32)Session["IdAssinante"];
+            USUARIO usuario = (USUARIO)Session["UserCredentials"];
+            PACIENTE_CONSULTA consulta = baseApp.GetConsultaById(id);
+            PACIENTE paciente = baseApp.GetItemById(consulta.PACI_CD_ID);
+            string urlRedirecionamento = "";
+
+            CONFIGURACAO conf = CarregaConfiguracaoGeral();
+
+            // Verifica se pode confirmar
+            List<PACIENTE_CONSULTA> cons = paciente.PACIENTE_CONSULTA.Where(p => p.PACO_IN_ATIVO == 1 & p.PACO_IN_CONFIRMADA == 1 & p.PACO_IN_ENCERRADA == 0 & p.PACO_DT_CONSULTA.Date < DateTime.Today.Date).ToList();
+            if (cons.Count > 0)
+            {
+                String frase = CRMSys_Base.ResourceManager.GetString("M0593", CultureInfo.CurrentCulture);
+                String frase1 = CRMSys_Base.ResourceManager.GetString("M0594", CultureInfo.CurrentCulture);
+                frase += " de " + paciente.PACI_NM_NOME + " em " + consulta.PACO_DT_CONSULTA.ToShortDateString() + ". " + frase1;
+                Session["MensPaciente"] = 111;
+                Session["MsgCRUD"] = frase;
+                urlRedirecionamento = Url.Action("MontarTelaConsultas", "Paciente");
+                return Json(new { success = true, redirectUrl = urlRedirecionamento });
+            }
+
+            // Processo
+            try
+            {
+                // Recupera Template
+                TEMPLATE_EMAIL template = temApp.GetByCode("CONFCONS1", idAss);
+
+                // Prepara cabeçalho
+                String cab = template.TEEM_TX_CABECALHO;
+                if (cab.Contains("{nome}"))
+                {
+                    cab = cab.Replace("{nome}", paciente.PACI_NM_NOME);
+                }
+
+                // Prepara assinatura
+                String classe = String.Empty;
+                if (usuario.TIPO_CARTEIRA_CLASSE != null)
+                {
+                    classe = usuario.TIPO_CARTEIRA_CLASSE.TICL_NM_NOME + ": " + usuario.USUA_NR_CLASSE;
+                }
+                String assinatura = "<b>" + usuario.USUA_NM_NOME + "</b><br />";
+                if (usuario.ESPECIALIDADE != null)
+                {
+                    assinatura += usuario.ESPECIALIDADE.ESPE_NM_NOME + "<br />";
+                }
+                else
+                {
+                    assinatura += usuario.USUA_NM_ESPECIALIDADE + "<br />";
+                }
+                assinatura += classe + "  CPF: " + usuario.USUA_NR_CPF + "<br />";
+
+                // Monta link
+                String linkBase = "https://webdoctorformbase.azurewebsites.net/api/ExibirFormulario";
+                String sufixo = "?CPF=" + paciente.PACI_NR_CPF;
+                sufixo += "&Nome=" + paciente.PACI_NM_NOME;
+                sufixo += "&EMail=" + paciente.PACI_NM_EMAIL;
+                sufixo += "&Celular=" + paciente.PACI_NR_CELULAR;
+                sufixo += "&Zap=" + conf.CONF_IN_ENVIA_EXAME_ZAP.ToString();
+                sufixo += "&ZapNumero=" + conf.CONF_NR_WHAPSAPP;
+                sufixo += "&Consulta=" + consulta.PACO_CD_ID;
+                String linkFinal = linkBase + sufixo;
+
+                // Prepara corpo da mensagem
+                String texto = template.TEEM_TX_CORPO;
+                if (texto.Contains("{medico}"))
+                {
+                    texto = texto.Replace("{medico}", usuario.USUA_NM_NOME);
+                }
+                if (texto.Contains("{data}"))
+                {
+                    texto = texto.Replace("{data}", consulta.PACO_DT_CONSULTA.ToLongDateString());
+                }
+                if (texto.Contains("{inicio}"))
+                {
+                    texto = texto.Replace("{inicio}", consulta.PACO_HR_INICIO.ToString());
+                }
+                if (texto.Contains("{final}"))
+                {
+                    texto = texto.Replace("{final}", consulta.PACO_HR_FINAL.ToString());
+                }
+                if (texto.Contains("{idConsulta}"))
+                {
+                    texto = texto.Replace("{idConsulta}", consulta.PACO_CD_ID.ToString());
+                }
+                if (texto.Contains("{idPaciente}"))
+                {
+                    texto = texto.Replace("{idPaciente}", paciente.PACI__CD_ID.ToString());
+                }
+                if (texto.Contains("{idUsuario}"))
+                {
+                    texto = texto.Replace("{idUsuario}", usuario.USUA_CD_ID.ToString());
+                }
+                if (texto.Contains("{link}"))
+                {
+                    texto = texto.Replace("{link}", linkFinal);
+                }
+                String emailBody = cab + "<br />" + texto + "<br /><br />" + assinatura;
+
+                // Decriptografa chaves
+                String emissor = CrossCutting.Cryptography.Decrypt(conf.CONF_NM_EMISSOR_AZURE_CRIP);
+                String conn = CrossCutting.Cryptography.Decrypt(conf.CONF_CS_CONNECTION_STRING_AZURE_CRIP);
+                List<AttachmentModel> models = new List<AttachmentModel>();
+
+                // Monta e-mail
+                NetworkCredential net = new NetworkCredential(conf.CONF_NM_SENDGRID_LOGIN, conf.CONF_NM_SENDGRID_PWD);
+                EmailAzure mensagem = new EmailAzure();
+                mensagem.ASSUNTO = "Confirmação de Consulta - " + paciente.PACI_NM_NOME.ToUpper() + " - " + consulta.PACO_DT_CONSULTA.ToLongDateString();
+                mensagem.CORPO = emailBody;
+                mensagem.DEFAULT_CREDENTIALS = false;
+                mensagem.EMAIL_TO_DESTINO = paciente.PACI_NM_EMAIL;
+                mensagem.NOME_EMISSOR_AZURE = emissor;
+                mensagem.ENABLE_SSL = true;
+                mensagem.NOME_EMISSOR = usuario.USUA_NM_NOME;
+                mensagem.PORTA = conf.CONF_NM_PORTA_SMTP;
+                mensagem.PRIORIDADE = System.Net.Mail.MailPriority.High;
+                mensagem.SENHA_EMISSOR = conf.CONF_NM_SENDGRID_PWD;
+                mensagem.SMTP = conf.CONF_NM_HOST_SMTP;
+                mensagem.IS_HTML = true;
+                mensagem.NETWORK_CREDENTIAL = net;
+                mensagem.ConnectionString = conn;
+
+                // Envia mensagem
+                try
+                {
+                    await CrossCutting.CommunicationAzurePackage.SendMailAsync(mensagem, models);
+                }
+                catch (Exception ex)
+                {
+                    ViewBag.Message = ex.Message;
+                    Session["TipoVolta"] = 2;
+                    Session["VoltaExcecao"] = "Paciente";
+                    Session["Excecao"] = ex;
+                    Session["ExcecaoTipo"] = ex.GetType().ToString();
+                    GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                    Int32 voltaX = grava.GravarLogExcecao(ex, "Paciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                    urlRedirecionamento = Url.Action("TrataExcecao", "BaseAdmin");
+                    return Json(new { success = true, redirectUrl = urlRedirecionamento });
+                }
+
+                // Grava mensagem enviada
+                MensagemViewModel mens = new MensagemViewModel();
+                mens.NOME = paciente.PACI_NM_NOME;
+                mens.ID = paciente.PACI__CD_ID;
+                mens.MODELO = paciente.PACI_NM_EMAIL;
+                mens.MENS_DT_CRIACAO = DateTime.Today.Date;
+                mens.MENS_IN_TIPO = 1;
+                mens.MENS_NM_CAMPANHA = paciente.PACI_NM_EMAIL;
+                mens.MENS_NM_NOME = "Mensagem para Paciente - Confirmação de Consulta: " + paciente.PACI_NM_NOME;
+                mens.PACI_CD_ID = paciente.PACI__CD_ID;
+                mens.MENS_TX_TEXTO = emailBody;
+
+                EnvioEMailGeralBase envio = new EnvioEMailGeralBase(usuApp, confApp, meApp);
+                String guid = Xid.NewXid().ToString();
+                Int32 volta1 = envio.GravarMensagemEnviada(mens, usuario, mens.MENS_TX_TEXTO, "Succeeded", guid, null, "Envio de confirmação de Consulta de Paciente - " + paciente.PACI_NM_NOME);
+
+                // Mensagem do CRUD
+                Session["MsgCRUD"] = "Enviado ao paciente " + paciente.PACI_NM_NOME.ToUpper() + " uma solicitação de confirmação de consulta para a data: " + consulta.PACO_DT_CONSULTA.ToLongDateString();
+                Session["MensPaciente"] = 888;
+
+                // Sucesso
+                Session["NivelPaciente"] = 3;
+                Session["Consultas"] = null;
+                Session["ConsultaAlterada"] = 1;
+
+                // Retorno
+                if ((Int32)Session["TipoSolicitacao"] == 1)
+                {
+                    if ((Int32)Session["VoltaAtestado"] == 1)
+                    {
+                        urlRedirecionamento = Url.Action("MontarTelaPaciente", "Paciente");
+                    }
+                    urlRedirecionamento = Url.Action("VoltarAnexoPaciente", "Paciente");
+                }
+                if ((Int32)Session["VoltarEnvio"] == 2)
+                {
+                    urlRedirecionamento = Url.Action("ConfirmarCancelarConsulta", "Paciente");
+                }
+                urlRedirecionamento = Url.Action("MontarTelaConsultas", "Paciente");
+                return Json(new { success = true, redirectUrl = urlRedirecionamento });
+
+
+                //if ((Int32)Session["TipoSolicitacao"] == 1)
+                //{
+                //    if ((Int32)Session["VoltaAtestado"] == 1)
+                //    {
+                //        return RedirectToAction("MontarTelaPaciente");
+                //    }
+                //    return RedirectToAction("VoltarAnexoPaciente");
+                //}
+                //if ((Int32)Session["VoltarEnvio"] == 2)
+                //{
+                //    return RedirectToAction("ConfirmarCancelarConsulta", "Paciente");
+                //}
+                //return RedirectToAction("MontarTelaConsultas", "Paciente");
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Paciente";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Paciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                String urlRedirecionamento1 = Url.Action("TrataExcecao", "BaseAdmin");
+                return Json(new { success = true, redirectUrl = urlRedirecionamento1 });
+            }
+        }
+
         public ActionResult GerarRelatorioConsultaGeral()
         {
             try
