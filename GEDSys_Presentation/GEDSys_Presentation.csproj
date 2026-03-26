@@ -4057,6 +4057,7 @@
     <Content Include="Imagens\1\AreaPaciente\34\Anexos\Molhos para saladas.pdf" />
     <Content Include="Imagens\1\Locacao\102\Anexos\Documento médico.pdf" />
     <Content Include="Imagens\1\Locacao\102\Contrato\Contrato_LocacaoColapso Cardíaco Da Silva_d6ssaf4n00032i1o0ljg.pdf" />
+    <Content Include="BaseAdmin\Ajuda\24\Ajuda24.pdf" />
     <None Include="Properties\PublishProfiles\eprontuario - FTP.pubxml" />
     <None Include="Properties\PublishProfiles\eprontuario - FTP1.pubxml" />
     <None Include="Properties\PublishProfiles\eprontuario - Web Deploy.pubxml" />

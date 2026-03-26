@@ -101,10 +101,10 @@
                                                     <details class="ajuda-contextual">
                                                         <summary><i class="fa fa-question-circle text-info"></i> Como preencher?</summary>
                                                         <div class="well well-sm">
-                                                            <p>Informe o nome comercial completo do medicamento, incluindo a concentração e a forma farmacêutica se houver variações.</p>
+                                                            <p>Informe o nome comercial ou genérico completo do medicamento, incluindo a concentração, se houver variações.</p>
                                                             <ul>
-                                                                <li>Exemplo 1: <strong>Tylenol 750mg Comprimidos</strong></li>
-                                                                <li>Exemplo 2: <strong>Amoxicilina 500mg Cápsulas</strong></li>
+                                                                <li>Exemplo 1: <strong>Tylenol 750mg</strong></li>
+                                                                <li>Exemplo 2: <strong>Amoxicilina 500mg</strong></li>
                                                             </ul>
                                                         </div>
                                                     </details>
@@ -115,6 +115,18 @@
                                                     Nome Genérico
                                                     @Html.TextAreaFor(m => m.MEDI_NM_GENERICO, new { @class = "form-control", style = "width: 100%; height: 80px; overflow:auto;", autofocus = true })
                                                     @Html.ValidationMessageFor(m => m.MEDI_NM_GENERICO, "", new { @style = "color:red" })
+                                                    @* --- INÍCIO DA AJUDA CONTEXTUAL --- *@
+                                                    <details class="ajuda-contextual">
+                                                        <summary><i class="fa fa-question-circle text-info"></i> Como preencher?</summary>
+                                                        <div class="well well-sm">
+                                                            <p><b>OPCIONAL</b> - Informe o nome genérico completo do medicamento, incluindo a concentração, caso tenha informado o nome comercial.</p>
+                                                            <ul>
+                                                                <li>Exemplo 1: <strong>Paracetamol 750mg</strong></li>
+                                                                <li>Exemplo 2: <strong>Amoxicilina 500mg</strong></li>
+                                                            </ul>
+                                                        </div>
+                                                    </details>
+                                                    @* --- FIM DA AJUDA CONTEXTUAL --- *@
                                                 </div>
                                             </div>
                                             <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
@@ -132,11 +144,35 @@
                                                     Forma de Apresentação
                                                     @Html.TextAreaFor(m => m.MEDI_NM_APRESENTACAO, new { @class = "form-control", style = "width: 100%; height: 100px; overflow:auto;", autofocus = true })
                                                     @Html.ValidationMessageFor(m => m.MEDI_NM_APRESENTACAO, "", new { @style = "color:red" })
+                                                    @* --- INÍCIO DA AJUDA CONTEXTUAL --- *@
+                                                    <details class="ajuda-contextual">
+                                                        <summary><i class="fa fa-question-circle text-info"></i> Como preencher?</summary>
+                                                        <div class="well well-sm">
+                                                            <p><b>OPCIONAL</b> - Informe a forma de apresentação do medicamento.</p>
+                                                            <ul>
+                                                                <li>Exemplo 1: <strong>Comprimidos revestidos</strong></li>
+                                                                <li>Exemplo 2: <strong>Gotas</strong></li>
+                                                            </ul>
+                                                        </div>
+                                                    </details>
+                                                    @* --- FIM DA AJUDA CONTEXTUAL --- *@
                                                 </div>
                                                 <div class="col-lg-3 col-md-3 col-xs-12">
                                                     Laboratório
                                                     @Html.TextAreaFor(m => m.MEDI_NM_LABORATORIO, new { @class = "form-control", style = "width: 100%; height: 100px; overflow:auto;", autofocus = true })
                                                     @Html.ValidationMessageFor(m => m.MEDI_NM_LABORATORIO, "", new { @style = "color:red" })
+                                                    @* --- INÍCIO DA AJUDA CONTEXTUAL --- *@
+                                                    <details class="ajuda-contextual">
+                                                        <summary><i class="fa fa-question-circle text-info"></i> Como preencher?</summary>
+                                                        <div class="well well-sm">
+                                                            <p><b>OPCIONAL</b> - Informe o nome do laboratório/farmaceutica fabricante.</p>
+                                                            <ul>
+                                                                <li>Exemplo 1: <strong>Pfizer</strong></li>
+                                                                <li>Exemplo 2: <strong>Medley</strong></li>
+                                                            </ul>
+                                                        </div>
+                                                    </details>
+                                                    @* --- FIM DA AJUDA CONTEXTUAL --- *@
                                                 </div>
                                             </div>
                                             <div class="form-group" style=" margin-left: -15px; margin-right: -15px; scrollbar-gutter: stable; scrollbar-width: thin">

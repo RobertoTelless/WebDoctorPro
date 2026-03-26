@@ -119,6 +119,36 @@
             </div>
         }
         <div class="row">
+            <div class="form-group" style=" margin-left: 15px; margin-right: 0px;">
+                @* --- INÍCIO DA AJUDA CONTEXTUAL --- *@
+                <details class="ajuda-contextual">
+                    <summary><i class="fa fa-info-circle text-info"></i> Resumo das funcionalidades desta página</summary>
+                    <div class="well well-sm">
+                        <p>Essa é a página central do <b>WebDoctorPro</b>. Nela você poderá:</p>
+                        <ol>
+                            <li>Exibe as informações disponibilizadas pela RTi com possibilidade de visualização.</li>
+                            <li>Localizar (filtrar) um paciente pelo nome e acessar a sua página principal.</li>
+                            <li>Visualizar as consultas confirmadas do dia e abrir a página de procedimento da consulta</li>
+                            <li>Visualizar os aniversariantes do dia.</li>
+                            <li>Visualizar os avisos pendentes.</li>
+                            <li>Acessar a página de inclusão de pacientes.</li>
+                            <li>Acessar a página de marcação/confirmação de consultas.</li>
+                            <li>Acessar a página de bloqueios de horários.</li>
+                            <li>Acessar a central de pacientes.</li>
+                            <li>Acessar a central de consultas.</li>
+                            <li>Acessar a central de atestados.</li>
+                            <li>Acessar a central de prescrições.</li>
+                            <li>Acessar a central de solicitações de exames.</li>
+                            <li>Acessar a central de resultados de exames.</li>
+                            <li>Acessar o histórico dos pacientes.</li>
+                            <li>Acessar as informações enviadas por pacientes através da Área do Paciente.</li>
+                        </ol>
+                    </div>
+                </details>
+                @* --- FIM DA AJUDA CONTEXTUAL --- *@
+            </div>
+        </div>
+        <div class="row">
             <div class="col-lg-2">
                 <div class="ibox float-e-margins">
                     <div class="ibox-title" style="background-color: darkseagreen; color: darkgreen">
@@ -176,7 +206,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-lg-2">
+            @*<div class="col-lg-2">
                 <div class="ibox float-e-margins">
                     <div class="ibox-title" style="background-color: darkseagreen; color: darkgreen">
                         <span class="label label-primary pull-right">Hoje</span>
@@ -187,7 +217,7 @@
                         <small><a href="@Url.Action("MontarTelaAvisosRTi", "Paciente2")" class="btn-loading" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Consultar todos os avisos da Rti disponíveis">Avisos Disponíveis</a></small>
                     </div>
                 </div>
-            </div>
+            </div>*@
         </div>
         @*Atalhos*@
         <div class="row">
@@ -305,7 +335,7 @@
                                                                         <tr>
                                                                             @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_ALTERAR_PACIENTE == 1)
                                                                             {
-                                                                                <td style="width: auto; cursor: pointer; text-decoration: underline;"><a href="@Url.Action("EditarPaciente", "Paciente", new { id = cond.PACI__CD_ID })" class="btn-loading6" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Editar/Consultar paciente"/>@cond.PACI_NM_NOME</td>
+                                                                                <td style="width: auto; cursor: pointer; text-decoration: underline;"><a href="@Url.Action("EditarPaciente", "Paciente", new { id = cond.PACI__CD_ID })" class="btn-loading6" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Alterar         /Consultar paciente"/>@cond.PACI_NM_NOME</td>
                                                                             }
                                                                             else
                                                                             {

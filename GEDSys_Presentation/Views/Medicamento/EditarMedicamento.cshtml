@@ -132,6 +132,21 @@
                                                     Posologia
                                                     @Html.TextAreaFor(m => m.MEDI_DS_POSOLOGIA, new { @class = "form-control", style = "width: 100%; height: 100px; overflow:auto;", autofocus = true })
                                                     @Html.ValidationMessageFor(m => m.MEDI_DS_POSOLOGIA, "", new { @style = "color:red" })
+                                                    @* --- INÍCIO DA AJUDA CONTEXTUAL --- *@
+                                                    <details class="ajuda-contextual">
+                                                        <summary><i class="fa fa-info-circle text-info"></i> Orientações sobre a Posologia</summary>
+                                                        <div class="well well-sm">
+                                                            <p>Descreva detalhadamente como o paciente deve utilizar o medicamento. Inclua:</p>
+                                                            <ol>
+                                                                <li>A dose (ex: 1 comprimido, 5ml, 2 gotas).</li>
+                                                                <li>A frequência (ex: a cada 8 horas, 1 vez ao dia).</li>
+                                                                <li>A duração do tratamento (ex: por 7 dias, uso contínuo).</li>
+                                                                <li>Via de administração (ex: via oral, aplicar na pele).</li>
+                                                            </ol>
+                                                            <p><em>Exemplo: Tomar 1 comprimido via oral a cada 12 horas (8h e 20h) durante 5 dias. Não partir o comprimido.</em></p>
+                                                        </div>
+                                                    </details>
+                                                    @* --- FIM DA AJUDA CONTEXTUAL --- *@
                                                 </div>
                                             </div>
                                         </div>

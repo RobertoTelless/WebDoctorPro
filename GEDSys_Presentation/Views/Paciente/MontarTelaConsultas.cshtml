@@ -8,29 +8,7 @@
     ViewBag.MetaKeywords = "WebDoctor, paciente, consulta";
 }
 
-@*<div class="wrapper wrapper-content animated fadeInRight">
-    <div class="modal fade" id="modalCancelar" tabindex="-1" role="dialog" aria-labelledby="modalCancelarLabel" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="modalCancelarLabel">Justificar Cancelamento</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Fechar">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <div class="form-group">
-                        <label for="textoJustificativa">Justificativa do Cancelamento:</label>
-                        <textarea class="form-control" id="textoJustificativa" rows="5" required></textarea>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
-                    <button type="button" class="btn btn-danger" id="btnConfirmarCancelamento">Confirmar Cancelamento</button>
-                </div>
-            </div>
-        </div>
-    </div>*@    
+<div class="wrapper wrapper-content animated fadeInRight">
     <div class="modal inmodal fade" id="modalConfirmacao" tabindex="-1" role="dialog" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
@@ -145,7 +123,28 @@
         </ol>
         <br />
     </div>
-
+    <div class="row">
+        <div class="form-group" style=" margin-left: 15px; margin-right: 0px;">
+            @* --- INÍCIO DA AJUDA CONTEXTUAL --- *@
+            <details class="ajuda-contextual">
+                <summary><i class="fa fa-info-circle text-info"></i> Resumo das funcionalidades desta página</summary>
+                <div class="well well-sm">
+                    <p>Essa é a página da central de Consultas do <b>WebDoctorPro</b>. Nela você poderá:</p>
+                    <ol>
+                        <li>Ver consultas marcadas para todos os pacientes para a data corrente, mês corrente, anteriores e futuras.</li>
+                        <li>Acessar a página de marcação de consultas.</li>
+                        <li>Acessar a página de alteração de uma consulta.</li>
+                        <li>Confirmar e cancelar consultas.</li>
+                        <li>Acessar a página de visualização de consultas em formato calendário.</li>
+                        <li>Acessar a página de encerramento de consultas.</li>
+                        <li>Excluir consultas</li>
+                        <li>Acessar a página de procedimento de consultas.</li>
+                    </ol>
+                </div>
+            </details>
+            @* --- FIM DA AJUDA CONTEXTUAL --- *@
+        </div>
+    </div>
     <div class="row">
         <div class="col-lg-12 col-md-12 col-xs-12">
             <div class="col-lg-12 col-md-12 col-xs-12 ibox float-e-margins">

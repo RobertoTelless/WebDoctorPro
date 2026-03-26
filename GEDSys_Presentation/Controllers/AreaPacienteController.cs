@@ -9376,6 +9376,7 @@ namespace GEDSys_Presentation.Controllers
                 Session["IncluirConsultaArea"] = 2;
                 Session["JaCriou"] = 0;
                 Session["IdExameVer"] = null;
+                Session["AjudaNivel"] = "../BaseAdmin/Ajuda/24/Ajuda24.pdf";
 
                 objetoArea = new AREA_PACIENTE();
                 return View(objetoArea);

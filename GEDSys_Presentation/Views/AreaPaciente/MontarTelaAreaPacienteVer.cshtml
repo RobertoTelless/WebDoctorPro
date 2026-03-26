@@ -246,6 +246,7 @@
                                 <a href="@Url.Action("RetirarFiltroAreaPaciente", "AreaPaciente")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Retorna a exibição padrão da área do paciente" class="btn btn-sm btn-warning btn-loading" id="emp" OnClick = "Fade()">Retirar Filtro</a>                
                                 <a href="@Url.Action("EnviarEMailPaciente", "AreaPaciente")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Envia mensagem para o paciente" class="btn btn-sm btn-warning btn-loading" id="emp" OnClick = "Fade()">Enviar Mensagem</a>                
                                 @Html.ButtonLinkIndex(text: "Voltar", controller: "Paciente", action: "MontarTelaPaciente", htmlAttributes: new { @class = "btn-loading" })
+                                <a href="@Url.Action((String)Session["AjudaNivel"])"  class="btn btn-sm btn-danger" target="_blank">Ajuda</a>                
                                 <span id="loadingIndicator" style="display: none; margin-left: 10px; color: #007bff;">
                                     <i class="fa fa-spinner fa-spin"></i> Processando...
                                 </span>
