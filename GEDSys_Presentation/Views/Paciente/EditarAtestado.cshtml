@@ -65,7 +65,24 @@
             <br />
         </div>
     }
-
+    <div class="row">
+        <div class="form-group" style=" margin-left: 15px; margin-right: 0px;">
+            @* --- INÍCIO DA AJUDA CONTEXTUAL --- *@
+            <details class="ajuda-contextual">
+                <summary><i class="fa fa-info-circle text-info"></i> Resumo das funcionalidades desta página</summary>
+                <div class="well well-sm">
+                    <p>Essa é a página de alteração de atestados do <b>WebDoctorPro</b>. Nela você poderá:</p>
+                    <ol>
+                        <li>Permite alterar apenas o texto de um atestado criado e não enviado ao paciente</li>
+                        <li>Permite visualizar o número de vezes que o atestado foi enviado ao paciente </li>
+                        <li>Permite visualizar a data do último envio do atestado ao paciente </li>
+                        <li>Impressão do atestado em formato PDF.</li>
+                    </ol>
+                </div>
+            </details>
+            @* --- FIM DA AJUDA CONTEXTUAL --- *@
+        </div>
+    </div>
     <div class="row">
         <div class="col-lg-12 col-md-12 col-xs-12">
             <div class="col-lg-12 col-md-12 col-xs-12 ibox float-e-margins">
@@ -114,7 +131,6 @@
                                     @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaAtestados", controller: "Paciente", htmlAttributes: new { @class = "btn-loading" })
                                 }
                             }
-                            <a href="@Url.Action((String)Session["AjudaNivel"])"  class="btn btn-sm btn-danger" target="_blank">Ajuda</a>                
                             <span id="loadingIndicator" style="display: none; margin-left: 10px; color: #007bff;">
                                 <i class="fa fa-spinner fa-spin"></i> Processando...
                             </span>

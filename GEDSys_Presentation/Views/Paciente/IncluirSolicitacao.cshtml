@@ -65,7 +65,24 @@
             <br />
         </div>
     }
-
+    <div class="row">
+        <div class="form-group" style=" margin-left: 15px; margin-right: 0px;">
+            @* --- INÍCIO DA AJUDA CONTEXTUAL --- *@
+            <details class="ajuda-contextual">
+                <summary><i class="fa fa-info-circle text-info"></i> Resumo das funcionalidades desta página</summary>
+                <div class="well well-sm">
+                    <p>Essa é a página de emissão de solicitações de exames do <b>WebDoctorPro</b>. Nela você poderá:</p>
+                    <ol>
+                        <li>Criar uma nova solicitação de exame para um paciente cadastrado</li>
+                        <li>Poderá selecionar um modelo de solicitação de exame previamente cadastrado ou redigir um novo</li>
+                        <li>Poderá selecionar se a solicitação de exame sendo criada terá ou não data de emissão</li>
+                        <li>Acesso à página de cadastramento de um novo modelo solicitação de exame</li>
+                    </ol>
+                </div>
+            </details>
+            @* --- FIM DA AJUDA CONTEXTUAL --- *@
+        </div>
+    </div>
     <div class="row">
         <div class="col-lg-12 col-md-12 col-xs-12">
             <div class="col-lg-12 col-md-12 col-xs-12 ibox float-e-margins">
@@ -226,7 +243,7 @@
                                     @Html.ValidationMessageFor(m => m.TIEX_CD_ID, "", new { @style = "color:red" })
                                 </div>
                                 <div class="col-lg-2 col-md-2 col-xs-12">
-                                    Incluir Data?
+                                    Incluir Data?*
                                     @Html.DropDownListFor(m => m.PASO_IN_DATA, (SelectList)ViewBag.TrataData, "Selecionar", new { @class = "form-control", data_toggle = "popover", data_content = "Permite escolher se quer que a data de emissão apareça na solicitação sendo gerada", data_trigger="hover", data_placement="top", autofocus = true })
                                     @Html.ValidationMessageFor(m => m.PASO_IN_DATA, "", new { @style = "color:red" })
                                 </div>

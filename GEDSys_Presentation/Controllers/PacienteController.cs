@@ -19752,7 +19752,7 @@ namespace GEDSys_Presentation.Controllers
 
                 // Mensagem do CRUD
                 Session["MsgCRUD"] = "A consulta do(a) paciente " + pac.PACI_NM_NOME.ToUpper() + " marcada para " + item.PACO_DT_CONSULTA.ToLongDateString() + " foi confirmada com sucesso";
-                Session["MensPaciente"] = 888;
+                Session["MensPaciente"] = 61;
 
                 // Envia mensagem
                 if (pac.PACI_NM_EMAIL != null & conf.CONF_IN_ENVIA_CONFIRMACAO == 1)
@@ -20201,7 +20201,13 @@ namespace GEDSys_Presentation.Controllers
                     }
                     if ((Int32)Session["MensPaciente"] == 888)
                     {
-                        ModelState.AddModelError("", (String)Session["MsgCRUD"]);
+                        TempData["MensagemAcerto"] = (String)Session["MsgCRUD"];
+                        TempData["TemMensagem"] = 1;
+                    }
+                    if ((Int32)Session["MensPaciente"] == 61)
+                    {
+                        TempData["MensagemAcerto"] = (String)Session["MsgCRUD"];
+                        TempData["TemMensagem"] = 1;
                     }
                 }
 
@@ -24997,6 +25003,11 @@ namespace GEDSys_Presentation.Controllers
                         ModelState.AddModelError("", (String)Session["MsgCRUD"]);
                     }
                     if ((Int32)Session["MensPaciente"] == 888)
+                    {
+                        TempData["MensagemAcerto"] = (String)Session["MsgCRUD"];
+                        TempData["TemMensagem"] = 1;
+                    }
+                    if ((Int32)Session["MensPaciente"] == 61)
                     {
                         TempData["MensagemAcerto"] = (String)Session["MsgCRUD"];
                         TempData["TemMensagem"] = 1;

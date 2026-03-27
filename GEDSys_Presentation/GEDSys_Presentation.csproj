@@ -2906,6 +2906,7 @@
     <Content Include="Images\Tela_SD.jpg" />
     <Content Include="Images\teste_1.jpg" />
     <Content Include="Images\zender_logo.png" />
+    <Content Include="Marketing\webdoctorpro-infografico.jpg" />
     <Content Include="PdfViewer\build\pdf.js" />
     <Content Include="PdfViewer\build\pdf.worker.js" />
     <Content Include="PdfViewer\web\debugger.js" />

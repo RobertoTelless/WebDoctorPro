@@ -139,6 +139,7 @@
                         <li>Acessar a página de encerramento de consultas.</li>
                         <li>Excluir consultas</li>
                         <li>Acessar a página de procedimento de consultas.</li>
+                        <li>Enviar ao paciente e-mail para confirmação da consulta.</li>
                     </ol>
                 </div>
             </details>
@@ -571,6 +572,7 @@
                                                             }
                                                         }
                                                     }
+
                                                     @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_PACIENTE_CONSULTA_ALTERAR == 1)
                                                     {
                                                         if (cond.PACO_IN_ATIVO == 1 & cond.PACO_IN_CONFIRMADA == 0)
@@ -597,6 +599,7 @@
                                                             @*<span style="color: #337ab7; cursor:pointer;" alt="Mensagem" class="tbl-link fa-lg fa fa-times btn-loading" onclick="ShowModalCancelar('/Paciente2/CancelarConsulta/@cond.PACO_CD_ID')" title="Cancelar Consulta"></span>*@     
                                                         }
                                                     }
+
                                                     @if (cond.PACO_IN_ATIVO == 1 & cond.PACO_IN_CONFIRMADA == 0)
                                                     {
                                                         <button type="button" 
@@ -608,7 +611,7 @@
                                                             <i class="fa fa-mail-forward" style="font-size: 17px; margin-left: -5px;"></i>
                                                         </button>
 
-                                                        <span style="color: #337ab7; cursor:pointer;" alt="Mensagem" class="tbl-link fa-lg fa fa-mail-forward btn-loading" onclick="ShowModalEnviar('/Paciente2/EnviarEMailConfirmacao/@cond.PACO_CD_ID')" title="Enviar Confirmação"></span>
+                                                        @*<span style="color: #337ab7; cursor:pointer;" alt="Mensagem" class="tbl-link fa-lg fa fa-mail-forward btn-loading" onclick="ShowModalEnviar('/Paciente2/EnviarEMailConfirmacao/@cond.PACO_CD_ID')" title="Enviar Confirmação"></span>*@
                                                     }
                                                 </td>
                                             </tr>
@@ -967,7 +970,7 @@
         }; 
     </script>
 
-        <script type="text/javascript">
+    <script type="text/javascript">
         $(document).ready(function () {
             // Configurações globais do Toastr
             toastr.options = {
@@ -1076,6 +1079,7 @@
         });
 
     </script>*@
+
     <script type="text/javascript">
         $(document).ready(function () {
             var $modal = $('#modalConfirmacao');
