@@ -87,7 +87,26 @@
             <br />
         </div>
     }
-
+    <div class="row">
+        <div class="form-group" style=" margin-left: 15px; margin-right: 0px;">
+            @* --- INÍCIO DA AJUDA CONTEXTUAL --- *@
+            <details class="ajuda-contextual">
+                <summary><i class="fa fa-info-circle text-info"></i> Resumo das funcionalidades desta página</summary>
+                <div class="well well-sm">
+                    <p>Essa é a página de alteração de resultados de exames do <b>WebDoctorPro</b>. Nela você poderá:</p>
+                    <ol>
+                        <li>Permite alterar algumas informações de um resultado de exame de um paciente</li>
+                        <li>Permite acessar o site do laboratório que produziu o exame </li>
+                        <li>Permite incluir anotações de texto ao resultado do exame</li>
+                        <li>Permite a visualização dos arquivos anexados ao resultado de exame</li>
+                        <li>Permite a incluir ou excluir arquivos anexados ao resultado de exame</li>
+                        <li>Impressão do resultado de exame em formato PDF.</li>
+                    </ol>
+                </div>
+            </details>
+            @* --- FIM DA AJUDA CONTEXTUAL --- *@
+        </div>
+    </div>
     <div class="row">
         <div class="col-lg-12 col-md-12 col-xs-12">
             <div class="col-lg-12 col-md-12 col-xs-12 ibox float-e-margins">
@@ -989,7 +1008,7 @@
             $('#file').on('change', function () {
                 var arquivo = this.files[0];
                 var limiteTamanho = 50 * 1024 * 1024; // 50MB (Conforme seu código)
-                var extensoesPermitidas = ['pdf', 'jpg', 'png', 'mp3', 'mp4', 'xlsx'];
+                var extensoesPermitidas = ['pdf', 'jpg', 'jpeg', 'png', 'mp3', 'mp4', 'webp', 'xlsx'];
 
                 if (arquivo) {
                     var nomeArquivo = arquivo.name;

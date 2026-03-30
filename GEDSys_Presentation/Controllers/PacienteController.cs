@@ -2108,40 +2108,101 @@ namespace GEDSys_Presentation.Controllers
         //    Session["FileQueuePaciente"] = queue;
         //}
 
+        //[HttpPost]
+        //public JsonResult UploadFileToSession(HttpPostedFileBase file)
+        //{
+        //    if (file != null && file.ContentLength > 0)
+        //    {
+        //        byte[] data;
+        //        using (Stream inputStream = file.InputStream)
+        //        {
+        //            MemoryStream memoryStream = inputStream as MemoryStream;
+        //            if (memoryStream == null)
+        //            {
+        //                memoryStream = new MemoryStream();
+        //                inputStream.CopyTo(memoryStream);
+        //            }
+        //            data = memoryStream.ToArray();
+        //        }
+
+        //        // Recupera a fila da sessão ou cria uma nova
+        //        List<FileQueue> queue = Session["FileQueuePaciente"] as List<FileQueue> ?? new List<FileQueue>();
+
+        //        queue.Add(new FileQueue
+        //        {
+        //            Name = file.FileName,
+        //            ContentType = file.ContentType,
+        //            Contents = data,
+        //            Profile = 1 
+        //        });
+
+        //        Session["FileQueuePaciente"] = queue;
+        //        return Json(new { Sucesso = 1 });
+        //    }
+        //    return Json(new { Sucesso = 0 });
+        //}
+
+        //[HttpPost]
+        //public JsonResult UploadFileToSession(IEnumerable<HttpPostedFileBase> files) // Nome alterado para "files"
+        //{
+        //    if (files != null && files.Any())
+        //    {
+        //        // Recupera a fila da sessão ou cria uma nova
+        //        List<FileQueue> queue = Session["FileQueuePaciente"] as List<FileQueue> ?? new List<FileQueue>();
+
+        //        foreach (var file in files)
+        //        {
+        //            if (file != null && file.ContentLength > 0)
+        //            {
+        //                byte[] data;
+        //                using (Stream inputStream = file.InputStream)
+        //                {
+        //                    MemoryStream memoryStream = new MemoryStream();
+        //                    inputStream.CopyTo(memoryStream);
+        //                    data = memoryStream.ToArray();
+        //                }
+
+        //                queue.Add(new FileQueue
+        //                {
+        //                    Name = file.FileName,
+        //                    ContentType = file.ContentType,
+        //                    Contents = data,
+        //                    Profile = 1
+        //                });
+        //            }
+        //        }
+
+        //        Session["FileQueuePaciente"] = queue;
+        //        return Json(new { Sucesso = 1 });
+        //    }
+        //    return Json(new { Sucesso = 0 });
+        //}
+
         [HttpPost]
-        public JsonResult UploadFileToSession(HttpPostedFileBase file)
+        public void UploadFileToSession(IEnumerable<HttpPostedFileBase> files, String profile)
         {
-            if (file != null && file.ContentLength > 0)
+            List<FileQueue> queue = new List<FileQueue>();
+            foreach (var file in files)
             {
-                byte[] data;
-                using (Stream inputStream = file.InputStream)
+                FileQueue f = new FileQueue();
+                f.Name = Path.GetFileName(file.FileName);
+                f.ContentType = Path.GetExtension(file.FileName);
+
+                MemoryStream ms = new MemoryStream();
+                file.InputStream.CopyTo(ms);
+                f.Contents = ms.ToArray();
+
+                if (profile != null)
                 {
-                    MemoryStream memoryStream = inputStream as MemoryStream;
-                    if (memoryStream == null)
+                    if (file.FileName.Equals(profile))
                     {
-                        memoryStream = new MemoryStream();
-                        inputStream.CopyTo(memoryStream);
+                        f.Profile = 1;
                     }
-                    data = memoryStream.ToArray();
                 }
-
-                // Recupera a fila da sessão ou cria uma nova
-                List<FileQueue> queue = Session["FileQueuePaciente"] as List<FileQueue> ?? new List<FileQueue>();
-
-                queue.Add(new FileQueue
-                {
-                    Name = file.FileName,
-                    ContentType = file.ContentType,
-                    Contents = data,
-                    Profile = 1 
-                });
-
-                Session["FileQueuePaciente"] = queue;
-                return Json(new { Sucesso = 1 });
+                queue.Add(f);
             }
-            return Json(new { Sucesso = 0 });
+            Session["FileQueuePaciente"] = queue;
         }
-
 
         [HttpPost]
         public void UploadFileToSessionMensagem(IEnumerable<HttpPostedFileBase> files, String profile)
@@ -10901,39 +10962,44 @@ namespace GEDSys_Presentation.Controllers
         }
 
         [HttpPost]
-        public JsonResult SalvarAnotacaoPonto(int paeoId, double x, double y, string texto)
+        public JsonResult SalvarAnotacaoPonto(int paeoId, string x, string y, string texto)
         {
             try
             {
+                // Converte tratando ponto e vírgula
+                double posX = Convert.ToDouble(x.Replace('.', ','));
+                double posY = Convert.ToDouble(y.Replace('.', ','));
+
                 var novoPonto = new PACIENTE_EXAME_ANEXO_IMAGEM
                 {
                     PAEO_CD_ID = paeoId,
-                    PAIM_VL_X = x,
-                    PAIM_VL_Y = y,
+                    PAIM_VL_X = posX,
+                    PAIM_VL_Y = posY,
                     PAIM_DS_TEXTO = texto
                 };
-                Int32 volta = baseApp.ValidateCreateAnexoImagem(novoPonto);
-                return Json(new { success = true, id = novoPonto.PAIM_CD_ID }); // Retorne o ID gerado
+
+                baseApp.ValidateCreateAnexoImagem(novoPonto);
+                return Json(new { success = true, id = novoPonto.PAIM_CD_ID });
             }
-            catch
+            catch (Exception ex)
             {
-                return Json(new { success = false });
+                return Json(new { success = false, message = ex.Message });
             }
         }
-
         [HttpGet]
-        public JsonResult ListarAnotacoesPonto(int id)
+        public JsonResult ListarAnotacoesPonto(int paeoId)
         {
-            var pontos = baseApp.GetPontosById(id);
-
-            var lista = new List<object>();
-            foreach (var item in pontos)
+            var pontos = baseApp.GetPontosById(paeoId);
+            var lista = pontos.Select(p => new
             {
-                lista.Add(item);
-            }
+                id = p.PAIM_CD_ID,
+                x = p.PAIM_VL_X,
+                y = p.PAIM_VL_Y,
+                texto = p.PAIM_DS_TEXTO
+            }).ToList();
+
             return Json(lista, JsonRequestBehavior.AllowGet);
         }
-
         [HttpGet]
         public ActionResult VerAnexoExamePacienteAudio(Int32 id)
         {

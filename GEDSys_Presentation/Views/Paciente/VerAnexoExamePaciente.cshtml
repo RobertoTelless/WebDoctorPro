@@ -8,6 +8,29 @@
 }
 
 <div class="wrapper wrapper-content animated fadeInRight">
+    <div class="modal inmodal fade" id="modalAnotacao" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header" style="padding: 20px 15px;">
+                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Fechar</span></button>
+                    <i class="fa fa-pencil-square-o modal-icon text-primary"></i>
+                    <h4 class="modal-title">Nova Anotação na Imagem</h4>
+                    <small class="font-bold">WebDoctorPro - Anotação em Imagem de Exame</small>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label>Digite a anotação para este ponto da imagem:</label>
+                        <textarea id="txtAnotacaoModal" class="form-control" rows="4" placeholder="Ex: Mancha identificada na região lateral..."></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-white" data-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" id="btnSalvarAnotacaoModal">Salvar Anotação</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="page-title">
         <ol class="breadcrumb">
             <li>
@@ -29,6 +52,23 @@
         <br />
     </div>
     <div class="row">
+        <div class="form-group" style=" margin-left: 15px; margin-right: 0px;">
+            @* --- INÍCIO DA AJUDA CONTEXTUAL --- *@
+            <details class="ajuda-contextual">
+                <summary><i class="fa fa-info-circle text-info"></i> Resumo das funcionalidades desta página</summary>
+                <div class="well well-sm">
+                    <p>Essa é a página de visualização de anexos (imagens ou vídeos) de resultados de exames do <b>WebDoctorPro</b>. Nela você poderá:</p>
+                    <ol>
+                        <li>Visualizar uma imagem anexada com recursos de ampliação e anotação na prória imagem</li>
+                        <li>Visualizar um vídeo anexado com recursos de velocidade de exibição, baixa (download), tela cheia e PiP (picture in picture)</li>
+                    </ol>
+                </div>
+            </details>
+            @* --- FIM DA AJUDA CONTEXTUAL --- *@
+        </div>
+    </div>
+
+    <div class="row">
         <div class="col-lg-12 col-md-12 col-xs-12">
             <div class="col-lg-12 col-md-12 col-xs-12 ibox float-e-margins">
                 <div class="ibox-title">
@@ -49,7 +89,6 @@
                             {
                                 @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarEditarExame", controller: "Paciente", htmlAttributes: new { @class = "btn-loading" })
                             }
-                            <a href="@Url.Action((String)Session["AjudaNivel"])"  class="btn btn-sm btn-danger" target="_blank">Ajuda</a>                
                             <span id="loadingIndicator" style="display: none; margin-left: 10px; color: #007bff;">
                                 <i class="fa fa-spinner fa-spin"></i> Processando...
                             </span>
@@ -113,15 +152,15 @@
                             @if (Model.PAEO_IN_TIPO == 1)
                             {
                                 <div class="col-lg-12">
-                                    <p class="alert alert-info"><i class="fa fa-info-circle"></i> Clique em qualquer lugar da imagem para adicionar uma anotação.</p>
+                                    <p class="alert alert-info"><i class="fa fa-info-circle"></i> Clique em qualquer lugar da imagem para adicionar uma anotação ou passe o mouse para visualizar uma anotação já existente</p>
         
                                     @* Container para posicionamento absoluto dos Pins *@
                                     <div id="image-container" style="position: relative; display: inline-block; cursor: crosshair;">
                                         <img id="img-exame" src="@Url.Content(Model.PAEO_AQ_ARQUIVO)" class="img-responsive" style="max-height: 1530px; max-width: 100%;">
-                                        @* Os pins existentes serão carregados aqui via JS *@
-                                        <div id="pins-overlay"></div>
-                                    </div>
-                                </div>
+    
+                                        <div id="pins-overlay" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; cursor: crosshair;"></div>
+                                    </div> 
+                               </div>
                             }
 
                             @if (Model.PAEO_IN_TIPO == 2)
@@ -177,77 +216,165 @@
         });
     </script>
 
-    <script>
-    $(document).ready(function () {
-        const paeoId = @Model.PAEO_CD_ID;
+    @*<script>
+        $(document).ready(function () {
+            const paeoId = @Model.PAEO_CD_ID;
 
-        // 1. Carregar pins existentes ao abrir a página
-        loadPins();
+            // 1. Carregar pins existentes ao abrir a página
+            loadPins();
 
-        // 2. Evento de clique na imagem
-        $('#img-exame').click(function (e) {
-            const offset = $(this).offset();
-        
-            // Calcula posição percentual (X, Y) para garantir que funcione em telas de tamanhos diferentes
-            const x = ((e.pageX - offset.left) / $(this).width()) * 100;
-            const y = ((e.pageY - offset.top) / $(this).height()) * 100;
+            // 2. Evento de clique na imagem
+            $('#pins-overlay').click(function (e) {
+                e.preventDefault(); // Impede qualquer ação do formulário
+                e.stopPropagation(); // Impede que o clique suba para o formulário
+    
+                const $overlay = $(this);
+                const offset = $overlay.offset();
+                const x = ((e.pageX - offset.left) / $overlay.width()) * 100;
+                const y = ((e.pageY - offset.top) / $overlay.height()) * 100;
 
-            const texto = prompt("Digite a anotação para este ponto:");
-        
-            if (texto) {
-                savePin(x, y, texto);
-            }
-        });
-
-        function savePin(x, y, texto) {
-            $.post('@Url.Action("SalvarAnotacaoPonto", "Paciente")', {
-                paeoId: paeoId,
-                x: x,
-                y: y,
-                texto: texto
-            }, function (response) {
-                if (response.success) {
-                    renderPin(x, y, texto, response.id);
-                } else {
-                    alert("Erro ao salvar anotação.");
+                const texto = prompt("Digite a anotação para este ponto:");
+                if (texto) {
+                    savePin(x, y, texto);
                 }
             });
-        }
 
-        function renderPin(x, y, texto, id) {
-            const pin = $('<div class="pin" title="' + texto + '"></div>');
-            pin.css({
-                'position': 'absolute',
-                'left': x + '%',
-                'top': y + '%',
-                'width': '15px',
-                'height': '15px',
-                'background-color': 'red',
-                'border-radius': '50%',
-                'border': '2px solid white',
-                'transform': 'translate(-50%, -50%)',
-                'cursor': 'pointer',
-                'z-index': 100
-            });
-        
-            // Adiciona um popover do Bootstrap para mostrar o texto
-            pin.popover({
-                trigger: 'hover',
-                placement: 'top',
-                content: texto
+            function savePin(x, y, texto) {
+                $.post('@Url.Action("SalvarAnotacaoPonto", "Paciente")', {
+                    paeoId: paeoId,
+                    x: x,
+                    y: y,
+                    texto: texto
+                }, function (response) {
+                    if (response.success) {
+                        renderPin(x, y, texto, response.id);
+                    } else {
+                        alert("Erro ao salvar anotação.");
+                    }
+                });
+            }
+
+            function renderPin(x, y, texto, id) {
+                const pin = $('<div class="pin"></div>');
+                pin.css({
+                    'position': 'absolute',
+                    'left': x + '%',
+                    'top': y + '%',
+                    'width': '12px',
+                    'height': '12px',
+                    'background-color': 'red',
+                    'border-radius': '50%',
+                    'border': '2px solid white',
+                    'transform': 'translate(-50%, -50%)',
+                    'cursor': 'pointer',
+                    'z-index': 1000,
+                    'pointer-events': 'auto' // Garante que o pin responda ao mouse para o popover
+                });
+
+                $('#pins-overlay').append(pin);
+
+                // Inicializa o popover do Bootstrap
+                pin.popover({
+                    trigger: 'hover',
+                    placement: 'top',
+                    content: texto,
+                    container: 'body' // Importante para não quebrar o layout
+                });
+            }
+            function loadPins() {
+                $.getJSON('@Url.Action("ListarAnotacoesPonto", "Paciente")', { paeoId: paeoId }, function (data) {
+                    data.forEach(p => renderPin(p.x, p.y, p.texto, p.id));
+                });
+            }
+        });
+    </script>*@
+
+    <script>
+        $(document).ready(function () {
+            const paeoId = @Model.PAEO_CD_ID;
+            let tempX = 0; // Armazena X temporariamente enquanto a modal abre
+            let tempY = 0; // Armazena Y temporariamente enquanto a modal abre
+
+            loadPins();
+
+            // 1. Evento de clique no overlay da imagem
+            $('#pins-overlay').click(function (e) {
+                const $overlay = $(this);
+                const offset = $overlay.offset();
+            
+                // Calcula e guarda as coordenadas
+                tempX = ((e.pageX - offset.left) / $overlay.width()) * 100;
+                tempY = ((e.pageY - offset.top) / $overlay.height()) * 100;
+
+                // Limpa o campo e abre a modal
+                $('#txtAnotacaoModal').val('');
+                $('#modalAnotacao').modal('show');
             });
 
-            $('#pins-overlay').append(pin);
-        }
+            // 2. Evento do botão "Salvar" dentro da modal
+            $('#btnSalvarAnotacaoModal').click(function () {
+                const texto = $('#txtAnotacaoModal').val();
 
-        function loadPins() {
-            $.getJSON('@Url.Action("ListarAnotacoesPonto", "Paciente")', { paeoId: paeoId }, function (data) {
-                data.forEach(p => renderPin(p.x, p.y, p.texto, p.id));
+                if (texto.trim() === "") {
+                    alert("Por favor, digite um texto para a anotação.");
+                    return;
+                }
+
+                // Chama a função de salvar usando as coordenadas guardadas
+                savePin(tempX, tempY, texto);
+            
+                // Fecha a modal
+                $('#modalAnotacao').modal('hide');
             });
-        }
-    });
+
+            function savePin(x, y, texto) {
+                $.post('@Url.Action("SalvarAnotacaoPonto", "Paciente")', {
+                    paeoId: paeoId,
+                    x: x,
+                    y: y,
+                    texto: texto
+                }, function (response) {
+                    if (response.success) {
+                        renderPin(x, y, texto, response.id);
+                    } else {
+                        alert("Erro ao salvar anotação.");
+                    }
+                });
+            }
+
+            function renderPin(x, y, texto, id) {
+                const pin = $('<div class="pin"></div>');
+                pin.css({
+                    'position': 'absolute',
+                    'left': x + '%',
+                    'top': y + '%',
+                    'width': '12px',
+                    'height': '12px',
+                    'background-color': 'red',
+                    'border-radius': '50%',
+                    'border': '2px solid white',
+                    'transform': 'translate(-50%, -50%)',
+                    'cursor': 'pointer',
+                    'z-index': 1000
+                });
+
+                $('#pins-overlay').append(pin);
+
+                pin.popover({
+                    trigger: 'hover',
+                    placement: 'top',
+                    content: texto,
+                    container: 'body'
+                });
+            }
+
+            function loadPins() {
+                $.getJSON('@Url.Action("ListarAnotacoesPonto", "Paciente")', { paeoId: paeoId }, function (data) {
+                    data.forEach(p => renderPin(p.x, p.y, p.texto, p.id));
+                });
+            }
+        });
     </script>
-
 
     @if (ViewBag.Message != null)
     {

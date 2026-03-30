@@ -1261,6 +1261,8 @@
     <Content Include="Imagens\1\Locacao\100\QRCode\Contrato_QRCode_d6phm84n0005107j8g7g.png" />
     <Content Include="Imagens\1\Locacao\101\QRCode\Contrato_QRCode_d6s3f3sn00096v3n8s40.png" />
     <Content Include="Imagens\1\Locacao\102\QRCode\Contrato_QRCode_d6ssaf4n00032i1o0ljg.png" />
+    <Content Include="Imagens\1\Locacao\103\Anexos\amoedo.png" />
+    <Content Include="Imagens\1\Locacao\103\QRCode\Contrato_QRCode_d75ep4cn00045g78akcg.png" />
     <Content Include="Imagens\1\Locacao\74\QRCode\Contrato_QRCode_d4gcnhkn000c5t6n1560.png" />
     <Content Include="Imagens\1\Locacao\75\QRCode\Contrato_QRCode_d4gcr4sn000c5t6n159g.png" />
     <Content Include="Imagens\1\Locacao\76\Anexos\haddock_1.jpg" />
@@ -1366,6 +1368,9 @@
     <Content Include="Imagens\1\Mensagem\486\Anexos\comoda frente.jpg" />
     <Content Include="Imagens\1\Mensagem\492\Anexos\jeannie.jpg" />
     <Content Include="Imagens\1\Noticias\15\Fotos\149538416_10158234366607151_5002183375713967439_n.jpg" />
+    <Content Include="Imagens\1\Pacientes\1060\Fotos\foto_paciente.jpg" />
+    <Content Include="Imagens\1\Pacientes\1061\Fotos\foto_camera.jpg" />
+    <Content Include="Imagens\1\Pacientes\1061\Fotos\foto_paciente.jpg" />
     <Content Include="Imagens\1\Pacientes\106\Fotos\louca.jpg" />
     <Content Include="Imagens\1\Pacientes\108\Fotos\louca.jpg" />
     <Content Include="Imagens\1\Pacientes\10\Anexos\estoque_icone.png" />
@@ -1448,10 +1453,12 @@
     <Content Include="Imagens\1\Pacientes\33\Anexos\naps2-7.5.1-win.exe" />
     <Content Include="Imagens\1\Pacientes\33\Fotos\Severide.jpg" />
     <Content Include="Imagens\1\Pacientes\34\Anexos\AmorinhaLinda.png" />
+    <Content Include="Imagens\1\Pacientes\34\Exames\Foto_Amorinha_2.jpg" />
     <Content Include="Imagens\1\Pacientes\34\Exames\RX_2.jpg" />
     <Content Include="Imagens\1\Pacientes\34\Exames\RX_Braco.jpeg" />
     <Content Include="Imagens\1\Pacientes\34\Exames\TOMO_2.jpg" />
     <Content Include="Imagens\1\Pacientes\34\Exames\US_Abdomem.jpg" />
+    <Content Include="Imagens\1\Pacientes\34\Exames\Video_Teste.mp4" />
     <Content Include="Imagens\1\Pacientes\34\Fotos\Voight.jpg" />
     <Content Include="Imagens\1\Pacientes\34\QRCode\Atestado_QRCode_cu0n4p4n0008ju3isgk0.png" />
     <Content Include="Imagens\1\Pacientes\34\QRCode\Atestado_QRCode_cu37qdkn0008hf16v560.png" />
@@ -1557,6 +1564,8 @@
     <Content Include="Imagens\1\Pacientes\59\Fotos\dores.jpg" />
     <Content Include="Imagens\1\Pacientes\59\QRCode\Prescricao_QRCode_d0mcaqsn0003301r8ci0.png" />
     <Content Include="Imagens\1\Pacientes\60\Exames\ECG_2.jpg" />
+    <Content Include="Imagens\1\Pacientes\60\Exames\RX_2.jpg" />
+    <Content Include="Imagens\1\Pacientes\60\Exames\WhatsApp Video 2025-12-11 at 13.02.43.mp4" />
     <Content Include="Imagens\1\Pacientes\60\Fotos\colapso.png" />
     <Content Include="Imagens\1\Pacientes\60\QRCode\Atestado_QRCode_d0cho14n000bht2t7po0.png" />
     <Content Include="Imagens\1\Pacientes\60\QRCode\Prescricao_QRCode_d0cin8kn000bht4u7hvg.png" />
@@ -1573,6 +1582,7 @@
     <Content Include="Imagens\1\Pacientes\61\QRCode\Solicitacao_QRCode_cvptp4kn0009s275qq9g.png" />
     <Content Include="Imagens\1\Pacientes\61\QRCode\Solicitacao_QRCode_d0ci21sn000bht3s252g.png" />
     <Content Include="Imagens\1\Pacientes\61\QRCode\Solicitacao_QRCode_d0jqi6kn0008pl64b0g0.png" />
+    <Content Include="Imagens\1\Pacientes\62\Exames\ECO_2.png" />
     <Content Include="Imagens\1\Pacientes\62\Fotos\dentuco.jpeg" />
     <Content Include="Imagens\1\Pacientes\62\QRCode\Solicitacao_QRCode_d0ci1rkn000bht3s2520.png" />
     <Content Include="Imagens\1\Pacientes\642\Exames\ECO_2.png" />
@@ -1605,6 +1615,7 @@
     <Content Include="Imagens\1\Pacientes\89\Anexos\pagamento_recorrente_1.png" />
     <Content Include="Imagens\1\Pacientes\90\Anexos\confirmacao.jpg" />
     <Content Include="Imagens\1\Pacientes\9\Fotos\a7.jpg" />
+    <Content Include="Imagens\1\Pagamento\108\Anexos\A4.jpg" />
     <Content Include="Imagens\1\Pagamento\94\Anexos\Irmaos_Gavea.mp4" />
     <Content Include="Imagens\1\Pagamento\98\Anexos\Irmaos_Gavea.mp4" />
     <Content Include="Imagens\1\Produtos\151\Fotos\A4.jpg" />
@@ -4059,6 +4070,9 @@
     <Content Include="Imagens\1\Locacao\102\Anexos\Documento médico.pdf" />
     <Content Include="Imagens\1\Locacao\102\Contrato\Contrato_LocacaoColapso Cardíaco Da Silva_d6ssaf4n00032i1o0ljg.pdf" />
     <Content Include="BaseAdmin\Ajuda\24\Ajuda24.pdf" />
+    <Content Include="Imagens\1\Pacientes\60\Exames\ExameLista_22122025.pdf" />
+    <Content Include="Imagens\1\Pacientes\60\Exames\Exame_Colapso Cardíaco Da Silva_10_22122025.pdf" />
+    <Content Include="Imagens\1\Locacao\103\Contrato\Contrato_LocacaoÁlvaro Van Beethoven_d75ep4cn00045g78akcg.pdf" />
     <None Include="Properties\PublishProfiles\eprontuario - FTP.pubxml" />
     <None Include="Properties\PublishProfiles\eprontuario - FTP1.pubxml" />
     <None Include="Properties\PublishProfiles\eprontuario - Web Deploy.pubxml" />
@@ -5540,6 +5554,10 @@
     <Folder Include="Imagens\1\Exames\125\Anexos\" />
     <Folder Include="Imagens\1\Exames\126\Anexos\" />
     <Folder Include="Imagens\1\Exames\127\Anexos\" />
+    <Folder Include="Imagens\1\Exames\136\Anexos\" />
+    <Folder Include="Imagens\1\Exames\137\Anexos\" />
+    <Folder Include="Imagens\1\Exames\138\Anexos\" />
+    <Folder Include="Imagens\1\Exames\139\Anexos\" />
     <Folder Include="Imagens\1\Exames\46\Anexos\" />
     <Folder Include="Imagens\1\Exames\47\Anexos\" />
     <Folder Include="Imagens\1\Exames\48\Anexos\" />
@@ -5596,6 +5614,8 @@
     <Folder Include="Imagens\1\Locacao\101\Distrato\" />
     <Folder Include="Imagens\1\Locacao\102\Assinado\" />
     <Folder Include="Imagens\1\Locacao\102\Distrato\" />
+    <Folder Include="Imagens\1\Locacao\103\Assinado\" />
+    <Folder Include="Imagens\1\Locacao\103\Distrato\" />
     <Folder Include="Imagens\1\Locacao\74\Anexos\" />
     <Folder Include="Imagens\1\Locacao\74\Assinado\" />
     <Folder Include="Imagens\1\Locacao\74\Contrato\" />
@@ -5714,6 +5734,22 @@
     <Folder Include="Imagens\1\Mensagem\458\Anexos\" />
     <Folder Include="Imagens\1\Mensagem\493\Anexos\" />
     <Folder Include="Imagens\1\Mensagem\494\Anexos\" />
+    <Folder Include="Imagens\1\Pacientes\1060\Anexos\" />
+    <Folder Include="Imagens\1\Pacientes\1060\Atestado\" />
+    <Folder Include="Imagens\1\Pacientes\1060\Consultas\" />
+    <Folder Include="Imagens\1\Pacientes\1060\Exames\" />
+    <Folder Include="Imagens\1\Pacientes\1060\Fichas\" />
+    <Folder Include="Imagens\1\Pacientes\1060\Prescricao\" />
+    <Folder Include="Imagens\1\Pacientes\1060\QRCode\" />
+    <Folder Include="Imagens\1\Pacientes\1060\Solicitacao\" />
+    <Folder Include="Imagens\1\Pacientes\1061\Anexos\" />
+    <Folder Include="Imagens\1\Pacientes\1061\Atestado\" />
+    <Folder Include="Imagens\1\Pacientes\1061\Consultas\" />
+    <Folder Include="Imagens\1\Pacientes\1061\Exames\" />
+    <Folder Include="Imagens\1\Pacientes\1061\Fichas\" />
+    <Folder Include="Imagens\1\Pacientes\1061\Prescricao\" />
+    <Folder Include="Imagens\1\Pacientes\1061\QRCode\" />
+    <Folder Include="Imagens\1\Pacientes\1061\Solicitacao\" />
     <Folder Include="Imagens\1\Pacientes\106\Atestado\" />
     <Folder Include="Imagens\1\Pacientes\106\Consultas\" />
     <Folder Include="Imagens\1\Pacientes\106\Exames\" />
@@ -6116,7 +6152,6 @@
     <Folder Include="Imagens\1\Pacientes\62\Anexos\" />
     <Folder Include="Imagens\1\Pacientes\62\Atestado\" />
     <Folder Include="Imagens\1\Pacientes\62\Consultas\" />
-    <Folder Include="Imagens\1\Pacientes\62\Exames\" />
     <Folder Include="Imagens\1\Pacientes\62\Fichas\" />
     <Folder Include="Imagens\1\Pacientes\62\Prescricao\" />
     <Folder Include="Imagens\1\Pacientes\62\Solicitacao\" />
@@ -6306,6 +6341,7 @@
     <Folder Include="Imagens\1\Pagamento\106\NF\" />
     <Folder Include="Imagens\1\Pagamento\107\Anexos\" />
     <Folder Include="Imagens\1\Pagamento\107\NF\" />
+    <Folder Include="Imagens\1\Pagamento\108\NF\" />
     <Folder Include="Imagens\1\Pagamento\1\NF\" />
     <Folder Include="Imagens\1\Pagamento\31\Anexos\" />
     <Folder Include="Imagens\1\Pagamento\31\NF\" />
@@ -6469,6 +6505,9 @@
     <Folder Include="Imagens\1\Recebimento\19\Anexos\" />
     <Folder Include="Imagens\1\Recebimento\19\Recibo\" />
     <Folder Include="Imagens\1\Recebimento\1\Recibo\" />
+    <Folder Include="Imagens\1\Recebimento\2012\Anexos\" />
+    <Folder Include="Imagens\1\Recebimento\2013\Anexos\" />
+    <Folder Include="Imagens\1\Recebimento\2014\Anexos\" />
     <Folder Include="Imagens\1\Recebimento\20\Anexos\" />
     <Folder Include="Imagens\1\Recebimento\20\Recibo\" />
     <Folder Include="Imagens\1\Recebimento\219\Anexos\" />

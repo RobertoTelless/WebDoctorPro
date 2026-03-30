@@ -72,7 +72,7 @@
                                         @Html.TextBoxFor(m => m.COPA_VL_VALOR, new { @class = "form-control", autofocus = true, @style = "color: green; font-weight: bold", @id = "valor", onblur = "CalculaTotal()" })
                                         @Html.ValidationMessageFor(m => m.COPA_VL_VALOR, "", new { @style = "color:red" })
                                     </div>
-                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                    <div class="col-lg-3 col-md-3 col-xs-12">
                                         @Html.HiddenFor(m => m.ASSI_CD_ID)
                                         @Html.HiddenFor(m => m.USUA_CD_ID)
                                         @Html.HiddenFor(m => m.COPA_IN_ATIVO)
@@ -101,7 +101,7 @@
                                 <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
                                     <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold; margin-right: 15px;">Quitação</h4>
                                     <h5 style="margin-left: 0px; color:darkblue; background-color: beige; font-weight:bold; margin-right: 15px;">Na criação de pagamento recursivo a informação de quitação será aplicada apenas na primeira ocorrência</h5>
-                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                    <div class="col-lg-3 col-md-3 col-xs-12">
                                         Pagamento já Quitado*
                                         @Html.DropDownListFor(m => m.QUITA_PAGAMENTO, (SelectList)ViewBag.Quitar, "Selecionar", new { @class = "form-control", autofocus = true })
                                         @Html.ValidationMessageFor(m => m.QUITA_PAGAMENTO, "", new { @style = "color:red" })
@@ -129,7 +129,7 @@
                                 <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
                                     <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold; margin-right: 15px;">Pagamento Recursivo</h4>
                                     <h5 style="margin-left: 0px; color:darkblue; background-color: beige; font-weight:bold; margin-right: 15px;">Na criação de pagamento recursivo NÃO serão considerados os arquivos anexados</h5>
-                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                    <div class="col-lg-3 col-md-3 col-xs-12">
                                         Pagamento Recursivo?*
                                         @Html.DropDownListFor(m => m.RECURSIVO, (SelectList)ViewBag.Recursivo, "Selecionar", new { @class = "form-control", autofocus = true })
                                         @Html.ValidationMessageFor(m => m.RECURSIVO, "", new { @style = "color:red" })

@@ -65,7 +65,23 @@
             <br />
         </div>
     }
-
+    <div class="row">
+        <div class="form-group" style=" margin-left: 15px; margin-right: 0px;">
+            @* --- INÍCIO DA AJUDA CONTEXTUAL --- *@
+            <details class="ajuda-contextual">
+                <summary><i class="fa fa-info-circle text-info"></i> Resumo das funcionalidades desta página</summary>
+                <div class="well well-sm">
+                    <p>Essa é a página de inclusão de resultados de exames do <b>WebDoctorPro</b>. Nela você poderá:</p>
+                    <ol>
+                        <li>Incluir um novo resultado de exame para um paciente cadastrado</li>
+                        <li>Poderá selecionar o laboratório que produziu esse ezame</li>
+                        <li>Poderá incluir anexos (laudos ou imagens)</li>
+                    </ol>
+                </div>
+            </details>
+            @* --- FIM DA AJUDA CONTEXTUAL --- *@
+        </div>
+    </div>
     <div class="row">
         <div class="col-lg-12 col-md-12 col-xs-12">
             <div class="col-lg-12 col-md-12 col-xs-12 ibox float-e-margins">
@@ -219,8 +235,7 @@
                             </div>
 
                             <div class="col-lg-4 col-md-4 col-xs-12">
-                                <h4 style="margin-left: -15px; color:green; background-color: beige; font-weight:bold">Anexos</h4>
-                                <input class="btn btn-sm btn-warning" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="ATENÇÃO - Antes de anexar arquivos certifique-se de que eles estejam livres de vírus e outras ameaças.  " style="margin-left: -15px;" id="inputFile" type="file" multiple />
+                                <input class="btn btn-sm btn-warning" style="margin-left: -15px;" id="inputFile" type="file" multiple data-toggle="popover" data-trigger="hover" data-placement="top" data-content="ATENÇÃO - Antes de anexar arquivos certifique-se de que eles estejam livres de vírus e outras ameaças. Anexe aqui os arquivos referentes a este pagamento. As notas fiscais NF-e em formato XML da SRF devem ser anexadas em local próprio na página de edição de pagamentos"/>
                                 <br />
                                 <div class="form-group" style="margin-left: -15px;">
                                     <div>
