@@ -39,6 +39,59 @@
 </style>
 
 <div class="wrapper wrapper-content animated fadeInRight">
+    <div class="modal inmodal fade" id="modalConfirmacaoExclusaoAnexo" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content animated bounceInRight">
+                <div class="modal-header" style="position: relative; padding: 30px 15px;">
+                    <img src="@Url.Content("~/Images/Prontuario/prontuario_icon_3.png?v=1.1")" 
+                         style="position: absolute; left: 15px; top: 15px; width: 40px; height: auto;" 
+                         alt="Ícone" />
+
+                    <i class="fa fa-trash-o modal-icon text-danger" style="display: block;"></i>
+                    <h4 class="modal-title">Confirmação de Exclusão de Anexo</h4>
+                    <small class="font-bold">WebDoctorPro - Gestão de Anexos</small>
+                </div>
+            
+                <div class="modal-body text-center">
+                    <h3>Deseja realmente excluir este anexo?</h3>
+                    <p>Esta ação removerá o arquivo permanentemente do prontuário do paciente.</p>
+                    <input type="hidden" id="urlExclusaoTemp" value="" />
+                </div>
+            
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-white" data-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-danger" id="btnConfirmarExclusaoFicha">Confirmar Exclusão</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal inmodal fade" id="modalConfirmacaoExclusaoFicha" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content animated bounceInRight">
+                <div class="modal-header" style="position: relative; padding: 30px 15px;">
+                    <img src="@Url.Content("~/Images/Prontuario/prontuario_icon_3.png?v=1.1")" 
+                         style="position: absolute; left: 15px; top: 15px; width: 40px; height: auto;" 
+                         alt="Ícone" />
+
+                    <i class="fa fa-trash-o modal-icon text-danger" style="display: block;"></i>
+                    <h4 class="modal-title">Confirmação de Exclusão de Ficha Digitalizada</h4>
+                    <small class="font-bold">WebDoctorPro - Gestão de Pacientes</small>
+                </div>
+            
+                <div class="modal-body text-center">
+                    <h3>Deseja realmente excluir esta ficha?</h3>
+                    <p>Esta ação removerá o arquivo permanentemente do prontuário do paciente.</p>
+                    <input type="hidden" id="urlExclusaoTemp" value="" />
+                </div>
+            
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-white" data-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-danger" id="btnConfirmarExclusaoAnexo">Confirmar Exclusão</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="modal fade" id="modalCancelar" tabindex="-1" role="dialog" aria-labelledby="modalCancelarLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
@@ -2050,38 +2103,6 @@
                             {
                                 <div id="tab-2" class="tab-pane active">
                                     <div class="panel-body">
-                                        @*<div class="row">
-                                            <div class="col-lg-3 col-md-3 col-xs-12">
-                                                <div class="form-group">
-                                                    <div class="col-lg-12 col-md-12 col-sm-12">
-                                                        <br />
-                                                        @if (!String.IsNullOrEmpty(Model.PACI_AQ_FOTO))
-                                                        {
-                                                            <img src="@Url.Content(Model.PACI_AQ_FOTO)" style="width: auto; height: auto; max-height: 270px; max-width: 270px;" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Clique Ctrl+Ctrl para ampliar a fotografia">
-                                                        }
-                                                        else
-                                                        {
-                                                            <img src="~/Images/icon_morador.png" style="width: auto; height: auto; max-height: 270px; max-width: 270px;">
-                                                        }
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="col-lg-9 col-md-9 col-xs-12">
-                                                <div class="form-group">
-                                                    <h4 style="margin-left: 15px; color:green; background-color: beige; font-weight:bold">Fotografia</h4>
-                                                    @using (Html.BeginForm("UploadFotoPaciente", "Paciente", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { enctype = "multipart/form-data", @id = "pwd-container3" }))
-                                                    {
-                                                        <div class="form-group">
-                                                            <div class="col-lg-12 col-md-12 col-xs-12">
-                                                                <input style="float: left; margin-right: 5px;" type="file" accept=".jpg, .png, .jpeg, .gif|images/*" name="file" id="file" class="btn btn-sm btn-warning" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="ATENÇÃO - Antes de anexar fotografia certifique-se de que ela esteja livre de vírus e outras ameaças.  " />
-                                                                <input style="float: left; margin-right: 5px;"  type="submit" value="Incluir/Alterar Fotografia do paciente" class="btn btn-sm btn-primary" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Confirma a alteração da fotografia do paciente"/> 
-                                                            </div>
-                                                        </div>
-                                                    }
-                                                </div>
-                                            </div>
-                                        </div>*@
-
                                         <div class="row">
                                             <div class="col-lg-3 col-md-3 col-xs-12">
                                                 <div class="form-group">
@@ -2138,92 +2159,129 @@
                                                 <div class="form-group">
                                                     @using (Html.BeginForm("UploadFilePaciente", "Paciente", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { enctype = "multipart/form-data", @id = "pwd-container2" }))
                                                     {
-                                                        if (Model.PACIENTE_ANEXO.Count > 0)
-                                                        {
-                                                            <table class="table table-striped table-bordered table-hover dataTables-example">
-                                                                <thead style="background-color:lightsteelblue">
-                                                                    <tr>
-                                                                        <th>Nome do Anexo</th>
-                                                                        <th>Data de inclusão</th>
-                                                                        <th>Tipo de Arquivo</th>
-                                                                        <th class="td-one-action">Ações</th>
-                                                                    </tr>
-                                                                </thead>
-                                                                <tbody>
-                                                                    @foreach (var cond in (Model.PACIENTE_ANEXO.Where(p => p.PAAX_IN_ATIVO == 1).ToList()))
-                                                                    {
-                                                                        <tr>
-                                                                            @if (cond.PAAX_IN_TIPO == 1 || cond.PAAX_IN_TIPO == 2)
-                                                                            {
-                                                                                <td style="width: auto"><a href="@Url.Action("VerAnexoPaciente", "Paciente", new { id = cond.PAAX_CD_ID })" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página de visualização do anexo do paciente" />@cond.PAAX_NM_TITULO</td>
-                                                                            }
-                                                                            else if (cond.PAAX_IN_TIPO == 4)
-                                                                            {
-                                                                                <td style="width: auto"><a href="@Url.Action("VerAnexoPacienteAudio", "Paciente", new { id = cond.PAAX_CD_ID })" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página de visualização do anexo do paciente" />@cond.PAAX_NM_TITULO</td>
-                                                                            }
-                                                                            else if (cond.PAAX_IN_TIPO == 3)
-                                                                            {
-                                                                                <td style="width: auto"><a href="~/PdfViewer/web/viewer.html?file=@(cond.PAAX_AQ_ARQUIVO.Replace("~", ""))&ReturnUrl=@Request.Url.AbsolutePath" target="_blank" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Abre arquivo PDF em outra aba do navegador" />@cond.PAAX_NM_TITULO</td>
-                                                                            }
-                                                                            else
-                                                                            {
-                                                                                <td style="width: auto">@cond.PAAX_NM_TITULO</td>
-                                                                            }
+                                                        var listaAnexos = Model.PACIENTE_ANEXO.Where(p => p.PAAX_IN_ATIVO == 1).ToList();
 
-                                                                            <td>@cond.PAAX_DT_ANEXO.ToShortDateString()</td>
-                                                                            @if (cond.PAAX_IN_TIPO == 1)
-                                                                            {
-                                                                                <td>Imagem</td>
-                                                                            }
-                                                                            else if (cond.PAAX_IN_TIPO == 2)
-                                                                            {
-                                                                                <td>Vídeo</td>
-                                                                            }
-                                                                            else if (cond.PAAX_IN_TIPO == 3)
-                                                                            {
-                                                                                <td>PDF</td>
-                                                                            }
-                                                                            else if (cond.PAAX_IN_TIPO == 4)
-                                                                            {
-                                                                                <td>Audio</td>
-                                                                            }
-                                                                            else if (cond.PAAX_IN_TIPO == 5)
-                                                                            {
-                                                                                <td>Documento/Word</td>
-                                                                            }
-                                                                            else if (cond.PAAX_IN_TIPO == 6)
-                                                                            {
-                                                                                <td>Planilha/Excel</td>
-                                                                            }
-                                                                            else
-                                                                            {
-                                                                                <td>Outros</td>
-                                                                            }
-                                                                            <td class="td-one-action">
-                                                                                @if (cond.PAAX_IN_TIPO == 1 || cond.PAAX_IN_TIPO == 2)
-                                                                                {
-                                                                                    @Html.TableLinkDetails(cond.PAAX_CD_ID, "VerAnexoPaciente", "fa-camera", "Visualizar Anexo")
-                                                                                }
-                                                                                @if (cond.PAAX_IN_TIPO == 4)
-                                                                                {
-                                                                                    @Html.TableLinkDetails(cond.PAAX_CD_ID, "VerAnexoPacienteAudio", "fa-volume-up", "Visualizar Anexo")
-                                                                                }
-                                                                                @if (cond.PAAX_IN_TIPO == 3)
-                                                                                {
-                                                                                    <a title="Visualizar Anexo" class="fa fa-camera fa-lg" href="~/PdfViewer/web/viewer.html?file=@(cond.PAAX_AQ_ARQUIVO.Replace("~", ""))&ReturnUrl=@Request.Url.AbsolutePath" target="_blank"></a>
-                                                                                }
-                                                                                <span style="color: #337ab7; cursor:pointer;" alt="Desativar" class="tbl-link fa-lg fa fa-trash-o" onclick="ShowModalExcluirAnexo('/Paciente/ExcluirAnexo/@cond.PAAX_CD_ID')" title="Excluir Anexo"></span>
-                                                                                @Html.TableLinkDetails(cond.PAAX_CD_ID, "DownloadPaciente", "fa-download", "Download")
-                                                                            </td>
+                                                        <div class="text-center" style="margin-top: 15px;">
+                                                            <div class="toggle-container" id="viewToggle">
+                                                                <div class="toggle-option active" data-target="sectionList">
+                                                                    <i class="fa fa-list"></i> Ver lista
+                                                                </div>
+                                                                <div class="toggle-option" data-target="sectionIcons">
+                                                                    <i class="fa fa-th"></i> Ver ícones
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        if (listaAnexos.Count > 0)
+                                                        {
+                                                            <div id="sectionList" class="view-section grupo-anexo active">
+                                                                <table class="table table-striped table-bordered table-hover dataTables-example">
+                                                                    <thead style="background-color:lightsteelblue">
+                                                                        <tr>
+                                                                            <th>Título</th>
+                                                                            <th>Data</th>
+                                                                            <th>Tipo</th>
+                                                                            <th class="td-one-action">Ações</th>
                                                                         </tr>
+                                                                    </thead>
+                                                                    <tbody>
+                                                                        @foreach (var cond in listaAnexos)
+                                                                        {
+                                                                            <tr>
+                                                                                <td style="width: auto">
+                                                                                    @if (cond.PAAX_IN_TIPO == 1 || cond.PAAX_IN_TIPO == 2)
+                                                                                    {
+                                                                                        <a href="@Url.Action("VerAnexoExamePaciente", "Paciente", new { id = cond.PAAX_CD_ID })">@cond.PAAX_NM_TITULO</a>
+                                                                                    }
+                                                                                    else if (cond.PAAX_IN_TIPO == 4)
+                                                                                    {
+                                                                                        <a href="@Url.Action("VerAnexoExamePacienteAudio", "Paciente", new { id = cond.PAAX_CD_ID })">@cond.PAAX_NM_TITULO</a>
+                                                                                    }
+                                                                                    else if (cond.PAAX_IN_TIPO == 3)
+                                                                                    {
+                                                                                        <a href="~/PdfViewer/web/viewer.html?file=@(cond.PAAX_AQ_ARQUIVO.Replace("~", ""))&ReturnUrl=@Request.Url.AbsolutePath" target="_blank">@cond.PAAX_NM_TITULO</a>
+                                                                                    }
+                                                                                    else { @cond.PAAX_NM_TITULO }
+                                                                                </td>
+                                                                                <td>@cond.PAAX_DT_ANEXO.ToShortDateString()</td>
+                                                                                <td>@(cond.PAAX_IN_TIPO == 1 ? "Imagem" : cond.PAAX_IN_TIPO == 2 ? "Vídeo" : cond.PAAX_IN_TIPO == 3 ? "PDF" : "Outros")</td>
+                                                                                <td class="td-one-action">
+                                                                                    <span class="fa fa-trash-o" onclick="PrepararExclusaoAnexo('/Paciente/ExcluirAnexo/@cond.PAAX_CD_ID')" style="cursor:pointer; color:#337ab7"></span>
+                                                                                    @Html.TableLinkDetails(cond.PAAX_CD_ID, "DownloadPaciente", "fa-download", "Download")
+                                                                                </td>
+                                                                            </tr>
+                                                                        }
+                                                                    </tbody>
+                                                                </table>
+                                                            </div>
+
+                                                            <div id="sectionIcons" class="view-section grupo-anexo">
+                                                                <div class="row" style="display: flex; flex-wrap: wrap; justify-content: flex-start; margin-bottom: 20px;">
+                                                                    @foreach (var cond in listaAnexos)
+                                                                    {
+                                                                        <div class="col-lg-2 col-md-2 col-sm-3 col-xs-4 text-center" style="margin-bottom: 25px; min-width: 130px;">
+                                                                            <div style="display: flex; flex-direction: column; align-items: center; justify-content: space-between; height: 100%;">
+                    
+                                                                                @* Container de Mídia (Altura fixa para alinhamento) *@
+                                                                                <div style="height: 80px; display: flex; align-items: center; justify-content: center; width: 100%;">
+                        
+                                                                                    @if (cond.PAAX_IN_TIPO == 1) // IMAGEM - Abre na mesma aba
+                                                                                    {
+                                                                                        <a href="@Url.Action("VerAnexoPaciente", "Paciente", new { id = cond.PAAX_CD_ID })" title="Visualizar Imagem">
+                                                                                            <img src="@Url.Content(cond.PAAX_AQ_ARQUIVO)" class="img-thumbnail" style="width: 70px; height: 70px; object-fit: cover; border: 1px solid #ddd;" />
+                                                                                        </a>
+                                                                                    }
+                                                                                    else if (cond.PAAX_IN_TIPO == 2) // VÍDEO - Abre na mesma aba (Ícone comum)
+                                                                                    {
+                                                                                        <a href="@Url.Action("VerAnexoPaciente", "Paciente", new { id = cond.PAAX_CD_ID })" title="Visualizar Vídeo">
+                                                                                            <i class="fa fa-video-camera fa-4x text-navy"></i>
+                                                                                        </a>
+                                                                                    }
+                                                                                    else if (cond.PAAX_IN_TIPO == 3) // PDF - ÚNICO QUE ABRE EM NOVA ABA
+                                                                                    {
+                                                                                        <a href="~/PdfViewer/web/viewer.html?file=@(cond.PAAX_AQ_ARQUIVO.Replace("~", ""))&ReturnUrl=@Request.Url.AbsolutePath" target="_blank" title="Visualizar PDF">
+                                                                                            <i class="fa fa-file-pdf-o fa-5x text-danger"></i>
+                                                                                        </a>
+                                                                                    }
+                                                                                    else if (cond.PAAX_IN_TIPO == 4) // ÁUDIO - Abre na mesma aba
+                                                                                    {
+                                                                                        <a href="@Url.Action("VerAnexoPacienteAudio", "Paciente", new { id = cond.PAAX_CD_ID })" title="Ouvir Áudio">
+                                                                                            <i class="fa fa-volume-up fa-4x text-info"></i>
+                                                                                        </a>
+                                                                                    }
+                                                                                    else // PADRÃO PARA OUTROS
+                                                                                    {
+                                                                                        <i class="fa fa-file-o fa-4x text-muted"></i>
+                                                                                    }
+                                                                                </div>
+
+                                                                                @* Nome do Arquivo *@
+                                                                                <div style="font-size: 11px; margin-top: 8px; font-weight: bold; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; width: 100%;" title="@cond.PAAX_NM_TITULO">
+                                                                                    @cond.PAAX_NM_TITULO
+                                                                                </div>
+
+                                                                                @* Botões de Ação (Excluir e Download) *@
+                                                                                <div style="margin-top: 5px; display: flex; gap: 12px; justify-content: center;">
+                                                                                    <span style="cursor:pointer;" onclick="PrepararExclusaoAnexo('/Paciente/ExcluirAnexo/@cond.PAAX_CD_ID')" title="Excluir">
+                                                                                        <i class="fa fa-trash-o fa-lg text-navy"></i>
+                                                                                    </span>
+                                                                                    <a href="@Url.Action("DownloadPaciente", "Paciente", new { id = cond.PAAX_CD_ID })" title="Download">
+                                                                                        <i class="fa fa-download fa-lg text-navy"></i>
+                                                                                    </a>
+                                                                                </div>
+
+                                                                            </div>
+                                                                        </div>
                                                                     }
-                                                                </tbody>
-                                                            </table>
+                                                                </div>
+                                                            </div>
+
                                                         }
-                                                        <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
-                                                            <div class="col-lg-12 col-md-12 col-xs-12">
-                                                                <input style="float: left; margin-right: 5px;" type="file" name="file" id="file" class="btn btn-sm btn-warning" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="ATENÇÃO - Antes de anexar arquivos certifique-se de que eles estejam livres de vírus e outras ameaças.  " />
-                                                                <input style="float: left; margin-right: 5px;" type="submit" value="Anexar Arquivo ao Paciente" class="btn btn-sm btn-primary" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Confirma a inclusão de novo anexo ao paciente" />
+
+                                                        <div class="form-group" style="margin-top: 20px;">
+                                                            <div class="col-lg-12">
+                                                                <input type="file" name="file" id="file" class="btn btn-sm btn-warning" style="float: left; margin-right: 5px;" />
+                                                                <input type="submit" value="Incluir Anexo" class="btn btn-sm btn-success" />
                                                             </div>
                                                         </div>
                                                     }
@@ -2239,64 +2297,123 @@
                                                 <div class="form-group">
                                                     @using (Html.BeginForm("UploadFichaPaciente", "Paciente2", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { enctype = "multipart/form-data", @id = "pwd-container2" }))
                                                     {
-                                                        if (Model.PACIENTE_FICHA.Count > 0)
-                                                        {
-                                                            <table class="table table-striped table-bordered table-hover dataTables-example">
-                                                                <thead style="background-color:lightsteelblue">
-                                                                    <tr>
-                                                                        <th>Nome da Ficha</th>
-                                                                        <th>Data de inclusão</th>
-                                                                        <th>Tipo de Arquivo</th>
-                                                                        <th class="td-one-action">Ações</th>
-                                                                    </tr>
-                                                                </thead>
-                                                                <tbody>
-                                                                    @foreach (var cond in (Model.PACIENTE_FICHA.Where(p => p.PAFC_IN_ATIVO == 1).ToList()))
-                                                                    {
-                                                                        <tr>
-                                                                            @if (cond.PAFC_IN_TIPO == 1 || cond.PAFC_IN_TIPO == 2)
-                                                                            {
-                                                                                <td style="width: auto"><a href="@Url.Action("VerFichaPaciente", "Paciente2", new { id = cond.PAFC_CD_ID })" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página de visualização da ficha do paciente"/>@cond.PAFC_NM_TITULO</td>
-                                                                            }
-                                                                            else if (cond.PAFC_IN_TIPO == 3)
-                                                                            {
-                                                                                <td style="width: auto"><a href="~/PdfViewer/web/viewer.html?file=@(cond.PAFC_AQ_ARQUIVO.Replace("~", ""))&ReturnUrl=@Request.Url.AbsolutePath" target="_blank" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Abrir a ficha em outra aba do navegador"/>@cond.PAFC_NM_TITULO</td>
-                                                                            }
-                                                                            else
-                                                                            {
-                                                                                <td style="width: auto">@cond.PAFC_NM_TITULO</td>
-                                                                            }
+                                                        var listaFichas = Model.PACIENTE_FICHA.Where(p => p.PAFC_IN_ATIVO == 1).ToList();
 
-                                                                            <td>@cond.PAFC_DT_FICHA.ToShortDateString()</td>
-                                                                            @if (cond.PAFC_IN_TIPO == 1)
-                                                                            {
-                                                                                <td>Imagem</td>
-                                                                            }
-                                                                            else if (cond.PAFC_IN_TIPO == 3)
-                                                                            {
-                                                                                <td>PDF</td>
-                                                                            }
-                                                                            else
-                                                                            {
-                                                                                <td>Outros</td>
-                                                                            }
-                                                                            <td class="td-one-action">
-                                                                                @if (cond.PAFC_IN_TIPO == 3)
-                                                                                {
-                                                                                    <a title="Visualizar Ficha Digitalizada" class="fa fa-camera fa-lg" href="~/PdfViewer/web/viewer.html?file=@(cond.PAFC_AQ_ARQUIVO.Replace("~", ""))&ReturnUrl=@Request.Url.AbsolutePath" target="_blank"></a>
-                                                                                }
-                                                                                <span style="color: #337ab7; cursor:pointer;" alt="Desativar" class="tbl-link fa-lg fa fa-trash-o" onclick="ShowModalExcluirFicha('/Paciente2/ExcluirFicha/@cond.PAFC_CD_ID')" title="Excluir Ficha Digitalizada"></span>
-                                                                                @Html.TableLinkDetails(cond.PAFC_CD_ID, "DownloadFichaPaciente", "fa-download", "Download")
-                                                                            </td>
+                                                        <div class="text-center" style="margin-top: 15px;">
+                                                            <div class="toggle-container" id="viewToggle1">
+                                                                <div class="toggle-option active" data-target="sectionList1">
+                                                                    <i class="fa fa-list"></i> Ver lista
+                                                                </div>
+                                                                <div class="toggle-option" data-target="sectionIcons1">
+                                                                    <i class="fa fa-th"></i> Ver ícones
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        if (listaFichas.Count > 0)
+                                                        {
+                                                            <div id="sectionList1" class="view-section grupo-ficha active">
+                                                                <table class="table table-striped table-bordered table-hover dataTables-example">
+                                                                    <thead style="background-color:lightsteelblue">
+                                                                        <tr>
+                                                                            <th>Nome da Ficha</th>
+                                                                            <th>Data de inclusão</th>
+                                                                            <th>Tipo de Arquivo</th>
+                                                                            <th class="td-one-action">Ações</th>
                                                                         </tr>
+                                                                    </thead>
+                                                                    <tbody>
+                                                                        @foreach (var cond in listaFichas)
+                                                                        {
+                                                                            <tr>
+                                                                                <td style="width: auto">
+                                                                                    @if (cond.PAFC_IN_TIPO == 1 || cond.PAFC_IN_TIPO == 2)
+                                                                                    {
+                                                                                        <a href="@Url.Action("VerFichaPaciente", "Paciente2", new { id = cond.PAFC_CD_ID })">@cond.PAFC_NM_TITULO</a>
+                                                                                    }
+                                                                                    else if (cond.PAFC_IN_TIPO == 3)
+                                                                                    {
+                                                                                        <a href="~/PdfViewer/web/viewer.html?file=@(cond.PAFC_AQ_ARQUIVO.Replace("~", ""))&ReturnUrl=@Request.Url.AbsolutePath" target="_blank">@cond.PAFC_NM_TITULO</a>
+                                                                                    }
+                                                                                    else { @cond.PAFC_NM_TITULO }
+                                                                                </td>
+                                                                                <td>@cond.PAFC_DT_FICHA.ToShortDateString()</td>
+                                                                                <td>@(cond.PAFC_IN_TIPO == 1 ? "Imagem" : cond.PAFC_IN_TIPO == 2 ? "Vídeo" : cond.PAFC_IN_TIPO == 3 ? "PDF" : "Outros")</td>
+                                                                                <td class="td-one-action">
+                                                                                    @if (cond.PAFC_IN_TIPO == 3)
+                                                                                    {
+                                                                                        <a title="Visualizar Ficha Digitalizada" class="fa fa-camera fa-lg" href="~/PdfViewer/web/viewer.html?file=@(cond.PAFC_AQ_ARQUIVO.Replace("~", ""))&ReturnUrl=@Request.Url.AbsolutePath" target="_blank"></a>
+                                                                                    }
+                                                                                    <span class="fa fa-trash-o" onclick="PrepararExclusaoFicha('/Paciente2/ExcluirFicha/@cond.PAFC_CD_ID')" style="cursor:pointer; color:#337ab7"></span>
+                                                                                    @Html.TableLinkDetails(cond.PAFC_CD_ID, "DownloadFichaPaciente", "fa-download", "Download")
+                                                                                </td>
+                                                                            </tr>
+                                                                        }
+                                                                    </tbody>
+                                                                </table>
+                                                            </div>
+
+                                                            <div id="sectionIcons1" class="view-section grupo-ficha">
+                                                                <div class="row" style="display: flex; flex-wrap: wrap; justify-content: flex-start; margin-bottom: 20px;">
+                                                                    @foreach (var cond in listaFichas)
+                                                                    {
+                                                                        <div class="col-lg-2 col-md-2 col-sm-3 col-xs-4 text-center" style="margin-bottom: 25px; min-width: 130px;">
+                                                                            <div style="display: flex; flex-direction: column; align-items: center; justify-content: space-between; height: 100%;">
+                    
+                                                                                @* Container de Mídia (Altura fixa para alinhamento) *@
+                                                                                <div style="height: 80px; display: flex; align-items: center; justify-content: center; width: 100%;">
+                        
+                                                                                    @if (cond.PAFC_IN_TIPO == 1) // IMAGEM - Abre na mesma aba
+                                                                                    {
+                                                                                        <a href="@Url.Action("VerFichaPaciente", "Paciente2", new { id = cond.PAFC_CD_ID })" title="Visualizar Imagem">
+                                                                                            <img src="@Url.Content(cond.PAFC_AQ_ARQUIVO)" class="img-thumbnail" style="width: 70px; height: 70px; object-fit: cover; border: 1px solid #ddd;" />
+                                                                                        </a>
+                                                                                    }
+                                                                                    else if (cond.PAFC_IN_TIPO == 2) // VÍDEO - Abre na mesma aba (Ícone comum)
+                                                                                    {
+                                                                                        <a href="@Url.Action("VerFichaPaciente", "Paciente2", new { id = cond.PAFC_CD_ID })" title="Visualizar Vídeo">
+                                                                                            <i class="fa fa-video-camera fa-4x text-navy"></i>
+                                                                                        </a>
+                                                                                    }
+                                                                                    else if (cond.PAFC_IN_TIPO == 3) // PDF - ÚNICO QUE ABRE EM NOVA ABA
+                                                                                    {
+                                                                                        <a href="~/PdfViewer/web/viewer.html?file=@(cond.PAFC_AQ_ARQUIVO.Replace("~", ""))&ReturnUrl=@Request.Url.AbsolutePath" target="_blank" title="Visualizar PDF">
+                                                                                            <i class="fa fa-file-pdf-o fa-5x text-danger"></i>
+                                                                                        </a>
+                                                                                    }
+                                                                                    else // PADRÃO PARA OUTROS
+                                                                                    {
+                                                                                        <i class="fa fa-file-o fa-4x text-muted"></i>
+                                                                                    }
+                                                                                </div>
+
+                                                                                @* Nome do Arquivo *@
+                                                                                <div style="font-size: 11px; margin-top: 8px; font-weight: bold; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; width: 100%;" title="@cond.PAFC_NM_TITULO">
+                                                                                    @cond.PAFC_NM_TITULO
+                                                                                </div>
+
+                                                                                @* Botões de Ação (Excluir e Download) *@
+                                                                                <div style="margin-top: 5px; display: flex; gap: 12px; justify-content: center;">
+                                                                                    <span style="cursor:pointer;" onclick="PrepararExclusaoFicha('/Paciente2/ExcluirFicha/@cond.PAFC_CD_ID')" title="Excluir">
+                                                                                        <i class="fa fa-trash-o fa-lg text-navy"></i>
+                                                                                    </span>
+                                                                                    <a href="@Url.Action("DownloadFichaPaciente", "Paciente2", new { id = cond.PAFC_CD_ID })" title="Download">
+                                                                                        <i class="fa fa-download fa-lg text-navy"></i>
+                                                                                    </a>
+                                                                                </div>
+
+                                                                            </div>
+                                                                        </div>
                                                                     }
-                                                                </tbody>
-                                                            </table>
+                                                                </div>
+                                                            </div>
+
                                                         }
-                                                        <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
-                                                            <div class="col-lg-12 col-md-12 col-xs-12">
-                                                                <input style="float: left; margin-right: 5px;" type="file" name="file" id="file" class="btn btn-sm btn-warning" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="ATENÇÃO - Antes de anexar fichas ao paciente certifique-se de que elas estejam livres de vírus e outras ameaças.  " />
-                                                                <input style="float: left; margin-right: 5px;" type="submit" value="Anexar Ficha do Paciente" class="btn btn-sm btn-primary" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Confirma a inclusão de nova ficha digitalizada para o paciente"/>
+
+                                                        <div class="form-group" style="margin-top: 20px;">
+                                                            <div class="col-lg-12">
+                                                                <input type="file" name="file" id="file" class="btn btn-sm btn-warning" style="float: left; margin-right: 5px;" />
+                                                                <input type="submit" value="Incluir Ficha Digitalizada" class="btn btn-sm btn-success" />
                                                             </div>
                                                         </div>
                                                     }
@@ -2310,38 +2427,6 @@
                             {
                                 <div id="tab-2" class="tab-pane">
                                     <div class="panel-body">
-                                        @*<div class="row">
-                                            <div class="col-lg-3 col-md-3 col-xs-12">
-                                                <div class="form-group">
-                                                    <div class="col-lg-12 col-md-12 col-sm-12">
-                                                        <br />
-                                                        @if (!String.IsNullOrEmpty(Model.PACI_AQ_FOTO))
-                                                        {
-                                                            <img src="@Url.Content(Model.PACI_AQ_FOTO)" style="width: auto; height: auto; max-height: 270px; max-width: 270px;" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Clique Ctrl+Ctrl para ampliar a fotografia">
-                                                        }
-                                                        else
-                                                        {
-                                                            <img src="~/Images/icon_morador.png" style="width: auto; height: auto; max-height: 270px; max-width: 270px;">
-                                                        }
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="col-lg-9 col-md-9 col-xs-12">
-                                                <div class="form-group">
-                                                    <h4 style="margin-left: 15px; color:green; background-color: beige; font-weight:bold">Fotografia</h4>
-                                                    @using (Html.BeginForm("UploadFotoPaciente", "Paciente", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { enctype = "multipart/form-data", @id = "pwd-container3" }))
-                                                    {
-                                                        <div class="form-group">
-                                                            <div class="col-lg-12 col-md-12 col-xs-12">
-                                                                <input style="float: left; margin-right: 5px;" type="file" accept=".jpg, .png, .jpeg, .gif|images/*" name="file" id="file" class="btn btn-sm btn-warning" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="ATENÇÃO - Antes de anexar fotografia certifique-se de que ela esteja livre de vírus e outras ameaças.  " />
-                                                                <input style="float: left; margin-right: 5px;"  type="submit" value="Incluir/Alterar Fotografia do paciente" class="btn btn-sm btn-primary" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Confirma a alteração da fotografia do paciente"/> 
-                                                            </div>
-                                                        </div>
-                                                    }
-                                                </div>
-                                            </div>
-                                        </div>*@
-
                                         <div class="row">
                                             <div class="col-lg-3 col-md-3 col-xs-12">
                                                 <div class="form-group">
@@ -2390,7 +2475,6 @@
                                             </div>
                                         </div>
 
-
                                         <br />
                                         <div class="row">
                                             <div class="col-lg-12 col-md-12 col-xs-12">
@@ -2399,92 +2483,129 @@
                                                 <div class="form-group">
                                                     @using (Html.BeginForm("UploadFilePaciente", "Paciente", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { enctype = "multipart/form-data", @id = "pwd-container2" }))
                                                     {
-                                                        if (Model.PACIENTE_ANEXO.Count > 0)
-                                                        {
-                                                            <table class="table table-striped table-bordered table-hover dataTables-example">
-                                                                <thead style="background-color:lightsteelblue">
-                                                                    <tr>
-                                                                        <th>Nome do Anexo</th>
-                                                                        <th>Data de inclusão</th>
-                                                                        <th>Tipo de Arquivo</th>
-                                                                        <th class="td-one-action">Ações</th>
-                                                                    </tr>
-                                                                </thead>
-                                                                <tbody>
-                                                                    @foreach (var cond in (Model.PACIENTE_ANEXO.Where(p => p.PAAX_IN_ATIVO == 1).ToList()))
-                                                                    {
-                                                                        <tr>
-                                                                            @if (cond.PAAX_IN_TIPO == 1 || cond.PAAX_IN_TIPO == 2)
-                                                                            {
-                                                                                <td style="width: auto"><a href="@Url.Action("VerAnexoPaciente", "Paciente", new { id = cond.PAAX_CD_ID })" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página de visualização do anexo do paciente" />@cond.PAAX_NM_TITULO</td>
-                                                                            }
-                                                                            else if (cond.PAAX_IN_TIPO == 4)
-                                                                            {
-                                                                                <td style="width: auto"><a href="@Url.Action("VerAnexoPacienteAudio", "Paciente", new { id = cond.PAAX_CD_ID })" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página de visualização do anexo do paciente" />@cond.PAAX_NM_TITULO</td>
-                                                                            }
-                                                                            else if (cond.PAAX_IN_TIPO == 3)
-                                                                            {
-                                                                                <td style="width: auto"><a href="~/PdfViewer/web/viewer.html?file=@(cond.PAAX_AQ_ARQUIVO.Replace("~", ""))&ReturnUrl=@Request.Url.AbsolutePath" target="_blank" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Abre arquivo PDF em outra aba do navegador" />@cond.PAAX_NM_TITULO</td>
-                                                                            }
-                                                                            else
-                                                                            {
-                                                                                <td style="width: auto">@cond.PAAX_NM_TITULO</td>
-                                                                            }
+                                                        var listaAnexos = Model.PACIENTE_ANEXO.Where(p => p.PAAX_IN_ATIVO == 1).ToList();
 
-                                                                            <td>@cond.PAAX_DT_ANEXO.ToShortDateString()</td>
-                                                                            @if (cond.PAAX_IN_TIPO == 1)
-                                                                            {
-                                                                                <td>Imagem</td>
-                                                                            }
-                                                                            else if (cond.PAAX_IN_TIPO == 2)
-                                                                            {
-                                                                                <td>Vídeo</td>
-                                                                            }
-                                                                            else if (cond.PAAX_IN_TIPO == 3)
-                                                                            {
-                                                                                <td>PDF</td>
-                                                                            }
-                                                                            else if (cond.PAAX_IN_TIPO == 4)
-                                                                            {
-                                                                                <td>Audio</td>
-                                                                            }
-                                                                            else if (cond.PAAX_IN_TIPO == 5)
-                                                                            {
-                                                                                <td>Documento/Word</td>
-                                                                            }
-                                                                            else if (cond.PAAX_IN_TIPO == 6)
-                                                                            {
-                                                                                <td>Planilha/Excel</td>
-                                                                            }
-                                                                            else
-                                                                            {
-                                                                                <td>Outros</td>
-                                                                            }
-                                                                            <td class="td-one-action">
-                                                                                @if (cond.PAAX_IN_TIPO == 1 || cond.PAAX_IN_TIPO == 2)
-                                                                                {
-                                                                                    @Html.TableLinkDetails(cond.PAAX_CD_ID, "VerAnexoPaciente", "fa-camera", "Visualizar Anexo")
-                                                                                }
-                                                                                @if (cond.PAAX_IN_TIPO == 4)
-                                                                                {
-                                                                                    @Html.TableLinkDetails(cond.PAAX_CD_ID, "VerAnexoPacienteAudio", "fa-volume-up", "Visualizar Anexo")
-                                                                                }
-                                                                                @if (cond.PAAX_IN_TIPO == 3)
-                                                                                {
-                                                                                    <a title="Visualizar Anexo" class="fa fa-camera fa-lg" href="~/PdfViewer/web/viewer.html?file=@(cond.PAAX_AQ_ARQUIVO.Replace("~", ""))&ReturnUrl=@Request.Url.AbsolutePath" target="_blank"></a>
-                                                                                }
-                                                                                <span style="color: #337ab7; cursor:pointer;" alt="Desativar" class="tbl-link fa-lg fa fa-trash-o" onclick="ShowModalExcluirAnexo('/Paciente/ExcluirAnexo/@cond.PAAX_CD_ID')" title="Excluir Anexo"></span>
-                                                                                @Html.TableLinkDetails(cond.PAAX_CD_ID, "DownloadPaciente", "fa-download", "Download")
-                                                                            </td>
+                                                        <div class="text-center" style="margin-top: 15px;">
+                                                            <div class="toggle-container" id="viewToggle">
+                                                                <div class="toggle-option active" data-target="sectionList">
+                                                                    <i class="fa fa-list"></i> Ver lista
+                                                                </div>
+                                                                <div class="toggle-option" data-target="sectionIcons">
+                                                                    <i class="fa fa-th"></i> Ver ícones
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        if (listaAnexos.Count > 0)
+                                                        {
+                                                            <div id="sectionList" class="view-section active">
+                                                                <table class="table table-striped table-bordered table-hover dataTables-example">
+                                                                    <thead style="background-color:lightsteelblue">
+                                                                        <tr>
+                                                                            <th>Título</th>
+                                                                            <th>Data</th>
+                                                                            <th>Tipo</th>
+                                                                            <th class="td-one-action">Ações</th>
                                                                         </tr>
+                                                                    </thead>
+                                                                    <tbody>
+                                                                        @foreach (var cond in listaAnexos)
+                                                                        {
+                                                                            <tr>
+                                                                                <td style="width: auto">
+                                                                                    @if (cond.PAAX_IN_TIPO == 1 || cond.PAAX_IN_TIPO == 2)
+                                                                                    {
+                                                                                        <a href="@Url.Action("VerAnexoExamePaciente", "Paciente", new { id = cond.PAAX_CD_ID })">@cond.PAAX_NM_TITULO</a>
+                                                                                    }
+                                                                                    else if (cond.PAAX_IN_TIPO == 4)
+                                                                                    {
+                                                                                        <a href="@Url.Action("VerAnexoExamePacienteAudio", "Paciente", new { id = cond.PAAX_CD_ID })">@cond.PAAX_NM_TITULO</a>
+                                                                                    }
+                                                                                    else if (cond.PAAX_IN_TIPO == 3)
+                                                                                    {
+                                                                                        <a href="~/PdfViewer/web/viewer.html?file=@(cond.PAAX_AQ_ARQUIVO.Replace("~", ""))&ReturnUrl=@Request.Url.AbsolutePath" target="_blank">@cond.PAAX_NM_TITULO</a>
+                                                                                    }
+                                                                                    else { @cond.PAAX_NM_TITULO }
+                                                                                </td>
+                                                                                <td>@cond.PAAX_DT_ANEXO.ToShortDateString()</td>
+                                                                                <td>@(cond.PAAX_IN_TIPO == 1 ? "Imagem" : cond.PAAX_IN_TIPO == 2 ? "Vídeo" : cond.PAAX_IN_TIPO == 3 ? "PDF" : "Outros")</td>
+                                                                                <td class="td-one-action">
+                                                                                    <span class="fa fa-trash-o" onclick="PrepararExclusaoAnexo('/Paciente/ExcluirAnexo/@cond.PAAX_CD_ID')" style="cursor:pointer; color:#337ab7"></span>
+                                                                                    @Html.TableLinkDetails(cond.PAAX_CD_ID, "DownloadPaciente", "fa-download", "Download")
+                                                                                </td>
+                                                                            </tr>
+                                                                        }
+                                                                    </tbody>
+                                                                </table>
+                                                            </div>
+
+                                                            <div id="sectionIcons" class="view-section">
+                                                                <div class="row" style="display: flex; flex-wrap: wrap; justify-content: flex-start; margin-bottom: 20px;">
+                                                                    @foreach (var cond in listaAnexos)
+                                                                    {
+                                                                        <div class="col-lg-2 col-md-2 col-sm-3 col-xs-4 text-center" style="margin-bottom: 25px; min-width: 130px;">
+                                                                            <div style="display: flex; flex-direction: column; align-items: center; justify-content: space-between; height: 100%;">
+                    
+                                                                                @* Container de Mídia (Altura fixa para alinhamento) *@
+                                                                                <div style="height: 80px; display: flex; align-items: center; justify-content: center; width: 100%;">
+                        
+                                                                                    @if (cond.PAAX_IN_TIPO == 1) // IMAGEM - Abre na mesma aba
+                                                                                    {
+                                                                                        <a href="@Url.Action("VerAnexoPaciente", "Paciente", new { id = cond.PAAX_CD_ID })" title="Visualizar Imagem">
+                                                                                            <img src="@Url.Content(cond.PAAX_AQ_ARQUIVO)" class="img-thumbnail" style="width: 70px; height: 70px; object-fit: cover; border: 1px solid #ddd;" />
+                                                                                        </a>
+                                                                                    }
+                                                                                    else if (cond.PAAX_IN_TIPO == 2) // VÍDEO - Abre na mesma aba (Ícone comum)
+                                                                                    {
+                                                                                        <a href="@Url.Action("VerAnexoPaciente", "Paciente", new { id = cond.PAAX_CD_ID })" title="Visualizar Vídeo">
+                                                                                            <i class="fa fa-video-camera fa-4x text-navy"></i>
+                                                                                        </a>
+                                                                                    }
+                                                                                    else if (cond.PAAX_IN_TIPO == 3) // PDF - ÚNICO QUE ABRE EM NOVA ABA
+                                                                                    {
+                                                                                        <a href="~/PdfViewer/web/viewer.html?file=@(cond.PAAX_AQ_ARQUIVO.Replace("~", ""))&ReturnUrl=@Request.Url.AbsolutePath" target="_blank" title="Visualizar PDF">
+                                                                                            <i class="fa fa-file-pdf-o fa-5x text-danger"></i>
+                                                                                        </a>
+                                                                                    }
+                                                                                    else if (cond.PAAX_IN_TIPO == 4) // ÁUDIO - Abre na mesma aba
+                                                                                    {
+                                                                                        <a href="@Url.Action("VerAnexoPacienteAudio", "Paciente", new { id = cond.PAAX_CD_ID })" title="Ouvir Áudio">
+                                                                                            <i class="fa fa-volume-up fa-4x text-info"></i>
+                                                                                        </a>
+                                                                                    }
+                                                                                    else // PADRÃO PARA OUTROS
+                                                                                    {
+                                                                                        <i class="fa fa-file-o fa-4x text-muted"></i>
+                                                                                    }
+                                                                                </div>
+
+                                                                                @* Nome do Arquivo *@
+                                                                                <div style="font-size: 11px; margin-top: 8px; font-weight: bold; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; width: 100%;" title="@cond.PAAX_NM_TITULO">
+                                                                                    @cond.PAAX_NM_TITULO
+                                                                                </div>
+
+                                                                                @* Botões de Ação (Excluir e Download) *@
+                                                                                <div style="margin-top: 5px; display: flex; gap: 12px; justify-content: center;">
+                                                                                    <span style="cursor:pointer;" onclick="PrepararExclusaoAnexo('/Paciente/ExcluirAnexo/@cond.PAAX_CD_ID')" title="Excluir">
+                                                                                        <i class="fa fa-trash-o fa-lg text-navy"></i>
+                                                                                    </span>
+                                                                                    <a href="@Url.Action("DownloadPaciente", "Paciente", new { id = cond.PAAX_CD_ID })" title="Download">
+                                                                                        <i class="fa fa-download fa-lg text-navy"></i>
+                                                                                    </a>
+                                                                                </div>
+
+                                                                            </div>
+                                                                        </div>
                                                                     }
-                                                                </tbody>
-                                                            </table>
+                                                                </div>
+                                                            </div>
+
                                                         }
-                                                        <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
-                                                            <div class="col-lg-12 col-md-12 col-xs-12">
-                                                                <input style="float: left; margin-right: 5px;" type="file" name="file" id="file" class="btn btn-sm btn-warning" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="ATENÇÃO - Antes de anexar arquivos certifique-se de que eles estejam livres de vírus e outras ameaças.  " />
-                                                                <input style="float: left; margin-right: 5px;" type="submit" value="Anexar Arquivo ao Paciente" class="btn btn-sm btn-primary" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Confirma a inclusão de novo anexo ao paciente" />
+
+                                                        <div class="form-group" style="margin-top: 20px;">
+                                                            <div class="col-lg-12">
+                                                                <input type="file" name="file" id="file" class="btn btn-sm btn-warning" style="float: left; margin-right: 5px;" />
+                                                                <input type="submit" value="Incluir Anexo" class="btn btn-sm btn-success" />
                                                             </div>
                                                         </div>
                                                     }
@@ -2492,6 +2613,7 @@
                                             </div>
                                         </div>
                                         <br />
+
                                         <div class="row">
                                             <div class="col-lg-12 col-md-12 col-xs-12">
                                                 <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Fichas Digitalizadas</h4>
@@ -2499,64 +2621,123 @@
                                                 <div class="form-group">
                                                     @using (Html.BeginForm("UploadFichaPaciente", "Paciente2", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { enctype = "multipart/form-data", @id = "pwd-container2" }))
                                                     {
-                                                        if (Model.PACIENTE_FICHA.Count > 0)
-                                                        {
-                                                            <table class="table table-striped table-bordered table-hover dataTables-example">
-                                                                <thead style="background-color:lightsteelblue">
-                                                                    <tr>
-                                                                        <th>Nome da Ficha</th>
-                                                                        <th>Data de inclusão</th>
-                                                                        <th>Tipo de Arquivo</th>
-                                                                        <th class="td-one-action">Ações</th>
-                                                                    </tr>
-                                                                </thead>
-                                                                <tbody>
-                                                                    @foreach (var cond in (Model.PACIENTE_FICHA.Where(p => p.PAFC_IN_ATIVO == 1).ToList()))
-                                                                    {
-                                                                        <tr>
-                                                                            @if (cond.PAFC_IN_TIPO == 1 || cond.PAFC_IN_TIPO == 2)
-                                                                            {
-                                                                                <td style="width: auto"><a href="@Url.Action("VerFichaPaciente", "Paciente2", new { id = cond.PAFC_CD_ID })" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página de visualização da ficha do paciente"/>@cond.PAFC_NM_TITULO</td>
-                                                                            }
-                                                                            else if (cond.PAFC_IN_TIPO == 3)
-                                                                            {
-                                                                                <td style="width: auto"><a href="~/PdfViewer/web/viewer.html?file=@(cond.PAFC_AQ_ARQUIVO.Replace("~", ""))&ReturnUrl=@Request.Url.AbsolutePath" target="_blank" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Abrir a ficha em outra aba do navegador"/>@cond.PAFC_NM_TITULO</td>
-                                                                            }
-                                                                            else
-                                                                            {
-                                                                                <td style="width: auto">@cond.PAFC_NM_TITULO</td>
-                                                                            }
+                                                        var listaFichas = Model.PACIENTE_FICHA.Where(p => p.PAFC_IN_ATIVO == 1).ToList();
 
-                                                                            <td>@cond.PAFC_DT_FICHA.ToShortDateString()</td>
-                                                                            @if (cond.PAFC_IN_TIPO == 1)
-                                                                            {
-                                                                                <td>Imagem</td>
-                                                                            }
-                                                                            else if (cond.PAFC_IN_TIPO == 3)
-                                                                            {
-                                                                                <td>PDF</td>
-                                                                            }
-                                                                            else
-                                                                            {
-                                                                                <td>Outros</td>
-                                                                            }
-                                                                            <td class="td-one-action">
-                                                                                @if (cond.PAFC_IN_TIPO == 3)
-                                                                                {
-                                                                                    <a title="Visualizar Ficha Digitalizada" class="fa fa-camera fa-lg" href="~/PdfViewer/web/viewer.html?file=@(cond.PAFC_AQ_ARQUIVO.Replace("~", ""))&ReturnUrl=@Request.Url.AbsolutePath" target="_blank"></a>
-                                                                                }
-                                                                                <span style="color: #337ab7; cursor:pointer;" alt="Desativar" class="tbl-link fa-lg fa fa-trash-o" onclick="ShowModalExcluirFicha('/Paciente2/ExcluirFicha/@cond.PAFC_CD_ID')" title="Excluir Ficha Digitalizada"></span>
-                                                                                @Html.TableLinkDetails(cond.PAFC_CD_ID, "DownloadFichaPaciente", "fa-download", "Download")
-                                                                            </td>
+                                                        <div class="text-center" style="margin-top: 15px;">
+                                                            <div class="toggle-container" id="viewToggle1">
+                                                                <div class="toggle-option active" data-target="sectionList1">
+                                                                    <i class="fa fa-list"></i> Ver lista
+                                                                </div>
+                                                                <div class="toggle-option" data-target="sectionIcons1">
+                                                                    <i class="fa fa-th"></i> Ver ícones
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        if (listaFichas.Count > 0)
+                                                        {
+                                                            <div id="sectionList1" class="view-section active">
+                                                                <table class="table table-striped table-bordered table-hover dataTables-example">
+                                                                    <thead style="background-color:lightsteelblue">
+                                                                        <tr>
+                                                                            <th>Nome da Ficha</th>
+                                                                            <th>Data de inclusão</th>
+                                                                            <th>Tipo de Arquivo</th>
+                                                                            <th class="td-one-action">Ações</th>
                                                                         </tr>
+                                                                    </thead>
+                                                                    <tbody>
+                                                                        @foreach (var cond in listaFichas)
+                                                                        {
+                                                                            <tr>
+                                                                                <td style="width: auto">
+                                                                                    @if (cond.PAFC_IN_TIPO == 1 || cond.PAFC_IN_TIPO == 2)
+                                                                                    {
+                                                                                        <a href="@Url.Action("VerFichaPaciente", "Paciente2", new { id = cond.PAFC_CD_ID })">@cond.PAFC_NM_TITULO</a>
+                                                                                    }
+                                                                                    else if (cond.PAFC_IN_TIPO == 3)
+                                                                                    {
+                                                                                        <a href="~/PdfViewer/web/viewer.html?file=@(cond.PAFC_AQ_ARQUIVO.Replace("~", ""))&ReturnUrl=@Request.Url.AbsolutePath" target="_blank">@cond.PAFC_NM_TITULO</a>
+                                                                                    }
+                                                                                    else { @cond.PAFC_NM_TITULO }
+                                                                                </td>
+                                                                                <td>@cond.PAFC_DT_FICHA.ToShortDateString()</td>
+                                                                                <td>@(cond.PAFC_IN_TIPO == 1 ? "Imagem" : cond.PAFC_IN_TIPO == 2 ? "Vídeo" : cond.PAFC_IN_TIPO == 3 ? "PDF" : "Outros")</td>
+                                                                                <td class="td-one-action">
+                                                                                    @if (cond.PAFC_IN_TIPO == 3)
+                                                                                    {
+                                                                                        <a title="Visualizar Ficha Digitalizada" class="fa fa-camera fa-lg" href="~/PdfViewer/web/viewer.html?file=@(cond.PAFC_AQ_ARQUIVO.Replace("~", ""))&ReturnUrl=@Request.Url.AbsolutePath" target="_blank"></a>
+                                                                                    }
+                                                                                    <span class="fa fa-trash-o" onclick="PrepararExclusaoFicha('/Paciente2/ExcluirFicha/@cond.PAFC_CD_ID')" style="cursor:pointer; color:#337ab7"></span>
+                                                                                    @Html.TableLinkDetails(cond.PAFC_CD_ID, "DownloadFichaPaciente", "fa-download", "Download")
+                                                                                </td>
+                                                                            </tr>
+                                                                        }
+                                                                    </tbody>
+                                                                </table>
+                                                            </div>
+
+                                                            <div id="sectionIcons1" class="view-section">
+                                                                <div class="row" style="display: flex; flex-wrap: wrap; justify-content: flex-start; margin-bottom: 20px;">
+                                                                    @foreach (var cond in listaFichas)
+                                                                    {
+                                                                        <div class="col-lg-2 col-md-2 col-sm-3 col-xs-4 text-center" style="margin-bottom: 25px; min-width: 130px;">
+                                                                            <div style="display: flex; flex-direction: column; align-items: center; justify-content: space-between; height: 100%;">
+                    
+                                                                                @* Container de Mídia (Altura fixa para alinhamento) *@
+                                                                                <div style="height: 80px; display: flex; align-items: center; justify-content: center; width: 100%;">
+                        
+                                                                                    @if (cond.PAFC_IN_TIPO == 1) // IMAGEM - Abre na mesma aba
+                                                                                    {
+                                                                                        <a href="@Url.Action("VerFichaPaciente", "Paciente2", new { id = cond.PAFC_CD_ID })" title="Visualizar Imagem">
+                                                                                            <img src="@Url.Content(cond.PAFC_AQ_ARQUIVO)" class="img-thumbnail" style="width: 70px; height: 70px; object-fit: cover; border: 1px solid #ddd;" />
+                                                                                        </a>
+                                                                                    }
+                                                                                    else if (cond.PAFC_IN_TIPO == 2) // VÍDEO - Abre na mesma aba (Ícone comum)
+                                                                                    {
+                                                                                        <a href="@Url.Action("VerFichaPaciente", "Paciente2", new { id = cond.PAFC_CD_ID })" title="Visualizar Vídeo">
+                                                                                            <i class="fa fa-video-camera fa-4x text-navy"></i>
+                                                                                        </a>
+                                                                                    }
+                                                                                    else if (cond.PAFC_IN_TIPO == 3) // PDF - ÚNICO QUE ABRE EM NOVA ABA
+                                                                                    {
+                                                                                        <a href="~/PdfViewer/web/viewer.html?file=@(cond.PAFC_AQ_ARQUIVO.Replace("~", ""))&ReturnUrl=@Request.Url.AbsolutePath" target="_blank" title="Visualizar PDF">
+                                                                                            <i class="fa fa-file-pdf-o fa-5x text-danger"></i>
+                                                                                        </a>
+                                                                                    }
+                                                                                    else // PADRÃO PARA OUTROS
+                                                                                    {
+                                                                                        <i class="fa fa-file-o fa-4x text-muted"></i>
+                                                                                    }
+                                                                                </div>
+
+                                                                                @* Nome do Arquivo *@
+                                                                                <div style="font-size: 11px; margin-top: 8px; font-weight: bold; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; width: 100%;" title="@cond.PAFC_NM_TITULO">
+                                                                                    @cond.PAFC_NM_TITULO
+                                                                                </div>
+
+                                                                                @* Botões de Ação (Excluir e Download) *@
+                                                                                <div style="margin-top: 5px; display: flex; gap: 12px; justify-content: center;">
+                                                                                    <span style="cursor:pointer;" onclick="PrepararExclusaoFicha('/Paciente2/ExcluirFicha/@cond.PAFC_CD_ID')" title="Excluir">
+                                                                                        <i class="fa fa-trash-o fa-lg text-navy"></i>
+                                                                                    </span>
+                                                                                    <a href="@Url.Action("DownloadFichaPaciente", "Paciente2", new { id = cond.PAFC_CD_ID })" title="Download">
+                                                                                        <i class="fa fa-download fa-lg text-navy"></i>
+                                                                                    </a>
+                                                                                </div>
+
+                                                                            </div>
+                                                                        </div>
                                                                     }
-                                                                </tbody>
-                                                            </table>
+                                                                </div>
+                                                            </div>
+
                                                         }
-                                                        <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
-                                                            <div class="col-lg-12 col-md-12 col-xs-12">
-                                                                <input style="float: left; margin-right: 5px;" type="file" name="file" id="file" class="btn btn-sm btn-warning" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="ATENÇÃO - Antes de anexar fichas ao paciente certifique-se de que elas estejam livres de vírus e outras ameaças.  " />
-                                                                <input style="float: left; margin-right: 5px;" type="submit" value="Anexar Ficha do Paciente" class="btn btn-sm btn-primary" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Confirma a inclusão de nova ficha digitalizada para o paciente"/>
+
+                                                        <div class="form-group" style="margin-top: 20px;">
+                                                            <div class="col-lg-12">
+                                                                <input type="file" name="file" id="file" class="btn btn-sm btn-warning" style="float: left; margin-right: 5px;" />
+                                                                <input type="submit" value="Incluir Ficha Digitalizada" class="btn btn-sm btn-success" />
                                                             </div>
                                                         </div>
                                                     }
@@ -7890,6 +8071,48 @@
         .toast-success .toast-message {
             padding-left: 10px !important;
         }
+        /* Container externo (o fundo da "pílula") */
+        .toggle-container {
+            background-color: #ebf9eb; /* Verde bem claro */
+            border-radius: 20px;
+            display: inline-flex;
+            padding: 4px;
+            margin-bottom: 20px;
+            border: 1px solid #d0e9d0; /* Borda verde suave */
+        }
+
+        /* Opções de texto */
+        .toggle-option {
+            padding: 6px 20px;
+            border-radius: 18px;
+            cursor: pointer;
+            font-weight: bold;
+            color: #5cb85c; /* Verde padrão (Success) */
+            transition: all 0.3s ease;
+            user-select: none;
+        }
+
+        /* Opção selecionada (a "pílula" branca que corre) */
+        .toggle-option.active {
+            background-color: #ffffff; /* Fundo branco para destacar a opção ativa */
+            color: #28a745; /* Verde mais escuro para o texto ativo */
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        /* Efeito de hover para melhorar a UX */
+        .toggle-option:not(.active):hover {
+            background-color: rgba(255, 255, 255, 0.5);
+            color: #1e7e34;
+        }
+        .view-section {
+            display: none !important;
+        }
+
+        .view-section.active {
+            display: block !important;
+        }
+
+
     </style>
 }
 @section Scripts {
@@ -8848,7 +9071,7 @@
             $('#file').on('change', function () {
                 var arquivo = this.files[0];
                 var limiteTamanho = 50 * 1024 * 1024; // 50MB (Conforme seu código)
-                var extensoesPermitidas = ['pdf'];
+                var extensoesPermitidas = ['pdf', 'jpg', 'jpeg', 'png', 'mp3', 'mp4', 'webp', 'xlsx'];
 
                 if (arquivo) {
                     var nomeArquivo = arquivo.name;
@@ -8942,6 +9165,107 @@
             });
         }
     </script>
+    <script>
+        $(document).ready(function () {
+            $('.toggle-option').click(function () {
+                var $btn = $(this);
+                var $container = $btn.closest('.toggle-container');
+                var targetSection = $btn.data('target');
+
+                // 1. Alterna o botão dentro do container atual apenas
+                $container.find('.toggle-option').removeClass('active');
+                $btn.addClass('active');
+
+                // 2. Identifica qual o grupo (Anexo ou Ficha)
+                // Se o target for da Ficha (termina com 1), limpa só as fichas
+                if (targetSection.indexOf('1') > -1) {
+                    $('.grupo-ficha').removeClass('active');
+                } else {
+                    // Caso contrário, limpa só os anexos
+                    $('.grupo-anexo').removeClass('active');
+                }
+
+                // 3. Mostra apenas a seção desejada
+                $('#' + targetSection).addClass('active');
+            });
+        });    
+    </script>
+
+
+    <script type="text/javascript">
+        // 1. Prepara a URL e abre a modal
+        function PrepararExclusaoAnexo(url) {
+            $('#urlExclusaoTemp').val(url); // Armazena a URL no campo hidden da modal
+            $('#modalConfirmacaoExclusaoAnexo').modal('show');
+        }
+
+        $(document).ready(function () {
+            // 2. Ação do botão Confirmar dentro da modal
+            $('#btnConfirmarExclusaoAnexo').click(function () {
+                var urlFinal = $('#urlExclusaoTemp').val();
+                var $btn = $(this);
+
+                if (urlFinal !== "") {
+                    // Feedback visual
+                    $btn.prop('disabled', true).addClass('disabled');
+                    $btn.html('<i class="fa fa-spinner fa-spin"></i> Excluindo...');
+
+                    // Fecha a modal e redireciona
+                    $('#modalConfirmacaoExclusaoAnexo').modal('hide');
+                
+                    setTimeout(function () {
+                        $('.modal-backdrop').remove();
+                        $('#loadingIndicator').show();
+                        window.location.href = urlFinal;
+                    }, 400);
+                }
+            });
+
+            // Limpeza de segurança ao fechar
+            $('#modalConfirmacaoExclusaoAnexo').on('hidden.bs.modal', function () {
+                $('#urlExclusaoTemp').val("");
+                $('#btnConfirmarExclusaoAnexo').prop('disabled', false).removeClass('disabled').html('Confirmar Exclusão');
+            });
+        });
+    </script>
+
+    <script type="text/javascript">
+        // 1. Prepara a URL e abre a modal
+        function PrepararExclusaoFicha(url) {
+            $('#urlExclusaoTemp').val(url); // Armazena a URL no campo hidden da modal
+            $('#modalConfirmacaoExclusaoFicha').modal('show');
+        }
+
+        $(document).ready(function () {
+            // 2. Ação do botão Confirmar dentro da modal
+            $('#btnConfirmarExclusaoFicha').click(function () {
+                var urlFinal = $('#urlExclusaoTemp').val();
+                var $btn = $(this);
+
+                if (urlFinal !== "") {
+                    // Feedback visual
+                    $btn.prop('disabled', true).addClass('disabled');
+                    $btn.html('<i class="fa fa-spinner fa-spin"></i> Excluindo...');
+
+                    // Fecha a modal e redireciona
+                    $('#modalConfirmacaoExclusaoFicha').modal('hide');
+                
+                    setTimeout(function () {
+                        $('.modal-backdrop').remove();
+                        $('#loadingIndicator').show();
+                        window.location.href = urlFinal;
+                    }, 400);
+                }
+            });
+
+            // Limpeza de segurança ao fechar
+            $('#modalConfirmacaoExclusaoFicha').on('hidden.bs.modal', function () {
+                $('#urlExclusaoTemp').val("");
+                $('#btnConfirmarExclusaoFicha').prop('disabled', false).removeClass('disabled').html('Confirmar Exclusão');
+            });
+        });
+    </script>
+
 
 
     @if (ViewBag.Message != null)
