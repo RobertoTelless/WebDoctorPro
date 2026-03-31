@@ -1445,7 +1445,7 @@ namespace GEDSys_Presentation.Controllers
                 foto.LOAX_DT_ANEXO = DateTime.Today;
                 foto.LOAX_IN_ATIVO = 1;
                 Int32 tipo = 3;
-                if (extensao.ToUpper() == ".JPG" || extensao.ToUpper() == ".GIF" || extensao.ToUpper() == ".PNG" || extensao.ToUpper() == ".JPEG")
+                if (extensao.ToUpper() == ".JPG" || extensao.ToUpper() == ".GIF" || extensao.ToUpper() == ".PNG" || extensao.ToUpper() == ".JPEG" || extensao.ToUpper() == ".WEBP")
                 {
                     tipo = 1;
                 }
@@ -1497,6 +1497,13 @@ namespace GEDSys_Presentation.Controllers
                 return RedirectToAction("TrataExcecao", "BaseAdmin");
             }
         }
+
+
+
+
+
+
+
 
         public ActionResult VoltarEditarLocacao()
         {
