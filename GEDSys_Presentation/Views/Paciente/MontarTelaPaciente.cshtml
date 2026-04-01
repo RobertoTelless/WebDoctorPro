@@ -252,6 +252,7 @@
                     {
                         <a href="@Url.Action("MontarTelaAreaPacienteVer", "AreaPaciente")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acesso às informações da área do paciente" class="btn btn-sm btn-primary btn-loading" id="emp" OnClick = "Fade()">Informações da Área do Paciente</a>                
                     }
+                    @*<a href="@Url.Action("SincronizarArquivosAzure", "BaseAdmin")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Sincronização dos arquivos" class="btn btn-sm btn-primary btn-danger" id="emp" OnClick = "Fade()">Sincronizar Arquivos</a>*@                
                     <a href="@Url.Action((String)Session["AjudaNivel"])"  class="btn btn-sm btn-danger" target="_blank" >Ajuda</a>               
                     <span id="loadingIndicator" style="display: none; margin-left: 10px; color: #007bff;">
                         <i class="fa fa-spinner fa-spin"></i> Processando...
@@ -362,14 +363,35 @@
                                                                             {
                                                                                 <td style="width: auto">-</td>
                                                                             }
-                                                                            @if (!String.IsNullOrEmpty(cond.PACI_AQ_FOTO))
+                                                                            @*@if (!String.IsNullOrEmpty(cond.PACI_AQ_FOTO))
                                                                             {
                                                                                 <td style="width: auto"><img src="@Url.Content(cond.PACI_AQ_FOTO)" style="width: auto; height: auto; max-height: 75px; max-width: 65px;" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Clique Ctrl+Ctrl para ampliar a fotografia"></td>
                                                                             }
                                                                             else
                                                                             {
                                                                                 <td style="width: auto"><img src="~/Images/icon_morador.png" style="width: auto; height: auto; max-height: 65px; max-width: 55px;"  ></td>
+                                                                            }*@
+                                                                            @if (!String.IsNullOrEmpty(cond.PACI_AQ_FOTO))
+                                                                            {
+                                                                                // Tratamento manual da URL dentro do loop
+                                                                                var caminhoLimpo = cond.PACI_AQ_FOTO.Replace("~/", "").Replace("~", "");
+                                                                                var urlFinal = "https://rtistoragemain.blob.core.windows.net/rti-datacontainer/" + caminhoLimpo;
+
+                                                                                <td style="width: auto">
+                                                                                    <img src="@urlFinal" 
+                                                                                         style="width: auto; height: auto; max-height: 75px; max-width: 65px;" 
+                                                                                         data-toggle="popover" data-trigger="hover" data-placement="top" 
+                                                                                         data-content="Clique Ctrl+Ctrl para ampliar a fotografia"
+                                                                                         onerror="this.onerror=null;this.src='@Url.Content("~/Images/icon_morador.png")';">
+                                                                                </td>
                                                                             }
+                                                                            else
+                                                                            {
+                                                                                <td style="width: auto">
+                                                                                    <img src="~/Images/icon_morador.png" style="width: auto; height: auto; max-height: 65px; max-width: 55px;">
+                                                                                </td>
+                                                                            }
+
                                                                         </tr>
                                                                     }
                                                                 </tbody>

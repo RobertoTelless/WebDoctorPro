@@ -38,6 +38,8 @@ using System.Diagnostics;
 using EntitiesServices.Work_Classes;
 using System.Net.Mail;
 using System.Net.Mime;
+using Azure.Storage.Blobs;
+using Azure.Storage.Blobs.Models;
 
 namespace ERP_Condominios_Solution.Controllers
 {
@@ -79,6 +81,9 @@ namespace ERP_Condominios_Solution.Controllers
         private readonly ITipoPagamentoAppService tpgApp;
         private readonly ITipoValorConsultaAppService ticoApp;
         private readonly IUnidadeAppService uniApp;
+
+        private readonly string _connectionString = "DefaultEndpointsProtocol=https;AccountName=rtistoragemain;AccountKey=VowoS1r1iQ7OeHYB8COjfTPicHc1GxV1LvpPyKlKw0+GAb7MXIyWqX1uAGGNMOAHh7CsxabKbMaC+AStfHmdXQ==;EndpointSuffix=core.windows.net";
+        private readonly string _containerName = "rti-datacontainer";
 
 #pragma warning disable CS0169 // O campo "BaseAdminController.msg" nunca é usado
         private String msg;
@@ -7323,5 +7328,67 @@ namespace ERP_Condominios_Solution.Controllers
             return Json(hash);
         }
 
+        [HttpGet]
+        public async Task<ActionResult> SincronizarArquivosAzure()
+        {
+            try
+            {
+                CONFIGURACAO conf = CarregaConfiguracaoGeral();
+                string _connectionString = conf.CONF_NM_STORAGE_CONN;
+                string _containerName = conf.CONF_NM_STORAGE_CONTAINER;
+
+
+                // Caminho base: ~/Imagens/1/
+                // Queremos preservar a estrutura a partir de "Imagens/..."
+                string rootPath = Server.MapPath("~/Imagens/1/");
+
+                // Instancia o serviço de Blob
+                BlobServiceClient blobServiceClient = new BlobServiceClient(_connectionString);
+                BlobContainerClient containerClient = blobServiceClient.GetBlobContainerClient(_containerName);
+
+                // Garante que o container existe
+                await containerClient.CreateIfNotExistsAsync(PublicAccessType.None);
+
+                int arquivosCopiados = 0;
+                int arquivosIgnorados = 0;
+
+                if (Directory.Exists(rootPath))
+                {
+                    // Busca todos os arquivos recursivamente
+                    var allFiles = Directory.GetFiles(rootPath, "*.*", SearchOption.AllDirectories);
+
+                    foreach (string filePath in allFiles)
+                    {
+                        // Transforma o caminho físico em caminho relativo (ex: Imagens/1/Pasta/Arquivo.jpg)
+                        // Buscamos o índice da palavra "Imagens" para manter a hierarquia exigida
+                        string relativePath = filePath.Substring(filePath.IndexOf("Imagens")).Replace("\\", "/");
+
+                        BlobClient blobClient = containerClient.GetBlobClient(relativePath);
+
+                        // IDEMPOTÊNCIA: Verifica se o arquivo já existe no Storage
+                        if (!await blobClient.ExistsAsync())
+                        {
+                            using (FileStream uploadFileStream = System.IO.File.OpenRead(filePath))
+                            {
+                                await blobClient.UploadAsync(uploadFileStream, true);
+                                arquivosCopiados++;
+                            }
+                        }
+                        else
+                        {
+                            arquivosIgnorados++;
+                        }
+                    }
+                }
+
+                Session["MsgCRUD"] = $"Sincronização concluída! {arquivosCopiados} novos arquivos enviados, {arquivosIgnorados} já existentes.";
+            }
+            catch (Exception ex)
+            {
+                Session["MsgCRUD"] = "Erro na sincronização: " + ex.Message;
+            }
+            Session["MensPaciente"] = 61;
+            return RedirectToAction("MontarTelaPaciente", "Paciente"); // Ajuste para sua rota de retorno
+        }
     }
 }

@@ -1167,6 +1167,9 @@
           <Property Name="CONF_IN_ABA_SOLICITACAO" Type="int" />
           <Property Name="CONF_IN_ABA_PRESCRICAO" Type="int" />
           <Property Name="CONF_IN_ABA_LOCACAO" Type="int" />
+          <Property Name="CONF_NM_STORAGE_KEY" Type="varchar" MaxLength="250" />
+          <Property Name="CONF_NM_STORAGE_CONN" Type="varchar" MaxLength="250" />
+          <Property Name="CONF_NM_STORAGE_CONTAINER" Type="varchar" MaxLength="250" />
         </EntityType>
         <EntityType Name="CONFIGURACAO_ANAMNESE">
           <Key>
@@ -21415,6 +21418,9 @@
           <Property Name="CONF_IN_ABA_SOLICITACAO" Type="Int32" />
           <Property Name="CONF_IN_ABA_PRESCRICAO" Type="Int32" />
           <Property Name="CONF_IN_ABA_LOCACAO" Type="Int32" />
+          <Property Name="CONF_NM_STORAGE_KEY" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
+          <Property Name="CONF_NM_STORAGE_CONN" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
+          <Property Name="CONF_NM_STORAGE_CONTAINER" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
         </EntityType>
         <EntityType Name="CONFIGURACAO_ANAMNESE">
           <Key>
@@ -42668,6 +42674,9 @@
           <EntitySetMapping Name="CONFIGURACAO">
             <EntityTypeMapping TypeName="CRMSysDBModel.CONFIGURACAO">
               <MappingFragment StoreEntitySet="CONFIGURACAO">
+                <ScalarProperty Name="CONF_NM_STORAGE_CONTAINER" ColumnName="CONF_NM_STORAGE_CONTAINER" />
+                <ScalarProperty Name="CONF_NM_STORAGE_CONN" ColumnName="CONF_NM_STORAGE_CONN" />
+                <ScalarProperty Name="CONF_NM_STORAGE_KEY" ColumnName="CONF_NM_STORAGE_KEY" />
                 <ScalarProperty Name="CONF_IN_ABA_LOCACAO" ColumnName="CONF_IN_ABA_LOCACAO" />
                 <ScalarProperty Name="CONF_IN_ABA_PRESCRICAO" ColumnName="CONF_IN_ABA_PRESCRICAO" />
                 <ScalarProperty Name="CONF_IN_ABA_SOLICITACAO" ColumnName="CONF_IN_ABA_SOLICITACAO" />

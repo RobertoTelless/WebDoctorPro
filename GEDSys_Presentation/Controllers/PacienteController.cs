@@ -1663,11 +1663,11 @@ namespace GEDSys_Presentation.Controllers
                         {
                             if (file.Profile == null)
                             {
-                                volta3 = UploadFileQueuePaciente(file);
+                                volta3 = await UploadFileQueuePacienteBlob(file);
                             }
                             else
                             {
-                                volta3 = UploadFotoQueuePaciente(file);
+                                volta3 = await UploadFotoQueuePacienteBlob(file);
                             }
                         }
                         Session["FileQueuePaciente"] = null;
@@ -2355,6 +2355,145 @@ namespace GEDSys_Presentation.Controllers
         }
 
         [HttpPost]
+        public async Task<Int32> UploadFileQueuePacienteBlob(FileQueue file)
+        {
+            try
+            {
+                Int32 idNot = (Int32)Session["IdPaciente"];
+                Int32 idAss = (Int32)Session["IdAssinante"];
+
+                if (file == null)
+                {
+                    Session["MensPaciente"] = 5;
+                    return 1;
+                }
+
+                // Recupera paciente
+                PACIENTE item = baseApp.GetById(idNot);
+                USUARIO usu = (USUARIO)Session["UserCredentials"];
+                var fileName = file.Name;
+
+                if (fileName.Length > 250)
+                {
+                    Session["MensPaciente"] = 6;
+                    return 2;
+                }
+
+                // Critica tamanho arquivo
+                var fileSize = file.Contents.Length;
+                if (fileSize > 50000000)
+                {
+                    Session["MensPaciente"] = 7;
+                    return 3;
+                }
+
+                //Recupera tipo de arquivo
+                string extensao = Path.GetExtension(fileName);
+                if (!((String)Session["ExtensoesPossiveis"]).Contains(extensao.ToUpper()))
+                {
+                    Session["MensPaciente"] = 12;
+                    return 4;
+                }
+
+                // 1. DEFINIÇÃO DE CAMINHOS
+                String caminhoRelativo = "Imagens/" + item.ASSI_CD_ID.ToString() + "/Pacientes/" + item.PACI__CD_ID.ToString() + "/Anexos/";
+                String caminhoLocal = Server.MapPath("~/" + caminhoRelativo);
+                String fullPathLocal = Path.Combine(caminhoLocal, fileName);
+
+                // Garante que a pasta local existe
+                if (!Directory.Exists(caminhoLocal)) Directory.CreateDirectory(caminhoLocal);
+
+                // 2. CÓPIA LOCAL (Escrita de Bytes)
+                System.IO.File.WriteAllBytes(fullPathLocal, file.Contents);
+
+                // 3. CÓPIA PARA O AZURE BLOB STORAGE
+                try
+                {
+                    CONFIGURACAO conf = CarregaConfiguracaoGeral();
+                    string connString = conf.CONF_NM_STORAGE_CONN;
+                    string containerName = conf.CONF_NM_STORAGE_CONTAINER;
+
+                    var blobServiceClient = new Azure.Storage.Blobs.BlobServiceClient(connString);
+                    var containerClient = blobServiceClient.GetBlobContainerClient(containerName);
+
+                    // O nome do blob no Azure
+                    string blobName = caminhoRelativo + fileName;
+                    var blobClient = containerClient.GetBlobClient(blobName);
+
+                    // Como file.Contents é byte[], usamos MemoryStream para o upload
+                    using (var ms = new MemoryStream(file.Contents))
+                    {
+                        await blobClient.UploadAsync(ms, overwrite: true);
+                    }
+                }
+                catch (Exception exAzure)
+                {
+                    Session["MsgCRUD"] = "Erro na sincronização: " + exAzure.Message;
+                    Session["MensPaciente"] = 61;
+                    return 0;
+                }
+
+                // 4. GRAVAR REGISTRO NO BANCO
+                PACIENTE_ANEXO foto = new PACIENTE_ANEXO();
+                foto.PAAX_AQ_ARQUIVO = "~/" + caminhoRelativo + fileName;
+                foto.PAAX_DT_ANEXO = DateTime.Today;
+                foto.PAAX_IN_ATIVO = 1;
+
+                // Determinação do tipo (simplificada)
+                Int32 tipo = 7;
+                string extUpper = extensao.ToUpper();
+                if (extUpper == ".JPG" || extUpper == ".PNG" || extUpper == ".JPEG" || extUpper == ".GIF") tipo = 1;
+                else if (extUpper == ".MP4" || extUpper == ".AVI" || extUpper == ".MPEG") tipo = 2;
+                else if (extUpper == ".PDF") tipo = 3;
+                else if (extUpper == ".MP3") tipo = 4;
+                else if (extUpper == ".DOCX" || extUpper == ".DOC" || extUpper == ".ODT") tipo = 5;
+                else if (extUpper == ".XLSX" || extUpper == ".XLS" || extUpper == ".ODS") tipo = 6;
+
+                foto.PAAX_IN_TIPO = tipo;
+                foto.PAAX_NM_TITULO = fileName;
+                foto.PACI_CD_ID = item.PACI__CD_ID;
+                item.PACIENTE_ANEXO.Add(foto);
+                objetoAntes = item;
+                Int32 volta = baseApp.ValidateEdit(item, objetoAntes);
+
+                // Configura serilização
+                JsonSerializerSettings settings = new JsonSerializerSettings
+                {
+                    ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+                    NullValueHandling = NullValueHandling.Ignore
+                };
+
+                // Monta Log
+                DTO_Paciente_Anexo dto = MontarPacienteAnexoDTOObj(foto);
+                String json = JsonConvert.SerializeObject(dto, settings);
+                LOG log = new LOG
+                {
+                    LOG_DT_DATA = DateTime.Now,
+                    ASSI_CD_ID = usu.ASSI_CD_ID,
+                    USUA_CD_ID = usu.USUA_CD_ID,
+                    LOG_NM_OPERACAO = "Paciente - Anexo - Inclusão",
+                    LOG_IN_ATIVO = 1,
+                    LOG_TX_REGISTRO = json,
+                    LOG_IN_SISTEMA = 6
+                };
+                Int32 volta1 = logApp.ValidateCreate(log);
+
+                return 0;
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Paciente";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Paciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return 0;
+            }
+        }
+
+        [HttpPost]
         public Int32 UploadFotoQueuePaciente(FileQueue file)
         {
             try
@@ -2418,6 +2557,98 @@ namespace GEDSys_Presentation.Controllers
             }
         }
 
+        [HttpPost]
+        public async Task<Int32> UploadFotoQueuePacienteBlob(FileQueue file)
+        {
+            try
+            {
+                // Inicializa
+                Int32 idNot = (Int32)Session["IdPaciente"];
+                Int32 idAss = (Int32)Session["IdAssinante"];
+
+                if (file == null)
+                {
+                    Session["MensPaciente"] = 5;
+                    return 1;
+                }
+
+                // Recupera cliente
+                PACIENTE item = baseApp.GetById(idNot);
+                USUARIO usu = (USUARIO)Session["UserCredentials"];
+                var fileName = file.Name;
+
+                if (fileName.Length > 250)
+                {
+                    Session["MensPaciente"] = 6;
+                    return 2;
+                }
+
+                // Critica tamanho arquivo
+                var fileSize = file.Contents.Length;
+                if (fileSize > 50000000)
+                {
+                    Session["MensPaciente"] = 7;
+                    return 3;
+                }
+
+                // 1. DEFINIÇÃO DE CAMINHOS (Removendo a barra inicial para o Azure)
+                String caminhoRelativo = "Imagens/" + item.ASSI_CD_ID.ToString() + "/Pacientes/" + item.PACI__CD_ID.ToString() + "/Fotos/";
+                String caminhoLocal = Server.MapPath("~/" + caminhoRelativo);
+                String fullPathLocal = Path.Combine(caminhoLocal, fileName);
+
+                // Garante que a pasta local existe
+                if (!Directory.Exists(caminhoLocal)) Directory.CreateDirectory(caminhoLocal);
+
+                // 2. CÓPIA LOCAL
+                System.IO.File.WriteAllBytes(fullPathLocal, file.Contents);
+
+                // 3. CÓPIA PARA O AZURE BLOB STORAGE
+                try
+                {
+                    CONFIGURACAO conf = CarregaConfiguracaoGeral();
+                    string connString = conf.CONF_NM_STORAGE_CONN;
+                    string containerName = conf.CONF_NM_STORAGE_CONTAINER;
+
+                    var blobServiceClient = new Azure.Storage.Blobs.BlobServiceClient(connString);
+                    var containerClient = blobServiceClient.GetBlobContainerClient(containerName);
+
+                    // Nome do blob incluindo as "pastas" virtuais
+                    string blobName = caminhoRelativo + fileName;
+                    var blobClient = containerClient.GetBlobClient(blobName);
+
+                    // Upload idempotente usando MemoryStream
+                    using (var ms = new MemoryStream(file.Contents))
+                    {
+                        await blobClient.UploadAsync(ms, overwrite: true);
+                    }
+                }
+                catch (Exception exAzure)
+                {
+                    return 0;
+                }
+
+                // 4. ATUALIZAÇÃO DO REGISTRO
+                item.PACI_AQ_FOTO = "~/" + caminhoRelativo + fileName;
+                objetoAntes = item;
+                Int32 volta = baseApp.ValidateEdit(item, objetoAntes);
+
+                listaMaster = new List<PACIENTE>();
+                Session["ListaPaciente"] = null;
+
+                return 0;
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Paciente";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Paciente", "ePront", 1, (USUARIO)Session["UserCredentials"]);
+                return 0;
+            }
+        }
 
         public ActionResult VoltarAnexoPaciente()
         {
@@ -5144,6 +5375,107 @@ namespace GEDSys_Presentation.Controllers
                 item.PACI_AQ_FOTO = "~" + caminho + fileName;
                 objetoAntes = item;
                 Int32 volta = baseApp.ValidateEdit(item, objetoAntes);
+                listaMaster = new List<PACIENTE>();
+                Session["ListaPaciente"] = null;
+                Session["PacienteAlterada"] = 1;
+                Session["NivelPaciente"] = 2;
+
+                return RedirectToAction("VoltarAnexoPaciente");
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Paciente";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Paciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return RedirectToAction("TrataExcecao", "BaseAdmin");
+            }
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> UploadFotoPacienteBlob(HttpPostedFileBase file)
+        {
+            try
+            {
+                // Inicializa
+                if ((String)Session["Ativa"] == null)
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+                Int32 idNot = (Int32)Session["IdPaciente"];
+                Int32 idAss = (Int32)Session["IdAssinante"];
+
+                if (file == null)
+                {
+                    Session["MensPaciente"] = 5;
+                    return RedirectToAction("VoltarAnexoPaciente");
+                }
+
+                // Recupera cliente
+                PACIENTE item = baseApp.GetById(idNot);
+                USUARIO usu = (USUARIO)Session["UserCredentials"];
+                var fileName = Path.GetFileName(file.FileName);
+
+                if (fileName.Length > 250)
+                {
+                    Session["MensPaciente"] = 6;
+                    return RedirectToAction("VoltarAnexoPaciente");
+                }
+
+                // Critica tamanho arquivo
+                if (file.ContentLength > 50000000)
+                {
+                    Session["MensPaciente"] = 7;
+                    return RedirectToAction("VoltarAnexoPaciente");
+                }
+
+                // 1. DEFINIÇÃO DE CAMINHOS
+                String caminhoRelativo = "Imagens/" + item.ASSI_CD_ID.ToString() + "/Pacientes/" + item.PACI__CD_ID.ToString() + "/Fotos/";
+                String caminhoLocal = Server.MapPath("~/" + caminhoRelativo);
+                String fullPathLocal = Path.Combine(caminhoLocal, fileName);
+
+                // Garante que a pasta local existe
+                if (!Directory.Exists(caminhoLocal)) Directory.CreateDirectory(caminhoLocal);
+
+                // 2. CÓPIA LOCAL
+                file.SaveAs(fullPathLocal);
+
+                // 3. CÓPIA PARA O AZURE BLOB STORAGE
+                try
+                {
+                    // IMPORTANTE: Resetar a posição do stream após o SaveAs local
+                    file.InputStream.Position = 0;
+
+                    CONFIGURACAO conf = CarregaConfiguracaoGeral();
+                    string connString = conf.CONF_NM_STORAGE_CONN;
+                    string containerName = conf.CONF_NM_STORAGE_CONTAINER;
+
+                    var blobServiceClient = new Azure.Storage.Blobs.BlobServiceClient(connString);
+                    var containerClient = blobServiceClient.GetBlobContainerClient(containerName);
+
+                    // Nome do blob (caminho virtual no container)
+                    string blobName = caminhoRelativo + fileName;
+                    var blobClient = containerClient.GetBlobClient(blobName);
+
+                    // Upload para o Azure (Idempotente)
+                    await blobClient.UploadAsync(file.InputStream, overwrite: true);
+                }
+                catch (Exception exAzure)
+                {
+                    Session["MsgCRUD"] = "Erro na sincronização: " + exAzure.Message;
+                    Session["MensPaciente"] = 61;
+                    return RedirectToAction("VoltarAnexoPaciente");
+                }
+
+                // 4. ATUALIZAÇÃO DO REGISTRO NO BANCO
+                item.PACI_AQ_FOTO = "~/" + caminhoRelativo + fileName;
+                objetoAntes = item;
+                Int32 volta = baseApp.ValidateEdit(item, objetoAntes);
+
+                // Limpeza de cache/sessão conforme original
                 listaMaster = new List<PACIENTE>();
                 Session["ListaPaciente"] = null;
                 Session["PacienteAlterada"] = 1;
@@ -10797,6 +11129,155 @@ namespace GEDSys_Presentation.Controllers
                 {
                     return RedirectToAction("VoltarVerAnexoPaciente", "Paciente");
                 }
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Paciente";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Paciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return RedirectToAction("TrataExcecao", "BaseAdmin");
+            }
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> UploadFilePacienteBlob(HttpPostedFileBase file)
+        {
+            try
+            {
+                // Inicializa
+                if ((String)Session["Ativa"] == null)
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+                Int32 idNot = (Int32)Session["IdPaciente"];
+                Int32 idAss = (Int32)Session["IdAssinante"];
+
+                // Recupera paciente
+                PACIENTE item = baseApp.GetItemById(idNot);
+                USUARIO usu = (USUARIO)Session["UserCredentials"];
+
+                // Criticas (mantidas conforme original)
+                if (file == null)
+                {
+                    Session["MensPaciente"] = 5;
+                    return (Int32)Session["VoltaAnexo"] == 1 ? RedirectToAction("VoltarAnexoPaciente") : RedirectToAction("VoltarVerAnexoPaciente", "Paciente");
+                }
+
+                var fileName = Path.GetFileName(file.FileName);
+                if (fileName.Length > 250)
+                {
+                    Session["MensPaciente"] = 6;
+                    return (Int32)Session["VoltaAnexo"] == 1 ? RedirectToAction("VoltarAnexoPaciente") : RedirectToAction("VoltarVerAnexoPaciente", "Paciente");
+                }
+
+                if (file.ContentLength > 50000000)
+                {
+                    Session["MensPaciente"] = 7;
+                    return (Int32)Session["VoltaAnexo"] == 1 ? RedirectToAction("VoltarAnexoPaciente") : RedirectToAction("VoltarVerAnexoPaciente", "Paciente2");
+                }
+
+                string extensao = Path.GetExtension(fileName);
+                if (!((String)Session["ExtensoesPossiveis"]).Contains(extensao.ToUpper()))
+                {
+                    Session["MensPaciente"] = 12;
+                    return (Int32)Session["VoltaAnexo"] == 1 ? RedirectToAction("VoltarAnexoPaciente") : RedirectToAction("VoltarVerAnexoPaciente", "Paciente");
+                }
+
+                // 1. DEFINIÇÃO DO CAMINHO (Mesmo para Local e Azure)
+                // Removida a barra inicial para o Azure não criar uma pasta raiz vazia
+                String caminhoRelativo = "Imagens/" + item.ASSI_CD_ID.ToString() + "/Pacientes/" + item.PACI__CD_ID.ToString() + "/Anexos/";
+                String caminhoLocal = Server.MapPath("~/" + caminhoRelativo);
+                String fullPathLocal = Path.Combine(caminhoLocal, fileName);
+
+                // Garante que a pasta local existe
+                if (!Directory.Exists(caminhoLocal)) Directory.CreateDirectory(caminhoLocal);
+
+                // 2. CÓPIA LOCAL
+                using (var stream = new FileStream(fullPathLocal, FileMode.Create))
+                {
+                    await file.InputStream.CopyToAsync(stream);
+                }
+
+                // 3. CÓPIA PARA O AZURE BLOB STORAGE
+                try
+                {
+                    // Reinicia o ponteiro do stream para o início após a cópia local
+                    file.InputStream.Position = 0;
+
+                    CONFIGURACAO conf = CarregaConfiguracaoGeral();
+                    string connString = conf.CONF_NM_STORAGE_CONN;
+                    string containerName = conf.CONF_NM_STORAGE_CONTAINER;
+
+                    var blobServiceClient = new Azure.Storage.Blobs.BlobServiceClient(connString);
+                    var containerClient = blobServiceClient.GetBlobContainerClient(containerName);
+            
+                    // O nome do blob no Azure incluirá toda a estrutura de pastas
+                    string blobName = caminhoRelativo + fileName;
+                    var blobClient = containerClient.GetBlobClient(blobName);
+
+                    // Upload para o Azure (Idempotente: Se já existe, sobrescreve com true)
+                    await blobClient.UploadAsync(file.InputStream, overwrite: true);
+                }
+                catch (Exception exAzure)
+                {
+                    Session["MsgCRUD"] = "Erro na sincronização: " + exAzure.Message;
+                    Session["MensPaciente"] = 61;
+                    return RedirectToAction("VoltarAnexoPaciente");
+                }
+
+                // 4. GRAVAR REGISTRO NO BANCO (Mantido conforme original)
+                PACIENTE_ANEXO foto = new PACIENTE_ANEXO();
+                foto.PAAX_AQ_ARQUIVO = "~/" + caminhoRelativo + fileName;
+                foto.PAAX_DT_ANEXO = DateTime.Today;
+                foto.PAAX_IN_ATIVO = 1;
+
+                // Lógica de definição de 'tipo' (simplificada para o exemplo)
+                Int32 tipo = 7;
+                string extUpper = extensao.ToUpper();
+                if (extUpper == ".JPG" || extUpper == ".PNG" || extUpper == ".JPEG") tipo = 1;
+                else if (extUpper == ".MP4" || extUpper == ".AVI") tipo = 2;
+                else if (extUpper == ".PDF") tipo = 3;
+                else if (extUpper == ".MP3") tipo = 4;
+                else if (extUpper == ".DOCX" || extUpper == ".DOC") tipo = 5;
+                else if (extUpper == ".XLSX" || extUpper == ".XLS") tipo = 6;
+
+                foto.PAAX_IN_TIPO = tipo;
+                foto.PAAX_NM_TITULO = fileName;
+                foto.PACI_CD_ID = item.PACI__CD_ID;
+
+                item.PACIENTE_ANEXO.Add(foto);
+                objetoAntes = item;
+                baseApp.ValidateEdit(item, objetoAntes);
+
+                // Configura serilização
+                JsonSerializerSettings settings = new JsonSerializerSettings
+                {
+                    ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+                    NullValueHandling = NullValueHandling.Ignore
+                };
+
+                // Monta Log
+                DTO_Paciente_Anexo dto = MontarPacienteAnexoDTOObj(foto);
+                String json = JsonConvert.SerializeObject(dto, settings);
+                LOG log = new LOG
+                {
+                    LOG_DT_DATA = DateTime.Now,
+                    ASSI_CD_ID = usu.ASSI_CD_ID,
+                    USUA_CD_ID = usu.USUA_CD_ID,
+                    LOG_NM_OPERACAO = "Paciente - Anexo - Inclusão",
+                    LOG_IN_ATIVO = 1,
+                    LOG_TX_REGISTRO = json,
+                    LOG_IN_SISTEMA = 6
+                };
+                Int32 volta1 = logApp.ValidateCreate(log);
+
+                Session["NivelPaciente"] = 2;
+                Session["PacienteAlterada"] = 1;
+                return (Int32)Session["VoltaAnexo"] == 1 ? RedirectToAction("VoltarAnexoPaciente") : RedirectToAction("VoltarVerAnexoPaciente", "Paciente");
             }
             catch (Exception ex)
             {

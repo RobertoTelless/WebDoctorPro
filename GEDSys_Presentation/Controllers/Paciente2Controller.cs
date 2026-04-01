@@ -10318,6 +10318,153 @@ namespace GEDSys_Presentation.Controllers
             }
         }
 
+        [HttpPost]
+        public async Task<ActionResult> UploadFichaPacienteBlob(HttpPostedFileBase file)
+        {
+            try
+            {
+                // Inicializa
+                if ((String)Session["Ativa"] == null)
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+                Int32 idNot = (Int32)Session["IdPaciente"];
+                Int32 idAss = (Int32)Session["IdAssinante"];
+
+                // Recupera paciente
+                PACIENTE item = baseApp.GetItemById(idNot);
+                USUARIO usu = (USUARIO)Session["UserCredentials"];
+
+                // Criticas
+                if (file == null)
+                {
+                    Session["MensPaciente"] = 5;
+                    return (Int32)Session["VoltaAnexo"] == 1 ? RedirectToAction("VoltarAnexoPaciente", "Paciente") : RedirectToAction("VoltarVerAnexoPaciente", "Paciente");
+                }
+
+                var fileName = Path.GetFileName(file.FileName);
+                if (fileName.Length > 250)
+                {
+                    Session["MensPaciente"] = 6;
+                    return (Int32)Session["VoltaAnexo"] == 1 ? RedirectToAction("VoltarAnexoPaciente", "Paciente") : RedirectToAction("VoltarVerAnexoPaciente", "Paciente");
+                }
+
+                if (file.ContentLength > 50000000)
+                {
+                    Session["MensPaciente"] = 7;
+                    return (Int32)Session["VoltaAnexo"] == 1 ? RedirectToAction("VoltarAnexoPaciente", "Paciente") : RedirectToAction("VoltarVerAnexoPaciente", "Paciente2");
+                }
+
+                string extensao = Path.GetExtension(fileName);
+                if (!((String)Session["ExtensoesPossiveisFicha"]).Contains(extensao.ToUpper()))
+                {
+                    Session["MensPaciente"] = 12;
+                    return (Int32)Session["VoltaAnexo"] == 1 ? RedirectToAction("VoltarAnexoPaciente", "Paciente") : RedirectToAction("VoltarVerAnexoPaciente", "Paciente");
+                }
+
+                // 1. DEFINIÇÃO DE CAMINHOS
+                String caminhoRelativo = "Imagens/" + item.ASSI_CD_ID.ToString() + "/Pacientes/" + item.PACI__CD_ID.ToString() + "/Fichas/";
+                String caminhoLocal = Server.MapPath("~/" + caminhoRelativo);
+                String fullPathLocal = Path.Combine(caminhoLocal, fileName);
+
+                // Garante que a pasta local existe
+                if (!Directory.Exists(caminhoLocal)) Directory.CreateDirectory(caminhoLocal);
+
+                // 2. CÓPIA LOCAL
+                file.SaveAs(fullPathLocal);
+
+                // 3. CÓPIA PARA O AZURE BLOB STORAGE
+                try
+                {
+                    // IMPORTANTE: Resetar a posição do stream após o SaveAs local
+                    file.InputStream.Position = 0;
+
+                    CONFIGURACAO conf = CarregaConfiguracaoGeral();
+                    string connString = conf.CONF_NM_STORAGE_CONN;
+                    string containerName = conf.CONF_NM_STORAGE_CONTAINER;
+
+                    var blobServiceClient = new Azure.Storage.Blobs.BlobServiceClient(connString);
+                    var containerClient = blobServiceClient.GetBlobContainerClient(containerName);
+
+                    // Nome do blob (caminho virtual no container)
+                    string blobName = caminhoRelativo + fileName;
+                    var blobClient = containerClient.GetBlobClient(blobName);
+
+                    // Upload para o Azure (Idempotente)
+                    await blobClient.UploadAsync(file.InputStream, overwrite: true);
+                }
+                catch (Exception exAzure)
+                {
+                    Session["MsgCRUD"] = "Erro na sincronização: " + exAzure.Message;
+                    Session["MensPaciente"] = 61;
+                    return RedirectToAction("VoltarAnexoPaciente");
+                }
+
+                // 4. GRAVAR REGISTRO NO BANCO
+                PACIENTE_FICHA foto = new PACIENTE_FICHA();
+                foto.PAFC_AQ_ARQUIVO = "~/" + caminhoRelativo + fileName;
+                foto.PAFC_DT_FICHA = DateTime.Today;
+                foto.PAFC_IN_ATIVO = 1;
+        
+                Int32 tipo = 7;
+                string extUpper = extensao.ToUpper();
+                if (extUpper == ".JPG" || extUpper == ".GIF" || extUpper == ".PNG" || extUpper == ".JPEG") tipo = 1;
+                else if (extUpper == ".PDF") tipo = 3;
+
+                foto.PAFC_IN_TIPO = tipo;
+                foto.PAFC_NM_TITULO = fileName;
+                foto.PACI_CD_ID = item.PACI__CD_ID;
+
+                item.PACIENTE_FICHA.Add(foto);
+                objetoAntes = item;
+                baseApp.ValidateEdit(item, objetoAntes);
+
+                // 5. LOG E FINALIZAÇÃO
+                JsonSerializerSettings settings = new JsonSerializerSettings
+                {
+                    ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+                    NullValueHandling = NullValueHandling.Ignore
+                };
+
+                DTO_Paciente_Ficha dto = MontarPacienteFichaDTOObj(foto);
+                String json = JsonConvert.SerializeObject(dto, settings);
+                LOG log = new LOG
+                {
+                    LOG_DT_DATA = DateTime.Now,
+                    ASSI_CD_ID = usu.ASSI_CD_ID,
+                    USUA_CD_ID = usu.USUA_CD_ID,
+                    LOG_NM_OPERACAO = "Paciente - Ficha - Inclusão",
+                    LOG_IN_ATIVO = 1,
+                    LOG_TX_REGISTRO = json,
+                    LOG_IN_SISTEMA = 6
+                };
+                logApp.ValidateCreate(log);
+
+                Session["NivelPaciente"] = 2;
+                Session["PacienteAlterada"] = 1;
+
+                if ((Int32)Session["VoltaAnexo"] == 1)
+                {
+                    return RedirectToAction("VoltarAnexoPaciente", "Paciente");
+                }
+                else
+                {
+                    return RedirectToAction("VoltarVerFichaPaciente", "Paciente2");
+                }
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Paciente";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Paciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return RedirectToAction("TrataExcecao", "BaseAdmin");
+            }
+        }
+
         public DTO_Paciente_Ficha MontarPacienteFichaDTOObj(PACIENTE_FICHA l)
         {
             using (var context = new CRMSysDBEntities())
