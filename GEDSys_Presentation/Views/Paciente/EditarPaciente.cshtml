@@ -9268,37 +9268,66 @@
             $('#btn-capturar, #btn-cancelar-camera').hide();
         }
 
+        //function takeSnapshot() {
+        //    var context = canvas.getContext('2d');
+        //    context.drawImage(video, 0, 0, 640, 480);
+
+        //    canvas.toBlob(function (blob) {
+        //        var file = new File([blob], "foto_camera.jpg", { type: "image/jpeg" });
+        //        enviarFotoCamera(file);
+        //    }, 'image/jpeg');
+        //}
+
         function takeSnapshot() {
+            console.log("Iniciando captura...");
             var context = canvas.getContext('2d');
+    
+            // Verifica se o vídeo está realmente enviando frames
+            if (video.paused || video.ended) {
+                console.error("O vídeo está pausado ou finalizado.");
+                return;
+            }
+
             context.drawImage(video, 0, 0, 640, 480);
+            console.log("Desenho no canvas concluído.");
 
-            canvas.toBlob(function (blob) {
-                var file = new File([blob], "foto_camera.jpg", { type: "image/jpeg" });
-                enviarFotoCamera(file);
-            }, 'image/jpeg');
+            try {
+                canvas.toBlob(function (blob) {
+                    if (!blob) {
+                        console.error("Falha ao gerar o Blob da imagem.");
+                        return;
+                    }
+                    console.log("Blob gerado com sucesso. Tamanho:", blob.size);
+                    var file = new File([blob], "foto_camera.jpg", { type: "image/jpeg" });
+                    enviarFotoCamera(file);
+                }, 'image/jpeg');
+            } catch (e) {
+                console.error("Erro no toBlob:", e);
+            }
         }
-
         function enviarFotoCamera(file) {
-            var formData = new FormData();
+        var formData = new FormData();
             formData.append('file', file);
 
-            $('#loadingIndicator').show();
+            console.log("Iniciando upload para o servidor...");
 
             $.ajax({
-                url: '@Url.Action("UploadFotoPaciente", "Paciente")',
+                // IMPORTANTE: Verifique se a URL do Action está correta! 
+                // Você postou o código do 'UploadFotoPacienteBlob', então a URL deve ser essa:
+                url: '@Url.Action("UploadFotoPacienteBlob", "Paciente")',
                 type: 'POST',
                 data: formData,
                 processData: false,
                 contentType: false,
-                success: function (r) {
-                    // Como o seu ActionResult original dá um Redirect, 
-                    // o AJAX vai receber o HTML da página de volta.
-                    // O ideal é recarregar para ver a foto nova.
-                    window.location.reload();
+                success: function(r) {
+                    console.log("Sucesso no servidor!");
+                    // Como o C# retorna um Redirect, o AJAX recebe o HTML da página de destino.
+                    // Precisamos forçar o recarregamento da página para o usuário ver o resultado.
+                    window.location.href = '@Url.Action("VoltarAnexoPaciente", "Paciente")';
                 },
-                error: function () {
-                    toastr.error("Erro ao enviar foto da câmera.");
-                    $('#loadingIndicator').hide();
+                error: function(xhr, status, error) {
+                    console.error("Erro detalhado:", xhr.responseText);
+                    toastr.error("Erro no servidor: " + error);
                 }
             });
         }

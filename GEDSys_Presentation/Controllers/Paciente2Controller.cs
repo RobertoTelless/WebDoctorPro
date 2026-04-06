@@ -13242,21 +13242,22 @@ namespace GEDSys_Presentation.Controllers
                 Font meuFontBold = FontFactory.GetFont("Arial", 8, iTextSharp.text.Font.BOLD, BaseColor.BLACK);
 
                 // Caminho de saida
-                String caminho = "/Imagens/" + idAss.ToString() + "/Pacientes/" + paciente.PACI__CD_ID.ToString() + "/Solicitacao/";
+                //String caminho = "/Imagens/" + idAss.ToString() + "/Pacientes/" + paciente.PACI__CD_ID.ToString() + "/Atestado/";
+                String caminho = "/Temp/";
                 String filePath = Path.Combine(Server.MapPath(caminho), nomeRel);
-                Directory.CreateDirectory(caminho);
-                Boolean existe = System.IO.File.Exists(filePath);
-                if (existe)
-                {
-                    try
-                    {
-                        System.IO.File.Delete(filePath);
-                    }
-                    catch (Exception)
-                    {
-                        existe = false;
-                    }
-                }
+                //Directory.CreateDirectory(caminho);
+                //Boolean existe = System.IO.File.Exists(filePath);
+                //if (existe)
+                //{
+                //    try
+                //    {
+                //        System.IO.File.Delete(filePath);
+                //    }
+                //    catch (Exception)
+                //    {
+                //        existe = false;
+                //    }
+                //}
 
                 using (FileStream stream = new FileStream(filePath, FileMode.Create))
                 {
@@ -14156,21 +14157,22 @@ namespace GEDSys_Presentation.Controllers
                 Font meuFontBold = FontFactory.GetFont("Arial", 8, iTextSharp.text.Font.BOLD, BaseColor.BLACK);
 
                 // Caminho de saida
-                String caminho = "/Imagens/" + idAss.ToString() + "/Pacientes/" + paciente.PACI__CD_ID.ToString() + "/Solicitacao/";
+                //String caminho = "/Imagens/" + idAss.ToString() + "/Pacientes/" + paciente.PACI__CD_ID.ToString() + "/Atestado/";
+                String caminho = "/Temp/";
                 String filePath = Path.Combine(Server.MapPath(caminho), nomeRel);
-                Directory.CreateDirectory(caminho);
-                Boolean existe = System.IO.File.Exists(filePath);
-                if (existe)
-                {
-                    try
-                    {
-                        System.IO.File.Delete(filePath);
-                    }
-                    catch (Exception)
-                    {
-                        existe = false;
-                    }
-                }
+                //Directory.CreateDirectory(caminho);
+                //Boolean existe = System.IO.File.Exists(filePath);
+                //if (existe)
+                //{
+                //    try
+                //    {
+                //        System.IO.File.Delete(filePath);
+                //    }
+                //    catch (Exception)
+                //    {
+                //        existe = false;
+                //    }
+                //}
 
                 // Processamento
                 using (FileStream stream = new FileStream(filePath, FileMode.Create))

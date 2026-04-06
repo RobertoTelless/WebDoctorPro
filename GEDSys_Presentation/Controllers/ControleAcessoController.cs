@@ -1133,7 +1133,7 @@ namespace ERP_Condominios_Solution.Controllers
                 Session["FiltroStatus"] = 1;
                 Session["IdAssinante"] = usuario.ASSI_CD_ID;
                 Session["IdUsuario"] = usuario.USUA_CD_ID;
-                Session["ExtensoesPossiveis"] = ".PDF|.TXT|.JPG|.JPEG|.PNG|.GIF|.MP4|.MKV|.XLS|.XLSX|.PPT|.PPTX|.DOC|.DOCX|.ODS|.ODT|.ODP|.ODG";
+                Session["ExtensoesPossiveis"] = ".PDF|.TXT|.JPG|.JPEG|.PNG|.GIF|.MP4|.MKV|.XLS|.XLSX|.PPT|.PPTX|.DOC|.DOCX|.ODS|.ODT|.ODP|.ODG|.MP3|.MPEG";
                 Session["ExtensoesPossiveisFicha"] = ".PDF|.JPG|.JPEG|.PNG|.GIF";
                 Session["IdMarcacao"] = usuario.USUA_CD_ID;
                 Session["VoltaSolicitacao"] = 0;

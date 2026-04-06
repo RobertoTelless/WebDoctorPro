@@ -7340,7 +7340,7 @@ namespace ERP_Condominios_Solution.Controllers
 
                 // Caminho base: ~/Imagens/1/
                 // Queremos preservar a estrutura a partir de "Imagens/..."
-                string rootPath = Server.MapPath("~/Imagens/1/");
+                string rootPath = Server.MapPath("~/Imagens/35/");
 
                 // Instancia o serviço de Blob
                 BlobServiceClient blobServiceClient = new BlobServiceClient(_connectionString);

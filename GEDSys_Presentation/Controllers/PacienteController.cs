@@ -5395,8 +5395,109 @@ namespace GEDSys_Presentation.Controllers
             }
         }
 
+        //[HttpPost]
+        //public async Task<ActionResult> UploadFotoPacienteBlob(HttpPostedFileBase file)
+        //{
+        //    try
+        //    {
+        //        // Inicializa
+        //        if ((String)Session["Ativa"] == null)
+        //        {
+        //            return RedirectToAction("Logout", "ControleAcesso");
+        //        }
+        //        Int32 idNot = (Int32)Session["IdPaciente"];
+        //        Int32 idAss = (Int32)Session["IdAssinante"];
+
+        //        if (file == null)
+        //        {
+        //            Session["MensPaciente"] = 5;
+        //            return RedirectToAction("VoltarAnexoPaciente");
+        //        }
+
+        //        // Recupera cliente
+        //        PACIENTE item = baseApp.GetById(idNot);
+        //        USUARIO usu = (USUARIO)Session["UserCredentials"];
+        //        var fileName = Path.GetFileName(file.FileName);
+
+        //        if (fileName.Length > 250)
+        //        {
+        //            Session["MensPaciente"] = 6;
+        //            return RedirectToAction("VoltarAnexoPaciente");
+        //        }
+
+        //        // Critica tamanho arquivo
+        //        if (file.ContentLength > 50000000)
+        //        {
+        //            Session["MensPaciente"] = 7;
+        //            return RedirectToAction("VoltarAnexoPaciente");
+        //        }
+
+        //        // 1. DEFINIÇÃO DE CAMINHOS
+        //        String caminhoRelativo = "Imagens/" + item.ASSI_CD_ID.ToString() + "/Pacientes/" + item.PACI__CD_ID.ToString() + "/Fotos/";
+        //        String caminhoLocal = Server.MapPath("~/" + caminhoRelativo);
+        //        String fullPathLocal = Path.Combine(caminhoLocal, fileName);
+
+        //        // Garante que a pasta local existe
+        //        if (!Directory.Exists(caminhoLocal)) Directory.CreateDirectory(caminhoLocal);
+
+        //        // 2. CÓPIA LOCAL
+        //        file.SaveAs(fullPathLocal);
+
+        //        // 3. CÓPIA PARA O AZURE BLOB STORAGE
+        //        try
+        //        {
+        //            // IMPORTANTE: Resetar a posição do stream após o SaveAs local
+        //            file.InputStream.Position = 0;
+
+        //            CONFIGURACAO conf = CarregaConfiguracaoGeral();
+        //            string connString = conf.CONF_NM_STORAGE_CONN;
+        //            string containerName = conf.CONF_NM_STORAGE_CONTAINER;
+
+        //            var blobServiceClient = new Azure.Storage.Blobs.BlobServiceClient(connString);
+        //            var containerClient = blobServiceClient.GetBlobContainerClient(containerName);
+
+        //            // Nome do blob (caminho virtual no container)
+        //            string blobName = caminhoRelativo + fileName;
+        //            var blobClient = containerClient.GetBlobClient(blobName);
+
+        //            // Upload para o Azure (Idempotente)
+        //            await blobClient.UploadAsync(file.InputStream, overwrite: true);
+        //        }
+        //        catch (Exception exAzure)
+        //        {
+        //            Session["MsgCRUD"] = "Erro na sincronização: " + exAzure.Message;
+        //            Session["MensPaciente"] = 61;
+        //            return RedirectToAction("VoltarAnexoPaciente");
+        //        }
+
+        //        // 4. ATUALIZAÇÃO DO REGISTRO NO BANCO
+        //        item.PACI_AQ_FOTO = "~/" + caminhoRelativo + fileName;
+        //        objetoAntes = item;
+        //        Int32 volta = baseApp.ValidateEdit(item, objetoAntes);
+
+        //        // Limpeza de cache/sessão conforme original
+        //        listaMaster = new List<PACIENTE>();
+        //        Session["ListaPaciente"] = null;
+        //        Session["PacienteAlterada"] = 1;
+        //        Session["NivelPaciente"] = 2;
+
+        //        return RedirectToAction("VoltarAnexoPaciente");
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        ViewBag.Message = ex.Message;
+        //        Session["TipoVolta"] = 2;
+        //        Session["VoltaExcecao"] = "Paciente";
+        //        Session["Excecao"] = ex;
+        //        Session["ExcecaoTipo"] = ex.GetType().ToString();
+        //        GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+        //        Int32 voltaX = grava.GravarLogExcecao(ex, "Paciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+        //        return RedirectToAction("TrataExcecao", "BaseAdmin");
+        //    }
+        //}
+
         [HttpPost]
-        public async Task<ActionResult> UploadFotoPacienteBlob(HttpPostedFileBase file)
+        public ActionResult UploadFotoPacienteBlob(HttpPostedFileBase file)
         {
             try
             {
@@ -5425,7 +5526,6 @@ namespace GEDSys_Presentation.Controllers
                     return RedirectToAction("VoltarAnexoPaciente");
                 }
 
-                // Critica tamanho arquivo
                 if (file.ContentLength > 50000000)
                 {
                     Session["MensPaciente"] = 7;
@@ -5437,16 +5537,14 @@ namespace GEDSys_Presentation.Controllers
                 String caminhoLocal = Server.MapPath("~/" + caminhoRelativo);
                 String fullPathLocal = Path.Combine(caminhoLocal, fileName);
 
-                // Garante que a pasta local existe
                 if (!Directory.Exists(caminhoLocal)) Directory.CreateDirectory(caminhoLocal);
 
                 // 2. CÓPIA LOCAL
                 file.SaveAs(fullPathLocal);
 
-                // 3. CÓPIA PARA O AZURE BLOB STORAGE
+                // 3. CÓPIA PARA O AZURE BLOB STORAGE (Síncrono)
                 try
                 {
-                    // IMPORTANTE: Resetar a posição do stream após o SaveAs local
                     file.InputStream.Position = 0;
 
                     CONFIGURACAO conf = CarregaConfiguracaoGeral();
@@ -5456,16 +5554,16 @@ namespace GEDSys_Presentation.Controllers
                     var blobServiceClient = new Azure.Storage.Blobs.BlobServiceClient(connString);
                     var containerClient = blobServiceClient.GetBlobContainerClient(containerName);
 
-                    // Nome do blob (caminho virtual no container)
                     string blobName = caminhoRelativo + fileName;
                     var blobClient = containerClient.GetBlobClient(blobName);
 
-                    // Upload para o Azure (Idempotente)
-                    await blobClient.UploadAsync(file.InputStream, overwrite: true);
+                    // Chamada Síncrona usando .GetRawResponse() ou apenas omitindo await e usando Upload
+                    // No SDK novo, usamos Upload(stream, overwrite) para modo síncrono
+                    blobClient.Upload(file.InputStream, overwrite: true);
                 }
                 catch (Exception exAzure)
                 {
-                    Session["MsgCRUD"] = "Erro na sincronização: " + exAzure.Message;
+                    Session["MsgCRUD"] = "Erro na sincronização Azure: " + exAzure.Message;
                     Session["MensPaciente"] = 61;
                     return RedirectToAction("VoltarAnexoPaciente");
                 }
@@ -5475,7 +5573,6 @@ namespace GEDSys_Presentation.Controllers
                 objetoAntes = item;
                 Int32 volta = baseApp.ValidateEdit(item, objetoAntes);
 
-                // Limpeza de cache/sessão conforme original
                 listaMaster = new List<PACIENTE>();
                 Session["ListaPaciente"] = null;
                 Session["PacienteAlterada"] = 1;
@@ -5485,13 +5582,7 @@ namespace GEDSys_Presentation.Controllers
             }
             catch (Exception ex)
             {
-                ViewBag.Message = ex.Message;
-                Session["TipoVolta"] = 2;
-                Session["VoltaExcecao"] = "Paciente";
-                Session["Excecao"] = ex;
-                Session["ExcecaoTipo"] = ex.GetType().ToString();
-                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
-                Int32 voltaX = grava.GravarLogExcecao(ex, "Paciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                // Seu log de erro original...
                 return RedirectToAction("TrataExcecao", "BaseAdmin");
             }
         }
@@ -12519,7 +12610,8 @@ namespace GEDSys_Presentation.Controllers
 
             // Incluir PDF como anexo
             List<AttachmentModel> models = new List<AttachmentModel>();
-            String caminho = "/Imagens/" + idAss.ToString() + "/Pacientes/" + paciente.PACI__CD_ID.ToString() + "/Prescricao/";
+            //String caminho = "/Imagens/" + idAss.ToString() + "/Pacientes/" + paciente.PACI__CD_ID.ToString() + "/Atestado/";
+            String caminho = "/Temp/";
             String fileNamePDF = "Prescricao_" + paciente.PACI_NM_NOME + "_" + prescricao.PAPR_GU_GUID + ".pdf";
             String path = Path.Combine(Server.MapPath(caminho), fileNamePDF);
 
@@ -12587,6 +12679,12 @@ namespace GEDSys_Presentation.Controllers
                 Session["MensPaciente"] = 998;
                 Session["IdMail"] = iD;
                 Session["StatusMail"] = status;
+            }
+
+            // 4. APAGAR ARQUIVO LOCAL APÓS SUCESSO
+            if (System.IO.File.Exists(path))
+            {
+                System.IO.File.Delete(path);
             }
             return 0;
         }
@@ -13413,7 +13511,8 @@ namespace GEDSys_Presentation.Controllers
 
             // Incluir PDF como anexo
             List<AttachmentModel> models = new List<AttachmentModel>();
-            String caminho = "/Imagens/" + idAss.ToString() + "/Pacientes/" + paciente.PACI__CD_ID.ToString() + "/Atestado/";
+            //String caminho = "/Imagens/" + idAss.ToString() + "/Pacientes/" + paciente.PACI__CD_ID.ToString() + "/Atestado/";
+            String caminho = "/Temp/";
             String fileNamePDF = "Atestado_" + paciente.PACI_NM_NOME + "_" + solicitacao.PAAT_GU_GUID + ".pdf";
             String path = Path.Combine(Server.MapPath(caminho), fileNamePDF);
 
@@ -13481,6 +13580,12 @@ namespace GEDSys_Presentation.Controllers
                 Session["MensPaciente"] = 991;
                 Session["IdMail"] = iD;
                 Session["StatusMail"] = status;
+            }
+
+            // 4. APAGAR ARQUIVO LOCAL APÓS SUCESSO
+            if (System.IO.File.Exists(path))
+            {
+                System.IO.File.Delete(path);
             }
             return 0;
         }
@@ -14033,21 +14138,22 @@ namespace GEDSys_Presentation.Controllers
                 Font meuFontBold = FontFactory.GetFont("Arial", 8, iTextSharp.text.Font.BOLD, BaseColor.BLACK);
 
                 // Caminho de saida
-                String caminho = "/Imagens/" + idAss.ToString() + "/Pacientes/" + paciente.PACI__CD_ID.ToString() + "/Solicitacao/";
+                //String caminho = "/Imagens/" + idAss.ToString() + "/Pacientes/" + paciente.PACI__CD_ID.ToString() + "/Atestado/";
+                String caminho = "/Temp/";
                 String filePath = Path.Combine(Server.MapPath(caminho), nomeRel);
-                Directory.CreateDirectory(caminho);
-                Boolean existe = System.IO.File.Exists(filePath);
-                if (existe)
-                {
-                    try
-                    {
-                        System.IO.File.Delete(filePath);
-                    }
-                    catch (Exception)
-                    {
-                        existe = false;
-                    }
-                }
+                //Directory.CreateDirectory(caminho);
+                //Boolean existe = System.IO.File.Exists(filePath);
+                //if (existe)
+                //{
+                //    try
+                //    {
+                //        System.IO.File.Delete(filePath);
+                //    }
+                //    catch (Exception)
+                //    {
+                //        existe = false;
+                //    }
+                //}
 
                 using (FileStream stream = new FileStream(filePath, FileMode.Create))
                 {
@@ -14485,21 +14591,22 @@ namespace GEDSys_Presentation.Controllers
                 Font meuFontBold = FontFactory.GetFont("Arial", 8, iTextSharp.text.Font.BOLD, BaseColor.BLACK);
 
                 // Caminho de saida
-                String caminho = "/Imagens/" + idAss.ToString() + "/Pacientes/" + paciente.PACI__CD_ID.ToString() + "/Solicitacao/";
+                //String caminho = "/Imagens/" + idAss.ToString() + "/Pacientes/" + paciente.PACI__CD_ID.ToString() + "/Atestado/";
+                String caminho = "/Temp/";
                 String filePath = Path.Combine(Server.MapPath(caminho), nomeRel);
-                Directory.CreateDirectory(caminho);
-                Boolean existe = System.IO.File.Exists(filePath);
-                if (existe)
-                {
-                    try
-                    {
-                        System.IO.File.Delete(filePath);
-                    }
-                    catch (Exception)
-                    {
-                        existe = false;
-                    }
-                }
+                //Directory.CreateDirectory(caminho);
+                //Boolean existe = System.IO.File.Exists(filePath);
+                //if (existe)
+                //{
+                //    try
+                //    {
+                //        System.IO.File.Delete(filePath);
+                //    }
+                //    catch (Exception)
+                //    {
+                //        existe = false;
+                //    }
+                //}
 
                 // Processamento
                 using (FileStream stream = new FileStream(filePath, FileMode.Create))
@@ -15362,7 +15469,8 @@ namespace GEDSys_Presentation.Controllers
 
             // Incluir PDF como anexo
             List<AttachmentModel> models = new List<AttachmentModel>();
-            String caminho = "/Imagens/" + idAss.ToString() + "/Pacientes/" + paciente.PACI__CD_ID.ToString() + "/Solicitacao/";
+            //String caminho = "/Imagens/" + idAss.ToString() + "/Pacientes/" + paciente.PACI__CD_ID.ToString() + "/Atestado/";
+            String caminho = "/Temp/";
             String fileNamePDF = "Solicitacao_" + paciente.PACI_NM_NOME + "_" + solicitacao.PASO_GU_GUID + ".pdf";
             String path = Path.Combine(Server.MapPath(caminho), fileNamePDF);
 
@@ -15431,6 +15539,13 @@ namespace GEDSys_Presentation.Controllers
                 Session["IdMail"] = iD;
                 Session["StatusMail"] = status;
             }
+
+            // 4. APAGAR ARQUIVO LOCAL APÓS SUCESSO
+            if (System.IO.File.Exists(path))
+            {
+                System.IO.File.Delete(path);
+            }
+
             return 0;
         }
 
@@ -28082,21 +28197,22 @@ namespace GEDSys_Presentation.Controllers
                 Font meuFontBold = FontFactory.GetFont("Arial", 8, iTextSharp.text.Font.BOLD, BaseColor.BLACK);
 
                 // Caminho de saida
-                String caminho = "/Imagens/" + idAss.ToString() + "/Pacientes/" + paciente.PACI__CD_ID.ToString() + "/Atestado/";
+                //String caminho = "/Imagens/" + idAss.ToString() + "/Pacientes/" + paciente.PACI__CD_ID.ToString() + "/Atestado/";
+                String caminho = "/Temp/";
                 String filePath = Path.Combine(Server.MapPath(caminho), nomeRel);
-                Directory.CreateDirectory(caminho);
-                Boolean existe = System.IO.File.Exists(filePath);
-                if (existe)
-                {
-                    try
-                    {
-                        System.IO.File.Delete(filePath);
-                    }
-                    catch (Exception)
-                    {
-                        existe = false;
-                    }
-                }
+                //Directory.CreateDirectory(caminho);
+                //Boolean existe = System.IO.File.Exists(filePath);
+                //if (existe)
+                //{
+                //    try
+                //    {
+                //        System.IO.File.Delete(filePath);
+                //    }
+                //    catch (Exception)
+                //    {
+                //        existe = false;
+                //    }
+                //}
 
                 using (FileStream stream = new FileStream(filePath, FileMode.Create))
                 {
@@ -29014,21 +29130,22 @@ namespace GEDSys_Presentation.Controllers
                 Font meuFontBold = FontFactory.GetFont("Arial", 8, iTextSharp.text.Font.BOLD, BaseColor.BLACK);
 
                 // Caminho de saida
-                String caminho = "/Imagens/" + idAss.ToString() + "/Pacientes/" + paciente.PACI__CD_ID.ToString() + "/Atestado/";
+                //String caminho = "/Imagens/" + idAss.ToString() + "/Pacientes/" + paciente.PACI__CD_ID.ToString() + "/Atestado/";
+                String caminho = "/Temp/";
                 String filePath = Path.Combine(Server.MapPath(caminho), nomeRel);
-                Directory.CreateDirectory(caminho);
-                Boolean existe = System.IO.File.Exists(filePath);
-                if (existe)
-                {
-                    try
-                    {
-                        System.IO.File.Delete(filePath);
-                    }
-                    catch (Exception)
-                    {
-                        existe = false;
-                    }
-                }
+                //Directory.CreateDirectory(caminho);
+                //Boolean existe = System.IO.File.Exists(filePath);
+                //if (existe)
+                //{
+                //    try
+                //    {
+                //        System.IO.File.Delete(filePath);
+                //    }
+                //    catch (Exception)
+                //    {
+                //        existe = false;
+                //    }
+                //}
 
                 using (FileStream stream = new FileStream(filePath, FileMode.Create))
                 {
@@ -32210,21 +32327,22 @@ namespace GEDSys_Presentation.Controllers
                 Font meuFontBold = FontFactory.GetFont("Arial", 8, iTextSharp.text.Font.BOLD, BaseColor.BLACK);
 
                 // Caminho de saida
-                String caminho = "/Imagens/" + idAss.ToString() + "/Pacientes/" + paciente.PACI__CD_ID.ToString() + "/Prescricao/";
+                //String caminho = "/Imagens/" + idAss.ToString() + "/Pacientes/" + paciente.PACI__CD_ID.ToString() + "/Atestado/";
+                String caminho = "/Temp/";
                 String filePath = Path.Combine(Server.MapPath(caminho), nomeRel);
-                Directory.CreateDirectory(caminho);
-                Boolean existe = System.IO.File.Exists(filePath);
-                if (existe)
-                {
-                    try
-                    {
-                        System.IO.File.Delete(filePath);
-                    }
-                    catch (Exception)
-                    {
-                        existe = false;
-                    }
-                }
+                //Directory.CreateDirectory(caminho);
+                //Boolean existe = System.IO.File.Exists(filePath);
+                //if (existe)
+                //{
+                //    try
+                //    {
+                //        System.IO.File.Delete(filePath);
+                //    }
+                //    catch (Exception)
+                //    {
+                //        existe = false;
+                //    }
+                //}
 
                 using (FileStream stream = new FileStream(filePath, FileMode.Create))
                 {
@@ -32677,21 +32795,22 @@ namespace GEDSys_Presentation.Controllers
                 Font meuFontBold = FontFactory.GetFont("Arial", 8, iTextSharp.text.Font.BOLD, BaseColor.BLACK);
 
                 // Caminho de saida
-                String caminho = "/Imagens/" + idAss.ToString() + "/Pacientes/" + paciente.PACI__CD_ID.ToString() + "/Prescricao/";
+                //String caminho = "/Imagens/" + idAss.ToString() + "/Pacientes/" + paciente.PACI__CD_ID.ToString() + "/Atestado/";
+                String caminho = "/Temp/";
                 String filePath = Path.Combine(Server.MapPath(caminho), nomeRel);
-                Directory.CreateDirectory(caminho);
-                Boolean existe = System.IO.File.Exists(filePath);
-                if (existe)
-                {
-                    try
-                    {
-                        System.IO.File.Delete(filePath);
-                    }
-                    catch (Exception)
-                    {
-                        existe = false;
-                    }
-                }
+                //Directory.CreateDirectory(caminho);
+                //Boolean existe = System.IO.File.Exists(filePath);
+                //if (existe)
+                //{
+                //    try
+                //    {
+                //        System.IO.File.Delete(filePath);
+                //    }
+                //    catch (Exception)
+                //    {
+                //        existe = false;
+                //    }
+                //}
 
                 using (FileStream stream = new FileStream(filePath, FileMode.Create))
                 {
@@ -33153,21 +33272,22 @@ namespace GEDSys_Presentation.Controllers
                 Font meuFontBold = FontFactory.GetFont("Arial", 8, iTextSharp.text.Font.BOLD, BaseColor.BLACK);
 
                 // Caminho de saida
-                String caminho = "/Imagens/" + idAss.ToString() + "/Pacientes/" + paciente.PACI__CD_ID.ToString() + "/Prescricao/";
+                //String caminho = "/Imagens/" + idAss.ToString() + "/Pacientes/" + paciente.PACI__CD_ID.ToString() + "/Atestado/";
+                String caminho = "/Temp/";
                 String filePath = Path.Combine(Server.MapPath(caminho), nomeRel);
-                Directory.CreateDirectory(caminho);
-                Boolean existe = System.IO.File.Exists(filePath);
-                if (existe)
-                {
-                    try
-                    {
-                        System.IO.File.Delete(filePath);
-                    }
-                    catch (Exception)
-                    {
-                        existe = false;
-                    }
-                }
+                //Directory.CreateDirectory(caminho);
+                //Boolean existe = System.IO.File.Exists(filePath);
+                //if (existe)
+                //{
+                //    try
+                //    {
+                //        System.IO.File.Delete(filePath);
+                //    }
+                //    catch (Exception)
+                //    {
+                //        existe = false;
+                //    }
+                //}
 
                 Int32 conta = 1;
                 Document pdfDoc = null;
@@ -34080,21 +34200,22 @@ namespace GEDSys_Presentation.Controllers
                 Font meuFontBold = FontFactory.GetFont("Arial", 8, iTextSharp.text.Font.BOLD, BaseColor.BLACK);
 
                 // Caminho de saida
-                String caminho = "/Imagens/" + idAss.ToString() + "/Pacientes/" + paciente.PACI__CD_ID.ToString() + "/Prescricao/";
+                //String caminho = "/Imagens/" + idAss.ToString() + "/Pacientes/" + paciente.PACI__CD_ID.ToString() + "/Atestado/";
+                String caminho = "/Temp/";
                 String filePath = Path.Combine(Server.MapPath(caminho), nomeRel);
-                Directory.CreateDirectory(caminho);
-                Boolean existe = System.IO.File.Exists(filePath);
-                if (existe)
-                {
-                    try
-                    {
-                        System.IO.File.Delete(filePath);
-                    }
-                    catch (Exception)
-                    {
-                        existe = false;
-                    }
-                }
+                //Directory.CreateDirectory(caminho);
+                //Boolean existe = System.IO.File.Exists(filePath);
+                //if (existe)
+                //{
+                //    try
+                //    {
+                //        System.IO.File.Delete(filePath);
+                //    }
+                //    catch (Exception)
+                //    {
+                //        existe = false;
+                //    }
+                //}
 
                 Int32 conta = 1;
                 Document pdfDoc = null;

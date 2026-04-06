@@ -1008,9 +1008,11 @@
 
         function uploadCapturedPhoto(file) {
             var formData = new FormData();
-            formData.append('file', file);
+            // 1. O nome deve ser 'files' para coincidir com o IEnumerable no C#
+            formData.append('files', file);
+            // 2. Garanta que o parâmetro 'profile' seja enviado
+            formData.append('profile', 'foto_paciente.jpg'); 
 
-            // Ajuste a URL conforme sua rota (Baseado no seu código: /Paciente/UploadFileToSession)
             $.ajax({
                 url: '@Url.Action("UploadFileToSession", "Paciente")',
                 type: 'POST',
@@ -1020,8 +1022,10 @@
                 success: function(r) {
                     toastr.success("Foto capturada e preparada para salvar!");
                 },
-                error: function() {
-                    toastr.error("Erro ao processar captura na sessão.");
+                error: function(xhr, status, error) {
+                    // Instrumentação para ver o erro real no console (F12)
+                    console.error("Erro detalhado:", xhr.responseText);
+                    toastr.error("Erro ao processar captura na sessão: " + error);
                 }
             });
         }

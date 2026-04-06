@@ -252,7 +252,7 @@
                     {
                         <a href="@Url.Action("MontarTelaAreaPacienteVer", "AreaPaciente")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acesso às informações da área do paciente" class="btn btn-sm btn-primary btn-loading" id="emp" OnClick = "Fade()">Informações da Área do Paciente</a>                
                     }
-                    @*<a href="@Url.Action("SincronizarArquivosAzure", "BaseAdmin")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Sincronização dos arquivos" class="btn btn-sm btn-primary btn-danger" id="emp" OnClick = "Fade()">Sincronizar Arquivos</a>*@                
+                    <a href="@Url.Action("SincronizarArquivosAzure", "BaseAdmin")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Sincronização dos arquivos" class="btn btn-sm btn-primary btn-danger" id="emp" OnClick = "Fade()">Sincronizar Arquivos</a>                
                     <a href="@Url.Action((String)Session["AjudaNivel"])"  class="btn btn-sm btn-danger" target="_blank" >Ajuda</a>               
                     <span id="loadingIndicator" style="display: none; margin-left: 10px; color: #007bff;">
                         <i class="fa fa-spinner fa-spin"></i> Processando...

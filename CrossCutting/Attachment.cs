@@ -10,5 +10,6 @@ namespace CrossCutting
         public string CONTENT_TYPE { get; set; }
         public string ContentBytes { get; set; }
         public List<AttachmentModel> Attachments { get; set; }
+        public byte[] ATTACHMENT_BYTES { get; set; }
     }
 }

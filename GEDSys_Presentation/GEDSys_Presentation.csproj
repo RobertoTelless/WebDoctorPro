@@ -1375,7 +1375,16 @@
     <Content Include="Imagens\1\Pacientes\1082\Anexos\Amorinha_Novo_1.png" />
     <Content Include="Imagens\1\Pacientes\1082\Fotos\foto_camera.jpg" />
     <Content Include="Imagens\1\Pacientes\1084\Anexos\haddock_1.jpg" />
+    <Content Include="Imagens\1\Pacientes\1084\Fotos\AmorinhaLinda.png" />
+    <Content Include="Imagens\1\Pacientes\1084\Fotos\foto_camera.jpg" />
+    <Content Include="Imagens\1\Pacientes\1084\Fotos\haddock.jpg" />
     <Content Include="Imagens\1\Pacientes\108\Fotos\louca.jpg" />
+    <Content Include="Imagens\1\Pacientes\1091\Anexos\Amorinha_Novo_1.png" />
+    <Content Include="Imagens\1\Pacientes\1091\Anexos\Video_Teste.mp4" />
+    <Content Include="Imagens\1\Pacientes\1091\Fotos\foto_camera.jpg" />
+    <Content Include="Imagens\1\Pacientes\1092\Anexos\Video_Teste.mp4" />
+    <Content Include="Imagens\1\Pacientes\1092\Fotos\foto_camera.jpg" />
+    <Content Include="Imagens\1\Pacientes\1093\Fotos\foto_paciente.jpg" />
     <Content Include="Imagens\1\Pacientes\10\Anexos\estoque_icone.png" />
     <Content Include="Imagens\1\Pacientes\10\Fotos\a4.jpg" />
     <Content Include="Imagens\1\Pacientes\10\QRCode\Solicitacao_QRCode_d3r5734n0005r356f5bg.png" />
@@ -4076,6 +4085,8 @@
     <Content Include="Imagens\1\Pacientes\60\Exames\ExameLista_22122025.pdf" />
     <Content Include="Imagens\1\Pacientes\60\Exames\Exame_Colapso Cardíaco Da Silva_10_22122025.pdf" />
     <Content Include="Imagens\1\Locacao\103\Contrato\Contrato_LocacaoÁlvaro Van Beethoven_d75ep4cn00045g78akcg.pdf" />
+    <Content Include="Imagens\1\Pacientes\1084\Fichas\260327 Exactech March Update Letter 2026-03-27 1440.pdf" />
+    <Content Include="Imagens\1\Pacientes\1084\Fichas\Sind_prof_RJ_CYDIA.pdf" />
     <None Include="Properties\PublishProfiles\eprontuario - FTP.pubxml" />
     <None Include="Properties\PublishProfiles\eprontuario - FTP1.pubxml" />
     <None Include="Properties\PublishProfiles\eprontuario - Web Deploy.pubxml" />
@@ -5770,8 +5781,6 @@
     <Folder Include="Imagens\1\Pacientes\1084\Atestado\" />
     <Folder Include="Imagens\1\Pacientes\1084\Consultas\" />
     <Folder Include="Imagens\1\Pacientes\1084\Exames\" />
-    <Folder Include="Imagens\1\Pacientes\1084\Fichas\" />
-    <Folder Include="Imagens\1\Pacientes\1084\Fotos\" />
     <Folder Include="Imagens\1\Pacientes\1084\Prescricao\" />
     <Folder Include="Imagens\1\Pacientes\1084\QRCode\" />
     <Folder Include="Imagens\1\Pacientes\1084\Solicitacao\" />
@@ -5782,6 +5791,28 @@
     <Folder Include="Imagens\1\Pacientes\108\Prescricao\" />
     <Folder Include="Imagens\1\Pacientes\108\QRCode\" />
     <Folder Include="Imagens\1\Pacientes\108\Solicitacao\" />
+    <Folder Include="Imagens\1\Pacientes\1091\Atestado\" />
+    <Folder Include="Imagens\1\Pacientes\1091\Consultas\" />
+    <Folder Include="Imagens\1\Pacientes\1091\Exames\" />
+    <Folder Include="Imagens\1\Pacientes\1091\Fichas\" />
+    <Folder Include="Imagens\1\Pacientes\1091\Prescricao\" />
+    <Folder Include="Imagens\1\Pacientes\1091\QRCode\" />
+    <Folder Include="Imagens\1\Pacientes\1091\Solicitacao\" />
+    <Folder Include="Imagens\1\Pacientes\1092\Atestado\" />
+    <Folder Include="Imagens\1\Pacientes\1092\Consultas\" />
+    <Folder Include="Imagens\1\Pacientes\1092\Exames\" />
+    <Folder Include="Imagens\1\Pacientes\1092\Fichas\" />
+    <Folder Include="Imagens\1\Pacientes\1092\Prescricao\" />
+    <Folder Include="Imagens\1\Pacientes\1092\QRCode\" />
+    <Folder Include="Imagens\1\Pacientes\1092\Solicitacao\" />
+    <Folder Include="Imagens\1\Pacientes\1093\Anexos\" />
+    <Folder Include="Imagens\1\Pacientes\1093\Atestado\" />
+    <Folder Include="Imagens\1\Pacientes\1093\Consultas\" />
+    <Folder Include="Imagens\1\Pacientes\1093\Exames\" />
+    <Folder Include="Imagens\1\Pacientes\1093\Fichas\" />
+    <Folder Include="Imagens\1\Pacientes\1093\Prescricao\" />
+    <Folder Include="Imagens\1\Pacientes\1093\QRCode\" />
+    <Folder Include="Imagens\1\Pacientes\1093\Solicitacao\" />
     <Folder Include="Imagens\1\Pacientes\10\Atestado\" />
     <Folder Include="Imagens\1\Pacientes\10\Consulta\" />
     <Folder Include="Imagens\1\Pacientes\10\Exames\" />
@@ -6809,6 +6840,7 @@
     <Folder Include="Imagens\Assinante\88\Pagamentos\" />
     <Folder Include="Models\" />
     <Folder Include="TemplatesHTML\" />
+    <Folder Include="Temp\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff2" />
