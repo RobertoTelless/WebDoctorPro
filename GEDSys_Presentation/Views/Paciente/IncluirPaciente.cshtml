@@ -231,12 +231,6 @@
                                         </div>
 
                                         <div class="row">
-                                            @*<div style="margin-left: 0px;" class="col-lg-6 col-md-6 col-xs-12">
-                                                <div class="form-group">
-                                                    <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Fotografia</h4><input type="file" accept=".jpg, .png, .jpeg, .gif|images/*" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="ATENÇÃO - Antes de anexar fotografia certifique-se de que ela esteja livre de vírus e outras ameaças.  " name="file" id="imgCliente" class="btn btn-sm btn-warning" multiple />
-                                                    <br />
-                                                </div>
-                                            </div>*@
 
                                             @* Localize a div de Fotografia e substitua por esta estrutura *@
                                             <div style="margin-left: 0px;" class="col-lg-6 col-md-6 col-xs-12">
@@ -1009,7 +1003,7 @@
         function uploadCapturedPhoto(file) {
             var formData = new FormData();
             // 1. O nome deve ser 'files' para coincidir com o IEnumerable no C#
-            formData.append('files', file);
+            formData.append('files[0]', file);
             // 2. Garanta que o parâmetro 'profile' seja enviado
             formData.append('profile', 'foto_paciente.jpg'); 
 

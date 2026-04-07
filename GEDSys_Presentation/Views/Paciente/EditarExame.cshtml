@@ -695,7 +695,7 @@
                                                 <br />
                                                 <div class="form-group">
 
-                                                    @using (Html.BeginForm("UploadFileExamePaciente", "Paciente", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { enctype = "multipart/form-data", @id = "pwd-container2" }))
+                                                    @using (Html.BeginForm("UploadFileExamePacienteBlob", "Paciente", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { enctype = "multipart/form-data", @id = "pwd-container2" }))
                                                     {
                                                         var listaAnexos = Model.PACIENTE_EXAME_ANEXO.Where(p => p.PAEO_IN_ATIVO == 1).ToList();
 
@@ -739,7 +739,11 @@
                                                                                     }
                                                                                     else if (cond.PAEO_IN_TIPO == 3)
                                                                                     {
-                                                                                        <a href="~/PdfViewer/web/viewer.html?file=@(cond.PAEO_AQ_ARQUIVO.Replace("~", ""))&ReturnUrl=@Request.Url.AbsolutePath" target="_blank">@cond.PAEO_NM_TITULO</a>
+                                                                                        // Monta a URL direta do Azure
+                                                                                        var caminhoPdf = cond.PAEO_AQ_ARQUIVO.Replace("~/", "").Replace("~", "");
+                                                                                        var urlAzurePdf = "https://rtistoragemain.blob.core.windows.net/rti-datacontainer/" + caminhoPdf;
+
+                                                                                        <a href="@urlAzurePdf" target="_blank">@cond.PAEO_NM_TITULO</a>
                                                                                     }
                                                                                     else { @cond.PAEO_NM_TITULO }
                                                                                 </td>
@@ -779,9 +783,19 @@
                                                                                     }
                                                                                     else if (cond.PAEO_IN_TIPO == 3) // PDF - ÚNICO QUE ABRE EM NOVA ABA
                                                                                     {
-                                                                                        <a href="~/PdfViewer/web/viewer.html?file=@(cond.PAEO_AQ_ARQUIVO.Replace("~", ""))&ReturnUrl=@Request.Url.AbsolutePath" target="_blank" title="Visualizar PDF">
-                                                                                            <i class="fa fa-file-pdf-o fa-5x text-danger"></i>
-                                                                                        </a>
+                                                                                        // REMOVIDO O "@" ANTES DA CHAVE ABAIXO
+                                                                                        {
+                                                                                            // 1. Limpa o caminho do banco (remove ~/ e deixa Imagens/...)
+                                                                                            var blobPath = cond.PAEO_AQ_ARQUIVO.Replace("~/", "").Replace("~", "");
+
+                                                                                            // 2. Monta a URL direta para o Azure
+                                                                                            var urlAzurePdf = "https://rtistoragemain.blob.core.windows.net/rti-datacontainer/" + blobPath;
+
+                                                                                            // O Razor entende que deve voltar para HTML quando encontra a tag <a>
+                                                                                            <a href="@urlAzurePdf" target="_blank" title="Visualizar PDF">
+                                                                                                <i class="fa fa-file-pdf-o fa-5x text-danger"></i>
+                                                                                            </a>
+                                                                                        }
                                                                                     }
                                                                                     else if (cond.PAEO_IN_TIPO == 4) // ÁUDIO - Abre na mesma aba
                                                                                     {
@@ -841,7 +855,7 @@
                                                 <br />
                                                 <div class="form-group">
 
-                                                    @using (Html.BeginForm("UploadFileExamePaciente", "Paciente", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { enctype = "multipart/form-data", @id = "pwd-container2" }))
+                                                    @using (Html.BeginForm("UploadFileExamePacienteBlob", "Paciente", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { enctype = "multipart/form-data", @id = "pwd-container2" }))
                                                     {
                                                         var listaAnexos = Model.PACIENTE_EXAME_ANEXO.Where(p => p.PAEO_IN_ATIVO == 1).ToList();
 
@@ -891,7 +905,11 @@
                                                                                     }
                                                                                     else if (cond.PAEO_IN_TIPO == 3)
                                                                                     {
-                                                                                        <a href="~/PdfViewer/web/viewer.html?file=@(cond.PAEO_AQ_ARQUIVO.Replace("~", ""))&ReturnUrl=@Request.Url.AbsolutePath" target="_blank">@cond.PAEO_NM_TITULO</a>
+                                                                                        // Monta a URL direta do Azure
+                                                                                        var caminhoPdf = cond.PAEO_AQ_ARQUIVO.Replace("~/", "").Replace("~", "");
+                                                                                        var urlAzurePdf = "https://rtistoragemain.blob.core.windows.net/rti-datacontainer/" + caminhoPdf;
+
+                                                                                        <a href="@urlAzurePdf" target="_blank">@cond.PAEO_NM_TITULO</a>
                                                                                     }
                                                                                     else { @cond.PAEO_NM_TITULO }
                                                                                 </td>
@@ -931,9 +949,19 @@
                                                                                     }
                                                                                     else if (cond.PAEO_IN_TIPO == 3) // PDF - ÚNICO QUE ABRE EM NOVA ABA
                                                                                     {
-                                                                                        <a href="~/PdfViewer/web/viewer.html?file=@(cond.PAEO_AQ_ARQUIVO.Replace("~", ""))&ReturnUrl=@Request.Url.AbsolutePath" target="_blank" title="Visualizar PDF">
-                                                                                            <i class="fa fa-file-pdf-o fa-5x text-danger"></i>
-                                                                                        </a>
+                                                                                        // REMOVIDO O "@" ANTES DA CHAVE ABAIXO
+                                                                                        {
+                                                                                            // 1. Limpa o caminho do banco (remove ~/ e deixa Imagens/...)
+                                                                                            var blobPath = cond.PAEO_AQ_ARQUIVO.Replace("~/", "").Replace("~", "");
+
+                                                                                            // 2. Monta a URL direta para o Azure
+                                                                                            var urlAzurePdf = "https://rtistoragemain.blob.core.windows.net/rti-datacontainer/" + blobPath;
+
+                                                                                            // O Razor entende que deve voltar para HTML quando encontra a tag <a>
+                                                                                            <a href="@urlAzurePdf" target="_blank" title="Visualizar PDF">
+                                                                                                <i class="fa fa-file-pdf-o fa-5x text-danger"></i>
+                                                                                            </a>
+                                                                                        }
                                                                                     }
                                                                                     else if (cond.PAEO_IN_TIPO == 4) // ÁUDIO - Abre na mesma aba
                                                                                     {

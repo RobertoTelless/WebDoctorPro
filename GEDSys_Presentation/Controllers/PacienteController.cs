@@ -5305,9 +5305,21 @@ namespace GEDSys_Presentation.Controllers
                 {
                     contentType = "audio/mpeg";
                 }
+                else if (arquivo.Contains(".mpeg"))
+                {
+                    contentType = "audio/mpeg";
+                }
                 else if (arquivo.Contains(".mp4"))
                 {
                     contentType = "video/mp4";
+                }
+                else if (arquivo.Contains(".webp"))
+                {
+                    contentType = "image/webp";
+                }
+                else if (arquivo.Contains(".mkv"))
+                {
+                    contentType = "video/video/x-matroska";
                 }
                 Session["NivelPaciente"] = 2;
                 return File(arquivo, contentType, nomeDownload);
@@ -10306,7 +10318,7 @@ namespace GEDSys_Presentation.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult IncluirExame(PacienteExameViewModel vm)
+        public async Task<ActionResult> IncluirExame(PacienteExameViewModel vm)
         {
             Int32 idAss = (Int32)Session["IdAssinante"];
             USUARIO usuario = (USUARIO)Session["UserCredentials"];
@@ -10404,7 +10416,7 @@ namespace GEDSys_Presentation.Controllers
                         {
                             if (file.Profile == null)
                             {
-                                volta3 = UploadFileQueueExamePaciente(file);
+                                volta3 = await UploadFileQueueExamePacienteBlob(file);
                             }
                         }
                         Session["FileQueuePaciente"] = null;
@@ -10630,6 +10642,124 @@ namespace GEDSys_Presentation.Controllers
                 foto.PACI_CD_ID = item.PACI_CD_ID;
                 item.PACIENTE_EXAME_ANEXO.Add(foto);
                 Int32 volta = baseApp.ValidateEditExame(item);
+                return 0;
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Paciente";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Paciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return 0;
+            }
+        }
+
+        [HttpPost]
+        public async Task<Int32> UploadFileQueueExamePacienteBlob(FileQueue file)
+        {
+            try
+            {
+                // Inicializa
+                Int32 idNot = (Int32)Session["IdExame"];
+                Int32 idAss = (Int32)Session["IdAssinante"];
+
+                if (file == null)
+                {
+                    Session["MensPaciente"] = 5;
+                    return 1;
+                }
+
+                // Recupera exame
+                PACIENTE_EXAMES item = baseApp.GetExameById(idNot);
+                USUARIO usu = (USUARIO)Session["UserCredentials"];
+                var fileName = file.Name;
+                if (fileName.Length > 250)
+                {
+                    Session["MensPaciente"] = 6;
+                    return 2;
+                }
+
+                // Critica tamanho arquivo
+                var fileSize = file.Contents.Length;
+                if (fileSize > 50000000)
+                {
+                    Session["MensPaciente"] = 7;
+                    return 3;
+                }
+
+                //Recupera tipo de arquivo
+                extensao = Path.GetExtension(fileName);
+                String a = extensao;
+                if (!((String)Session["ExtensoesPossiveis"]).Contains(extensao.ToUpper()))
+                {
+                    Session["MensPaciente"] = 12;
+                    return 4;
+                }
+
+                // 1. DEFINIÇÃO DE CAMINHOS
+                String caminhoRelativo = "Imagens/" + idAss.ToString() + "/Pacientes/" + item.PACIENTE.PACI__CD_ID.ToString() + "/Exames/";
+                String caminhoLocal = Server.MapPath("~/" + caminhoRelativo);
+                String fullPathLocal = Path.Combine(caminhoLocal, fileName);
+
+                // Garante que a pasta local existe
+                if (!Directory.Exists(caminhoLocal)) Directory.CreateDirectory(caminhoLocal);
+
+                // 2. CÓPIA LOCAL (Escrita de Bytes)
+                System.IO.File.WriteAllBytes(fullPathLocal, file.Contents);
+
+                // 3. CÓPIA PARA O AZURE BLOB STORAGE
+                try
+                {
+                    CONFIGURACAO conf = CarregaConfiguracaoGeral();
+                    string connString = conf.CONF_NM_STORAGE_CONN;
+                    string containerName = conf.CONF_NM_STORAGE_CONTAINER;
+
+                    var blobServiceClient = new Azure.Storage.Blobs.BlobServiceClient(connString);
+                    var containerClient = blobServiceClient.GetBlobContainerClient(containerName);
+
+                    // O nome do blob no Azure
+                    string blobName = caminhoRelativo + fileName;
+                    var blobClient = containerClient.GetBlobClient(blobName);
+
+                    // Como file.Contents é byte[], usamos MemoryStream para o upload
+                    using (var ms = new MemoryStream(file.Contents))
+                    {
+                        await blobClient.UploadAsync(ms, overwrite: true);
+                    }
+                }
+                catch (Exception exAzure)
+                {
+                    Session["MsgCRUD"] = "Erro na sincronização: " + exAzure.Message;
+                    Session["MensPaciente"] = 61;
+                    return 0;
+                }
+
+                // 4. GRAVAR REGISTRO NO BANCO
+                PACIENTE_EXAME_ANEXO foto = new PACIENTE_EXAME_ANEXO();
+                foto.PAEO_AQ_ARQUIVO = "~/" + caminhoRelativo + fileName;
+                foto.PAEO_DT_ANEXO = DateTime.Today;
+                foto.PAEO_IN_ATIVO = 1;
+
+                // Determinação do tipo (simplificada)
+                Int32 tipo = 7;
+                string extUpper = extensao.ToUpper();
+                if (extUpper == ".JPG" || extUpper == ".PNG" || extUpper == ".JPEG" || extUpper == ".GIF") tipo = 1;
+                else if (extUpper == ".MP4" || extUpper == ".AVI" || extUpper == ".MPEG") tipo = 2;
+                else if (extUpper == ".PDF") tipo = 3;
+                else if (extUpper == ".MP3") tipo = 4;
+                else if (extUpper == ".DOCX" || extUpper == ".DOC" || extUpper == ".ODT") tipo = 5;
+                else if (extUpper == ".XLSX" || extUpper == ".XLS" || extUpper == ".ODS") tipo = 6;
+
+                foto.PAEO_IN_TIPO = tipo;
+                foto.PAEO_NM_TITULO = fileName;
+                foto.PACI_CD_ID = item.PACIENTE.PACI__CD_ID;
+                foto.PAEX_CD_ID = item.PAEX_CD_ID;
+                item.PACIENTE_EXAME_ANEXO.Add(foto);
+                Int32 volta = baseApp.ValidateEditExame(item);
+
                 return 0;
             }
             catch (Exception ex)
@@ -11320,29 +11450,27 @@ namespace GEDSys_Presentation.Controllers
                     return RedirectToAction("VoltarAnexoPaciente");
                 }
 
-                // 4. GRAVAR REGISTRO NO BANCO (Mantido conforme original)
+                // 4. GRAVAR REGISTRO NO BANCO
                 PACIENTE_ANEXO foto = new PACIENTE_ANEXO();
                 foto.PAAX_AQ_ARQUIVO = "~/" + caminhoRelativo + fileName;
                 foto.PAAX_DT_ANEXO = DateTime.Today;
                 foto.PAAX_IN_ATIVO = 1;
 
-                // Lógica de definição de 'tipo' (simplificada para o exemplo)
+                // Determinação do tipo (simplificada)
                 Int32 tipo = 7;
                 string extUpper = extensao.ToUpper();
-                if (extUpper == ".JPG" || extUpper == ".PNG" || extUpper == ".JPEG") tipo = 1;
-                else if (extUpper == ".MP4" || extUpper == ".AVI") tipo = 2;
+                if (extUpper == ".JPG" || extUpper == ".PNG" || extUpper == ".JPEG" || extUpper == ".GIF") tipo = 1;
+                else if (extUpper == ".MP4" || extUpper == ".AVI" || extUpper == ".MPEG") tipo = 2;
                 else if (extUpper == ".PDF") tipo = 3;
                 else if (extUpper == ".MP3") tipo = 4;
-                else if (extUpper == ".DOCX" || extUpper == ".DOC") tipo = 5;
-                else if (extUpper == ".XLSX" || extUpper == ".XLS") tipo = 6;
+                else if (extUpper == ".DOCX" || extUpper == ".DOC" || extUpper == ".ODT") tipo = 5;
+                else if (extUpper == ".XLSX" || extUpper == ".XLS" || extUpper == ".ODS") tipo = 6;
 
                 foto.PAAX_IN_TIPO = tipo;
                 foto.PAAX_NM_TITULO = fileName;
                 foto.PACI_CD_ID = item.PACI__CD_ID;
-
                 item.PACIENTE_ANEXO.Add(foto);
-                objetoAntes = item;
-                baseApp.ValidateEdit(item, objetoAntes);
+                Int32 volta = baseApp.ValidateEdit(item, item);
 
                 // Configura serilização
                 JsonSerializerSettings settings = new JsonSerializerSettings
@@ -11481,6 +11609,139 @@ namespace GEDSys_Presentation.Controllers
 
                 item.PACIENTE_EXAME_ANEXO.Add(foto);
                 Int32 volta = await baseApp.ValidateEditExameAsync(item);
+                Session["NivelPaciente"] = 7;
+                Session["NivelExame"] = 2;
+                Session["PacienteAlterada"] = 1;
+                return RedirectToAction("VoltarEditarExame");
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Paciente";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Paciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return RedirectToAction("TrataExcecao", "BaseAdmin");
+            }
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> UploadFileExamePacienteBlob(HttpPostedFileBase file)
+        {
+            try
+            {
+                // Inicializa
+                if ((String)Session["Ativa"] == null)
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+                Int32 idNot = (Int32)Session["IdExame"];
+                Int32 idAss = (Int32)Session["IdAssinante"];
+
+                // Recupera exame
+                PACIENTE_EXAMES item = baseApp.GetExameById(idNot);
+                USUARIO usu = (USUARIO)Session["UserCredentials"];
+
+                // Criticas
+                if (file == null)
+                {
+                    Session["MensPaciente"] = 5;
+                    return RedirectToAction("VoltarEditarExame");
+                }
+
+                // Critica tamanho nome
+                var fileName = Path.GetFileName(file.FileName);
+                if (fileName.Length > 250)
+                {
+                    Session["MensPaciente"] = 6;
+                    return RedirectToAction("VoltarEditarExame");
+                }
+
+                // Critica tamanho arquivo
+                var fileSize = file.ContentLength;
+                if (fileSize > 50000000)
+                {
+                    Session["MensPaciente"] = 7;
+                    return RedirectToAction("VoltarEditarExame");
+                }
+
+                //Recupera tipo de arquivo
+                extensao = Path.GetExtension(fileName);
+                String a = extensao;
+                if (!((String)Session["ExtensoesPossiveis"]).Contains(extensao.ToUpper()))
+                {
+                    Session["MensPaciente"] = 12;
+                    return RedirectToAction("VoltarEditarExame");
+                }
+
+                // 1. DEFINIÇÃO DO CAMINHO (Mesmo para Local e Azure)
+                // Removida a barra inicial para o Azure não criar uma pasta raiz vazia
+                String caminhoRelativo = "Imagens/" + idAss.ToString() + "/Pacientes/" + item.PACIENTE.PACI__CD_ID.ToString() + "/Exames/";
+                String caminhoLocal = Server.MapPath("~/" + caminhoRelativo);
+                String fullPathLocal = Path.Combine(caminhoLocal, fileName);
+
+                // Garante que a pasta local existe
+                if (!Directory.Exists(caminhoLocal)) Directory.CreateDirectory(caminhoLocal);
+
+                // 2. CÓPIA LOCAL
+                using (var stream = new FileStream(fullPathLocal, FileMode.Create))
+                {
+                    await file.InputStream.CopyToAsync(stream);
+                }
+
+                // 3. CÓPIA PARA O AZURE BLOB STORAGE
+                try
+                {
+                    // Reinicia o ponteiro do stream para o início após a cópia local
+                    file.InputStream.Position = 0;
+
+                    CONFIGURACAO conf = CarregaConfiguracaoGeral();
+                    string connString = conf.CONF_NM_STORAGE_CONN;
+                    string containerName = conf.CONF_NM_STORAGE_CONTAINER;
+
+                    var blobServiceClient = new Azure.Storage.Blobs.BlobServiceClient(connString);
+                    var containerClient = blobServiceClient.GetBlobContainerClient(containerName);
+
+                    // O nome do blob no Azure incluirá toda a estrutura de pastas
+                    string blobName = caminhoRelativo + fileName;
+                    var blobClient = containerClient.GetBlobClient(blobName);
+
+                    // Upload para o Azure (Idempotente: Se já existe, sobrescreve com true)
+                    await blobClient.UploadAsync(file.InputStream, overwrite: true);
+                }
+                catch (Exception exAzure)
+                {
+                    Session["MsgCRUD"] = "Erro na sincronização: " + exAzure.Message;
+                    Session["MensPaciente"] = 61;
+                    return RedirectToAction("VoltarAnexoPaciente");
+                }
+
+                // 4. GRAVAR REGISTRO NO BANCO (Mantido conforme original)
+                PACIENTE_EXAME_ANEXO foto = new PACIENTE_EXAME_ANEXO();
+                foto.PAEO_AQ_ARQUIVO = "~/" + caminhoRelativo + fileName;
+                foto.PAEO_DT_ANEXO = DateTime.Today;
+                foto.PAEO_IN_ATIVO = 1;
+
+                // Lógica de definição de 'tipo' (simplificada para o exemplo)
+                Int32 tipo = 7;
+                string extUpper = extensao.ToUpper();
+                if (extUpper == ".JPG" || extUpper == ".PNG" || extUpper == ".JPEG") tipo = 1;
+                else if (extUpper == ".MP4" || extUpper == ".AVI") tipo = 2;
+                else if (extUpper == ".PDF") tipo = 3;
+                else if (extUpper == ".MP3") tipo = 4;
+                else if (extUpper == ".DOCX" || extUpper == ".DOC") tipo = 5;
+                else if (extUpper == ".XLSX" || extUpper == ".XLS") tipo = 6;
+
+                foto.PAEO_IN_TIPO = tipo;
+                foto.PAEO_NM_TITULO = fileName;
+                foto.PACI_CD_ID = item.PACIENTE.PACI__CD_ID;
+                foto.PAEX_CD_ID = item.PAEX_CD_ID;
+
+                item.PACIENTE_EXAME_ANEXO.Add(foto);
+                baseApp.ValidateEditExame(item);
+
                 Session["NivelPaciente"] = 7;
                 Session["NivelExame"] = 2;
                 Session["PacienteAlterada"] = 1;
@@ -11706,6 +11967,14 @@ namespace GEDSys_Presentation.Controllers
                 else if (arquivo.Contains(".mp4")) 
                 {
                     contentType = "video/mp4";
+                }
+                else if (arquivo.Contains(".webp"))
+                {
+                    contentType = "image/webp";
+                }
+                else if (arquivo.Contains(".mkv"))
+                {
+                    contentType = "video/video/x-matroska";
                 }
                 Session["NivelPaciente"] = 7;
                 Session["NivelExame"] = 2;

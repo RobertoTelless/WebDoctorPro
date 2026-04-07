@@ -141,33 +141,48 @@
                             </div>
                         </div>
                         <div class="form-group">
-                            @*@if (Model.PAEO_IN_TIPO == 1)
-                            {
-                                <div class="col-lg-12 col-md-12 col-sm-12">
-                                    <div class="col-lg-12 col-md-12 col-sm-12">
-                                        <img src="@Url.Content(Model.PAEO_AQ_ARQUIVO)" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Clique Ctrl+Ctrl para ampliar a fotografia" style="width: auto; height: auto; max-height: 1530px; max-width: 1530px;">
-                                    </div>
-                                </div>
-                            }*@
                             @if (Model.PAEO_IN_TIPO == 1)
                             {
-                                <div class="col-lg-12">
-                                    <p class="alert alert-info"><i class="fa fa-info-circle"></i> Clique em qualquer lugar da imagem para adicionar uma anotação ou passe o mouse para visualizar uma anotação já existente</p>
+                                <!--<div class="col-lg-12">
+                                    <p class="alert alert-info"><i class="fa fa-info-circle"></i> Clique em qualquer lugar da imagem para adicionar uma anotação ou passe o mouse para visualizar uma anotação já existente</p>-->
         
                                     @* Container para posicionamento absoluto dos Pins *@
-                                    <div id="image-container" style="position: relative; display: inline-block; cursor: crosshair;">
+                                    <!--<div id="image-container" style="position: relative; display: inline-block; cursor: crosshair;">
                                         <img id="img-exame" src="@Url.Content(Model.PAEO_AQ_ARQUIVO)" class="img-responsive" style="max-height: 1530px; max-width: 100%;">
     
                                         <div id="pins-overlay" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; cursor: crosshair;"></div>
                                     </div> 
-                               </div>
+                               </div>-->
+                                <div class="col-lg-12">
+                                    <p class="alert alert-info">
+                                        <i class="fa fa-info-circle"></i> Clique em qualquer lugar da imagem para adicionar uma anotação ou passe o mouse para visualizar uma anotação já existente
+                                    </p>
+
+                                    @* Container para posicionamento absoluto dos Pins *@
+                                    <div id="image-container" style="position: relative; display: inline-block; cursor: crosshair;">
+        
+                                        <img id="img-exame" 
+                                             src="@("https://rtistoragemain.blob.core.windows.net/rti-datacontainer/" + Model.PAEO_AQ_ARQUIVO.Replace("~/", "").Replace("~", ""))" 
+                                             class="img-responsive" 
+                                             style="max-height: 1530px; max-width: 100%;"
+                                             onerror="this.onerror=null;this.src='@Url.Content("~/Images/icone_imagem.jpg")';">
+
+                                        <div id="pins-overlay" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; cursor: crosshair;"></div>
+                                    </div> 
+                                </div>
                             }
 
                             @if (Model.PAEO_IN_TIPO == 2)
                             {
                                 <div class="col-lg-12 col-md-12 col-sm-12">
                                     <figure>
-                                        <iframe width="900" height="600" src="@Url.Content(Model.PAEO_AQ_ARQUIVO)" frameborder="0" allowfullscreen></iframe>
+                                        @{
+                                            var urlVideoAzure = "https://rtistoragemain.blob.core.windows.net/rti-datacontainer/" + Model.PAEO_AQ_ARQUIVO.Replace("~/", "").Replace("~", "");
+                                        }
+                                        <video width="900" height="600" controls style="background: #000;">
+                                            <source src="@urlVideoAzure" type="video/mp4">
+                                            Seu navegador não suporta a tag de vídeo.
+                                        </video>
                                     </figure>
                                 </div>
                             }
