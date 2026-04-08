@@ -167,6 +167,8 @@ namespace EntitiesServices.Model
         public string CONF_NM_STORAGE_KEY { get; set; }
         public string CONF_NM_STORAGE_CONN { get; set; }
         public string CONF_NM_STORAGE_CONTAINER { get; set; }
+        public string CONF_NM_SENHA_CERTIFICADO { get; set; }
+        public string CONF_NM_LOCAL_CERTIFICADO { get; set; }
     
         public virtual ASSINANTE ASSINANTE { get; set; }
     }

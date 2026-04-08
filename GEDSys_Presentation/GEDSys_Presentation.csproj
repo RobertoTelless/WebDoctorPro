@@ -4087,6 +4087,7 @@
     <Content Include="Imagens\1\Locacao\103\Contrato\Contrato_LocacaoÁlvaro Van Beethoven_d75ep4cn00045g78akcg.pdf" />
     <Content Include="Imagens\1\Pacientes\1084\Fichas\260327 Exactech March Update Letter 2026-03-27 1440.pdf" />
     <Content Include="Imagens\1\Pacientes\1084\Fichas\Sind_prof_RJ_CYDIA.pdf" />
+    <Content Include="App_Data\Certificados\26195962.pfx" />
     <None Include="Properties\PublishProfiles\eprontuario - FTP.pubxml" />
     <None Include="Properties\PublishProfiles\eprontuario - FTP1.pubxml" />
     <None Include="Properties\PublishProfiles\eprontuario - Web Deploy.pubxml" />
@@ -5518,7 +5519,6 @@
     <Content Include="Views\Paciente\ProcederConsulta - Cópia %282%29.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="App_Data\" />
     <Folder Include="Filters\" />
     <Folder Include="Imagens\1\AreaPaciente\10\Anexos\" />
     <Folder Include="Imagens\1\AreaPaciente\12\Anexos\" />

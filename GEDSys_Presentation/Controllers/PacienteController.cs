@@ -39,6 +39,8 @@ using Humanizer;
 using Newtonsoft.Json;
 using EntitiesServices.Work_Classes;
 using System.Windows.Input;
+using iTextSharp.text.pdf.security;
+using System.Security.Cryptography.X509Certificates;
 
 namespace GEDSys_Presentation.Controllers
 {
@@ -28882,7 +28884,7 @@ namespace GEDSys_Presentation.Controllers
             }
         }
 
-        public Int32 GerarAtestadoPDFNovaAssina()
+        public Int32 GerarAtestadoPDFNovaAssinaOld()
         {
             try
             {
@@ -29327,11 +29329,527 @@ namespace GEDSys_Presentation.Controllers
                 // Finaliza
                 pdfWriter.CloseStream = false;
                 pdfDoc.Close();
+
+
+
+
                 Response.Buffer = true;
                 Response.ContentType = "application/pdf";
                 Response.AddHeader("content-disposition", "attachment;filename=" + nomeRel);
                 Response.Cache.SetCacheability(HttpCacheability.NoCache);
                 Response.Write(pdfDoc);
+                Response.End();
+                return 0;
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Paciente";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Paciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return 1;
+            }
+        }
+
+        public Int32 GerarAtestadoPDFNovaAssina()
+        {
+            try
+            {
+                Int32 idAss = (Int32)Session["IdAssinante"];
+                USUARIO usuario = (USUARIO)Session["UserCredentials"];
+
+                // Prepara geração
+                CONFIGURACAO conf = CarregaConfiguracaoGeral();
+                String data = DateTime.Today.Date.ToShortDateString();
+                data = data.Substring(0, 2) + data.Substring(3, 2) + data.Substring(6, 4);
+
+                // Recupera informações
+                PACIENTE_ATESTADO solic = baseApp.GetAtestadoById((Int32)Session["IdAtestado"]);
+                PACIENTE paciente = baseApp.GetItemById(solic.PACI_CD_ID.Value);
+                String nomeRel = "Atestado_" + paciente.PACI_NM_NOME + "_" + solic.PAAT_GU_GUID + "_" + data + ".pdf";
+                String classe = String.Empty;
+                if (usuario.TIPO_CARTEIRA_CLASSE != null)
+                {
+                    classe = usuario.TIPO_CARTEIRA_CLASSE.TICL_NM_NOME + ": " + usuario.USUA_NR_CLASSE;
+                }
+                String nomeMedico = usuario.USUA_NM_NOME;
+                if (usuario.USUA_NM_PREFIXO != null)
+                {
+                    nomeMedico = usuario.USUA_NM_PREFIXO + " " + nomeMedico;
+                }
+                if (usuario.USUA_NM_SUFIXO != null)
+                {
+                    nomeMedico = nomeMedico + " " + usuario.USUA_NM_SUFIXO;
+                }
+                EMPRESA empresa = empApp.GetItemById(usuario.EMPR_CD_ID.Value);
+                String token = solic.PAAT_TK_TOKEN;
+                Int32? assina = solic.PAAT_IN_ASSINADO_DIGITAL;
+
+                // Atualiza atestado
+                PACIENTE_ATESTADO atestado1 = baseApp.GetAtestadoById(solic.PAAT_CD_ID);
+                atestado1.PAAT_IN_PDF = 1;
+                atestado1.PAAT_DT_GERACAO_PDF = DateTime.Today.Date;
+                atestado1.PAAT__IN_ENVIADO = 0;
+                Int32 voltaA = baseApp.ValidateEditAtestado(atestado1);
+
+                // Prepara fontes
+                Font meuFont = FontFactory.GetFont("Arial", 8, iTextSharp.text.Font.NORMAL, BaseColor.BLACK);
+                Font meuFont1 = FontFactory.GetFont("Arial", 9, iTextSharp.text.Font.NORMAL, BaseColor.BLACK);
+                Font meuFont2 = FontFactory.GetFont("Arial", 14, iTextSharp.text.Font.NORMAL, BaseColor.BLACK);
+                Font meuFont1Bold = FontFactory.GetFont("Arial", 9, iTextSharp.text.Font.BOLD, BaseColor.BLACK);
+                Font meuFont3Bold = FontFactory.GetFont("Arial", 10, iTextSharp.text.Font.BOLD, BaseColor.BLACK);
+                Font meuFont4Bold = FontFactory.GetFont("Arial", 12, iTextSharp.text.Font.BOLD, BaseColor.BLACK);
+                Font meuFont5Bold = FontFactory.GetFont("Arial", 16, iTextSharp.text.Font.BOLD, BaseColor.BLACK);
+                Font meuFontBold = FontFactory.GetFont("Arial", 8, iTextSharp.text.Font.BOLD, BaseColor.BLACK);
+
+                // Cabeçalho
+                PdfPTable headerTable = null;
+                PdfPCell cell = new PdfPCell();
+                Image image = null;
+                if (conf.CONF_IN_LOGO_EMPRESA == 1)
+                {
+                    headerTable = new PdfPTable(new float[] { 20f, 700f });
+                    headerTable.WidthPercentage = 100;
+                    headerTable.HorizontalAlignment = 1;
+                    headerTable.SpacingBefore = 1f;
+                    headerTable.SpacingAfter = 1f;
+
+                    cell = new PdfPCell();
+                    cell.Border = 0;
+                    cell.Colspan = 1;
+                    image = null;
+                    if (conf.CONF_IN_LOGO_EMPRESA == 1)
+                    {
+                        image = Image.GetInstance(Server.MapPath(empresa.EMPR_AQ_LOGO));
+                    }
+                    else
+                    {
+                        image = Image.GetInstance(Server.MapPath("~/Images/Prontuario_Icone_1.png"));
+                    }
+                    image.ScaleAbsolute(80, 80);
+                    cell.AddElement(image);
+                    headerTable.AddCell(cell);
+                }
+                else
+                {
+                    headerTable = new PdfPTable(new float[] { 750f });
+                    headerTable.WidthPercentage = 100;
+                    headerTable.HorizontalAlignment = 1;
+                    headerTable.SpacingBefore = 1f;
+                    headerTable.SpacingAfter = 1f;
+                }
+
+                // Dados do medico
+                PdfPTable table1 = new PdfPTable(new float[] { 120f, 120f, 120f, 120f });
+                table1.WidthPercentage = 100;
+                table1.HorizontalAlignment = 0;
+                table1.SpacingBefore = 1f;
+                table1.SpacingAfter = 1f;
+
+                cell = new PdfPCell(new Paragraph(nomeMedico, meuFont4Bold));
+                cell.Border = 0;
+                cell.Colspan = 4;
+                cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                cell.HorizontalAlignment = Element.ALIGN_CENTER;
+                table1.AddCell(cell);
+                if (usuario.ESPECIALIDADE != null)
+                {
+                    cell = new PdfPCell(new Paragraph(usuario.ESPECIALIDADE.ESPE_NM_NOME, meuFont1));
+                    cell.Border = 0;
+                    cell.Colspan = 4;
+                    cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                    cell.HorizontalAlignment = Element.ALIGN_CENTER;
+                    table1.AddCell(cell);
+                }
+
+                String frase = classe + " CPF: " + usuario.USUA_NR_CPF;
+                cell = new PdfPCell(new Paragraph(frase, meuFont1));
+                cell.Border = 0;
+                cell.Colspan = 4;
+                cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                cell.HorizontalAlignment = Element.ALIGN_CENTER;
+                table1.AddCell(cell);
+                cell = new PdfPCell(new Paragraph(" ", meuFont1));
+                cell.Border = 0;
+                cell.Colspan = 4;
+                cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                cell.HorizontalAlignment = Element.ALIGN_CENTER;
+                table1.AddCell(cell);
+
+                PdfPCell innerTableCell = new PdfPCell(table1);
+                innerTableCell.Border = Rectangle.NO_BORDER;
+                innerTableCell.Colspan = 1;
+                headerTable.AddCell(innerTableCell);
+
+                // Rodape
+                PdfPTable footerTable = new PdfPTable(1);
+                footerTable = new PdfPTable(new float[] { 160f, 600f, 180f });
+                footerTable.WidthPercentage = 100;
+                footerTable.HorizontalAlignment = 1;
+                footerTable.SpacingBefore = 1f;
+                footerTable.SpacingAfter = 1f;
+
+                cell = new PdfPCell();
+                cell.Border = 0;
+                cell.Colspan = 1;
+                image = null;
+                if (solic.PAAT_AQ_ARQUIVO_QRCODE != null)
+                {
+                    image = Image.GetInstance(Server.MapPath(solic.PAAT_AQ_ARQUIVO_QRCODE));
+                }
+                else
+                {
+                    image = Image.GetInstance(Server.MapPath("~/Imagens/Base/qrcode.png"));
+                }
+                image.ScaleAbsolute(100, 100);
+                cell.AddElement(image);
+                footerTable.AddCell(cell);
+
+                // Dados do medico
+                table1 = new PdfPTable(new float[] { 120f, 120f, 120f, 120f });
+                table1.WidthPercentage = 100;
+                table1.HorizontalAlignment = 0;
+                table1.SpacingBefore = 1f;
+                table1.SpacingAfter = 1f;
+
+                cell = new PdfPCell(new Paragraph(usuario.USUA_NM_NOME, meuFont3Bold));
+                cell.Border = 0;
+                cell.Colspan = 4;
+                cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                table1.AddCell(cell);
+                if (usuario.ESPECIALIDADE != null)
+                {
+                    cell = new PdfPCell(new Paragraph(usuario.ESPECIALIDADE.ESPE_NM_NOME, meuFont1));
+                    cell.Border = 0;
+                    cell.Colspan = 4;
+                    cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                    cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                    table1.AddCell(cell);
+                }
+
+                cell = new PdfPCell(new Paragraph(classe, meuFont));
+                cell.Border = 0;
+                cell.Colspan = 1;
+                cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                table1.AddCell(cell);
+                cell = new PdfPCell(new Paragraph("CPF: " + usuario.USUA_NR_CPF, meuFont));
+                cell.Border = 0;
+                cell.Colspan = 3;
+                cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                table1.AddCell(cell);
+
+                String endereco = String.Empty;
+                String enderecoCont = String.Empty;
+                if (empresa.EMPR_NM_ENDERECO != null)
+                {
+                    endereco += empresa.EMPR_NM_ENDERECO;
+                    if (empresa.EMPR_NM_NUMERO != null)
+                    {
+                        endereco += " " + empresa.EMPR_NM_NUMERO;
+                    }
+                    if (empresa.EMPR_NM_COMPLEMENTO != null)
+                    {
+                        endereco += " " + empresa.EMPR_NM_COMPLEMENTO;
+                    }
+                    if (empresa.EMPR_NM_BAIRRO != null)
+                    {
+                        enderecoCont += empresa.EMPR_NM_BAIRRO;
+                    }
+                    if (empresa.EMPR_NM_CIDADE != null)
+                    {
+                        enderecoCont += " - " + empresa.EMPR_NM_CIDADE;
+                    }
+                    if (empresa.UF != null)
+                    {
+                        enderecoCont += " - " + empresa.UF.UF_SG_SIGLA;
+                    }
+                    if (empresa.EMPR_NR_CEP != null)
+                    {
+                        enderecoCont += " - " + empresa.EMPR_NR_CEP;
+                    }
+                }
+
+                cell = new PdfPCell(new Paragraph(endereco, meuFont));
+                cell.Border = 0;
+                cell.Colspan = 4;
+                cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                table1.AddCell(cell);
+                cell = new PdfPCell(new Paragraph(enderecoCont, meuFont));
+                cell.Border = 0;
+                cell.Colspan = 4;
+                cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                table1.AddCell(cell);
+
+                String fraseAssina = "Documento assinado digitalmente em " + solic.PAAT_DT_EMISSAO_COMPLETA.Value.ToShortDateString() + " " + solic.PAAT_DT_EMISSAO_COMPLETA.Value.ToShortTimeString() + " conforme MP 2.200-2/01";
+                cell = new PdfPCell(new Paragraph(fraseAssina, meuFontBold));
+                cell.Border = 0;
+                cell.Colspan = 4;
+                cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                table1.AddCell(cell);
+
+                cell = new PdfPCell(new Paragraph("Para validar este documento use o código QR ao lado ou acesse " + conf.CONF_LK_LINK_VALIDACAO + " e use o token de acesso " + token, meuFont));
+                cell.Border = 0;
+                cell.Colspan = 4;
+                cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                table1.AddCell(cell);
+
+                cell = new PdfPCell(new Paragraph("  ", meuFont));
+                cell.Border = 0;
+                cell.Colspan = 4;
+                cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                table1.AddCell(cell);
+
+                innerTableCell = new PdfPCell(table1);
+                innerTableCell.Border = Rectangle.NO_BORDER;
+                innerTableCell.Colspan = 1;
+                footerTable.AddCell(innerTableCell);
+
+                cell = new PdfPCell();
+                cell.Border = 0;
+                cell.Colspan = 1;
+                image = null;
+                image = Image.GetInstance(Server.MapPath("~/Imagens/Base/Selo_Digital.png"));
+                image.ScaleAbsolute(100, 100);
+                cell.AddElement(image);
+                footerTable.AddCell(cell);
+
+                // Cria documento
+                Document pdfDoc = new Document(PageSize.A4, 10, 10, 70, 150);
+                MemoryStream msInput = new MemoryStream();
+                PdfWriter pdfWriter = PdfWriter.GetInstance(pdfDoc, msInput);
+                //PdfWriter pdfWriter = PdfWriter.GetInstance(pdfDoc, Response.OutputStream);
+                pdfWriter.PageEvent = new CustomPageEventHelper(headerTable, footerTable);
+                pdfDoc.Open();
+
+                Paragraph line1 = new Paragraph("  ");
+                pdfDoc.Add(line1);
+
+                // Dados do atestado
+                PdfPTable table = new PdfPTable(new float[] { 120f, 120f, 120f, 120f });
+                table.WidthPercentage = 100;
+                table.HorizontalAlignment = 0;
+                table.SpacingBefore = 1f;
+                table.SpacingAfter = 1f;
+
+                cell = new PdfPCell(new Paragraph("Data/Hora da Emissão: " + solic.PAAT_DT_EMISSAO_COMPLETA.Value.ToLongDateString() + " " + solic.PAAT_DT_EMISSAO_COMPLETA.Value.ToLongTimeString() + " (GMT-3)", meuFont1Bold));
+                cell.Border = 0;
+                cell.Colspan = 4;
+                cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph("Identificador: " + solic.PAAT_GU_GUID, meuFont1Bold));
+                cell.Border = 0;
+                cell.Colspan = 4;
+                cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                table.AddCell(cell);
+                pdfDoc.Add(table);
+
+                line1 = new Paragraph("  ");
+                pdfDoc.Add(line1);
+
+                // Dados do paciente
+                table = new PdfPTable(new float[] { 120f, 120f, 120f, 120f });
+                table.WidthPercentage = 100;
+                table.HorizontalAlignment = 0;
+                table.SpacingBefore = 1f;
+                table.SpacingAfter = 1f;
+
+                cell = new PdfPCell(new Paragraph("Nome: " + paciente.PACI_NM_NOME, meuFont3Bold));
+                cell.Border = 0;
+                cell.Colspan = 4;
+                cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph("CPF: " + paciente.PACI_NR_CPF, meuFont1));
+                cell.Border = 0;
+                cell.Colspan = 4;
+                cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph("Data Nasc.: " + paciente.PACI_DT_NASCIMENTO.Value.ToShortDateString(), meuFont1));
+                cell.Border = 0;
+                cell.Colspan = 4;
+                cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                table.AddCell(cell);
+                pdfDoc.Add(table);
+
+                // Linha Horizontal
+                line1 = new Paragraph("  ");
+                pdfDoc.Add(line1);
+
+                // Grid
+                table = new PdfPTable(new float[] { 100f, 500f });
+                table.WidthPercentage = 100;
+                table.HorizontalAlignment = 0;
+                table.SpacingBefore = 1f;
+                table.SpacingAfter = 1f;
+
+                if (solic.TIPO_ATESTADO != null)
+                {
+                    cell = new PdfPCell(new Paragraph("Tipo de Atestado: ", meuFont1Bold))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    cell.Colspan = 1;
+                    cell.BackgroundColor = BaseColor.WHITE;
+                    cell.Border = PdfPCell.NO_BORDER;
+                    table.AddCell(cell);
+                    cell = new PdfPCell(new Paragraph(solic.TIPO_ATESTADO.TIAT_NM_NOME, meuFont1))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    cell.Colspan = 1;
+                    cell.BackgroundColor = BaseColor.WHITE;
+                    cell.Border = PdfPCell.NO_BORDER;
+                    table.AddCell(cell);
+                }
+
+                if (solic.PAAT_NM_TITULO != null)
+                {
+                    cell = new PdfPCell(new Paragraph("Finalidade: ", meuFont1Bold))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    cell.Colspan = 1;
+                    cell.BackgroundColor = BaseColor.WHITE;
+                    cell.Border = PdfPCell.NO_BORDER;
+                    table.AddCell(cell);
+                    cell = new PdfPCell(new Paragraph(solic.PAAT_NM_TITULO, meuFont1))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    cell.Colspan = 1;
+                    cell.Border = PdfPCell.NO_BORDER;
+                    cell.BackgroundColor = BaseColor.WHITE;
+                    table.AddCell(cell);
+                }
+
+                cell = new PdfPCell(new Paragraph("Destinatário: ", meuFont1Bold))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.WHITE;
+                cell.Border = PdfPCell.NO_BORDER;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph(solic.PAAT_NM_DESTINO, meuFont1))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.WHITE;
+                cell.Border = PdfPCell.NO_BORDER;
+                table.AddCell(cell);
+                pdfDoc.Add(table);
+
+                // Texto da atestado
+                line1 = new Paragraph("  ");
+                pdfDoc.Add(line1);
+                line1 = new Paragraph("  ");
+                pdfDoc.Add(line1);
+
+                Chunk chunk3 = new Chunk("A T E S T A D O", FontFactory.GetFont("Arial", 16, Font.NORMAL, BaseColor.BLACK));
+                Paragraph paragraph = new Paragraph(chunk3);
+                paragraph.Alignment = Element.ALIGN_CENTER;
+                pdfDoc.Add(paragraph);
+
+                line1 = new Paragraph("  ");
+                pdfDoc.Add(line1);
+
+                Chunk chunk1 = new Chunk(solic.PAAT_TX_TEXTO, FontFactory.GetFont("Arial", 9, Font.NORMAL, BaseColor.BLACK));
+                pdfDoc.Add(chunk1);
+
+                if (solic.PAAT_IN_ASSINADO_DIGITAL == 0)
+                {
+                    // Ajusta espaço
+                    line1 = new Paragraph("  ");
+                    pdfDoc.Add(line1);
+                    line1 = new Paragraph("  ");
+                    pdfDoc.Add(line1);
+                    line1 = new Paragraph("  ");
+                    pdfDoc.Add(line1);
+                    line1 = new Paragraph("  ");
+                    pdfDoc.Add(line1);
+
+                    //Assinatura manual
+                    String assinatura = usuario.USUA_NM_PREFIXO + " " + usuario.USUA_NM_NOME + (usuario.USUA_NM_SUFIXO != null ? " " + usuario.USUA_NM_SUFIXO : "");
+                    Chunk chunk4 = new Chunk(assinatura, FontFactory.GetFont("Arial", 12, Font.NORMAL, BaseColor.BLACK));
+                    Paragraph paragraph1 = new Paragraph(chunk4);
+                    paragraph1.Alignment = Element.ALIGN_CENTER;
+                    pdfDoc.Add(paragraph1);
+                }
+    
+                // Finaliza
+                pdfWriter.CloseStream = false;
+                pdfDoc.Close();
+
+                byte[] pdfFinal;
+                if (solic.PAAT_IN_ASSINADO_DIGITAL == 1) // Se for para assinar com PFX
+                {
+                    // Caminho do certificado e senha (ajuste conforme seu armazenamento)
+                    string caminhoPFX = Server.MapPath(conf.CONF_NM_LOCAL_CERTIFICADO);
+                    string senhaPFX = conf.CONF_NM_SENHA_CERTIFICADO;
+
+                    using (MemoryStream msOutput = new MemoryStream())
+                    {
+                        // Carrega o certificado
+                        X509Certificate2 cert = new X509Certificate2(caminhoPFX, senhaPFX, X509KeyStorageFlags.Exportable);
+
+                        // Extrai a chave privada e a cadeia de certificados para o iText
+                        Org.BouncyCastle.X509.X509Certificate bcCert = Org.BouncyCastle.Security.DotNetUtilities.FromX509Certificate(cert);
+                        Org.BouncyCastle.Crypto.AsymmetricKeyParameter key = Org.BouncyCastle.Security.DotNetUtilities.GetKeyPair(cert.PrivateKey).Private;
+
+                        Org.BouncyCastle.X509.X509Certificate[] chain = new Org.BouncyCastle.X509.X509Certificate[] { bcCert };
+
+                        // Cria o Stamper para assinar
+                        PdfReader reader = new PdfReader(msInput.ToArray());
+                        PdfStamper stamper = PdfStamper.CreateSignature(reader, msOutput, '\0');
+
+                        // Configura a aparência da assinatura (onde ela aparece no PDF)
+                        PdfSignatureAppearance appearance = stamper.SignatureAppearance;
+                        appearance.Reason = "Assinatura de Atestado Médico";
+                        appearance.Location = paciente.PACI_NM_CIDADE + ", " + paciente.UF.UF_SG_SIGLA;
+
+                        // Define a posição (x, y, largura, altura) na última página
+                        // Exemplo: retângulo no final da página
+                        appearance.SetVisibleSignature(new Rectangle(100, 100, 300, 200), reader.NumberOfPages, "Signature");
+
+                        // Aplica a assinatura usando o padrão de criptografia padrão
+                        IExternalSignature es = new PrivateKeySignature(key, "SHA-256");
+                        MakeSignature.SignDetached(appearance, es, chain, null, null, null, 0, CryptoStandard.CMS);
+
+                        pdfFinal = msOutput.ToArray();
+                    }
+                }
+                else
+                {
+                    pdfFinal = msInput.ToArray();
+                }
+
+                // 2. Envia o arquivo final (assinado ou não) para o navegador
+                Response.Clear();
+                Response.ContentType = "application/pdf";
+                Response.AddHeader("content-disposition", "attachment;filename=" + nomeRel);
+                Response.BinaryWrite(pdfFinal);
                 Response.End();
                 return 0;
             }
