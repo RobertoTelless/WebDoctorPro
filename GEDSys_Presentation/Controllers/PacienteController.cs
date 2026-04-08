@@ -1270,6 +1270,7 @@ namespace GEDSys_Presentation.Controllers
                 }
                 Int32 idAss = (Int32)Session["IdAssinante"];
                 Session["ModuloAtual"] = "Paciente - Inclusão";
+                Session["FileQueuePaciente"] = null;
 
                 // Verifica possibilidade
                 Int32 num = CarregaPaciente().Count;
@@ -2180,29 +2181,66 @@ namespace GEDSys_Presentation.Controllers
         //    return Json(new { Sucesso = 0 });
         //}
 
+        //[HttpPost]
+        //public void UploadFileToSession(IEnumerable<HttpPostedFileBase> files, String profile)
+        //{
+        //    List<FileQueue> queue = new List<FileQueue>();
+        //    foreach (var file in files)
+        //    {
+        //        FileQueue f = new FileQueue();
+        //        f.Name = Path.GetFileName(file.FileName);
+        //        f.ContentType = Path.GetExtension(file.FileName);
+
+        //        MemoryStream ms = new MemoryStream();
+        //        file.InputStream.CopyTo(ms);
+        //        f.Contents = ms.ToArray();
+
+        //        if (profile != null)
+        //        {
+        //            if (file.FileName.Equals(profile))
+        //            {
+        //                f.Profile = 1;
+        //            }
+        //        }
+        //        queue.Add(f);
+        //    }
+        //    Session["FileQueuePaciente"] = queue;
+        //}
+
         [HttpPost]
         public void UploadFileToSession(IEnumerable<HttpPostedFileBase> files, String profile)
         {
-            List<FileQueue> queue = new List<FileQueue>();
-            foreach (var file in files)
+            // 1. Tenta recuperar a lista existente ou cria uma nova se for null
+            List<FileQueue> queue = Session["FileQueuePaciente"] as List<FileQueue> ?? new List<FileQueue>();
+
+            if (files != null)
             {
-                FileQueue f = new FileQueue();
-                f.Name = Path.GetFileName(file.FileName);
-                f.ContentType = Path.GetExtension(file.FileName);
-
-                MemoryStream ms = new MemoryStream();
-                file.InputStream.CopyTo(ms);
-                f.Contents = ms.ToArray();
-
-                if (profile != null)
+                foreach (var file in files)
                 {
-                    if (file.FileName.Equals(profile))
+                    if (file == null) continue;
+
+                    FileQueue f = new FileQueue();
+                    f.Name = Path.GetFileName(file.FileName);
+                    f.ContentType = Path.GetExtension(file.FileName);
+
+                    using (MemoryStream ms = new MemoryStream())
                     {
+                        file.InputStream.CopyTo(ms);
+                        f.Contents = ms.ToArray();
+                    }
+
+                    // Se for foto de perfil, remove sinalização de perfil de qualquer outro arquivo anterior
+                    if (profile != null && file.FileName.Equals(profile))
+                    {
+                        queue.ForEach(x => x.Profile = 0);
                         f.Profile = 1;
                     }
+
+                    queue.Add(f);
                 }
-                queue.Add(f);
             }
+
+            // 2. Salva a lista atualizada (Contendo foto + anexos)
             Session["FileQueuePaciente"] = queue;
         }
 
@@ -4185,6 +4223,7 @@ namespace GEDSys_Presentation.Controllers
                 }
                 Int32 idAss = (Int32)Session["IdAssinante"];
                 Session["ModuloAtual"] = "Paciente - Edição";
+                Session["FileQueuePaciente"] = null;
                 CONFIGURACAO conf = CarregaConfiguracaoGeral();
 
                 // Checa classe
@@ -14409,24 +14448,10 @@ namespace GEDSys_Presentation.Controllers
                 Font meuFontBold = FontFactory.GetFont("Arial", 8, iTextSharp.text.Font.BOLD, BaseColor.BLACK);
 
                 // Caminho de saida
-                //String caminho = "/Imagens/" + idAss.ToString() + "/Pacientes/" + paciente.PACI__CD_ID.ToString() + "/Atestado/";
                 String caminho = "/Temp/";
                 String filePath = Path.Combine(Server.MapPath(caminho), nomeRel);
-                //Directory.CreateDirectory(caminho);
-                //Boolean existe = System.IO.File.Exists(filePath);
-                //if (existe)
-                //{
-                //    try
-                //    {
-                //        System.IO.File.Delete(filePath);
-                //    }
-                //    catch (Exception)
-                //    {
-                //        existe = false;
-                //    }
-                //}
 
-                using (FileStream stream = new FileStream(filePath, FileMode.Create))
+                using (MemoryStream msInput = new MemoryStream())
                 {
                     // Cabeçalho
                     PdfPTable headerTable = null;
@@ -14649,7 +14674,7 @@ namespace GEDSys_Presentation.Controllers
 
                     // Cria documento
                     Document pdfDoc = new Document(PageSize.A4, 10, 10, 70, 150);
-                    PdfWriter pdfWriter = PdfWriter.GetInstance(pdfDoc, stream);
+                    PdfWriter pdfWriter = PdfWriter.GetInstance(pdfDoc, msInput);
                     pdfWriter.PageEvent = new CustomPageEventHelper(headerTable, footerTable);
                     pdfDoc.Open();
 
@@ -14795,6 +14820,62 @@ namespace GEDSys_Presentation.Controllers
                     // Finaliza
                     pdfWriter.CloseStream = false;
                     pdfDoc.Close();
+
+                    byte[] pdfFinal;
+
+                    // --- LÓGICA DE ASSINATURA DIGITAL ---
+                    if (solic.PASO_IN_ASSINADO_DIGITAL == 1)
+                    {
+                        //string caminhoPFX = Server.MapPath(conf.CONF_NM_LOCAL_CERTIFICADO);
+                        string caminhoPFX = conf.CONF_NM_LOCAL_CERTIFICADO;
+                        string senhaPFX = conf.CONF_NM_SENHA_CERTIFICADO;
+
+                        using (MemoryStream msOutput = new MemoryStream())
+                        {
+                            // Carrega Certificado usando System.Security.Cryptography.X509Certificates
+                            var cert = new System.Security.Cryptography.X509Certificates.X509Certificate2(caminhoPFX, senhaPFX, System.Security.Cryptography.X509Certificates.X509KeyStorageFlags.Exportable);
+
+                            // Converte para BouncyCastle (necessário para iTextSharp)
+                            var bcCert = Org.BouncyCastle.Security.DotNetUtilities.FromX509Certificate(cert);
+                            var key = Org.BouncyCastle.Security.DotNetUtilities.GetKeyPair(cert.PrivateKey).Private;
+                            var chain = new Org.BouncyCastle.X509.X509Certificate[] { bcCert };
+
+                            PdfReader reader = new PdfReader(msInput.ToArray());
+                            PdfStamper stamper = PdfStamper.CreateSignature(reader, msOutput, '\0');
+
+                            PdfSignatureAppearance appearance = stamper.SignatureAppearance;
+                            appearance.Reason = "Assinatura de Solicitação de EXame";
+                            appearance.Location = paciente.PACI_NM_CIDADE + ", " + paciente.UF.UF_SG_SIGLA;
+
+                            // --- AJUSTE DE POSIÇÃO PARA NÃO SOBREPOR O FOOTER ---
+                            // Coordenadas: x inicial, y inicial, x final, y final
+                            // Aumentamos o 'y' inicial para 160 (já que o footer ocupa até 150)
+                            // O retângulo terá 300 de largura (de 100 a 400) e 60 de altura (de 160 a 220)
+                            float xPos = 60;   // Margem esquerda
+                            float yPos = 160;  // Acima da margem de 150 do footer
+                            float largura = 300;
+                            float altura = 60;
+
+                            Rectangle posicaoAssinatura = new Rectangle(xPos, yPos, xPos + largura, yPos + altura);
+                            //appearance.SetVisibleSignature(posicaoAssinatura, reader.NumberOfPages, "Signature");
+                            // ----------------------------------------------------
+
+                            IExternalSignature es = new PrivateKeySignature(key, "SHA-256");
+                            MakeSignature.SignDetached(appearance, es, chain, null, null, null, 0, CryptoStandard.CMS);
+
+                            pdfFinal = msOutput.ToArray();
+                        }
+                    }
+                    else
+                    {
+                        pdfFinal = msInput.ToArray();
+                    }
+
+                    // --- SALVAMENTO DO ARQUIVO FINAL NO DISCO ---
+                    String caminhoSai = "/Temp/";
+                    String filePathSai = Path.Combine(Server.MapPath(caminhoSai), nomeRel);
+
+                    System.IO.File.WriteAllBytes(filePathSai, pdfFinal);
                     return 0;
                 }
             }
@@ -15526,7 +15607,9 @@ namespace GEDSys_Presentation.Controllers
 
                 // Cria documento
                 Document pdfDoc = new Document(PageSize.A4, 10, 10, 70, 150);
-                PdfWriter pdfWriter = PdfWriter.GetInstance(pdfDoc, Response.OutputStream);
+                MemoryStream msInput = new MemoryStream();
+                PdfWriter pdfWriter = PdfWriter.GetInstance(pdfDoc, msInput);
+                //PdfWriter pdfWriter = PdfWriter.GetInstance(pdfDoc, Response.OutputStream);
                 pdfWriter.PageEvent = new CustomPageEventHelper(headerTable, footerTable);
                 pdfDoc.Open();
 
@@ -15673,11 +15756,65 @@ namespace GEDSys_Presentation.Controllers
                 // Finaliza
                 pdfWriter.CloseStream = false;
                 pdfDoc.Close();
-                Response.Buffer = true;
+
+                byte[] pdfFinal;
+                if (solic.PASO_IN_ASSINADO_DIGITAL == 1) // Se for para assinar com PFX
+                {
+                    // Caminho do certificado e senha (ajuste conforme seu armazenamento)
+                    //string caminhoPFX = Server.MapPath(conf.CONF_NM_LOCAL_CERTIFICADO);
+                    string caminhoPFX = conf.CONF_NM_LOCAL_CERTIFICADO;
+                    string senhaPFX = conf.CONF_NM_SENHA_CERTIFICADO;
+
+                    using (MemoryStream msOutput = new MemoryStream())
+                    {
+                        // Carrega o certificado
+                        X509Certificate2 cert = new X509Certificate2(caminhoPFX, senhaPFX, X509KeyStorageFlags.Exportable);
+
+                        // Extrai a chave privada e a cadeia de certificados para o iText
+                        Org.BouncyCastle.X509.X509Certificate bcCert = Org.BouncyCastle.Security.DotNetUtilities.FromX509Certificate(cert);
+                        Org.BouncyCastle.Crypto.AsymmetricKeyParameter key = Org.BouncyCastle.Security.DotNetUtilities.GetKeyPair(cert.PrivateKey).Private;
+
+                        Org.BouncyCastle.X509.X509Certificate[] chain = new Org.BouncyCastle.X509.X509Certificate[] { bcCert };
+
+                        // Cria o Stamper para assinar
+                        PdfReader reader = new PdfReader(msInput.ToArray());
+                        PdfStamper stamper = PdfStamper.CreateSignature(reader, msOutput, '\0');
+
+                        // Configura a aparência da assinatura (onde ela aparece no PDF)
+                        PdfSignatureAppearance appearance = stamper.SignatureAppearance;
+                        appearance.Reason = "Assinatura de Solicitação de Exame";
+                        appearance.Location = paciente.PACI_NM_CIDADE + ", " + paciente.UF.UF_SG_SIGLA;
+
+                        // --- AJUSTE DE POSIÇÃO PARA NÃO SOBREPOR O FOOTER ---
+                        // Coordenadas: x inicial, y inicial, x final, y final
+                        // Aumentamos o 'y' inicial para 160 (já que o footer ocupa até 150)
+                        // O retângulo terá 300 de largura (de 100 a 400) e 60 de altura (de 160 a 220)
+                        float xPos = 60;   // Margem esquerda
+                        float yPos = 160;  // Acima da margem de 150 do footer
+                        float largura = 300;
+                        float altura = 60;
+
+                        Rectangle posicaoAssinatura = new Rectangle(xPos, yPos, xPos + largura, yPos + altura);
+                        //appearance.SetVisibleSignature(posicaoAssinatura, reader.NumberOfPages, "Signature");
+                        // ----------------------------------------------------
+
+                        // Aplica a assinatura usando o padrão de criptografia padrão
+                        IExternalSignature es = new PrivateKeySignature(key, "SHA-256");
+                        MakeSignature.SignDetached(appearance, es, chain, null, null, null, 0, CryptoStandard.CMS);
+
+                        pdfFinal = msOutput.ToArray();
+                    }
+                }
+                else
+                {
+                    pdfFinal = msInput.ToArray();
+                }
+
+                // 2. Envia o arquivo final (assinado ou não) para o navegador
+                Response.Clear();
                 Response.ContentType = "application/pdf";
                 Response.AddHeader("content-disposition", "attachment;filename=" + nomeRel);
-                Response.Cache.SetCacheability(HttpCacheability.NoCache);
-                Response.Write(pdfDoc);
+                Response.BinaryWrite(pdfFinal);
                 Response.End();
                 return 0;
             }
@@ -29806,7 +29943,8 @@ namespace GEDSys_Presentation.Controllers
                 if (solic.PAAT_IN_ASSINADO_DIGITAL == 1) // Se for para assinar com PFX
                 {
                     // Caminho do certificado e senha (ajuste conforme seu armazenamento)
-                    string caminhoPFX = Server.MapPath(conf.CONF_NM_LOCAL_CERTIFICADO);
+                    //string caminhoPFX = Server.MapPath(conf.CONF_NM_LOCAL_CERTIFICADO);
+                    string caminhoPFX = conf.CONF_NM_LOCAL_CERTIFICADO;
                     string senhaPFX = conf.CONF_NM_SENHA_CERTIFICADO;
 
                     using (MemoryStream msOutput = new MemoryStream())
@@ -29829,9 +29967,18 @@ namespace GEDSys_Presentation.Controllers
                         appearance.Reason = "Assinatura de Atestado Médico";
                         appearance.Location = paciente.PACI_NM_CIDADE + ", " + paciente.UF.UF_SG_SIGLA;
 
-                        // Define a posição (x, y, largura, altura) na última página
-                        // Exemplo: retângulo no final da página
-                        appearance.SetVisibleSignature(new Rectangle(100, 100, 300, 200), reader.NumberOfPages, "Signature");
+                        // --- AJUSTE DE POSIÇÃO PARA NÃO SOBREPOR O FOOTER ---
+                        // Coordenadas: x inicial, y inicial, x final, y final
+                        // Aumentamos o 'y' inicial para 160 (já que o footer ocupa até 150)
+                        // O retângulo terá 300 de largura (de 100 a 400) e 60 de altura (de 160 a 220)
+                        float xPos = 60;   // Margem esquerda
+                        float yPos = 160;  // Acima da margem de 150 do footer
+                        float largura = 300;
+                        float altura = 60;
+
+                        Rectangle posicaoAssinatura = new Rectangle(xPos, yPos, xPos + largura, yPos + altura);
+                        //appearance.SetVisibleSignature(posicaoAssinatura, reader.NumberOfPages, "Signature");
+                        // ----------------------------------------------------
 
                         // Aplica a assinatura usando o padrão de criptografia padrão
                         IExternalSignature es = new PrivateKeySignature(key, "SHA-256");
@@ -29917,24 +30064,10 @@ namespace GEDSys_Presentation.Controllers
                 Font meuFontBold = FontFactory.GetFont("Arial", 8, iTextSharp.text.Font.BOLD, BaseColor.BLACK);
 
                 // Caminho de saida
-                //String caminho = "/Imagens/" + idAss.ToString() + "/Pacientes/" + paciente.PACI__CD_ID.ToString() + "/Atestado/";
                 String caminho = "/Temp/";
                 String filePath = Path.Combine(Server.MapPath(caminho), nomeRel);
-                //Directory.CreateDirectory(caminho);
-                //Boolean existe = System.IO.File.Exists(filePath);
-                //if (existe)
-                //{
-                //    try
-                //    {
-                //        System.IO.File.Delete(filePath);
-                //    }
-                //    catch (Exception)
-                //    {
-                //        existe = false;
-                //    }
-                //}
 
-                using (FileStream stream = new FileStream(filePath, FileMode.Create))
+                using (MemoryStream msInput = new MemoryStream())
                 {
                     // Cabeçalho
                     PdfPTable headerTable = null;
@@ -30157,7 +30290,7 @@ namespace GEDSys_Presentation.Controllers
 
                     // Cria documento
                     Document pdfDoc = new Document(PageSize.A4, 10, 10, 70, 150);
-                    PdfWriter pdfWriter = PdfWriter.GetInstance(pdfDoc, stream);
+                    PdfWriter pdfWriter = PdfWriter.GetInstance(pdfDoc, msInput);
                     pdfWriter.PageEvent = new CustomPageEventHelper(headerTable, footerTable);
                     pdfDoc.Open();
 
@@ -30329,6 +30462,62 @@ namespace GEDSys_Presentation.Controllers
                     // Finaliza
                     pdfWriter.CloseStream = false;
                     pdfDoc.Close();
+
+                    byte[] pdfFinal;
+
+                    // --- LÓGICA DE ASSINATURA DIGITAL ---
+                    if (solic.PAAT_IN_ASSINADO_DIGITAL == 1)
+                    {
+                        //string caminhoPFX = Server.MapPath(conf.CONF_NM_LOCAL_CERTIFICADO);
+                        string caminhoPFX = conf.CONF_NM_LOCAL_CERTIFICADO;
+                        string senhaPFX = conf.CONF_NM_SENHA_CERTIFICADO;
+
+                        using (MemoryStream msOutput = new MemoryStream())
+                        {
+                            // Carrega Certificado usando System.Security.Cryptography.X509Certificates
+                            var cert = new System.Security.Cryptography.X509Certificates.X509Certificate2(caminhoPFX, senhaPFX, System.Security.Cryptography.X509Certificates.X509KeyStorageFlags.Exportable);
+
+                            // Converte para BouncyCastle (necessário para iTextSharp)
+                            var bcCert = Org.BouncyCastle.Security.DotNetUtilities.FromX509Certificate(cert);
+                            var key = Org.BouncyCastle.Security.DotNetUtilities.GetKeyPair(cert.PrivateKey).Private;
+                            var chain = new Org.BouncyCastle.X509.X509Certificate[] { bcCert };
+
+                            PdfReader reader = new PdfReader(msInput.ToArray());
+                            PdfStamper stamper = PdfStamper.CreateSignature(reader, msOutput, '\0');
+
+                            PdfSignatureAppearance appearance = stamper.SignatureAppearance;
+                            appearance.Reason = "Assinatura de Atestado Médico";
+                            appearance.Location = paciente.PACI_NM_CIDADE + ", " + paciente.UF.UF_SG_SIGLA;
+
+                            // --- AJUSTE DE POSIÇÃO PARA NÃO SOBREPOR O FOOTER ---
+                            // Coordenadas: x inicial, y inicial, x final, y final
+                            // Aumentamos o 'y' inicial para 160 (já que o footer ocupa até 150)
+                            // O retângulo terá 300 de largura (de 100 a 400) e 60 de altura (de 160 a 220)
+                            float xPos = 60;   // Margem esquerda
+                            float yPos = 160;  // Acima da margem de 150 do footer
+                            float largura = 300;
+                            float altura = 60;
+
+                            Rectangle posicaoAssinatura = new Rectangle(xPos, yPos, xPos + largura, yPos + altura);
+                            //appearance.SetVisibleSignature(posicaoAssinatura, reader.NumberOfPages, "Signature");
+                            // ----------------------------------------------------
+
+                            IExternalSignature es = new PrivateKeySignature(key, "SHA-256");
+                            MakeSignature.SignDetached(appearance, es, chain, null, null, null, 0, CryptoStandard.CMS);
+
+                            pdfFinal = msOutput.ToArray();
+                        }
+                    }
+                    else
+                    {
+                        pdfFinal = msInput.ToArray();
+                    }
+
+                    // --- SALVAMENTO DO ARQUIVO FINAL NO DISCO ---
+                    String caminhoSai = "/Temp/";
+                    String filePathSai = Path.Combine(Server.MapPath(caminhoSai), nomeRel);
+
+                    System.IO.File.WriteAllBytes(filePathSai, pdfFinal);
                     return 0;
                 }
             }

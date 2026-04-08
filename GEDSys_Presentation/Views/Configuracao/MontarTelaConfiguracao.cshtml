@@ -166,6 +166,9 @@
                                                     @Html.HiddenFor(m => m.CONF_IN_PAGAR_SISTEMA)
                                                     @Html.HiddenFor(m => m.CONF_NM_SENDGRID_APIKEY) 
                                                     @Html.HiddenFor(m => m.CON_TK_TOKEN_API_PAGTO) 
+                                                    @Html.HiddenFor(m => m.CONF_NM_STORAGE_CONN) 
+                                                    @Html.HiddenFor(m => m.CONF_NM_STORAGE_CONTAINER) 
+                                                    @Html.HiddenFor(m => m.CONF_NM_STORAGE_KEY) 
                                                     <h4 style="margin-left: 15px; color:green; background-color: beige; font-weight:bold">Configurações Genéricas</h4>
                                                     <div class="col-lg-2 col-md-2 col-xs-12">
                                                         Usa Logotipo do Assinante*
@@ -376,8 +379,13 @@
                                                 <div class="form-group">
                                                     <div class="col-lg-4 col-md-4 col-xs-12">
                                                         Localização do Arquivo de Assinatura Digital .PFX*
-                                                        @Html.TextBoxFor(m => m.CONF_IN_ASSINA_DIGITAL_LOCAL_PFX, new { @class = "form-control", autofocus = true, data_toggle = "popover", data_content = "Define o local, na máquina do usuário, onde o arquivo de assinatura digital de formato PFX se enontra", data_trigger="hover", data_placement="top" })
-                                                        @Html.ValidationMessageFor(m => m.CONF_IN_ASSINA_DIGITAL_LOCAL_PFX, "", new { @style = "color:red" })
+                                                        @Html.TextBoxFor(m => m.CONF_NM_LOCAL_CERTIFICADO, new { @class = "form-control", autofocus = true, data_toggle = "popover", data_content = "Define o local, na máquina do usuário, onde o certificado digital de formato PFX se encontra", data_trigger="hover", data_placement="top" })
+                                                        @Html.ValidationMessageFor(m => m.CONF_NM_LOCAL_CERTIFICADO, "", new { @style = "color:red" })
+                                                    </div>
+                                                    <div class="col-lg-3 col-md-3 col-xs-12">
+                                                        Senha do Arquivo de Assinatura Digital .PFX*
+                                                        @Html.TextBoxFor(m => m.CONF_NM_SENHA_CERTIFICADO, new { @class = "form-control", autofocus = true, data_toggle = "popover", data_content = "Senha do certificado digital de formato PFX se encontra", data_trigger="hover", data_placement="top" })
+                                                        @Html.ValidationMessageFor(m => m.CONF_NM_SENHA_CERTIFICADO, "", new { @style = "color:red" })
                                                     </div>
                                                 </div>
                                                 <div class="form-group">

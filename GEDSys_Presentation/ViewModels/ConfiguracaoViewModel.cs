@@ -179,6 +179,11 @@ namespace ERP_Condominios_Solution.ViewModels
         public Nullable<int> CONF_IN_ABA_SOLICITACAO { get; set; }
         public Nullable<int> CONF_IN_ABA_PRESCRICAO { get; set; }
         public Nullable<int> CONF_IN_ABA_LOCACAO { get; set; }
+        public string CONF_NM_STORAGE_KEY { get; set; }
+        public string CONF_NM_STORAGE_CONN { get; set; }
+        public string CONF_NM_STORAGE_CONTAINER { get; set; }
+        public string CONF_NM_SENHA_CERTIFICADO { get; set; }
+        public string CONF_NM_LOCAL_CERTIFICADO { get; set; }
 
         public virtual ASSINANTE ASSINANTE { get; set; }
     }
