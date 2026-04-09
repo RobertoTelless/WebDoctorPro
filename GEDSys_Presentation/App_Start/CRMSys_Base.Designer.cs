@@ -6521,5 +6521,23 @@ namespace GEDSys_Presentation.App_Start {
                 return ResourceManager.GetString("M0739", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Consulta uma cadeia de caracteres localizada semelhante a Nenhum certificado digital informado.
+        /// </summary>
+        internal static string M0740 {
+            get {
+                return ResourceManager.GetString("M0740", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Consulta uma cadeia de caracteres localizada semelhante a Certificado digital já incluido.
+        /// </summary>
+        internal static string M0741 {
+            get {
+                return ResourceManager.GetString("M0741", resourceCulture);
+            }
+        }
     }
 }

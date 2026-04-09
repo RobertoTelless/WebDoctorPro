@@ -14,6 +14,7 @@ using System.Linq;
 using XidNet;
 using Ical.Net.Serialization.iCalendar;
 using CrossCutting;
+using System.Web;
 
 
 namespace ERP_Condominios_Solution.Controllers
@@ -303,7 +304,23 @@ namespace ERP_Condominios_Solution.Controllers
             abaLoc.Add(new SelectListItem() { Text = "Não Exibir", Value = "0" });
             ViewBag.AbaLoc = new SelectList(abaLoc, "Value", "Text");
 
-            // Indicadores
+            // Mensagem
+            if (Session["MensPaciente"] != null)
+            {
+                if ((Int32)Session["MensPaciente"] == 1)
+                {
+                    ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0016", CultureInfo.CurrentCulture));
+                }
+                if ((Int32)Session["MensPaciente"] == 2)
+                {
+                    ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0016", CultureInfo.CurrentCulture));
+                }
+                if ((Int32)Session["MensPaciente"] == 61)
+                {
+                    TempData["MensagemAcerto"] = (String)Session["MsgCRUD"];
+                    TempData["TemMensagem"] = 1;
+                }
+            }
 
             // Grava Acesso
             ControleAcessoMetodo grava = new ControleAcessoMetodo(aceApp);
@@ -2417,6 +2434,127 @@ namespace ERP_Condominios_Solution.Controllers
             }
         }
 
+        //[HttpPost]
+        //public ActionResult UploadCertificado(HttpPostedFileBase fileCert)
+        //{
+        //    if ((String)Session["Ativa"] == null)
+        //    {
+        //        return RedirectToAction("Logout", "ControleAcesso");
+        //    }
+        //    USUARIO usuario = (USUARIO)Session["UserCredentials"];
+        //    Int32 idAss = (Int32)Session["IdAssinante"];
 
+        //    if (fileCert != null && fileCert.ContentLength > 0)
+        //    {
+        //        // 1. Verifica a extensão para segurança
+        //        string extensao = Path.GetExtension(fileCert.FileName).ToLower();
+        //        if (extensao != ".pfx")
+        //        {
+        //            Session["MensPaciente"] = 1;
+        //            return RedirectToAction("MontarTelaConfiguracao");
+        //        }
+
+        //        try
+        //        {
+        //            // 2. Define o caminho da pasta (Ex: C:\Certificados ou dentro do App_Data)
+        //            // É recomendável que fique fora da pasta pública do site por segurança
+        //            string pastaCert = @"C:\Certificados\" + idAss.ToString() + @"\";
+
+        //            if (!Directory.Exists(pastaCert))
+        //                Directory.CreateDirectory(pastaCert);
+
+        //            // 3. Nomeia o arquivo usando o ID do usuário da sessão
+        //            Int32 idUsuario = usuario.USUA_CD_ID;
+        //            string nomeArquivo = fileCert.FileName;
+        //            string caminhoFinal = Path.Combine(pastaCert, nomeArquivo);
+
+        //            if (System.IO.File.Exists(caminhoFinal))
+        //            {
+        //                Session["MensPaciente"] = 2; 
+        //                return RedirectToAction("MontarTelaConfiguracao");
+        //            }
+
+        //            // 4. Salva o arquivo no disco do servidor
+        //            fileCert.SaveAs(caminhoFinal);
+
+        //            // Encerra
+        //            Session["MsgCRUD"] = "O certificado " + nomeArquivo + " foi incluido com sucesso";
+        //            Session["MensPaciente"] = 61;
+        //            return RedirectToAction("MontarTelaConfiguracao");
+        //        }
+        //        catch (Exception ex)
+        //        {
+        //            ViewBag.Message = ex.Message;
+        //            Session["TipoVolta"] = 2;
+        //            Session["VoltaExcecao"] = "Configuracao";
+        //            Session["Excecao"] = ex;
+        //            Session["ExcecaoTipo"] = ex.GetType().ToString();
+        //            GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+        //            Int32 voltaX = grava.GravarLogExcecao(ex, "Configuracao", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+        //            return RedirectToAction("TrataExcecao", "BaseAdmin");
+        //        }
+        //    }
+        //    return RedirectToAction("MontarTelaConfiguracao");
+
+        //}
+
+        [HttpPost]
+        public JsonResult UploadCertificado(HttpPostedFileBase fileCert)
+        {
+            try
+            {
+                if (fileCert == null || fileCert.ContentLength == 0)
+                    return Json(new { success = false, message = "Por favor, selecione um arquivo." });
+
+                Int32 idAss = (Int32)Session["IdAssinante"];
+
+                // 1. Validação de Extensão
+                string extensao = Path.GetExtension(fileCert.FileName).ToLower();
+                if (extensao != ".pfx")
+                    return Json(new { success = false, message = "Apenas arquivos .pfx são permitidos." });
+
+                // 2. Mapeamento do caminho físico (~/Certificados/ID_ASSINANTE/)
+                string caminhoBase = Server.MapPath("~/Certificados/");
+                string pastaCert = Path.Combine(caminhoBase, idAss.ToString());
+
+                if (!Directory.Exists(pastaCert))
+                {
+                    Directory.CreateDirectory(pastaCert);
+                }
+
+                // 3. Nome do arquivo original
+                string nomeArquivo = Path.GetFileName(fileCert.FileName);
+                string caminhoFinal = Path.Combine(pastaCert, nomeArquivo);
+
+                // 4. Gravação física (Substitui se já existir ou valida como preferir)
+                // Se quiser sobrescrever sempre para atualizar o cert, remova o IF abaixo
+                if (System.IO.File.Exists(caminhoFinal))
+                {
+                    return Json(new { success = false, message = "Este certificado já foi carregado anteriormente." });
+                }
+
+                fileCert.SaveAs(caminhoFinal);
+
+                // 5. Atualiza apenas o NOME do arquivo na tabela de configuração
+                CONFIGURACAO conf = CarregaConfiguracaoGeral();
+                var confUpdate = baseApp.GetItemById(conf.CONF_CD_ID);              
+                
+                confUpdate.CONF_NM_LOCAL_CERTIFICADO = nomeArquivo;
+
+                // A senha permanece a que já estava no banco ou fica vazia para preenchimento posterior
+                baseApp.ValidateEdit(confUpdate);
+
+                return Json(new
+                {
+                    success = true,
+                    fileName = nomeArquivo,
+                    message = "Certificado carregado com sucesso!"
+                });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = "Erro ao processar: " + ex.Message });
+            }
+        }
     }
 }

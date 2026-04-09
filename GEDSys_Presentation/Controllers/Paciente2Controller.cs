@@ -14965,7 +14965,8 @@ namespace GEDSys_Presentation.Controllers
 
             // Incluir PDF como anexo
             List<AttachmentModel> models = new List<AttachmentModel>();
-            String caminho = "/Imagens/" + idAss.ToString() + "/Pacientes/" + paciente.PACI__CD_ID.ToString() + "/Solicitacao/";
+            //String caminho = "/Imagens/" + idAss.ToString() + "/Pacientes/" + paciente.PACI__CD_ID.ToString() + "/Atestado/";
+            String caminho = "/Temp/";
             String fileNamePDF = "Solicitacao_" + paciente.PACI_NM_NOME + "_" + solicitacao.PASO_GU_GUID + ".pdf";
             String path = Path.Combine(Server.MapPath(caminho), fileNamePDF);
 

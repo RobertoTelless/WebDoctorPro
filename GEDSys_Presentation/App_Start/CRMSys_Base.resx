@@ -2271,4 +2271,10 @@
   <data name="M0739" xml:space="preserve">
     <value>Vacina já cadastrada nesta data para este paciente</value>
   </data>
+  <data name="M0740" xml:space="preserve">
+    <value>Nenhum certificado digital informado</value>
+  </data>
+  <data name="M0741" xml:space="preserve">
+    <value>Certificado digital já incluido</value>
+  </data>
 </root>
