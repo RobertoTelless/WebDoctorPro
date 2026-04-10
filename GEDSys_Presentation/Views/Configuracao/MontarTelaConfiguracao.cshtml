@@ -26,14 +26,16 @@
             <details class="ajuda-contextual">
                 <summary><i class="fa fa-info-circle text-info"></i> Resumo das funcionalidades desta página</summary>
                 <div class="well well-sm">
-                    <p>Essa é a página da central de Atestados do <b>WebDoctorPro</b>. Nela você poderá:</p>
+                    <p>Essa é a página de Configuração do <b>WebDoctorPro</b>. Nela você poderá:</p>
                     <ol>
-                        <li>Ver atestados emitidos para todos os pacientes.</li>
-                        <li>Acessar a página de emissão de atestados.</li>
-                        <li>Acessar a página de alteração de um atestado.</li>
-                        <li>Acessar a página de envio de atestados por e-mail para um paciente.</li>
-                        <li>Excluir atestados   </li>
-                        <li>Impressão do atestado em formato PDF.</li>
+                        <li>Configurar a aparencia e comportamento do WebDoctorPro.</li>
+                        <li>Configurar o comportamento da validação de senha.</li>
+                        <li>Configurar a aparencia e comportamento do cadastro de pacientes.</li>
+                        <li>Configurar a aparencia e comportamento da central de consultas.</li>
+                        <li>Configurar a aparencia e comportamento das anamneses </li>
+                        <li>Configurar a assinatura eletronica. Carregar o certificado digital</li>
+                        <li>Configurar o envio automatico de mensagens.</li>
+                        <li>Configurar as automações do WebDoctorPro.</li>
                     </ol>
                 </div>
             </details>
@@ -73,7 +75,22 @@
                                             <div class="form-group">
                                                 <br />
                                                 @Html.ButtonActionSubmit(text: "Confirma Alteração das Configurações Gerais", htmlAttributes: new { id = "basictoast" })
-                                                @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaPaciente", controller: "Paciente")
+                                                @if ((Int32)Session["VoltaCertificado"] == 1)
+                                                {
+                                                    @Html.ButtonLinkIndex(text: "Voltar", action: "IncluirAtestado", controller: "Paciente")
+                                                }
+                                                else if ((Int32)Session["VoltaCertificado"] == 2)
+                                                {
+                                                    @Html.ButtonLinkIndex(text: "Voltar", action: "IncluirSolicitacao", controller: "Paciente")
+                                                }
+                                                else if ((Int32)Session["VoltaCertificado"] == 3)
+                                                {
+                                                    @Html.ButtonLinkIndex(text: "Voltar", action: "IncluirPrescricaoNova", controller: "Paciente")
+                                                }
+                                                else
+                                                {
+                                                    @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaPaciente", controller: "Paciente")
+                                                }
                                                 <a href="@Url.Action((String)Session["AjudaNivel"])"  class="btn btn-sm btn-danger" target="_blank">Ajuda</a>                
                                             </div>
 

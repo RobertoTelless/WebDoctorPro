@@ -5451,22 +5451,8 @@ namespace GEDSys_Presentation.Controllers
                 Font meuFontBold = FontFactory.GetFont("Arial", 8, iTextSharp.text.Font.BOLD, BaseColor.BLACK);
 
                 // Caminho de saida
-                String caminhoVirtual = "/Imagens/" + idAss.ToString() + "/Locacao/" + locacao.LOCA_CD_ID.ToString() + "/Contrato/";
-                String pastaFisica = Server.MapPath(caminhoVirtual);
-                String filePath = Path.Combine(pastaFisica, nomeRel);
-                Directory.CreateDirectory(pastaFisica);
-                Boolean existe = System.IO.File.Exists(filePath);
-                if (existe)
-                {
-                    try
-                    {
-                        System.IO.File.Delete(filePath);
-                    }
-                    catch (Exception)
-                    {
-                        existe = false;
-                    }
-                }
+                String caminho = "/Temp/";
+                String filePath = Path.Combine(Server.MapPath(caminho), nomeRel);
 
                 // Recupera texto legal
                 CONTRATO_LOCACAO template = baseApp.GetContratoById(locacao.COLO_CD_ID.Value);
@@ -7277,23 +7263,23 @@ namespace GEDSys_Presentation.Controllers
                 Font meuFont5Bold = FontFactory.GetFont("Arial", 16, iTextSharp.text.Font.BOLD, BaseColor.BLACK);
                 Font meuFontBold = FontFactory.GetFont("Arial", 8, iTextSharp.text.Font.BOLD, BaseColor.BLACK);
 
-                // Caminho de saida
-                String caminhoVirtual = "/Imagens/" + idAss.ToString() + "/Locacao/" + locacao.LOCA_CD_ID.ToString() + "/Contrato/";
-                String pastaFisica = Server.MapPath(caminhoVirtual);
-                String filePath = Path.Combine(pastaFisica, nomeRel);
-                Directory.CreateDirectory(pastaFisica);
-                Boolean existe = System.IO.File.Exists(filePath);
-                if (existe)
-                {
-                    try
-                    {
-                        System.IO.File.Delete(filePath);
-                    }
-                    catch (Exception)
-                    {
-                        existe = false;
-                    }
-                }
+                //// Caminho de saida
+                //String caminhoVirtual = "/Imagens/" + idAss.ToString() + "/Locacao/" + locacao.LOCA_CD_ID.ToString() + "/Contrato/";
+                //String pastaFisica = Server.MapPath(caminhoVirtual);
+                //String filePath = Path.Combine(pastaFisica, nomeRel);
+                //Directory.CreateDirectory(pastaFisica);
+                //Boolean existe = System.IO.File.Exists(filePath);
+                //if (existe)
+                //{
+                //    try
+                //    {
+                //        System.IO.File.Delete(filePath);
+                //    }
+                //    catch (Exception)
+                //    {
+                //        existe = false;
+                //    }
+                //}
 
                 // Recupera texto legal
                 CONTRATO_LOCACAO template = baseApp.GetContratoById(locacao.COLO_CD_ID.Value);

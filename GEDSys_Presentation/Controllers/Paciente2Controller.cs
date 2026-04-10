@@ -12792,6 +12792,21 @@ namespace GEDSys_Presentation.Controllers
                 atestado1.PASO_IN_ENVIADO = 0;
                 Int32 voltaA = baseApp.ValidateEditSolicitacao(atestado1);
 
+                // Verifica assinatura digital
+                Int32 certificado = 1;
+                if (conf.CONF_NM_LOCAL_CERTIFICADO == null || conf.CONF_NM_SENHA_CERTIFICADO == null)
+                {
+                    certificado = 0;
+                }
+                String caminhoBase = Server.MapPath("~/Certificados/");
+                String pastaCert = Path.Combine(caminhoBase, idAss.ToString());
+                String nomeArquivo = conf.CONF_NM_LOCAL_CERTIFICADO;
+                String caminhoFinal = Path.Combine(pastaCert, nomeArquivo);
+                if (!System.IO.File.Exists(caminhoFinal))
+                {
+                    certificado = 0;
+                }
+
                 // Prepara fontes
                 Font meuFont = FontFactory.GetFont("Arial", 8, iTextSharp.text.Font.NORMAL, BaseColor.BLACK);
                 Font meuFont1 = FontFactory.GetFont("Arial", 9, iTextSharp.text.Font.NORMAL, BaseColor.BLACK);
@@ -13176,49 +13191,60 @@ namespace GEDSys_Presentation.Controllers
                 byte[] pdfFinal;
                 if (solic.PASO_IN_ASSINADO_DIGITAL == 1) // Se for para assinar com PFX
                 {
-                    // Caminho do certificado e senha (ajuste conforme seu armazenamento)
-                    //string caminhoPFX = Server.MapPath(conf.CONF_NM_LOCAL_CERTIFICADO);
-                    string caminhoPFX = conf.CONF_NM_LOCAL_CERTIFICADO;
-                    string senhaPFX = conf.CONF_NM_SENHA_CERTIFICADO;
-
-                    using (MemoryStream msOutput = new MemoryStream())
+                    if (certificado == 1)
                     {
-                        // Carrega o certificado
-                        X509Certificate2 cert = new X509Certificate2(caminhoPFX, senhaPFX, X509KeyStorageFlags.Exportable);
+                        // Monta o caminho relativo: ~/Certificados/ID/NomeArquivo.pfx
+                        string caminhoRelativo = "~/Certificados/" + idAss.ToString() + "/" + conf.CONF_NM_LOCAL_CERTIFICADO;
 
-                        // Extrai a chave privada e a cadeia de certificados para o iText
-                        Org.BouncyCastle.X509.X509Certificate bcCert = Org.BouncyCastle.Security.DotNetUtilities.FromX509Certificate(cert);
-                        Org.BouncyCastle.Crypto.AsymmetricKeyParameter key = Org.BouncyCastle.Security.DotNetUtilities.GetKeyPair(cert.PrivateKey).Private;
+                        // Converte para o caminho físico real do servidor
+                        string caminhoPFX = Server.MapPath(caminhoRelativo);
+                        string senhaPFX = conf.CONF_NM_SENHA_CERTIFICADO;
 
-                        Org.BouncyCastle.X509.X509Certificate[] chain = new Org.BouncyCastle.X509.X509Certificate[] { bcCert };
+                        using (MemoryStream msOutput = new MemoryStream())
+                        {
+                            // Validação de segurança: verifica se o arquivo realmente existe fisicamente
+                            if (!System.IO.File.Exists(caminhoPFX))
+                            {
+                                throw new Exception("Arquivo de certificado não encontrado em: " + caminhoPFX);
+                            }
 
-                        // Cria o Stamper para assinar
-                        PdfReader reader = new PdfReader(msInput.ToArray());
-                        PdfStamper stamper = PdfStamper.CreateSignature(reader, msOutput, '\0');
+                            // Carrega o certificado (Adicionado MachineKeySet para evitar erros no IIS)
+                            X509Certificate2 cert = new X509Certificate2(caminhoPFX, senhaPFX, X509KeyStorageFlags.Exportable | X509KeyStorageFlags.MachineKeySet);
 
-                        // Configura a aparência da assinatura (onde ela aparece no PDF)
-                        PdfSignatureAppearance appearance = stamper.SignatureAppearance;
-                        appearance.Reason = "Assinatura de Solicitação de Exame";
-                        appearance.Location = paciente.PACI_NM_CIDADE + ", " + paciente.UF.UF_SG_SIGLA;
+                            // Extrai a chave privada e a cadeia de certificados para o iText
+                            Org.BouncyCastle.X509.X509Certificate bcCert = Org.BouncyCastle.Security.DotNetUtilities.FromX509Certificate(cert);
+                            Org.BouncyCastle.Crypto.AsymmetricKeyParameter key = Org.BouncyCastle.Security.DotNetUtilities.GetKeyPair(cert.PrivateKey).Private;
+                            Org.BouncyCastle.X509.X509Certificate[] chain = new Org.BouncyCastle.X509.X509Certificate[] { bcCert };
 
-                        // --- AJUSTE DE POSIÇÃO PARA NÃO SOBREPOR O FOOTER ---
-                        // Coordenadas: x inicial, y inicial, x final, y final
-                        // Aumentamos o 'y' inicial para 160 (já que o footer ocupa até 150)
-                        // O retângulo terá 300 de largura (de 100 a 400) e 60 de altura (de 160 a 220)
-                        float xPos = 60;   // Margem esquerda
-                        float yPos = 160;  // Acima da margem de 150 do footer
-                        float largura = 300;
-                        float altura = 60;
+                            // Cria o Stamper para assinar
+                            PdfReader reader = new PdfReader(msInput.ToArray());
+                            PdfStamper stamper = PdfStamper.CreateSignature(reader, msOutput, '\0');
 
-                        Rectangle posicaoAssinatura = new Rectangle(xPos, yPos, xPos + largura, yPos + altura);
-                        //appearance.SetVisibleSignature(posicaoAssinatura, reader.NumberOfPages, "Signature");
-                        // ----------------------------------------------------
+                            // Configura a aparência da assinatura
+                            PdfSignatureAppearance appearance = stamper.SignatureAppearance;
+                            appearance.Reason = "Assinatura de Solicitação";
+                            appearance.Location = paciente.PACI_NM_CIDADE + ", " + paciente.UF.UF_SG_SIGLA;
 
-                        // Aplica a assinatura usando o padrão de criptografia padrão
-                        IExternalSignature es = new PrivateKeySignature(key, "SHA-256");
-                        MakeSignature.SignDetached(appearance, es, chain, null, null, null, 0, CryptoStandard.CMS);
+                            // --- AJUSTE DE POSIÇÃO ---
+                            float xPos = 60;
+                            float yPos = 160;
+                            float largura = 300;
+                            float altura = 60;
 
-                        pdfFinal = msOutput.ToArray();
+                            Rectangle posicaoAssinatura = new Rectangle(xPos, yPos, xPos + largura, yPos + altura);
+                            // Descomente a linha abaixo para exibir o carimbo visual no PDF
+                            // appearance.SetVisibleSignature(posicaoAssinatura, reader.NumberOfPages, "Signature");
+
+                            // Aplica a assinatura digital SHA-256
+                            IExternalSignature es = new PrivateKeySignature(key, "SHA-256");
+                            MakeSignature.SignDetached(appearance, es, chain, null, null, null, 0, CryptoStandard.CMS);
+
+                            pdfFinal = msOutput.ToArray();
+                        }
+                    }
+                    else
+                    {
+                        pdfFinal = msInput.ToArray();
                     }
                 }
                 else
@@ -13286,6 +13312,21 @@ namespace GEDSys_Presentation.Controllers
                 atestado1.PASO_DT_GERACAO_PDF = DateTime.Today.Date;
                 atestado1.PASO_IN_ENVIADO = 0;
                 Int32 voltaA = baseApp.ValidateEditSolicitacao(atestado1);
+
+                // Verifica assinatura digital
+                Int32 certificado = 1;
+                if (conf.CONF_NM_LOCAL_CERTIFICADO == null || conf.CONF_NM_SENHA_CERTIFICADO == null)
+                {
+                    certificado = 0;
+                }
+                String caminhoBase = Server.MapPath("~/Certificados/");
+                String pastaCert = Path.Combine(caminhoBase, idAss.ToString());
+                String nomeArquivo = conf.CONF_NM_LOCAL_CERTIFICADO;
+                String caminhoFinal = Path.Combine(pastaCert, nomeArquivo);
+                if (!System.IO.File.Exists(caminhoFinal))
+                {
+                    certificado = 0;
+                }
 
                 // Prepara fontes
                 Font meuFont = FontFactory.GetFont("Arial", 8, iTextSharp.text.Font.NORMAL, BaseColor.BLACK);
@@ -13676,44 +13717,54 @@ namespace GEDSys_Presentation.Controllers
                     // --- LÓGICA DE ASSINATURA DIGITAL ---
                     if (solic.PASO_IN_ASSINADO_DIGITAL == 1)
                     {
-                        //string caminhoPFX = Server.MapPath(conf.CONF_NM_LOCAL_CERTIFICADO);
-                        string caminhoPFX = conf.CONF_NM_LOCAL_CERTIFICADO;
-                        string senhaPFX = conf.CONF_NM_SENHA_CERTIFICADO;
-
-                        using (MemoryStream msOutput = new MemoryStream())
+                        if (certificado == 1)
                         {
-                            // Carrega Certificado usando System.Security.Cryptography.X509Certificates
-                            var cert = new System.Security.Cryptography.X509Certificates.X509Certificate2(caminhoPFX, senhaPFX, System.Security.Cryptography.X509Certificates.X509KeyStorageFlags.Exportable);
+                            // Monta o caminho relativo: ~/Certificados/ID/NomeArquivo.pfx
+                            string caminhoRelativo = "~/Certificados/" + idAss.ToString() + "/" + conf.CONF_NM_LOCAL_CERTIFICADO;
 
-                            // Converte para BouncyCastle (necessário para iTextSharp)
-                            var bcCert = Org.BouncyCastle.Security.DotNetUtilities.FromX509Certificate(cert);
-                            var key = Org.BouncyCastle.Security.DotNetUtilities.GetKeyPair(cert.PrivateKey).Private;
-                            var chain = new Org.BouncyCastle.X509.X509Certificate[] { bcCert };
+                            // Converte para o caminho físico real do servidor
+                            string caminhoPFX = Server.MapPath(caminhoRelativo);
+                            string senhaPFX = conf.CONF_NM_SENHA_CERTIFICADO;
 
-                            PdfReader reader = new PdfReader(msInput.ToArray());
-                            PdfStamper stamper = PdfStamper.CreateSignature(reader, msOutput, '\0');
+                            using (MemoryStream msOutput = new MemoryStream())
+                            {
+                                // Carrega Certificado usando System.Security.Cryptography.X509Certificates
+                                var cert = new System.Security.Cryptography.X509Certificates.X509Certificate2(caminhoPFX, senhaPFX, System.Security.Cryptography.X509Certificates.X509KeyStorageFlags.Exportable);
 
-                            PdfSignatureAppearance appearance = stamper.SignatureAppearance;
-                            appearance.Reason = "Assinatura de Atestado Médico";
-                            appearance.Location = paciente.PACI_NM_CIDADE + ", " + paciente.UF.UF_SG_SIGLA;
+                                // Converte para BouncyCastle (necessário para iTextSharp)
+                                var bcCert = Org.BouncyCastle.Security.DotNetUtilities.FromX509Certificate(cert);
+                                var key = Org.BouncyCastle.Security.DotNetUtilities.GetKeyPair(cert.PrivateKey).Private;
+                                var chain = new Org.BouncyCastle.X509.X509Certificate[] { bcCert };
 
-                            // --- AJUSTE DE POSIÇÃO PARA NÃO SOBREPOR O FOOTER ---
-                            // Coordenadas: x inicial, y inicial, x final, y final
-                            // Aumentamos o 'y' inicial para 160 (já que o footer ocupa até 150)
-                            // O retângulo terá 300 de largura (de 100 a 400) e 60 de altura (de 160 a 220)
-                            float xPos = 60;   // Margem esquerda
-                            float yPos = 160;  // Acima da margem de 150 do footer
-                            float largura = 300;
-                            float altura = 60;
+                                PdfReader reader = new PdfReader(msInput.ToArray());
+                                PdfStamper stamper = PdfStamper.CreateSignature(reader, msOutput, '\0');
 
-                            Rectangle posicaoAssinatura = new Rectangle(xPos, yPos, xPos + largura, yPos + altura);
-                            //appearance.SetVisibleSignature(posicaoAssinatura, reader.NumberOfPages, "Signature");
-                            // ----------------------------------------------------
+                                PdfSignatureAppearance appearance = stamper.SignatureAppearance;
+                                appearance.Reason = "Assinatura de Prescrição";
+                                appearance.Location = paciente.PACI_NM_CIDADE + ", " + paciente.UF.UF_SG_SIGLA;
 
-                            IExternalSignature es = new PrivateKeySignature(key, "SHA-256");
-                            MakeSignature.SignDetached(appearance, es, chain, null, null, null, 0, CryptoStandard.CMS);
+                                // --- AJUSTE DE POSIÇÃO PARA NÃO SOBREPOR O FOOTER ---
+                                // Coordenadas: x inicial, y inicial, x final, y final
+                                // Aumentamos o 'y' inicial para 160 (já que o footer ocupa até 150)
+                                // O retângulo terá 300 de largura (de 100 a 400) e 60 de altura (de 160 a 220)
+                                float xPos = 60;   // Margem esquerda
+                                float yPos = 160;  // Acima da margem de 150 do footer
+                                float largura = 300;
+                                float altura = 60;
 
-                            pdfFinal = msOutput.ToArray();
+                                Rectangle posicaoAssinatura = new Rectangle(xPos, yPos, xPos + largura, yPos + altura);
+                                //appearance.SetVisibleSignature(posicaoAssinatura, reader.NumberOfPages, "Signature");
+                                // ----------------------------------------------------
+
+                                IExternalSignature es = new PrivateKeySignature(key, "SHA-256");
+                                MakeSignature.SignDetached(appearance, es, chain, null, null, null, 0, CryptoStandard.CMS);
+
+                                pdfFinal = msOutput.ToArray();
+                            }
+                        }
+                        else
+                        {
+                            pdfFinal = msInput.ToArray();
                         }
                     }
                     else

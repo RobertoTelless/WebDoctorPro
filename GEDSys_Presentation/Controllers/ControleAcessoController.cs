@@ -110,6 +110,8 @@ namespace ERP_Condominios_Solution.Controllers
             Session["AreaPacientes"] = null;
             Session["ListaAreaPaciente"] = null;
             Session["IncluirConsultaArea"] = 1;
+            Session["TemCertificado"] = 0;
+            Session["VoltaCertificado"] = 1;
 
             // Permissões
             Session["PermProntuario"] = 0;

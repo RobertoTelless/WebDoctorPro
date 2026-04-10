@@ -82,11 +82,6 @@
                                 // Define o ícone baseado no tipo
                                 string iconeModal = item.MEFA_IN_TIPO == 2 ? "fa-exclamation-triangle" : "fa-info-circle";
     
-                                @*<a href="javascript:void(0);" class="marquee-msg @corItem" data-id="@item.MEFA_CD_ID" 
-                                   onclick="abrirModalAviso('@item.MEFA_LK_LINK', '@Html.Raw(HttpUtility.JavaScriptStringEncode(item.MEFA_TX_TEXTO))', '@iconeModal')">
-                                    <i class="fa @(item.MEFA_IN_TIPO == 2 ? "fa-exclamation-triangle" : "fa-info-circle")"></i>
-                                    @item.MEFA_LK_LINK
-                                </a>*@
                                 <a href="javascript:void(0);" class="marquee-msg @corItem" data-id="@item.MEFA_CD_ID" data-toggle="popover" data-trigger="hover" data-placement="left" data-content="Clique para ver detalhes deste aviso"  
                                    onclick="abrirModalAviso('@item.MEFA_CD_ID', '@item.MEFA_LK_LINK', '@Html.Raw(HttpUtility.JavaScriptStringEncode(item.MEFA_TX_TEXTO))', '@iconeModal')">
                                     <i class="fa @(item.MEFA_IN_TIPO == 2 ? "fa-exclamation-triangle" : "fa-info-circle")"></i>
