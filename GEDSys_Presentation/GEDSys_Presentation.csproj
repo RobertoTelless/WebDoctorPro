@@ -4088,6 +4088,7 @@
     <Content Include="Imagens\1\Pacientes\1084\Fichas\260327 Exactech March Update Letter 2026-03-27 1440.pdf" />
     <Content Include="Imagens\1\Pacientes\1084\Fichas\Sind_prof_RJ_CYDIA.pdf" />
     <Content Include="Certificados\1\26195962.pfx" />
+    <Content Include="BaseAdmin\RTi\Versao_2_0_0_0 .pdf" />
     <None Include="Properties\PublishProfiles\eprontuario - FTP.pubxml" />
     <None Include="Properties\PublishProfiles\eprontuario - FTP1.pubxml" />
     <None Include="Properties\PublishProfiles\eprontuario - Web Deploy.pubxml" />

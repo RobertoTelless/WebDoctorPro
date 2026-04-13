@@ -12987,54 +12987,87 @@ namespace GEDSys_Presentation.Controllers
                     }
                 }
 
-                cell = new PdfPCell(new Paragraph(endereco, meuFont));
-                cell.Border = 0;
-                cell.Colspan = 4;
-                cell.VerticalAlignment = Element.ALIGN_MIDDLE;
-                cell.HorizontalAlignment = Element.ALIGN_LEFT;
-                table1.AddCell(cell);
-                cell = new PdfPCell(new Paragraph(enderecoCont, meuFont));
-                cell.Border = 0;
-                cell.Colspan = 4;
-                cell.VerticalAlignment = Element.ALIGN_MIDDLE;
-                cell.HorizontalAlignment = Element.ALIGN_LEFT;
-                table1.AddCell(cell);
+                if (certificado == 1)
+                {
+                    cell = new PdfPCell(new Paragraph(endereco, meuFont));
+                    cell.Border = 0;
+                    cell.Colspan = 4;
+                    cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                    cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                    table1.AddCell(cell);
+                    cell = new PdfPCell(new Paragraph(enderecoCont, meuFont));
+                    cell.Border = 0;
+                    cell.Colspan = 4;
+                    cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                    cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                    table1.AddCell(cell);
 
-                String fraseAssina = "Documento assinado digitalmente em " + solic.PASO_DT_EMISSAO_COMPLETA.Value.ToShortDateString() + " " + solic.PASO_DT_EMISSAO_COMPLETA.Value.ToShortTimeString() + " conforme MP 2.200-2/01";
-                cell = new PdfPCell(new Paragraph(fraseAssina, meuFontBold));
-                cell.Border = 0;
-                cell.Colspan = 4;
-                cell.VerticalAlignment = Element.ALIGN_MIDDLE;
-                cell.HorizontalAlignment = Element.ALIGN_LEFT;
-                table1.AddCell(cell);
+                    String fraseAssina = "Documento assinado digitalmente em " + solic.PASO_DT_EMISSAO_COMPLETA.Value.ToShortDateString() + " " + solic.PASO_DT_EMISSAO_COMPLETA.Value.ToShortTimeString() + " conforme MP 2.200-2/01";
+                    cell = new PdfPCell(new Paragraph(fraseAssina, meuFontBold));
+                    cell.Border = 0;
+                    cell.Colspan = 4;
+                    cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                    cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                    table1.AddCell(cell);
 
-                cell = new PdfPCell(new Paragraph("Para validar este documento use o código QR ao lado ou acesse " + conf.CONF_LK_LINK_VALIDACAO + " e use o token de acesso " + token, meuFont));
-                cell.Border = 0;
-                cell.Colspan = 4;
-                cell.VerticalAlignment = Element.ALIGN_MIDDLE;
-                cell.HorizontalAlignment = Element.ALIGN_LEFT;
-                table1.AddCell(cell);
+                    cell = new PdfPCell(new Paragraph("Para validar este documento use o código QR ao lado ou acesse " + conf.CONF_LK_LINK_VALIDACAO + " e use o token de acesso " + token, meuFont));
+                    cell.Border = 0;
+                    cell.Colspan = 4;
+                    cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                    cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                    table1.AddCell(cell);
 
-                cell = new PdfPCell(new Paragraph("  ", meuFont));
-                cell.Border = 0;
-                cell.Colspan = 4;
-                cell.VerticalAlignment = Element.ALIGN_MIDDLE;
-                cell.HorizontalAlignment = Element.ALIGN_LEFT;
-                table1.AddCell(cell);
+                    cell = new PdfPCell(new Paragraph("  ", meuFont));
+                    cell.Border = 0;
+                    cell.Colspan = 4;
+                    cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                    cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                    table1.AddCell(cell);
 
-                innerTableCell = new PdfPCell(table1);
-                innerTableCell.Border = Rectangle.NO_BORDER;
-                innerTableCell.Colspan = 1;
-                footerTable.AddCell(innerTableCell);
+                    innerTableCell = new PdfPCell(table1);
+                    innerTableCell.Border = Rectangle.NO_BORDER;
+                    innerTableCell.Colspan = 1;
+                    footerTable.AddCell(innerTableCell);
 
-                cell = new PdfPCell();
-                cell.Border = 0;
-                cell.Colspan = 1;
-                image = null;
-                image = Image.GetInstance(Server.MapPath("~/Imagens/Base/Selo_Digital.png"));
-                image.ScaleAbsolute(100, 100);
-                cell.AddElement(image);
-                footerTable.AddCell(cell);
+                    cell = new PdfPCell();
+                    cell.Border = 0;
+                    cell.Colspan = 1;
+                    image = null;
+                    image = Image.GetInstance(Server.MapPath("~/Imagens/Base/Selo_Digital.png"));
+                    image.ScaleAbsolute(100, 100);
+                    cell.AddElement(image);
+                    footerTable.AddCell(cell);
+                }
+                else
+                {
+                    cell = new PdfPCell(new Paragraph("Token para validação: " + token, meuFont));
+                    cell.Border = 0;
+                    cell.Colspan = 4;
+                    cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                    cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                    table1.AddCell(cell);
+                    cell = new PdfPCell(new Paragraph("Documento não assinado digitalmente", meuFont));
+                    cell.Border = 0;
+                    cell.Colspan = 4;
+                    cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                    cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                    table1.AddCell(cell);
+
+                    cell = new PdfPCell(new Paragraph("  ", meuFont));
+                    cell.Border = 0;
+                    cell.Colspan = 4;
+                    cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                    cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                    table1.AddCell(cell);
+
+                    innerTableCell = new PdfPCell(table1);
+                    innerTableCell.Border = Rectangle.NO_BORDER;
+                    innerTableCell.Colspan = 4;
+                    footerTable.AddCell(innerTableCell);
+                    String msg = "(*) Para validar este documento use o código QR acima ou acesse " + conf.CONF_LK_LINK_VALIDACAO + " usando o token de acesso " + token;
+                    cell.AddElement(new Chunk(msg, FontFactory.GetFont("Arial", 8, Font.NORMAL, BaseColor.BLACK)));
+                    footerTable.AddCell(cell);
+                }
 
                 // Cria documento
                 Document pdfDoc = new Document(PageSize.A4, 10, 10, 70, 150);
@@ -13527,41 +13560,74 @@ namespace GEDSys_Presentation.Controllers
                     cell.HorizontalAlignment = Element.ALIGN_LEFT;
                     table1.AddCell(cell);
 
-                    String fraseAssina = "Documento assinado digitalmente em " + solic.PASO_DT_EMISSAO_COMPLETA.Value.ToShortDateString() + " " + solic.PASO_DT_EMISSAO_COMPLETA.Value.ToShortTimeString() + " conforme MP 2.200-2/01";
-                    cell = new PdfPCell(new Paragraph(fraseAssina, meuFontBold));
-                    cell.Border = 0;
-                    cell.Colspan = 4;
-                    cell.VerticalAlignment = Element.ALIGN_MIDDLE;
-                    cell.HorizontalAlignment = Element.ALIGN_LEFT;
-                    table1.AddCell(cell);
+                    if (certificado == 1)
+                    {
+                        String fraseAssina = "Documento assinado digitalmente em " + solic.PASO_DT_EMISSAO_COMPLETA.Value.ToShortDateString() + " " + solic.PASO_DT_EMISSAO_COMPLETA.Value.ToShortTimeString() + " conforme MP 2.200-2/01";
+                        cell = new PdfPCell(new Paragraph(fraseAssina, meuFontBold));
+                        cell.Border = 0;
+                        cell.Colspan = 4;
+                        cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                        cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                        table1.AddCell(cell);
 
-                    cell = new PdfPCell(new Paragraph("Para validar este documento use o código QR ao lado ou acesse " + conf.CONF_LK_LINK_VALIDACAO + " e use o token de acesso " + token, meuFont));
-                    cell.Border = 0;
-                    cell.Colspan = 4;
-                    cell.VerticalAlignment = Element.ALIGN_MIDDLE;
-                    cell.HorizontalAlignment = Element.ALIGN_LEFT;
-                    table1.AddCell(cell);
+                        cell = new PdfPCell(new Paragraph("Para validar este documento use o código QR ao lado ou acesse " + conf.CONF_LK_LINK_VALIDACAO + " e use o token de acesso " + token, meuFont));
+                        cell.Border = 0;
+                        cell.Colspan = 4;
+                        cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                        cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                        table1.AddCell(cell);
 
-                    cell = new PdfPCell(new Paragraph("  ", meuFont));
-                    cell.Border = 0;
-                    cell.Colspan = 4;
-                    cell.VerticalAlignment = Element.ALIGN_MIDDLE;
-                    cell.HorizontalAlignment = Element.ALIGN_LEFT;
-                    table1.AddCell(cell);
+                        cell = new PdfPCell(new Paragraph("  ", meuFont));
+                        cell.Border = 0;
+                        cell.Colspan = 4;
+                        cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                        cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                        table1.AddCell(cell);
 
-                    innerTableCell = new PdfPCell(table1);
-                    innerTableCell.Border = Rectangle.NO_BORDER;
-                    innerTableCell.Colspan = 1;
-                    footerTable.AddCell(innerTableCell);
+                        innerTableCell = new PdfPCell(table1);
+                        innerTableCell.Border = Rectangle.NO_BORDER;
+                        innerTableCell.Colspan = 1;
+                        footerTable.AddCell(innerTableCell);
 
-                    cell = new PdfPCell();
-                    cell.Border = 0;
-                    cell.Colspan = 1;
-                    image = null;
-                    image = Image.GetInstance(Server.MapPath("~/Imagens/Base/Selo_Digital.png"));
-                    image.ScaleAbsolute(100, 100);
-                    cell.AddElement(image);
-                    footerTable.AddCell(cell);
+                        cell = new PdfPCell();
+                        cell.Border = 0;
+                        cell.Colspan = 1;
+                        image = null;
+                        image = Image.GetInstance(Server.MapPath("~/Imagens/Base/Selo_Digital.png"));
+                        image.ScaleAbsolute(100, 100);
+                        cell.AddElement(image);
+                        footerTable.AddCell(cell);
+                    }
+                    else
+                    {
+                        cell = new PdfPCell(new Paragraph("Token para validação: " + token, meuFont));
+                        cell.Border = 0;
+                        cell.Colspan = 4;
+                        cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                        cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                        table1.AddCell(cell);
+                        cell = new PdfPCell(new Paragraph("Documento não assinado digitalmente", meuFont));
+                        cell.Border = 0;
+                        cell.Colspan = 4;
+                        cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                        cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                        table1.AddCell(cell);
+
+                        cell = new PdfPCell(new Paragraph("  ", meuFont));
+                        cell.Border = 0;
+                        cell.Colspan = 4;
+                        cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                        cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                        table1.AddCell(cell);
+
+                        innerTableCell = new PdfPCell(table1);
+                        innerTableCell.Border = Rectangle.NO_BORDER;
+                        innerTableCell.Colspan = 4;
+                        footerTable.AddCell(innerTableCell);
+                        String msg = "(*) Para validar este documento use o código QR acima ou acesse " + conf.CONF_LK_LINK_VALIDACAO + " usando o token de acesso " + token;
+                        cell.AddElement(new Chunk(msg, FontFactory.GetFont("Arial", 8, Font.NORMAL, BaseColor.BLACK)));
+                        footerTable.AddCell(cell);
+                    }
 
                     // Cria documento
                     Document pdfDoc = new Document(PageSize.A4, 10, 10, 70, 150);
@@ -14026,6 +14092,7 @@ namespace GEDSys_Presentation.Controllers
                 cell.VerticalAlignment = Element.ALIGN_MIDDLE;
                 cell.HorizontalAlignment = Element.ALIGN_LEFT;
                 table1.AddCell(cell);
+
                 cell = new PdfPCell(new Paragraph("Token para validação: " + token, meuFont));
                 cell.Border = 0;
                 cell.Colspan = 4;

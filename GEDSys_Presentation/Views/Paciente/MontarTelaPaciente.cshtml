@@ -17,28 +17,36 @@
   }
 </script>
 <!-- Mova este bloco para fora de qualquer div de coluna, se possível coloque no topo ou fim do arquivo -->
-<div class="modal inmodal fade" id="modalAviso" tabindex="-1" role="dialog" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content animated bounceInRight">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span></button>
-                @* Adicionamos o ID 'modalIconeDinamico' *@
-                <i id="modalIconeDinamico" class="fa modal-icon"></i>
-                <h4 class="modal-title" id="modalTitle">Aviso</h4>
-            </div>
-            <div class="modal-body">
-                <div id="modalBodyContent"></div>
-            </div>
-            @*<div class="modal-footer">
-                <button type="button" class="btn btn-white" data-dismiss="modal">Fechar</button>
-            </div>*@
-            <div class="modal-footer">
-                <button type="button" class="btn btn-primary" onclick="confirmarLeitura()">Entendi, não mostrar novamente</button>
-                <button type="button" class="btn btn-white" data-dismiss="modal">Fechar</button>
+    <div class="modal inmodal fade" id="modalAviso" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content animated bounceInRight">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span></button>
+                    @* Adicionamos o ID 'modalIconeDinamico' *@
+                    <i id="modalIconeDinamico" class="fa modal-icon"></i>
+                    <h4 class="modal-title" id="modalTitle">Aviso</h4>
+                </div>
+                <div class="modal-body">
+                    <div id="modalBodyContent"></div>
+                </div>
+                @*<div class="modal-footer">
+                    <button type="button" class="btn btn-white" data-dismiss="modal">Fechar</button>
+                </div>*@
+                @*<div class="modal-footer">
+                    <button type="button" class="btn btn-primary" onclick="confirmarLeitura()">Entendi, não mostrar novamente</button>
+                    <button type="button" class="btn btn-white" data-dismiss="modal">Fechar</button>
+                </div>*@
+                <div class="modal-footer">
+                    @* Novo botão para o PDF *@
+                    <a id="btnVerPdf" href="#" target="_blank" class="btn btn-danger" style="display:none;">
+                        <i class="fa fa-file-pdf-o"></i> Visualizar PDF
+                    </a>
+                    <button type="button" class="btn btn-primary" onclick="confirmarLeitura()">Entendi, não mostrar novamente</button>
+                    <button type="button" class="btn btn-white" data-dismiss="modal">Fechar</button>
+                </div>
             </div>
         </div>
     </div>
-</div>
 
 <div id="content" class="wraper container-fluid">
     <div class="modalContainer">
@@ -82,11 +90,18 @@
                                 // Define o ícone baseado no tipo
                                 string iconeModal = item.MEFA_IN_TIPO == 2 ? "fa-exclamation-triangle" : "fa-info-circle";
     
-                                <a href="javascript:void(0);" class="marquee-msg @corItem" data-id="@item.MEFA_CD_ID" data-toggle="popover" data-trigger="hover" data-placement="left" data-content="Clique para ver detalhes deste aviso"  
+                                @*<a href="javascript:void(0);" class="marquee-msg @corItem" data-id="@item.MEFA_CD_ID" data-toggle="popover" data-trigger="hover" data-placement="left" data-content="Clique para ver detalhes deste aviso"  
                                    onclick="abrirModalAviso('@item.MEFA_CD_ID', '@item.MEFA_LK_LINK', '@Html.Raw(HttpUtility.JavaScriptStringEncode(item.MEFA_TX_TEXTO))', '@iconeModal')">
                                     <i class="fa @(item.MEFA_IN_TIPO == 2 ? "fa-exclamation-triangle" : "fa-info-circle")"></i>
                                     @item.MEFA_LK_LINK
+                                </a>*@
+
+                                <a href="javascript:void(0);" class="marquee-msg @corItem" 
+                                   onclick="abrirModalAviso('@item.MEFA_CD_ID', '@item.MEFA_LK_LINK', '@Html.Raw(HttpUtility.JavaScriptStringEncode(item.MEFA_TX_TEXTO))', '@iconeModal', '@item.MEFA_AQ_ARQUIVO')">
+                                    <i class="fa @(item.MEFA_IN_TIPO == 2 ? "fa-exclamation-triangle" : "fa-info-circle")"></i>
+                                    @item.MEFA_LK_LINK
                                 </a>
+
 
                             }
 
@@ -811,6 +826,11 @@
             from { transform: translateX(0); }
             to { transform: translateX(-50%); }
         }
+
+        #modalBodyContent {
+            white-space: pre-line;
+            line-height: 1.6; /* Melhora a leitura como na imagem */
+        }
     </style>
 
     <style>
@@ -1231,35 +1251,34 @@
             filtrarAvisosLidos();
         });
 
-        // FUNÇÃO UNIFICADA: Trata ID (Storage) e Visual (Icones/Cores)
-        function abrirModalAviso(id, titulo, detalhe, icone) {
-
-            $('#modalAviso .btn-primary').text("Entendi, não mostrar novamente").attr("onclick", "confirmarLeitura()");
-
-            // 1. Armazena o ID para a confirmação posterior
+        function abrirModalAviso(id, titulo, texto, icone, arquivoPdf) {
+            // CORREÇÃO: Atualiza a variável global com o ID do aviso clicado
             idAvisoAtual = id;
 
-            // 2. Define o título e o conteúdo
+            // Preenche título e o conteúdo do texto na modal
             $('#modalTitle').text(titulo);
-            $('#modalBodyContent').html(detalhe);
+            $('#modalBodyContent').html(texto); // Aqui exibe o conteúdo do campo MEFA_TX_TEXTO
+    
+            // Configura o ícone dinâmico
+            $('#modalIconeDinamico').attr('class', 'fa modal-icon ' + icone);
 
-            // 3. Gerencia o Ícone e a Cor dinamicamente
-            var $iconeElemento = $('#modalIconeDinamico');
-        
-            // Limpa classes antigas
-            $iconeElemento.removeClass('fa-info-circle fa-exclamation-triangle text-primary text-warning');
-        
-            // Adiciona o novo ícone
-            $iconeElemento.addClass(icone);
-        
-            // Aplica a cor baseada no tipo de ícone
-            if (icone === 'fa-exclamation-triangle') {
-                $iconeElemento.addClass('text-warning'); // Amarelo
+            // Lógica do botão PDF
+            var btnPdf = $('#btnVerPdf');
+            if (arquivoPdf && arquivoPdf.trim() !== "") {
+                // Remove o til (~) e limpa a URL
+                var caminhoTratado = arquivoPdf.replace(/^~/, '');
+                if (!caminhoTratado.startsWith('/')) {
+                    caminhoTratado = '/' + caminhoTratado;
+                }
+
+                var urlFinal = window.location.origin + caminhoTratado;
+                btnPdf.attr('href', urlFinal);
+                btnPdf.show();
             } else {
-                $iconeElemento.addClass('text-primary'); // Azul
+                btnPdf.hide();
             }
 
-            // 4. Abre a modal
+            // Abre a modal (usando as classes do Inspinia)
             $('#modalAviso').modal('show');
         }
 

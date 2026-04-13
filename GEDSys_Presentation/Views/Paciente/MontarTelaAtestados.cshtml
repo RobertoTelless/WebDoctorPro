@@ -145,13 +145,6 @@
                             @Html.ValidationSummary(false, "", new { @class = "text-danger" })
                         </div>
                     }
-                    @*@if (TempData["TemMensagem"] != null)
-                    {
-                        <div class="alert alert-success">
-                            <button type="button" class="close" data-dismiss="alert">Fechar</button>
-                            <span>@TempData["MensagemAcerto"]</span>
-                        </div>
-                    }*@                    
                     <div class="row">
                         @if (ViewBag.Listas != null &&(ViewBag.Listas as List<EntitiesServices.Model.PACIENTE_ATESTADO>).Count > 0)
                         {
@@ -219,20 +212,6 @@
                                                     <span class="status-badge status-pending">Não</span>
                                                 }
                                             </td>
-
-
-
-
-                                            @*@if (cond.PAAT__IN_ENVIADO == 1)
-                                            {
-                                                <td style="width: auto"><span class="badge badge-primary">Sim</span></td>
-
-                                            }
-                                            else
-                                            {
-                                                <td style="width: auto"><span class="badge badge-warning">Não</span></td>
-
-                                            }*@
                                             @if (cond.PAAT_DT_ENVIO != null)
                                             {
                                                 <td style="width: auto">@cond.PAAT_DT_ENVIO.Value.ToShortDateString()</td>
