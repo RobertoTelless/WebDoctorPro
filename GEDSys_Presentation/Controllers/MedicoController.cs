@@ -1062,7 +1062,7 @@ namespace GEDSys_Presentation.Controllers
                         {
                             if (file.Profile == null)
                             {
-                                volta3 = UploadFileQueueEnvio(file);
+                                volta3 = await   UploadFileQueueEnvioBlob(file);
                             }
                         }
                         Session["FileQueuePaciente"] = null;
@@ -1184,29 +1184,66 @@ namespace GEDSys_Presentation.Controllers
             }
         }
 
+        //[HttpPost]
+        //public void UploadFileToSession(IEnumerable<HttpPostedFileBase> files, String profile)
+        //{
+        //    List<FileQueue> queue = new List<FileQueue>();
+        //    foreach (var file in files)
+        //    {
+        //        FileQueue f = new FileQueue();
+        //        f.Name = Path.GetFileName(file.FileName);
+        //        f.ContentType = Path.GetExtension(file.FileName);
+
+        //        MemoryStream ms = new MemoryStream();
+        //        file.InputStream.CopyTo(ms);
+        //        f.Contents = ms.ToArray();
+
+        //        if (profile != null)
+        //        {
+        //            if (file.FileName.Equals(profile))
+        //            {
+        //                f.Profile = 1;
+        //            }
+        //        }
+        //        queue.Add(f);
+        //    }
+        //    Session["FileQueuePaciente"] = queue;
+        //}
+
         [HttpPost]
         public void UploadFileToSession(IEnumerable<HttpPostedFileBase> files, String profile)
         {
-            List<FileQueue> queue = new List<FileQueue>();
-            foreach (var file in files)
+            // 1. Tenta recuperar a lista existente ou cria uma nova se for null
+            List<FileQueue> queue = Session["FileQueuePaciente"] as List<FileQueue> ?? new List<FileQueue>();
+
+            if (files != null)
             {
-                FileQueue f = new FileQueue();
-                f.Name = Path.GetFileName(file.FileName);
-                f.ContentType = Path.GetExtension(file.FileName);
-
-                MemoryStream ms = new MemoryStream();
-                file.InputStream.CopyTo(ms);
-                f.Contents = ms.ToArray();
-
-                if (profile != null)
+                foreach (var file in files)
                 {
-                    if (file.FileName.Equals(profile))
+                    if (file == null) continue;
+
+                    FileQueue f = new FileQueue();
+                    f.Name = Path.GetFileName(file.FileName);
+                    f.ContentType = Path.GetExtension(file.FileName);
+
+                    using (MemoryStream ms = new MemoryStream())
                     {
+                        file.InputStream.CopyTo(ms);
+                        f.Contents = ms.ToArray();
+                    }
+
+                    // Se for foto de perfil, remove sinalização de perfil de qualquer outro arquivo anterior
+                    if (profile != null && file.FileName.Equals(profile))
+                    {
+                        queue.ForEach(x => x.Profile = 0);
                         f.Profile = 1;
                     }
+
+                    queue.Add(f);
                 }
-                queue.Add(f);
             }
+
+            // 2. Salva a lista atualizada (Contendo foto + anexos)
             Session["FileQueuePaciente"] = queue;
         }
 
@@ -1260,6 +1297,140 @@ namespace GEDSys_Presentation.Controllers
                 // Gravar registro
                 MEDICOS_ENVIO_ANEXO foto = new MEDICOS_ENVIO_ANEXO();
                 foto.MVAN_AQ_ARQUIVO = "~" + caminho + fileName;
+                foto.MVAN_DT_ANEXO = DateTime.Today;
+                foto.MVAN_IN_ATIVO = 1;
+                Int32 tipo = 3;
+                if (extensao.ToUpper() == ".JPG" || extensao.ToUpper() == ".GIF" || extensao.ToUpper() == ".PNG" || extensao.ToUpper() == ".JPEG")
+                {
+                    tipo = 1;
+                }
+                else if (extensao.ToUpper() == ".MP4" || extensao.ToUpper() == ".AVI" || extensao.ToUpper() == ".MPEG")
+                {
+                    tipo = 2;
+                }
+                else if (extensao.ToUpper() == ".PDF")
+                {
+                    tipo = 3;
+                }
+                else if (extensao.ToUpper() == ".MP3" || extensao.ToUpper() == ".MPEG")
+                {
+                    tipo = 4;
+                }
+                else if (extensao.ToUpper() == ".DOCX" || extensao.ToUpper() == ".DOC" || extensao.ToUpper() == ".ODT")
+                {
+                    tipo = 5;
+                }
+                else if (extensao.ToUpper() == ".XLSX" || extensao.ToUpper() == ".XLS" || extensao.ToUpper() == ".ODS")
+                {
+                    tipo = 6;
+                }
+                else
+                {
+                    tipo = 7;
+                }
+                foto.MVAN_IN_TIPO = tipo;
+                foto.MVAN_NM_TITULO = fileName;
+                foto.MEEV_CD_ID = item.MEEV_CD_ID;
+                item.MEDICOS_ENVIO_ANEXO.Add(foto);
+                Int32 volta = baseApp.ValidateEditEnvio(item);
+                return 0;
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Medico";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Medico", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return 0;
+            }
+        }
+
+        [HttpPost]
+        public async Task<Int32> UploadFileQueueEnvioBlob(FileQueue file)
+        {
+            try
+            {
+                // Inicializa
+                Int32 idNot = (Int32)Session["IdEnvio"];
+                Int32 idAss = (Int32)Session["IdAssinante"];
+
+                if (file == null)
+                {
+                    Session["MensMedico"] = 5;
+                    return 1;
+                }
+
+                // Recupera envio
+                MEDICOS_ENVIO item = baseApp.GetEnvioById(idNot);
+                USUARIO usu = (USUARIO)Session["UserCredentials"];
+                var fileName = file.Name;
+                if (fileName.Length > 250)
+                {
+                    Session["MensMedico"] = 6;
+                    return 2;
+                }
+
+                // Critica tamanho arquivo
+                var fileSize = file.Contents.Length;
+                if (fileSize > 50000000)
+                {
+                    Session["MensMedico"] = 7;
+                    return 3;
+                }
+
+                //Recupera tipo de arquivo
+                extensao = Path.GetExtension(fileName);
+                String a = extensao;
+                if (!((String)Session["ExtensoesPossiveis"]).Contains(extensao.ToUpper()))
+                {
+                    Session["MensMedico"] = 12;
+                    return 4;
+                }
+
+                // 1. DEFINIÇÃO DE CAMINHOS
+                String caminhoRelativo = "Imagens/" + item.ASSI_CD_ID.ToString() + "/Envio/" + item.MEEV_CD_ID.ToString() + "/Anexos/";
+                String caminhoLocal = Server.MapPath("~/" + caminhoRelativo);
+                String fullPathLocal = Path.Combine(caminhoLocal, fileName);
+
+                // Garante que a pasta local existe
+                if (!Directory.Exists(caminhoLocal)) Directory.CreateDirectory(caminhoLocal);
+
+                // 2. CÓPIA LOCAL (Escrita de Bytes)
+                System.IO.File.WriteAllBytes(fullPathLocal, file.Contents);
+
+                // 3. CÓPIA PARA O AZURE BLOB STORAGE
+                try
+                {
+                    CONFIGURACAO conf = CarregaConfiguracaoGeral();
+                    string connString = conf.CONF_NM_STORAGE_CONN;
+                    string containerName = conf.CONF_NM_STORAGE_CONTAINER;
+
+                    var blobServiceClient = new Azure.Storage.Blobs.BlobServiceClient(connString);
+                    var containerClient = blobServiceClient.GetBlobContainerClient(containerName);
+
+                    // O nome do blob no Azure
+                    string blobName = caminhoRelativo + fileName;
+                    var blobClient = containerClient.GetBlobClient(blobName);
+
+                    // Como file.Contents é byte[], usamos MemoryStream para o upload
+                    using (var ms = new MemoryStream(file.Contents))
+                    {
+                        await blobClient.UploadAsync(ms, overwrite: true);
+                    }
+                }
+                catch (Exception exAzure)
+                {
+                    Session["MsgCRUD"] = "Erro na sincronização: " + exAzure.Message;
+                    Session["MensPaciente"] = 61;
+                    return 0;
+                }
+
+                // Gravar registro
+                MEDICOS_ENVIO_ANEXO foto = new MEDICOS_ENVIO_ANEXO();
+                foto.MVAN_AQ_ARQUIVO = "~" + caminhoRelativo + fileName;
                 foto.MVAN_DT_ANEXO = DateTime.Today;
                 foto.MVAN_IN_ATIVO = 1;
                 Int32 tipo = 3;
@@ -1540,13 +1711,173 @@ namespace GEDSys_Presentation.Controllers
                 }
 
                 // Copia arquivo
+                //String caminho = "/Imagens/" + idAss.ToString() + "/Envio/" + item.MEEV_CD_ID.ToString() + "/Anexos/";
+                //String path = Path.Combine(Server.MapPath(caminho), fileName);
+                //file.SaveAs(path);
+                // Copia arquivo
                 String caminho = "/Imagens/" + idAss.ToString() + "/Envio/" + item.MEEV_CD_ID.ToString() + "/Anexos/";
                 String path = Path.Combine(Server.MapPath(caminho), fileName);
-                file.SaveAs(path);
+                using (var stream = new FileStream(path, FileMode.Create))
+                {
+                    await file.InputStream.CopyToAsync(stream);
+                }
 
                 // Gravar registro
                 MEDICOS_ENVIO_ANEXO foto = new MEDICOS_ENVIO_ANEXO();
                 foto.MVAN_AQ_ARQUIVO = "~" + caminho + fileName;
+                foto.MVAN_DT_ANEXO = DateTime.Today;
+                foto.MVAN_IN_ATIVO = 1;
+                Int32 tipo = 3;
+                if (extensao.ToUpper() == ".JPG" || extensao.ToUpper() == ".GIF" || extensao.ToUpper() == ".PNG" || extensao.ToUpper() == ".JPEG")
+                {
+                    tipo = 1;
+                }
+                else if (extensao.ToUpper() == ".MP4" || extensao.ToUpper() == ".AVI" || extensao.ToUpper() == ".MPEG")
+                {
+                    tipo = 2;
+                }
+                else if (extensao.ToUpper() == ".PDF")
+                {
+                    tipo = 3;
+                }
+                else if (extensao.ToUpper() == ".MP3" || extensao.ToUpper() == ".MPEG")
+                {
+                    tipo = 4;
+                }
+                else if (extensao.ToUpper() == ".DOCX" || extensao.ToUpper() == ".DOC" || extensao.ToUpper() == ".ODT")
+                {
+                    tipo = 5;
+                }
+                else if (extensao.ToUpper() == ".XLSX" || extensao.ToUpper() == ".XLS" || extensao.ToUpper() == ".ODS")
+                {
+                    tipo = 6;
+                }
+                else
+                {
+                    tipo = 7;
+                }
+                foto.MVAN_IN_TIPO = tipo;
+                foto.MVAN_NM_TITULO = fileName;
+                foto.MEEV_CD_ID = item.MEEV_CD_ID;
+
+                item.MEDICOS_ENVIO_ANEXO.Add(foto);
+                Int32 volta = baseApp.ValidateEditEnvio(item);
+                Session["NivelEnvio"] = 2;
+                Session["EnvioAlterada"] = 1;
+
+                // Mensagem do CRUD
+                Session["MsgCRUD"] = "O arquivo " + fileName.ToUpper() + " foi anexado com sucesso ao envio para o médico " + item.MEDICOS.MEDC_NM_MEDICO.ToUpper();
+                Session["MensMedico"] = 61;
+
+                return RedirectToAction("VoltarAnexoEnvio");
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Medico";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Medico", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return RedirectToAction("TrataExcecao", "BaseAdmin");
+            }
+        }
+
+                [HttpPost]
+        public async Task<ActionResult> UploadFileEnvioBlob(HttpPostedFileBase file)
+        {
+            try
+            {
+                // Inicializa
+                if ((String)Session["Ativa"] == null)
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+                Int32 idNot = (Int32)Session["IdEnvio"];
+                Int32 idAss = (Int32)Session["IdAssinante"];
+
+                // Recupera exame
+                MEDICOS_ENVIO item = baseApp.GetEnvioById(idNot);
+                USUARIO usu = (USUARIO)Session["UserCredentials"];
+
+                // Criticas
+                if (file == null)
+                {
+                    Session["MensMedico"] = 5;
+                    return RedirectToAction("VoltarAnexoEnvio");
+                }
+
+                // Critica tamanho nome
+                var fileName = Path.GetFileName(file.FileName);
+                if (fileName.Length > 250)
+                {
+                    Session["MensMedico"] = 6;
+                    return RedirectToAction("VoltarAnexoEnvio");
+                }
+
+                // Critica tamanho arquivo
+                var fileSize = file.ContentLength;
+                if (fileSize > 50000000)
+                {
+                    Session["MensMedico"] = 7;
+                    return RedirectToAction("VoltarAnexoEnvio");
+                }
+
+                //Recupera tipo de arquivo
+                extensao = Path.GetExtension(fileName);
+                String a = extensao;
+                if (!((String)Session["ExtensoesPossiveis"]).Contains(extensao.ToUpper()))
+                {
+                    Session["MensMedico"] = 12;
+                    return RedirectToAction("VoltarAnexoEnvio");
+                }
+
+                // 1. DEFINIÇÃO DO CAMINHO (Mesmo para Local e Azure)
+                // Removida a barra inicial para o Azure não criar uma pasta raiz vazia
+                String caminhoRelativo = "Imagens/" + item.ASSI_CD_ID.ToString() + "/Envio/" + item.MEEV_CD_ID.ToString() + "/Anexos/";
+                String caminhoLocal = Server.MapPath("~/" + caminhoRelativo);
+                String fullPathLocal = Path.Combine(caminhoLocal, fileName);
+
+                // Garante que a pasta local existe
+                if (!Directory.Exists(caminhoLocal)) Directory.CreateDirectory(caminhoLocal);
+
+                // 2. CÓPIA LOCAL
+                using (var stream = new FileStream(fullPathLocal, FileMode.Create))
+                {
+                    await file.InputStream.CopyToAsync(stream);
+                }
+
+                // 3. CÓPIA PARA O AZURE BLOB STORAGE
+                try
+                {
+                    // Reinicia o ponteiro do stream para o início após a cópia local
+                    file.InputStream.Position = 0;
+
+                    CONFIGURACAO conf = CarregaConfiguracaoGeral();
+                    string connString = conf.CONF_NM_STORAGE_CONN;
+                    string containerName = conf.CONF_NM_STORAGE_CONTAINER;
+
+                    var blobServiceClient = new Azure.Storage.Blobs.BlobServiceClient(connString);
+                    var containerClient = blobServiceClient.GetBlobContainerClient(containerName);
+
+                    // O nome do blob no Azure incluirá toda a estrutura de pastas
+                    string blobName = caminhoRelativo + fileName;
+                    var blobClient = containerClient.GetBlobClient(blobName);
+
+                    // Upload para o Azure (Idempotente: Se já existe, sobrescreve com true)
+                    await blobClient.UploadAsync(file.InputStream, overwrite: true);
+                }
+                catch (Exception exAzure)
+                {
+                    Session["MsgCRUD"] = "Erro na sincronização: " + exAzure.Message;
+                    Session["MensMedico"] = 61;
+                    return RedirectToAction("VoltarAnexoEnvio");
+                }
+
+                // Gravar registro
+                MEDICOS_ENVIO_ANEXO foto = new MEDICOS_ENVIO_ANEXO();
+                foto.MVAN_AQ_ARQUIVO = "~/" + caminhoRelativo + fileName;
                 foto.MVAN_DT_ANEXO = DateTime.Today;
                 foto.MVAN_IN_ATIVO = 1;
                 Int32 tipo = 3;

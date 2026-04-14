@@ -133,7 +133,6 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                            <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Endereço</h4>
                                             <div class="col-lg-8 col-md-8 col-xs-8">
                                                 <h4 style="margin-left: -15px; color:green; background-color: beige; font-weight:bold">Endereço</h4>
                                                 <div class="form-group" style=" margin-left: -30px; margin-right: -30px;">
@@ -216,67 +215,9 @@
                                             </div>
                                         </div>
 
-                                        @*<div class="row" id="Enderecos">
-                                            <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Endereço</h4>
-                                            <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
-                                                <div class="col-lg-2 col-md-2 col-xs-12">
-                                                    CEP*
-                                                    <div class="input-group">
-                                                        @Html.TextBoxFor(m => m.CEP, new { @class = "form-control", @id = "cep", autofocus = true, @onblur = "PesquisaCep($('#cep').val(), $(this), 1)" })
-                                                        @Html.ValidationMessageFor(m => m.CEP, "", new { @style = "color:red" })
-                                                        <span class="input-group-btn">
-                                                            <span class="btn btn-warning btn-sm" id="btnBuscaCep" data_toggle = "popover" data_content = "Pesquisar o CEP informado" data_trigger="hover" data_placement="top" onclick="PesquisaCep($('#cep').val(), $(this), 1)">Buscar CEP</span>
-                                                        </span>
-                                                    </div>
-                                                    <div class="col-lg-12 col-md-12 col-xs-12" style="display:none" id="cepval">
-                                                        <h5>CEP inválido</h5>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
-                                                <div class="col-lg-4 col-md-4 col-xs-12">
-                                                    Endereço*
-                                                    @Html.TextBoxFor(m => m.Endereco, new { @class = "form-control", @id = "endereco", autofocus = true })
-                                                    @Html.ValidationMessageFor(m => m.Endereco, "", new { @style = "color:red" })
-                                                </div>
-                                                <div class="col-lg-2 col-md-2 col-xs-12">
-                                                    Número*
-                                                    @Html.TextBoxFor(m => m.Numero, new { @class = "form-control", @id = "nmr", autofocus = true })
-                                                    @Html.ValidationMessageFor(m => m.Numero, "", new { @style = "color:red" })
-                                                </div>
-                                                <div class="col-lg-2 col-md-2 col-xs-12">
-                                                    Complemento
-                                                    @Html.TextBoxFor(m => m.Complemento, new { @class = "form-control", autofocus = true, @id = "complemento" })
-                                                    @Html.ValidationMessageFor(m => m.Complemento, "", new { @style = "color:red" })
-                                                </div>
-                                            </div>
-                                            <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
-                                                <div class="col-lg-3 col-md-3 col-xs-12">
-                                                    Bairro*
-                                                    @Html.TextBoxFor(m => m.Bairro, new { @class = "form-control", @id = "bairro", autofocus = true })
-                                                    @Html.ValidationMessageFor(m => m.Bairro, "", new { @style = "color:red" })
-                                                </div>
-                                                <div class="col-lg-3 col-md-3 col-xs-12">
-                                                    Cidade*
-                                                    @Html.TextBoxFor(m => m.Cidade, new { @class = "form-control", @id = "cidade", autofocus = true })
-                                                    @Html.ValidationMessageFor(m => m.Cidade, "", new { @style = "color:red" })
-                                                </div>
-                                                <div class="col-lg-2 col-md-2 col-xs-12">
-                                                    UF*
-                                                    @Html.DropDownListFor(m => m.UF, (SelectList)ViewBag.UF, "UF", new { @class = "form-control", @id = "uf", autofocus = true })
-                                                    @Html.ValidationMessageFor(m => m.UF, "", new { @style = "color:red" })
-                                                </div>
-                                                <div class="col-lg-2 col-md-2 col-xs-12">
-                                                    CEP
-                                                    @Html.TextBoxFor(m => m.CEPBase, new { @class = "form-control", @id = "cepBase", @readonly = "readonly" })
-                                                    @Html.ValidationMessageFor(m => m.CEPBase, "", new { @style = "color:red" })
-                                                </div>
-                                            </div>
-                                        </div>*@
-
                                         <div class="row" id="Botoes">
                                             <div class="form-group">
-                                                <div class="col-lg-4 col-md-4 col-xs-12" id="Basico">
+                                                <div class="col-lg-6 col-md-6 col-xs-12" id="Basico">
                                                     @Html.ButtonActionSubmit(text: "Confirma a Solicitação de Assinatura de Demonstração", htmlAttributes: new { id = "basictoast", @class = "btn-loading2" })
                                                     <span id="loadingIndicator1" style="display: none; margin-left: 10px; color: #007bff;">
                                                         <i class="fa fa-spinner fa-spin"></i> Processando...
@@ -306,6 +247,77 @@
     @Styles.Render("~/Content/css")
     @Styles.Render("~/font-awesome/css")
     <link href="@Url.Content("~/Scripts/plugins/jquery-ui/jquery-ui.min.css")" rel="stylesheet" type="text/css" />
+
+    <style>
+        /* 1. Aumenta a largura e garante o espaço interno */
+        #toast-container > .toast {
+            width: 500px !important; 
+            max-width: 500px !important;
+            opacity: 0.95 !important;
+        }
+
+        /* 2. Remove o ícone nativo do Toastr (Background Image) */
+        #toast-container > .toast-success {
+            background-image: none !important;
+        }
+
+        /* 3. Remove ícones do FontAwesome/Inspinia injetados via ::before no Título */
+        .toast-success .toast-title::before, 
+        .toast-success .toast-title::after,
+        .toast-success::before {
+            content: none !important;
+            display: none !important;
+        }
+
+        /* 4. Ajusta o recuo do texto já que removemos o ícone */
+        .toast-success .toast-title, 
+        .toast-success .toast-message {
+            padding-left: 10px !important;
+        }
+    </style>
+    <style>
+        /* Estilo Base */
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .status-badge::before {
+            content: "";
+            display: inline-block;
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            margin-right: 6px;
+        }
+
+        /* PENDING (Gold) - Status 0 */
+        .status-pending { background-color: #fef9c3; color: #a16207; }
+        .status-pending::before { background-color: #ca8a04; }
+
+        /* ACTIVE (Green) - Status 1 */
+        .status-active { background-color: #dcfce7; color: #15803d; }
+        .status-active::before { background-color: #16a34a; }
+
+        /* CANCEL (Red) - Status 4 */
+        .status-cancel { background-color: #fee2e2; color: #b91c1c; }
+        .status-cancel::before { background-color: #dc2626; }
+
+        /* FINISH (Dark Blue) - Status 2 */
+        .status-finish { background-color: #dbeafe; color: #1e40af; }
+        .status-finish::before { background-color: #2563eb; }
+
+        /* OVERDUE (Gray) - Status 3 */
+        .status-overdue { background-color: #f3f4f6; color: #4b5563; }
+        .status-overdue::before { background-color: #6b7280; }
+    </style>
+
 }
 @section Scripts {
     @Scripts.Render("~/plugins/toastr")
@@ -598,6 +610,44 @@
             }
         }
     </style>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            // Configurações globais do Toastr
+            toastr.options = {
+                "closeButton": true,
+                //"debug": false,
+                "progressBar": true,
+                "preventDuplicates": false,
+                "positionClass": "toast-top-right",
+                "onclick": null,
+                "showDuration": "400",
+                "hideDuration": "1000",
+                "timeOut": "15000",
+                "extendedTimeOut": "5000",
+                "showEasing": "swing",
+                "hideEasing": "linear",
+                "showMethod": "fadeIn",
+                "hideMethod": "fadeOut"
+            //    "iconClass": "customer-toast-info", // Se quiser remover o ícone padrão totalmente
+            //    "titleClass": "toast-title",
+            //    "messageClass": "toast-message"
+            };
+
+            // Verifica se existe mensagem de sucesso no TempData (vinda do Redirect)
+            var msgSucesso = '@TempData["MensagemAcerto"]';
+            if (msgSucesso != '') {
+                toastr.success(msgSucesso, 'Sucesso!');
+            }
+
+            // Verifica se existe mensagem de erro
+            var msgErro = '@TempData["MensagemErro"]';
+            if (msgErro != '') {
+                toastr.error(msgErro, 'Erro!');
+            }
+        });
+    </script>
+
 }
 @if (ViewBag.Message != null)
 {

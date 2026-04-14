@@ -78,7 +78,14 @@
                             {
                                 <div class="col-lg-12 col-md-12 col-sm-12">
                                     <div class="col-lg-12 col-md-12 col-sm-12">
-                                        <img src="@Url.Content(Model.MVAN_AQ_ARQUIVO)" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Clique Ctrl+Ctrl para ampliar a fotografia" style="width: auto; height: auto; max-height: 1530px; max-width: 1530px;">
+                                        @*<img src="@Url.Content(Model.PAAX_AQ_ARQUIVO)" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Clique Ctrl+Ctrl para ampliar a fotografia" style="width: auto; height: auto; max-height: 1530px; max-width: 1530px;">*@
+                                        <img src="@("https://rtistoragemain.blob.core.windows.net/rti-datacontainer/" + Model.MVAN_AQ_ARQUIVO.Replace("~/", "").Replace("~", ""))" 
+                                             data-toggle="popover" 
+                                             data-trigger="hover" 
+                                             data-placement="top" 
+                                             data-content="Clique Ctrl+Ctrl para ampliar a imagem" 
+                                             style="width: auto; height: auto; max-height: 1530px; max-width: 1530px;"
+                                             onerror="this.onerror=null;this.src='@Url.Content("~/Images/icone_imagem.jpg")';">
                                     </div>
                                 </div>
                             }
@@ -86,7 +93,13 @@
                             {
                                 <div class="col-lg-12 col-md-12 col-sm-12">
                                     <figure>
-                                        <iframe width="900" height="600" src="@Url.Content(Model.MVAN_AQ_ARQUIVO)" frameborder="0" allowfullscreen></iframe>
+                                        @{
+                                            var urlVideoAzure = "https://rtistoragemain.blob.core.windows.net/rti-datacontainer/" + Model.MVAN_AQ_ARQUIVO.Replace("~/", "").Replace("~", "");
+                                        }
+                                        <video width="900" height="600" controls style="background: #000;">
+                                            <source src="@urlVideoAzure" type="video/mp4">
+                                            Seu navegador não suporta a tag de vídeo.
+                                        </video>
                                     </figure>
                                 </div>
                             }

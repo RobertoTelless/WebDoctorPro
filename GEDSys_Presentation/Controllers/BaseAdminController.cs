@@ -81,6 +81,7 @@ namespace ERP_Condominios_Solution.Controllers
         private readonly ITipoPagamentoAppService tpgApp;
         private readonly ITipoValorConsultaAppService ticoApp;
         private readonly IUnidadeAppService uniApp;
+        private readonly ILaboratorioAppService labApp;
 
         private readonly string _connectionString = "DefaultEndpointsProtocol=https;AccountName=rtistoragemain;AccountKey=VowoS1r1iQ7OeHYB8COjfTPicHc1GxV1LvpPyKlKw0+GAb7MXIyWqX1uAGGNMOAHh7CsxabKbMaC+AStfHmdXQ==;EndpointSuffix=core.windows.net";
         private readonly string _containerName = "rti-datacontainer";
@@ -98,7 +99,7 @@ namespace ERP_Condominios_Solution.Controllers
         MENSAGENS_ENVIADAS_SISTEMA objetEnviadaoAntes = new MENSAGENS_ENVIADAS_SISTEMA();
         List<MENSAGENS_ENVIADAS_SISTEMA> listaMasterEnviada = new List<MENSAGENS_ENVIADAS_SISTEMA>();
 
-        public BaseAdminController(IUsuarioAppService baseApps, ILogAppService logApps, IUsuarioAppService usuApps, IConfiguracaoAppService confApps, IAssinanteAppService assiApps, IPlanoAppService planApps, ITemplateAppService temApps, IMensagemEnviadaSistemaAppService envApps, ITemplateEMailAppService mailApps, IEmpresaAppService empApps, IPerfilAppService perfApps, IMensagemAppService mensApps, IRecursividadeAppService recApps, IPacienteAppService pacApps, IGrupoAppService gruApps, IAcessoMetodoAppService aceApps, IConvenioAppService convApps, IEspecialidadeAppService espApps, IAvisoLembreteAppService avApps, ITemplateEMailAppService teApps, ITipoExameAppService tiApps, ITipoPacienteAppService tpApps, ITipoPagamentoAppService tgApps, ITipoValorConsultaAppService tcApps, ITipoAtestadoAppService taApps, IValorConsultaAppService vcApps, IPeriodicidadeAppService peApps, IConfiguracaoAnamneseAppService caApps, IConfiguracaoCalendarioAppService ccApps, ITemplateSMSAppService smsApps, ILocacaoAppService locApps, ITipoPagamentoAppService tpgApps, ITipoValorConsultaAppService ticoApps, IUnidadeAppService uniApps)
+        public BaseAdminController(IUsuarioAppService baseApps, ILogAppService logApps, IUsuarioAppService usuApps, IConfiguracaoAppService confApps, IAssinanteAppService assiApps, IPlanoAppService planApps, ITemplateAppService temApps, IMensagemEnviadaSistemaAppService envApps, ITemplateEMailAppService mailApps, IEmpresaAppService empApps, IPerfilAppService perfApps, IMensagemAppService mensApps, IRecursividadeAppService recApps, IPacienteAppService pacApps, IGrupoAppService gruApps, IAcessoMetodoAppService aceApps, IConvenioAppService convApps, IEspecialidadeAppService espApps, IAvisoLembreteAppService avApps, ITemplateEMailAppService teApps, ITipoExameAppService tiApps, ITipoPacienteAppService tpApps, ITipoPagamentoAppService tgApps, ITipoValorConsultaAppService tcApps, ITipoAtestadoAppService taApps, IValorConsultaAppService vcApps, IPeriodicidadeAppService peApps, IConfiguracaoAnamneseAppService caApps, IConfiguracaoCalendarioAppService ccApps, ITemplateSMSAppService smsApps, ILocacaoAppService locApps, ITipoPagamentoAppService tpgApps, ITipoValorConsultaAppService ticoApps, IUnidadeAppService uniApps, ILaboratorioAppService labApps)
         {
             baseApp = baseApps;
             logApp = logApps;
@@ -133,6 +134,7 @@ namespace ERP_Condominios_Solution.Controllers
             tpgApp = tpgApps;
             ticoApp = ticoApps;
             uniApp = uniApps;
+            labApp = labApps;
         }
 
         public ActionResult CarregarAdmin()
@@ -3721,24 +3723,6 @@ namespace ERP_Condominios_Solution.Controllers
             Session["idNovoAssinante"] = idAss;
             ASSINANTE assinante = assiApp.GetItemById(idAss);
 
-            //// Cria assinante plano
-            //ASSINANTE_PLANO assPlano = new ASSINANTE_PLANO();
-            //assPlano.ASSI_CD_ID = idAss;
-            //assPlano.PLAN_CD_ID = 10;
-            //assPlano.ASPL_IN_ATIVO = 1;
-            //assPlano.ASPL_DT_INICIO = DateTime.Today.Date;
-            //if (vm.TipoAssinatura == 1)
-            //{
-            //    assPlano.ASPL_DT_VALIDADE = DateTime.Today.Date.AddDays(365);
-            //}
-            //else
-            //{
-            //    assPlano.ASPL_DT_VALIDADE = DateTime.Today.Date.AddDays(30);
-            //}
-            //assPlano.ASPL_IN_PRECO = 1;
-            //assPlano.ASPL_IN_SISTEMA = 6;
-            //assinante.ASSINANTE_PLANO.Add(assPlano);
-
             // Cria assinante-plano-assinatura
             ASSINANTE_PLANO_ASSINATURA assPlanoAss = new ASSINANTE_PLANO_ASSINATURA();
             assPlanoAss.ASSI_CD_ID = idAss;
@@ -3784,7 +3768,6 @@ namespace ERP_Condominios_Solution.Controllers
             caminho = "/Imagens/Assinante/" + idAss.ToString() + "/Pagamentos/";
             map = Server.MapPath(caminho);
             Directory.CreateDirectory(Server.MapPath(caminho));
-
 
             // Criar empresa
             EMPRESA emp = new EMPRESA();
@@ -4039,7 +4022,7 @@ namespace ERP_Condominios_Solution.Controllers
             usu.USUA_NM_SALT = salt;
             usu.USUA_NM_SENHA_CONFIRMA = vm.SenhaBase;
             Int32 voltaUsu = usuApp.ValidateCreate(usu);
-            USUARIO usuario = usuApp.GetItemById(usu.USUA_CD_ID);
+            USUARIO usuario = usuApp.GetItemById(usu.USUA_CD_ID);       
 
             // Cria pasta usuario
             caminho = "/Imagens/" + idAss.ToString() + "/Usuario/" + usuario.USUA_CD_ID.ToString() + "/Anexos/";
@@ -4185,6 +4168,13 @@ namespace ERP_Condominios_Solution.Controllers
             Int32 voltaTC = tcApp.ValidateCreate(tc);
             TIPO_VALOR_CONSULTA tipoValor = tcApp.GetItemById(tc.TIVL_CD_ID);
 
+            // Cria convenio
+            CONVENIO con = new CONVENIO();
+            con.ASSI_CD_ID = idAss;
+            con.CONV_NM_NOME = "Convênio 1";
+            con.CONV_IN_ATIVO = 1;
+            Int32 voltaCon = convApp.ValidateCreate(con, usuario);
+
             // Cria tipo de contrato
             List<CONTRATO_LOCACAO> conts = locApp.GetAllContratos(1);
             foreach (CONTRATO_LOCACAO item in conts)
@@ -4198,6 +4188,22 @@ namespace ERP_Condominios_Solution.Controllers
                 novo.USUA_CD_ID = item.USUA_CD_ID;
                 Int32 voltaEM = locApp.ValidateCreateContrato(novo);
             }
+
+            // Cria laboratorios
+            List<LABORATORIO> labs = labApp.GetAllItens(1);
+            foreach (LABORATORIO item in labs)
+            {
+                LABORATORIO novo = new LABORATORIO();
+                novo.ASSI_CD_ID = idAss;
+                novo.LABS_IN_ATIVO = 1;
+                novo.LABS_LK_LINK = item.LABS_LK_LINK;
+                novo.LABS_LK_LINK_PESSOAL = item.LABS_LK_LINK_PESSOAL;
+                novo.LABS_NM_CIDADE = item.LABS_NM_CIDADE;
+                novo.LABS_NM_NOME = item.LABS_NM_NOME;
+                novo.UF_CD_ID = item.UF_CD_ID;
+                Int32 voltaLab = labApp.ValidateCreate(novo, usuario);
+            }
+
 
             // Cria tipo de Pagamento
             List<TIPO_PAGAMENTO> tps = tpgApp.GetAllItens(1);
@@ -4517,6 +4523,17 @@ namespace ERP_Condominios_Solution.Controllers
             cf.CONF_NM_SENHA_PACIENTE = "a123456A@";
             cf.CONF_IN_RECIBO_SRF = 1;
             cf.CONF_IN_DOC_PRONTUARIO = 1;
+            cf.CONF_IN_ABA_VACINA = 1;
+            cf.CONF_IN_ABA_EXAME = 1;
+            cf.CONF_IN_ABA_ATESTADO = 1;
+            cf.CONF_IN_ABA_LOCACAO = 1;
+            cf.CONF_IN_ABA_PRESCRICAO = 1;
+            cf.CONF_IN_ABA_SOLICITACAO = 1;
+            cf.CONF_NM_STORAGE_CONN = "DefaultEndpointsProtocol=https;AccountName=rtistoragemain;AccountKey=VowoS1r1iQ7OeHYB8COjfTPicHc1GxV1LvpPyKlKw0+GAb7MXIyWqX1uAGGNMOAHh7CsxabKbMaC+AStfHmdXQ==;EndpointSuffix=core.windows.net";
+            cf.CONF_NM_STORAGE_KEY = "VowoS1r1iQ7OeHYB8COjfTPicHc1GxV1LvpPyKlKw0+GAb7MXIyWqX1uAGGNMOAHh7CsxabKbMaC+AStfHmdXQ==";
+            cf.CONF_NM_STORAGE_CONTAINER = "rti-datacontainer";
+            cf.CONF_NM_LOCAL_CERTIFICADO = null;
+            cf.CONF_NM_SENHA_CERTIFICADO = null;
             Int32 voltaCF = confApp.ValidateCreate(cf);
 
             // Encerra

@@ -9,6 +9,34 @@
 }
 
 <div class="wrapper wrapper-content animated fadeInRight">
+    <div class="modal inmodal fade" id="modalConfirmacaoExclusaoAnexo" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content animated bounceInRight">
+                <div class="modal-header" style="position: relative; padding: 30px 15px;">
+                    <img src="@Url.Content("~/Images/Prontuario/prontuario_icon_3.png?v=1.1")" 
+                         style="position: absolute; left: 15px; top: 15px; width: 40px; height: auto;" 
+                         alt="Ícone" />
+
+                    <i class="fa fa-trash-o modal-icon text-danger" style="display: block;"></i>
+                    <h4 class="modal-title">Confirmação de Exclusão de Anexo</h4>
+                    <small class="font-bold">WebDoctorPro - Gestão de Anexos</small>
+                </div>
+            
+                <div class="modal-body text-center">
+                    <h3>Deseja realmente excluir este anexo?</h3>
+                    <p>Esta ação removerá o arquivo permanentemente dos movimentos do médico.</p>
+                    <input type="hidden" id="urlExclusaoTemp" value="" />
+                </div>
+            
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-white" data-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-danger" id="btnConfirmarExclusaoFicha">Confirmar Exclusão</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
     <div class="modalContainer">
         <div id="modal" class="modal" tabindex="-1" role="dialog">
             <div class="modal-dialog" role="document">
@@ -481,7 +509,7 @@
                                                 <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Anexos</h4>
                                                 <br />
                                                 <div class="form-group">
-                                                    @using (Html.BeginForm("UploadFileEnvio", "Medico", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { enctype = "multipart/form-data", @id = "pwd-container2" }))
+                                                    @using (Html.BeginForm("UploadFileEnvioBlob", "Medico", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { enctype = "multipart/form-data", @id = "pwd-container2" }))
                                                     {
                                                             if (Model.MEDICOS_ENVIO_ANEXO.Count > 0)
                                                             {
@@ -508,7 +536,12 @@
                                                                                 }
                                                                                 else if (cond.MVAN_IN_TIPO == 3)
                                                                                 {
-                                                                                    <td style="width: auto"><a href="~/PdfViewer/web/viewer.html?file=@(cond.MVAN_AQ_ARQUIVO.Replace("~", ""))&ReturnUrl=@Request.Url.AbsolutePath" target="_blank" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página de visualização do anexo - PDF"/>@cond.MVAN_NM_TITULO</td>
+                                                                                    // Monta a URL direta do Azure
+                                                                                    var caminhoPdf = cond.MVAN_AQ_ARQUIVO.Replace("~/", "").Replace("~", "");
+                                                                                    var urlAzurePdf = "https://rtistoragemain.blob.core.windows.net/rti-datacontainer/" + caminhoPdf;
+                                                                                    <td style="width: auto">
+                                                                                        <a href="@urlAzurePdf" target="_blank">@cond.MVAN_NM_TITULO</a>
+                                                                                    </td>
                                                                                 }
                                                                                 else
                                                                                 {
@@ -545,19 +578,8 @@
                                                                                     <td>Outros</td>
                                                                                 }
                                                                                 <td class="td-one-action">
-                                                                                    @if (cond.MVAN_IN_TIPO == 1 || cond.MVAN_IN_TIPO == 2)
-                                                                                    {
-                                                                                        @Html.TableLinkDetails(cond.MVAN_CD_ID, "VerAnexoEnvio", "fa-video", "Visualizar")
-                                                                                    }
-                                                                                    @if (cond.MVAN_IN_TIPO == 4)
-	                                                                                {
-                                                                                        @Html.TableLinkDetails(cond.MVAN_CD_ID, "VerAnexoEnvioAudio","fa-volume-up", "Visualizar")
-	                                                                                }
-                                                                                    @if (cond.MVAN_IN_TIPO == 3)
-                                                                                    {
-                                                                                        <a title="Visualizar" class="fa fa-camera fa-lg" href="~/PdfViewer/web/viewer.html?file=@(cond.MVAN_AQ_ARQUIVO.Replace("~", ""))&ReturnUrl=@Request.Url.AbsolutePath" target="_blank"></a>
-                                                                                    }
-                                                                                    <span style="color: #337ab7; cursor:pointer;" alt="Desativar" class="tbl-link fa-lg fa fa-trash-o" onclick="ShowModalExcluirAnexo('/Medico/ExcluirAnexoEnvio/@cond.MVAN_CD_ID')" title="Excluir"></span>
+                                                                                    @*<span style="color: #337ab7; cursor:pointer;" alt="Desativar" class="tbl-link fa-lg fa fa-trash-o" onclick="ShowModalExcluirAnexo('/Medico/ExcluirAnexoEnvio/@cond.MVAN_CD_ID')" title="Excluir"></span>*@
+                                                                                    <span class="fa fa-trash-o" onclick="PrepararExclusaoAnexo('/Medico/ExcluirAnexo/@cond.MVAN_CD_ID')" style="cursor:pointer; color:#337ab7"></span>
                                                                                     @Html.TableLinkDetails(cond.MVAN_CD_ID, "DownloadEnvio", "fa-download", "Descarga (Download)")
                                                                                 </td>
                                                                             </tr>
@@ -587,7 +609,7 @@
                                                 <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Anexos</h4>
                                                 <br />
                                                 <div class="form-group">
-                                                    @using (Html.BeginForm("UploadFileEnvio", "Medico", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { enctype = "multipart/form-data", @id = "pwd-container2" }))
+                                                    @using (Html.BeginForm("UploadFileEnvioBlob", "Medico", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { enctype = "multipart/form-data", @id = "pwd-container2" }))
                                                     {
                                                             if (Model.MEDICOS_ENVIO_ANEXO.Count > 0)
                                                             {
@@ -614,7 +636,12 @@
                                                                                 }
                                                                                 else if (cond.MVAN_IN_TIPO == 3)
                                                                                 {
-                                                                                    <td style="width: auto"><a href="~/PdfViewer/web/viewer.html?file=@(cond.MVAN_AQ_ARQUIVO.Replace("~", ""))&ReturnUrl=@Request.Url.AbsolutePath" target="_blank" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página de visualização do anexo - PDF"/>@cond.MVAN_NM_TITULO</td>
+                                                                                    // Monta a URL direta do Azure
+                                                                                    var caminhoPdf = cond.MVAN_AQ_ARQUIVO.Replace("~/", "").Replace("~", "");
+                                                                                    var urlAzurePdf = "https://rtistoragemain.blob.core.windows.net/rti-datacontainer/" + caminhoPdf;
+                                                                                    <td style="width: auto">
+                                                                                        <a href="@urlAzurePdf" target="_blank">@cond.MVAN_NM_TITULO</a>
+                                                                                    </td>
                                                                                 }
                                                                                 else
                                                                                 {
@@ -651,19 +678,8 @@
                                                                                     <td>Outros</td>
                                                                                 }
                                                                                 <td class="td-one-action">
-                                                                                    @if (cond.MVAN_IN_TIPO == 1 || cond.MVAN_IN_TIPO == 2)
-                                                                                    {
-                                                                                        @Html.TableLinkDetails(cond.MVAN_CD_ID, "VerAnexoEnvio", "fa-camera", "Visualizar")
-                                                                                    }
-                                                                                    @if (cond.MVAN_IN_TIPO == 4)
-	                                                                                {
-                                                                                        @Html.TableLinkDetails(cond.MVAN_CD_ID, "VerAnexoEnvioAudio","fa-volume-up", "Visualizar")
-	                                                                                }
-                                                                                    @if (cond.MVAN_IN_TIPO == 3)
-                                                                                    {
-                                                                                        <a title="Visualizar" class="fa fa-camera fa-lg" href="~/PdfViewer/web/viewer.html?file=@(cond.MVAN_AQ_ARQUIVO.Replace("~", ""))&ReturnUrl=@Request.Url.AbsolutePath" target="_blank"></a>
-                                                                                    }
-                                                                                    <span style="color: #337ab7; cursor:pointer;" alt="Desativar" class="tbl-link fa-lg fa fa-trash-o" onclick="ShowModalExcluirAnexo('/Medico/ExcluirAnexoEnvio/@cond.MVAN_CD_ID')" title="Excluir"></span>
+                                                                                    @*<span style="color: #337ab7; cursor:pointer;" alt="Desativar" class="tbl-link fa-lg fa fa-trash-o" onclick="ShowModalExcluirAnexo('/Medico/ExcluirAnexoEnvio/@cond.MVAN_CD_ID')" title="Excluir"></span>*@
+                                                                                    <span class="fa fa-trash-o" onclick="PrepararExclusaoAnexo('/Medico/ExcluirAnexo/@cond.MVAN_CD_ID')" style="cursor:pointer; color:#337ab7"></span>
                                                                                     @Html.TableLinkDetails(cond.MVAN_CD_ID, "DownloadEnvio", "fa-download", "Descarga (Download)")
                                                                                 </td>
                                                                             </tr>
@@ -810,6 +826,48 @@
         .toast-success .toast-message {
             padding-left: 10px !important;
         }
+        /* Container externo (o fundo da "pílula") */
+        .toggle-container {
+            background-color: #ebf9eb; /* Verde bem claro */
+            border-radius: 20px;
+            display: inline-flex;
+            padding: 4px;
+            margin-bottom: 20px;
+            border: 1px solid #d0e9d0; /* Borda verde suave */
+        }
+
+        /* Opções de texto */
+        .toggle-option {
+            padding: 6px 20px;
+            border-radius: 18px;
+            cursor: pointer;
+            font-weight: bold;
+            color: #5cb85c; /* Verde padrão (Success) */
+            transition: all 0.3s ease;
+            user-select: none;
+        }
+
+        /* Opção selecionada (a "pílula" branca que corre) */
+        .toggle-option.active {
+            background-color: #ffffff; /* Fundo branco para destacar a opção ativa */
+            color: #28a745; /* Verde mais escuro para o texto ativo */
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        /* Efeito de hover para melhorar a UX */
+        .toggle-option:not(.active):hover {
+            background-color: rgba(255, 255, 255, 0.5);
+            color: #1e7e34;
+        }
+        .view-section {
+            display: none !important;
+        }
+
+        .view-section.active {
+            display: block !important;
+        }
+
+
     </style>
 
 
@@ -1082,6 +1140,47 @@
             });
         });
     </script>
+
+    <script type="text/javascript">
+        // 1. Prepara a URL e abre a modal
+        function PrepararExclusaoAnexo(url) {
+            $('#urlExclusaoTemp').val(url); // Armazena a URL no campo hidden da modal
+            $('#modalConfirmacaoExclusaoAnexo').modal('show');
+        }
+
+        $(document).ready(function () {
+            // 2. Ação do botão Confirmar dentro da modal
+            $('#btnConfirmarExclusaoAnexo').click(function () {
+                var urlFinal = $('#urlExclusaoTemp').val();
+                var $btn = $(this);
+
+                if (urlFinal !== "") {
+                    // Feedback visual
+                    $btn.prop('disabled', true).addClass('disabled');
+                    $btn.html('<i class="fa fa-spinner fa-spin"></i> Excluindo...');
+
+                    // Fecha a modal e redireciona
+                    $('#modalConfirmacaoExclusaoAnexo').modal('hide');
+                
+                    setTimeout(function () {
+                        $('.modal-backdrop').remove();
+                        $('#loadingIndicator').show();
+                        window.location.href = urlFinal;
+                    }, 400);
+                }
+            });
+
+            // Limpeza de segurança ao fechar
+            $('#modalConfirmacaoExclusaoAnexo').on('hidden.bs.modal', function () {
+                $('#urlExclusaoTemp').val("");
+                $('#btnConfirmarExclusaoAnexo').prop('disabled', false).removeClass('disabled').html('Confirmar Exclusão');
+            });
+        });
+    </script>
+
+
+
+
     @if (ViewBag.Message != null)
     {
         <script type="text/javascript">
