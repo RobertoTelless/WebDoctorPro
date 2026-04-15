@@ -140,7 +140,7 @@
                                 <h4 style="margin-left: 0px; margin-right: 0px;color:green; background-color: beige; font-weight:bold">Anexos</h4>
                                 <br />
                                 <div class="form-group">
-                                    @using (Html.BeginForm("UploadFilePaciente2", "Paciente2", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { enctype = "multipart/form-data", @id = "pwd-container2" }))
+                                    @using (Html.BeginForm("UploadFilePaciente2Blob", "Paciente2", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { enctype = "multipart/form-data", @id = "pwd-container2" }))
                                     {
                                         var listaAnexos = Model.PACIENTE_ANEXO.Where(p => p.PAAX_IN_ATIVO == 1).ToList();
 
@@ -185,9 +185,7 @@
                                                                         // Monta a URL direta do Azure
                                                                         var caminhoPdf = cond.PAAX_AQ_ARQUIVO.Replace("~/", "").Replace("~", "");
                                                                         var urlAzurePdf = "https://rtistoragemain.blob.core.windows.net/rti-datacontainer/" + caminhoPdf;
-                                                                        <td style="width: auto">
-                                                                            <a href="@urlAzurePdf" target="_blank">@cond.PAAX_NM_TITULO</a>
-                                                                        </td>
+                                                                        <a href="@urlAzurePdf" target="_blank">@cond.PAAX_NM_TITULO</a>
                                                                     }
                                                                     else { @cond.PAAX_NM_TITULO }
                                                                 </td>
@@ -207,69 +205,61 @@
                                                 <div class="row" style="display: flex; flex-wrap: wrap; justify-content: flex-start; margin-bottom: 20px;">
                                                     @foreach (var cond in listaAnexos)
                                                     {
-                                                        <div class="col-lg-2 col-md-2 col-sm-3 col-xs-4 text-center" style="margin-bottom: 25px; min-width: 130px;">
-                                                            <div style="display: flex; flex-direction: column; align-items: center; justify-content: space-between; height: 100%;">
-                    
-                                                                @* Container de Mídia (Altura fixa para alinhamento) *@
-                                                                <div style="height: 80px; display: flex; align-items: center; justify-content: center; width: 100%;">
-                        
-                                                                    @if (cond.PAAX_IN_TIPO == 1) // IMAGEM - Abre na mesma aba
+                                                        <div class="col-lg-2 col-md-2 col-sm-3 col-xs-4 text-center" style="margin-bottom: 30px; min-width: 140px;">
+    
+                                                            @* 2. Div interna (Card): É aqui que colocamos a borda, cantos arredondados, fundo e sombra leve *@
+                                                            <div style="border: 1px solid #ddd; border-radius: 8px; padding: 15px; background-color: #fff; box-shadow: 0 2px 4px rgba(0,0,0,0.05); display: flex; flex-direction: column; align-items: center; justify-content: space-between; height: 180px;">
+        
+                                                                @* Container de Mídia (Altura fixa para alinhamento centralizado) *@
+                                                                <div style="height: 90px; display: flex; align-items: center; justify-content: center; width: 100%;">
+                                                                    @if (cond.PAAX_IN_TIPO == 1) // IMAGEM - Exibe miniatura
                                                                     {
-                                                                        <a href="@Url.Action("VerAnexoPaciente", "Paciente2", new { id = cond.PAAX_CD_ID })" title="Visualizar Imagem">
-                                                                            <img src="@Url.Content(cond.PAAX_AQ_ARQUIVO)" class="img-thumbnail" style="width: 70px; height: 70px; object-fit: cover; border: 1px solid #ddd;" />
+                                                                        <a href="@Url.Action("VerFichaPaciente", "Paciente2", new { id = cond.PAAX_CD_ID })" title="Visualizar Imagem">
+                                                                            <img src="@("https://rtistoragemain.blob.core.windows.net/rti-datacontainer/" + cond.PAAX_AQ_ARQUIVO.Replace("~/", "").Replace("~", ""))" 
+                                                                                 class="img-thumbnail" 
+                                                                                 style="width: 70px; height: 70px; object-fit: cover; border: 1px solid #eee;"
+                                                                                 onerror="this.onerror=null;this.src='@Url.Content("~/Images/icone_imagem.jpg")';" />
                                                                         </a>
                                                                     }
-                                                                    else if (cond.PAAX_IN_TIPO == 2) // VÍDEO - Abre na mesma aba (Ícone comum)
+                                                                    else if (cond.PAAX_IN_TIPO == 2) // VÍDEO - Ícone de câmera
                                                                     {
-                                                                        <a href="@Url.Action("VerAnexoPaciente", "Paciente2", new { id = cond.PAAX_CD_ID })" title="Visualizar Vídeo">
+                                                                        <a href="@Url.Action("VerFichaPaciente", "Paciente2", new { id = cond.PAAX_CD_ID })" title="Visualizar Vídeo">
                                                                             <i class="fa fa-video-camera fa-4x text-navy"></i>
                                                                         </a>
                                                                     }
-                                                                    else if (cond.PAAX_IN_TIPO == 3) // PDF - ÚNICO QUE ABRE EM NOVA ABA
+                                                                    else if (cond.PAAX_IN_TIPO == 3) // PDF - Ícone específico e abre em nova aba
                                                                     {
-                                                                        // REMOVIDO O "@" ANTES DA CHAVE ABAIXO
-                                                                        {
-                                                                            // 1. Limpa o caminho do banco (remove ~/ e deixa Imagens/...)
-                                                                            var blobPath = cond.PAAX_AQ_ARQUIVO.Replace("~/", "").Replace("~", "");
+                                                                        var blobPath = cond.PAAX_AQ_ARQUIVO.Replace("~/", "").Replace("~", "");
+                                                                        var urlAzurePdf = "https://rtistoragemain.blob.core.windows.net/rti-datacontainer/" + blobPath;
 
-                                                                            // 2. Monta a URL direta para o Azure
-                                                                            var urlAzurePdf = "https://rtistoragemain.blob.core.windows.net/rti-datacontainer/" + blobPath;
-
-                                                                            // O Razor entende que deve voltar para HTML quando encontra a tag <a>
-                                                                            <td style="width: auto">
-                                                                                <a href="@urlAzurePdf" target="_blank">@cond.PAAX_NM_TITULO</a>
-                                                                            </td>
-                                                                        }
-                                                                    }
-                                                                    else if (cond.PAAX_IN_TIPO == 4) // ÁUDIO - Abre na mesma aba
-                                                                    {
-                                                                        <a href="@Url.Action("VerAnexoPacienteAudio", "Paciente", new { id = cond.PAAX_CD_ID })" title="Ouvir Áudio">
-                                                                            <i class="fa fa-volume-up fa-4x text-info"></i>
+                                                                        <a href="@urlAzurePdf" target="_blank" title="Visualizar PDF">
+                                                                            <i class="fa fa-file-pdf-o fa-4x text-danger"></i>
                                                                         </a>
                                                                     }
-                                                                    else // PADRÃO PARA OUTROS
+                                                                    else // PADRÃO - Ícone de arquivo genérico
                                                                     {
                                                                         <i class="fa fa-file-o fa-4x text-muted"></i>
                                                                     }
                                                                 </div>
 
-                                                                @* Nome do Arquivo *@
-                                                                <div style="font-size: 11px; margin-top: 8px; font-weight: bold; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; width: 100%;" title="@cond.PAAX_NM_TITULO">
+                                                                @* Nome do Arquivo - Com ellipsis para nomes longos *@
+                                                                <div style="font-size: 11px; margin-top: 10px; font-weight: bold; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; width: 100%; color: #333;" title="@cond.PAAX_NM_TITULO">
                                                                     @cond.PAAX_NM_TITULO
                                                                 </div>
 
                                                                 @* Botões de Ação (Excluir e Download) *@
-                                                                <div style="margin-top: 5px; display: flex; gap: 12px; justify-content: center;">
-                                                                    <span style="cursor:pointer;" onclick="PrepararExclusaoAnexo('/Paciente/ExcluirAnexo/@cond.PAAX_CD_ID')" title="Excluir">
+                                                                <div style="margin-top: 10px; display: flex; gap: 15px; justify-content: center;">
+                                                                    <span style="cursor:pointer;" onclick="PrepararExclusaoAnexo('/Paciente2/ExcluirFicha/@cond.PAAX_CD_ID')" title="Excluir">
                                                                         <i class="fa fa-trash-o fa-lg text-navy"></i>
                                                                     </span>
-                                                                    <a href="@Url.Action("DownloadPaciente", "Paciente2", new { id = cond.PAAX_CD_ID })" title="Download">
+                                                                    <a href="@Url.Action("DownloadFichaPaciente", "Paciente2", new { id = cond.PAAX_CD_ID })" title="Download">
                                                                         <i class="fa fa-download fa-lg text-navy"></i>
                                                                     </a>
                                                                 </div>
 
                                                             </div>
                                                         </div>
+
                                                     }
                                                 </div>
                                             </div>

@@ -4868,6 +4868,7 @@ namespace GEDSys_Presentation.Controllers
                 {
                     Session["EscondeAba"] = 1;
                 }
+                Session["VACO"] = vm.VACO_CD_ID;
 
                 // Grava Acesso
                 ControleAcessoMetodo grava = new ControleAcessoMetodo(aceApp);
@@ -5014,6 +5015,13 @@ namespace GEDSys_Presentation.Controllers
 
                     // Serializa paciente
                     String json = JsonConvert.SerializeObject(vm);
+
+                    // Altera data de preco
+                    Int32 vaco = (Int32)Session["VACO"];
+                    if (vm.VACO_CD_ID != vaco)
+                    {
+                        vm.PACI_DT_PRECO = DateTime.Today.Date;
+                    }
 
                     // Executa a operação
                     Session["FlagAlteraPaciente"] = 1;
