@@ -29,6 +29,22 @@
         <br />
     </div>
     <div class="row">
+        <div class="form-group" style=" margin-left: 15px; margin-right: 0px;">
+            @* --- INÍCIO DA AJUDA CONTEXTUAL --- *@
+            <details class="ajuda-contextual">
+                <summary><i class="fa fa-info-circle text-info"></i> Resumo das funcionalidades desta página</summary>
+                <div class="well well-sm">
+                    <p>Essa é a página de visualização de anexos (imagens ou vídeos) de pagamentos <b>WebDoctorPro</b>. Nela você poderá:</p>
+                    <ol>
+                        <li>Visualizar uma imagem anexada com recursos de ampliação e anotação na prória imagem</li>
+                        <li>Visualizar um vídeo anexado com recursos de velocidade de exibição, baixa (download), tela cheia e PiP (picture in picture)</li>
+                    </ol>
+                </div>
+            </details>
+            @* --- FIM DA AJUDA CONTEXTUAL --- *@
+        </div>
+    </div>
+    <div class="row">
         <div class="col-lg-12 col-md-12 col-xs-12">
             <div class="col-lg-12 col-md-12 col-xs-12 ibox float-e-margins">
                 <div class="ibox-title">
@@ -65,17 +81,31 @@
                         <div class="form-group">
                             @if (Model.PAAN_IN_TIPO == 1)
                             {
-                                <div class="col-lg-12 col-md-12 col-sm-12">
-                                    <div class="col-lg-12 col-md-12 col-sm-12">
-                                        <img src="@Url.Content(Model.PAAN_AQ_ARQUIVO)" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Clique Ctrl+Ctrl para ampliar a imagem" style="width: auto; height: auto; max-height: 1530px; max-width: 1530px;">
-                                    </div>
+                                <div class="col-lg-12">
+                                    @* Container para posicionamento absoluto dos Pins *@
+                                    <div id="image-container" style="position: relative; display: inline-block; cursor: crosshair;">
+        
+                                        <img id="img-exame" 
+                                             src="@("https://rtistoragemain.blob.core.windows.net/rti-datacontainer/" + Model.PAAN_AQ_ARQUIVO.Replace("~/", "").Replace("~", ""))" 
+                                             class="img-responsive" 
+                                             style="max-height: 1530px; max-width: 100%;"
+                                             onerror="this.onerror=null;this.src='@Url.Content("~/Images/icone_imagem.jpg")';">
+
+                                    </div> 
                                 </div>
                             }
+
                             @if (Model.PAAN_IN_TIPO == 2)
                             {
                                 <div class="col-lg-12 col-md-12 col-sm-12">
                                     <figure>
-                                        <iframe width="900" height="600" src="@Url.Content(Model.PAAN_AQ_ARQUIVO)" frameborder="0" allowfullscreen></iframe>
+                                        @{
+                                            var urlVideoAzure = "https://rtistoragemain.blob.core.windows.net/rti-datacontainer/" + Model.PAAN_AQ_ARQUIVO.Replace("~/", "").Replace("~", "");
+                                        }
+                                        <video width="900" height="600" controls style="background: #000;">
+                                            <source src="@urlVideoAzure" type="video/mp4">
+                                            Seu navegador não suporta a tag de vídeo.
+                                        </video>
                                     </figure>
                                 </div>
                             }

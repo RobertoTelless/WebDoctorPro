@@ -1,0 +1,349 @@
+﻿@using Presentation.Extensions
+@using CrossCutting;
+@using System.IO;
+@using EntitiesServices.Work_Classes;
+@model EntitiesServices.Model.VACINA
+@{
+    Layout = "~/Views/Shared/_Layout_Admin.cshtml";
+    ViewBag.Title = "WebDoctor - Medicamentos";
+    ViewBag.MetaDescription = "WebDoctor - Medicamentos - Lista de medicamentos";
+    ViewBag.MetaKeywords = "WebDoctor, Medicamento";
+}
+    
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="modalContainer">
+        <div id="modal" class="modal" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        @*titulo gerado dinamicamente*@
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        @*Gerado dinamicamente*@
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="page-title">
+        <h3 class="title">Vacinas</h3>
+        <br />
+        <ol class="breadcrumb">
+            <li>
+                <a href="@Url.Action("MontarTelaPaciente", "Paciente")">Dashboard</a>
+            </li>
+            <li class="active">
+                <strong>Vacinas</strong>
+            </li>
+        </ol>
+        <br />
+    </div>
+    <div class="row">
+        <div class="form-group" style=" margin-left: 15px; margin-right: 0px;">
+            @* --- INÍCIO DA AJUDA CONTEXTUAL --- *@
+            <details class="ajuda-contextual">
+                <summary><i class="fa fa-info-circle text-info"></i> Resumo das funcionalidades desta página</summary>
+                <div class="well well-sm">
+                    <p>Essa é a página do cadastro de vacinas do <b>WebDoctorPro</b>. Nela você poderá:</p>
+                    <ol>
+                        <li>Ver as vacinas cadastradas.</li>
+                        <li>Incluir nova vacina</li>
+                        <li>Alterar ou excluir uma vacina cadastrada.</li>
+                        <li>Impressão a lista de vacinas cadastradas em formato PDF.</li>
+                    </ol>
+                </div>
+            </details>
+            @* --- FIM DA AJUDA CONTEXTUAL --- *@
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-12 col-md-12 col-xs-12">
+            <div class="col-lg-12 col-md-12 col-xs-12 ibox float-e-margins">
+                <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                    <div class="col-lg-12 col-md-12 col-xs-12">
+                        <a href="@Url.Action("Incluirvacina", "Vacina")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Inclusão de uma nova vvaacciinnaa" class="btn btn-sm btn-primary btn-loading" id="emp" OnClick = "Fade()">Nova Vacina</a>                
+                        @Html.ButtonLinkIndex(text: "Imprimir", controller: "Vacina", action: "GerarRelatorioVacinas")
+                        @Html.ButtonLinkIndex(text: "Voltar", controller: "Paciente", action: "MontarTelaPaciente", htmlAttributes: new { @class = "btn-loading" })
+                        <a href="@Url.Action((String)Session["AjudaNivel"])"  class="btn btn-sm btn-danger" target="_blank">Ajuda</a>                
+                        <span id="loadingIndicator" style="display: none; margin-left: 10px; color: #007bff;">
+                            <i class="fa fa-spinner fa-spin"></i> Processando...
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-12 col-md-12 col-xs-12">
+            <div class="col-lg-12 col-md-12 col-xs-12 ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>Medicamentos</h5>
+                </div>
+                <div class="ibox-content">
+                    @if (!ViewData.ModelState.IsValid)
+                    {
+                        <div class="alert alert-danger">
+                            <button type="button" class="close" data-dismiss="alert">Fechar</button>
+                            @Html.ValidationSummary(false, "", new { @class = "text-danger" })
+                        </div>
+                    }
+                    <div class="row">
+                        @if (ViewBag.Listas != null && (ViewBag.Listas as List<EntitiesServices.Model.VACINA>).Count > 0)
+                        {
+                            <table class="table table-striped table-bordered table-hover dataTables-example">
+                                <thead style="background-color:lightsteelblue">
+                                    <tr>
+                                        <th style="width: auto">Nome da Vacina</th>
+                                        <th style="width: auto">Fabricante</th>
+                                        <th style="width: auto">Periodicidade (Meses)</th>
+                                        <th class="td-one-action">Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var cond in (ViewBag.Listas as List<EntitiesServices.Model.VACINA>))
+                                    {
+                                        <tr>
+                                            <td style="width: auto; cursor: pointer; text-decoration: underline;"><a href="@Url.Action("EditarVacina", "Vacina", new { id = cond.VACI_CD_ID })" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página de alteração de vacina"/>@cond.VACI_NM_NOME</td>
+                                            <td style="width: auto">@cond.VACI_NM_FABRICANTE</td>
+                                            <td style="width: auto">@cond.VACI_NR_PERIODO</td>
+                                            <td class="td-one-action">
+                                                @Html.TableLinkDetails(cond.VACI_CD_ID, "EditarVacina", "fa-edit", "Alterar Vacina")
+                                                @if (cond.VACI_IN_ATIVO == 1)
+                                                {
+                                                    <span style="color: #337ab7; cursor:pointer;" alt="Desativar" class="tbl-link fa-lg fa fa-trash-o" onclick="ShowModalExcluir('/Vacina/ExcluirVacina/@cond.VACI_CD_ID')" title="Excluir Vacina"></span>
+                                                }
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        }
+                        else
+                        {
+                            <div class="row">
+                                <div class="col-lg-4 col-md-4 col-xs-2">
+
+                                </div>
+                                <div style="border: 5px solid #F6A54A; padding: 10px; border-radius: 8px 8px; " class="col-lg-4 col-md-4 col-xs-8">
+                                    <h2 style="font-weight: bold">Nenhuma vacina está cadastrada</h2>
+                                    @Html.ButtonLinkIndex(text: "Retirar Filtro", controller: "Medicamento", action: "RetirarFiltroMedicamento")
+                                </div>
+                                <div class="col-lg-4 col-md-4 col-xs-2">
+
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <link href="~/Content/themes/base/all.css" rel="stylesheet" />  
+    @Styles.Render("~/Content/plugins/dataTables/dataTablesStyles")
+    @Styles.Render("~/plugins/jasnyBootstrapStyles")
+
+        <style>
+        /* 1. Aumenta a largura e garante o espaço interno */
+        #toast-container > .toast {
+            width: 500px !important; 
+            max-width: 500px !important;
+            opacity: 0.95 !important;
+        }
+
+        /* 2. Remove o ícone nativo do Toastr (Background Image) */
+        #toast-container > .toast-success {
+            background-image: none !important;
+        }
+
+        /* 3. Remove ícones do FontAwesome/Inspinia injetados via ::before no Título */
+        .toast-success .toast-title::before, 
+        .toast-success .toast-title::after,
+        .toast-success::before {
+            content: none !important;
+            display: none !important;
+        }
+
+        /* 4. Ajusta o recuo do texto já que removemos o ícone */
+        .toast-success .toast-title, 
+        .toast-success .toast-message {
+            padding-left: 10px !important;
+        }
+    </style>
+
+}
+
+@section Scripts {
+
+    @Scripts.Render("~/plugins/dataTables")
+    @Scripts.Render("~/bundles/inputmask")
+    @Scripts.Render("~/plugins/jasnyBootstrap")
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.maskedinput/1.4.1/jquery.maskedinput.js"></script>
+   
+    <script type="text/javascript" src="~/Scripts/moment.min.js"></script>
+    <script type="text/javascript" src="~/Scripts/bootstrap.min.js"></script>
+   
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('[data-toggle="popover"]').popover();
+        });
+    </script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-toggle="popover"]'));
+            var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
+                return new bootstrap.Popover(popoverTriggerEl);
+            });
+        });
+    </script>
+
+    <!-- Handler de fechamento do browser -->
+    <script type="text/javascript">
+        window.onbeforeunload = function ()
+        {
+            navigator.sendBeacon('../ControleAcesso/LogSessionTime');
+        }; 
+    </script>
+    
+    <script>
+        $(function () {
+            limpaModal();
+        });
+
+        function limpaModal() {
+            $('#btnModal').remove();
+            $('#modalTitle').remove();
+        }
+
+        function ShowModalExcluir(url) {
+            $('#modal').find('.modal-footer').prepend('<a id="btnModal" alt="Desativar" class="btn btn-primary" href="' + url + '" target="_self" title="Desativar">Confirmar</a>');
+            $('#modal').find('.modal-body').html('Confirma exclusão da Vacina?');
+            $('#modal').find('.modal-header').prepend('<h5 id="modalTitle" class="modal-title">Confimar Exclusão</h5>');
+            $('#modal').modal('show');
+        }
+    </script>
+
+    <script type="text/javascript">
+        $(document).ready(function () { 
+            $('.btn-loading').on('click', function (e) {            
+                $(this).prop('disabled', true);
+                $(this).addClass('disabled');
+                $('#loadingIndicator').show();
+                var tagName = $(this).prop('tagName').toLowerCase();
+                if (tagName === 'a') {
+                    e.preventDefault(); 
+                    var targetUrl = $(this).attr('href');
+                    window.location.href = targetUrl;
+
+                } else if (tagName === 'button' || tagName === 'input') {
+                    $(this).closest('form').submit();
+                }
+            });
+        });
+    </script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('.btn-loading1').on('click', function (e) {
+            
+                var $this = $(this);
+                var tagName = $this.prop('tagName').toLowerCase();
+                $this.addClass('disabled'); 
+                $('#loadingIndicator').show();
+
+                if (tagName === 'a') {
+                    e.preventDefault();
+                
+                    var targetUrl = $this.attr('href');
+                    window.location.href = targetUrl;
+                
+                } else if (tagName === 'button' || tagName === 'input') {               
+                    $this.closest('form').submit();
+                    $this.prop('disabled', true);
+                }
+            });
+        });
+    </script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            $('.dataTables-example').DataTable({
+                pageLength: 25,
+                dom: '<"html5buttons"B>lTfgitp',
+                buttons: [
+                    { extend: 'excel', title: 'Vacina_Planilha' },
+                    {
+                        extend: 'print',
+                        customize: function (win) {
+                            $(win.document.body).addClass('white-bg');
+                            $(win.document.body).css('font-size', '10px');
+
+                            $(win.document.body).find('table')
+                                    .addClass('compact')
+                                    .css('font-size', 'inherit');
+                        }
+                    }
+                ]
+            });           
+        });
+    </script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            // Configurações globais do Toastr
+            toastr.options = {
+                "closeButton": true,
+                //"debug": false,
+                "progressBar": true,
+                "preventDuplicates": false,
+                "positionClass": "toast-top-right",
+                "onclick": null,
+                "showDuration": "400",
+                "hideDuration": "1000",
+                "timeOut": "15000",
+                "extendedTimeOut": "5000",
+                "showEasing": "swing",
+                "hideEasing": "linear",
+                "showMethod": "fadeIn",
+                "hideMethod": "fadeOut"
+            //    "iconClass": "customer-toast-info", // Se quiser remover o ícone padrão totalmente
+            //    "titleClass": "toast-title",
+            //    "messageClass": "toast-message"
+            };
+
+            // Verifica se existe mensagem de sucesso no TempData (vinda do Redirect)
+            var msgSucesso = '@TempData["MensagemAcerto"]';
+            if (msgSucesso != '') {
+                toastr.success(msgSucesso, 'Sucesso!');
+            }
+
+            // Verifica se existe mensagem de erro
+            var msgErro = '@TempData["MensagemErro"]';
+            if (msgErro != '') {
+                toastr.error(msgErro, 'Erro!');
+            }
+        });
+    </script>
+
+}
+
+@if (ViewBag.Message != null)
+{
+    <script type="text/javascript">
+            window.onload = function () {
+                alert("@ViewBag.Message");
+            };
+    </script>
+}
+

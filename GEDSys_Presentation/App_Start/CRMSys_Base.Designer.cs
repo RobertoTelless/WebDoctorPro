@@ -6539,5 +6539,23 @@ namespace GEDSys_Presentation.App_Start {
                 return ResourceManager.GetString("M0741", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Consulta uma cadeia de caracteres localizada semelhante a Vacina já cadastrada.
+        /// </summary>
+        internal static string M0742 {
+            get {
+                return ResourceManager.GetString("M0742", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Consulta uma cadeia de caracteres localizada semelhante a Imposs[ivel excluir essa vacina. Ela está relacionada com outros registros.
+        /// </summary>
+        internal static string M0743 {
+            get {
+                return ResourceManager.GetString("M0743", resourceCulture);
+            }
+        }
     }
 }

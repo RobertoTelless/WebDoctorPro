@@ -9,6 +9,7 @@ namespace ModelServices.Interfaces.Repositories
 {
     public interface IVacinaRepository : IRepositoryBase<VACINA>
     {
+        VACINA CheckExist(VACINA item, Int32 idAss);
         List<VACINA> GetAllItens(Int32 idAss);
         VACINA GetItemById(Int32 id);
     }

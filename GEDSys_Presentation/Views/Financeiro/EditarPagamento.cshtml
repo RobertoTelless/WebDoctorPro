@@ -25,12 +25,38 @@
                 <div class="modal-body text-center">
                     <h3>Deseja realmente excluir este anexo?</h3>
                     <p>Esta ação removerá o arquivo permanentemente do prontuário do paciente.</p>
-                    <input type="hidden" id="urlExclusaoTemp" value="" />
+                    <input type="hidden" id="urlExclusaoTempNFvalue="" />
                 </div>
             
                 <div class="modal-footer">
                     <button type="button" class="btn btn-white" data-dismiss="modal">Cancelar</button>
                     <button type="button" class="btn btn-danger" id="btnConfirmarExclusaoAnexo">Confirmar Exclusão</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal inmodal fade" id="modalConfirmacaoExclusaoNota" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content animated bounceInRight">
+                <div class="modal-header" style="position: relative; padding: 30px 15px;">
+                    <img src="@Url.Content("~/Images/Prontuario/prontuario_icon_3.png?v=1.1")" 
+                         style="position: absolute; left: 15px; top: 15px; width: 40px; height: auto;" 
+                         alt="Ícone" />
+
+                    <i class="fa fa-trash-o modal-icon text-danger" style="display: block;"></i>
+                    <h4 class="modal-title">Confirmação de Exclusão de Nota Fiscal</h4>
+                    <small class="font-bold">WebDoctorPro - Gestão de Nota Fiscal</small>
+                </div>
+            
+                <div class="modal-body text-center">
+                    <h3>Deseja realmente excluir a nota fiscal desse pagamento?</h3>
+                    <p>Esta ação removerá o arquivo permanentemente a nota fiscal do pagamento.</p>
+                    <input type="hidden" id="urlExclusaoTemp" value="" />
+                </div>
+            
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-white" data-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-danger" id="btnConfirmarExclusaoNota">Confirmar Exclusão</button>
                 </div>
             </div>
         </div>
@@ -72,6 +98,26 @@
             </li>
         </ol>
         <br />
+    </div>
+    <div class="row">
+        <div class="form-group" style=" margin-left: 15px; margin-right: 0px;">
+            @* --- INÍCIO DA AJUDA CONTEXTUAL --- *@
+            <details class="ajuda-contextual">
+                <summary><i class="fa fa-info-circle text-info"></i> Resumo das funcionalidades desta página</summary>
+                <div class="well well-sm">
+                    <p>Essa é a página de alteração de pagamentos do <b>WebDoctorPro</b>. Nela você poderá:</p>
+                    <ol>
+                        <li>Alterar informações de um pagamento</li>
+                        <li>Informar a quitação desse pagamento</li>
+                        <li>Criar anotações a esse pagamento</li>
+                        <li>Anexar, excluir ou visualizar arquivos desse pagamento</li>
+                        <li>Anexar nota fiscal a esse pagamento (Apenas NF-e no padrão da Receita Federal)</li>
+                        <li>Visualizar, excluir ou baixar notas fiscais anexadas a esse pagamento</li>
+                    </ol>
+                </div>
+            </details>
+            @* --- FIM DA AJUDA CONTEXTUAL --- *@
+        </div>
     </div>
     <div class="row">
         <div class="col-lg-12 col-md-12 col-xs-12">
@@ -410,7 +456,7 @@
                                                 <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Anexos</h4>
                                                 <br />
                                                 <div class="form-group">
-                                                    @using (Html.BeginForm("UploadFilePagamento", "Financeiro", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { enctype = "multipart/form-data", @id = "pwd-container2" }))
+                                                    @using (Html.BeginForm("UploadFilePagamentoBlob", "Financeiro", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { enctype = "multipart/form-data", @id = "pwd-container2" }))
                                                     {
                                                         var listaAnexos = Model.PAGAMENTO_ANEXO.Where(p => p.PAAN_IN_ATIVO == 1).ToList();
 
@@ -424,8 +470,6 @@
                                                                 </div>
                                                             </div>
                                                         </div>
-
-
 
                                                         if (listaAnexos.Count > 0)
                                                         {
@@ -454,7 +498,11 @@
                                                                                     }
                                                                                     else if (cond.PAAN_IN_TIPO == 3)
                                                                                     {
-                                                                                        <a href="~/PdfViewer/web/viewer.html?file=@(cond.PAAN_AQ_ARQUIVO.Replace("~", ""))&ReturnUrl=@Request.Url.AbsolutePath" target="_blank">@cond.PAAN_NM_TITULO</a>
+                                                                                        // Monta a URL direta do Azure
+                                                                                        var caminhoPdf = cond.PAAN_AQ_ARQUIVO.Replace("~/", "").Replace("~", "");
+                                                                                        var urlAzurePdf = "https://rtistoragemain.blob.core.windows.net/rti-datacontainer/" + caminhoPdf;
+
+                                                                                        <a href="@urlAzurePdf" target="_blank">@cond.PAAN_NM_TITULO</a>
                                                                                     }
                                                                                     else { @cond.PAAN_NM_TITULO }
                                                                                 </td>
@@ -474,59 +522,60 @@
                                                                 <div class="row" style="display: flex; flex-wrap: wrap; justify-content: flex-start; margin-bottom: 20px;">
                                                                     @foreach (var cond in listaAnexos)
                                                                     {
-                                                                        <div class="col-lg-2 col-md-2 col-sm-3 col-xs-4 text-center" style="margin-bottom: 25px; min-width: 130px;">
-                                                                            <div style="display: flex; flex-direction: column; align-items: center; justify-content: space-between; height: 100%;">
-                    
-                                                                                @* Container de Mídia (Altura fixa para alinhamento) *@
-                                                                                <div style="height: 80px; display: flex; align-items: center; justify-content: center; width: 100%;">
-                        
-                                                                                    @if (cond.PAAN_IN_TIPO == 1) // IMAGEM - Abre na mesma aba
-                                                                                    {
-                                                                                        <a href="@Url.Action("VerAnexoPagamento", "Financeiro", new { id = cond.PAAN_CD_ID })" title="Visualizar Imagem">
-                                                                                            <img src="@Url.Content(cond.PAAN_AQ_ARQUIVO)" class="img-thumbnail" style="width: 70px; height: 70px; object-fit: cover; border: 1px solid #ddd;" />
-                                                                                        </a>
-                                                                                    }
-                                                                                    else if (cond.PAAN_IN_TIPO == 2) // VÍDEO - Abre na mesma aba (Ícone comum)
-                                                                                    {
-                                                                                        <a href="@Url.Action("VerAnexoPagamento", "Financeiro", new { id = cond.PAAN_CD_ID })" title="Visualizar Vídeo">
-                                                                                            <i class="fa fa-video-camera fa-4x text-navy"></i>
-                                                                                        </a>
-                                                                                    }
-                                                                                    else if (cond.PAAN_IN_TIPO == 3) // PDF - ÚNICO QUE ABRE EM NOVA ABA
-                                                                                    {
-                                                                                        <a href="~/PdfViewer/web/viewer.html?file=@(cond.PAAN_AQ_ARQUIVO.Replace("~", ""))&ReturnUrl=@Request.Url.AbsolutePath" target="_blank" title="Visualizar PDF">
-                                                                                            <i class="fa fa-file-pdf-o fa-5x text-danger"></i>
-                                                                                        </a>
-                                                                                    }
-                                                                                    else if (cond.PAAN_IN_TIPO == 4) // ÁUDIO - Abre na mesma aba
-                                                                                    {
-                                                                                        <a href="@Url.Action("VerAnexoPagamentoAudio", "Financeiro", new { id = cond.PAAN_CD_ID })" title="Ouvir Áudio">
-                                                                                            <i class="fa fa-volume-up fa-4x text-info"></i>
-                                                                                        </a>
-                                                                                    }
-                                                                                    else // PADRÃO PARA OUTROS
-                                                                                    {
-                                                                                        <i class="fa fa-file-o fa-4x text-muted"></i>
-                                                                                    }
-                                                                                </div>
+                                                                            <div class="col-lg-2 col-md-2 col-sm-3 col-xs-4 text-center" style="margin-bottom: 30px; min-width: 140px;">
+    
+                                                                                @* 2. Div interna (Card): É aqui que colocamos a borda, cantos arredondados, fundo e sombra leve *@
+                                                                                <div style="border: 1px solid #ddd; border-radius: 8px; padding: 15px; background-color: #fff; box-shadow: 0 2px 4px rgba(0,0,0,0.05); display: flex; flex-direction: column; align-items: center; justify-content: space-between; height: 180px;">
+        
+                                                                                    @* Container de Mídia (Altura fixa para alinhamento centralizado) *@
+                                                                                    <div style="height: 90px; display: flex; align-items: center; justify-content: center; width: 100%;">
+                                                                                        @if (cond.PAAN_IN_TIPO == 1) // IMAGEM - Exibe miniatura
+                                                                                        {
+                                                                                            <a href="@Url.Action("VerAnexoPagamento", "Financeiro", new { id = cond.PAAN_CD_ID })" title="Visualizar Imagem">
+                                                                                                <img src="@("https://rtistoragemain.blob.core.windows.net/rti-datacontainer/" + cond.PAAN_AQ_ARQUIVO.Replace("~/", "").Replace("~", ""))" 
+                                                                                                     class="img-thumbnail" 
+                                                                                                     style="width: 70px; height: 70px; object-fit: cover; border: 1px solid #eee;"
+                                                                                                     onerror="this.onerror=null;this.src='@Url.Content("~/Images/icone_imagem.jpg")';" />
+                                                                                            </a>
+                                                                                        }
+                                                                                        else if (cond.PAAN_IN_TIPO == 2) // VÍDEO - Ícone de câmera
+                                                                                        {
+                                                                                            <a href="@Url.Action("VerAnexoPagamento", "Financeiro", new { id = cond.PAAN_CD_ID })" title="Visualizar Vídeo">
+                                                                                                <i class="fa fa-video-camera fa-4x text-navy"></i>
+                                                                                            </a>
+                                                                                        }
+                                                                                        else if (cond.PAAN_IN_TIPO == 3) // PDF - Ícone específico e abre em nova aba
+                                                                                        {
+                                                                                            var blobPath = cond.PAAN_AQ_ARQUIVO.Replace("~/", "").Replace("~", "");
+                                                                                            var urlAzurePdf = "https://rtistoragemain.blob.core.windows.net/rti-datacontainer/" + blobPath;
 
-                                                                                @* Nome do Arquivo *@
-                                                                                <div style="font-size: 11px; margin-top: 8px; font-weight: bold; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; width: 100%;" title="@cond.PAAN_NM_TITULO">
-                                                                                    @cond.PAAN_NM_TITULO
-                                                                                </div>
+                                                                                            <a href="@urlAzurePdf" target="_blank" title="Visualizar PDF">
+                                                                                                <i class="fa fa-file-pdf-o fa-4x text-danger"></i>
+                                                                                            </a>
+                                                                                        }
+                                                                                        else // PADRÃO - Ícone de arquivo genérico
+                                                                                        {
+                                                                                            <i class="fa fa-file-o fa-4x text-muted"></i>
+                                                                                        }
+                                                                                    </div>
 
-                                                                                @* Botões de Ação (Excluir e Download) *@
-                                                                                <div style="margin-top: 5px; display: flex; gap: 12px; justify-content: center;">
-                                                                                    <span style="cursor:pointer;" onclick="PrepararExclusaoAnexo('/Financeiro/ExcluirAnexoPagamento/@cond.PAAN_CD_ID')" title="Excluir">
-                                                                                        <i class="fa fa-trash-o fa-lg text-navy"></i>
-                                                                                    </span>
-                                                                                    <a href="@Url.Action("DownloadPagamento", "Financeiro", new { id = cond.PAAN_CD_ID })" title="Download">
-                                                                                        <i class="fa fa-download fa-lg text-navy"></i>
-                                                                                    </a>
-                                                                                </div>
+                                                                                    @* Nome do Arquivo - Com ellipsis para nomes longos *@
+                                                                                    <div style="font-size: 11px; margin-top: 10px; font-weight: bold; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; width: 100%; color: #333;" title="@cond.PAAN_NM_TITULO">
+                                                                                        @cond.PAAN_NM_TITULO
+                                                                                    </div>
 
+                                                                                    @* Botões de Ação (Excluir e Download) *@
+                                                                                    <div style="margin-top: 10px; display: flex; gap: 15px; justify-content: center;">
+                                                                                        <span style="cursor:pointer;" onclick="PrepararExclusaoAnexo('/Financeiro/ExcluirAnexoPagamento/@cond.PAAN_CD_ID')" title="Excluir">
+                                                                                            <i class="fa fa-trash-o fa-lg text-navy"></i>
+                                                                                        </span>
+                                                                                        <a href="@Url.Action("DownloadPagamento", "Financeiro", new { id = cond.PAAN_CD_ID })" title="Download">
+                                                                                            <i class="fa fa-download fa-lg text-navy"></i>
+                                                                                        </a>
+                                                                                    </div>
+
+                                                                                </div>
                                                                             </div>
-                                                                        </div>
                                                                     }
                                                                 </div>
                                                             </div>
@@ -555,7 +604,7 @@
                                                 <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Anexos</h4>
                                                 <br />
                                                 <div class="form-group">
-                                                    @using (Html.BeginForm("UploadFilePagamento", "Financeiro", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { enctype = "multipart/form-data", @id = "pwd-container2" }))
+                                                    @using (Html.BeginForm("UploadFilePagamentoBlob", "Financeiro", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { enctype = "multipart/form-data", @id = "pwd-container2" }))
                                                     {
                                                         var listaAnexos = Model.PAGAMENTO_ANEXO.Where(p => p.PAAN_IN_ATIVO == 1).ToList();
 
@@ -569,8 +618,6 @@
                                                                 </div>
                                                             </div>
                                                         </div>
-
-
 
                                                         if (listaAnexos.Count > 0)
                                                         {
@@ -599,7 +646,11 @@
                                                                                     }
                                                                                     else if (cond.PAAN_IN_TIPO == 3)
                                                                                     {
-                                                                                        <a href="~/PdfViewer/web/viewer.html?file=@(cond.PAAN_AQ_ARQUIVO.Replace("~", ""))&ReturnUrl=@Request.Url.AbsolutePath" target="_blank">@cond.PAAN_NM_TITULO</a>
+                                                                                        // Monta a URL direta do Azure
+                                                                                        var caminhoPdf = cond.PAAN_AQ_ARQUIVO.Replace("~/", "").Replace("~", "");
+                                                                                        var urlAzurePdf = "https://rtistoragemain.blob.core.windows.net/rti-datacontainer/" + caminhoPdf;
+
+                                                                                        <a href="@urlAzurePdf" target="_blank">@cond.PAAN_NM_TITULO</a>
                                                                                     }
                                                                                     else { @cond.PAAN_NM_TITULO }
                                                                                 </td>
@@ -619,59 +670,60 @@
                                                                 <div class="row" style="display: flex; flex-wrap: wrap; justify-content: flex-start; margin-bottom: 20px;">
                                                                     @foreach (var cond in listaAnexos)
                                                                     {
-                                                                        <div class="col-lg-2 col-md-2 col-sm-3 col-xs-4 text-center" style="margin-bottom: 25px; min-width: 130px;">
-                                                                            <div style="display: flex; flex-direction: column; align-items: center; justify-content: space-between; height: 100%;">
-                    
-                                                                                @* Container de Mídia (Altura fixa para alinhamento) *@
-                                                                                <div style="height: 80px; display: flex; align-items: center; justify-content: center; width: 100%;">
-                        
-                                                                                    @if (cond.PAAN_IN_TIPO == 1) // IMAGEM - Abre na mesma aba
-                                                                                    {
-                                                                                        <a href="@Url.Action("VerAnexoPagamento", "Financeiro", new { id = cond.PAAN_CD_ID })" title="Visualizar Imagem">
-                                                                                            <img src="@Url.Content(cond.PAAN_AQ_ARQUIVO)" class="img-thumbnail" style="width: 70px; height: 70px; object-fit: cover; border: 1px solid #ddd;" />
-                                                                                        </a>
-                                                                                    }
-                                                                                    else if (cond.PAAN_IN_TIPO == 2) // VÍDEO - Abre na mesma aba (Ícone comum)
-                                                                                    {
-                                                                                        <a href="@Url.Action("VerAnexoPagamento", "Financeiro", new { id = cond.PAAN_CD_ID })" title="Visualizar Vídeo">
-                                                                                            <i class="fa fa-video-camera fa-4x text-navy"></i>
-                                                                                        </a>
-                                                                                    }
-                                                                                    else if (cond.PAAN_IN_TIPO == 3) // PDF - ÚNICO QUE ABRE EM NOVA ABA
-                                                                                    {
-                                                                                        <a href="~/PdfViewer/web/viewer.html?file=@(cond.PAAN_AQ_ARQUIVO.Replace("~", ""))&ReturnUrl=@Request.Url.AbsolutePath" target="_blank" title="Visualizar PDF">
-                                                                                            <i class="fa fa-file-pdf-o fa-5x text-danger"></i>
-                                                                                        </a>
-                                                                                    }
-                                                                                    else if (cond.PAAN_IN_TIPO == 4) // ÁUDIO - Abre na mesma aba
-                                                                                    {
-                                                                                        <a href="@Url.Action("VerAnexoPagamentoAudio", "Financeiro", new { id = cond.PAAN_CD_ID })" title="Ouvir Áudio">
-                                                                                            <i class="fa fa-volume-up fa-4x text-info"></i>
-                                                                                        </a>
-                                                                                    }
-                                                                                    else // PADRÃO PARA OUTROS
-                                                                                    {
-                                                                                        <i class="fa fa-file-o fa-4x text-muted"></i>
-                                                                                    }
-                                                                                </div>
+                                                                            <div class="col-lg-2 col-md-2 col-sm-3 col-xs-4 text-center" style="margin-bottom: 30px; min-width: 140px;">
+    
+                                                                                @* 2. Div interna (Card): É aqui que colocamos a borda, cantos arredondados, fundo e sombra leve *@
+                                                                                <div style="border: 1px solid #ddd; border-radius: 8px; padding: 15px; background-color: #fff; box-shadow: 0 2px 4px rgba(0,0,0,0.05); display: flex; flex-direction: column; align-items: center; justify-content: space-between; height: 180px;">
+        
+                                                                                    @* Container de Mídia (Altura fixa para alinhamento centralizado) *@
+                                                                                    <div style="height: 90px; display: flex; align-items: center; justify-content: center; width: 100%;">
+                                                                                        @if (cond.PAAN_IN_TIPO == 1) // IMAGEM - Exibe miniatura
+                                                                                        {
+                                                                                            <a href="@Url.Action("VerAnexoPagamento", "Financeiro", new { id = cond.PAAN_CD_ID })" title="Visualizar Imagem">
+                                                                                                <img src="@("https://rtistoragemain.blob.core.windows.net/rti-datacontainer/" + cond.PAAN_AQ_ARQUIVO.Replace("~/", "").Replace("~", ""))" 
+                                                                                                     class="img-thumbnail" 
+                                                                                                     style="width: 70px; height: 70px; object-fit: cover; border: 1px solid #eee;"
+                                                                                                     onerror="this.onerror=null;this.src='@Url.Content("~/Images/icone_imagem.jpg")';" />
+                                                                                            </a>
+                                                                                        }
+                                                                                        else if (cond.PAAN_IN_TIPO == 2) // VÍDEO - Ícone de câmera
+                                                                                        {
+                                                                                            <a href="@Url.Action("VerAnexoPagamento", "Financeiro", new { id = cond.PAAN_CD_ID })" title="Visualizar Vídeo">
+                                                                                                <i class="fa fa-video-camera fa-4x text-navy"></i>
+                                                                                            </a>
+                                                                                        }
+                                                                                        else if (cond.PAAN_IN_TIPO == 3) // PDF - Ícone específico e abre em nova aba
+                                                                                        {
+                                                                                            var blobPath = cond.PAAN_AQ_ARQUIVO.Replace("~/", "").Replace("~", "");
+                                                                                            var urlAzurePdf = "https://rtistoragemain.blob.core.windows.net/rti-datacontainer/" + blobPath;
 
-                                                                                @* Nome do Arquivo *@
-                                                                                <div style="font-size: 11px; margin-top: 8px; font-weight: bold; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; width: 100%;" title="@cond.PAAN_NM_TITULO">
-                                                                                    @cond.PAAN_NM_TITULO
-                                                                                </div>
+                                                                                            <a href="@urlAzurePdf" target="_blank" title="Visualizar PDF">
+                                                                                                <i class="fa fa-file-pdf-o fa-4x text-danger"></i>
+                                                                                            </a>
+                                                                                        }
+                                                                                        else // PADRÃO - Ícone de arquivo genérico
+                                                                                        {
+                                                                                            <i class="fa fa-file-o fa-4x text-muted"></i>
+                                                                                        }
+                                                                                    </div>
 
-                                                                                @* Botões de Ação (Excluir e Download) *@
-                                                                                <div style="margin-top: 5px; display: flex; gap: 12px; justify-content: center;">
-                                                                                    <span style="cursor:pointer;" onclick="PrepararExclusaoAnexo('/Financeiro/ExcluirAnexoPagamento/@cond.PAAN_CD_ID')" title="Excluir">
-                                                                                        <i class="fa fa-trash-o fa-lg text-navy"></i>
-                                                                                    </span>
-                                                                                    <a href="@Url.Action("DownloadPagamento", "Financeiro", new { id = cond.PAAN_CD_ID })" title="Download">
-                                                                                        <i class="fa fa-download fa-lg text-navy"></i>
-                                                                                    </a>
-                                                                                </div>
+                                                                                    @* Nome do Arquivo - Com ellipsis para nomes longos *@
+                                                                                    <div style="font-size: 11px; margin-top: 10px; font-weight: bold; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; width: 100%; color: #333;" title="@cond.PAAN_NM_TITULO">
+                                                                                        @cond.PAAN_NM_TITULO
+                                                                                    </div>
 
+                                                                                    @* Botões de Ação (Excluir e Download) *@
+                                                                                    <div style="margin-top: 10px; display: flex; gap: 15px; justify-content: center;">
+                                                                                        <span style="cursor:pointer;" onclick="PrepararExclusaoAnexo('/Financeiro/ExcluirAnexoPagamento/@cond.PAAN_CD_ID')" title="Excluir">
+                                                                                            <i class="fa fa-trash-o fa-lg text-navy"></i>
+                                                                                        </span>
+                                                                                        <a href="@Url.Action("DownloadPagamento", "Financeiro", new { id = cond.PAAN_CD_ID })" title="Download">
+                                                                                            <i class="fa fa-download fa-lg text-navy"></i>
+                                                                                        </a>
+                                                                                    </div>
+
+                                                                                </div>
                                                                             </div>
-                                                                        </div>
                                                                     }
                                                                 </div>
                                                             </div>
@@ -787,7 +839,7 @@
                                                 <h5 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Somente para importação de arquivos de nota fiscal NF-e no formato XML da Receita Federal</h5>
                                                 <br />
                                                 <div class="form-group">
-                                                    @using (Html.BeginForm("UploadFileNotaFiscal", "Financeiro", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { enctype = "multipart/form-data", @id = "pwd-container2" }))
+                                                    @using (Html.BeginForm("UploadFileNotaFiscalBlob", "Financeiro", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { enctype = "multipart/form-data", @id = "pwd-container2" }))
                                                     {
                                                         if (Model.PAGAMENTO_NOTA_FISCAL.Where(p => p.PANF_IN_ATIVO == 1).ToList().Count > 0)
                                                         {
@@ -814,7 +866,8 @@
                                                                             <td>@cond.PANF_NM_EMITENTE</td>
                                                                             <td style="width: auto">@CrossCutting.Formatters.DecimalFormatter(cond.PANF_VL_VALOR.Value)</td>
                                                                             <td class="td-one-action">
-                                                                                <span style="color: #337ab7; cursor:pointer;" alt="Desativar" class="tbl-link fa-lg fa fa-trash-o btn-loading" onclick="ShowModalExcluirNota('/Financeiro/ExcluirNotaFiscalPagamento/@cond.PANF_CD_ID')" title="Excluir Nota Fiscal"></span>
+                                                                                <span class="fa fa-trash-o" onclick="PrepararExclusaoNota('/Financeiro/ExcluirNotaFiscalPagamento/@cond.PANF_CD_ID')" style="cursor:pointer; color:#337ab7"></span>
+                                                                                @*<span style="color: #337ab7; cursor:pointer;" alt="Desativar" class="tbl-link fa-lg fa fa-trash-o btn-loading" onclick="ShowModalExcluirNota('/Financeiro/ExcluirNotaFiscalPagamento/@cond.PANF_CD_ID')" title="Excluir Nota Fiscal"></span>*@
                                                                                 @Html.TableLinkDetails(cond.PANF_CD_ID, "DownloadNotaFiscal", "fa-download", "Download")
                                                                             </td>
                                                                         </tr>
@@ -848,7 +901,7 @@
                                                 <h5 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Somente para importação de arquivos de nota fiscal NF-e no formato XML da Receita Federal</h5>
                                                 <br />
                                                 <div class="form-group">
-                                                    @using (Html.BeginForm("UploadFileNotaFiscal", "Financeiro", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { enctype = "multipart/form-data", @id = "pwd-container2" }))
+                                                    @using (Html.BeginForm("UploadFileNotaFiscalBlob", "Financeiro", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { enctype = "multipart/form-data", @id = "pwd-container2" }))
                                                     {
                                                         if (Model.PAGAMENTO_NOTA_FISCAL.Where(p => p.PANF_IN_ATIVO == 1).ToList().Count > 0)
                                                         {
@@ -875,7 +928,8 @@
                                                                             <td>@cond.PANF_NM_EMITENTE</td>
                                                                             <td style="width: auto">@CrossCutting.Formatters.DecimalFormatter(cond.PANF_VL_VALOR.Value)</td>
                                                                             <td class="td-one-action">
-                                                                                <span style="color: #337ab7; cursor:pointer;" alt="Desativar" class="tbl-link fa-lg fa fa-trash-o btn-loading" onclick="ShowModalExcluirNota('/Financeiro/ExcluirNotaFiscalPagamento/@cond.PANF_CD_ID')" title="Excluir Nota Fiscal"></span>
+                                                                                <span class="fa fa-trash-o" onclick="PrepararExclusaoNota('/Financeiro/ExcluirNotaFiscalPagamento/@cond.PANF_CD_ID')" style="cursor:pointer; color:#337ab7"></span>
+                                                                                @*<span style="color: #337ab7; cursor:pointer;" alt="Desativar" class="tbl-link fa-lg fa fa-trash-o btn-loading" onclick="ShowModalExcluirNota('/Financeiro/ExcluirNotaFiscalPagamento/@cond.PANF_CD_ID')" title="Excluir Nota Fiscal"></span>*@
                                                                                 @Html.TableLinkDetails(cond.PANF_CD_ID, "DownloadNotaFiscal", "fa-download", "Download")
                                                                             </td>
                                                                         </tr>
@@ -1091,44 +1145,6 @@
         }
     </script>
 
-    @*<script type="text/javascript">
-        $(function () {
-            $('.date-picker').datepicker({
-                dateFormat: 'dd/mm/yy',
-                dayNames: ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'],
-                dayNamesMin: ['D', 'S', 'T', 'Q', 'Q', 'S', 'S', 'D'],
-                dayNamesShort: ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'],
-                monthNames: ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'],
-                monthNamesShort: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'],
-                nextText: 'Proximo',
-                prevText: 'Anterior',
-                showOn: "focus", // <--- A VÍRGULA QUE FALTAVA ESTAVA AQUI
-                onSelect: function () {
-                    // Quando seleciona com o mouse
-                    setTimeout(function () {
-                        $('#desc').focus().select();
-                    }, 50);
-                },
-                onClose: function () {
-                    // Quando sai do campo ou aperta Esc/Tab
-                    setTimeout(function () {
-                        // Se o foco ainda estiver no campo de data ou "perdido" no body
-                        if (document.activeElement.id === 'dn' || document.activeElement.tagName === "BODY") {
-                            $('#desc').focus().select();
-                        }
-                    }, 50);
-                }
-            });
-
-            // CSS e Botão (Se você estiver usando o ícone ao lado)
-            $('.date-picker').css("display", "inline-block")
-                .next("button").button({
-                    icons: { primary: "ui-icon-calendar" },
-                    label: "Selecione uma data",
-                    text: false
-                });
-        });
-    </script>*@
 
 <script type="text/javascript">
     $(function () {
@@ -1183,31 +1199,6 @@
             $('#dn1').mask("99/99/9999");
         });
     </script>
-
-    @*<script>
-        function CalculaTotal() {
-            var valor = $('#valor').val() == "" ? 0 : $('#valor').val();
-            var desc = $('#desc').val() == "" ? 0 : $('#desc').val();
-            var multa = $('#multa').val() == "" ? 0 : $('#multa').val();
-            valor = (parseFloat(valor.replace(',', '.')));
-            desc = (parseFloat(desc.replace(',', '.')));
-            multa = (parseFloat(multa.replace(',', '.')));
-            var tot = 0;
-            if (valor != "")
-            {
-                tot = tot + valor;
-            }
-            if (desc != "")
-            {
-                tot = tot - desc;
-            }
-            if (multa != "")
-            {
-                tot = tot + multa;
-            }
-            $('#total').val(parseFloat(tot).toFixed(2).replace('.', ','));
-        }
-    </script>*@
 
     <script>
         function CalculaTotal() {
@@ -1469,6 +1460,7 @@
             });
         });
     </script>
+
     <script type="text/javascript">
         // 1. Prepara a URL e abre a modal
         function PrepararExclusaoAnexo(url) {
@@ -1506,7 +1498,42 @@
         });
     </script>
 
+    <script type="text/javascript">
+        // 1. Prepara a URL e abre a modal
+        function PrepararExclusaoNota(url) {
+            $('#urlExclusaoTempNF').val(url); // Armazena a URL no campo hidden da modal
+            $('#modalConfirmacaoExclusaoNota').modal('show');
+        }
 
+        $(document).ready(function () {
+            // 2. Ação do botão Confirmar dentro da modal
+            $('#btnConfirmarExclusaoNota').click(function () {
+                var urlFinal = $('#urlExclusaoTempNF').val();
+                var $btn = $(this);
+
+                if (urlFinal !== "") {
+                    // Feedback visual
+                    $btn.prop('disabled', true).addClass('disabled');
+                    $btn.html('<i class="fa fa-spinner fa-spin"></i> Excluindo...');
+
+                    // Fecha a modal e redireciona
+                    $('#modalConfirmacaoExclusaoNota').modal('hide');
+                
+                    setTimeout(function () {
+                        $('.modal-backdrop').remove();
+                        $('#loadingIndicator').show();
+                        window.location.href = urlFinal;
+                    }, 400);
+                }
+            });
+
+            // Limpeza de segurança ao fechar
+            $('#modalConfirmacaoExclusaoNota').on('hidden.bs.modal', function () {
+                $('#urlExclusaoTempNF').val("");
+                $('#btnConfirmarExclusaoNota').prop('disabled', false).removeClass('disabled').html('Confirmar Exclusão');
+            });
+        });
+    </script>
     @if (ViewBag.Message != null)
     {
         <script type="text/javascript">

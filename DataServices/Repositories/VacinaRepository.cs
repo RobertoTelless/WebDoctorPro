@@ -21,5 +21,15 @@ namespace DataServices.Repositories
             query = query.Where(p => p.ASSI_CD_ID == idAss);
             return query.ToList();
         }
+
+        public VACINA CheckExist(VACINA conta, Int32 idAss)
+        {
+            IQueryable<VACINA> query = Db.VACINA;
+            query = query.Where(p => p.VACI_NM_NOME == conta.VACI_NM_NOME);
+            query = query.Where(p => p.VACI_NM_FABRICANTE == conta.VACI_NM_FABRICANTE);
+            query = query.Where(p => p.ASSI_CD_ID == idAss);
+            return query.FirstOrDefault();
+        }
+
     }
 }

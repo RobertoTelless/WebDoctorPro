@@ -1,0 +1,422 @@
+﻿@using Presentation.Extensions
+@model ERP_Condominios_Solution.ViewModels.VacinaViewModel
+@{
+    Layout = "~/Views/Shared/_Layout_Admin.cshtml";
+    ViewBag.Title = "WebDoctor - Vacina - Alteração";
+    ViewBag.MetaDescription = "WebDoctor - Vacina - Alteração de Vacina";
+    ViewBag.MetaKeywords = "WebDoctor, Vacina";
+}
+
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="modalContainer">
+        <div id="modal" class="modal" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        @*titulo gerado dinamicamente*@
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        @*Gerado dinamicamente*@
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="page-title">
+        <h3 class="title">Vacinas</h3>
+        <br />
+        <ol class="breadcrumb">
+            <li>
+                <a href="@Url.Action("MontarTelaPaciente", "Paciente")">Dashboard</a>
+            </li>
+            <li>
+                <a href="@Url.Action("MontarTelaVacina", "Vacina")">Vacinas</a>
+            </li>
+            <li class="active">
+                <strong>Vacinas - Alteração</strong>
+            </li>
+        </ol>
+        <br />
+    </div>
+
+    <div class="row">
+        <div class="col-lg-12 col-md-12 col-xs-12">
+            <div class="col-lg-12 col-md-12 col-xs-12 ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>Vacina - Alteração</h5>
+                </div>
+                <div class="ibox-content">
+                    @Html.AntiForgeryToken()
+                    @if (!ViewData.ModelState.IsValid)
+                    {
+                        <div class="alert alert-danger">
+                            <button type="button" class="close" data-dismiss="alert">Fechar</button>
+                            @Html.ValidationSummary(false, "", new { @class = "text-danger" })
+                        </div>
+                    }
+                    <div class="tabs-container">
+                        @using (Html.BeginForm("EditarVacina", "Vacina", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal", @id = "pwd-container1" }))
+                        {
+                            <div class="form-group">
+                                <br />
+                                <div class="col-lg-12 col-md-12 col-xs-12">
+                                    @Html.ButtonActionSubmit(text: "Confirma Alteração da Vacina", htmlAttributes: new { id = "basictoast", @class = "btn-loading1" })
+                                    @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaVacina", controller: "Vacina", htmlAttributes: new { @class = "btn-loading" })
+                                    <a href="@Url.Action((String)Session["AjudaNivel"])"  class="btn btn-sm btn-danger" target="_blank">Ajuda</a>                
+                                    <span id="loadingIndicator" style="display: none; margin-left: 10px; color: #007bff;">
+                                        <i class="fa fa-spinner fa-spin"></i> Processando...
+                                    </span>
+                                </div>
+                            </div>
+                            
+                            <ul class="nav nav-tabs">
+                                <li class="active"><a data-toggle="tab" href="#tab-1">Dados da Vacina</a></li>
+                            </ul>
+
+                            <div class="tab-content">
+                                @*Dados Gerais*@
+                                <div id="tab-1" class="tab-pane active">
+                                    <div class="panel-body">
+                                        <div class="row">
+                                            <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                                @Html.HiddenFor(m => m.ASSI_CD_ID)
+                                                @Html.HiddenFor(m => m.VACI_IN_ATIVO)
+                                                @Html.HiddenFor(m => m.VACI_CD_ID)
+                                                <div class="col-lg-12 col-md-12 col-xs-12">
+                                                    Nome da vacina
+                                                    @Html.TextBoxFor(m => m.VACI_NM_NOME, new { @class = "form-control", autofocus = true, @id = "nome", @readonly = "readonly" })
+                                                </div>
+                                            </div>
+                                            <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                                <div class="col-lg-6 col-md-6 col-xs-12">
+                                                    Fabricante
+                                                    @Html.TextBoxFor(m => m.VACI_NM_FABRICANTE, new { @class = "form-control", autofocus = true, @id = "nome", @readonly = "readonly" })
+                                                </div>
+                                                <div class="col-lg-2 col-md-2 col-xs-12">
+                                                    Periodicidade (Meses)*
+                                                    @Html.TextBoxFor(m => m.VACI_NR_PERIODO, new { @class = "form-control", autofocus = true, @id = "nome", data_toggle = "popover", data_content = "Informe a periodicidade da revacinação em meses", data_trigger="hover", data_placement="top" })
+                                                    @Html.ValidationMessageFor(m => m.VACI_NR_PERIODO, "", new { @style = "color:red" })
+                                                </div>
+                                            </div>
+                                            <div class="form-group" style=" margin-left: -15px; margin-right: -15px; scrollbar-gutter: stable; scrollbar-width: thin">
+                                                <div class="col-lg-12 col-md-12 col-xs-12">
+                                                    Descrição detalhada (Opcional)
+                                                    @Html.TextAreaFor(m => m.VACI_DS_DESCRICAO, new { @class = "form-control", style = "width: 100%; height: 250px; overflow:auto;", autofocus = true })
+                                                    @Html.ValidationMessageFor(m => m.VACI_DS_DESCRICAO, "", new { @style = "color:red" })
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <link href="~/Content/themes/base/jquery-ui.min.css" rel="stylesheet" />
+    <link href="~/Content/themes/base/all.css" rel="stylesheet" />
+    @Styles.Render("~/Content/plugins/dataTables/dataTablesStyles")
+    @Styles.Render("~/plugins/jasnyBootstrapStyles")
+    @Styles.Render("~/plugins/toastrStyles")
+
+    <style type="text/css">
+        /* Espaçamento e cursor para o summary */
+        details.ajuda-contextual {
+            margin-top: 5px; /* Separa um pouco do campo acima */
+            margin-bottom: 10px;
+        }
+
+        details.ajuda-contextual summary {
+            cursor: pointer; /* Mostra a mãozinha ao passar o mouse */
+            font-weight: bold;
+            color: #31708f; /* Cor text-info do Bootstrap */
+            outline: none; /* Remove a borda de foco padrão do navegador */
+            list-style: none; /* Esconde a seta padrão se quiser usar ícones customizados */
+        }
+        
+        /* Se quiser esconder a seta padrão e usar apenas o ícone do FontAwesome */
+        details.ajuda-contextual summary::-webkit-details-marker {
+            display: none;
+        }
+
+        /* Espaçamento para o conteúdo interno da ajuda */
+        details.ajuda-contextual .well {
+            margin-top: 5px;
+            margin-bottom: 0;
+            padding: 10px;
+            font-size: 12px; /* Texto ligeiramente menor para ajuda */
+        }
+    </style>
+
+}
+@section Scripts {
+    @Scripts.Render("~/plugins/toastr")
+    <script src="~/Scripts/jquery-ui-1.12.1.min.js"></script>
+    @Scripts.Render("~/bundles/inputmask")
+    @Scripts.Render("~/plugins/jasnyBootstrap")
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.maskedinput/1.4.1/jquery.maskedinput.js"></script>
+
+    <script type="text/javascript" src="~/Scripts/moment.min.js"></script>
+    <script type="text/javascript" src="~/Scripts/bootstrap.min.js"></script>
+   
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('[data-toggle="popover"]').popover();
+        });
+    </script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-toggle="popover"]'));
+            var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
+                return new bootstrap.Popover(popoverTriggerEl);
+            });
+        });
+    </script>
+
+    <!-- Handler de fechamento do browser -->
+    <script type="text/javascript">
+        window.onbeforeunload = function ()
+        {
+            navigator.sendBeacon('../ControleAcesso/LogSessionTime');
+        }; 
+    </script>
+
+    <script type="text/javascript">
+        $(document).ready(function () { 
+            $('.btn-loading').on('click', function (e) {            
+                $(this).prop('disabled', true);
+                $(this).addClass('disabled');
+                $('#loadingIndicator').show();
+                var tagName = $(this).prop('tagName').toLowerCase();
+                if (tagName === 'a') {
+                    e.preventDefault(); 
+                    var targetUrl = $(this).attr('href');
+                    window.location.href = targetUrl;
+
+                } else if (tagName === 'button' || tagName === 'input') {
+                    $(this).closest('form').submit();
+                }
+            });
+        });
+    </script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('.btn-loading1').on('click', function (e) {
+            
+                var $this = $(this);
+                var tagName = $this.prop('tagName').toLowerCase();
+                $this.addClass('disabled'); 
+                $('#loadingIndicator').show();
+
+                if (tagName === 'a') {
+                    e.preventDefault();
+                
+                    var targetUrl = $this.attr('href');
+                    window.location.href = targetUrl;
+                
+                } else if (tagName === 'button' || tagName === 'input') {               
+                    $this.closest('form').submit();
+                    $this.prop('disabled', true);
+                }
+            });
+        });
+    </script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            // Configurações globais do Toastr
+            toastr.options = {
+                "closeButton": true,
+                //"debug": false,
+                "progressBar": true,
+                "preventDuplicates": false,
+                "positionClass": "toast-top-right",
+                "onclick": null,
+                "showDuration": "400",
+                "hideDuration": "1000",
+                "timeOut": "15000",
+                "extendedTimeOut": "5000",
+                "showEasing": "swing",
+                "hideEasing": "linear",
+                "showMethod": "fadeIn",
+                "hideMethod": "fadeOut"
+            //    "iconClass": "customer-toast-info", // Se quiser remover o ícone padrão totalmente
+            //    "titleClass": "toast-title",
+            //    "messageClass": "toast-message"
+            };
+
+            // Verifica se existe mensagem de sucesso no TempData (vinda do Redirect)
+            var msgSucesso = '@TempData["MensagemAcerto"]';
+            if (msgSucesso != '') {
+                toastr.success(msgSucesso, 'Sucesso!');
+            }
+
+            // Verifica se existe mensagem de erro
+            var msgErro = '@TempData["MensagemErro"]';
+            if (msgErro != '') {
+                toastr.error(msgErro, 'Erro!');
+            }
+        });
+    </script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            var i = -1;
+            var toastCount = 0;
+            var $toastlast;
+            var getMessage = function () {
+                var msg = 'Hi, welcome to Inspinia. This is example of Toastr notification box.';
+                return msg;
+            };
+
+            $('#basictoast').click(function () {
+                // Display a success toast, with a title
+                toastr.success('Alteração em andamento!')
+            });
+            $('#showtoast').click(function () {
+                var shortCutFunction = $("#toastTypeGroup input:radio:checked").val();
+                var msg = $('#message').val();
+                var title = $('#title').val() || '';
+                var $showDuration = $('#showDuration');
+                var $hideDuration = $('#hideDuration');
+                var $timeOut = $('#timeOut');
+                var $extendedTimeOut = $('#extendedTimeOut');
+                var $showEasing = $('#showEasing');
+                var $hideEasing = $('#hideEasing');
+                var $showMethod = $('#showMethod');
+                var $hideMethod = $('#hideMethod');
+                var toastIndex = toastCount++;
+                toastr.options = {
+                    closeButton: $('#closeButton').prop('checked'),
+                    debug: $('#debugInfo').prop('checked'),
+                    progressBar: $('#progressBar').prop('checked'),
+                    positionClass: $('#positionGroup input:radio:checked').val() || 'toast-top-right',
+                    onclick: null
+                };
+                if ($('#addBehaviorOnToastClick').prop('checked')) {
+                    toastr.options.onclick = function () {
+                        alert('You can perform some custom action after a toast goes away');
+                    };
+                }
+                if ($showDuration.val().length) {
+                    toastr.options.showDuration = $showDuration.val();
+                }
+                if ($hideDuration.val().length) {
+                    toastr.options.hideDuration = $hideDuration.val();
+                }
+                if ($timeOut.val().length) {
+                    toastr.options.timeOut = $timeOut.val();
+                }
+                if ($extendedTimeOut.val().length) {
+                    toastr.options.extendedTimeOut = $extendedTimeOut.val();
+                }
+                if ($showEasing.val().length) {
+                    toastr.options.showEasing = $showEasing.val();
+                }
+                if ($hideEasing.val().length) {
+                    toastr.options.hideEasing = $hideEasing.val();
+                }
+                if ($showMethod.val().length) {
+                    toastr.options.showMethod = $showMethod.val();
+                }
+                if ($hideMethod.val().length) {
+                    toastr.options.hideMethod = $hideMethod.val();
+                }
+                if (!msg) {
+                    msg = getMessage();
+                }
+                $("#toastrOptions").text("Command: toastr["
+                    + shortCutFunction
+                    + "](\""
+                    + msg
+                    + (title ? "\", \"" + title : '')
+                    + "\")\n\ntoastr.options = "
+                    + JSON.stringify(toastr.options, null, 2)
+                );
+                var $toast = toastr[shortCutFunction](msg, title); // Wire up an event handler to a button in the toast, if it exists
+                $toastlast = $toast;
+                if ($toast.find('#okBtn').length) {
+                    $toast.delegate('#okBtn', 'click', function () {
+                        alert('you clicked me. i was toast #' + toastIndex + '. goodbye!');
+                        $toast.remove();
+                    });
+                }
+                if ($toast.find('#surpriseBtn').length) {
+                    $toast.delegate('#surpriseBtn', 'click', function () {
+                        alert('Surprise! you clicked me. i was toast #' + toastIndex + '. You could perform an action here.');
+                    });
+                }
+            });
+            function getLastToast() {
+                return $toastlast;
+            }
+            $('#clearlasttoast').click(function () {
+                toastr.clear(getLastToast());
+            });
+            $('#cleartoasts').click(function () {
+                toastr.clear();
+            });
+
+        });
+    </script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            // Configurações globais do Toastr
+            toastr.options = {
+                "closeButton": true,
+                //"debug": false,
+                "progressBar": true,
+                "preventDuplicates": false,
+                "positionClass": "toast-top-right",
+                "onclick": null,
+                "showDuration": "400",
+                "hideDuration": "1000",
+                "timeOut": "15000",
+                "extendedTimeOut": "5000",
+                "showEasing": "swing",
+                "hideEasing": "linear",
+                "showMethod": "fadeIn",
+                "hideMethod": "fadeOut"
+            //    "iconClass": "customer-toast-info", // Se quiser remover o ícone padrão totalmente
+            //    "titleClass": "toast-title",
+            //    "messageClass": "toast-message"
+            };
+
+            // Verifica se existe mensagem de sucesso no TempData (vinda do Redirect)
+            var msgSucesso = '@TempData["MensagemAcerto"]';
+            if (msgSucesso != '') {
+                toastr.success(msgSucesso, 'Sucesso!');
+            }
+
+            // Verifica se existe mensagem de erro
+            var msgErro = '@TempData["MensagemErro"]';
+            if (msgErro != '') {
+                toastr.error(msgErro, 'Erro!');
+            }
+        });
+    </script>
+
+    @if (ViewBag.Message != null)
+    {
+        <script type="text/javascript">
+            window.onload = function () {
+                  alert("@ViewBag.Message");
+            };
+        </script>
+    }
+}

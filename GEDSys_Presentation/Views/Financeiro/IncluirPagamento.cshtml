@@ -25,7 +25,24 @@
         </ol>
         <br />
     </div>
-
+    <div class="row">
+        <div class="form-group" style=" margin-left: 15px; margin-right: 0px;">
+            @* --- INÍCIO DA AJUDA CONTEXTUAL --- *@
+            <details class="ajuda-contextual">
+                <summary><i class="fa fa-info-circle text-info"></i> Resumo das funcionalidades desta página</summary>
+                <div class="well well-sm">
+                    <p>Essa é a página de inclusão de pagamentos do <b>WebDoctorPro</b>. Nela você poderá:</p>
+                    <ol>
+                        <li>Cadastrar um novo pagamento</li>
+                        <li>Informar a quitação desse pagamento</li>
+                        <li>Criar pagamento recursivo</li>
+                        <li>Anexar arquivos a pagamentos unicos (não recursivos)</li>
+                    </ol>
+                </div>
+            </details>
+            @* --- FIM DA AJUDA CONTEXTUAL --- *@
+        </div>
+    </div>
     <div class="row">
         <div class="col-lg-12 col-md-12 col-xs-12">
             <div class="col-lg-12 col-md-12 col-xs-12 ibox float-e-margins">
@@ -131,7 +148,7 @@
                                     <h5 style="margin-left: 0px; color:darkblue; background-color: beige; font-weight:bold; margin-right: 15px;">Na criação de pagamento recursivo NÃO serão considerados os arquivos anexados</h5>
                                     <div class="col-lg-3 col-md-3 col-xs-12">
                                         Pagamento Recursivo?*
-                                        @Html.DropDownListFor(m => m.RECURSIVO, (SelectList)ViewBag.Recursivo, "Selecionar", new { @class = "form-control", autofocus = true })
+                                        @Html.DropDownListFor(m => m.RECURSIVO, (SelectList)ViewBag.Recursivo, "Selecionar", new { @class = "form-control", autofocus = true, @id = "recursivo", onchange = "ValidaRecursivo($(this).val())" })
                                         @Html.ValidationMessageFor(m => m.RECURSIVO, "", new { @style = "color:red" })
                                     </div>
                                     <div class="col-lg-2 col-md-2 col-xs-12">
@@ -157,7 +174,7 @@
                                 </div>
                             </div>
 
-                            <div class="col-lg-4 col-md-4 col-xs-12">
+                            <div class="col-lg-4 col-md-4 col-xs-12" id="anexo">
                                 <h4 style="margin-left: -15px; color:green; background-color: beige; font-weight:bold; margin-right: -15px;">Anexos</h4>
                                 <input class="btn btn-sm btn-warning" style="margin-left: -15px;" id="inputFile" type="file" multiple data-toggle="popover" data-trigger="hover" data-placement="top" data-content="ATENÇÃO - Antes de anexar arquivos certifique-se de que eles estejam livres de vírus e outras ameaças. Anexe aqui os arquivos referentes a este pagamento. As notas fiscais NF-e em formato XML da SRF devem ser anexadas em local próprio na página de edição de pagamentos"/>
                                 <br />
@@ -449,7 +466,18 @@
 
         });
     </script>
-
+    <script type="text/javascript">
+        function ValidaRecursivo(conv) {
+            if (conv == '' & conv == 0) {
+                $("#anexo").show();
+            } else {
+                $("#anexo").hide();
+            }
+        }
+        $(document).ready(function () {
+            ValidaRecursivo($('#recursivo').val());
+        });
+    </script>
 
     @if (ViewBag.Message != null)
     {

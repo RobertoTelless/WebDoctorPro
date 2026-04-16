@@ -3508,7 +3508,7 @@ namespace GEDSys_Presentation.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult IncluirPagamento(PagamentoViewModel vm)
+        public async Task<ActionResult> IncluirPagamento(PagamentoViewModel vm)
         {
             if ((String)Session["Ativa"] == null)
             {
@@ -3673,7 +3673,7 @@ namespace GEDSys_Presentation.Controllers
                             {
                                 if (file.Profile == null)
                                 {
-                                    volta3 = UploadFileQueuePagamentoNovo(file);
+                                    volta3 = await UploadFileQueuePagamentoNovoBlob(file);
                                 }
                             }
                             Session["FileQueuePagamento"] = null;
@@ -4555,6 +4555,155 @@ namespace GEDSys_Presentation.Controllers
             }
         }
 
+        public async Task<Int32> UploadFileQueuePagamentoNovoBlob(FileQueue file)
+        {
+            try
+            {
+                // Inicializa
+                Int32 idNot = (Int32)Session["IdPagamento"];
+                Int32 idAss = (Int32)Session["IdAssinante"];
+                CONSULTA_PAGAMENTO copa = pagApp.GetItemById(idNot);
+
+                if (file == null)
+                {
+                    Session["MensPaciente"] = 5;
+                    return 1;
+                }
+
+                // Valida Nome
+                USUARIO usu = (USUARIO)Session["UserCredentials"];
+                var fileName = file.Name;
+                Session["CompAnexo"] = fileName;
+                if (fileName.Length > 250)
+                {
+                    Session["MensPaciente"] = 6;
+                    return 2;
+                }
+
+                // Critica tamanho arquivo
+                var fileSize = file.Contents.Length;
+                if (fileSize > 50000000)
+                {
+                    Session["MensPaciente"] = 7;
+                    return 3;
+                }
+
+                //Recupera tipo de arquivo
+                extensao = Path.GetExtension(fileName);
+                String a = extensao;
+                if (!((String)Session["ExtensoesPossiveis"]).Contains(extensao.ToUpper()))
+                {
+                    Session["MensPaciente"] = 12;
+                    return 4;
+                }
+
+                // 1. DEFINIÇÃO DE CAMINHOS
+                String caminhoRelativo = "Imagens/" + idAss.ToString() + "/Pagamento/" + copa.COPA_CD_ID.ToString() + "/Anexos/";
+                String caminhoLocal = Server.MapPath("~/" + caminhoRelativo);
+                String fullPathLocal = Path.Combine(caminhoLocal, fileName);
+
+                // Garante que a pasta local existe
+                if (!Directory.Exists(caminhoLocal)) Directory.CreateDirectory(caminhoLocal);
+
+                // 2. CÓPIA LOCAL (Escrita de Bytes)
+                System.IO.File.WriteAllBytes(fullPathLocal, file.Contents);
+
+                // 3. CÓPIA PARA O AZURE BLOB STORAGE
+                try
+                {
+                    CONFIGURACAO conf = CarregaConfiguracaoGeral();
+                    string connString = conf.CONF_NM_STORAGE_CONN;
+                    string containerName = conf.CONF_NM_STORAGE_CONTAINER;
+
+                    var blobServiceClient = new Azure.Storage.Blobs.BlobServiceClient(connString);
+                    var containerClient = blobServiceClient.GetBlobContainerClient(containerName);
+
+                    // O nome do blob no Azure
+                    string blobName = caminhoRelativo + fileName;
+                    var blobClient = containerClient.GetBlobClient(blobName);
+
+                    // Como file.Contents é byte[], usamos MemoryStream para o upload
+                    using (var ms = new MemoryStream(file.Contents))
+                    {
+                        await blobClient.UploadAsync(ms, overwrite: true);
+                    }
+                }
+                catch (Exception exAzure)
+                {
+                    Session["MsgCRUD"] = "Erro na sincronização: " + exAzure.Message;
+                    Session["MensPaciente"] = 61;
+                    return 0;
+                }
+
+                // Gravar registro
+                PAGAMENTO_ANEXO foto = new PAGAMENTO_ANEXO();
+                foto.PAAN_AQ_ARQUIVO = "~" + caminhoRelativo + fileName;
+                foto.PAAN_DT_ANEXO = DateTime.Today;
+                foto.PAAN_IN_ATIVO = 1;
+                Int32 tipo = 3;
+                if (extensao.ToUpper() == ".JPG" || extensao.ToUpper() == ".GIF" || extensao.ToUpper() == ".PNG" || extensao.ToUpper() == ".JPEG")
+                {
+                    tipo = 1;
+                }
+                else if (extensao.ToUpper() == ".MP4" || extensao.ToUpper() == ".AVI" || extensao.ToUpper() == ".MPEG")
+                {
+                    tipo = 2;
+                }
+                else if (extensao.ToUpper() == ".PDF")
+                {
+                    tipo = 3;
+                }
+                else if (extensao.ToUpper() == ".MP3" || extensao.ToUpper() == ".MPEG")
+                {
+                    tipo = 4;
+                }
+                else if (extensao.ToUpper() == ".DOCX" || extensao.ToUpper() == ".DOC" || extensao.ToUpper() == ".ODT")
+                {
+                    tipo = 5;
+                }
+                else if (extensao.ToUpper() == ".XLSX" || extensao.ToUpper() == ".XLS" || extensao.ToUpper() == ".ODS")
+                {
+                    tipo = 6;
+                }
+                else
+                {
+                    tipo = 7;
+                }
+                foto.PAAN_IN_TIPO = tipo;
+                foto.PAAN_NM_TITULO = fileName;
+                foto.ASSI_CD_ID = idAss;
+                foto.COPA_CD_ID = copa.COPA_CD_ID;
+                copa.PAGAMENTO_ANEXO.Add(foto);
+                objetoAntesPag = copa;
+                Int32 volta = pagApp.ValidateEdit(copa, objetoAntesPag);
+
+                // Monta Log
+                LOG log = new LOG
+                {
+                    LOG_DT_DATA = DateTime.Now,
+                    ASSI_CD_ID = usu.ASSI_CD_ID,
+                    USUA_CD_ID = usu.USUA_CD_ID,
+                    LOG_NM_OPERACAO = "Pagamento - Anexo - Inclusão",
+                    LOG_IN_ATIVO = 1,
+                    LOG_TX_REGISTRO = "Pagamento: " + copa.COPA_NM_NOME.ToUpper() + " | Anexo: " + fileName + " | Data: " + DateTime.Today.Date,
+                    LOG_IN_SISTEMA = 6
+                };
+                Int32 volta1 = logApp.ValidateCreate(log);
+                return 0;
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Paciente";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Paciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return 9;
+            }
+        }
+
         public ActionResult VoltarAnexoPagamento()
         {
             if ((String)Session["Ativa"] == null)
@@ -4741,6 +4890,168 @@ namespace GEDSys_Presentation.Controllers
             }
         }
 
+        public async Task<ActionResult> UploadFilePagamentoBlob(HttpPostedFileBase file)
+        {
+            try
+            {
+                // Inicializa
+                if ((String)Session["Ativa"] == null)
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+                Int32 idNot = (Int32)Session["IdPagamento"];
+                Int32 idAss = (Int32)Session["IdAssinante"];
+
+                // Recupera exame
+                CONSULTA_PAGAMENTO item = pagApp.GetItemById(idNot);
+                USUARIO usu = (USUARIO)Session["UserCredentials"];
+
+                // Criticas
+                if (file == null)
+                {
+                    Session["MensPaciente"] = 5;
+                    return RedirectToAction("VoltarAnexoPagamento");
+                }
+
+                // Critica tamanho nome
+                var fileName = Path.GetFileName(file.FileName);
+                if (fileName.Length > 250)
+                {
+                    Session["MensPaciente"] = 6;
+                    return RedirectToAction("VoltarAnexoPagamento");
+                }
+
+                // Critica tamanho arquivo
+                var fileSize = file.ContentLength;
+                if (fileSize > 50000000)
+                {
+                    Session["MensPaciente"] = 7;
+                    return RedirectToAction("VoltarAnexoPagamento");
+                }
+
+                //Recupera tipo de arquivo
+                extensao = Path.GetExtension(fileName);
+                String a = extensao;
+                if (!((String)Session["ExtensoesPossiveis"]).Contains(extensao.ToUpper()))
+                {
+                    Session["MensPaciente"] = 12;
+                    return RedirectToAction("VoltarAnexoPagamento");
+                }
+
+                // 1. DEFINIÇÃO DO CAMINHO (Mesmo para Local e Azure)
+                // Removida a barra inicial para o Azure não criar uma pasta raiz vazia
+                String caminhoRelativo = "Imagens/" + idAss.ToString() + "/Pagamento/" + item.COPA_CD_ID.ToString() + "/Anexos/";
+                String caminhoLocal = Server.MapPath("~/" + caminhoRelativo);
+                String fullPathLocal = Path.Combine(caminhoLocal, fileName);
+
+                // Garante que a pasta local existe
+                if (!Directory.Exists(caminhoLocal)) Directory.CreateDirectory(caminhoLocal);
+
+                // 2. CÓPIA LOCAL
+                using (var stream = new FileStream(fullPathLocal, FileMode.Create))
+                {
+                    await file.InputStream.CopyToAsync(stream);
+                }
+
+                // 3. CÓPIA PARA O AZURE BLOB STORAGE
+                try
+                {
+                    // Reinicia o ponteiro do stream para o início após a cópia local
+                    file.InputStream.Position = 0;
+
+                    CONFIGURACAO conf = CarregaConfiguracaoGeral();
+                    string connString = conf.CONF_NM_STORAGE_CONN;
+                    string containerName = conf.CONF_NM_STORAGE_CONTAINER;
+
+                    var blobServiceClient = new Azure.Storage.Blobs.BlobServiceClient(connString);
+                    var containerClient = blobServiceClient.GetBlobContainerClient(containerName);
+
+                    // O nome do blob no Azure incluirá toda a estrutura de pastas
+                    string blobName = caminhoRelativo + fileName;
+                    var blobClient = containerClient.GetBlobClient(blobName);
+
+                    // Upload para o Azure (Idempotente: Se já existe, sobrescreve com true)
+                    await blobClient.UploadAsync(file.InputStream, overwrite: true);
+                }
+                catch (Exception exAzure)
+                {
+                    Session["MsgCRUD"] = "Erro na sincronização: " + exAzure.Message;
+                    Session["MensPaciente"] = 61;
+                    return RedirectToAction("VoltarAnexoPaciente");
+                }
+
+                // Gravar registro
+                PAGAMENTO_ANEXO foto = new PAGAMENTO_ANEXO();
+                foto.ASSI_CD_ID = idAss;
+                foto.PAAN_AQ_ARQUIVO = "~" + caminhoRelativo + fileName;
+                foto.PAAN_DT_ANEXO = DateTime.Today.Date;
+                foto.PAAN_IN_ATIVO = 1;
+                Int32 tipo = 3;
+                if (extensao.ToUpper() == ".JPG" || extensao.ToUpper() == ".GIF" || extensao.ToUpper() == ".PNG" || extensao.ToUpper() == ".JPEG")
+                {
+                    tipo = 1;
+                }
+                else if (extensao.ToUpper() == ".MP4" || extensao.ToUpper() == ".AVI" || extensao.ToUpper() == ".MPEG")
+                {
+                    tipo = 2;
+                }
+                else if (extensao.ToUpper() == ".PDF")
+                {
+                    tipo = 3;
+                }
+                else if (extensao.ToUpper() == ".MP3" || extensao.ToUpper() == ".MPEG")
+                {
+                    tipo = 4;
+                }
+                else if (extensao.ToUpper() == ".DOCX" || extensao.ToUpper() == ".DOC" || extensao.ToUpper() == ".ODT")
+                {
+                    tipo = 5;
+                }
+                else if (extensao.ToUpper() == ".XLSX" || extensao.ToUpper() == ".XLS" || extensao.ToUpper() == ".ODS")
+                {
+                    tipo = 6;
+                }
+                else
+                {
+                    tipo = 7;
+                }
+                foto.PAAN_IN_TIPO = tipo;
+                foto.PAAN_IN_ATIVO = 1;
+                foto.PAAN_NM_TITULO = fileName;
+                foto.COPA_CD_ID = item.COPA_CD_ID;
+                item.PAGAMENTO_ANEXO.Add(foto);
+                Int32 volta = pagApp.ValidateEdit(item, item);
+
+                // Monta Log
+                LOG log = new LOG
+                {
+                    LOG_DT_DATA = DateTime.Now,
+                    ASSI_CD_ID = usu.ASSI_CD_ID,
+                    USUA_CD_ID = usu.USUA_CD_ID,
+                    LOG_NM_OPERACAO = "Pagamento - Anexo - Inclusão",
+                    LOG_IN_ATIVO = 1,
+                    LOG_TX_REGISTRO = "Pagamento: " + item.COPA_NM_NOME.ToUpper() + " | Anexo: " + fileName + " | Data: " + DateTime.Today.Date,
+                    LOG_IN_SISTEMA = 6
+                };
+                Int32 volta1 = logApp.ValidateCreate(log);
+
+                Session["NivelPagamento"] = 2;
+                Session["PagamentoAlterada"] = 1;
+                return RedirectToAction("VoltarAnexoPagamento");
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;   
+                Session["VoltaExcecao"] = "Paciente";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Paciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return RedirectToAction("TrataExcecao", "BaseAdmin");
+            }
+        }
+
         [HttpPost]
         public async Task<ActionResult> UploadFileNotaFiscal(HttpPostedFileBase file)
         {
@@ -4823,6 +5134,162 @@ namespace GEDSys_Presentation.Controllers
                 // Gravar registro
                 PAGAMENTO_NOTA_FISCAL foto = new PAGAMENTO_NOTA_FISCAL();
                 foto.PANF_AQ_ARQUIVO = "~" + caminho + fileName;
+                foto.PANF_DT_EMISSAO = dataEmissaoParsed;
+                foto.PANF_IN_ATIVO = 1;
+                foto.PANF_NM_EMITENTE = emitente;
+                foto.PANF_NR_NUMERO = numero;
+                foto.PANF_NM_NOME = nome;
+                foto.PANF_NR_SERIE = serie;
+                foto.PANF_VL_VALOR = valorTotalParsed;
+                foto.COPA_CD_ID = item.COPA_CD_ID;
+                item.PAGAMENTO_NOTA_FISCAL.Add(foto);
+                Int32 volta = pagApp.ValidateEdit(item, item);
+
+                // Monta Log
+                LOG log = new LOG
+                {
+                    LOG_DT_DATA = DateTime.Now,
+                    ASSI_CD_ID = usu.ASSI_CD_ID,
+                    USUA_CD_ID = usu.USUA_CD_ID,
+                    LOG_NM_OPERACAO = "Pagamento - Nota Fiscal - Inclusão",
+                    LOG_IN_ATIVO = 1,
+                    LOG_TX_REGISTRO = "Pagamento: " + item.COPA_NM_NOME.ToUpper() + " | Nota: " + numero + " | Nome: " + nome.ToUpper() + " | Emitente: " + emitente.ToUpper() + " | Valor: " + valorTotalParsed.ToString(),
+                    LOG_IN_SISTEMA = 6
+                };
+                Int32 volta1 = logApp.ValidateCreate(log);
+
+                Session["NivelPagamento"] = 4;
+                Session["PagamentoAlterada"] = 1;
+                return RedirectToAction("VoltarAnexoPagamento");
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;   
+                Session["VoltaExcecao"] = "Financeiro";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Financeiro", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return RedirectToAction("TrataExcecao", "BaseAdmin");
+            }
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> UploadFileNotaFiscalBlob(HttpPostedFileBase file)
+        {
+            try
+            {
+                // Inicializa
+                if ((String)Session["Ativa"] == null)
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+                Int32 idNot = (Int32)Session["IdPagamento"];
+                Int32 idAss = (Int32)Session["IdAssinante"];
+
+                // Recupera pagamento
+                CONSULTA_PAGAMENTO item = pagApp.GetItemById(idNot);
+                USUARIO usu = (USUARIO)Session["UserCredentials"];
+
+                // Criticas
+                if (file == null || file.ContentLength == 0)
+                {
+                    Session["MensPaciente"] = 5;
+                    return RedirectToAction("VoltarAnexoPagamento");
+                }
+
+                // Lê e processa o XML recém-salvo
+                XDocument xmlDoc = XDocument.Load(file.InputStream);
+
+                var ide = xmlDoc.Descendants().FirstOrDefault(e => e.Name.LocalName == "ide");
+                var emit = xmlDoc.Descendants().FirstOrDefault(e => e.Name.LocalName == "emit");
+                var total = xmlDoc.Descendants().FirstOrDefault(e => e.Name.LocalName == "total");
+
+                String numero = ide?.Elements().FirstOrDefault(e => e.Name.LocalName == "nNF")?.Value;
+                String serie = ide?.Elements().FirstOrDefault(e => e.Name.LocalName == "serie")?.Value;
+                String dataEmissao = ide?.Elements().FirstOrDefault(e => e.Name.LocalName == "dhEmi")?.Value;
+                String emitente = emit?.Elements().FirstOrDefault(e => e.Name.LocalName == "xNome")?.Value;
+                String valorTotal = total?.Descendants().FirstOrDefault(e => e.Name.LocalName == "vNF")?.Value;
+
+                DateTime? dataEmissaoParsed = null;
+                if (DateTime.TryParse(dataEmissao, out DateTime dt))
+                    dataEmissaoParsed = dt;
+
+                decimal? valorTotalParsed = null;
+                if (decimal.TryParse(valorTotal, NumberStyles.Any, CultureInfo.InvariantCulture, out decimal vl))
+                    valorTotalParsed = vl;
+
+                // Recupera arquivos
+                var fileName = Path.GetFileName(file.FileName);
+                var fileSize = file.ContentLength;
+                extensao = Path.GetExtension(fileName);
+
+                // Criticas
+                if (item.COPA_VL_VALOR != valorTotalParsed)
+                {
+                    Session["MensPaciente"] = 55;
+                    return RedirectToAction("VoltarAnexoPagamento");
+                }
+
+                // Monta nome
+                String nome = "Nota Fiscal Num: ";
+                nome += numero + " - Série: " + serie + " - Data: " + dataEmissaoParsed.Value.ToLongDateString() + " - Emissor: " + emitente;
+
+                // Checa duplicidade
+                List<PAGAMENTO_NOTA_FISCAL> notas = item.PAGAMENTO_NOTA_FISCAL.ToList();
+                Int32 temNota = notas.Where(p => p.PANF_NM_NOME == nome & p.PANF_VL_VALOR == valorTotalParsed).ToList().Count;
+                if (temNota > 0)
+                {
+                    Session["MensPaciente"] = 56;
+                    return RedirectToAction("VoltarAnexoPagamento");
+                }
+
+                // 1. DEFINIÇÃO DO CAMINHO (Mesmo para Local e Azure)
+                // Removida a barra inicial para o Azure não criar uma pasta raiz vazia
+                String caminhoRelativo = "Imagens/" + idAss.ToString() + "/Pagamento/" + item.COPA_CD_ID.ToString() + "/NF/";
+                String caminhoLocal = Server.MapPath("~/" + caminhoRelativo);
+                String fullPathLocal = Path.Combine(caminhoLocal, fileName);
+
+                // Garante que a pasta local existe
+                if (!Directory.Exists(caminhoLocal)) Directory.CreateDirectory(caminhoLocal);
+
+                // 2. CÓPIA LOCAL
+                using (var stream = new FileStream(fullPathLocal, FileMode.Create))
+                {
+                    await file.InputStream.CopyToAsync(stream);
+                }
+
+                // 3. CÓPIA PARA O AZURE BLOB STORAGE
+                try
+                {
+                    // Reinicia o ponteiro do stream para o início após a cópia local
+                    file.InputStream.Position = 0;
+
+                    CONFIGURACAO conf = CarregaConfiguracaoGeral();
+                    string connString = conf.CONF_NM_STORAGE_CONN;
+                    string containerName = conf.CONF_NM_STORAGE_CONTAINER;
+
+                    var blobServiceClient = new Azure.Storage.Blobs.BlobServiceClient(connString);
+                    var containerClient = blobServiceClient.GetBlobContainerClient(containerName);
+
+                    // O nome do blob no Azure incluirá toda a estrutura de pastas
+                    string blobName = caminhoRelativo + fileName;
+                    var blobClient = containerClient.GetBlobClient(blobName);
+
+                    // Upload para o Azure (Idempotente: Se já existe, sobrescreve com true)
+                    await blobClient.UploadAsync(file.InputStream, overwrite: true);
+                }
+                catch (Exception exAzure)
+                {
+                    Session["MsgCRUD"] = "Erro na sincronização: " + exAzure.Message;
+                    Session["MensPaciente"] = 61;
+                    return RedirectToAction("VoltarAnexoPaciente");
+                }
+
+                // Gravar registro
+                PAGAMENTO_NOTA_FISCAL foto = new PAGAMENTO_NOTA_FISCAL();
+                foto.PANF_AQ_ARQUIVO = "~" + caminhoRelativo + fileName;
                 foto.PANF_DT_EMISSAO = dataEmissaoParsed;
                 foto.PANF_IN_ATIVO = 1;
                 foto.PANF_NM_EMITENTE = emitente;

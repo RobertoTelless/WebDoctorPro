@@ -169,6 +169,7 @@
     <Compile Include="EntitiesServices\EMailAgendaService.cs" />
     <Compile Include="EntitiesServices\EmpresaService.cs" />
     <Compile Include="EntitiesServices\AreaPacienteService.cs" />
+    <Compile Include="EntitiesServices\VacinaService.cs" />
     <Compile Include="EntitiesServices\LocacaoService.cs" />
     <Compile Include="EntitiesServices\NoticiaService.cs" />
     <Compile Include="EntitiesServices\TipoHistoricoService.cs" />
@@ -381,6 +382,7 @@
     <Compile Include="Interfaces\Services\IEMailAgendaService.cs" />
     <Compile Include="Interfaces\Services\IEmpresaService.cs" />
     <Compile Include="Interfaces\Services\IAreaPacienteService.cs" />
+    <Compile Include="Interfaces\Services\IVacinaService.cs" />
     <Compile Include="Interfaces\Services\ILocacaoService.cs" />
     <Compile Include="Interfaces\Services\INoticiaService.cs" />
     <Compile Include="Interfaces\Services\ITipoHistoricoService.cs" />

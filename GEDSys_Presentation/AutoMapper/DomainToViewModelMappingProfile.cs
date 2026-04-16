@@ -104,6 +104,7 @@ namespace MvcMapping.Mappers
             CreateMap<NOTICIA, NoticiaViewModel>();
             CreateMap<NOTICIA_COMENTARIO, NoticiaComentarioViewModel>();
             CreateMap<PACIENTE_VACINA, PacienteVacinaViewModel>();
+            CreateMap<VACINA, VacinaViewModel>();
 
         }
     }

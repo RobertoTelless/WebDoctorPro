@@ -544,6 +544,7 @@
     <Compile Include="Controllers\TemplateEMailController.cs" />
     <Compile Include="Controllers\TemplateSMSController.cs" />
     <Compile Include="Controllers\UsuarioController.cs" />
+    <Compile Include="Controllers\VacinaController.cs" />
     <Compile Include="Controllers\ValidacaoDocumentoController.cs" />
     <Compile Include="Controllers\VideoController.cs" />
     <Compile Include="Extensions\HMTLHelperExtensions.cs" />
@@ -562,6 +563,7 @@
     <Compile Include="ViewModels\CategoriaProdutoViewModel.cs" />
     <Compile Include="ViewModels\AreaPacienteViewModel.cs" />
     <Compile Include="ViewModels\FaixaHoraViewModel.cs" />
+    <Compile Include="ViewModels\VacinaViewModel.cs" />
     <Compile Include="ViewModels\LocacaoAnexoViewModel.cs" />
     <Compile Include="ViewModels\ContratoLocacaoViewModel.cs" />
     <Compile Include="ViewModels\LocacaoOcorrenciaViewModel.cs" />
@@ -5518,6 +5520,9 @@
     <Content Include="Views\AreaPaciente\VerAnexoExamePacienteAudio.cshtml" />
     <Content Include="Views\Paciente\IncluirVacina.cshtml" />
     <Content Include="Views\Paciente\EditarVacina.cshtml" />
+    <Content Include="Views\Vacina\MontarTelaVacina.cshtml" />
+    <Content Include="Views\Vacina\IncluirVacina.cshtml" />
+    <Content Include="Views\Vacina\EditarVacina.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

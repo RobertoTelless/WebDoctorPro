@@ -103,6 +103,7 @@ namespace MvcMapping.Mappers
             CreateMap<NoticiaViewModel, NOTICIA>();
             CreateMap<NoticiaComentarioViewModel, NOTICIA_COMENTARIO>();
             CreateMap<PacienteVacinaViewModel, PACIENTE_VACINA>();
+            CreateMap<VacinaViewModel, VACINA>();
 
         }
     }

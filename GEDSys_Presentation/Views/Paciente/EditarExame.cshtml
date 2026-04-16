@@ -755,9 +755,7 @@
                                                                                         var caminhoPdf = cond.PAEO_AQ_ARQUIVO.Replace("~/", "").Replace("~", "");
                                                                                         var urlAzurePdf = "https://rtistoragemain.blob.core.windows.net/rti-datacontainer/" + caminhoPdf;
 
-                                                                                        <td style="width: auto">
-                                                                                            <a href="@urlAzurePdf" target="_blank">@cond.PAEO_NM_TITULO</a>
-                                                                                        </td>
+                                                                                        <a href="@urlAzurePdf" target="_blank">@cond.PAEO_NM_TITULO</a>
                                                                                     }
                                                                                     else { @cond.PAEO_NM_TITULO }
                                                                                 </td>
@@ -786,7 +784,7 @@
                                                                                     <div style="height: 90px; display: flex; align-items: center; justify-content: center; width: 100%;">
                                                                                         @if (cond.PAEO_IN_TIPO == 1) // IMAGEM - Exibe miniatura
                                                                                         {
-                                                                                            <a href="@Url.Action("VerFichaPaciente", "Paciente2", new { id = cond.PAEO_CD_ID })" title="Visualizar Imagem">
+                                                                                            <a href="@Url.Action("VerAnexoExamePaciente", "Paciente", new { id = cond.PAEO_CD_ID })" title="Visualizar Imagem">
                                                                                                 <img src="@("https://rtistoragemain.blob.core.windows.net/rti-datacontainer/" + cond.PAEO_AQ_ARQUIVO.Replace("~/", "").Replace("~", ""))" 
                                                                                                      class="img-thumbnail" 
                                                                                                      style="width: 70px; height: 70px; object-fit: cover; border: 1px solid #eee;"
@@ -795,7 +793,7 @@
                                                                                         }
                                                                                         else if (cond.PAEO_IN_TIPO == 2) // VÍDEO - Ícone de câmera
                                                                                         {
-                                                                                            <a href="@Url.Action("VerFichaPaciente", "Paciente2", new { id = cond.PAEO_CD_ID })" title="Visualizar Vídeo">
+                                                                                            <a href="@Url.Action("VerAnexoExamePaciente", "Paciente", new { id = cond.PAEO_CD_ID })" title="Visualizar Vídeo">
                                                                                                 <i class="fa fa-video-camera fa-4x text-navy"></i>
                                                                                             </a>
                                                                                         }
@@ -824,7 +822,7 @@
                                                                                         <span style="cursor:pointer;" onclick="PrepararExclusaoAnexo('/Paciente2/ExcluirFicha/@cond.PAEO_CD_ID')" title="Excluir">
                                                                                             <i class="fa fa-trash-o fa-lg text-navy"></i>
                                                                                         </span>
-                                                                                        <a href="@Url.Action("DownloadFichaPaciente", "Paciente2", new { id = cond.PAEO_CD_ID })" title="Download">
+                                                                                        <a href="@Url.Action("DownloadPacienteExame", "Paciente", new { id = cond.PAEO_CD_ID })" title="Download">
                                                                                             <i class="fa fa-download fa-lg text-navy"></i>
                                                                                         </a>
                                                                                     </div>
@@ -914,9 +912,7 @@
                                                                                         var caminhoPdf = cond.PAEO_AQ_ARQUIVO.Replace("~/", "").Replace("~", "");
                                                                                         var urlAzurePdf = "https://rtistoragemain.blob.core.windows.net/rti-datacontainer/" + caminhoPdf;
 
-                                                                                        <td style="width: auto">
-                                                                                            <a href="@urlAzurePdf" target="_blank">@cond.PAEO_NM_TITULO</a>
-                                                                                        </td>
+                                                                                        <a href="@urlAzurePdf" target="_blank">@cond.PAEO_NM_TITULO</a>
                                                                                     }
                                                                                     else { @cond.PAEO_NM_TITULO }
                                                                                 </td>

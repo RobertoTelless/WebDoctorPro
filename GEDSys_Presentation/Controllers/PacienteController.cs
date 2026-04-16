@@ -10532,14 +10532,6 @@ namespace GEDSys_Presentation.Controllers
                         Session["FileQueuePaciente"] = null;
                     }
 
-                    // Acerta exame
-                    //if ((Int32)Session["ModoConsulta"] != 0)
-                    //{
-                    //    PACIENTE_EXAMES exame = baseApp.GetExameById((Int32)Session["IdExame"]);
-                    //    exame.PACO_CD_ID = (Int32)Session["IdConsulta"];
-                    //    Int32 x = baseApp.ValidateEditExame(exame);
-                    //}
-
                     // Grava historico
                     PACIENTE_EXAMES exame = baseApp.GetExameById((Int32)Session["IdExame"]);
                     PACIENTE_HISTORICO hist = new PACIENTE_HISTORICO();

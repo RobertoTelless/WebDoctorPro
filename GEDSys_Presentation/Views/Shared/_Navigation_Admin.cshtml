@@ -52,7 +52,7 @@
                     {
                         <li class="@Html.IsSelected(action: "MontarTelaMedicamento")"><a href="@Url.Action("MontarTelaMedicamento", "Medicamento")"  data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acesso ao cadastro de medicamentos usados nas prescrições">Medicamentos</a></li>
                     }
-
+                    <li class="@Html.IsSelected(action: "MontarTelaVacina")"><a href="@Url.Action("MontarTelaVacina", "Vacina")"  data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acesso à lista de vacinas">Vacinas</a></li>
                     @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_ACESSO_ESTOQUE == 1)
                     {
                         <li class="@Html.IsSelected(action: "MontarTelaProduto")"><a href="@Url.Action("MontarTelaProduto", "Produto")">Materiais/Produtos</a></li>
