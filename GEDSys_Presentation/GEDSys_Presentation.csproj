@@ -512,6 +512,7 @@
     <Compile Include="Classes\CacheSingleton.cs" />
     <Compile Include="Classes\ControleAcessoMetodo.cs" />
     <Compile Include="Classes\CookieHelper.cs" />
+    <Compile Include="Classes\WatermarkEvent.cs" />
     <Compile Include="Classes\VerificacaoDataCalendario.cs" />
     <Compile Include="Classes\PDFEventHandler.cs" />
     <Compile Include="Classes\GenerateQRCode.cs" />

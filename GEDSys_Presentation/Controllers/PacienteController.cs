@@ -5312,76 +5312,156 @@ namespace GEDSys_Presentation.Controllers
             }
         }
 
-        public FileResult DownloadPaciente(Int32 id)
+        //public FileResult DownloadPaciente(Int32 id)
+        //{
+        //    try
+        //    {
+        //        PACIENTE_ANEXO item = baseApp.GetAnexoById(id);
+        //        String arquivo = item.PAAX_AQ_ARQUIVO;
+        //        Int32 pos = arquivo.LastIndexOf("/") + 1;
+        //        String nomeDownload = arquivo.Substring(pos);
+        //        String contentType = string.Empty;
+        //        if (arquivo.Contains(".pdf"))
+        //        {
+        //            contentType = "application/pdf";
+        //        }
+        //        else if (arquivo.Contains(".jpg") || arquivo.Contains(".jpeg"))
+        //        {
+        //            contentType = "image/jpg";
+        //        }
+        //        else if (arquivo.Contains(".png"))
+        //        {
+        //            contentType = "image/png";
+        //        }
+        //        else if (arquivo.Contains(".docx"))
+        //        {
+        //            contentType = "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+        //        }
+        //        else if (arquivo.Contains(".xlsx"))
+        //        {
+        //            contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+        //        }
+        //        else if (arquivo.Contains(".pptx"))
+        //        {
+        //            contentType = "application/vnd.openxmlformats-officedocument.presentationml.presentation";
+        //        }
+        //        else if (arquivo.Contains(".mp3"))
+        //        {
+        //            contentType = "audio/mpeg";
+        //        }
+        //        else if (arquivo.Contains(".mpeg"))
+        //        {
+        //            contentType = "audio/mpeg";
+        //        }
+        //        else if (arquivo.Contains(".mpeg"))
+        //        {
+        //            contentType = "audio/mpeg";
+        //        }
+        //        else if (arquivo.Contains(".mp4"))
+        //        {
+        //            contentType = "video/mp4";
+        //        }
+        //        else if (arquivo.Contains(".webp"))
+        //        {
+        //            contentType = "image/webp";
+        //        }
+        //        else if (arquivo.Contains(".mkv"))
+        //        {
+        //            contentType = "video/video/x-matroska";
+        //        }
+        //        Session["NivelPaciente"] = 2;
+        //        return File(arquivo, contentType, nomeDownload);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        ViewBag.Message = ex.Message;
+        //        Session["TipoVolta"] = 2;
+        //        Session["VoltaExcecao"] = "Paciente";
+        //        Session["Excecao"] = ex;
+        //        Session["ExcecaoTipo"] = ex.GetType().ToString();
+        //        GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+        //        Int32 voltaX = grava.GravarLogExcecao(ex, "Paciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+        //        return null;
+        //    }
+        //}
+
+        [HttpGet]
+        public ActionResult DownloadPaciente(Int32 id)
         {
+            // Força o uso de TLS 1.2 (Obrigatório para Azure Storage no .NET 4.8)
+            System.Net.ServicePointManager.SecurityProtocol = System.Net.SecurityProtocolType.Tls12;
+
             try
             {
+                // 1. Carrega as configurações de Storage da sua tabela CONFIGURACAO
+                CONFIGURACAO conf = CarregaConfiguracaoGeral();
+                if (conf == null) return Content("Erro: Configurações de Storage não encontradas.");
+
+                string connString = conf.CONF_NM_STORAGE_CONN;
+                string containerName = conf.CONF_NM_STORAGE_CONTAINER;
+
+                if (string.IsNullOrEmpty(connString)) return Content("Erro: String de conexão do Azure está vazia.");
+
+                // 2. Busca o registro do anexo no banco
                 PACIENTE_ANEXO item = baseApp.GetAnexoById(id);
-                String arquivo = item.PAAX_AQ_ARQUIVO;
-                Int32 pos = arquivo.LastIndexOf("/") + 1;
-                String nomeDownload = arquivo.Substring(pos);
-                String contentType = string.Empty;
-                if (arquivo.Contains(".pdf"))
+                if (item == null || string.IsNullOrEmpty(item.PAAX_AQ_ARQUIVO))
                 {
-                    contentType = "application/pdf";
+                    return Content("Erro: Registro do anexo não encontrado no banco de dados.");
                 }
-                else if (arquivo.Contains(".jpg") || arquivo.Contains(".jpeg"))
+
+                // 3. LIMPEZA DO CAMINHO (Tratamento para o Azure)
+                // Remove o '~', remove barras do início e padroniza as barras invertidas
+                string caminhoFormatado = item.PAAX_AQ_ARQUIVO.Replace("~", "");
+                caminhoFormatado = caminhoFormatado.TrimStart('/');
+                caminhoFormatado = caminhoFormatado.Replace("\\", "/");
+
+                // 4. Conexão com o Azure Blob Storage
+                var blobServiceClient = new Azure.Storage.Blobs.BlobServiceClient(connString);
+                var containerClient = blobServiceClient.GetBlobContainerClient(containerName);
+                var blobClient = containerClient.GetBlobClient(caminhoFormatado);
+
+                // 5. Verifica se o arquivo realmente existe no container
+                if (!blobClient.Exists())
                 {
-                    contentType = "image/jpg";
+                    return Content("Erro: Arquivo não localizado no Azure. Caminho tentado: [" + caminhoFormatado + "]");
                 }
-                else if (arquivo.Contains(".png"))
-                {
-                    contentType = "image/png";
-                }
-                else if (arquivo.Contains(".docx"))
-                {
-                    contentType = "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
-                }
-                else if (arquivo.Contains(".xlsx"))
-                {
-                    contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
-                }
-                else if (arquivo.Contains(".pptx"))
-                {
-                    contentType = "application/vnd.openxmlformats-officedocument.presentationml.presentation";
-                }
-                else if (arquivo.Contains(".mp3"))
-                {
-                    contentType = "audio/mpeg";
-                }
-                else if (arquivo.Contains(".mpeg"))
-                {
-                    contentType = "audio/mpeg";
-                }
-                else if (arquivo.Contains(".mpeg"))
-                {
-                    contentType = "audio/mpeg";
-                }
-                else if (arquivo.Contains(".mp4"))
-                {
-                    contentType = "video/mp4";
-                }
-                else if (arquivo.Contains(".webp"))
-                {
-                    contentType = "image/webp";
-                }
-                else if (arquivo.Contains(".mkv"))
-                {
-                    contentType = "video/video/x-matroska";
-                }
-                Session["NivelPaciente"] = 2;
-                return File(arquivo, contentType, nomeDownload);
+
+                // 6. Download do conteúdo para a memória do servidor
+                var download = blobClient.DownloadContent();
+                byte[] dados = download.Value.Content.ToArray();
+
+                // 7. Define nome e tipo do arquivo
+                string nomeDownload = Path.GetFileName(caminhoFormatado);
+                string contentType = MimeMapping.GetMimeMapping(nomeDownload);
+
+                // 8. Entrega o arquivo forçando o download no navegador
+                Response.Clear();
+                Response.ClearContent();
+                Response.ClearHeaders();
+                Response.Buffer = true;
+
+                Response.ContentType = contentType;
+                // Aspas duplas no nome do arquivo tratam nomes com espaços
+                Response.AddHeader("Content-Disposition", "attachment; filename=\"" + nomeDownload + "\"");
+
+                Response.BinaryWrite(dados);
+                Response.Flush();
+                Response.End();
+
+                return null;
             }
             catch (Exception ex)
             {
-                ViewBag.Message = ex.Message;
-                Session["TipoVolta"] = 2;
-                Session["VoltaExcecao"] = "Paciente";
-                Session["Excecao"] = ex;
-                Session["ExcecaoTipo"] = ex.GetType().ToString();
-                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
-                Int32 voltaX = grava.GravarLogExcecao(ex, "Paciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
-                return null;
+                // Gravação de Log de Exceção padrão WebDoctor/RTI
+                try
+                {
+                    var user = Session["UserCredentials"] as USUARIO;
+                    GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                    grava.GravarLogExcecao(ex, "Paciente", "WebDoctor", 1, user);
+                }
+                catch { /* Evita erro no catch se a sessão estiver expirada */ }
+
+                return Content("Erro técnico ao realizar download: " + ex.Message);
             }
         }
 
@@ -12025,73 +12105,153 @@ namespace GEDSys_Presentation.Controllers
             }
         }
 
-        public FileResult DownloadPacienteExame(Int32 id)
+        //public FileResult DownloadPacienteExame(Int32 id)
+        //{
+        //    try
+        //    {
+        //        PACIENTE_EXAME_ANEXO item = baseApp.GetExameAnexoById(id);
+        //        String arquivo = item.PAEO_AQ_ARQUIVO;
+        //        Int32 pos = arquivo.LastIndexOf("/") + 1;
+        //        String nomeDownload = arquivo.Substring(pos);
+        //        String contentType = string.Empty;
+        //        if (arquivo.Contains(".pdf"))
+        //        {
+        //            contentType = "application/pdf";
+        //        }
+        //        else if (arquivo.Contains(".jpg") || arquivo.Contains(".jpeg"))
+        //        {
+        //            contentType = "image/jpg";
+        //        }
+        //        else if (arquivo.Contains(".png"))
+        //        {
+        //            contentType = "image/png";
+        //        }
+        //        else if (arquivo.Contains(".docx"))
+        //        {
+        //            contentType = "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+        //        }
+        //        else if (arquivo.Contains(".xlsx"))
+        //        {
+        //            contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+        //        }
+        //        else if (arquivo.Contains(".pptx"))
+        //        {
+        //            contentType = "application/vnd.openxmlformats-officedocument.presentationml.presentation";
+        //        }
+        //        else if (arquivo.Contains(".mp3"))
+        //        {
+        //            contentType = "audio/mpeg";
+        //        }
+        //        else if (arquivo.Contains(".mpeg"))
+        //        {
+        //            contentType = "audio/mpeg";
+        //        }
+        //        else if (arquivo.Contains(".mp4")) 
+        //        {
+        //            contentType = "video/mp4";
+        //        }
+        //        else if (arquivo.Contains(".webp"))
+        //        {
+        //            contentType = "image/webp";
+        //        }
+        //        else if (arquivo.Contains(".mkv"))
+        //        {
+        //            contentType = "video/video/x-matroska";
+        //        }
+        //        Session["NivelPaciente"] = 7;
+        //        Session["NivelExame"] = 2;
+        //        return File(arquivo, contentType, nomeDownload);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        ViewBag.Message = ex.Message;
+        //        Session["TipoVolta"] = 2;
+        //        Session["VoltaExcecao"] = "Paciente";
+        //        Session["Excecao"] = ex;
+        //        Session["ExcecaoTipo"] = ex.GetType().ToString();
+        //        GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+        //        Int32 voltaX = grava.GravarLogExcecao(ex, "Paciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+        //        return null;
+        //    }
+        //}
+
+        [HttpGet]
+        public ActionResult DownloadPacienteExame(Int32 id)
         {
+            // Força o uso de TLS 1.2 (Obrigatório para Azure Storage no .NET 4.8)
+            System.Net.ServicePointManager.SecurityProtocol = System.Net.SecurityProtocolType.Tls12;
+
             try
             {
+                // 1. Carrega as configurações de Storage da sua tabela CONFIGURACAO
+                CONFIGURACAO conf = CarregaConfiguracaoGeral();
+                if (conf == null) return Content("Erro: Configurações de Storage não encontradas.");
+
+                string connString = conf.CONF_NM_STORAGE_CONN;
+                string containerName = conf.CONF_NM_STORAGE_CONTAINER;
+
+                if (string.IsNullOrEmpty(connString)) return Content("Erro: String de conexão do Azure está vazia.");
+
+                // 2. Busca o registro do anexo no banco
                 PACIENTE_EXAME_ANEXO item = baseApp.GetExameAnexoById(id);
-                String arquivo = item.PAEO_AQ_ARQUIVO;
-                Int32 pos = arquivo.LastIndexOf("/") + 1;
-                String nomeDownload = arquivo.Substring(pos);
-                String contentType = string.Empty;
-                if (arquivo.Contains(".pdf"))
+                if (item == null || string.IsNullOrEmpty(item.PAEO_AQ_ARQUIVO))
                 {
-                    contentType = "application/pdf";
+                    return Content("Erro: Registro do anexo não encontrado no banco de dados.");
                 }
-                else if (arquivo.Contains(".jpg") || arquivo.Contains(".jpeg"))
+
+                // 3. LIMPEZA DO CAMINHO (Tratamento para o Azure)
+                // Remove o '~', remove barras do início e padroniza as barras invertidas
+                string caminhoFormatado = item.PAEO_AQ_ARQUIVO.Replace("~", "");
+                caminhoFormatado = caminhoFormatado.TrimStart('/');
+                caminhoFormatado = caminhoFormatado.Replace("\\", "/");
+
+                // 4. Conexão com o Azure Blob Storage
+                var blobServiceClient = new Azure.Storage.Blobs.BlobServiceClient(connString);
+                var containerClient = blobServiceClient.GetBlobContainerClient(containerName);
+                var blobClient = containerClient.GetBlobClient(caminhoFormatado);
+
+                // 5. Verifica se o arquivo realmente existe no container
+                if (!blobClient.Exists())
                 {
-                    contentType = "image/jpg";
+                    return Content("Erro: Arquivo não localizado no Azure. Caminho tentado: [" + caminhoFormatado + "]");
                 }
-                else if (arquivo.Contains(".png"))
-                {
-                    contentType = "image/png";
-                }
-                else if (arquivo.Contains(".docx"))
-                {
-                    contentType = "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
-                }
-                else if (arquivo.Contains(".xlsx"))
-                {
-                    contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
-                }
-                else if (arquivo.Contains(".pptx"))
-                {
-                    contentType = "application/vnd.openxmlformats-officedocument.presentationml.presentation";
-                }
-                else if (arquivo.Contains(".mp3"))
-                {
-                    contentType = "audio/mpeg";
-                }
-                else if (arquivo.Contains(".mpeg"))
-                {
-                    contentType = "audio/mpeg";
-                }
-                else if (arquivo.Contains(".mp4")) 
-                {
-                    contentType = "video/mp4";
-                }
-                else if (arquivo.Contains(".webp"))
-                {
-                    contentType = "image/webp";
-                }
-                else if (arquivo.Contains(".mkv"))
-                {
-                    contentType = "video/video/x-matroska";
-                }
-                Session["NivelPaciente"] = 7;
-                Session["NivelExame"] = 2;
-                return File(arquivo, contentType, nomeDownload);
+
+                // 6. Download do conteúdo para a memória do servidor
+                var download = blobClient.DownloadContent();
+                byte[] dados = download.Value.Content.ToArray();
+
+                // 7. Define nome e tipo do arquivo
+                string nomeDownload = Path.GetFileName(caminhoFormatado);
+                string contentType = MimeMapping.GetMimeMapping(nomeDownload);
+
+                // 8. Entrega o arquivo forçando o download no navegador
+                Response.Clear();
+                Response.ClearContent();
+                Response.ClearHeaders();
+                Response.Buffer = true;
+
+                Response.ContentType = contentType;
+                // Aspas duplas no nome do arquivo tratam nomes com espaços
+                Response.AddHeader("Content-Disposition", "attachment; filename=\"" + nomeDownload + "\"");
+
+                Response.BinaryWrite(dados);
+                Response.Flush();
+                Response.End();
+
+                return null;
             }
             catch (Exception ex)
             {
-                ViewBag.Message = ex.Message;
-                Session["TipoVolta"] = 2;
-                Session["VoltaExcecao"] = "Paciente";
-                Session["Excecao"] = ex;
-                Session["ExcecaoTipo"] = ex.GetType().ToString();
-                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
-                Int32 voltaX = grava.GravarLogExcecao(ex, "Paciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
-                return null;
+                // Gravação de Log de Exceção padrão WebDoctor/RTI
+                try
+                {
+                    var user = Session["UserCredentials"] as USUARIO;
+                    GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                    grava.GravarLogExcecao(ex, "Paciente", "WebDoctor", 1, user);
+                }
+                catch { /* Evita erro no catch se a sessão estiver expirada */ }
+
+                return Content("Erro técnico ao realizar download: " + ex.Message);
             }
         }
 
@@ -40786,40 +40946,120 @@ namespace GEDSys_Presentation.Controllers
         }
 
 
-        public FileResult DownloadFichaPaciente(Int32 id)
+        //public FileResult DownloadFichaPaciente(Int32 id)
+        //{
+        //    try
+        //    {
+        //        PACIENTE_FICHA item = baseApp.GetFichaById(id);
+        //        String arquivo = item.PAFC_AQ_ARQUIVO;
+        //        Int32 pos = arquivo.LastIndexOf("/") + 1;
+        //        String nomeDownload = arquivo.Substring(pos);
+        //        String contentType = string.Empty;
+        //        if (arquivo.Contains(".pdf"))
+        //        {
+        //            contentType = "application/pdf";
+        //        }
+        //        else if (arquivo.Contains(".jpg") || arquivo.Contains(".jpeg"))
+        //        {
+        //            contentType = "image/jpg";
+        //        }
+        //        else if (arquivo.Contains(".png"))
+        //        {
+        //            contentType = "image/png";
+        //        }
+        //        Session["NivelPaciente"] = 2;
+        //        return File(arquivo, contentType, nomeDownload);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        ViewBag.Message = ex.Message;
+        //        Session["TipoVolta"] = 2;
+        //        Session["VoltaExcecao"] = "Paciente";
+        //        Session["Excecao"] = ex;
+        //        Session["ExcecaoTipo"] = ex.GetType().ToString();
+        //        GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+        //        Int32 voltaX = grava.GravarLogExcecao(ex, "Paciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+        //        return null;
+        //    }
+        //}
+
+        [HttpGet]
+        public ActionResult DownloadFichaPaciente(Int32 id)
         {
+            // Força o uso de TLS 1.2 (Obrigatório para Azure Storage no .NET 4.8)
+            System.Net.ServicePointManager.SecurityProtocol = System.Net.SecurityProtocolType.Tls12;
+
             try
             {
+                // 1. Carrega as configurações de Storage da sua tabela CONFIGURACAO
+                CONFIGURACAO conf = CarregaConfiguracaoGeral();
+                if (conf == null) return Content("Erro: Configurações de Storage não encontradas.");
+
+                string connString = conf.CONF_NM_STORAGE_CONN;
+                string containerName = conf.CONF_NM_STORAGE_CONTAINER;
+
+                if (string.IsNullOrEmpty(connString)) return Content("Erro: String de conexão do Azure está vazia.");
+
+                // 2. Busca o registro do anexo no banco
                 PACIENTE_FICHA item = baseApp.GetFichaById(id);
-                String arquivo = item.PAFC_AQ_ARQUIVO;
-                Int32 pos = arquivo.LastIndexOf("/") + 1;
-                String nomeDownload = arquivo.Substring(pos);
-                String contentType = string.Empty;
-                if (arquivo.Contains(".pdf"))
+                if (item == null || string.IsNullOrEmpty(item.PAFC_AQ_ARQUIVO))
                 {
-                    contentType = "application/pdf";
+                    return Content("Erro: Registro do anexo não encontrado no banco de dados.");
                 }
-                else if (arquivo.Contains(".jpg") || arquivo.Contains(".jpeg"))
+
+                // 3. LIMPEZA DO CAMINHO (Tratamento para o Azure)
+                // Remove o '~', remove barras do início e padroniza as barras invertidas
+                string caminhoFormatado = item.PAFC_AQ_ARQUIVO.Replace("~", "");
+                caminhoFormatado = caminhoFormatado.TrimStart('/');
+                caminhoFormatado = caminhoFormatado.Replace("\\", "/");
+
+                // 4. Conexão com o Azure Blob Storage
+                var blobServiceClient = new Azure.Storage.Blobs.BlobServiceClient(connString);
+                var containerClient = blobServiceClient.GetBlobContainerClient(containerName);
+                var blobClient = containerClient.GetBlobClient(caminhoFormatado);
+
+                // 5. Verifica se o arquivo realmente existe no container
+                if (!blobClient.Exists())
                 {
-                    contentType = "image/jpg";
+                    return Content("Erro: Arquivo não localizado no Azure. Caminho tentado: [" + caminhoFormatado + "]");
                 }
-                else if (arquivo.Contains(".png"))
-                {
-                    contentType = "image/png";
-                }
-                Session["NivelPaciente"] = 2;
-                return File(arquivo, contentType, nomeDownload);
+
+                // 6. Download do conteúdo para a memória do servidor
+                var download = blobClient.DownloadContent();
+                byte[] dados = download.Value.Content.ToArray();
+
+                // 7. Define nome e tipo do arquivo
+                string nomeDownload = Path.GetFileName(caminhoFormatado);
+                string contentType = MimeMapping.GetMimeMapping(nomeDownload);
+
+                // 8. Entrega o arquivo forçando o download no navegador
+                Response.Clear();
+                Response.ClearContent();
+                Response.ClearHeaders();
+                Response.Buffer = true;
+
+                Response.ContentType = contentType;
+                // Aspas duplas no nome do arquivo tratam nomes com espaços
+                Response.AddHeader("Content-Disposition", "attachment; filename=\"" + nomeDownload + "\"");
+
+                Response.BinaryWrite(dados);
+                Response.Flush();
+                Response.End();
+
+                return null;
             }
             catch (Exception ex)
             {
-                ViewBag.Message = ex.Message;
-                Session["TipoVolta"] = 2;
-                Session["VoltaExcecao"] = "Paciente";
-                Session["Excecao"] = ex;
-                Session["ExcecaoTipo"] = ex.GetType().ToString();
-                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
-                Int32 voltaX = grava.GravarLogExcecao(ex, "Paciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
-                return null;
+                // Gravação de Log de Exceção padrão WebDoctor/RTI
+                try
+                {
+                    var user = Session["UserCredentials"] as USUARIO;
+                    GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                    grava.GravarLogExcecao(ex, "Paciente", "WebDoctor", 1, user);
+                }
+                catch { /* Evita erro no catch se a sessão estiver expirada */ }
+
+                return Content("Erro técnico ao realizar download: " + ex.Message);
             }
         }
 

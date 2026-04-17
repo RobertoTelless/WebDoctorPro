@@ -25,7 +25,7 @@
                 <div class="modal-body text-center">
                     <h3>Deseja realmente excluir este anexo?</h3>
                     <p>Esta ação removerá o arquivo permanentemente do prontuário do paciente.</p>
-                    <input type="hidden" id="urlExclusaoTempNFvalue="" />
+                    <input type="hidden" id="urlExclusaoTemp="" />
                 </div>
             
                 <div class="modal-footer">
@@ -51,7 +51,7 @@
                 <div class="modal-body text-center">
                     <h3>Deseja realmente excluir a nota fiscal desse pagamento?</h3>
                     <p>Esta ação removerá o arquivo permanentemente a nota fiscal do pagamento.</p>
-                    <input type="hidden" id="urlExclusaoTemp" value="" />
+                    <input type="hidden" id="urlExclusaoTempNF" value="" />
                 </div>
             
                 <div class="modal-footer">
@@ -510,7 +510,13 @@
                                                                                 <td>@(cond.PAAN_IN_TIPO == 1 ? "Imagem" : cond.PAAN_IN_TIPO == 2 ? "Vídeo" : cond.PAAN_IN_TIPO == 3 ? "PDF" : "Outros")</td>
                                                                                 <td class="td-one-action">
                                                                                     <span class="fa fa-trash-o" onclick="PrepararExclusaoAnexo('/Financeiro/ExcluirAnexoPagamento/@cond.PAAN_CD_ID')" style="cursor:pointer; color:#337ab7"></span>
-                                                                                    @Html.TableLinkDetails(cond.PAAN_CD_ID, "DownloadPagamento", "fa-download", "Download")
+                                                                                    @*@Html.TableLinkDetails(cond.PAAN_CD_ID, "DownloadPagamento", "fa-download", "Download")*@
+
+                                                                                    <a href="@Url.Action("DownloadPagamento", "Financeiro", new { id = cond.PAAN_CD_ID })" 
+                                                                                       class="btn btn-default" 
+                                                                                       title="Download">
+                                                                                        <i class="fa fa-download"></i>
+                                                                                    </a>
                                                                                 </td>
                                                                             </tr>
                                                                         }
@@ -658,7 +664,13 @@
                                                                                 <td>@(cond.PAAN_IN_TIPO == 1 ? "Imagem" : cond.PAAN_IN_TIPO == 2 ? "Vídeo" : cond.PAAN_IN_TIPO == 3 ? "PDF" : "Outros")</td>
                                                                                 <td class="td-one-action">
                                                                                     <span class="fa fa-trash-o" onclick="PrepararExclusaoAnexo('/Financeiro/ExcluirAnexoPagamento/@cond.PAAN_CD_ID')" style="cursor:pointer; color:#337ab7"></span>
-                                                                                    @Html.TableLinkDetails(cond.PAAN_CD_ID, "DownloadPagamento", "fa-download", "Download")
+                                                                                    @*@Html.TableLinkDetails(cond.PAAN_CD_ID, "DownloadPagamento", "fa-download", "Download")*@
+
+                                                                                    <a href="@Url.Action("DownloadPagamento", "Financeiro", new { id = cond.PAAN_CD_ID })" 
+                                                                                       class="btn btn-default" 
+                                                                                       title="Download">
+                                                                                        <i class="fa fa-download"></i>
+                                                                                    </a>
                                                                                 </td>
                                                                             </tr>
                                                                         }
