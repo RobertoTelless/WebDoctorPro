@@ -123,6 +123,7 @@ namespace GEDSys_Presentation.Controllers
                 objeto = new NOTICIA();
                 Session["VoltaNoticia"] = 1;
                 Session["MensNoticia"] = 0;
+                Session["UsuarioEspecial"] = usuario.USUA_IN_ESPECIAL;
                 return View(objeto);
             }
             catch (Exception ex)
@@ -764,6 +765,99 @@ namespace GEDSys_Presentation.Controllers
                 GravaLogExcecao grava = new GravaLogExcecao(usuApp);
                 Int32 voltaX = grava.GravarLogExcecao(ex, "Noticia", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
                 return null;
+            }
+        }
+
+        public ActionResult VerNoticia(Int32 id)
+        {
+            if ((String)Session["Ativa"] == null)
+            {
+                return RedirectToAction("Logout", "ControleAcesso");
+            }
+            Session["IdVolta"] = id;
+            NOTICIA item = baseApp.GetItemById(id);
+            item.NOTC_NR_ACESSO = ++item.NOTC_NR_ACESSO;
+            objetoAntes = item;
+            Int32 volta = baseApp.ValidateEdit(item, objetoAntes);
+
+            NoticiaViewModel vm = Mapper.Map<NOTICIA, NoticiaViewModel>(item);
+            return View(vm);
+        }
+
+        [HttpGet]
+        public ActionResult MontarTelaNoticiaQuadro()
+        {
+            try
+            {
+                // Verifica se tem usuario logado
+                USUARIO usuario = new USUARIO();
+                if ((String)Session["Ativa"] == null)
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+                if ((USUARIO)Session["UserCredentials"] != null)
+                {
+                    usuario = (USUARIO)Session["UserCredentials"];
+
+                    // Verfifica permissão
+                    if (usuario.PERFIL.PERF_SG_SIGLA != "ADM")
+                    {
+                        Session["MensPermissao"] = 2;
+                        Session["ModuloPermissao"] = "Noticia";
+                        return RedirectToAction("MontarTelaPaciente", "Paciente");
+                    }
+                }
+                else
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+                Int32 idAss = (Int32)Session["IdAssinante"];
+                Session["ModuloAtual"] = "Noticia";
+
+                // Carrega listas
+                if ((List<NOTICIA>)Session["ListaNoticia"] == null)
+                {
+                    listaMaster = CarregaNoticiaGeral().Where(p => p.NOTC_DT_VALIDADE >= DateTime.Today.Date).ToList();
+                    Session["ListaNoticia"] = listaMaster;
+                }
+                ViewBag.Listas = (List<NOTICIA>)Session["ListaNoticia"];
+                ViewBag.Title = "Notícias";
+
+                // Indicadores
+                ViewBag.Noticias = ((List<NOTICIA>)Session["ListaNoticia"]).Count;
+                ViewBag.Perfil = usuario.PERFIL.PERF_SG_SIGLA;
+
+                // Mensagem
+                if (Session["MensNoticia"] != null)
+                {
+                    if ((Int32)Session["MensNoticia"] == 1)
+                    {
+                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0016", CultureInfo.CurrentCulture));
+                    }
+                    if ((Int32)Session["MensNoticia"] == 61)
+                    {
+                        TempData["MensagemAcerto"] = (String)Session["MsgCRUD"];
+                        TempData["TemMensagem"] = 1;
+                    }
+                }
+
+                // Abre view
+                objeto = new NOTICIA();
+                Session["VoltaNoticia"] = 1;
+                Session["MensNoticia"] = 0;
+                Session["UsuarioEspecial"] = usuario.USUA_IN_ESPECIAL;
+                return View(objeto);
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Noticia";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Noticia", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return RedirectToAction("TrataExcecao", "BaseAdmin");
             }
         }
 

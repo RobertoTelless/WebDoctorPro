@@ -44,6 +44,24 @@
     </div>
 
     <div class="row">
+        <div class="form-group" style=" margin-left: 15px; margin-right: 0px;">
+            @* --- INÍCIO DA AJUDA CONTEXTUAL --- *@
+            <details class="ajuda-contextual">
+                <summary><i class="fa fa-info-circle text-info"></i> Resumo das funcionalidades desta página</summary>
+                <div class="well well-sm">
+                    <p>Essa é a página da central de usuários do <b>WebDoctorPro</b>. Nela você poderá:</p>
+                    <ol>
+                        <li>Exibe os usuários cadastrados.</li>
+                        <li>Localizar (filtrar) um usuário e acessar a sua página principal.</li>
+                        <li>Acessar a página de inclusão de usuários.</li>
+                        <li>Acessar a página de alteração de usuários.</li>
+                    </ol>
+                </div>
+            </details>
+            @* --- FIM DA AJUDA CONTEXTUAL --- *@
+        </div>
+    </div>
+    <div class="row">
         <div class="col-lg-2">
             <div class="ibox float-e-margins">
                 <div class="ibox-title"  style="background-color:cornflowerblue; color:darkblue">
@@ -147,13 +165,6 @@
                             @Html.ValidationSummary(false, "", new { @class = "text-danger" })
                         </div>
                     }
-                    @*@if (TempData["TemMensagem"] != null)
-                    {
-                        <div class="alert alert-success">
-                            <button type="button" class="close" data-dismiss="alert">Fechar</button>
-                            <span>@TempData["MensagemAcerto"]</span>
-                        </div>
-                    }*@                    
                     <div class="row">
                         @if (ViewBag.Listas != null && (ViewBag.Listas as List<EntitiesServices.Model.USUARIO>).Count > 0)
                         {
@@ -211,14 +222,28 @@
 
                                             }
                                             <td style="width: auto">@cond.USUA_NR_ACESSOS</td>
-                                            @if (!String.IsNullOrEmpty(cond.USUA_AQ_FOTO) && File.Exists(Server.MapPath(cond.USUA_AQ_FOTO)))
+
+                                            @if (!String.IsNullOrEmpty(cond.USUA_AQ_FOTO))
                                             {
-                                                <td style="width: auto"><img src="@Url.Content(cond.USUA_AQ_FOTO)" style="width: auto; height: auto; max-height: 75px; max-width: 65px;" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Clique Ctrl+Ctrl para ampliar a fotografia"></td>
+                                                // Tratamento manual da URL dentro do loop
+                                                var caminhoLimpo = cond.USUA_AQ_FOTO.Replace("~/", "").Replace("~", "");
+                                                var urlFinal = "https://rtistoragemain.blob.core.windows.net/rti-datacontainer/" + caminhoLimpo;
+
+                                                <td style="width: auto">
+                                                    <img src="@urlFinal" 
+                                                            style="width: auto; height: auto; max-height: 75px; max-width: 65px;" 
+                                                            data-toggle="popover" data-trigger="hover" data-placement="top" 
+                                                            data-content="Clique Ctrl+Ctrl para ampliar a fotografia"
+                                                            onerror="this.onerror=null;this.src='@Url.Content("~/Imagens/icon_morador.png")';">
+                                                </td>
                                             }
                                             else
                                             {
-                                                <td style="width: auto"><img src="~/Images/icon_morador.png" style="width: auto; height: auto; max-height: 65px; max-width: 55px;" data-toggle="modal" data-target="#fotoModal" ></td>
+                                                <td style="width: auto">
+                                                    <img src="~/Imagens/icon_morador.png" style="width: auto; height: auto; max-height: 65px; max-width: 55px;">
+                                                </td>
                                             }
+
                                             <td class="td-one-action">
                                                 @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_EDICAO_USUARIO == 1)
                                                 {

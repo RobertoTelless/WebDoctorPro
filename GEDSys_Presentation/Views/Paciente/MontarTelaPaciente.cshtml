@@ -216,18 +216,33 @@
                     </div>
                 </div>
             </div>
-            @*<div class="col-lg-2">
+            <div class="col-lg-2">
                 <div class="ibox float-e-margins">
                     <div class="ibox-title" style="background-color: darkseagreen; color: darkgreen">
                         <span class="label label-primary pull-right">Hoje</span>
-                        <h5>Avisos RTi</h5>
+                        <h5>Notícias</h5>
                     </div>
                     <div class="ibox-content">
-                        <h1 class="no-margins">@ViewBag.NumListasFabricante</h1>
-                        <small><a href="@Url.Action("MontarTelaAvisosRTi", "Paciente2")" class="btn-loading" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Consultar todos os avisos da Rti disponíveis">Avisos Disponíveis</a></small>
+                        <a href="@Url.Action("MontarTelaNoticiaQuadro", "Noticia")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acesso às notícias" class="btn btn-sm btn-warning btn-loading" id="emp" OnClick = "Fade()">Visualizar Notícias</a>                
                     </div>
                 </div>
-            </div>*@
+            </div>
+            @*@if ((Int32)Session["eDemo"] == 1)
+            {*@
+                <div class="col-lg-2">
+                    <div class="ibox float-e-margins">
+                        <div class="ibox-title" style="background-color: lightblue; color: darkblue">
+                            <span class="label label-primary pull-right">Hoje</span>
+                            <h5>Demonstração</h5>
+                        </div>
+                        <div class="ibox-content">
+                            <h4 class="no-margins">Restam @((int)Session["DiasDemo"]) dias</h4>
+                            <br />
+                        <small><a href="@Url.Action("MontarTelaConsultas", "Paciente")" class="btn-loading" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Verificar as consultas marcadas para a data corrente" >Assinar WebDoctorPro</a></small>
+                        </div>
+                    </div>
+                </div>
+            @*}*@
         </div>
         @*Atalhos*@
         <div class="row">

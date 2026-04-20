@@ -19135,6 +19135,12 @@ namespace GEDSys_Presentation.Controllers
                 }
 
                 ViewBag.Paciente = new SelectList(listaPac, "PACI__CD_ID", "PACI_NM_NOME");
+                ViewBag.Tipos = new SelectList(CarregaCatPaciente(), "TIPA_CD_ID", "TIPA_NM_NOME");
+                ViewBag.Sexo = new SelectList(CarregaSexo(), "SEXO_CD_ID", "SEXO_NM_NOME");
+                ViewBag.Raca = new SelectList(baseApp.GetAllRaca(), "RACA_CD_ID", "RACA_NM_NOME");
+                ViewBag.Cor = new SelectList(CarregaCor(), "COR1_CD_ID", "COR1_NM_NOME");
+                ViewBag.EstadoCivil = new SelectList(CarregaEstadoCivil(), "ESCI_CD_ID", "ESCI_NM_NOME");
+                ViewBag.GrauInstrucao = new SelectList(CarregaGrauInstrucao(), "GRAU_CD_ID", "GRAU_NM_NOME");
                 ViewBag.TipoConsulta = new SelectList(CarregaTipoConsulta(), "VACO_CD_ID", "VACO_NM_NOME");
                 ViewBag.TipoConsulta1 = new SelectList(CarregaTipoConsulta(), "VACO_CD_ID", "VACO_NM_NOME");
                 var tipo = new List<SelectListItem>();
@@ -19347,6 +19353,12 @@ namespace GEDSys_Presentation.Controllers
             ViewBag.TipoConsulta = new SelectList(CarregaTipoConsulta(), "VACO_CD_ID", "VACO_NM_NOME");
             List<USUARIO> listUsu = CarregaUsuario().Where(p => p.USUA_IN_CONSULTA == 1).ToList();
             ViewBag.Usuario = new SelectList(listUsu, "USUA_CD_ID", "USUA_NM_NOME");
+            ViewBag.Tipos = new SelectList(CarregaCatPaciente(), "TIPA_CD_ID", "TIPA_NM_NOME");
+            ViewBag.Sexo = new SelectList(CarregaSexo(), "SEXO_CD_ID", "SEXO_NM_NOME");
+            ViewBag.Raca = new SelectList(baseApp.GetAllRaca(), "RACA_CD_ID", "RACA_NM_NOME");
+            ViewBag.Cor = new SelectList(CarregaCor(), "COR1_CD_ID", "COR1_NM_NOME");
+            ViewBag.EstadoCivil = new SelectList(CarregaEstadoCivil(), "ESCI_CD_ID", "ESCI_NM_NOME");
+            ViewBag.GrauInstrucao = new SelectList(CarregaGrauInstrucao(), "GRAU_CD_ID", "GRAU_NM_NOME");
 
             var seg = new List<SelectListItem>();
             seg.Add(new SelectListItem() { Text = "Sim", Value = "1" });
@@ -19570,7 +19582,7 @@ namespace GEDSys_Presentation.Controllers
                             // Monta paciente
                             PACIENTE paciente = new PACIENTE();
                             paciente.ASSI_CD_ID = idAss;
-                            paciente.TIPA_CD_ID = 1;
+                            paciente.TIPA_CD_ID = vm.TIPA_CD_ID.Value;
                             paciente.PACI_NM_NOME = vm.PACI_NM_NOME;
                             paciente.PACI_DT_NASCIMENTO = vm.PACI_DT_NASCIMENTO;
                             paciente.PACI_NR_CPF = vm.PACI_NR_CPF;
@@ -19601,6 +19613,12 @@ namespace GEDSys_Presentation.Controllers
                             paciente.PACI_DT_PRECO = DateTime.Today.Date;
                             paciente.PACI_IN_HUMANO = 1;
                             paciente.PACI_IN_MENSAGEM_ATRASO = 1;
+                            paciente.PACI_NM_RESPONSAVEL = vm.PACI_NM_RESPONSAVEL;
+                            paciente.COR1_CD_ID = vm.COR1_CD_ID;
+                            paciente.SEXO_CD_ID = vm.SEXO_CD_ID;
+                            paciente.ESCI_CD_ID = vm.ESCI_CD_ID;
+                            paciente.GRAU_CD_ID = vm.GRAU_CD_ID;
+                            paciente.PACI_NM_PROFISSAO = vm.PACI_NM_PROFISSAO;
                             Int32 voltaP = baseApp.ValidateCreate(paciente, usuario);
                             Int32 key = paciente.PACI__CD_ID;
                             vm.PACI_CD_ID = key;

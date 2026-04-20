@@ -360,6 +360,16 @@ namespace ERP_Condominios_Solution.ViewModels
                 return "Situação Normal";
             }
         }
+        public string FotoAzureUrl
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(PROD_AQ_FOTO)) return null;
+                string path = PROD_AQ_FOTO.Replace("~/", "").Replace("~", "");
+                return $"https://rtistoragemain.blob.core.windows.net/rti-datacontainer/{path}";
+            }
+        }
+
 
         public virtual ASSINANTE ASSINANTE { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]

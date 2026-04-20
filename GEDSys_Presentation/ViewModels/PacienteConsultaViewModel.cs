@@ -143,6 +143,15 @@ namespace ERP_Condominios_Solution.ViewModels
         public Nullable<int> PACI_IN_COMPLETADO { get; set; }
         public Nullable<int> PACI_IN_MENOR { get; set; }
         public Nullable<int> Idade { get; set; }
+        public Nullable<int> TIPA_CD_ID { get; set; }
+        [StringLength(50, ErrorMessage = "NOME DO RESPONSÁVEL deve conter no máximo 50 caracteres.")]
+        public string PACI_NM_RESPONSAVEL { get; set; }
+        public Nullable<int> SEXO_CD_ID { get; set; }
+        public Nullable<int> COR1_CD_ID { get; set; }
+        public Nullable<int> ESCI_CD_ID { get; set; }
+        public Nullable<int> GRAU_CD_ID { get; set; }
+        [StringLength(50, ErrorMessage = "PROFISSÃO deve conter no máximo 50 caracteres.")]
+        public string PACI_NM_PROFISSAO { get; set; }
 
         public int TIPO_VOLTA { get; set; }
 

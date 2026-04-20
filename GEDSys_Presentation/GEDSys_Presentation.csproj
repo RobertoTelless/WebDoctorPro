@@ -5524,9 +5524,12 @@
     <Content Include="Views\Vacina\MontarTelaVacina.cshtml" />
     <Content Include="Views\Vacina\IncluirVacina.cshtml" />
     <Content Include="Views\Vacina\EditarVacina.cshtml" />
+    <Content Include="Views\Noticia\VerNoticia.cshtml" />
+    <Content Include="Views\Noticia\MontarTelaNoticiaQuadro.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="BaseAdmin\BaseConhecimento\" />
     <Folder Include="Certificados\35\" />
     <Folder Include="Filters\" />
     <Folder Include="Imagens\1\AreaPaciente\10\Anexos\" />

@@ -118,13 +118,6 @@
                             @Html.ValidationSummary(false, "", new { @class = "text-danger" })
                         </div>
                     }
-                    @*@if (TempData["TemMensagem"] != null)
-                    {
-                        <div class="alert alert-success">
-                            <button type="button" class="close" data-dismiss="alert">Fechar</button>
-                            <span>@TempData["MensagemAcerto"]</span>
-                        </div>
-                    }*@  
                     @if (ViewBag.Perfil == "ADM" || ViewBag.Perfil == "GER")
                     {
                         if (Model.USUA_IN_BLOQUEADO == 0)
@@ -174,14 +167,29 @@
                                         <div class="row" style="width: 100%;">
                                             <div class="col-lg-2 col-md-2 col-xs-12">
                                                 <div style="text-align: center; margin-top: 20px; line-height: 10px;">
-                                                    @if (!String.IsNullOrEmpty(Model.USUA_AQ_FOTO))
-                                                    {
-                                                        <img src="@Url.Content(Model.USUA_AQ_FOTO)" style="width: auto; height: auto; max-height: 250px; max-width: 200px;" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Clique Ctrl+Ctrl para ampliar a fotografia">
-                                                    }
-                                                    else
-                                                    {
-                                                        <img src="~/Imagens/Base/icone_morador.png" style="width: auto; height: auto; max-height: 250px; max-width: 200px;" data-toggle="modal" data-target="#fotoModal" onclick="CriaModal('@Model.USUA_NM_NOME', '/Imagens/Base/icone_morador.png')">
-                                                    }
+                                                        @if (Model.USUA_AQ_FOTO.Contains("icon_morador"))
+	                                                    {
+                                                            <img src="~/Imagens/icon_morador.png" 
+                                                                    class="img-responsive thumbnail" 
+                                                                    style="max-height: 230px; margin: 0 auto;">
+                                                        }
+                                                        else
+                                                        {
+                                                            if (!String.IsNullOrEmpty(Model.USUA_AQ_FOTO))
+                                                            {
+                                                                <img src="@Model.FotoAzureUrl" 
+                                                                        class="img-responsive thumbnail" 
+                                                                        style="max-height: 270px; margin: 0 auto;">
+                                                            }
+                                                            else
+                                                            {
+                                                                <img src="~/Imagens/icon_morador.png" 
+                                                                        class="img-responsive thumbnail" 
+                                                                        style="max-height: 230px; margin: 0 auto;">
+                                                            }
+                                                        }
+
+
                                                     <br />
                                                     <br />
                                                     <br />
@@ -333,23 +341,32 @@
                                     <div class="row">
                                         <div class="col-lg-2 col-md-2 col-xs-12">
                                             <div class="form-group">
-                                                <div class="col-lg-12 col-md-12 col-sm-12">
-                                                    <br />
-                                                    @if (!String.IsNullOrEmpty(Model.USUA_AQ_FOTO))
-	                                                {
-                                                        <img src="@Url.Content(Model.USUA_AQ_FOTO)" style = "width: auto; height: auto; max-height: 250px; max-width: 250px;" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Clique Ctrl+Ctrl para ampliar a fotografia">
-                                                    }
-                                                    else
-                                                    {
-                                                        <img src="~/Images/icon_morador.png" style = "width: auto; height: auto; max-height: 250px; max-width: 250px;">
-                                                    }
-                                                </div>                       
+                                                    <div class="col-lg-12 col-md-12 col-sm-12">
+                                                        <br />
+                                                        <div id="photo-container">
+                                                            @if (!String.IsNullOrEmpty(Model.USUA_AQ_FOTO))
+                                                            {
+                                                                @* Usamos a nova propriedade que aponta para o Azure *@
+                                                                <img id="img-paciente" src="@Model.FotoAzureUrl" 
+                                                                        style="width: auto; height: auto; max-height: 270px; max-width: 270px;" 
+                                                                        data-toggle="popover" data-trigger="hover" data-placement="top" 
+                                                                        data-content="Clique Ctrl+Ctrl para ampliar a fotografia"
+                                                                        onerror="this.onerror=null;this.src='@Url.Content("~/Imagens/icon_morador.png")';">
+                                                            }
+                                                            else
+                                                            {
+                                                                <img id="img-paciente" src="~/Imagens/icon_morador.png" 
+                                                                        style="width: auto; height: auto; max-height: 270px; max-width: 270px;">
+                                                            }
+                                                        </div>
+
+                                                    </div>
                                             </div>
                                         </div>
                                         <div class="col-lg-10 col-md-10 col-xs-12">   
                                             <div class="form-group">
                                                 <h4 style="color: green; background-color: beige; font-weight: bold">Fotografia</h4>
-                                                @using (Html.BeginForm("UploadFotoUsuario", "Usuario", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { enctype = "multipart/form-data", @id="pwd-container3" }))
+                                                @using (Html.BeginForm("UploadFotoUsuarioBlob", "Usuario", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { enctype = "multipart/form-data", @id="pwd-container3" }))
                                                 {
                                                     <div class="col-lg-12 col-md-12 col-xs-12">
                                                         <input style="float: left; margin-right: 5px;" type="file" accept=".jpg, .png, .jpeg, .gif|images/*" name="file" id="file" class="btn btn-sm btn-warning"/>
@@ -365,7 +382,7 @@
                                             <h4 style="color: green; background-color: beige; font-weight: bold">Anexos</h4>
                                             <br />
                                             <div class="form-group">
-                                                @using (Html.BeginForm("UploadFileUsuario", "Usuario", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { enctype = "multipart/form-data", @id="pwd-container2" }))
+                                                @using (Html.BeginForm("UploadFileUsuarioBlob", "Usuario", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { enctype = "multipart/form-data", @id="pwd-container2" }))
                                                 {
                                                     <div class="ibox-content">
                                                         @if (Model.USUARIO_ANEXO != null)
@@ -385,7 +402,27 @@
                                                                         @foreach (var cond in (Model.USUARIO_ANEXO))
                                                                         {
                                                                             <tr>
-                                                                                <td>@cond.USAN_NM_TITULO</td>
+                                                                                <td style="width: auto">
+                                                                                    @if (cond.USAN_IN_TIPO == 1 || cond.USAN_IN_TIPO == 2)
+                                                                                    {
+                                                                                        <a href="@Url.Action("VerAnexoUsuario", "Usuario", new { id = cond.USAN_CD_ID })">@cond.USAN_NM_TITULO</a>
+                                                                                    }
+                                                                                    else if (cond.USAN_IN_TIPO == 4)
+                                                                                    {
+                                                                                        <a href="@Url.Action("VerAnexoUsuarioAudio", "Usuario", new { id = cond.USAN_CD_ID })">@cond.USAN_NM_TITULO</a>
+                                                                                    }
+                                                                                    else if (cond.USAN_IN_TIPO == 3)
+                                                                                    {
+                                                                                        // Monta a URL direta do Azure
+                                                                                        var caminhoPdf = cond.USAN_AQ_ARQUIVO.Replace("~/", "").Replace("~", "");
+                                                                                        var urlAzurePdf = "https://rtistoragemain.blob.core.windows.net/rti-datacontainer/" + caminhoPdf;
+
+                                                                                        @*<td style="width: auto">*@
+                                                                                            <a href="@urlAzurePdf" target="_blank">@cond.USAN_NM_TITULO</a>
+                                                                                        @*</td>*@
+                                                                                    }
+                                                                                    else { @cond.USAN_NM_TITULO }
+                                                                                </td>
                                                                                 <td>@cond.USAN_DT_ANEXO.Value.ToShortDateString()</td>
                                                                                 @if (cond.USAN_IN_TIPO == 1)
                                                                                 {
@@ -416,18 +453,6 @@
                                                                                     <td>Outros</td>
                                                                                 }
                                                                                 <td class="td-one-action">
-                                                                                    @if (cond.USAN_IN_TIPO == 1 || cond.USAN_IN_TIPO == 2)
-	                                                                                {
-                                                                                        @Html.TableLinkDetails(cond.USAN_CD_ID, "VerAnexoUsuario","fa-camera", "Visualizar")
-	                                                                                }
-                                                                                    @if (cond.USAN_IN_TIPO == 4)
-	                                                                                {
-                                                                                        @Html.TableLinkDetails(cond.USAN_CD_ID, "VerAnexoUsuarioAudio","fa-volume-up", "Visualizar")
-	                                                                                }
-                                                                                    @if (cond.USAN_IN_TIPO == 3)
-                                                                                    {
-                                                                                        <a title="Visualizar" class="fa fa-camera fa-lg" href="~/PdfViewer/web/viewer.html?file=@(cond.USAN_AQ_ARQUIVO.Replace("~", ""))&ReturnUrl=@Request.Url.AbsolutePath" target="_blank"></a>
-                                                                                    }
                                                                                     @Html.TableLinkDetails(cond.USAN_CD_ID, "DownloadUsuario","fa-download", "Download")
                                                                                 </td>
                                                                             </tr>

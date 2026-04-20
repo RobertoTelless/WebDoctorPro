@@ -959,6 +959,7 @@ namespace ERP_Condominios_Solution.Controllers
                         Session["DemoVencido"] = 1;
                         Session["MensFC"] = 334;
                         Session["FraseDemoVencido"] = "Sua assinatura de demonstração expirou em " + plano.ASPA_DT_VALIDADE.ToLongDateString() + ". Para continuar a usar o WebDoctorPro você deverá contratar um plano de assinatura";
+                        Session["eDemo"] = 1;
 
                         return RedirectToAction("MontarTelaCompraBasicoNova", "BaseAdmin");
                     }
@@ -969,6 +970,7 @@ namespace ERP_Condominios_Solution.Controllers
                         Session["eDemo"] = 1;
                         TempData["DiasDemo"] = diasDemo;
                         TempData["DemoAtivo"] = true;
+                        Session["DiasDemo"] = diasDemo;
                     }
                 }
 

@@ -1354,17 +1354,27 @@
                                                                     class="img-responsive thumbnail" 
                                                                     style="max-height: 230px; margin: 0 auto;">
                                                         }*@
-                                                        @if (!String.IsNullOrEmpty(Model.PACI_AQ_FOTO))
-                                                        {
-                                                            <img src="@Model.FotoAzureUrl" 
-                                                                    class="img-responsive thumbnail" 
-                                                                    style="max-height: 270px; margin: 0 auto;">
-                                                        }
-                                                        else
-                                                        {
+
+                                                        @if (Model.PACI_AQ_FOTO.Contains("icon_morador.png"))
+	                                                    {
                                                             <img src="~/Images/icon_morador.png" 
                                                                     class="img-responsive thumbnail" 
                                                                     style="max-height: 230px; margin: 0 auto;">
+                                                        }
+                                                        else
+                                                        {
+                                                            if (!String.IsNullOrEmpty(Model.PACI_AQ_FOTO))
+                                                            {
+                                                                <img src="@Model.FotoAzureUrl" 
+                                                                        class="img-responsive thumbnail" 
+                                                                        style="max-height: 270px; margin: 0 auto;">
+                                                            }
+                                                            else
+                                                            {
+                                                                <img src="~/Images/icon_morador.png" 
+                                                                        class="img-responsive thumbnail" 
+                                                                        style="max-height: 230px; margin: 0 auto;">
+                                                            }
                                                         }
 
                                                         <br />
@@ -1743,30 +1753,27 @@
                                                         @Html.HiddenFor(m => m.PACI_DT_ULTIMO_ENVIO)
                                                         @Html.HiddenFor(m => m.PACI_NM_LOGIN)
                                                         @Html.HiddenFor(m => m.PACI_NM_SENHA)
-                                                        @*@if (!String.IsNullOrEmpty(Model.PACI_AQ_FOTO))
-                                                        {
-                                                            <img src="@Url.Content(Model.PACI_AQ_FOTO)" 
-                                                                    class="img-responsive thumbnail" 
-                                                                    style="max-height: 270px; margin: 0 auto;">
-                                                        }
-                                                        else
-                                                        {
-                                                            <img src="~/Images/icon_morador.png" 
-                                                                    class="img-responsive thumbnail" 
-                                                                    style="max-height: 230px; margin: 0 auto;">
-                                                        }*@
 
-                                                        @if (!String.IsNullOrEmpty(Model.PACI_AQ_FOTO))
-                                                        {
-                                                            <img src="@Model.FotoAzureUrl" 
-                                                                    class="img-responsive thumbnail" 
-                                                                    style="max-height: 270px; margin: 0 auto;">
-                                                        }
-                                                        else
-                                                        {
+                                                        @if (Model.PACI_AQ_FOTO.Contains("icon_morador.png"))
+	                                                    {
                                                             <img src="~/Images/icon_morador.png" 
                                                                     class="img-responsive thumbnail" 
                                                                     style="max-height: 230px; margin: 0 auto;">
+                                                        }
+                                                        else
+                                                        {
+                                                            if (!String.IsNullOrEmpty(Model.PACI_AQ_FOTO))
+                                                            {
+                                                                <img src="@Model.FotoAzureUrl" 
+                                                                        class="img-responsive thumbnail" 
+                                                                        style="max-height: 270px; margin: 0 auto;">
+                                                            }
+                                                            else
+                                                            {
+                                                                <img src="~/Images/icon_morador.png" 
+                                                                        class="img-responsive thumbnail" 
+                                                                        style="max-height: 230px; margin: 0 auto;">
+                                                            }
                                                         }
 
                                                         <br />
@@ -2253,7 +2260,7 @@
                                                                                 <div style="height: 90px; display: flex; align-items: center; justify-content: center; width: 100%;">
                                                                                     @if (cond.PAAX_IN_TIPO == 1) // IMAGEM - Exibe miniatura
                                                                                     {
-                                                                                        <a href="@Url.Action("VerFichaPaciente", "Paciente2", new { id = cond.PAAX_CD_ID })" title="Visualizar Imagem">
+                                                                                        <a href="@Url.Action("VerAnexoPaciente", "Paciente", new { id = cond.PAAX_CD_ID })" title="Visualizar Imagem">
                                                                                             <img src="@("https://rtistoragemain.blob.core.windows.net/rti-datacontainer/" + cond.PAAX_AQ_ARQUIVO.Replace("~/", "").Replace("~", ""))" 
                                                                                                     class="img-thumbnail" 
                                                                                                     style="width: 70px; height: 70px; object-fit: cover; border: 1px solid #eee;"
@@ -2262,7 +2269,7 @@
                                                                                     }
                                                                                     else if (cond.PAAX_IN_TIPO == 2) // VÍDEO - Ícone de câmera
                                                                                     {
-                                                                                        <a href="@Url.Action("VerFichaPaciente", "Paciente2", new { id = cond.PAAX_CD_ID })" title="Visualizar Vídeo">
+                                                                                        <a href="@Url.Action("VerAnexoPaciente", "Paciente", new { id = cond.PAAX_CD_ID })" title="Visualizar Vídeo">
                                                                                             <i class="fa fa-video-camera fa-4x text-navy"></i>
                                                                                         </a>
                                                                                     }
@@ -2291,7 +2298,7 @@
                                                                                     <span style="cursor:pointer;" onclick="PrepararExclusaoAnexo('/Paciente2/ExcluirFicha/@cond.PAAX_CD_ID')" title="Excluir">
                                                                                         <i class="fa fa-trash-o fa-lg text-navy"></i>
                                                                                     </span>
-                                                                                    <a href="@Url.Action("DownloadFichaPaciente", "Paciente2", new { id = cond.PAAX_CD_ID })" title="Download">
+                                                                                    <a href="@Url.Action("DownloadPaciente", "Paciente", new { id = cond.PAAX_CD_ID })" title="Download">
                                                                                         <i class="fa fa-download fa-lg text-navy"></i>
                                                                                     </a>
                                                                                 </div>
@@ -2602,7 +2609,7 @@
                                                                                 <div style="height: 90px; display: flex; align-items: center; justify-content: center; width: 100%;">
                                                                                     @if (cond.PAAX_IN_TIPO == 1) // IMAGEM - Exibe miniatura
                                                                                     {
-                                                                                        <a href="@Url.Action("VerFichaPaciente", "Paciente2", new { id = cond.PAAX_CD_ID })" title="Visualizar Imagem">
+                                                                                        <a href="@Url.Action("VerAnexoPaciente", "Paciente", new { id = cond.PAAX_CD_ID })" title="Visualizar Imagem">
                                                                                             <img src="@("https://rtistoragemain.blob.core.windows.net/rti-datacontainer/" + cond.PAAX_AQ_ARQUIVO.Replace("~/", "").Replace("~", ""))" 
                                                                                                     class="img-thumbnail" 
                                                                                                     style="width: 70px; height: 70px; object-fit: cover; border: 1px solid #eee;"
@@ -2611,7 +2618,7 @@
                                                                                     }
                                                                                     else if (cond.PAAX_IN_TIPO == 2) // VÍDEO - Ícone de câmera
                                                                                     {
-                                                                                        <a href="@Url.Action("VerFichaPaciente", "Paciente2", new { id = cond.PAAX_CD_ID })" title="Visualizar Vídeo">
+                                                                                        <a href="@Url.Action("VerAnexoPaciente", "Paciente", new { id = cond.PAAX_CD_ID })" title="Visualizar Vídeo">
                                                                                             <i class="fa fa-video-camera fa-4x text-navy"></i>
                                                                                         </a>
                                                                                     }
@@ -2640,7 +2647,7 @@
                                                                                     <span style="cursor:pointer;" onclick="PrepararExclusaoAnexo('/Paciente2/ExcluirFicha/@cond.PAAX_CD_ID')" title="Excluir">
                                                                                         <i class="fa fa-trash-o fa-lg text-navy"></i>
                                                                                     </span>
-                                                                                    <a href="@Url.Action("DownloadFichaPaciente", "Paciente2", new { id = cond.PAAX_CD_ID })" title="Download">
+                                                                                    <a href="@Url.Action("DownloadPaciente", "Paciente", new { id = cond.PAAX_CD_ID })" title="Download">
                                                                                         <i class="fa fa-download fa-lg text-navy"></i>
                                                                                     </a>
                                                                                 </div>

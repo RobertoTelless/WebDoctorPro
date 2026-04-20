@@ -5,7 +5,6 @@ using Canducci.Zip;
 using CRMPresentation.App_Start;
 using CrossCutting;
 using EntitiesServices.Model;
-using EntitiesServices.Work_Classes;
 using EntitiesServices.WorkClasses;
 using ERP_Condominios_Solution.Classes;
 using ERP_Condominios_Solution.Controllers;
@@ -15,7 +14,6 @@ using iText.IO.Codec;
 using iTextSharp.text;
 using iTextSharp.text.pdf;
 using Microsoft.Ajax.Utilities;
-using Newtonsoft.Json;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -37,6 +35,12 @@ using System.Xml.Linq;
 using XidNet;
 using static iText.StyledXmlParser.Jsoup.Select.Evaluator;
 using Image = iTextSharp.text.Image;
+using Humanizer;
+using Newtonsoft.Json;
+using EntitiesServices.Work_Classes;
+using System.Windows.Input;
+using iTextSharp.text.pdf.security;
+using System.Security.Cryptography.X509Certificates;
 
 namespace GEDSys_Presentation.Controllers
 {
@@ -1042,11 +1046,6 @@ namespace GEDSys_Presentation.Controllers
                     {
                         item.PROD_VL_MEDIA_VENDA_MENSAL = 1;
                     }
-                    //if (item.PROD_CD_CODIGO == null || item.PROD_CD_CODIGO == "0")
-                    //{
-                    //    ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0324", CultureInfo.CurrentCulture));
-                    //    return View(vm);
-                    //}
                     if (item.PROD_CD_CODIGO != null & item.PROD_CD_CODIGO != "0" )
                     {
                         if (prodApp.CheckExist(item.PROD_CD_CODIGO, idAss) != null)
@@ -2348,63 +2347,82 @@ namespace GEDSys_Presentation.Controllers
             return RedirectToAction("EditarProduto", new { id = (Int32)Session["IdProduto"] });
         }
 
-        public FileResult DownloadProduto(Int32 id)
+        public ActionResult DownloadPaciente(Int32 id)
         {
+            // Força o uso de TLS 1.2 (Obrigatório para Azure Storage no .NET 4.8)
+            System.Net.ServicePointManager.SecurityProtocol = System.Net.SecurityProtocolType.Tls12;
+
             try
             {
+                // 1. Carrega as configurações de Storage da sua tabela CONFIGURACAO
+                CONFIGURACAO conf = CarregaConfiguracaoGeral();
+                if (conf == null) return Content("Erro: Configurações de Storage não encontradas.");
+
+                string connString = conf.CONF_NM_STORAGE_CONN;
+                string containerName = conf.CONF_NM_STORAGE_CONTAINER;
+
+                if (string.IsNullOrEmpty(connString)) return Content("Erro: String de conexão do Azure está vazia.");
+
+                // 2. Busca o registro do anexo no banco
                 PRODUTO_ANEXO item = prodApp.GetAnexoById(id);
-                String arquivo = item.PRAN_AQ_ARQUIVO;
-                Int32 pos = arquivo.LastIndexOf("/") + 1;
-                String nomeDownload = arquivo.Substring(pos);
-                String contentType = string.Empty;
-                if (arquivo.Contains(".pdf"))
+                if (item == null || string.IsNullOrEmpty(item.PRAN_AQ_ARQUIVO))
                 {
-                    contentType = "application/pdf";
+                    return Content("Erro: Registro do anexo não encontrado no banco de dados.");
                 }
-                else if (arquivo.Contains(".jpg"))
+
+                // 3. LIMPEZA DO CAMINHO (Tratamento para o Azure)
+                // Remove o '~', remove barras do início e padroniza as barras invertidas
+                string caminhoFormatado = item.PRAN_AQ_ARQUIVO.Replace("~", "");
+                caminhoFormatado = caminhoFormatado.TrimStart('/');
+                caminhoFormatado = caminhoFormatado.Replace("\\", "/");
+
+                // 4. Conexão com o Azure Blob Storage
+                var blobServiceClient = new Azure.Storage.Blobs.BlobServiceClient(connString);
+                var containerClient = blobServiceClient.GetBlobContainerClient(containerName);
+                var blobClient = containerClient.GetBlobClient(caminhoFormatado);
+
+                // 5. Verifica se o arquivo realmente existe no container
+                if (!blobClient.Exists())
                 {
-                    contentType = "image/jpg";
+                    return Content("Erro: Arquivo não localizado no Azure. Caminho tentado: [" + caminhoFormatado + "]");
                 }
-                else if (arquivo.Contains(".png"))
-                {
-                    contentType = "image/png";
-                }
-                else if (arquivo.Contains(".docx"))
-                {
-                    contentType = "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
-                }
-                else if (arquivo.Contains(".xlsx"))
-                {
-                    contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
-                }
-                else if (arquivo.Contains(".pptx"))
-                {
-                    contentType = "application/vnd.openxmlformats-officedocument.presentationml.presentation";
-                }
-                else if (arquivo.Contains(".mp3"))
-                {
-                    contentType = "audio/mpeg";
-                }
-                else if (arquivo.Contains(".mpeg"))
-                {
-                    contentType = "audio/mpeg";
-                }
-                else if (arquivo.Contains(".mp4"))
-                {
-                    contentType = "video/mp4";
-                }
-                return File(arquivo, contentType, nomeDownload);
+
+                // 6. Download do conteúdo para a memória do servidor
+                var download = blobClient.DownloadContent();
+                byte[] dados = download.Value.Content.ToArray();
+
+                // 7. Define nome e tipo do arquivo
+                string nomeDownload = Path.GetFileName(caminhoFormatado);
+                string contentType = MimeMapping.GetMimeMapping(nomeDownload);
+
+                // 8. Entrega o arquivo forçando o download no navegador
+                Response.Clear();
+                Response.ClearContent();
+                Response.ClearHeaders();
+                Response.Buffer = true;
+
+                Response.ContentType = contentType;
+                // Aspas duplas no nome do arquivo tratam nomes com espaços
+                Response.AddHeader("Content-Disposition", "attachment; filename=\"" + nomeDownload + "\"");
+
+                Response.BinaryWrite(dados);
+                Response.Flush();
+                Response.End();
+
+                return null;
             }
             catch (Exception ex)
             {
-                ViewBag.Message = ex.Message;
-                Session["TipoVolta"] = 2;
-                Session["VoltaExcecao"] = "Produto";
-                Session["Excecao"] = ex;
-                Session["ExcecaoTipo"] = ex.GetType().ToString();
-                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
-                Int32 voltaX = grava.GravarLogExcecao(ex, "Produto", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
-                return null;
+                // Gravação de Log de Exceção padrão WebDoctor/RTI
+                try
+                {
+                    var user = Session["UserCredentials"] as USUARIO;
+                    GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                    grava.GravarLogExcecao(ex, "Paciente", "WebDoctor", 1, user);
+                }
+                catch { /* Evita erro no catch se a sessão estiver expirada */ }
+
+                return Content("Erro técnico ao realizar download: " + ex.Message);
             }
         }
 
@@ -2540,6 +2558,131 @@ namespace GEDSys_Presentation.Controllers
         }
 
         [HttpPost]
+        public async Task<Int32> UploadFileQueueProdutoBlob(FileQueue file)
+        {
+            try
+            {
+                if ((String)Session["Ativa"] == null)
+                {
+                    return 1;
+                }
+                if (file == null)
+                {
+                    Session["MensProduto"] = 5;
+                    return 2;
+                }
+                Int32 idProd = (Int32)Session["IdVolta"];
+                Int32 idAss = (Int32)Session["IdAssinante"];
+
+                PRODUTO item = prodApp.GetById(idProd);
+                USUARIO usu = (USUARIO)Session["UserCredentials"];
+                var fileName = file.Name;
+                if (fileName.Length > 100)
+                {
+                    Session["MensProduto"] = 6;
+                    return 3;
+                }
+
+                // 1. DEFINIÇÃO DE CAMINHOS
+                String caminhoRelativo = "Imagens/" + item.ASSI_CD_ID.ToString() + "/Produtos/" + item.PROD_CD_ID.ToString() + "/Anexos/";
+                String caminhoLocal = Server.MapPath("~/" + caminhoRelativo);
+                String fullPathLocal = Path.Combine(caminhoLocal, fileName);
+
+                // Garante que a pasta local existe
+                if (!Directory.Exists(caminhoLocal)) Directory.CreateDirectory(caminhoLocal);
+
+                // 2. CÓPIA LOCAL (Escrita de Bytes)
+                System.IO.File.WriteAllBytes(fullPathLocal, file.Contents);
+
+                // 3. CÓPIA PARA O AZURE BLOB STORAGE
+                try
+                {
+                    CONFIGURACAO conf = CarregaConfiguracaoGeral();
+                    string connString = conf.CONF_NM_STORAGE_CONN;
+                    string containerName = conf.CONF_NM_STORAGE_CONTAINER;
+
+                    var blobServiceClient = new Azure.Storage.Blobs.BlobServiceClient(connString);
+                    var containerClient = blobServiceClient.GetBlobContainerClient(containerName);
+
+                    // O nome do blob no Azure
+                    string blobName = caminhoRelativo + fileName;
+                    var blobClient = containerClient.GetBlobClient(blobName);
+
+                    // Como file.Contents é byte[], usamos MemoryStream para o upload
+                    using (var ms = new MemoryStream(file.Contents))
+                    {
+                        await blobClient.UploadAsync(ms, overwrite: true);
+                    }
+                }
+                catch (Exception exAzure)
+                {
+                    Session["MsgCRUD"] = "Erro na sincronização: " + exAzure.Message;
+                    Session["MensPaciente"] = 61;
+                    return 0;
+                }
+
+                //Recupera tipo de arquivo
+                extensao = Path.GetExtension(fileName);
+                String a = extensao;
+
+                // Gravar registro
+                PRODUTO_ANEXO foto = new PRODUTO_ANEXO();
+                foto.PRAN_AQ_ARQUIVO = "~" + caminhoRelativo + fileName;
+                foto.PRAN_DT_ANEXO = DateTime.Today;
+                foto.PRAN_IN_ATIVO = 1;
+                Int32 tipo = 7;
+                if (extensao.ToUpper() == ".JPG" || extensao.ToUpper() == ".GIF" || extensao.ToUpper() == ".PNG" || extensao.ToUpper() == ".JPEG")
+                {
+                    tipo = 1;
+                }
+                else if (extensao.ToUpper() == ".MP4" || extensao.ToUpper() == ".AVI" || extensao.ToUpper() == ".MPEG")
+                {
+                    tipo = 2;
+                }
+                else if (extensao.ToUpper() == ".PDF")
+                {
+                    tipo = 3;
+                }
+                else if (extensao.ToUpper() == ".MP3" || extensao.ToUpper() == ".MPEG")
+                {
+                    tipo = 4;
+                }
+                else if (extensao.ToUpper() == ".DOCX" || extensao.ToUpper() == ".DOC" || extensao.ToUpper() == ".ODT")
+                {
+                    tipo = 5;
+                }
+                else if (extensao.ToUpper() == ".XLSX" || extensao.ToUpper() == ".XLS" || extensao.ToUpper() == ".ODS")
+                {
+                    tipo = 6;
+                }
+                else
+                {
+                    tipo = 7;
+                }
+                foto.PRAN_IN_TIPO = tipo;
+                foto.PRAN_NM_TITULO = fileName;
+                foto.PROD_CD_ID = item.PROD_CD_ID;
+
+                item.PRODUTO_ANEXO.Add(foto);
+                objetoProdAntes = item;
+                Int32 volta = prodApp.ValidateEdit(item, objetoProdAntes);
+                Session["AbaProduto"] = 5;
+                return 0;
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Produto";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Produto", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return 0;
+            }
+        }
+
+        [HttpPost]
         public async Task<ActionResult> UploadFileProduto(HttpPostedFileBase file)
         {
             try
@@ -2589,6 +2732,157 @@ namespace GEDSys_Presentation.Controllers
                 // Gravar registro
                 PRODUTO_ANEXO foto = new PRODUTO_ANEXO();
                 foto.PRAN_AQ_ARQUIVO = "~" + caminho + fileName;
+                foto.PRAN_DT_ANEXO = DateTime.Today;
+                foto.PRAN_IN_ATIVO = 1;
+                Int32 tipo = 7;
+                if (extensao.ToUpper() == ".JPG" || extensao.ToUpper() == ".GIF" || extensao.ToUpper() == ".PNG" || extensao.ToUpper() == ".JPEG")
+                {
+                    tipo = 1;
+                }
+                else if (extensao.ToUpper() == ".MP4" || extensao.ToUpper() == ".AVI" || extensao.ToUpper() == ".MPEG")
+                {
+                    tipo = 2;
+                }
+                else if (extensao.ToUpper() == ".PDF")
+                {
+                    tipo = 3;
+                }
+                else if (extensao.ToUpper() == ".MP3" || extensao.ToUpper() == ".MPEG")
+                {
+                    tipo = 4;
+                }
+                else if (extensao.ToUpper() == ".DOCX" || extensao.ToUpper() == ".DOC" || extensao.ToUpper() == ".ODT")
+                {
+                    tipo = 5;
+                }
+                else if (extensao.ToUpper() == ".XLSX" || extensao.ToUpper() == ".XLS" || extensao.ToUpper() == ".ODS")
+                {
+                    tipo = 6;
+                }
+                else
+                {
+                    tipo = 7;
+                }
+                foto.PRAN_IN_TIPO = tipo;
+                foto.PRAN_NM_TITULO = fileName;
+                foto.PROD_CD_ID = item.PROD_CD_ID;
+
+                item.PRODUTO_ANEXO.Add(foto);
+                objetoProdAntes = item;
+                Int32 volta = prodApp.ValidateEdit(item, objetoProdAntes);
+                Session["AbaProduto"] = 5;
+
+                // Monta Log
+                LOG log = new LOG
+                {
+                    LOG_DT_DATA = DateTime.Now,
+                    ASSI_CD_ID = usu.ASSI_CD_ID,
+                    USUA_CD_ID = usu.USUA_CD_ID,
+                    LOG_NM_OPERACAO = "Produto - Anexo - Inclusão",
+                    LOG_IN_ATIVO = 1,
+                    LOG_TX_REGISTRO = "Produto: " + item.PROD_NM_NOME.ToUpper() + " | Anexo: " + fileName + " | Data: " + DateTime.Today.Date,
+                    LOG_IN_SISTEMA = 6
+                };
+                Int32 volta1 = logApp.ValidateCreate(log);
+
+                return RedirectToAction("VoltarAnexoProduto");
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Produto";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Produto", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return RedirectToAction("TrataExcecao", "BaseAdmin");
+            }
+        }
+
+                [HttpPost]
+        public async Task<ActionResult> UploadFileProdutoBlob(HttpPostedFileBase file)
+        {
+            try
+            {
+                if ((String)Session["Ativa"] == null)
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+                if (file == null)
+                {
+                    Session["MensProduto"] = 5;
+                    return RedirectToAction("VoltarAnexoProduto");
+                }
+                Int32 idProd = (Int32)Session["IdVolta"];
+                Int32 idAss = (Int32)Session["IdAssinante"];
+
+                PRODUTO item = prodApp.GetById(idProd);
+                USUARIO usu = (USUARIO)Session["UserCredentials"];
+                var fileName = Path.GetFileName(file.FileName);
+                if (fileName.Length > 100)
+                {
+                    Session["MensProduto"] = 6;
+                    return RedirectToAction("VoltarAnexoProduto");
+                }
+
+                // Critica tamanho arquivo
+                var fileSize = file.ContentLength;
+                if (fileSize > 50000000)
+                {
+                    Session["MensProduto"] = 7;
+                    return RedirectToAction("VoltarAnexoProduto");
+                }
+
+                // 1. DEFINIÇÃO DO CAMINHO (Mesmo para Local e Azure)
+                // Removida a barra inicial para o Azure não criar uma pasta raiz vazia
+                String caminhoRelativo = "Imagens/" + item.ASSI_CD_ID.ToString() + "/Produtos/" + item.PROD_CD_ID.ToString() + "/Anexos/";
+                String caminhoLocal = Server.MapPath("~/" + caminhoRelativo);
+                String fullPathLocal = Path.Combine(caminhoLocal, fileName);
+
+                // Garante que a pasta local existe
+                if (!Directory.Exists(caminhoLocal)) Directory.CreateDirectory(caminhoLocal);
+
+                // 2. CÓPIA LOCAL
+                using (var stream = new FileStream(fullPathLocal, FileMode.Create))
+                {
+                    await file.InputStream.CopyToAsync(stream);
+                }
+
+                // 3. CÓPIA PARA O AZURE BLOB STORAGE
+                try
+                {
+                    // Reinicia o ponteiro do stream para o início após a cópia local
+                    file.InputStream.Position = 0;
+
+                    CONFIGURACAO conf = CarregaConfiguracaoGeral();
+                    string connString = conf.CONF_NM_STORAGE_CONN;
+                    string containerName = conf.CONF_NM_STORAGE_CONTAINER;
+
+                    var blobServiceClient = new Azure.Storage.Blobs.BlobServiceClient(connString);
+                    var containerClient = blobServiceClient.GetBlobContainerClient(containerName);
+
+                    // O nome do blob no Azure incluirá toda a estrutura de pastas
+                    string blobName = caminhoRelativo + fileName;
+                    var blobClient = containerClient.GetBlobClient(blobName);
+
+                    // Upload para o Azure (Idempotente: Se já existe, sobrescreve com true)
+                    await blobClient.UploadAsync(file.InputStream, overwrite: true);
+                }
+                catch (Exception exAzure)
+                {
+                    Session["MsgCRUD"] = "Erro na sincronização: " + exAzure.Message;
+                    Session["MensPaciente"] = 61;
+                    return RedirectToAction("VoltarAnexoPaciente");
+                }
+
+                //Recupera tipo de arquivo
+                extensao = Path.GetExtension(fileName);
+                String a = extensao;
+
+                // Gravar registro
+                PRODUTO_ANEXO foto = new PRODUTO_ANEXO();
+                foto.PRAN_AQ_ARQUIVO = "~" + caminhoRelativo + fileName;
                 foto.PRAN_DT_ANEXO = DateTime.Today;
                 foto.PRAN_IN_ATIVO = 1;
                 Int32 tipo = 7;
@@ -2722,6 +3016,100 @@ namespace GEDSys_Presentation.Controllers
         }
 
         [HttpPost]
+        public async Task<Int32> UploadFotoQueueProdutoBlob(FileQueue file)
+        {
+            try
+            {
+                if ((String)Session["Ativa"] == null)
+                {
+                    return 1;
+                }
+                if (file == null)
+                {
+                    Session["MensProduto"] = 5;
+                    return 2;
+                }
+                Int32 idProd = (Int32)Session["IdVolta"];
+                Int32 idAss = (Int32)Session["IdAssinante"];
+
+                PRODUTO item = prodApp.GetById(idProd);
+                USUARIO usu = (USUARIO)Session["UserCredentials"];
+                var fileName = file.Name;
+                if (fileName.Length > 100)
+                {
+                    Session["MensProduto"] = 6;
+                    return 3;
+                }
+
+                //Recupera tipo de arquivo
+                extensao = Path.GetExtension(fileName);
+                String a = extensao;
+
+                // Checa extensão
+                if (extensao.ToUpper() == ".JPG" || extensao.ToUpper() == ".GIF" || extensao.ToUpper() == ".PNG" || extensao.ToUpper() == ".JPEG")
+                {
+                    // 1. DEFINIÇÃO DE CAMINHOS (Removendo a barra inicial para o Azure)
+                    String caminhoRelativo = "Imagens/" + item.ASSI_CD_ID.ToString() + "/Produtos/" + item.PROD_CD_ID.ToString() + "/Fotos/";
+                    String caminhoLocal = Server.MapPath("~/" + caminhoRelativo);
+                    String fullPathLocal = Path.Combine(caminhoLocal, fileName);
+
+                    // Garante que a pasta local existe
+                    if (!Directory.Exists(caminhoLocal)) Directory.CreateDirectory(caminhoLocal);
+
+                    // 2. CÓPIA LOCAL
+                    System.IO.File.WriteAllBytes(fullPathLocal, file.Contents);
+
+                    // 3. CÓPIA PARA O AZURE BLOB STORAGE
+                    try
+                    {
+                        CONFIGURACAO conf = CarregaConfiguracaoGeral();
+                        string connString = conf.CONF_NM_STORAGE_CONN;
+                        string containerName = conf.CONF_NM_STORAGE_CONTAINER;
+
+                        var blobServiceClient = new Azure.Storage.Blobs.BlobServiceClient(connString);
+                        var containerClient = blobServiceClient.GetBlobContainerClient(containerName);
+
+                        // Nome do blob incluindo as "pastas" virtuais
+                        string blobName = caminhoRelativo + fileName;
+                        var blobClient = containerClient.GetBlobClient(blobName);
+
+                        // Upload idempotente usando MemoryStream
+                        using (var ms = new MemoryStream(file.Contents))
+                        {
+                            await blobClient.UploadAsync(ms, overwrite: true);
+                        }
+                    }
+                    catch (Exception exAzure)
+                    {
+                        return 0;
+                    }
+
+                    // 4. ATUALIZAÇÃO DO REGISTRO
+                    item.PROD_AQ_FOTO = "~/" + caminhoRelativo + fileName;
+                    objetoProd = item;
+                    Int32 volta = prodApp.ValidateEdit(item, objetoProd);
+                }
+                else
+                {
+                    ViewBag.Message = CRMSys_Base.ResourceManager.GetString("M0016", CultureInfo.CurrentCulture);
+                }
+                Session["AbaProduto"] = 3;
+                return 0;
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Produto";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Produto", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return 0;
+            }
+        }
+
+        [HttpPost]
         public async Task<ActionResult> UploadFotoProduto(HttpPostedFileBase file)
         {
             try
@@ -2775,6 +3163,122 @@ namespace GEDSys_Presentation.Controllers
 
                     // Gravar registro
                     item.PROD_AQ_FOTO = "~" + caminho + fileName;
+                    objetoProd = item;
+                    Int32 volta = prodApp.ValidateEdit(item, objetoProd);
+
+                    // Monta Log
+                    LOG log = new LOG
+                    {
+                        LOG_DT_DATA = DateTime.Now,
+                        ASSI_CD_ID = usu.ASSI_CD_ID,
+                        USUA_CD_ID = usu.USUA_CD_ID,
+                        LOG_NM_OPERACAO = "Produto - Foto - Inclusão",
+                        LOG_IN_ATIVO = 1,
+                        LOG_TX_REGISTRO = "Produto: " + item.PROD_NM_NOME.ToUpper() + " | Anexo: " + fileName + " | Data: " + DateTime.Today.Date,
+                        LOG_IN_SISTEMA = 6
+                    };
+                    Int32 volta1 = logApp.ValidateCreate(log);
+
+                }
+                else
+                {
+                    ViewBag.Message = CRMSys_Base.ResourceManager.GetString("M0016", CultureInfo.CurrentCulture);
+                }
+                Session["AbaProduto"] = 3;
+                return RedirectToAction("VoltarAnexoProduto");
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Produto";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Produto", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return RedirectToAction("TrataExcecao", "BaseAdmin");
+            }
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> UploadFotoProdutoBlob(HttpPostedFileBase file)
+        {
+            try
+            {
+                if ((String)Session["Ativa"] == null)
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+                if (file == null)
+                {
+                    Session["MensProduto"] = 5;
+                    return RedirectToAction("VoltarAnexoProduto");
+                }
+                Int32 idProd = (Int32)Session["IdVolta"];
+                Int32 idAss = (Int32)Session["IdAssinante"];
+
+                PRODUTO item = prodApp.GetById(idProd);
+                USUARIO usu = (USUARIO)Session["UserCredentials"];
+                var fileName = Path.GetFileName(file.FileName);
+                if (fileName.Length > 100)
+                {
+                    Session["MensProduto"] = 6;
+                    return RedirectToAction("VoltarAnexoProduto");
+                }
+
+                // Critica tamanho arquivo
+                var fileSize = file.ContentLength;
+                if (fileSize > 50000000)
+                {
+                    Session["MensProduto"] = 7;
+                    return RedirectToAction("VoltarAnexoProduto");
+                }
+
+                //Recupera tipo de arquivo
+                extensao = Path.GetExtension(fileName);
+                String a = extensao;
+
+                // Checa extensão
+                if (extensao.ToUpper() == ".JPG" || extensao.ToUpper() == ".GIF" || extensao.ToUpper() == ".PNG" || extensao.ToUpper() == ".JPEG")
+                {
+                    // 1. DEFINIÇÃO DE CAMINHOS
+                    String caminhoRelativo = "Imagens/" + item.ASSI_CD_ID.ToString() + "/Produtos/" + item.PROD_CD_ID.ToString() + "/Fotos/";
+                    String caminhoLocal = Server.MapPath("~/" + caminhoRelativo);
+                    String fullPathLocal = Path.Combine(caminhoLocal, fileName);
+
+                    if (!Directory.Exists(caminhoLocal)) Directory.CreateDirectory(caminhoLocal);
+
+                    // 2. CÓPIA LOCAL
+                    file.SaveAs(fullPathLocal);
+
+                    // 3. CÓPIA PARA O AZURE BLOB STORAGE (Síncrono)
+                    try
+                    {
+                        file.InputStream.Position = 0;
+
+                        CONFIGURACAO conf = CarregaConfiguracaoGeral();
+                        string connString = conf.CONF_NM_STORAGE_CONN;
+                        string containerName = conf.CONF_NM_STORAGE_CONTAINER;
+
+                        var blobServiceClient = new Azure.Storage.Blobs.BlobServiceClient(connString);
+                        var containerClient = blobServiceClient.GetBlobContainerClient(containerName);
+
+                        string blobName = caminhoRelativo + fileName;
+                        var blobClient = containerClient.GetBlobClient(blobName);
+
+                        // Chamada Síncrona usando .GetRawResponse() ou apenas omitindo await e usando Upload
+                        // No SDK novo, usamos Upload(stream, overwrite) para modo síncrono
+                        blobClient.Upload(file.InputStream, overwrite: true);
+                    }
+                    catch (Exception exAzure)
+                    {
+                        Session["MsgCRUD"] = "Erro na sincronização Azure: " + exAzure.Message;
+                        Session["MensPaciente"] = 61;
+                        return RedirectToAction("VoltarAnexoPaciente");
+                    }
+
+                    // Gravar registro
+                    item.PROD_AQ_FOTO = "~" + caminhoRelativo + fileName;
                     objetoProd = item;
                     Int32 volta = prodApp.ValidateEdit(item, objetoProd);
 

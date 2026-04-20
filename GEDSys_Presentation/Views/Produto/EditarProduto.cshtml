@@ -103,13 +103,6 @@
                             @Html.ValidationSummary(false, "", new { @class = "text-danger" })
                         </div>
                     }
-                    @*@if (TempData["TemMensagem"] != null)
-                    {
-                        <div class="alert alert-success">
-                            <button type="button" class="close" data-dismiss="alert">Fechar</button>
-                            <span>@TempData["MensagemAcerto"]</span>
-                        </div>
-                    }*@                    
                     <div class="form-group">
                         @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_INCLUSAO_PROD == 1)
                         {
@@ -421,14 +414,30 @@
                                                         @Html.HiddenFor(m => m.PROD_IN_SISTEMA)
                                                         @Html.HiddenFor(m => m.PROD_VL_PRECO_PROMOCAO)
                                                         @Html.HiddenFor(m => m.PROD_PC_DESCONTO)
-                                                        @if (!String.IsNullOrEmpty(Model.PROD_AQ_FOTO))
-                                                        {
-                                                            <img src="@Url.Content(Model.PROD_AQ_FOTO)" style="width: auto; height: auto; max-height: 240px; max-width: 230px;" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Clique Ctrl+Ctrl para ampliar a imagem">
+
+                                                        @if (Model.PROD_AQ_FOTO.Contains("icone_imagem.jpg"))
+	                                                    {
+                                                            <img src="~/Imagens/Base/icone_imagem.jpg" 
+                                                                    class="img-responsive thumbnail" 
+                                                                    style="max-height: 230px; margin: 0 auto;">
                                                         }
                                                         else
                                                         {
-                                                            <img src="~/Images/icone_imagem.png" style="width: auto; height: auto; max-height: 240px; max-width: 230px;" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Clique Ctrl+Ctrl para ampliar a imagem">
+                                                            if (!String.IsNullOrEmpty(Model.PROD_AQ_FOTO))
+                                                            {
+                                                                <img src="@Model.FotoAzureUrl" 
+                                                                        class="img-responsive thumbnail" 
+                                                                        style="max-height: 270px; margin: 0 auto;">
+                                                            }
+                                                            else
+                                                            {
+                                                                <img src="~/Imagens/Base/icone_imagem.jpg" 
+                                                                        class="img-responsive thumbnail" 
+                                                                        style="max-height: 230px; margin: 0 auto;">
+                                                            }
                                                         }
+
+
                                                         <br />
                                                         <br />
                                                         <br />
@@ -697,14 +706,29 @@
                                                         @Html.HiddenFor(m => m.PROD_IN_SISTEMA)
                                                         @Html.HiddenFor(m => m.PROD_VL_PRECO_PROMOCAO)
                                                         @Html.HiddenFor(m => m.PROD_PC_DESCONTO)
-                                                        @if (!String.IsNullOrEmpty(Model.PROD_AQ_FOTO))
-                                                        {
-                                                            <img src="@Url.Content(Model.PROD_AQ_FOTO)" style="width: auto; height: auto; max-height: 240px; max-width: 230px;" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Clique Ctrl+Ctrl para ampliar a imagem">
+
+                                                        @if (Model.PROD_AQ_FOTO.Contains("icone_imagem.jpg"))
+	                                                    {
+                                                            <img src="~/Imagens/Base/icone_imagem.jpg" 
+                                                                    class="img-responsive thumbnail" 
+                                                                    style="max-height: 230px; margin: 0 auto;">
                                                         }
                                                         else
                                                         {
-                                                            <img src="~/Images/icone_imagem.png" style="width: auto; height: auto; max-height: 240px; max-width: 230px;" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Clique Ctrl+Ctrl para ampliar a imagem">
+                                                            if (!String.IsNullOrEmpty(Model.PROD_AQ_FOTO))
+                                                            {
+                                                                <img src="@Model.FotoAzureUrl" 
+                                                                        class="img-responsive thumbnail" 
+                                                                        style="max-height: 270px; margin: 0 auto;">
+                                                            }
+                                                            else
+                                                            {
+                                                                <img src="~/Imagens/Base/icone_imagem.jpg" 
+                                                                        class="img-responsive thumbnail" 
+                                                                        style="max-height: 230px; margin: 0 auto;">
+                                                            }
                                                         }
+
                                                         <br />
                                                         <br />
                                                         <br />
@@ -939,10 +963,34 @@
                                 <div id="tab-2" class="tab-pane active">
                                     <div class="panel-body">
                                         <div class="row">
+                                            <div class="col-lg-3 col-md-3 col-xs-12">
+                                                <div class="form-group">
+                                                    <div class="col-lg-12 col-md-12 col-sm-12">
+                                                        <br />
+                                                        <div id="photo-container">
+                                                            @if (!String.IsNullOrEmpty(Model.PROD_AQ_FOTO))
+                                                            {
+                                                                @* Usamos a nova propriedade que aponta para o Azure *@
+                                                                <img id="img-paciente" src="@Model.FotoAzureUrl" 
+                                                                        style="width: auto; height: auto; max-height: 270px; max-width: 270px;" 
+                                                                        data-toggle="popover" data-trigger="hover" data-placement="top" 
+                                                                        data-content="Clique Ctrl+Ctrl para ampliar a fotografia"
+                                                                        onerror="this.onerror=null;this.src='@Url.Content("~/Imagens/Base/icone_imagem.jpg")';">
+                                                            }
+                                                            else
+                                                            {
+                                                                <img id="img-paciente" src="~/Imagens/Base/icone_imagem.jpg" 
+                                                                        style="width: auto; height: auto; max-height: 270px; max-width: 270px;">
+                                                            }
+                                                        </div>
+
+                                                    </div>
+                                                </div>
+                                            </div>
                                             <div class="col-lg-9 col-md-9 col-xs-12">
                                                 <div class="form-group">
                                                     <h4>Imagem do MaterialProduto</h4>
-                                                    @using (Html.BeginForm("UploadFotoProduto", "Produto", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { enctype = "multipart/form-data", @id = "pwd-container3" }))
+                                                    @using (Html.BeginForm("UploadFotoProdutoBlob", "Produto", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { enctype = "multipart/form-data", @id = "pwd-container3" }))
                                                     {
                                                         <div class="form-group">
                                                             @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_EDITAR_PRODUTO == 1)
@@ -954,21 +1002,6 @@
 	                                                        }
                                                         </div>
                                                     }
-                                                </div>
-                                            </div>
-                                            <div class="col-lg-3 col-md-3 col-xs-12">
-                                                <div class="form-group">
-                                                    <div class="col-lg-12 col-md-12 col-sm-12">
-                                                        <br />
-                                                        @if (!String.IsNullOrEmpty(Model.PROD_AQ_FOTO))
-                                                        {
-                                                            <img src="@Url.Content(Model.PROD_AQ_FOTO)" style="width: auto; height: auto; max-height: 240px; max-width: 230px;" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Clique Ctrl+Ctrl para ampliar a imagem">
-                                                        }
-                                                        else
-                                                        {
-                                                            <img src="~/Images/icone_imagem.png" style="width: auto; height: auto; max-height: 240px; max-width: 230px;" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Clique Ctrl+Ctrl para ampliar a imagem">
-                                                        }
-                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
@@ -980,10 +1013,34 @@
                                 <div id="tab-2" class="tab-pane">
                                     <div class="panel-body">
                                         <div class="row">
+                                            <div class="col-lg-3 col-md-3 col-xs-12">
+                                                <div class="form-group">
+                                                    <div class="col-lg-12 col-md-12 col-sm-12">
+                                                        <br />
+                                                        <div id="photo-container">
+                                                            @if (!String.IsNullOrEmpty(Model.PROD_AQ_FOTO))
+                                                            {
+                                                                @* Usamos a nova propriedade que aponta para o Azure *@
+                                                                <img id="img-paciente" src="@Model.FotoAzureUrl" 
+                                                                        style="width: auto; height: auto; max-height: 270px; max-width: 270px;" 
+                                                                        data-toggle="popover" data-trigger="hover" data-placement="top" 
+                                                                        data-content="Clique Ctrl+Ctrl para ampliar a fotografia"
+                                                                        onerror="this.onerror=null;this.src='@Url.Content("~/Imagens/Base/icone_imagem.jpg")';">
+                                                            }
+                                                            else
+                                                            {
+                                                                <img id="img-paciente" src="~/Imagens/Base/icone_imagem.jpg" 
+                                                                        style="width: auto; height: auto; max-height: 270px; max-width: 270px;">
+                                                            }
+                                                        </div>
+
+                                                    </div>
+                                                </div>
+                                            </div>
                                             <div class="col-lg-9 col-md-9 col-xs-12">
                                                 <div class="form-group">
                                                     <h4>Imagem do MaterialProduto</h4>
-                                                    @using (Html.BeginForm("UploadFotoProduto", "Produto", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { enctype = "multipart/form-data", @id = "pwd-container3" }))
+                                                    @using (Html.BeginForm("UploadFotoProdutoBlob", "Produto", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { enctype = "multipart/form-data", @id = "pwd-container3" }))
                                                     {
                                                         <div class="form-group">
                                                             @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_EDITAR_PRODUTO == 1)
@@ -995,21 +1052,6 @@
 	                                                        }
                                                         </div>
                                                     }
-                                                </div>
-                                            </div>
-                                            <div class="col-lg-3 col-md-3 col-xs-12">
-                                                <div class="form-group">
-                                                    <div class="col-lg-12 col-md-12 col-sm-12">
-                                                        <br />
-                                                        @if (!String.IsNullOrEmpty(Model.PROD_AQ_FOTO))
-                                                        {
-                                                            <img src="@Url.Content(Model.PROD_AQ_FOTO)" style="width: auto; height: auto; max-height: 240px; max-width: 230px;" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Clique Ctrl+Ctrl para ampliar a imagem">
-                                                        }
-                                                        else
-                                                        {
-                                                            <img src="~/Images/icone_imagem.png" style="width: auto; height: auto; max-height: 240px; max-width: 230px;" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Clique Ctrl+Ctrl para ampliar a imagem">
-                                                        }
-                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
@@ -1027,7 +1069,7 @@
                                                 <h4>Anexos</h4>
                                                 <br />
                                                 <div class="form-group">
-                                                    @using (Html.BeginForm("UploadFileProduto", "Produto", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { enctype = "multipart/form-data", @id = "pwd-container2" }))
+                                                    @using (Html.BeginForm("UploadFileProdutoBlob", "Produto", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { enctype = "multipart/form-data", @id = "pwd-container2" }))
                                                     {
                                                         var listaAnexos = Model.PRODUTO_ANEXO.Where(p => p.PRAN_IN_ATIVO == 1).ToList();
 
@@ -1041,8 +1083,6 @@
                                                                 </div>
                                                             </div>
                                                         </div>
-
-
 
                                                         if (listaAnexos.Count > 0)
                                                         {
@@ -1065,13 +1105,15 @@
                                                                                     {
                                                                                         <a href="@Url.Action("VerAnexoProduto", "Produto", new { id = cond.PRAN_CD_ID })">@cond.PRAN_NM_TITULO</a>
                                                                                     }
-                                                                                    else if (cond.PRAN_IN_TIPO == 4)
-                                                                                    {
-                                                                                        <a href="@Url.Action("VerAnexoProdutoAudio", "Produto", new { id = cond.PRAN_CD_ID })">@cond.PRAN_NM_TITULO</a>
-                                                                                    }
                                                                                     else if (cond.PRAN_IN_TIPO == 3)
                                                                                     {
-                                                                                        <a href="~/PdfViewer/web/viewer.html?file=@(cond.PRAN_AQ_ARQUIVO.Replace("~", ""))&ReturnUrl=@Request.Url.AbsolutePath" target="_blank">@cond.PRAN_NM_TITULO</a>
+                                                                                        // Monta a URL direta do Azure
+                                                                                        var caminhoPdf = cond.PRAN_AQ_ARQUIVO.Replace("~/", "").Replace("~", "");
+                                                                                        var urlAzurePdf = "https://rtistoragemain.blob.core.windows.net/rti-datacontainer/" + caminhoPdf;
+
+                                                                                        @*<td style="width: auto">*@
+                                                                                            <a href="@urlAzurePdf" target="_blank">@cond.PAAX_NM_TITULO</a>
+                                                                                        @*</td>*@
                                                                                     }
                                                                                     else { @cond.PRAN_NM_TITULO }
                                                                                 </td>
@@ -1097,31 +1139,31 @@
                                                                                 @* Container de Mídia (Altura fixa para alinhamento) *@
                                                                                 <div style="height: 80px; display: flex; align-items: center; justify-content: center; width: 100%;">
                         
-                                                                                    @if (cond.PRAN_IN_TIPO == 1) // IMAGEM - Abre na mesma aba
+                                                                                    @if (cond.PRAN_IN_TIPO == 1) // IMAGEM - Exibe miniatura
                                                                                     {
                                                                                         <a href="@Url.Action("VerAnexoProduto", "Produto", new { id = cond.PRAN_CD_ID })" title="Visualizar Imagem">
-                                                                                            <img src="@Url.Content(cond.PRAN_AQ_ARQUIVO)" class="img-thumbnail" style="width: 70px; height: 70px; object-fit: cover; border: 1px solid #ddd;" />
+                                                                                            <img src="@("https://rtistoragemain.blob.core.windows.net/rti-datacontainer/" + cond.PRAN_AQ_ARQUIVO.Replace("~/", "").Replace("~", ""))" 
+                                                                                                    class="img-thumbnail" 
+                                                                                                    style="width: 70px; height: 70px; object-fit: cover; border: 1px solid #eee;"
+                                                                                                    onerror="this.onerror=null;this.src='@Url.Content("~/Images/icone_imagem.jpg")';" />
                                                                                         </a>
                                                                                     }
-                                                                                    else if (cond.PRAN_IN_TIPO == 2) // VÍDEO - Abre na mesma aba (Ícone comum)
+                                                                                    else if (cond.PRAN_IN_TIPO == 2) // VÍDEO - Ícone de câmera
                                                                                     {
                                                                                         <a href="@Url.Action("VerAnexoProduto", "Produto", new { id = cond.PRAN_CD_ID })" title="Visualizar Vídeo">
                                                                                             <i class="fa fa-video-camera fa-4x text-navy"></i>
                                                                                         </a>
                                                                                     }
-                                                                                    else if (cond.PRAN_IN_TIPO == 3) // PDF - ÚNICO QUE ABRE EM NOVA ABA
+                                                                                    else if (cond.PRAN_IN_TIPO == 3) // PDF - Ícone específico e abre em nova aba
                                                                                     {
-                                                                                        <a href="~/PdfViewer/web/viewer.html?file=@(cond.PRAN_AQ_ARQUIVO.Replace("~", ""))&ReturnUrl=@Request.Url.AbsolutePath" target="_blank" title="Visualizar PDF">
-                                                                                            <i class="fa fa-file-pdf-o fa-5x text-danger"></i>
+                                                                                        var blobPath = cond.PRAN_AQ_ARQUIVO.Replace("~/", "").Replace("~", "");
+                                                                                        var urlAzurePdf = "https://rtistoragemain.blob.core.windows.net/rti-datacontainer/" + blobPath;
+
+                                                                                        <a href="@urlAzurePdf" target="_blank" title="Visualizar PDF">
+                                                                                            <i class="fa fa-file-pdf-o fa-4x text-danger"></i>
                                                                                         </a>
                                                                                     }
-                                                                                    else if (cond.PRAN_IN_TIPO == 4) // ÁUDIO - Abre na mesma aba
-                                                                                    {
-                                                                                        <a href="@Url.Action("VerAnexoProdutoAudio", "Produto", new { id = cond.PRAN_CD_ID })" title="Ouvir Áudio">
-                                                                                            <i class="fa fa-volume-up fa-4x text-info"></i>
-                                                                                        </a>
-                                                                                    }
-                                                                                    else // PADRÃO PARA OUTROS
+                                                                                    else // PADRÃO - Ícone de arquivo genérico
                                                                                     {
                                                                                         <i class="fa fa-file-o fa-4x text-muted"></i>
                                                                                     }
@@ -1172,7 +1214,7 @@
                                                 <h4>Anexos</h4>
                                                 <br />
                                                 <div class="form-group">
-                                                    @using (Html.BeginForm("UploadFileProduto", "Produto", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { enctype = "multipart/form-data", @id = "pwd-container2" }))
+                                                    @using (Html.BeginForm("UploadFileProdutoBlob", "Produto", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { enctype = "multipart/form-data", @id = "pwd-container2" }))
                                                     {
                                                         var listaAnexos = Model.PRODUTO_ANEXO.Where(p => p.PRAN_IN_ATIVO == 1).ToList();
 
@@ -1186,8 +1228,6 @@
                                                                 </div>
                                                             </div>
                                                         </div>
-
-
 
                                                         if (listaAnexos.Count > 0)
                                                         {
@@ -1210,13 +1250,13 @@
                                                                                     {
                                                                                         <a href="@Url.Action("VerAnexoProduto", "Produto", new { id = cond.PRAN_CD_ID })">@cond.PRAN_NM_TITULO</a>
                                                                                     }
-                                                                                    else if (cond.PRAN_IN_TIPO == 4)
-                                                                                    {
-                                                                                        <a href="@Url.Action("VerAnexoProdutoAudio", "Produto", new { id = cond.PRAN_CD_ID })">@cond.PRAN_NM_TITULO</a>
-                                                                                    }
                                                                                     else if (cond.PRAN_IN_TIPO == 3)
                                                                                     {
-                                                                                        <a href="~/PdfViewer/web/viewer.html?file=@(cond.PRAN_AQ_ARQUIVO.Replace("~", ""))&ReturnUrl=@Request.Url.AbsolutePath" target="_blank">@cond.PRAN_NM_TITULO</a>
+                                                                                        // Monta a URL direta do Azure
+                                                                                        var caminhoPdf = cond.PRAN_AQ_ARQUIVO.Replace("~/", "").Replace("~", "");
+                                                                                        var urlAzurePdf = "https://rtistoragemain.blob.core.windows.net/rti-datacontainer/" + caminhoPdf;
+
+                                                                                        <a href="@urlAzurePdf" target="_blank">@cond.PRAN_NM_TITULO</a>
                                                                                     }
                                                                                     else { @cond.PRAN_NM_TITULO }
                                                                                 </td>
@@ -1242,31 +1282,31 @@
                                                                                 @* Container de Mídia (Altura fixa para alinhamento) *@
                                                                                 <div style="height: 80px; display: flex; align-items: center; justify-content: center; width: 100%;">
                         
-                                                                                    @if (cond.PRAN_IN_TIPO == 1) // IMAGEM - Abre na mesma aba
+                                                                                    @if (cond.PRAN_IN_TIPO == 1) // IMAGEM - Exibe miniatura
                                                                                     {
                                                                                         <a href="@Url.Action("VerAnexoProduto", "Produto", new { id = cond.PRAN_CD_ID })" title="Visualizar Imagem">
-                                                                                            <img src="@Url.Content(cond.PRAN_AQ_ARQUIVO)" class="img-thumbnail" style="width: 70px; height: 70px; object-fit: cover; border: 1px solid #ddd;" />
+                                                                                            <img src="@("https://rtistoragemain.blob.core.windows.net/rti-datacontainer/" + cond.PRAN_AQ_ARQUIVO.Replace("~/", "").Replace("~", ""))" 
+                                                                                                    class="img-thumbnail" 
+                                                                                                    style="width: 70px; height: 70px; object-fit: cover; border: 1px solid #eee;"
+                                                                                                    onerror="this.onerror=null;this.src='@Url.Content("~/Images/icone_imagem.jpg")';" />
                                                                                         </a>
                                                                                     }
-                                                                                    else if (cond.PRAN_IN_TIPO == 2) // VÍDEO - Abre na mesma aba (Ícone comum)
+                                                                                    else if (cond.PRAN_IN_TIPO == 2) // VÍDEO - Ícone de câmera
                                                                                     {
                                                                                         <a href="@Url.Action("VerAnexoProduto", "Produto", new { id = cond.PRAN_CD_ID })" title="Visualizar Vídeo">
                                                                                             <i class="fa fa-video-camera fa-4x text-navy"></i>
                                                                                         </a>
                                                                                     }
-                                                                                    else if (cond.PRAN_IN_TIPO == 3) // PDF - ÚNICO QUE ABRE EM NOVA ABA
+                                                                                    else if (cond.PRAN_IN_TIPO == 3) // PDF - Ícone específico e abre em nova aba
                                                                                     {
-                                                                                        <a href="~/PdfViewer/web/viewer.html?file=@(cond.PRAN_AQ_ARQUIVO.Replace("~", ""))&ReturnUrl=@Request.Url.AbsolutePath" target="_blank" title="Visualizar PDF">
-                                                                                            <i class="fa fa-file-pdf-o fa-5x text-danger"></i>
+                                                                                        var blobPath = cond.PRAN_AQ_ARQUIVO.Replace("~/", "").Replace("~", "");
+                                                                                        var urlAzurePdf = "https://rtistoragemain.blob.core.windows.net/rti-datacontainer/" + blobPath;
+
+                                                                                        <a href="@urlAzurePdf" target="_blank" title="Visualizar PDF">
+                                                                                            <i class="fa fa-file-pdf-o fa-4x text-danger"></i>
                                                                                         </a>
                                                                                     }
-                                                                                    else if (cond.PRAN_IN_TIPO == 4) // ÁUDIO - Abre na mesma aba
-                                                                                    {
-                                                                                        <a href="@Url.Action("VerAnexoProdutoAudio", "Produto", new { id = cond.PRAN_CD_ID })" title="Ouvir Áudio">
-                                                                                            <i class="fa fa-volume-up fa-4x text-info"></i>
-                                                                                        </a>
-                                                                                    }
-                                                                                    else // PADRÃO PARA OUTROS
+                                                                                    else // PADRÃO - Ícone de arquivo genérico
                                                                                     {
                                                                                         <i class="fa fa-file-o fa-4x text-muted"></i>
                                                                                     }

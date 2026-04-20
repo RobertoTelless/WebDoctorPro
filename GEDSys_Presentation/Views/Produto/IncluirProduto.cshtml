@@ -5,6 +5,7 @@
 }
 
 <div class="wrapper wrapper-content animated fadeInRight">
+    <div id="top"></div>
     <div class="page-title">
         <h3 class="title">Materiais/Produtos</h3>
         <br />
@@ -291,6 +292,10 @@
         </div>
     </div>
 </div>
+<a href="#top" class="back-to-top">
+    <i class="fa fa-chevron-up"></i>
+</a>
+
 
 @section Styles {
     <link href="~/Content/themes/base/jquery-ui.min.css" rel="stylesheet" />
@@ -298,6 +303,46 @@
     @Styles.Render("~/Content/plugins/dataTables/dataTablesStyles")
     @Styles.Render("~/plugins/jasnyBootstrapStyles")
     @Styles.Render("~/plugins/toastrStyles")
+
+    <style>
+        html { scroll-behavior: smooth; }
+
+        .back-to-top {
+            position: fixed !important;
+            bottom: 30px !important;
+            left: 260px !important; 
+            z-index: 999999 !important;
+            width: 50px !important;
+            height: 50px !important;
+            background-color: #1ab394 !important;
+            color: white !important;
+            border-radius: 50% !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            text-decoration: none !important;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3) !important;
+            transition: all 0.3s ease;
+        
+            /* Estado inicial: Invisível e deslocado para baixo */
+            opacity: 0 !important;
+            visibility: hidden !important;
+            transform: translateY(20px) !important;
+        }
+
+        /* Classe que o JavaScript vai adicionar ao rolar a tela */
+        .back-to-top.visible {
+            opacity: 1 !important;
+            visibility: visible !important;
+            transform: translateY(0px) !important;
+        }
+
+        .back-to-top:hover {
+            background-color: #18a689 !important;
+            color: white !important;
+            transform: scale(1.1) !important;
+        }
+    </style>
 }
 @section Scripts {
     @Scripts.Render("~/plugins/toastr")
@@ -636,6 +681,37 @@
     <script>
         SendFilesV2('imgProduto', 'Produto', 'UploadFileToSession');
     </script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            // Função para verificar o scroll
+            function checkScroll() {
+                // Verifica o scroll tanto na janela quanto no wrapper do Inspinia
+                var scrollPos = $(window).scrollTop() || $('#page-wrapper').scrollTop();
+            
+                if (scrollPos > 300) {
+                    $('.back-to-top').addClass('visible');
+                } else {
+                    $('.back-to-top').removeClass('visible');
+                }
+            }
+
+            // Monitora o scroll em ambos os contextos possíveis no Inspinia
+            $(window).on('scroll', checkScroll);
+            $('#page-wrapper').on('scroll', checkScroll);
+
+            // Clique suave
+            $('.back-to-top').click(function (e) {
+                e.preventDefault();
+                $('html, body, #page-wrapper').animate({ scrollTop: 0 }, 600);
+                return false;
+            });
+        
+            // Executa uma vez ao carregar para garantir que comece oculto
+            checkScroll();
+        });
+    </script>
+
 
     @if (ViewBag.Message != null)
     {

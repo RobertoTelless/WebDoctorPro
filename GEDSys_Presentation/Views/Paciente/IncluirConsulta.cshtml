@@ -145,7 +145,7 @@
                                 <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Paciente</h4>
                                 <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
                                     <div class="col-lg-2 col-md-2 col-xs-12">
-                                        Tipo de Paciente*
+                                        Tipo de Seleção*
                                         @Html.DropDownListFor(m => m.PACO_IN_NOVO_PACIENTE, (SelectList)ViewBag.Novo, "Selecionar", new { @class = "form-control", autofocus = true, @id = "novo", onchange = "ValidaNovo($(this).val())" })
                                         @Html.ValidationMessageFor(m => m.PACO_IN_NOVO_PACIENTE, "", new { @style = "color:red" })
                                     </div>
@@ -174,6 +174,11 @@
                                     </div>
                                 </div>
                                 <div class="form-group" style=" margin-left: -15px; margin-right: -15px;" id="novoPac">
+                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                        Tipo de Paciente*
+                                        @Html.DropDownListFor(m => m.TIPA_CD_ID, (SelectList)ViewBag.Tipos, "Selecionar", new { @class = "form-control", autofocus = true })
+                                        @Html.ValidationMessageFor(m => m.TIPA_CD_ID, "", new { @style = "color:red" })
+                                    </div>
                                     <div class="col-lg-4 col-md-4 col-xs-12">
                                         Nome do Paciente*
                                         @Html.TextBoxFor(m => m.PACI_NM_NOME, new { @class = "form-control", autofocus = true })
@@ -184,6 +189,13 @@
                                         @Html.DropDownListFor(m => m.PACI_IN_MENOR, (SelectList)ViewBag.Menor, "Selecionar", new { @class = "form-control", autofocus = true, @id = "menor" })
                                         @Html.ValidationMessageFor(m => m.PACI_IN_MENOR, "", new { @style = "color:red" })
                                     </div>
+                                    <div class="col-lg-4 col-md-4 col-xs-12" id="resp" style="display: none">
+                                        Nome do Responsável
+                                        @Html.TextBoxFor(m => m.PACI_NM_RESPONSAVEL, new { @class = "form-control", autofocus = true, data_toggle = "popover", data_content = "Informe o nome do responsável pelo paciente menor de idade", data_trigger="hover", data_placement="top" })
+                                        @Html.ValidationMessageFor(m => m.PACI_NM_RESPONSAVEL, "", new { @style = "color:red" })
+                                    </div>
+                                </div>
+                                <div class="form-group" style=" margin-left: -15px; margin-right: -15px;" id="novoPac1">
                                     <div class="col-lg-2 col-md-2 col-xs-12">
                                         Data Nascimento*
                                         @Html.TextBoxFor(m => m.PACI_DT_NASCIMENTO, "{0:dd/MM/yyyy}", new { @class = "form-control", autofocus = true, @id = "dn" })
@@ -199,17 +211,42 @@
                                         @Html.TextBoxFor(m => m.PACI_NR_CELULAR, new { @class = "form-control", autofocus = true, @id = "cel1" })
                                         @Html.ValidationMessageFor(m => m.PACI_NR_CELULAR, "", new { @style = "color:red" })
                                     </div>
-                                </div>
-                                <div class="form-group" style=" margin-left: -15px; margin-right: -15px;" id="novoPac1">
                                     <div class="col-lg-3 col-md-3 col-xs-12">
                                         E-Mail
                                         @Html.TextBoxFor(m => m.PACI_NM_EMAIL, new { @class = "form-control", autofocus = true, @id = "email" })
                                         @Html.ValidationMessageFor(m => m.PACI_NM_EMAIL, "", new { @style = "color:red" })
                                     </div>
-                                    <div class="col-lg-4 col-md-4 col-xs-12">
+                                    <div class="col-lg-3 col-md-3 col-xs-12">
                                         Indicado Por
                                         @Html.TextBoxFor(m => m.PACI_NM_INDICADO, new { @class = "form-control", autofocus = true })
                                         @Html.ValidationMessageFor(m => m.PACI_NM_INDICADO, "", new { @style = "color:red" })
+                                    </div>
+                                </div>
+                                <div class="form-group" style=" margin-left: -15px; margin-right: -15px;" id="novoPac2">
+                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                        Gênero
+                                        @Html.DropDownListFor(m => m.SEXO_CD_ID, (SelectList)ViewBag.Sexo, "Selecionar", new { @class = "form-control", autofocus = true })
+                                        @Html.ValidationMessageFor(m => m.SEXO_CD_ID, "", new { @style = "color:red" })
+                                    </div>
+                                    <div class="col-lg-2 col-md-2 col-xs-12" id="RS">
+                                        Raça
+                                        @Html.DropDownListFor(m => m.COR1_CD_ID, (SelectList)ViewBag.Cor, "Selecionar", new { @class = "form-control", autofocus = true })
+                                        @Html.ValidationMessageFor(m => m.COR1_CD_ID, "", new { @style = "color:red" })
+                                    </div>
+                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                        Estado Civil
+                                        @Html.DropDownListFor(m => m.ESCI_CD_ID, (SelectList)ViewBag.EstadoCivil, "Selecionar", new { @class = "form-control", autofocus = true })
+                                        @Html.ValidationMessageFor(m => m.ESCI_CD_ID, "", new { @style = "color:red" })
+                                    </div>
+                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                        Escolaridade
+                                        @Html.DropDownListFor(m => m.GRAU_CD_ID, (SelectList)ViewBag.GrauInstrucao, "Selecionar", new { @class = "form-control", autofocus = true })
+                                        @Html.ValidationMessageFor(m => m.GRAU_CD_ID, "", new { @style = "color:red" })
+                                    </div>
+                                    <div class="col-lg-4 col-md-4 col-xs-12" id="RS">
+                                        Profissão
+                                        @Html.TextBoxFor(m => m.PACI_NM_PROFISSAO, new { @class = "form-control", autofocus = true })
+                                        @Html.ValidationMessageFor(m => m.PACI_NM_PROFISSAO, "", new { @style = "color:red" })
                                     </div>
                                 </div>
                             </div>
@@ -719,10 +756,12 @@
             if (novo == '1') {
                 $("#novoPac").show();
                 $("#novoPac1").show();
+                $("#novoPac2").show();
                 $("#existePac").hide();
             } else {
                 $("#novoPac").hide();
                 $("#novoPac1").hide();
+                $("#novoPac2").hide();
                 $("#existePac").show();
             }
         }

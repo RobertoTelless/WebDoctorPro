@@ -90,7 +90,10 @@
                             <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
                                 <div class="col-lg-6 col-md-6 col-xs-12">
                                     @Html.ButtonActionSubmit(text: "Filtrar", htmlAttributes: new { @class = "btn-loading1" })
-                                    <a href="@Url.Action("IncluirNoticia", "Noticia")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Inclusão de uma nova notícia" class="btn btn-sm btn-primary btn-loading" id="emp" OnClick = "Fade()">Nova Notícia</a>                
+                                    @if ((Int32)Session["UsuarioEspecial"] == 1)
+                                    {
+                                        <a href="@Url.Action("IncluirNoticia", "Noticia")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Inclusão de uma nova notícia" class="btn btn-sm btn-primary btn-loading" id="emp" OnClick = "Fade()">Nova Notícia</a>                
+                                    }
                                     @Html.ButtonLinkIndex(text: "Retirar Filtro", controller: "Noticia", action: "RetirarFiltroNoticiaGeral")
                                     @Html.ButtonLinkIndex(text: "Voltar", controller: "Paciente", action: "MontarTelaPaciente")
                                     <span id="loadingIndicator" style="display: none; margin-left: 10px; color: #007bff;">
@@ -136,14 +139,18 @@
                                                     <span style="display:none; width: auto">@cond.NOTC_DT_VALIDADE.Value.ToString("yyyyMMdd")</span>
                                                     @cond.NOTC_DT_VALIDADE.Value.ToString("dd/MM/yyyy")
                                                 </td>
-                                                <td style="width: auto; cursor: pointer; text-decoration: underline;"><a href="@Url.Action("EditarNoticia", "Noticia", new { id = cond.NOTC_CD_ID })" class="btn-loading" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Alterar/Consultar notícia"/>@cond.NOTC_NM_TITULO</td>
+                                                <td style="width: auto; cursor: pointer; text-decoration: underline;"><a href="@Url.Action("VerNoticia", "Noticia", new { id = cond.NOTC_CD_ID })" class="btn-loading" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Alterar/Consultar notícia"/>@cond.NOTC_NM_TITULO</td>
                                                 <td style="width: auto">@cond.NOTC_NM_AUTOR</td>
                                                 <td style="width: auto">@cond.NOTC_NR_ACESSO</td>
                                                 <td class="td-one-action">
-                                                    @Html.TableLinkDetails(cond.NOTC_CD_ID, "EditarNoticia","fa-edit btn-loading", "Alterar/Ver")
-                                                    @if (cond.NOTC_IN_ATIVO == 1)
+                                                    @Html.TableLinkDetails(cond.NOTC_CD_ID, "VerNoticia","fa-search btn-loading", "Ver")
+                                                    @if ((Int32)Session["UsuarioEspecial"] == 1)
                                                     {
-                                                        <span style="color: #337ab7; cursor:pointer;" alt="Excluir" class="tbl-link fa-lg fa fa-trash-o btn-loading" onclick="ShowModalExcluir('/Noticia/ExcluirNoticia/@cond.NOTC_CD_ID')" title="Excluir"></span>
+                                                        @Html.TableLinkDetails(cond.NOTC_CD_ID, "EditarNoticia","fa-edit btn-loading", "Alterar")
+                                                        if (cond.NOTC_IN_ATIVO == 1)
+                                                        {
+                                                            <span style="color: #337ab7; cursor:pointer;" alt="Excluir" class="tbl-link fa-lg fa fa-trash-o btn-loading" onclick="ShowModalExcluir('/Noticia/ExcluirNoticia/@cond.NOTC_CD_ID')" title="Excluir"></span>
+                                                        }
                                                     }
                                                 </td>
                                             </tr>
