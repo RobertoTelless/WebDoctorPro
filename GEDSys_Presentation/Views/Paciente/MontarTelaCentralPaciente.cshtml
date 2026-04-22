@@ -42,6 +42,33 @@
         <br />
     </div>
     <div class="row">
+        <div class="form-group" style=" margin-left: 15px; margin-right: 0px;">
+            @* --- INÍCIO DA AJUDA CONTEXTUAL --- *@
+            <details class="ajuda-contextual">
+                <summary><i class="fa fa-info-circle text-info"></i> Resumo das funcionalidades desta página</summary>
+                <div class="well well-sm">
+                    <p>Essa é a página da central de pacientes do <b>WebDoctorPro</b>. Nela você poderá:</p>
+                    <ol>
+                        <li>Consultar pacientes cadastrados</li>
+                        <li>Localizar (filtrar) um paciente pelo nome e acessar a sua página principal.</li>
+                        <li>Imprimir a relação de pacientes</li>
+                        <li>Enviar mensagens de e-mail para pacientes.</li>
+                        <li>Enviar mensagens de SMS para pacientes.</li>
+                        <li>Acessar a página de inclusão de pacientes.</li>
+                        <li>Acessar a central de consultas.</li>
+                        <li>Acessar a central de atestados.</li>
+                        <li>Acessar a central de prescrições.</li>
+                        <li>Acessar a central de solicitações de exames.</li>
+                        <li>Acessar a central de resultados de exames.</li>
+                        <li>Acessar o histórico dos pacientes.</li>
+                    </ol>
+                </div>
+            </details>
+            @* --- FIM DA AJUDA CONTEXTUAL --- *@
+        </div>
+    </div>
+
+    <div class="row">
         <div class="col-lg-10 col-md-10 col-xs-12">
             <div class="col-lg-12 col-md-12 col-xs-12 ibox float-e-margins">
                 <div class="ibox-title">
@@ -284,14 +311,28 @@
                                                     {
                                                         <td style="width: auto">-</td>
                                                     }
+
                                                     @if (!String.IsNullOrEmpty(cond.PACI_AQ_FOTO))
                                                     {
-                                                        <td style="width: auto"><img src="@Url.Content(cond.PACI_AQ_FOTO)" style="width: auto; height: auto; max-height: 75px; max-width: 65px;" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Clique Ctrl+Ctrl para ampliar a fotografia"></td>
+                                                        // Tratamento manual da URL dentro do loop
+                                                        var caminhoLimpo = cond.PACI_AQ_FOTO.Replace("~/", "").Replace("~", "");
+                                                        var urlFinal = "https://rtistoragemain.blob.core.windows.net/rti-datacontainer/" + caminhoLimpo;
+
+                                                        <td style="width: auto">
+                                                            <img src="@urlFinal" 
+                                                                    style="width: auto; height: auto; max-height: 75px; max-width: 65px;" 
+                                                                    data-toggle="popover" data-trigger="hover" data-placement="top" 
+                                                                    data-content="Clique Ctrl+Ctrl para ampliar a fotografia"
+                                                                    onerror="this.onerror=null;this.src='@Url.Content("~/Images/icon_morador.png")';">
+                                                        </td>
                                                     }
                                                     else
                                                     {
-                                                        <td style="width: auto"><img src="~/Images/icon_morador.png" style="width: auto; height: auto; max-height: 65px; max-width: 55px;" data-toggle="modal" data-target="#fotoModal"></td>
+                                                        <td style="width: auto">
+                                                            <img src="~/Images/icon_morador.png" style="width: auto; height: auto; max-height: 65px; max-width: 55px;">
+                                                        </td>
                                                     }
+
                                                     <td class="td-one-action">
                                                         @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_ALTERAR_PACIENTE == 1)
                                                         {

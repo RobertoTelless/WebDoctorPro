@@ -2347,7 +2347,7 @@ namespace GEDSys_Presentation.Controllers
             return RedirectToAction("EditarProduto", new { id = (Int32)Session["IdProduto"] });
         }
 
-        public ActionResult DownloadPaciente(Int32 id)
+        public ActionResult DownloadProduto(Int32 id)
         {
             // Força o uso de TLS 1.2 (Obrigatório para Azure Storage no .NET 4.8)
             System.Net.ServicePointManager.SecurityProtocol = System.Net.SecurityProtocolType.Tls12;

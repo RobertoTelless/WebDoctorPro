@@ -137,6 +137,30 @@
                                                         {
                                                             <img src="~/Images/Prontuario/prontuario_icon_3.png" style="width: auto; height: auto; max-height: 180px; max-width: 120px;">
                                                         }
+                                                        @if (Model.EMPR_AQ_LOGO.Contains("prontuario_icon.png"))
+	                                                    {
+                                                            <img src="~/Images/Prontuario/prontuario_icon_3.png" 
+                                                                    class="img-responsive thumbnail" 
+                                                                    style="max-height: 230px; margin: 0 auto;">
+                                                        }
+                                                        else
+                                                        {
+                                                            if (!String.IsNullOrEmpty(Model.EMPR_AQ_LOGO))
+                                                            {
+                                                                <img src="@Model.FotoAzureUrl" 
+                                                                        class="img-responsive thumbnail" 
+                                                                        style="max-height: 270px; margin: 0 auto;">
+                                                            }
+                                                            else
+                                                            {
+                                                                <img src="~/Images/icon_morador.png" 
+                                                                        class="img-responsive thumbnail" 
+                                                                        style="max-height: 230px; margin: 0 auto;">
+                                                            }
+                                                        }
+
+
+
                                                         <br />
                                                         <br />
                                                         <br />
@@ -263,6 +287,30 @@
                                                         {
                                                             <img src="~/Images/Prontuario/prontuario_icon_3.png" style="width: auto; height: auto; max-height: 180px; max-width: 120px;">
                                                         }
+                                                        @if (Model.EMPR_AQ_LOGO.Contains("prontuario_icon.png"))
+	                                                    {
+                                                            <img src="~/Images/Prontuario/prontuario_icon_3.png" 
+                                                                    class="img-responsive thumbnail" 
+                                                                    style="max-height: 230px; margin: 0 auto;">
+                                                        }
+                                                        else
+                                                        {
+                                                            if (!String.IsNullOrEmpty(Model.EMPR_AQ_LOGO))
+                                                            {
+                                                                <img src="@Model.FotoAzureUrl" 
+                                                                        class="img-responsive thumbnail" 
+                                                                        style="max-height: 270px; margin: 0 auto;">
+                                                            }
+                                                            else
+                                                            {
+                                                                <img src="~/Images/icon_morador.png" 
+                                                                        class="img-responsive thumbnail" 
+                                                                        style="max-height: 230px; margin: 0 auto;">
+                                                            }
+                                                        }
+
+
+
                                                         <br />
                                                         <br />
                                                         <br />
@@ -362,7 +410,7 @@
                                                         </div>
                                                         <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
                                                             <div class="col-lg-12 col-md-12 col-xs-12">
-                                                                <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Para alterar as  informações do assinante entre em contato com a RTi através de um dos canais disponíveis na página Fale Conosco</h4>
+                                                                <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Para alterar as  informações do assinante entre em contato com a Rti através de um dos canais disponíveis na página Fale Conosco</h4>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -382,7 +430,7 @@
                                             <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Anexos</h4>
                                             <br />
                                             <div class="form-group">
-                                                @using (Html.BeginForm("UploadFileEmpresa", "Empresa", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { enctype = "multipart/form-data", @id = "pwd-container2" }))
+                                                @using (Html.BeginForm("UploadFileEmpresaBlob", "Empresa", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { enctype = "multipart/form-data", @id = "pwd-container2" }))
                                                 {
                                                     if (Model.EMPRESA_ANEXO.Count > 0)
                                                     {
@@ -409,7 +457,13 @@
                                                                         }
                                                                         else if (cond.EMAN_IN_TIPO == 3)
                                                                         {
-                                                                            <td style="width: auto"><a href="~/PdfViewer/web/viewer.html?file=@(cond.EMAN_AQ_ARQUIVO.Replace("~", ""))&ReturnUrl=@Request.Url.AbsolutePath" target="_blank" />@cond.EMAN_NM_TITULO</td>
+                                                                            // Monta a URL direta do Azure
+                                                                            var caminhoPdf = cond.EMAN_AQ_ARQUIVO.Replace("~/", "").Replace("~", "");
+                                                                            var urlAzurePdf = "https://rtistoragemain.blob.core.windows.net/rti-datacontainer/" + caminhoPdf;
+
+                                                                            @*<td style="width: auto">*@
+                                                                                <a href="@urlAzurePdf" target="_blank">@cond.EMAN_NM_TITULO</a>
+                                                                            @*</td>*@
                                                                         }
                                                                         else
                                                                         {
@@ -445,18 +499,6 @@
                                                                             <td>Outros</td>
                                                                         }
                                                                         <td class="td-one-action">
-                                                                            @if (cond.EMAN_IN_TIPO == 1 || cond.EMAN_IN_TIPO == 2)
-                                                                            {
-                                                                                @Html.TableLinkDetails(cond.EMAN_CD_ID, "VerAnexoEmpresa", "fa-camera", "Visualizar")
-                                                                            }
-                                                                            @if (cond.EMAN_IN_TIPO == 4)
-	                                                                        {
-                                                                                @Html.TableLinkDetails(cond.EMAN_CD_ID, "VerAnexoEmpresaAudio","fa-volume-up", "Visualizar")
-	                                                                        }
-                                                                            @if (cond.EMAN_IN_TIPO == 3)
-                                                                            {
-                                                                                <a title="Visualizar" class="fa fa-camera fa-lg" href="~/PdfViewer/web/viewer.html?file=@(cond.EMAN_AQ_ARQUIVO.Replace("~", ""))&ReturnUrl=@Request.Url.AbsolutePath" target="_blank" ></a>
-                                                                            }
                                                                             @Html.TableLinkDetails(cond.EMAN_CD_ID, "DownloadEmpresa", "fa-download", "Download")
                                                                             @if (cond.EMAN_IN_ATIVO == 1)
 	                                                                        {
@@ -488,7 +530,7 @@
                                             <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Anexos</h4>
                                             <br />
                                             <div class="form-group">
-                                                @using (Html.BeginForm("UploadFileEmpresa", "Empresa", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { enctype = "multipart/form-data", @id = "pwd-container2" }))
+                                                @using (Html.BeginForm("UploadFileEmpresaBlob", "Empresa", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { enctype = "multipart/form-data", @id = "pwd-container2" }))
                                                 {
                                                     if (Model.EMPRESA_ANEXO.Count > 0)
                                                     {
@@ -515,7 +557,13 @@
                                                                         }
                                                                         else if (cond.EMAN_IN_TIPO == 3)
                                                                         {
-                                                                            <td style="width: auto"><a href="~/PdfViewer/web/viewer.html?file=@(cond.EMAN_AQ_ARQUIVO.Replace("~", ""))&ReturnUrl=@Request.Url.AbsolutePath" target="_blank" />@cond.EMAN_NM_TITULO</td>
+                                                                            // Monta a URL direta do Azure
+                                                                            var caminhoPdf = cond.EMAN_AQ_ARQUIVO.Replace("~/", "").Replace("~", "");
+                                                                            var urlAzurePdf = "https://rtistoragemain.blob.core.windows.net/rti-datacontainer/" + caminhoPdf;
+
+                                                                            @*<td style="width: auto">*@
+                                                                                <a href="@urlAzurePdf" target="_blank">@cond.EMAN_NM_TITULO</a>
+                                                                            @*</td>*@
                                                                         }
                                                                         else
                                                                         {
@@ -551,18 +599,6 @@
                                                                             <td>Outros</td>
                                                                         }
                                                                         <td class="td-one-action">
-                                                                            @if (cond.EMAN_IN_TIPO == 1 || cond.EMAN_IN_TIPO == 2)
-                                                                            {
-                                                                                @Html.TableLinkDetails(cond.EMAN_CD_ID, "VerAnexoEmpresa", "fa-camera", "Visualizar")
-                                                                            }
-                                                                            @if (cond.EMAN_IN_TIPO == 4)
-	                                                                        {
-                                                                                @Html.TableLinkDetails(cond.EMAN_CD_ID, "VerAnexoEmpresaAudio","fa-volume-up", "Visualizar")
-	                                                                        }
-                                                                            @if (cond.EMAN_IN_TIPO == 3)
-                                                                            {
-                                                                                <a title="Visualizar" class="fa fa-camera fa-lg" href="~/PdfViewer/web/viewer.html?file=@(cond.EMAN_AQ_ARQUIVO.Replace("~", ""))&ReturnUrl=@Request.Url.AbsolutePath" target="_blank" ></a>
-                                                                            }
                                                                             @Html.TableLinkDetails(cond.EMAN_CD_ID, "DownloadEmpresa", "fa-download", "Download")
                                                                             @if (cond.EMAN_IN_ATIVO == 1)
 	                                                                        {
@@ -598,22 +634,27 @@
                                             <div class="row">
                                                 <div class="col-lg-2 col-md-2 col-xs-12">
                                                     <div class="form-group">
-                                                        <div class="col-lg-12 col-md-12 col-sm-12">
-                                                            <br />
+                                                        <div id="photo-container">
                                                             @if (!String.IsNullOrEmpty(Model.EMPR_AQ_LOGO))
                                                             {
-                                                                <img src="@Url.Content(Model.EMPR_AQ_LOGO)" style="width: auto; height: auto; max-height: 180px; max-width: 180px;">
+                                                                @* Usamos a nova propriedade que aponta para o Azure *@
+                                                                <img id="img-paciente" src="@Model.FotoAzureUrl" 
+                                                                        style="width: auto; height: auto; max-height: 270px; max-width: 270px;" 
+                                                                        data-toggle="popover" data-trigger="hover" data-placement="top" 
+                                                                        data-content="Clique Ctrl+Ctrl para ampliar a fotografia"
+                                                                        onerror="this.onerror=null;this.src='@Url.Content("~/Images/icon_morador.png")';">
                                                             }
                                                             else
                                                             {
-                                                                <img src="~/Images/Prontuario/prontuario_icon_3.png" style="width: auto; height: auto; max-height: 110px; max-width: 90px;">
+                                                                <img id="img-paciente" src="~/Images/icon_morador.png" 
+                                                                        style="width: auto; height: auto; max-height: 270px; max-width: 270px;">
                                                             }
                                                         </div>
                                                     </div>
                                                 </div>
                                                 <div class="col-lg-10 col-md-10 col-xs-12">
                                                     <div class="form-group">
-                                                        @using (Html.BeginForm("UploadFotoEmpresa", "Empresa", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { enctype = "multipart/form-data", @id = "pwd-container3" }))
+                                                        @using (Html.BeginForm("UploadFotoEmpresaBlob", "Empresa", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { enctype = "multipart/form-data", @id = "pwd-container3" }))
                                                         {
                                                             <div class="form-group">
                                                                 <div class="col-lg-12 col-md-12 col-xs-12">
@@ -639,22 +680,27 @@
                                             <div class="row">
                                                 <div class="col-lg-2 col-md-2 col-xs-12">
                                                     <div class="form-group">
-                                                        <div class="col-lg-12 col-md-12 col-sm-12">
-                                                            <br />
+                                                        <div id="photo-container">
                                                             @if (!String.IsNullOrEmpty(Model.EMPR_AQ_LOGO))
                                                             {
-                                                                <img src="@Url.Content(Model.EMPR_AQ_LOGO)" style="width: auto; height: auto; max-height: 180px; max-width: 180px;">
+                                                                @* Usamos a nova propriedade que aponta para o Azure *@
+                                                                <img id="img-paciente" src="@Model.FotoAzureUrl" 
+                                                                        style="width: auto; height: auto; max-height: 270px; max-width: 270px;" 
+                                                                        data-toggle="popover" data-trigger="hover" data-placement="top" 
+                                                                        data-content="Clique Ctrl+Ctrl para ampliar a fotografia"
+                                                                        onerror="this.onerror=null;this.src='@Url.Content("~/Images/icon_morador.png")';">
                                                             }
                                                             else
                                                             {
-                                                                <img src="~/Images/Prontuario/prontuario_icon_3.png" style="width: auto; height: auto; max-height: 110px; max-width: 90px;">
+                                                                <img id="img-paciente" src="~/Images/icon_morador.png" 
+                                                                        style="width: auto; height: auto; max-height: 270px; max-width: 270px;">
                                                             }
                                                         </div>
                                                     </div>
                                                 </div>
                                                 <div class="col-lg-10 col-md-10 col-xs-12">
                                                     <div class="form-group">
-                                                        @using (Html.BeginForm("UploadFotoEmpresa", "Empresa", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { enctype = "multipart/form-data", @id = "pwd-container3" }))
+                                                        @using (Html.BeginForm("UploadFotoEmpresaBlob", "Empresa", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { enctype = "multipart/form-data", @id = "pwd-container3" }))
                                                         {
                                                             <div class="form-group">
                                                                 <div class="col-lg-12 col-md-12 col-xs-12">

@@ -488,27 +488,50 @@ namespace GEDSys_Presentation.Controllers
                 Image image = null;
                 if (conf.CONF_IN_LOGO_EMPRESA == 1)
                 {
-                    headerTable = new PdfPTable(new float[] { 20f, 700f });
-                    headerTable.WidthPercentage = 100;
-                    headerTable.HorizontalAlignment = 1;
-                    headerTable.SpacingBefore = 1f;
-                    headerTable.SpacingAfter = 1f;
+                    PdfPCell cell1 = new PdfPCell();
+                    cell1.Border = 0;
+                    cell1.Colspan = 1;
+                    Image image = null;
+                    EMPRESA empresa = empApp.GetItemByAssinante(idAss);
 
-                    cell = new PdfPCell();
-                    cell.Border = 0;
-                    cell.Colspan = 1;
-                    image = null;
-                    if (conf.CONF_IN_LOGO_EMPRESA == 1)
+                    // Verificamos se o caminho do logo existe
+                    if (!string.IsNullOrEmpty(empresa.EMPR_AQ_LOGO))
                     {
-                        image = Image.GetInstance(Server.MapPath(empresa.EMPR_AQ_LOGO));
+                        // 1. Removemos o "~" para obter o caminho interno (ex: Imagens/1/Logos/logo.png)
+                        string blobPath = empresa.EMPR_AQ_LOGO.Replace("~", "");
+
+                        // 2. Montamos a URL usando as configurações de Storage que você já tem
+                        // Recomendo usar as variáveis do seu objeto 'conf' para ficar dinâmico
+                        string storageUrl = "https://rtistoragemain.blob.core.windows.net/rti-datacontainer/";
+
+                        // Garante que a URL termine com barra antes de concatenar
+                        if (!storageUrl.EndsWith("/")) storageUrl += "/";
+
+                        string fullUrl = storageUrl + blobPath;
+
+                        // 3. iTextSharp busca a imagem diretamente da URL do Azure
+                        image = Image.GetInstance(fullUrl);
                     }
                     else
                     {
-                        image = Image.GetInstance(Server.MapPath("~/Images/Prontuario_Icone_1.png"));
+                        // Caso não tenha logo, você pode carregar um placeholder local ou ignorar
+                        image = Image.GetInstance(Server.MapPath("~/Imagens/Base/logo_padrao.png"));
                     }
-                    image.ScaleAbsolute(80, 80);
-                    cell.AddElement(image);
-                    headerTable.AddCell(cell);
+
+                    image.ScaleAbsolute(50, 50);
+                    cell1.AddElement(image);
+                    cell1.Border = PdfPCell.BOTTOM_BORDER;
+                    headerTable.AddCell(cell1);
+
+                    cell1 = new PdfPCell(new Paragraph("Atestados", meuFont2))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_CENTER
+                    };
+                    cell1.Border = 0;
+                    cell1.Colspan = 1;
+                    cell1.Border = PdfPCell.BOTTOM_BORDER;
+                    headerTable.AddCell(cell1);
                 }
                 else
                 {
@@ -701,13 +724,50 @@ namespace GEDSys_Presentation.Controllers
                 table.SpacingBefore = 1f;
                 table.SpacingAfter = 1f;
 
+                //cell = new PdfPCell();
+                //cell.Border = 0;
+                //cell.Colspan = 1;
+                //image = Image.GetInstance(Server.MapPath(paciente.PACI_AQ_FOTO));
+                //image.ScaleAbsolute(50, 50);
+                //cell.AddElement(image);
+                //table.AddCell(cell);
+
                 cell = new PdfPCell();
                 cell.Border = 0;
                 cell.Colspan = 1;
-                image = Image.GetInstance(Server.MapPath(paciente.PACI_AQ_FOTO));
-                image.ScaleAbsolute(50, 50);
-                cell.AddElement(image);
+                if (!string.IsNullOrEmpty(paciente.PACI_AQ_FOTO))
+                {
+                    try
+                    {
+                        // 1. Configura as URLs (Removendo o "~" do caminho do banco)
+                        string storageUrl = "https://rtistoragemain.blob.core.windows.net/rti-datacontainer/";
+                        string blobPath = paciente.PACI_AQ_FOTO.Replace("~", "").TrimStart('/');
+                        string fullUrl = storageUrl + blobPath;
+
+                        // 2. Baixa a imagem do Storage para a memória
+                        byte[] imgBytes;
+                        using (var webClient = new System.Net.WebClient())
+                        {
+                            imgBytes = webClient.DownloadData(fullUrl);
+                        }
+
+                        // 3. Cria a imagem a partir dos bytes baixados
+                        image = Image.GetInstance(imgBytes);
+                        image.ScaleAbsolute(50, 50);
+                        cell.AddElement(image);
+                    }
+                    catch (Exception)
+                    {
+                        // Caso a imagem não exista no Storage ou ocorra erro de rede, 
+                        // você pode carregar uma imagem padrão ou deixar a célula vazia
+                        // Exemplo de fallback para imagem local padrão:
+                        // image = Image.GetInstance(Server.MapPath("~/Imagens/Base/foto_padrao.png"));
+                        // image.ScaleAbsolute(50, 50);
+                        // cell.AddElement(image);
+                    }
+                }
                 table.AddCell(cell);
+
                 cell = new PdfPCell(new Paragraph(" ", meuFontBold));
                 cell.Border = 0;
                 cell.Colspan = 3;
@@ -7545,13 +7605,37 @@ namespace GEDSys_Presentation.Controllers
                     cell1.Colspan = 1;
                     Image image = null;
                     EMPRESA empresa = empApp.GetItemByAssinante(idAss);
-                    image = Image.GetInstance(Server.MapPath(empresa.EMPR_AQ_LOGO));
+
+                    // Verificamos se o caminho do logo existe
+                    if (!string.IsNullOrEmpty(empresa.EMPR_AQ_LOGO))
+                    {
+                        // 1. Removemos o "~" para obter o caminho interno (ex: Imagens/1/Logos/logo.png)
+                        string blobPath = empresa.EMPR_AQ_LOGO.Replace("~", "");
+
+                        // 2. Montamos a URL usando as configurações de Storage que você já tem
+                        // Recomendo usar as variáveis do seu objeto 'conf' para ficar dinâmico
+                        string storageUrl = "https://rtistoragemain.blob.core.windows.net/rti-datacontainer/";
+
+                        // Garante que a URL termine com barra antes de concatenar
+                        if (!storageUrl.EndsWith("/")) storageUrl += "/";
+
+                        string fullUrl = storageUrl + blobPath;
+
+                        // 3. iTextSharp busca a imagem diretamente da URL do Azure
+                        image = Image.GetInstance(fullUrl);
+                    }
+                    else
+                    {
+                        // Caso não tenha logo, você pode carregar um placeholder local ou ignorar
+                        image = Image.GetInstance(Server.MapPath("~/Imagens/Base/logo_padrao.png"));
+                    }
+
                     image.ScaleAbsolute(50, 50);
                     cell1.AddElement(image);
                     cell1.Border = PdfPCell.BOTTOM_BORDER;
                     headerTable.AddCell(cell1);
 
-                    cell1 = new PdfPCell(new Paragraph("Pacientes - Ausentes por mais de " + conf.CONF_IN_PACIENTE_AUSENCIA.ToString() + " meses após data prevista de retorno", meuFont2))
+                    cell1 = new PdfPCell(new Paragraph("Atestados", meuFont2))
                     {
                         VerticalAlignment = Element.ALIGN_MIDDLE,
                         HorizontalAlignment = Element.ALIGN_CENTER
@@ -7869,23 +7953,55 @@ namespace GEDSys_Presentation.Controllers
                         };
                         table.AddCell(cell);
                     }
-                    if (System.IO.File.Exists(Server.MapPath(item.PACI_AQ_FOTO)))
+
+                    if (!String.IsNullOrEmpty(item.PACI_AQ_FOTO))
                     {
-                        cell = new PdfPCell();
-                        Image image = Image.GetInstance(Server.MapPath(item.PACI_AQ_FOTO));
-                        image.ScaleAbsolute(40, 40);
-                        cell.AddElement(image);
-                        table.AddCell(cell);
+                        try
+                        {
+                            // 1. Monta a URL do Storage
+                            string storageUrl = "https://rtistoragemain.blob.core.windows.net/rti-datacontainer/";
+                            string blobPath = item.PACI_AQ_FOTO.Replace("~", "").TrimStart('/');
+                            string fullUrl = storageUrl + blobPath;
+
+                            // 2. Baixa os bytes da imagem do Azure
+                            byte[] imgBytes;
+                            using (var webClient = new System.Net.WebClient())
+                            {
+                                imgBytes = webClient.DownloadData(fullUrl);
+                            }
+
+                            // 3. Cria a célula com a imagem
+                            cell = new PdfPCell();
+                            Image imagePaci = Image.GetInstance(imgBytes);
+                            imagePaci.ScaleAbsolute(40, 40);
+                            cell.AddElement(imagePaci);
+                            cell.Border = PdfPCell.NO_BORDER; // Opcional: define se quer borda na célula da foto
+                            table.AddCell(cell);
+                        }
+                        catch (Exception)
+                        {
+                            // Se houver erro no download ou a imagem não existir no Storage, coloca o traço
+                            cell = new PdfPCell(new Paragraph("-", meuFont))
+                            {
+                                VerticalAlignment = Element.ALIGN_MIDDLE,
+                                HorizontalAlignment = Element.ALIGN_LEFT,
+                                Border = PdfPCell.NO_BORDER
+                            };
+                            table.AddCell(cell);
+                        }
                     }
                     else
                     {
+                        // Caso o campo no banco esteja nulo ou vazio
                         cell = new PdfPCell(new Paragraph("-", meuFont))
                         {
                             VerticalAlignment = Element.ALIGN_MIDDLE,
-                            HorizontalAlignment = Element.ALIGN_LEFT
+                            HorizontalAlignment = Element.ALIGN_LEFT,
+                            Border = PdfPCell.NO_BORDER
                         };
                         table.AddCell(cell);
                     }
+
                 }
                 pdfDoc.Add(table);
 

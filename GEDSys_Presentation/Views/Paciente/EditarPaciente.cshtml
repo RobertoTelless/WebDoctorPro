@@ -169,13 +169,6 @@
                             @Html.ValidationSummary(false, "", new { @class = "text-danger" })
                         </div>
                     }
-                    @*@if (TempData["TemMensagem"] != null)
-                    {
-                        <div class="alert alert-success">
-                            <button type="button" class="close" data-dismiss="alert">Fechar</button>
-                            <span>@TempData["MensagemAcerto"]</span>
-                        </div>
-                    }*@ 
                    
                     <div class="form-group">
                         @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PAERF_IN_PACIENTE_MENSAGEM == 1)
@@ -2831,8 +2824,23 @@
                                                     {
                                                         <div class="social-feed-box">
                                                             <div class="social-avatar">
-                                                                <a href="" class="pull-left">
-                                                                    <img src="@Url.Content(item.USUARIO.USUA_AQ_FOTO)" style="width: auto; height: auto; max-height: 110px; max-width: 90px;">
+                                                                <a href="#" class="pull-left">
+                                                                    @{
+                                                                        // Definimos a URL base do seu storage
+                                                                        string storageUrl = "https://rtistoragemain.blob.core.windows.net/rti-datacontainer/";
+        
+                                                                        // Pegamos o caminho que está no banco e removemos o "~"
+                                                                        string fotoPath = item.USUARIO.USUA_AQ_FOTO != null 
+                                                                                          ? item.USUARIO.USUA_AQ_FOTO.Replace("~", "") 
+                                                                                          : "Imagens/Base/foto_padrao.png"; // Fallback caso não tenha foto
+
+                                                                        // Montamos a URL completa
+                                                                        string fullImageUrl = storageUrl + fotoPath.TrimStart('/');
+                                                                    }
+    
+                                                                    <img src="@fullImageUrl" 
+                                                                         style="width: auto; height: auto; max-height: 110px; max-width: 90px;" 
+                                                                         alt="Foto do Usuário">
                                                                 </a>
                                                                 <span style="color: #337ab7; cursor:pointer;" alt="Excluir" class="tbl-link fa-lg fa fa-trash-o" onclick="ShowModalExcluirAnotacao('/Paciente/ExcluirAnotacaoPaciente/@item.PAAN_CD_ID')" title="Excluir Anotação"></span>
                                                                 <div class="media-body">
@@ -2872,9 +2880,24 @@
                                                     {
                                                         <div class="social-feed-box">
                                                             <div class="social-avatar">
-                                                                <a href="" class="pull-left">
-                                                                    <img src="@Url.Content(item.USUARIO.USUA_AQ_FOTO)" style="width: auto; height: auto; max-height: 110px; max-width: 90px;">
-                                                                </a>
+                                                            <a href="#" class="pull-left">
+                                                                @{
+                                                                    // Definimos a URL base do seu storage
+                                                                    string storageUrl = "https://rtistoragemain.blob.core.windows.net/rti-datacontainer/";
+        
+                                                                    // Pegamos o caminho que está no banco e removemos o "~"
+                                                                    string fotoPath = item.USUARIO.USUA_AQ_FOTO != null 
+                                                                                      ? item.USUARIO.USUA_AQ_FOTO.Replace("~", "") 
+                                                                                      : "Imagens/Base/foto_padrao.png"; // Fallback caso não tenha foto
+
+                                                                    // Montamos a URL completa
+                                                                    string fullImageUrl = storageUrl + fotoPath.TrimStart('/');
+                                                                }
+    
+                                                                <img src="@fullImageUrl" 
+                                                                     style="width: auto; height: auto; max-height: 110px; max-width: 90px;" 
+                                                                     alt="Foto do Usuário">
+                                                            </a>
                                                                 <span style="color: #337ab7; cursor:pointer;" alt="Excluir" class="tbl-link fa-lg fa fa-trash-o" onclick="ShowModalExcluirAnotacao('/Paciente/ExcluirAnotacaoPaciente/@item.PAAN_CD_ID')" title="Excluir Anotação"></span>
                                                                 <div class="media-body">
                                                                     <a href="@Url.Action("EditarAnotacaoPaciente", "Paciente", new { id = item.PAAN_CD_ID })" data-toggle="popover" data-trigger="hover" data-placement="left" data-content="Editar a anotação">
@@ -6840,9 +6863,25 @@
                                                     {
                                                         <div class="social-feed-box">
                                                             <div class="social-avatar">
-                                                                <a href="" class="pull-left">
-                                                                    <img src="@Url.Content(item.USUARIO.USUA_AQ_FOTO)" style="width: auto; height: auto; max-height: 110px; max-width: 90px;">
+                                                                <a href="#" class="pull-left">
+                                                                    @{
+                                                                        // Definimos a URL base do seu storage
+                                                                        string storageUrl = "https://rtistoragemain.blob.core.windows.net/rti-datacontainer/";
+        
+                                                                        // Pegamos o caminho que está no banco e removemos o "~"
+                                                                        string fotoPath = item.USUARIO.USUA_AQ_FOTO != null 
+                                                                                          ? item.USUARIO.USUA_AQ_FOTO.Replace("~", "") 
+                                                                                          : "Imagens/Base/foto_padrao.png"; // Fallback caso não tenha foto
+
+                                                                        // Montamos a URL completa
+                                                                        string fullImageUrl = storageUrl + fotoPath.TrimStart('/');
+                                                                    }
+    
+                                                                    <img src="@fullImageUrl" 
+                                                                         style="width: auto; height: auto; max-height: 110px; max-width: 90px;" 
+                                                                         alt="Foto do Usuário">
                                                                 </a>
+
                                                                 <span style="color: #337ab7; cursor:pointer;" alt="Excluir" class="tbl-link fa-lg fa fa-trash-o btn-loading8" onclick="ShowModalExcluirAcompanhamento('/Paciente2/ExcluirAnotacaoAnamnese/@item.PAAA_CD_ID')" title="Excluir Anotação"></span>
                                                                 <div class="media-body">
                                                                     <a href="@Url.Action("EditarAnotacaoAnamnese", "Paciente2", new { id = item.PAAA_CD_ID })" class="btn-loading8" data-toggle="popover" data-trigger="hover" data-placement="left" data-content="Editar a anotação">
@@ -6869,7 +6908,7 @@
                                 <div id="tab-13" class="tab-pane">
                                     <div class="panel-body">
                                         <div class="form-group">
-                                            <a href="@Url.Action("IncluirAnotacaoAnamnese", "Paciente2")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Abre a página de inclusão de acompanhamento" class="btn btn-sm btn-primary btn-loading8" id="emp" OnClick = "Fade()">Novo Acompanhamento</a>                
+                                            <a href="@Url.Action("IncluirAnotacaoAnamnese", "Paciente2")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Abre a página de inclusão de anotações na anamnese" class="btn btn-sm btn-primary btn-loading8" id="emp" OnClick = "Fade()">Novo Acompanhamento</a>                
                                             @if (ViewBag.Encerra == 1)
 	                                        {
                                                 <a href="@Url.Action("EncerrarConsultaFiltro", "Paciente2")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Abre a página de encerramento de consulta" class="btn btn-sm btn-warning btn-loading8" id="emp" OnClick = "Fade()">Encerrar Consulta</a>                
@@ -6887,9 +6926,25 @@
                                                     {
                                                         <div class="social-feed-box">
                                                             <div class="social-avatar">
-                                                                <a href="" class="pull-left">
-                                                                    <img src="@Url.Content(item.USUARIO.USUA_AQ_FOTO)" style="width: auto; height: auto; max-height: 110px; max-width: 90px;">
+                                                                <a href="#" class="pull-left">
+                                                                    @{
+                                                                        // Definimos a URL base do seu storage
+                                                                        string storageUrl = "https://rtistoragemain.blob.core.windows.net/rti-datacontainer/";
+        
+                                                                        // Pegamos o caminho que está no banco e removemos o "~"
+                                                                        string fotoPath = item.USUARIO.USUA_AQ_FOTO != null 
+                                                                                          ? item.USUARIO.USUA_AQ_FOTO.Replace("~", "") 
+                                                                                          : "Imagens/Base/foto_padrao.png"; // Fallback caso não tenha foto
+
+                                                                        // Montamos a URL completa
+                                                                        string fullImageUrl = storageUrl + fotoPath.TrimStart('/');
+                                                                    }
+    
+                                                                    <img src="@fullImageUrl" 
+                                                                         style="width: auto; height: auto; max-height: 110px; max-width: 90px;" 
+                                                                         alt="Foto do Usuário">
                                                                 </a>
+
                                                                 <span style="color: #337ab7; cursor:pointer;" alt="Excluir" class="tbl-link fa-lg fa fa-trash-o btn-loading8" onclick="ShowModalExcluirAcompanhamento('/Paciente2/ExcluirAnotacaoAnamnese/@item.PAAA_CD_ID')" title="Excluir Anotação"></span>
                                                                 <div class="media-body">
                                                                     <a href="@Url.Action("EditarAnotacaoAnamnese", "Paciente2", new { id = item.PAAA_CD_ID })" class="btn-loading8" data-toggle="popover" data-trigger="hover" data-placement="left" data-content="Editar a anotação">

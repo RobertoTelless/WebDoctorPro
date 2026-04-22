@@ -102,12 +102,18 @@
                                 <div class="col-lg-12 col-md-12 col-sm-12">
                                     <br />
                                     @if (!String.IsNullOrEmpty(Model.USUARIO.USUA_AQ_FOTO))
-	                                {
-                                        <img src="@Url.Content(Model.USUARIO.USUA_AQ_FOTO)" style = "width: auto; height: auto; max-height: 110px; max-width: 90px;">
+                                    {
+                                        // Monta a URL do Storage para a foto do usuário
+                                        string storageUrl = "https://rtistoragemain.blob.core.windows.net/rti-datacontainer/";
+                                        string fotoPath = Model.USUARIO.USUA_AQ_FOTO.Replace("~", "").TrimStart('/');
+                                        string fullImageUrl = storageUrl + fotoPath;
+
+                                        <img src="@fullImageUrl" style="width: auto; height: auto; max-height: 110px; max-width: 90px;" alt="Foto do Usuário">
                                     }
                                     else
                                     {
-                                        <img src="~/Imagens/Base/icone_morador.png" style = "width: auto; height: auto; max-height: 110px; max-width: 90px;">
+                                        // Mantém o caminho local para o ícone padrão do sistema
+                                        <img src="@Url.Content("~/Imagens/Base/icone_imagem.png")" style="width: auto; height: auto; max-height: 110px; max-width: 90px;" alt="Sem Foto">
                                     }
                                 </div>                       
                             </div>

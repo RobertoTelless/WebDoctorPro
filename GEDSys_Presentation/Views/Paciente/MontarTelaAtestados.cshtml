@@ -244,13 +244,16 @@
                                                 {
                                                     @Html.TableLinkDetails(cond.PAAT_CD_ID, "VerAtestadoCompleta", "fa-search btn-loading", "Consultar Atestado")
                                                 }
-                                                @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_ATESTADO_ENVIAR == 1)
+                                                @if (cond.PACIENTE.PACI_NM_EMAIL != null)
                                                 {
-                                                    if (cond.PAAT_IN_ATIVO == 1 )
+                                                    if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_ATESTADO_ENVIAR == 1)
                                                     {
-                                                        @Html.TableLinkDetails(cond.PAAT_CD_ID, "EnviarAtestadoEMail", "fa-send-o btn-loading", "Enviar Atestado para Paciente")
-                                                    }
-	                                            }
+                                                        if (cond.PAAT_IN_ATIVO == 1 )
+                                                        {
+                                                            @Html.TableLinkDetails(cond.PAAT_CD_ID, "EnviarAtestadoEMail", "fa-send-o btn-loading", "Enviar Atestado para Paciente")
+                                                        }
+	                                                }
+                                                }
                                                 @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_ATESTADO_ENVIAR == 1)
                                                 {
                                                     if (cond.PAAT_IN_ATIVO == 1 )

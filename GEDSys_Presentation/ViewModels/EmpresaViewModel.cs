@@ -31,6 +31,16 @@ namespace ERP_Condominios_Solution.ViewModels
                 EMPR_VL_PATRIMONIO_LIQUIDO = Convert.ToDecimal(CrossCutting.CommonHelpers.GetOnlyDigits(value, true));
             }
         }
+        public string FotoAzureUrl
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(EMPR_AQ_LOGO)) return null;
+                string path = EMPR_AQ_LOGO.Replace("~/", "").Replace("~", "");
+                return $"https://rtistoragemain.blob.core.windows.net/rti-datacontainer/{path}";
+            }
+        }
+
         [DataType(DataType.Date, ErrorMessage = "DATA DE CADASTRO Deve ser uma data válida")]
         public System.DateTime EMPR_DT_CADASTRO { get; set; }
         public int EMPR_IN_ATIVO { get; set; }

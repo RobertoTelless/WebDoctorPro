@@ -32,5 +32,25 @@ namespace ERP_Condominios_Solution.Classes
                 }
             }
         }
+
+        // Novo método para retornar os bytes da imagem
+        public static byte[] GenerateQrCodeBytes(string url)
+        {
+            using (var qrGenerator = new QRCodeGenerator())
+            {
+                QRCodeData qrCodeData = qrGenerator.CreateQrCode(url, QRCodeGenerator.ECCLevel.Q);
+                using (var qrCode = new QRCode(qrCodeData))
+                {
+                    using (Bitmap qrCodeImage = qrCode.GetGraphic(20))
+                    {
+                        using (MemoryStream ms = new MemoryStream())
+                        {
+                            qrCodeImage.Save(ms, System.Drawing.Imaging.ImageFormat.Png);
+                            return ms.ToArray();
+                        }
+                    }
+                }
+            }
+        }
     }
 }
