@@ -386,7 +386,7 @@ namespace GEDSys_Presentation.Controllers
         }
 
         [HttpPost]
-        public Int32 UploadFotoQueueNoticia(FileQueue file)
+        public async Task<Int32> UploadFotoQueueNoticia(FileQueue file)
         {
             try
             {
@@ -418,18 +418,48 @@ namespace GEDSys_Presentation.Controllers
                     return 3;
                 }
 
+                // 1. DEFINIÇÃO DE CAMINHOS (Removendo a barra inicial para o Azure)
+                String caminhoRelativo = "Imagens/" + item.ASSI_CD_ID.ToString() + "/Noticia/" + item.NOTC_CD_ID.ToString() + "/Fotos/";
+                String caminhoLocal = Server.MapPath("~/" + caminhoRelativo);
+                String fullPathLocal = Path.Combine(caminhoLocal, fileName);
 
-                // Copia imagem
-                String caminho = "/Imagens/" + item.ASSI_CD_ID.ToString() + "/Noticias/" + item.NOTC_CD_ID.ToString() + "/Fotos/";
-                String path = Path.Combine(Server.MapPath(caminho), fileName);
-                System.IO.File.WriteAllBytes(path, file.Contents);
+                // Garante que a pasta local existe
+                if (!Directory.Exists(caminhoLocal)) Directory.CreateDirectory(caminhoLocal);
+
+                // 2. CÓPIA LOCAL
+                System.IO.File.WriteAllBytes(fullPathLocal, file.Contents);
+
+                // 3. CÓPIA PARA O AZURE BLOB STORAGE
+                try
+                {
+                    CONFIGURACAO conf = CarregaConfiguracaoGeral();
+                    string connString = conf.CONF_NM_STORAGE_CONN;
+                    string containerName = conf.CONF_NM_STORAGE_CONTAINER;
+
+                    var blobServiceClient = new Azure.Storage.Blobs.BlobServiceClient(connString);
+                    var containerClient = blobServiceClient.GetBlobContainerClient(containerName);
+
+                    // Nome do blob incluindo as "pastas" virtuais
+                    string blobName = caminhoRelativo + fileName;
+                    var blobClient = containerClient.GetBlobClient(blobName);
+
+                    // Upload idempotente usando MemoryStream
+                    using (var ms = new MemoryStream(file.Contents))
+                    {
+                        await blobClient.UploadAsync(ms, overwrite: true);
+                    }
+                }
+                catch (Exception exAzure)
+                {
+                    return 0;
+                }
 
                 //Recupera tipo de arquivo
                 extensao = Path.GetExtension(fileName);
                 String a = extensao;
 
                 // Gravar registro
-                item.NOTC_AQ_FOTO = "~" + caminho + fileName;
+                item.NOTC_AQ_FOTO = "~" + caminhoRelativo + fileName;
                 objetoAntes = item;
                 Int32 volta = baseApp.ValidateEdit(item, objetoAntes);
                 listaMaster = new List<NOTICIA>();
@@ -650,10 +680,41 @@ namespace GEDSys_Presentation.Controllers
                     return RedirectToAction("VoltarAnexoNoticia");
                 }
 
-                // Copia imagem
-                String caminho = "/Imagens/" + item.ASSI_CD_ID.ToString() + "/Noticias/" + item.NOTC_CD_ID.ToString() + "/Fotos/";
-                String path = Path.Combine(Server.MapPath(caminho), fileName);
-                file.SaveAs(path);
+                // 1. DEFINIÇÃO DE CAMINHOS
+                String caminhoRelativo = "Imagens/" + item.ASSI_CD_ID.ToString() + "/Noticias/" + item.NOTC_CD_ID.ToString() + "/Fotos/";
+                String caminhoLocal = Server.MapPath("~/" + caminhoRelativo);
+                String fullPathLocal = Path.Combine(caminhoLocal, fileName);
+
+                if (!Directory.Exists(caminhoLocal)) Directory.CreateDirectory(caminhoLocal);
+
+                // 2. CÓPIA LOCAL
+                file.SaveAs(fullPathLocal);
+
+                // 3. CÓPIA PARA O AZURE BLOB STORAGE (Síncrono)
+                try
+                {
+                    file.InputStream.Position = 0;
+
+                    CONFIGURACAO conf = CarregaConfiguracaoGeral();
+                    string connString = conf.CONF_NM_STORAGE_CONN;
+                    string containerName = conf.CONF_NM_STORAGE_CONTAINER;
+
+                    var blobServiceClient = new Azure.Storage.Blobs.BlobServiceClient(connString);
+                    var containerClient = blobServiceClient.GetBlobContainerClient(containerName);
+
+                    string blobName = caminhoRelativo + fileName;
+                    var blobClient = containerClient.GetBlobClient(blobName);
+
+                    // Chamada Síncrona usando .GetRawResponse() ou apenas omitindo await e usando Upload
+                    // No SDK novo, usamos Upload(stream, overwrite) para modo síncrono
+                    blobClient.Upload(file.InputStream, overwrite: true);
+                }
+                catch (Exception exAzure)
+                {
+                    Session["MsgCRUD"] = "Erro na sincronização Azure: " + exAzure.Message;
+                    Session["MensPaciente"] = 61;
+                    return RedirectToAction("VoltarAnexoPaciente");
+                }
 
                 //Recupera tipo de arquivo
                 extensao = Path.GetExtension(fileName);

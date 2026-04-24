@@ -491,8 +491,8 @@ namespace GEDSys_Presentation.Controllers
                     PdfPCell cell1 = new PdfPCell();
                     cell1.Border = 0;
                     cell1.Colspan = 1;
-                    Image image = null;
-                    EMPRESA empresa = empApp.GetItemByAssinante(idAss);
+                    image = null;
+                    empresa = empApp.GetItemByAssinante(idAss);
 
                     // Verificamos se o caminho do logo existe
                     if (!string.IsNullOrEmpty(empresa.EMPR_AQ_LOGO))
@@ -3384,40 +3384,40 @@ namespace GEDSys_Presentation.Controllers
                 ViewBag.Listas = listaMasterUsuario;
                 ViewBag.Perfil = usuario.PERFIL.PERF_SG_SIGLA;
 
-                if (usuario.PERFIL.PERF_SG_SIGLA == "SEC")
-                {
-                    // Acerta estado    
-                    Session["MensPaciente"] = null;
-                    Session["VoltaPaciente"] = 1;
-                    Session["NivelPaciente"] = 1;
-                    Session["VoltaMsg"] = 0;
-                    Session["TipoSolicitacao"] = 6;
-                    Session["VoltarConsulta"] = 4;
-                    Session["VoltarPesquisa"] = 0;
-                    Session["AjudaNivel"] = "../BaseAdmin/Ajuda/5/Ajuda5_5.pdf";
-                    Session["ModoConsulta"] = 0;
-                    Session["VoltaCalendario"] = 0;
-                    Session["VoltaConfCalendario"] = 1;
-                    Session["VoltaUsu"] = 4;
-                    Session["VoltaConfCalendario"] = 5;
-                    Session["ListaConsultaGeral"] = null;
-                    Session["ListaLog"] = null;
+                //if (usuario.PERFIL.PERF_SG_SIGLA == "SEC")
+                //{
+                //    // Acerta estado    
+                //    Session["MensPaciente"] = null;
+                //    Session["VoltaPaciente"] = 1;
+                //    Session["NivelPaciente"] = 1;
+                //    Session["VoltaMsg"] = 0;
+                //    Session["TipoSolicitacao"] = 6;
+                //    Session["VoltarConsulta"] = 4;
+                //    Session["VoltarPesquisa"] = 0;
+                //    Session["AjudaNivel"] = "../BaseAdmin/Ajuda/5/Ajuda5_5.pdf";
+                //    Session["ModoConsulta"] = 0;
+                //    Session["VoltaCalendario"] = 0;
+                //    Session["VoltaConfCalendario"] = 1;
+                //    Session["VoltaUsu"] = 4;
+                //    Session["VoltaConfCalendario"] = 5;
+                //    Session["ListaConsultaGeral"] = null;
+                //    Session["ListaLog"] = null;
 
-                    // Carrega view
-                    objetoUsuario = new USUARIO();
+                //    // Carrega view
+                //    objetoUsuario = new USUARIO();
 
-                    // Grava Acesso
-                    ControleAcessoMetodo grava = new ControleAcessoMetodo(aceApp);
-                    Int32 voltaX = grava.GravaAcesso(usuario.USUA_CD_ID, usuario.ASSI_CD_ID, "PACIENTE_CONSULTA_MARCACAO", "Paciente2", "MontarTelaMarcacaoConsulta");
-                    return View(objetoUsuario);
-                }
-                else
-                {
+                //    // Grava Acesso
+                //    ControleAcessoMetodo grava = new ControleAcessoMetodo(aceApp);
+                //    Int32 voltaX = grava.GravaAcesso(usuario.USUA_CD_ID, usuario.ASSI_CD_ID, "PACIENTE_CONSULTA_MARCACAO", "Paciente2", "MontarTelaMarcacaoConsulta");
+                //    return View(objetoUsuario);
+                //}
+                //else
+                //{
                     // Grava Acesso
                     ControleAcessoMetodo grava = new ControleAcessoMetodo(aceApp);
                     Int32 voltaX = grava.GravaAcesso(usuario.USUA_CD_ID, usuario.ASSI_CD_ID, "PACIENTE_CONSULTA_MARCACAO", "Paciente", "MontarTelaMarcacaoConsulta");
                     return RedirectToAction("IncluirConsultaGeral", "Paciente");
-                }
+                //}
             }
             catch (Exception ex)
             {
@@ -7620,7 +7620,7 @@ namespace GEDSys_Presentation.Controllers
                         if (!storageUrl.EndsWith("/")) storageUrl += "/";
 
                         string fullUrl = storageUrl + blobPath;
-
+    
                         // 3. iTextSharp busca a imagem diretamente da URL do Azure
                         image = Image.GetInstance(fullUrl);
                     }

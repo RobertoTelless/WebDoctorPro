@@ -52,13 +52,35 @@
                             <div class="form-group">
                                 <div class="col-lg-12 col-md-12 col-sm-12">
                                     <br />
-                                    @if (!String.IsNullOrEmpty(Model.NOTC_AQ_FOTO))
+                                    @*@if (!String.IsNullOrEmpty(Model.NOTC_AQ_FOTO))
 	                                {
                                         <img src="@Url.Content(Model.NOTC_AQ_FOTO)" style = "width: auto; height: auto; max-height: 190px; max-width: 120px;">
                                     }
                                     else
                                     {
                                         <img src="~/Images/p_big2.jpg" style = "width: auto; height: auto; max-height: 110px; max-width: 90px;">
+                                    }*@
+
+                                    @if (Model.NOTC_AQ_FOTO.Contains("p_big2.png"))
+	                                {
+                                        <img src="~/Images/p_big2.jpg" 
+                                                class="img-responsive thumbnail" 
+                                                style="max-height: 230px; margin: 0 auto;">
+                                    }
+                                    else
+                                    {
+                                        if (!String.IsNullOrEmpty(Model.NOTC_AQ_FOTO))
+                                        {
+                                            <img src="@Model.FotoAzureUrl" 
+                                                    class="img-responsive thumbnail" 
+                                                    style="max-height: 270px; margin: 0 auto;">
+                                        }
+                                        else
+                                        {
+                                            <img src="~/Images/icon_morador.png" 
+                                                    class="img-responsive thumbnail" 
+                                                    style="max-height: 230px; margin: 0 auto;">
+                                        }
                                     }
                                 </div>                       
                             </div>

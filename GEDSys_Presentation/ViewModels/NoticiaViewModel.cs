@@ -39,6 +39,16 @@ namespace ERP_Condominios_Solution.ViewModels
         public string NOTC_NM_ORIGEM { get; set; }
         public Nullable<int> NOTC_IN_SISTEMA { get; set; }
 
+        public string FotoAzureUrl
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(NOTC_AQ_FOTO)) return null;
+                string path = NOTC_AQ_FOTO.Replace("~/", "").Replace("~", "");
+                return $"https://rtistoragemain.blob.core.windows.net/rti-datacontainer/{path}";
+            }
+        }
+
         public virtual ASSINANTE ASSINANTE { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<NOTICIA_COMENTARIO> NOTICIA_COMENTARIO { get; set; }

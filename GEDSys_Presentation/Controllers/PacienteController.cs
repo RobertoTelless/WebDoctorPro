@@ -13310,7 +13310,7 @@ namespace GEDSys_Presentation.Controllers
                     cell1.Border = PdfPCell.BOTTOM_BORDER;
                     headerTable.AddCell(cell1);
 
-                    cell1 = new PdfPCell(new Paragraph("Atestados", meuFont2))
+                    cell1 = new PdfPCell(new Paragraph("Pacientes", meuFont2))
                     {
                         VerticalAlignment = Element.ALIGN_MIDDLE,
                         HorizontalAlignment = Element.ALIGN_CENTER
@@ -13628,24 +13628,6 @@ namespace GEDSys_Presentation.Controllers
                         };
                         table.AddCell(cell);
                     }
-
-                    //if (System.IO.File.Exists(Server.MapPath(item.PACI_AQ_FOTO)))
-                    //{
-                    //    cell = new PdfPCell();
-                    //    Image image = Image.GetInstance(Server.MapPath(item.PACI_AQ_FOTO));
-                    //    image.ScaleAbsolute(40, 40);
-                    //    cell.AddElement(image);
-                    //    table.AddCell(cell);
-                    //}
-                    //else
-                    //{
-                    //    cell = new PdfPCell(new Paragraph("-", meuFont))
-                    //    {
-                    //        VerticalAlignment = Element.ALIGN_MIDDLE,
-                    //        HorizontalAlignment = Element.ALIGN_LEFT
-                    //    };
-                    //    table.AddCell(cell);
-                    //}
 
                     if (!String.IsNullOrEmpty(item.PACI_AQ_FOTO))
                     {
@@ -14780,27 +14762,48 @@ namespace GEDSys_Presentation.Controllers
                     Image image = null;
                     if (conf.CONF_IN_LOGO_EMPRESA == 1)
                     {
-                        headerTable = new PdfPTable(new float[] { 20f, 700f });
-                        headerTable.WidthPercentage = 100;
-                        headerTable.HorizontalAlignment = 1;
-                        headerTable.SpacingBefore = 1f;
-                        headerTable.SpacingAfter = 1f;
+                        PdfPCell cell1 = new PdfPCell();
+                        cell1.Border = 0;
+                        cell1.Colspan = 1;
 
-                        cell = new PdfPCell();
-                        cell.Border = 0;
-                        cell.Colspan = 1;
-                        image = null;
-                        if (conf.CONF_IN_LOGO_EMPRESA == 1)
+                        // Verificamos se o caminho do logo existe
+                        if (!string.IsNullOrEmpty(empresa.EMPR_AQ_LOGO))
                         {
-                            image = Image.GetInstance(Server.MapPath(empresa.EMPR_AQ_LOGO));
+                            // 1. Removemos o "~" para obter o caminho interno (ex: Imagens/1/Logos/logo.png)
+                            string blobPath = empresa.EMPR_AQ_LOGO.Replace("~", "");
+
+                            // 2. Montamos a URL usando as configurações de Storage que você já tem
+                            // Recomendo usar as variáveis do seu objeto 'conf' para ficar dinâmico
+                            string storageUrl = "https://rtistoragemain.blob.core.windows.net/rti-datacontainer/";
+
+                            // Garante que a URL termine com barra antes de concatenar
+                            if (!storageUrl.EndsWith("/")) storageUrl += "/";
+
+                            string fullUrl = storageUrl + blobPath;
+
+                            // 3. iTextSharp busca a imagem diretamente da URL do Azure
+                            image = Image.GetInstance(fullUrl);
                         }
                         else
                         {
-                            image = Image.GetInstance(Server.MapPath("~/Images/Prontuario_Icone_1.png"));
+                            // Caso não tenha logo, você pode carregar um placeholder local ou ignorar
+                            image = Image.GetInstance(Server.MapPath("~/Imagens/Base/logo_padrao.png"));
                         }
-                        image.ScaleAbsolute(80, 80);
-                        cell.AddElement(image);
-                        headerTable.AddCell(cell);
+
+                        image.ScaleAbsolute(50, 50);
+                        cell1.AddElement(image);
+                        cell1.Border = PdfPCell.BOTTOM_BORDER;
+                        headerTable.AddCell(cell1);
+
+                        cell1 = new PdfPCell(new Paragraph("Solicitações de Exames", meuFont2))
+                        {
+                            VerticalAlignment = Element.ALIGN_MIDDLE,
+                            HorizontalAlignment = Element.ALIGN_CENTER
+                        };
+                        cell1.Border = 0;
+                        cell1.Colspan = 1;
+                        cell1.Border = PdfPCell.BOTTOM_BORDER;
+                        headerTable.AddCell(cell1);
                     }
                     else
                     {
@@ -15290,27 +15293,48 @@ namespace GEDSys_Presentation.Controllers
                     Image image = null;
                     if (conf.CONF_IN_LOGO_EMPRESA == 1)
                     {
-                        headerTable = new PdfPTable(new float[] { 20f, 700f });
-                        headerTable.WidthPercentage = 100;
-                        headerTable.HorizontalAlignment = 1;
-                        headerTable.SpacingBefore = 1f;
-                        headerTable.SpacingAfter = 1f;
+                        PdfPCell cell1 = new PdfPCell();
+                        cell1.Border = 0;
+                        cell1.Colspan = 1;
 
-                        cell = new PdfPCell();
-                        cell.Border = 0;
-                        cell.Colspan = 1;
-                        image = null;
-                        if (conf.CONF_IN_LOGO_EMPRESA == 1)
+                        // Verificamos se o caminho do logo existe
+                        if (!string.IsNullOrEmpty(empresa.EMPR_AQ_LOGO))
                         {
-                            image = Image.GetInstance(Server.MapPath(empresa.EMPR_AQ_LOGO));
+                            // 1. Removemos o "~" para obter o caminho interno (ex: Imagens/1/Logos/logo.png)
+                            string blobPath = empresa.EMPR_AQ_LOGO.Replace("~", "");
+
+                            // 2. Montamos a URL usando as configurações de Storage que você já tem
+                            // Recomendo usar as variáveis do seu objeto 'conf' para ficar dinâmico
+                            string storageUrl = "https://rtistoragemain.blob.core.windows.net/rti-datacontainer/";
+
+                            // Garante que a URL termine com barra antes de concatenar
+                            if (!storageUrl.EndsWith("/")) storageUrl += "/";
+
+                            string fullUrl = storageUrl + blobPath;
+
+                            // 3. iTextSharp busca a imagem diretamente da URL do Azure
+                            image = Image.GetInstance(fullUrl);
                         }
                         else
                         {
-                            image = Image.GetInstance(Server.MapPath("~/Images/Prontuario_Icone_1.png"));
+                            // Caso não tenha logo, você pode carregar um placeholder local ou ignorar
+                            image = Image.GetInstance(Server.MapPath("~/Imagens/Base/logo_padrao.png"));
                         }
-                        image.ScaleAbsolute(80, 80);
-                        cell.AddElement(image);
-                        headerTable.AddCell(cell);
+
+                        image.ScaleAbsolute(50, 50);
+                        cell1.AddElement(image);
+                        cell1.Border = PdfPCell.BOTTOM_BORDER;
+                        headerTable.AddCell(cell1);
+
+                        cell1 = new PdfPCell(new Paragraph("Solicitações de Exames", meuFont2))
+                        {
+                            VerticalAlignment = Element.ALIGN_MIDDLE,
+                            HorizontalAlignment = Element.ALIGN_CENTER
+                        };
+                        cell1.Border = 0;
+                        cell1.Colspan = 1;
+                        cell1.Border = PdfPCell.BOTTOM_BORDER;
+                        headerTable.AddCell(cell1);
                     }
                     else
                     {
@@ -15713,27 +15737,48 @@ namespace GEDSys_Presentation.Controllers
                 Image image = null;
                 if (conf.CONF_IN_LOGO_EMPRESA == 1)
                 {
-                    headerTable = new PdfPTable(new float[] { 20f, 700f });
-                    headerTable.WidthPercentage = 100;
-                    headerTable.HorizontalAlignment = 1;
-                    headerTable.SpacingBefore = 1f;
-                    headerTable.SpacingAfter = 1f;
+                    PdfPCell cell1 = new PdfPCell();
+                    cell1.Border = 0;
+                    cell1.Colspan = 1;
 
-                    cell = new PdfPCell();
-                    cell.Border = 0;
-                    cell.Colspan = 1;
-                    image = null;
-                    if (conf.CONF_IN_LOGO_EMPRESA == 1)
+                    // Verificamos se o caminho do logo existe
+                    if (!string.IsNullOrEmpty(empresa.EMPR_AQ_LOGO))
                     {
-                        image = Image.GetInstance(Server.MapPath(empresa.EMPR_AQ_LOGO));
+                        // 1. Removemos o "~" para obter o caminho interno (ex: Imagens/1/Logos/logo.png)
+                        string blobPath = empresa.EMPR_AQ_LOGO.Replace("~", "");
+
+                        // 2. Montamos a URL usando as configurações de Storage que você já tem
+                        // Recomendo usar as variáveis do seu objeto 'conf' para ficar dinâmico
+                        string storageUrl = "https://rtistoragemain.blob.core.windows.net/rti-datacontainer/";
+
+                        // Garante que a URL termine com barra antes de concatenar
+                        if (!storageUrl.EndsWith("/")) storageUrl += "/";
+
+                        string fullUrl = storageUrl + blobPath;
+
+                        // 3. iTextSharp busca a imagem diretamente da URL do Azure
+                        image = Image.GetInstance(fullUrl);
                     }
                     else
                     {
-                        image = Image.GetInstance(Server.MapPath("~/Images/Prontuario_Icone_1.png"));
+                        // Caso não tenha logo, você pode carregar um placeholder local ou ignorar
+                        image = Image.GetInstance(Server.MapPath("~/Imagens/Base/logo_padrao.png"));
                     }
-                    image.ScaleAbsolute(80, 80);
-                    cell.AddElement(image);
-                    headerTable.AddCell(cell);
+
+                    image.ScaleAbsolute(50, 50);
+                    cell1.AddElement(image);
+                    cell1.Border = PdfPCell.BOTTOM_BORDER;
+                    headerTable.AddCell(cell1);
+
+                    cell1 = new PdfPCell(new Paragraph("Solicitações de Exames", meuFont2))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_CENTER
+                    };
+                    cell1.Border = 0;
+                    cell1.Colspan = 1;
+                    cell1.Border = PdfPCell.BOTTOM_BORDER;
+                    headerTable.AddCell(cell1);
                 }
                 else
                 {
@@ -23660,7 +23705,31 @@ namespace GEDSys_Presentation.Controllers
                     cell1.Colspan = 1;
                     Image image = null;
                     EMPRESA empresa = empApp.GetItemByAssinante(idAss);
-                    image = Image.GetInstance(Server.MapPath(empresa.EMPR_AQ_LOGO));
+
+                    // Verificamos se o caminho do logo existe
+                    if (!string.IsNullOrEmpty(empresa.EMPR_AQ_LOGO))
+                    {
+                        // 1. Removemos o "~" para obter o caminho interno (ex: Imagens/1/Logos/logo.png)
+                        string blobPath = empresa.EMPR_AQ_LOGO.Replace("~", "");
+
+                        // 2. Montamos a URL usando as configurações de Storage que você já tem
+                        // Recomendo usar as variáveis do seu objeto 'conf' para ficar dinâmico
+                        string storageUrl = "https://rtistoragemain.blob.core.windows.net/rti-datacontainer/";
+
+                        // Garante que a URL termine com barra antes de concatenar
+                        if (!storageUrl.EndsWith("/")) storageUrl += "/";
+
+                        string fullUrl = storageUrl + blobPath;
+
+                        // 3. iTextSharp busca a imagem diretamente da URL do Azure
+                        image = Image.GetInstance(fullUrl);
+                    }
+                    else
+                    {
+                        // Caso não tenha logo, você pode carregar um placeholder local ou ignorar
+                        image = Image.GetInstance(Server.MapPath("~/Imagens/Base/logo_padrao.png"));
+                    }
+
                     image.ScaleAbsolute(50, 50);
                     cell1.AddElement(image);
                     cell1.Border = PdfPCell.BOTTOM_BORDER;
@@ -27165,8 +27234,31 @@ namespace GEDSys_Presentation.Controllers
                     cell1.Border = 0;
                     cell1.Colspan = 1;
                     Image image = null;
-                    EMPRESA empresa = empApp.GetItemByAssinante(idAss);
-                    image = Image.GetInstance(Server.MapPath(empresa.EMPR_AQ_LOGO));
+
+                    // Verificamos se o caminho do logo existe
+                    if (!string.IsNullOrEmpty(empresa.EMPR_AQ_LOGO))
+                    {
+                        // 1. Removemos o "~" para obter o caminho interno (ex: Imagens/1/Logos/logo.png)
+                        string blobPath = empresa.EMPR_AQ_LOGO.Replace("~", "");
+
+                        // 2. Montamos a URL usando as configurações de Storage que você já tem
+                        // Recomendo usar as variáveis do seu objeto 'conf' para ficar dinâmico
+                        string storageUrl = "https://rtistoragemain.blob.core.windows.net/rti-datacontainer/";
+
+                        // Garante que a URL termine com barra antes de concatenar
+                        if (!storageUrl.EndsWith("/")) storageUrl += "/";
+
+                        string fullUrl = storageUrl + blobPath;
+
+                        // 3. iTextSharp busca a imagem diretamente da URL do Azure
+                        image = Image.GetInstance(fullUrl);
+                    }
+                    else
+                    {
+                        // Caso não tenha logo, você pode carregar um placeholder local ou ignorar
+                        image = Image.GetInstance(Server.MapPath("~/Imagens/Base/logo_padrao.png"));
+                    }
+
                     image.ScaleAbsolute(50, 50);
                     cell1.AddElement(image);
                     cell1.Border = PdfPCell.BOTTOM_BORDER;
@@ -28111,27 +28203,48 @@ namespace GEDSys_Presentation.Controllers
                 Image image = null;
                 if (conf.CONF_IN_LOGO_EMPRESA == 1)
                 {
-                    headerTable = new PdfPTable(new float[] { 20f, 700f });
-                    headerTable.WidthPercentage = 100;
-                    headerTable.HorizontalAlignment = 1;
-                    headerTable.SpacingBefore = 1f;
-                    headerTable.SpacingAfter = 1f;
+                    PdfPCell cell1 = new PdfPCell();
+                    cell1.Border = 0;
+                    cell1.Colspan = 1;
 
-                    cell = new PdfPCell();
-                    cell.Border = 0;
-                    cell.Colspan = 1;
-                    image = null;
-                    if (conf.CONF_IN_LOGO_EMPRESA == 1)
+                    // Verificamos se o caminho do logo existe
+                    if (!string.IsNullOrEmpty(empresa.EMPR_AQ_LOGO))
                     {
-                        image = Image.GetInstance(Server.MapPath(empresa.EMPR_AQ_LOGO));
+                        // 1. Removemos o "~" para obter o caminho interno (ex: Imagens/1/Logos/logo.png)
+                        string blobPath = empresa.EMPR_AQ_LOGO.Replace("~", "");
+
+                        // 2. Montamos a URL usando as configurações de Storage que você já tem
+                        // Recomendo usar as variáveis do seu objeto 'conf' para ficar dinâmico
+                        string storageUrl = "https://rtistoragemain.blob.core.windows.net/rti-datacontainer/";
+
+                        // Garante que a URL termine com barra antes de concatenar
+                        if (!storageUrl.EndsWith("/")) storageUrl += "/";
+
+                        string fullUrl = storageUrl + blobPath;
+
+                        // 3. iTextSharp busca a imagem diretamente da URL do Azure
+                        image = Image.GetInstance(fullUrl);
                     }
                     else
                     {
-                        image = Image.GetInstance(Server.MapPath("~/Images/Prontuario_Icone_1.png"));
+                        // Caso não tenha logo, você pode carregar um placeholder local ou ignorar
+                        image = Image.GetInstance(Server.MapPath("~/Imagens/Base/logo_padrao.png"));
                     }
-                    image.ScaleAbsolute(80, 80);
-                    cell.AddElement(image);
-                    headerTable.AddCell(cell);
+
+                    image.ScaleAbsolute(50, 50);
+                    cell1.AddElement(image);
+                    cell1.Border = PdfPCell.BOTTOM_BORDER;
+                    headerTable.AddCell(cell1);
+
+                    cell1 = new PdfPCell(new Paragraph("Solicitações de Exames", meuFont2))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_CENTER
+                    };
+                    cell1.Border = 0;
+                    cell1.Colspan = 1;
+                    cell1.Border = PdfPCell.BOTTOM_BORDER;
+                    headerTable.AddCell(cell1);
                 }
                 else
                 {

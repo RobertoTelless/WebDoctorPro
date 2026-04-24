@@ -147,13 +147,26 @@
                                         <div class="row" style="width: 100%;">
                                             <div class="col-lg-2 col-md-2 col-xs-12">
                                                 <div style="text-align: center; margin-top: 20px; line-height: 10px;">
-                                                    @if (!String.IsNullOrEmpty(Model.USUA_AQ_FOTO))
-                                                    {
-                                                        <img src="@Url.Content(Model.USUA_AQ_FOTO)" style="width: auto; height: auto; max-height: 250px; max-width: 200px;" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Clique Ctrl+Ctrl para ampliar a fotografia">
+                                                    @if (Model.USUA_AQ_FOTO.Contains("icon_morador"))
+	                                                {
+                                                        <img src="~/Imagens/icon_morador.png" 
+                                                                class="img-responsive thumbnail" 
+                                                                style="max-height: 230px; margin: 0 auto;">
                                                     }
                                                     else
                                                     {
-                                                        <img src="~/Imagens/Base/icone_morador.png" style="width: auto; height: auto; max-height: 250px; max-width: 200px;" data-toggle="modal" data-target="#fotoModal" onclick="CriaModal('@Model.USUA_NM_NOME', '/Images/gallery/10s.jpg')">
+                                                        if (!String.IsNullOrEmpty(Model.USUA_AQ_FOTO))
+                                                        {
+                                                            <img src="@Model.FotoAzureUrl" 
+                                                                    class="img-responsive thumbnail" 
+                                                                    style="max-height: 270px; margin: 0 auto;">
+                                                        }
+                                                        else
+                                                        {
+                                                            <img src="~/Imagens/icon_morador.png" 
+                                                                    class="img-responsive thumbnail" 
+                                                                    style="max-height: 230px; margin: 0 auto;">
+                                                        }
                                                     }
                                                     <br />
                                                     <br />
