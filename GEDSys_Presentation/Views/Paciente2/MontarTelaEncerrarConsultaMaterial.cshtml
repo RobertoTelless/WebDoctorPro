@@ -186,7 +186,7 @@
                                                     </tr>
                                                 </thead>
                                                 <tbody>
-                                                    @* 1. Criamos uma lista indexada para garantir a ordem e o índice no POST *@
+                                                     1. Criamos uma lista indexada para garantir a ordem e o índice no POST 
                                                     @{
                                                         var materiaisAtivos = Model.VALOR_CONSULTA_MATERIAL.Where(p => p.VCMA_IN_ATIVO == 1).OrderBy(p => p.PROD_CD_ID).ToList();
                                                     }
@@ -202,17 +202,17 @@
                                                             {
                                                                 <td style="width: 80px">@materiaisAtivos[i].VCMA_QN_QUANTIDADE.ToString()</td>
                                                                 <td style="width: 80px">
-                                                                    @* 2. O Atributo 'name' deve conter o índice exato da coleção no Model *@
+                                                                     2. O Atributo 'name' deve conter o índice exato da coleção no Model 
                                                                     <input type="number"
                                                                            name="VALOR_CONSULTA_MATERIAL[@i].VCMA_QN_QUANTIDADE_REAL"
                                                                            class="form-control"
                                                                            value="@materiaisAtivos[i].VCMA_QN_QUANTIDADE_REAL"
                                                                            min="0" />
 
-                                                                    @* 3. IMPORTANTE: Campos ocultos para o Model Binder saber qual ID e Status estamos alterando *@
+                                                                     3. IMPORTANTE: Campos ocultos para o Model Binder saber qual ID e Status estamos alterando 
                                                                     <input type="hidden" name="VALOR_CONSULTA_MATERIAL[@i].VCMA_CD_ID" value="@materiaisAtivos[i].VCMA_CD_ID" />
                                                                     <input type="hidden" name="VALOR_CONSULTA_MATERIAL[@i].VCMA_IN_ATIVO" value="1" />
-                                                                    @* Adicione o ID do Produto se necessário para a lógica de negócio *@
+                                                                     Adicione o ID do Produto se necessário para a lógica de negócio 
                                                                     <input type="hidden" name="VALOR_CONSULTA_MATERIAL[@i].PROD_CD_ID" value="@materiaisAtivos[i].PROD_CD_ID" />
                                                                 </td>
                                                             }
@@ -220,17 +220,17 @@
                                                             {
                                                                 <td style="width: 80px; color: brown; background-color: lavenderblush">@materiaisAtivos[i].VCMA_QN_QUANTIDADE.ToString()</td>
                                                                 <td style="width: 80px; color: brown; background-color: lavenderblush">
-                                                                    @* 2. O Atributo 'name' deve conter o índice exato da coleção no Model *@
+                                                                     2. O Atributo 'name' deve conter o índice exato da coleção no Model 
                                                                     <input type="number"
                                                                            name="VALOR_CONSULTA_MATERIAL[@i].VCMA_QN_QUANTIDADE_REAL"
                                                                            class="form-control"
                                                                            value="@materiaisAtivos[i].VCMA_QN_QUANTIDADE_REAL"
                                                                            min="0" />
 
-                                                                    @* 3. IMPORTANTE: Campos ocultos para o Model Binder saber qual ID e Status estamos alterando *@
+                                                                     3. IMPORTANTE: Campos ocultos para o Model Binder saber qual ID e Status estamos alterando 
                                                                     <input type="hidden" name="VALOR_CONSULTA_MATERIAL[@i].VCMA_CD_ID" value="@materiaisAtivos[i].VCMA_CD_ID" />
                                                                     <input type="hidden" name="VALOR_CONSULTA_MATERIAL[@i].VCMA_IN_ATIVO" value="1" />
-                                                                    @* Adicione o ID do Produto se necessário para a lógica de negócio *@
+                                                                     Adicione o ID do Produto se necessário para a lógica de negócio 
                                                                     <input type="hidden" name="VALOR_CONSULTA_MATERIAL[@i].PROD_CD_ID" value="@materiaisAtivos[i].PROD_CD_ID" />
                                                                 </td>
 

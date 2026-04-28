@@ -180,6 +180,7 @@ namespace ERP_Condominios_Solution.Controllers
             Session["IdAssinante"] = 0;
 
             // Medicos
+            Session["ListaCadVacina"] = null;
             Session["ListaMedico"] = null;
             Session["MedicoAlterada"] = 0;
             Session["Medicos"] = null;

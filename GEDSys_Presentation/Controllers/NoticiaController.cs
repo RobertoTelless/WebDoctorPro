@@ -721,7 +721,7 @@ namespace GEDSys_Presentation.Controllers
                 String a = extensao;
 
                 // Gravar registro
-                item.NOTC_AQ_FOTO = "~" + caminho + fileName;
+                item.NOTC_AQ_FOTO = "~" + caminhoRelativo + fileName;
                 objetoAntes = item;
                 Int32 volta = baseApp.ValidateEdit(item, objetoAntes);
                 listaMaster = new List<NOTICIA>();
@@ -904,7 +904,7 @@ namespace GEDSys_Presentation.Controllers
 
                 // Abre view
                 objeto = new NOTICIA();
-                Session["VoltaNoticia"] = 1;
+                Session["VoltaNoticia"] = 2;
                 Session["MensNoticia"] = 0;
                 Session["UsuarioEspecial"] = usuario.USUA_IN_ESPECIAL;
                 return View(objeto);

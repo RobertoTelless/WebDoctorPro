@@ -706,6 +706,12 @@ namespace GEDSys_Presentation.Controllers
                 paragraph.Alignment = Element.ALIGN_CENTER;
                 pdfDoc.Add(paragraph);
 
+                String nome = paciente.PACI_NM_NOME.ToUpper();
+                Chunk chunk4 = new Chunk(nome, FontFactory.GetFont("Arial", 16, Font.NORMAL, BaseColor.BLACK));
+                Paragraph paragraph1 = new Paragraph(chunk4);
+                paragraph1.Alignment = Element.ALIGN_CENTER;
+                pdfDoc.Add(paragraph1);
+
                 line1 = new Paragraph(new Chunk(new iTextSharp.text.pdf.draw.LineSeparator(0.0F, 100.0F, BaseColor.BLACK, Element.ALIGN_LEFT, 1)));
                 pdfDoc.Add(line1);
 
@@ -21381,6 +21387,10 @@ namespace GEDSys_Presentation.Controllers
                 vm.PACO_DT_CONSULTA = cons.PACO_DT_CONSULTA;
                 vm.PACO_HR_INICIO = cons.PACO_HR_INICIO;
                 vm.PACO_HR_FINAL = cons.PACO_HR_FINAL;
+                vm.TIVL_CD_ID = tipo.TIVL_CD_ID;
+                vm.VACO_DT_REFERENCIA = tipo.VACO_DT_REFERENCIA;
+                vm.VACO_IN_PADRAO = tipo.VACO_IN_PADRAO;
+                vm.VACO_NR_VALOR = tipo.VACO_NR_VALOR;
 
                 // Grava Acesso
                 ControleAcessoMetodo grava = new ControleAcessoMetodo(aceApp);

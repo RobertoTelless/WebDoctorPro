@@ -123,11 +123,11 @@
         
                                                 @* Container de Mídia (Altura fixa para alinhamento centralizado) *@
                                                 <div style="height: 90px; display: flex; align-items: center; justify-content: center; width: 100%;">
-                                                    <a href="@Url.Action("VerNoticia", "Noticia", new { id = cond.NOTC_CD_ID })" title="Visualizar Notícia">
-                                                        <img src="@Url.Content(cond.NOTC_AQ_FOTO)" 
-                                                             class="img-thumbnail" 
-                                                             style="width: 70px; height: 70px; object-fit: cover; border: 1px solid #eee;"
-                                                             onerror="this.onerror=null;this.src='@Url.Content("~/Images/icone_imagem.jpg")';" />
+                                                    <a href="@Url.Action("VerNoticia", "Noticia", new { id = cond.NOTC_CD_ID })" title="Visualizar Imagem">
+                                                        <img src="@("https://rtistoragemain.blob.core.windows.net/rti-datacontainer/" + cond.NOTC_AQ_FOTO.Replace("~/", "").Replace("~", ""))" 
+                                                                class="img-thumbnail" 
+                                                                style="width: 70px; height: 70px; object-fit: cover; border: 1px solid #eee;"
+                                                                onerror="this.onerror=null;this.src='@Url.Content("~/Images/icone_imagem.jpg")';" />
                                                     </a>
                                                 </div>
 

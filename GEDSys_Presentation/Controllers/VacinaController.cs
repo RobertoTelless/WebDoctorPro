@@ -110,12 +110,12 @@ namespace GEDSys_Presentation.Controllers
                 Session["ModuloAtual"] = "Vacinas";
 
                 // Carrega listas
-                if ((List<VACINA>)Session["ListaVacina"] == null)
+                if (Session["ListaCadVacina"] == null)
                 {
                     listaMaster = CarregarVacina().OrderBy(p => p.VACI_NM_NOME).ToList();
-                    Session["ListaVacina"] = listaMaster;
+                    Session["ListaCadVacina"] = listaMaster;
                 }
-                ViewBag.Listas = (List<VACINA>)Session["ListaVacina"];
+                ViewBag.Listas = (List<VACINA>)Session["ListaCadVacina"];
                 Session["Vacina"] = null;
                 Session["AjudaNivel"] = "../BaseAdmin/Ajuda/12/Ajuda12.pdf";
 
@@ -274,7 +274,7 @@ namespace GEDSys_Presentation.Controllers
 
                     // Sucesso
                     listaMaster = new List<VACINA>();
-                    Session["ListaVacina"] = null;
+                    Session["ListaCadVacina"] = null;
                     Session["IdVacina"] = item.VACI_CD_ID;
                     Session["VacinaAlterada"] = 1;
                     Session["Vacinas"] = null;
@@ -386,7 +386,7 @@ namespace GEDSys_Presentation.Controllers
 
                     // Sucesso
                     listaMaster = new List<VACINA>();
-                    Session["ListaVacina"] = null;
+                    Session["ListaCadVacina"] = null;
                     Session["VacinaAlterada"] = 1;
 
                     // Mensagem do CRUD
@@ -455,7 +455,7 @@ namespace GEDSys_Presentation.Controllers
                     return RedirectToAction("MontarTelaVacina", "Vacina");
                 }
 
-                Session["ListaVacina"] = null;
+                Session["ListaCadVacina"] = null;
                 Session["VacinaAlterada"] = 1;
 
                 // Mensagem do CRUD
@@ -493,7 +493,7 @@ namespace GEDSys_Presentation.Controllers
                 data = data.Substring(0, 2) + data.Substring(3, 2) + data.Substring(6, 4);
 
                 String nomeRel = "VacinaLista" + "_" + data + ".pdf";
-                List<VACINA> lista = (List<VACINA>)Session["ListaVacina"];
+                List<VACINA> lista = (List<VACINA>)Session["ListaCadVacina"];
 
                 Font meuFont = FontFactory.GetFont("Arial", 8, iTextSharp.text.Font.NORMAL, BaseColor.BLACK);
                 Font meuFont1 = FontFactory.GetFont("Arial", 9, iTextSharp.text.Font.NORMAL, BaseColor.BLACK);
@@ -516,21 +516,21 @@ namespace GEDSys_Presentation.Controllers
                 table.SpacingAfter = 1f;
 
                 PdfPCell cell = new PdfPCell();
-                cell.Border = 0;
-                cell.Colspan = 1;
-                Image image = null;
-                if (conf.CONF_IN_LOGO_EMPRESA == 1)
-                {
-                    EMPRESA empresa = empApp.GetItemByAssinante(idAss);
-                    image = Image.GetInstance(Server.MapPath(empresa.EMPR_AQ_LOGO));
-                }
-                else
-                {
-                    image = Image.GetInstance(Server.MapPath("~/Images/Prontuario_Icone_1.png"));
-                }
-                image.ScaleAbsolute(50, 50);
-                cell.AddElement(image);
-                table.AddCell(cell);
+                //cell.Border = 0;
+                //cell.Colspan = 1;
+                //Image image = null;
+                //if (conf.CONF_IN_LOGO_EMPRESA == 1)
+                //{
+                //    EMPRESA empresa = empApp.GetItemByAssinante(idAss);
+                //    image = Image.GetInstance(Server.MapPath(empresa.EMPR_AQ_LOGO));
+                //}
+                //else
+                //{
+                //    image = Image.GetInstance(Server.MapPath("~/Images/Prontuario_Icone_1.png"));
+                //}
+                //image.ScaleAbsolute(50, 50);
+                //cell.AddElement(image);
+                //table.AddCell(cell);
 
                 cell = new PdfPCell(new Paragraph("Vacinas", meuFont2))
                 {
@@ -744,7 +744,7 @@ namespace GEDSys_Presentation.Controllers
                 data = data.Substring(0, 2) + data.Substring(3, 2) + data.Substring(6, 4);
 
                 String nomeRel = "VacinaLista" + "_" + data + ".pdf";
-                List<VACINA> lista = (List<VACINA>)Session["ListaVacina"];
+                List<VACINA> lista = (List<VACINA>)Session["ListaCadVacina"];
 
                 Font meuFont = FontFactory.GetFont("Arial", 8, iTextSharp.text.Font.NORMAL, BaseColor.BLACK);
                 Font meuFont1 = FontFactory.GetFont("Arial", 9, iTextSharp.text.Font.NORMAL, BaseColor.BLACK);

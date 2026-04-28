@@ -21126,7 +21126,7 @@ namespace GEDSys_Presentation.Controllers
                     frase += " de " + pac.PACI_NM_NOME + " em " + item.PACO_DT_CONSULTA.ToShortDateString() + ". " + frase1;
                     Session["MensPaciente"] = 111;
                     Session["MsgCRUD"] = frase;
-                    urlRedirecionamento = Url.Action("MontarTelaConsulta", "Paciente");
+                    urlRedirecionamento = Url.Action("MontarTelaConsultas", "Paciente");
                     return Json(new { success = true, redirectUrl = urlRedirecionamento });
                 }
 
@@ -27213,6 +27213,7 @@ namespace GEDSys_Presentation.Controllers
                 Int32 idAss = (Int32)Session["IdAssinante"];
                 String data = DateTime.Today.Date.ToShortDateString();
                 data = data.Substring(0, 2) + data.Substring(3, 2) + data.Substring(6, 4);
+                USUARIO usuario = (USUARIO)Session["UserCredentials"];
 
                 String nomeRel = "ConsultaLista" + "_" + data + ".pdf";
                 List<PACIENTE_CONSULTA> lista = (List<PACIENTE_CONSULTA>)Session["ListaConsultasGeral"];
@@ -27220,6 +27221,7 @@ namespace GEDSys_Presentation.Controllers
                 Font meuFont = FontFactory.GetFont("Arial", 8, iTextSharp.text.Font.NORMAL, BaseColor.BLACK);
                 Font meuFont1 = FontFactory.GetFont("Arial", 9, iTextSharp.text.Font.NORMAL, BaseColor.BLACK);
                 Font meuFont2 = FontFactory.GetFont("Arial", 14, iTextSharp.text.Font.NORMAL, BaseColor.BLACK);
+                EMPRESA empresa = empApp.GetItemById(usuario.EMPR_CD_ID.Value);
 
                 // Cabeçalho
                 PdfPTable headerTable = new PdfPTable(new float[] { 20f, 700f });
@@ -27411,12 +27413,24 @@ namespace GEDSys_Presentation.Controllers
                         HorizontalAlignment = Element.ALIGN_LEFT
                     };
                     table.AddCell(cell);
-                    cell = new PdfPCell(new Paragraph(item.VALOR_CONSULTA.VACO_NM_NOME, meuFont))
+                    if (item.VALOR_CONSULTA != null)
                     {
-                        VerticalAlignment = Element.ALIGN_MIDDLE,
-                        HorizontalAlignment = Element.ALIGN_LEFT
-                    };
-                    table.AddCell(cell);
+                        cell = new PdfPCell(new Paragraph(item.VALOR_CONSULTA.VACO_NM_NOME, meuFont))
+                        {
+                            VerticalAlignment = Element.ALIGN_MIDDLE,
+                            HorizontalAlignment = Element.ALIGN_LEFT
+                        };
+                        table.AddCell(cell);
+                    }
+                    else
+                    {
+                        cell = new PdfPCell(new Paragraph("-", meuFont))
+                        {
+                            VerticalAlignment = Element.ALIGN_MIDDLE,
+                            HorizontalAlignment = Element.ALIGN_LEFT
+                        };
+                        table.AddCell(cell);
+                    }
                     if (item.PACO_IN_CONFIRMADA == 1)
                     {
                         cell = new PdfPCell(new Paragraph("Confirmada", meuFont))
