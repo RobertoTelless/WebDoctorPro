@@ -1,5 +1,5 @@
 ﻿@using Presentation.Extensions
-@model ERP_Condominios_Solution.ViewModels.ValorConsulta1ViewModel
+@model ERP_Condominios_Solution.ViewModels.ValorConsultaAcertoViewModel
 @{
     Layout = "~/Views/Shared/_Layout_Admin.cshtml";
     ViewBag.Title = "WebDoctor - Consulta - Encerrar";
@@ -144,6 +144,7 @@
                                         @Html.HiddenFor(m => m.VACO_NR_VALOR)
                                         @Html.HiddenFor(m => m.TIVL_CD_ID)
                                         @Html.HiddenFor(m => m.USUA_CD_ID)
+                                        @Html.HiddenFor(m => m.VALOR_CONSULTA_MATERIAL)
                                         Tipo da Consulta
                                         @Html.TextBoxFor(m => m.VACO_NM_NOME, new { @class = "form-control", @readonly = "readonly", @style = "color: green; font-weight: bold" })
                                     </div>
@@ -174,7 +175,7 @@
                                     <div class="col-lg-8 col-md-8 col-xs-12">
                                         @if (Model.VALOR_CONSULTA_MATERIAL.Where(p => p.VCMA_IN_ATIVO == 1).ToList().Count > 0)
                                         {
-                                            <table class="table table-striped table-bordered table-hover dataTables-example">
+                                            <table class="table table-striped table-bordered table-hover dataTables-atestado">
                                                 <thead style="background-color:lightsteelblue">
                                                     <tr>
                                                         <th style="width: auto">Nome do Material</th>
@@ -186,89 +187,41 @@
                                                     </tr>
                                                 </thead>
                                                 <tbody>
-                                                     1. Criamos uma lista indexada para garantir a ordem e o índice no POST 
-                                                    @{
-                                                        var materiaisAtivos = Model.VALOR_CONSULTA_MATERIAL.Where(p => p.VCMA_IN_ATIVO == 1).OrderBy(p => p.PROD_CD_ID).ToList();
-                                                    }
-
-                                                    @for (int i = 0; i < materiaisAtivos.Count; i++)
-                                                    {
+                                                    @foreach (var cond in (Model.VALOR_CONSULTA_MATERIAL.Where(p => p.VCMA_IN_ATIVO == 1).OrderBy(p => p.PROD_CD_ID)))
+                                                    {                                                      
                                                         <tr>
-                                                            <td style="width: auto">@materiaisAtivos[i].PRODUTO.PROD_NM_NOME</td>
-                                                            <td style="width: auto">@materiaisAtivos[i].PRODUTO.PROD_NM_MARCA</td>
-                                                            <td style="width: auto">@materiaisAtivos[i].PRODUTO.PROD_NM_MODELO</td>
-                                                            <td style="width: auto">@materiaisAtivos[i].PRODUTO.PROD_VL_ESTOQUE_ATUAL.ToString()</td>
-                                                            @if (materiaisAtivos[i].VCMA_QN_QUANTIDADE <= materiaisAtivos[i].PRODUTO.PROD_VL_ESTOQUE_ATUAL)
+                                                            <td style="width: auto">@cond.PRODUTO.PROD_NM_NOME</td>
+                                                            <td style="width: auto">@cond.PRODUTO.PROD_NM_MARCA</td>
+                                                            <td style="width: auto">@cond.PRODUTO.PROD_NM_MODELO</td>
+                                                            <td style="width: auto">@cond.PRODUTO.PROD_VL_ESTOQUE_ATUAL</td>
+                                                            @if (cond.VCMA_QN_QUANTIDADE < cond.PRODUTO.PROD_VL_ESTOQUE_ATUAL)
                                                             {
-                                                                <td style="width: 80px">@materiaisAtivos[i].VCMA_QN_QUANTIDADE.ToString()</td>
+                                                                <td style="width: 80px">@cond.VCMA_QN_QUANTIDADE.ToString()</td>
                                                                 <td style="width: 80px">
-                                                                     2. O Atributo 'name' deve conter o índice exato da coleção no Model 
                                                                     <input type="number"
-                                                                           name="VALOR_CONSULTA_MATERIAL[@i].VCMA_QN_QUANTIDADE_REAL"
-                                                                           class="form-control"
-                                                                           value="@materiaisAtivos[i].VCMA_QN_QUANTIDADE_REAL"
-                                                                           min="0" />
-
-                                                                     3. IMPORTANTE: Campos ocultos para o Model Binder saber qual ID e Status estamos alterando 
-                                                                    <input type="hidden" name="VALOR_CONSULTA_MATERIAL[@i].VCMA_CD_ID" value="@materiaisAtivos[i].VCMA_CD_ID" />
-                                                                    <input type="hidden" name="VALOR_CONSULTA_MATERIAL[@i].VCMA_IN_ATIVO" value="1" />
-                                                                     Adicione o ID do Produto se necessário para a lógica de negócio 
-                                                                    <input type="hidden" name="VALOR_CONSULTA_MATERIAL[@i].PROD_CD_ID" value="@materiaisAtivos[i].PROD_CD_ID" />
+                                                                        class="form-control quantidade-real"
+                                                                        value="@cond.VCMA_QN_QUANTIDADE_REAL"
+                                                                        data-id="@cond.VCMA_CD_ID"
+                                                                        min="0" />
                                                                 </td>
                                                             }
                                                             else
                                                             {
-                                                                <td style="width: 80px; color: brown; background-color: lavenderblush">@materiaisAtivos[i].VCMA_QN_QUANTIDADE.ToString()</td>
+                                                                <td style="width: 80px; color: brown; background-color: lavenderblush">@cond.VCMA_QN_QUANTIDADE.ToString()</td>
                                                                 <td style="width: 80px; color: brown; background-color: lavenderblush">
-                                                                     2. O Atributo 'name' deve conter o índice exato da coleção no Model 
                                                                     <input type="number"
-                                                                           name="VALOR_CONSULTA_MATERIAL[@i].VCMA_QN_QUANTIDADE_REAL"
-                                                                           class="form-control"
-                                                                           value="@materiaisAtivos[i].VCMA_QN_QUANTIDADE_REAL"
-                                                                           min="0" />
-
-                                                                     3. IMPORTANTE: Campos ocultos para o Model Binder saber qual ID e Status estamos alterando 
-                                                                    <input type="hidden" name="VALOR_CONSULTA_MATERIAL[@i].VCMA_CD_ID" value="@materiaisAtivos[i].VCMA_CD_ID" />
-                                                                    <input type="hidden" name="VALOR_CONSULTA_MATERIAL[@i].VCMA_IN_ATIVO" value="1" />
-                                                                     Adicione o ID do Produto se necessário para a lógica de negócio 
-                                                                    <input type="hidden" name="VALOR_CONSULTA_MATERIAL[@i].PROD_CD_ID" value="@materiaisAtivos[i].PROD_CD_ID" />
+                                                                        class="form-control quantidade-real"
+                                                                        readonly="readonly"
+                                                                        value="0"
+                                                                        style="background-color: #eee; cursor: not-allowed;"
+                                                                        data-id="@cond.VCMA_CD_ID"
+                                                                        min="0" />
                                                                 </td>
-
                                                             }
                                                         </tr>
                                                     }
                                                 </tbody>
                                             </table>
-
-                                            @*<table class="table table-striped table-bordered table-hover dataTables-atestado">
-                                                <thead style="background-color:lightsteelblue">
-                                                    <tr>
-                                                        <th style="width: auto">Nome do Material</th>
-                                                        <th style="width: auto">Marca</th>
-                                                        <th style="width: auto">Modelo</th>
-                                                        <th style="width: 80px">Quant.Prevista</th>
-                                                        <th style="width: 80px">Quant.Utilizada</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    @foreach (var cond in (Model.VALOR_CONSULTA_MATERIAL.Where(p => p.VCMA_IN_ATIVO == 1).OrderBy(p => p.PROD_CD_ID)))
-                                                    {
-                                                        <tr>
-                                                            <td style="width: auto">@cond.PRODUTO.PROD_NM_NOME</td>
-                                                            <td style="width: auto">@cond.PRODUTO.PROD_NM_MARCA</td>
-                                                            <td style="width: auto">@cond.PRODUTO.PROD_NM_MODELO</td>
-                                                            <td style="width: 80px">@cond.VCMA_QN_QUANTIDADE.ToString()</td>
-                                                            <td style="width: 80px">
-                                                                <input type="number"
-                                                                       class="form-control quantidade-real"
-                                                                       value="@cond.VCMA_QN_QUANTIDADE_REAL"
-                                                                       data-id="@cond.VCMA_CD_ID"
-                                                                       min="0" />
-                                                            </td>
-                                                        </tr>
-                                                    }
-                                                </tbody>
-                                            </table>*@
                                         }
                                         else
                                         {

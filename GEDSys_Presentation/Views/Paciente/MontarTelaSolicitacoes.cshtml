@@ -75,6 +75,7 @@
                         <li>Acessar a página de envio de solicitações de exames por e-mail para um paciente.</li>
                         <li>Excluir solicitações de exames   </li>
                         <li>Impressão da solicitação de exames em formato PDF.</li>
+                        <li>Permite a assinatura digital das solicitações de exames caso o assinante possua certificado digital válido.</li>
                     </ol>
                 </div>
             </details>
@@ -165,13 +166,6 @@
                             @Html.ValidationSummary(false, "", new { @class = "text-danger" })
                         </div>
                     }
-                    @*@if (TempData["TemMensagem"] != null)
-                    {
-                        <div class="alert alert-success">
-                            <button type="button" class="close" data-dismiss="alert">Fechar</button>
-                            <span>@TempData["MensagemAcerto"]</span>
-                        </div>
-                    }*@                    
                     <div class="row">
                         @if (ViewBag.Listas != null &&(ViewBag.Listas as List<EntitiesServices.Model.PACIENTE_SOLICITACAO>).Count > 0)
                         {
@@ -241,17 +235,6 @@
                                                 }
                                             </td>
 
-                                            @*@if (cond.PASO_IN_ENVIADO == 1)
-                                            {
-                                                <td style="width: auto"><span class="badge badge-primary">Sim</span></td>
-
-                                            }
-                                            else
-                                            {
-                                                <td style="width: auto"><span class="badge badge-warning">Não</span></td>
-
-                                            }*@
-
                                             @if (cond.PASO_DT_ENVIO != null)
                                             {
                                                 <td style="width: auto">@cond.PASO_DT_ENVIO.Value.ToShortDateString()</td>
@@ -284,13 +267,16 @@
                                                 {
                                                     @Html.TableLinkDetails(cond.PASO_CD_ID, "VerSolicitacaoCompleta", "fa-search btn-loading", "Consultar a Solicitação")
                                                 }
-                                                @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_SOLICITACAO_ENVIAR == 1)
+                                                @if (cond.PACIENTE.PACI_NM_EMAIL != null)
                                                 {
-                                                    if (cond.PASO_IN_ATIVO == 1 )
+                                                    if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_SOLICITACAO_ENVIAR == 1)
                                                     {
-                                                        @Html.TableLinkDetails(cond.PASO_CD_ID, "EnviarSolicitacaoEMailBase", "fa-send-o btn-loading", "Enviar Solicitação ao Paciente")
-                                                    }
-	                                            }
+                                                        if (cond.PASO_IN_ATIVO == 1 )
+                                                        {
+                                                            @Html.TableLinkDetails(cond.PASO_CD_ID, "EnviarSolicitacaoEMailBase", "fa-send-o btn-loading", "Enviar Solicitação ao Paciente")
+                                                        }
+	                                                }
+                                                }
                                                 @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_SOLICITACAO_ENVIAR == 1)
                                                 {
                                                     if (cond.PASO_IN_ATIVO == 1 )

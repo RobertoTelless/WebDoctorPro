@@ -582,6 +582,7 @@
     <Compile Include="ViewModels\QuestionarioBerlimViewModel.cs" />
     <Compile Include="ViewModels\TipoHistoricoViewModel.cs" />
     <Compile Include="ViewModels\ValorConsultaMaterialViewModel.cs" />
+    <Compile Include="ViewModels\ValorConsultaAcertoViewModel.cs" />
     <Compile Include="ViewModels\VideoViewModel.cs" />
     <Compile Include="ViewModels\MedicoViewModel.cs" />
     <Compile Include="ViewModels\MovimentoAnotacaoViewModel.cs" />

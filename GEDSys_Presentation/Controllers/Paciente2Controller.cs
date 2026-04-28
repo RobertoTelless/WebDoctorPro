@@ -13135,21 +13135,6 @@ namespace GEDSys_Presentation.Controllers
                 atestado1.PASO_IN_ENVIADO = 0;
                 Int32 voltaA = baseApp.ValidateEditSolicitacao(atestado1);
 
-                // Verifica assinatura digital
-                Int32 certificado = 1;
-                if (conf.CONF_NM_LOCAL_CERTIFICADO == null || conf.CONF_NM_SENHA_CERTIFICADO == null)
-                {
-                    certificado = 0;
-                }
-                String caminhoBase = Server.MapPath("~/Certificados/");
-                String pastaCert = Path.Combine(caminhoBase, idAss.ToString());
-                String nomeArquivo = conf.CONF_NM_LOCAL_CERTIFICADO;
-                String caminhoFinal = Path.Combine(pastaCert, nomeArquivo);
-                if (!System.IO.File.Exists(caminhoFinal))
-                {
-                    certificado = 0;
-                }
-
                 // Prepara fontes
                 Font meuFont = FontFactory.GetFont("Arial", 8, iTextSharp.text.Font.NORMAL, BaseColor.BLACK);
                 Font meuFont1 = FontFactory.GetFont("Arial", 9, iTextSharp.text.Font.NORMAL, BaseColor.BLACK);
@@ -13166,27 +13151,48 @@ namespace GEDSys_Presentation.Controllers
                 Image image = null;
                 if (conf.CONF_IN_LOGO_EMPRESA == 1)
                 {
-                    headerTable = new PdfPTable(new float[] { 20f, 700f });
-                    headerTable.WidthPercentage = 100;
-                    headerTable.HorizontalAlignment = 1;
-                    headerTable.SpacingBefore = 1f;
-                    headerTable.SpacingAfter = 1f;
+                    PdfPCell cell1 = new PdfPCell();
+                    cell1.Border = 0;
+                    cell1.Colspan = 1;
 
-                    cell = new PdfPCell();
-                    cell.Border = 0;
-                    cell.Colspan = 1;
-                    image = null;
-                    if (conf.CONF_IN_LOGO_EMPRESA == 1)
+                    // Verificamos se o caminho do logo existe
+                    if (!string.IsNullOrEmpty(empresa.EMPR_AQ_LOGO))
                     {
-                        image = Image.GetInstance(Server.MapPath(empresa.EMPR_AQ_LOGO));
+                        // 1. Removemos o "~" para obter o caminho interno (ex: Imagens/1/Logos/logo.png)
+                        string blobPath = empresa.EMPR_AQ_LOGO.Replace("~", "");
+
+                        // 2. Montamos a URL usando as configurações de Storage que você já tem
+                        // Recomendo usar as variáveis do seu objeto 'conf' para ficar dinâmico
+                        string storageUrl = "https://rtistoragemain.blob.core.windows.net/rti-datacontainer/";
+
+                        // Garante que a URL termine com barra antes de concatenar
+                        if (!storageUrl.EndsWith("/")) storageUrl += "/";
+
+                        string fullUrl = storageUrl + blobPath;
+
+                        // 3. iTextSharp busca a imagem diretamente da URL do Azure
+                        image = Image.GetInstance(fullUrl);
                     }
                     else
                     {
-                        image = Image.GetInstance(Server.MapPath("~/Images/Prontuario_Icone_1.png"));
+                        // Caso não tenha logo, você pode carregar um placeholder local ou ignorar
+                        image = Image.GetInstance(Server.MapPath("~/Imagens/Base/logo_padrao.png"));
                     }
-                    image.ScaleAbsolute(80, 80);
-                    cell.AddElement(image);
-                    headerTable.AddCell(cell);
+
+                    image.ScaleAbsolute(50, 50);
+                    cell1.AddElement(image);
+                    cell1.Border = PdfPCell.BOTTOM_BORDER;
+                    headerTable.AddCell(cell1);
+
+                    cell1 = new PdfPCell(new Paragraph("Solicitações de Exames", meuFont2))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_CENTER
+                    };
+                    cell1.Border = 0;
+                    cell1.Colspan = 1;
+                    cell1.Border = PdfPCell.BOTTOM_BORDER;
+                    headerTable.AddCell(cell1);
                 }
                 else
                 {
@@ -13330,87 +13336,54 @@ namespace GEDSys_Presentation.Controllers
                     }
                 }
 
-                if (certificado == 1)
-                {
-                    cell = new PdfPCell(new Paragraph(endereco, meuFont));
-                    cell.Border = 0;
-                    cell.Colspan = 4;
-                    cell.VerticalAlignment = Element.ALIGN_MIDDLE;
-                    cell.HorizontalAlignment = Element.ALIGN_LEFT;
-                    table1.AddCell(cell);
-                    cell = new PdfPCell(new Paragraph(enderecoCont, meuFont));
-                    cell.Border = 0;
-                    cell.Colspan = 4;
-                    cell.VerticalAlignment = Element.ALIGN_MIDDLE;
-                    cell.HorizontalAlignment = Element.ALIGN_LEFT;
-                    table1.AddCell(cell);
+                cell = new PdfPCell(new Paragraph(endereco, meuFont));
+                cell.Border = 0;
+                cell.Colspan = 4;
+                cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                table1.AddCell(cell);
+                cell = new PdfPCell(new Paragraph(enderecoCont, meuFont));
+                cell.Border = 0;
+                cell.Colspan = 4;
+                cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                table1.AddCell(cell);
 
-                    String fraseAssina = "Documento assinado digitalmente em " + solic.PASO_DT_EMISSAO_COMPLETA.Value.ToShortDateString() + " " + solic.PASO_DT_EMISSAO_COMPLETA.Value.ToShortTimeString() + " conforme MP 2.200-2/01";
-                    cell = new PdfPCell(new Paragraph(fraseAssina, meuFontBold));
-                    cell.Border = 0;
-                    cell.Colspan = 4;
-                    cell.VerticalAlignment = Element.ALIGN_MIDDLE;
-                    cell.HorizontalAlignment = Element.ALIGN_LEFT;
-                    table1.AddCell(cell);
+                String fraseAssina = "Documento assinado digitalmente em " + solic.PASO_DT_EMISSAO_COMPLETA.Value.ToShortDateString() + " " + solic.PASO_DT_EMISSAO_COMPLETA.Value.ToShortTimeString() + " conforme MP 2.200-2/01";
+                cell = new PdfPCell(new Paragraph(fraseAssina, meuFontBold));
+                cell.Border = 0;
+                cell.Colspan = 4;
+                cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                table1.AddCell(cell);
 
-                    cell = new PdfPCell(new Paragraph("Para validar este documento use o código QR ao lado ou acesse " + conf.CONF_LK_LINK_VALIDACAO + " e use o token de acesso " + token, meuFont));
-                    cell.Border = 0;
-                    cell.Colspan = 4;
-                    cell.VerticalAlignment = Element.ALIGN_MIDDLE;
-                    cell.HorizontalAlignment = Element.ALIGN_LEFT;
-                    table1.AddCell(cell);
+                cell = new PdfPCell(new Paragraph("Para validar este documento use o código QR ao lado ou acesse " + conf.CONF_LK_LINK_VALIDACAO + " e use o token de acesso " + token, meuFont));
+                cell.Border = 0;
+                cell.Colspan = 4;
+                cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                table1.AddCell(cell);
 
-                    cell = new PdfPCell(new Paragraph("  ", meuFont));
-                    cell.Border = 0;
-                    cell.Colspan = 4;
-                    cell.VerticalAlignment = Element.ALIGN_MIDDLE;
-                    cell.HorizontalAlignment = Element.ALIGN_LEFT;
-                    table1.AddCell(cell);
+                cell = new PdfPCell(new Paragraph("  ", meuFont));
+                cell.Border = 0;
+                cell.Colspan = 4;
+                cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                table1.AddCell(cell);
 
-                    innerTableCell = new PdfPCell(table1);
-                    innerTableCell.Border = Rectangle.NO_BORDER;
-                    innerTableCell.Colspan = 1;
-                    footerTable.AddCell(innerTableCell);
+                innerTableCell = new PdfPCell(table1);
+                innerTableCell.Border = Rectangle.NO_BORDER;
+                innerTableCell.Colspan = 1;
+                footerTable.AddCell(innerTableCell);
 
-                    cell = new PdfPCell();
-                    cell.Border = 0;
-                    cell.Colspan = 1;
-                    image = null;
-                    image = Image.GetInstance(Server.MapPath("~/Imagens/Base/Selo_Digital.png"));
-                    image.ScaleAbsolute(100, 100);
-                    cell.AddElement(image);
-                    footerTable.AddCell(cell);
-                }
-                else
-                {
-                    cell = new PdfPCell(new Paragraph("Token para validação: " + token, meuFont));
-                    cell.Border = 0;
-                    cell.Colspan = 4;
-                    cell.VerticalAlignment = Element.ALIGN_MIDDLE;
-                    cell.HorizontalAlignment = Element.ALIGN_LEFT;
-                    table1.AddCell(cell);
-                    cell = new PdfPCell(new Paragraph("Documento não assinado digitalmente", meuFont));
-                    cell.Border = 0;
-                    cell.Colspan = 4;
-                    cell.VerticalAlignment = Element.ALIGN_MIDDLE;
-                    cell.HorizontalAlignment = Element.ALIGN_LEFT;
-                    table1.AddCell(cell);
-
-                    cell = new PdfPCell(new Paragraph("  ", meuFont));
-                    cell.Border = 0;
-                    cell.Colspan = 4;
-                    cell.VerticalAlignment = Element.ALIGN_MIDDLE;
-                    cell.HorizontalAlignment = Element.ALIGN_LEFT;
-                    table1.AddCell(cell);
-
-                    innerTableCell = new PdfPCell(table1);
-                    innerTableCell.Border = Rectangle.NO_BORDER;
-                    innerTableCell.Colspan = 4;
-                    footerTable.AddCell(innerTableCell);
-                    String msg = "(*) Para validar este documento use o código QR acima ou acesse " + conf.CONF_LK_LINK_VALIDACAO + " usando o token de acesso " + token;
-                    cell.AddElement(new Chunk(msg, FontFactory.GetFont("Arial", 8, Font.NORMAL, BaseColor.BLACK)));
-                    footerTable.AddCell(cell);
-                }
+                cell = new PdfPCell();
+                cell.Border = 0;
+                cell.Colspan = 1;
+                image = null;
+                image = Image.GetInstance(Server.MapPath("~/Imagens/Base/Selo_Digital.png"));
+                image.ScaleAbsolute(100, 100);
+                cell.AddElement(image);
+                footerTable.AddCell(cell);
 
                 // Cria documento
                 Document pdfDoc = new Document(PageSize.A4, 10, 10, 70, 150);
@@ -13567,60 +13540,49 @@ namespace GEDSys_Presentation.Controllers
                 byte[] pdfFinal;
                 if (solic.PASO_IN_ASSINADO_DIGITAL == 1) // Se for para assinar com PFX
                 {
-                    if (certificado == 1)
+                    // Caminho do certificado e senha (ajuste conforme seu armazenamento)
+                    //string caminhoPFX = Server.MapPath(conf.CONF_NM_LOCAL_CERTIFICADO);
+                    string caminhoPFX = conf.CONF_NM_LOCAL_CERTIFICADO;
+                    string senhaPFX = conf.CONF_NM_SENHA_CERTIFICADO;
+
+                    using (MemoryStream msOutput = new MemoryStream())
                     {
-                        // Monta o caminho relativo: ~/Certificados/ID/NomeArquivo.pfx
-                        string caminhoRelativo = "~/Certificados/" + idAss.ToString() + "/" + conf.CONF_NM_LOCAL_CERTIFICADO;
+                        // Carrega o certificado
+                        X509Certificate2 cert = new X509Certificate2(caminhoPFX, senhaPFX, X509KeyStorageFlags.Exportable);
 
-                        // Converte para o caminho físico real do servidor
-                        string caminhoPFX = Server.MapPath(caminhoRelativo);
-                        string senhaPFX = conf.CONF_NM_SENHA_CERTIFICADO;
+                        // Extrai a chave privada e a cadeia de certificados para o iText
+                        Org.BouncyCastle.X509.X509Certificate bcCert = Org.BouncyCastle.Security.DotNetUtilities.FromX509Certificate(cert);
+                        Org.BouncyCastle.Crypto.AsymmetricKeyParameter key = Org.BouncyCastle.Security.DotNetUtilities.GetKeyPair(cert.PrivateKey).Private;
 
-                        using (MemoryStream msOutput = new MemoryStream())
-                        {
-                            // Validação de segurança: verifica se o arquivo realmente existe fisicamente
-                            if (!System.IO.File.Exists(caminhoPFX))
-                            {
-                                throw new Exception("Arquivo de certificado não encontrado em: " + caminhoPFX);
-                            }
+                        Org.BouncyCastle.X509.X509Certificate[] chain = new Org.BouncyCastle.X509.X509Certificate[] { bcCert };
 
-                            // Carrega o certificado (Adicionado MachineKeySet para evitar erros no IIS)
-                            X509Certificate2 cert = new X509Certificate2(caminhoPFX, senhaPFX, X509KeyStorageFlags.Exportable | X509KeyStorageFlags.MachineKeySet);
+                        // Cria o Stamper para assinar
+                        PdfReader reader = new PdfReader(msInput.ToArray());
+                        PdfStamper stamper = PdfStamper.CreateSignature(reader, msOutput, '\0');
 
-                            // Extrai a chave privada e a cadeia de certificados para o iText
-                            Org.BouncyCastle.X509.X509Certificate bcCert = Org.BouncyCastle.Security.DotNetUtilities.FromX509Certificate(cert);
-                            Org.BouncyCastle.Crypto.AsymmetricKeyParameter key = Org.BouncyCastle.Security.DotNetUtilities.GetKeyPair(cert.PrivateKey).Private;
-                            Org.BouncyCastle.X509.X509Certificate[] chain = new Org.BouncyCastle.X509.X509Certificate[] { bcCert };
+                        // Configura a aparência da assinatura (onde ela aparece no PDF)
+                        PdfSignatureAppearance appearance = stamper.SignatureAppearance;
+                        appearance.Reason = "Assinatura de Solicitação de Exame";
+                        appearance.Location = paciente.PACI_NM_CIDADE + ", " + paciente.UF.UF_SG_SIGLA;
 
-                            // Cria o Stamper para assinar
-                            PdfReader reader = new PdfReader(msInput.ToArray());
-                            PdfStamper stamper = PdfStamper.CreateSignature(reader, msOutput, '\0');
+                        // --- AJUSTE DE POSIÇÃO PARA NÃO SOBREPOR O FOOTER ---
+                        // Coordenadas: x inicial, y inicial, x final, y final
+                        // Aumentamos o 'y' inicial para 160 (já que o footer ocupa até 150)
+                        // O retângulo terá 300 de largura (de 100 a 400) e 60 de altura (de 160 a 220)
+                        float xPos = 60;   // Margem esquerda
+                        float yPos = 160;  // Acima da margem de 150 do footer
+                        float largura = 300;
+                        float altura = 60;
 
-                            // Configura a aparência da assinatura
-                            PdfSignatureAppearance appearance = stamper.SignatureAppearance;
-                            appearance.Reason = "Assinatura de Solicitação";
-                            appearance.Location = paciente.PACI_NM_CIDADE + ", " + paciente.UF.UF_SG_SIGLA;
+                        Rectangle posicaoAssinatura = new Rectangle(xPos, yPos, xPos + largura, yPos + altura);
+                        //appearance.SetVisibleSignature(posicaoAssinatura, reader.NumberOfPages, "Signature");
+                        // ----------------------------------------------------
 
-                            // --- AJUSTE DE POSIÇÃO ---
-                            float xPos = 60;
-                            float yPos = 160;
-                            float largura = 300;
-                            float altura = 60;
+                        // Aplica a assinatura usando o padrão de criptografia padrão
+                        IExternalSignature es = new PrivateKeySignature(key, "SHA-256");
+                        MakeSignature.SignDetached(appearance, es, chain, null, null, null, 0, CryptoStandard.CMS);
 
-                            Rectangle posicaoAssinatura = new Rectangle(xPos, yPos, xPos + largura, yPos + altura);
-                            // Descomente a linha abaixo para exibir o carimbo visual no PDF
-                            // appearance.SetVisibleSignature(posicaoAssinatura, reader.NumberOfPages, "Signature");
-
-                            // Aplica a assinatura digital SHA-256
-                            IExternalSignature es = new PrivateKeySignature(key, "SHA-256");
-                            MakeSignature.SignDetached(appearance, es, chain, null, null, null, 0, CryptoStandard.CMS);
-
-                            pdfFinal = msOutput.ToArray();
-                        }
-                    }
-                    else
-                    {
-                        pdfFinal = msInput.ToArray();
+                        pdfFinal = msOutput.ToArray();
                     }
                 }
                 else
@@ -13689,21 +13651,6 @@ namespace GEDSys_Presentation.Controllers
                 atestado1.PASO_IN_ENVIADO = 0;
                 Int32 voltaA = baseApp.ValidateEditSolicitacao(atestado1);
 
-                // Verifica assinatura digital
-                Int32 certificado = 1;
-                if (conf.CONF_NM_LOCAL_CERTIFICADO == null || conf.CONF_NM_SENHA_CERTIFICADO == null)
-                {
-                    certificado = 0;
-                }
-                String caminhoBase = Server.MapPath("~/Certificados/");
-                String pastaCert = Path.Combine(caminhoBase, idAss.ToString());
-                String nomeArquivo = conf.CONF_NM_LOCAL_CERTIFICADO;
-                String caminhoFinal = Path.Combine(pastaCert, nomeArquivo);
-                if (!System.IO.File.Exists(caminhoFinal))
-                {
-                    certificado = 0;
-                }
-
                 // Prepara fontes
                 Font meuFont = FontFactory.GetFont("Arial", 8, iTextSharp.text.Font.NORMAL, BaseColor.BLACK);
                 Font meuFont1 = FontFactory.GetFont("Arial", 9, iTextSharp.text.Font.NORMAL, BaseColor.BLACK);
@@ -13726,27 +13673,48 @@ namespace GEDSys_Presentation.Controllers
                     Image image = null;
                     if (conf.CONF_IN_LOGO_EMPRESA == 1)
                     {
-                        headerTable = new PdfPTable(new float[] { 20f, 700f });
-                        headerTable.WidthPercentage = 100;
-                        headerTable.HorizontalAlignment = 1;
-                        headerTable.SpacingBefore = 1f;
-                        headerTable.SpacingAfter = 1f;
+                        PdfPCell cell1 = new PdfPCell();
+                        cell1.Border = 0;
+                        cell1.Colspan = 1;
 
-                        cell = new PdfPCell();
-                        cell.Border = 0;
-                        cell.Colspan = 1;
-                        image = null;
-                        if (conf.CONF_IN_LOGO_EMPRESA == 1)
+                        // Verificamos se o caminho do logo existe
+                        if (!string.IsNullOrEmpty(empresa.EMPR_AQ_LOGO))
                         {
-                            image = Image.GetInstance(Server.MapPath(empresa.EMPR_AQ_LOGO));
+                            // 1. Removemos o "~" para obter o caminho interno (ex: Imagens/1/Logos/logo.png)
+                            string blobPath = empresa.EMPR_AQ_LOGO.Replace("~", "");
+
+                            // 2. Montamos a URL usando as configurações de Storage que você já tem
+                            // Recomendo usar as variáveis do seu objeto 'conf' para ficar dinâmico
+                            string storageUrl = "https://rtistoragemain.blob.core.windows.net/rti-datacontainer/";
+
+                            // Garante que a URL termine com barra antes de concatenar
+                            if (!storageUrl.EndsWith("/")) storageUrl += "/";
+
+                            string fullUrl = storageUrl + blobPath;
+
+                            // 3. iTextSharp busca a imagem diretamente da URL do Azure
+                            image = Image.GetInstance(fullUrl);
                         }
                         else
                         {
-                            image = Image.GetInstance(Server.MapPath("~/Images/Prontuario_Icone_1.png"));
+                            // Caso não tenha logo, você pode carregar um placeholder local ou ignorar
+                            image = Image.GetInstance(Server.MapPath("~/Imagens/Base/logo_padrao.png"));
                         }
-                        image.ScaleAbsolute(80, 80);
-                        cell.AddElement(image);
-                        headerTable.AddCell(cell);
+
+                        image.ScaleAbsolute(50, 50);
+                        cell1.AddElement(image);
+                        cell1.Border = PdfPCell.BOTTOM_BORDER;
+                        headerTable.AddCell(cell1);
+
+                        cell1 = new PdfPCell(new Paragraph("Solicitações de Exames", meuFont2))
+                        {
+                            VerticalAlignment = Element.ALIGN_MIDDLE,
+                            HorizontalAlignment = Element.ALIGN_CENTER
+                        };
+                        cell1.Border = 0;
+                        cell1.Colspan = 1;
+                        cell1.Border = PdfPCell.BOTTOM_BORDER;
+                        headerTable.AddCell(cell1);
                     }
                     else
                     {
@@ -13903,74 +13871,41 @@ namespace GEDSys_Presentation.Controllers
                     cell.HorizontalAlignment = Element.ALIGN_LEFT;
                     table1.AddCell(cell);
 
-                    if (certificado == 1)
-                    {
-                        String fraseAssina = "Documento assinado digitalmente em " + solic.PASO_DT_EMISSAO_COMPLETA.Value.ToShortDateString() + " " + solic.PASO_DT_EMISSAO_COMPLETA.Value.ToShortTimeString() + " conforme MP 2.200-2/01";
-                        cell = new PdfPCell(new Paragraph(fraseAssina, meuFontBold));
-                        cell.Border = 0;
-                        cell.Colspan = 4;
-                        cell.VerticalAlignment = Element.ALIGN_MIDDLE;
-                        cell.HorizontalAlignment = Element.ALIGN_LEFT;
-                        table1.AddCell(cell);
+                    String fraseAssina = "Documento assinado digitalmente em " + solic.PASO_DT_EMISSAO_COMPLETA.Value.ToShortDateString() + " " + solic.PASO_DT_EMISSAO_COMPLETA.Value.ToShortTimeString() + " conforme MP 2.200-2/01";
+                    cell = new PdfPCell(new Paragraph(fraseAssina, meuFontBold));
+                    cell.Border = 0;
+                    cell.Colspan = 4;
+                    cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                    cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                    table1.AddCell(cell);
 
-                        cell = new PdfPCell(new Paragraph("Para validar este documento use o código QR ao lado ou acesse " + conf.CONF_LK_LINK_VALIDACAO + " e use o token de acesso " + token, meuFont));
-                        cell.Border = 0;
-                        cell.Colspan = 4;
-                        cell.VerticalAlignment = Element.ALIGN_MIDDLE;
-                        cell.HorizontalAlignment = Element.ALIGN_LEFT;
-                        table1.AddCell(cell);
+                    cell = new PdfPCell(new Paragraph("Para validar este documento use o código QR ao lado ou acesse " + conf.CONF_LK_LINK_VALIDACAO + " e use o token de acesso " + token, meuFont));
+                    cell.Border = 0;
+                    cell.Colspan = 4;
+                    cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                    cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                    table1.AddCell(cell);
 
-                        cell = new PdfPCell(new Paragraph("  ", meuFont));
-                        cell.Border = 0;
-                        cell.Colspan = 4;
-                        cell.VerticalAlignment = Element.ALIGN_MIDDLE;
-                        cell.HorizontalAlignment = Element.ALIGN_LEFT;
-                        table1.AddCell(cell);
+                    cell = new PdfPCell(new Paragraph("  ", meuFont));
+                    cell.Border = 0;
+                    cell.Colspan = 4;
+                    cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                    cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                    table1.AddCell(cell);
 
-                        innerTableCell = new PdfPCell(table1);
-                        innerTableCell.Border = Rectangle.NO_BORDER;
-                        innerTableCell.Colspan = 1;
-                        footerTable.AddCell(innerTableCell);
+                    innerTableCell = new PdfPCell(table1);
+                    innerTableCell.Border = Rectangle.NO_BORDER;
+                    innerTableCell.Colspan = 1;
+                    footerTable.AddCell(innerTableCell);
 
-                        cell = new PdfPCell();
-                        cell.Border = 0;
-                        cell.Colspan = 1;
-                        image = null;
-                        image = Image.GetInstance(Server.MapPath("~/Imagens/Base/Selo_Digital.png"));
-                        image.ScaleAbsolute(100, 100);
-                        cell.AddElement(image);
-                        footerTable.AddCell(cell);
-                    }
-                    else
-                    {
-                        cell = new PdfPCell(new Paragraph("Token para validação: " + token, meuFont));
-                        cell.Border = 0;
-                        cell.Colspan = 4;
-                        cell.VerticalAlignment = Element.ALIGN_MIDDLE;
-                        cell.HorizontalAlignment = Element.ALIGN_LEFT;
-                        table1.AddCell(cell);
-                        cell = new PdfPCell(new Paragraph("Documento não assinado digitalmente", meuFont));
-                        cell.Border = 0;
-                        cell.Colspan = 4;
-                        cell.VerticalAlignment = Element.ALIGN_MIDDLE;
-                        cell.HorizontalAlignment = Element.ALIGN_LEFT;
-                        table1.AddCell(cell);
-
-                        cell = new PdfPCell(new Paragraph("  ", meuFont));
-                        cell.Border = 0;
-                        cell.Colspan = 4;
-                        cell.VerticalAlignment = Element.ALIGN_MIDDLE;
-                        cell.HorizontalAlignment = Element.ALIGN_LEFT;
-                        table1.AddCell(cell);
-
-                        innerTableCell = new PdfPCell(table1);
-                        innerTableCell.Border = Rectangle.NO_BORDER;
-                        innerTableCell.Colspan = 4;
-                        footerTable.AddCell(innerTableCell);
-                        String msg = "(*) Para validar este documento use o código QR acima ou acesse " + conf.CONF_LK_LINK_VALIDACAO + " usando o token de acesso " + token;
-                        cell.AddElement(new Chunk(msg, FontFactory.GetFont("Arial", 8, Font.NORMAL, BaseColor.BLACK)));
-                        footerTable.AddCell(cell);
-                    }
+                    cell = new PdfPCell();
+                    cell.Border = 0;
+                    cell.Colspan = 1;
+                    image = null;
+                    image = Image.GetInstance(Server.MapPath("~/Imagens/Base/Selo_Digital.png"));
+                    image.ScaleAbsolute(100, 100);
+                    cell.AddElement(image);
+                    footerTable.AddCell(cell);
 
                     // Cria documento
                     Document pdfDoc = new Document(PageSize.A4, 10, 10, 70, 150);
@@ -14126,54 +14061,44 @@ namespace GEDSys_Presentation.Controllers
                     // --- LÓGICA DE ASSINATURA DIGITAL ---
                     if (solic.PASO_IN_ASSINADO_DIGITAL == 1)
                     {
-                        if (certificado == 1)
+                        //string caminhoPFX = Server.MapPath(conf.CONF_NM_LOCAL_CERTIFICADO);
+                        string caminhoPFX = conf.CONF_NM_LOCAL_CERTIFICADO;
+                        string senhaPFX = conf.CONF_NM_SENHA_CERTIFICADO;
+
+                        using (MemoryStream msOutput = new MemoryStream())
                         {
-                            // Monta o caminho relativo: ~/Certificados/ID/NomeArquivo.pfx
-                            string caminhoRelativo = "~/Certificados/" + idAss.ToString() + "/" + conf.CONF_NM_LOCAL_CERTIFICADO;
+                            // Carrega Certificado usando System.Security.Cryptography.X509Certificates
+                            var cert = new System.Security.Cryptography.X509Certificates.X509Certificate2(caminhoPFX, senhaPFX, System.Security.Cryptography.X509Certificates.X509KeyStorageFlags.Exportable);
 
-                            // Converte para o caminho físico real do servidor
-                            string caminhoPFX = Server.MapPath(caminhoRelativo);
-                            string senhaPFX = conf.CONF_NM_SENHA_CERTIFICADO;
+                            // Converte para BouncyCastle (necessário para iTextSharp)
+                            var bcCert = Org.BouncyCastle.Security.DotNetUtilities.FromX509Certificate(cert);
+                            var key = Org.BouncyCastle.Security.DotNetUtilities.GetKeyPair(cert.PrivateKey).Private;
+                            var chain = new Org.BouncyCastle.X509.X509Certificate[] { bcCert };
 
-                            using (MemoryStream msOutput = new MemoryStream())
-                            {
-                                // Carrega Certificado usando System.Security.Cryptography.X509Certificates
-                                var cert = new System.Security.Cryptography.X509Certificates.X509Certificate2(caminhoPFX, senhaPFX, System.Security.Cryptography.X509Certificates.X509KeyStorageFlags.Exportable);
+                            PdfReader reader = new PdfReader(msInput.ToArray());
+                            PdfStamper stamper = PdfStamper.CreateSignature(reader, msOutput, '\0');
 
-                                // Converte para BouncyCastle (necessário para iTextSharp)
-                                var bcCert = Org.BouncyCastle.Security.DotNetUtilities.FromX509Certificate(cert);
-                                var key = Org.BouncyCastle.Security.DotNetUtilities.GetKeyPair(cert.PrivateKey).Private;
-                                var chain = new Org.BouncyCastle.X509.X509Certificate[] { bcCert };
+                            PdfSignatureAppearance appearance = stamper.SignatureAppearance;
+                            appearance.Reason = "Assinatura de Solicitação de EXame";
+                            appearance.Location = paciente.PACI_NM_CIDADE + ", " + paciente.UF.UF_SG_SIGLA;
 
-                                PdfReader reader = new PdfReader(msInput.ToArray());
-                                PdfStamper stamper = PdfStamper.CreateSignature(reader, msOutput, '\0');
+                            // --- AJUSTE DE POSIÇÃO PARA NÃO SOBREPOR O FOOTER ---
+                            // Coordenadas: x inicial, y inicial, x final, y final
+                            // Aumentamos o 'y' inicial para 160 (já que o footer ocupa até 150)
+                            // O retângulo terá 300 de largura (de 100 a 400) e 60 de altura (de 160 a 220)
+                            float xPos = 60;   // Margem esquerda
+                            float yPos = 160;  // Acima da margem de 150 do footer
+                            float largura = 300;
+                            float altura = 60;
 
-                                PdfSignatureAppearance appearance = stamper.SignatureAppearance;
-                                appearance.Reason = "Assinatura de Prescrição";
-                                appearance.Location = paciente.PACI_NM_CIDADE + ", " + paciente.UF.UF_SG_SIGLA;
+                            Rectangle posicaoAssinatura = new Rectangle(xPos, yPos, xPos + largura, yPos + altura);
+                            //appearance.SetVisibleSignature(posicaoAssinatura, reader.NumberOfPages, "Signature");
+                            // ----------------------------------------------------
 
-                                // --- AJUSTE DE POSIÇÃO PARA NÃO SOBREPOR O FOOTER ---
-                                // Coordenadas: x inicial, y inicial, x final, y final
-                                // Aumentamos o 'y' inicial para 160 (já que o footer ocupa até 150)
-                                // O retângulo terá 300 de largura (de 100 a 400) e 60 de altura (de 160 a 220)
-                                float xPos = 60;   // Margem esquerda
-                                float yPos = 160;  // Acima da margem de 150 do footer
-                                float largura = 300;
-                                float altura = 60;
+                            IExternalSignature es = new PrivateKeySignature(key, "SHA-256");
+                            MakeSignature.SignDetached(appearance, es, chain, null, null, null, 0, CryptoStandard.CMS);
 
-                                Rectangle posicaoAssinatura = new Rectangle(xPos, yPos, xPos + largura, yPos + altura);
-                                //appearance.SetVisibleSignature(posicaoAssinatura, reader.NumberOfPages, "Signature");
-                                // ----------------------------------------------------
-
-                                IExternalSignature es = new PrivateKeySignature(key, "SHA-256");
-                                MakeSignature.SignDetached(appearance, es, chain, null, null, null, 0, CryptoStandard.CMS);
-
-                                pdfFinal = msOutput.ToArray();
-                            }
-                        }
-                        else
-                        {
-                            pdfFinal = msInput.ToArray();
+                            pdfFinal = msOutput.ToArray();
                         }
                     }
                     else
@@ -14258,27 +14183,48 @@ namespace GEDSys_Presentation.Controllers
                 Image image = null;
                 if (conf.CONF_IN_LOGO_EMPRESA == 1)
                 {
-                    headerTable = new PdfPTable(new float[] { 20f, 700f });
-                    headerTable.WidthPercentage = 100;
-                    headerTable.HorizontalAlignment = 1;
-                    headerTable.SpacingBefore = 1f;
-                    headerTable.SpacingAfter = 1f;
+                    PdfPCell cell1 = new PdfPCell();
+                    cell1.Border = 0;
+                    cell1.Colspan = 1;
 
-                    cell = new PdfPCell();
-                    cell.Border = 0;
-                    cell.Colspan = 1;
-                    image = null;
-                    if (conf.CONF_IN_LOGO_EMPRESA == 1)
+                    // Verificamos se o caminho do logo existe
+                    if (!string.IsNullOrEmpty(empresa.EMPR_AQ_LOGO))
                     {
-                        image = Image.GetInstance(Server.MapPath(empresa.EMPR_AQ_LOGO));
+                        // 1. Removemos o "~" para obter o caminho interno (ex: Imagens/1/Logos/logo.png)
+                        string blobPath = empresa.EMPR_AQ_LOGO.Replace("~", "");
+
+                        // 2. Montamos a URL usando as configurações de Storage que você já tem
+                        // Recomendo usar as variáveis do seu objeto 'conf' para ficar dinâmico
+                        string storageUrl = "https://rtistoragemain.blob.core.windows.net/rti-datacontainer/";
+
+                        // Garante que a URL termine com barra antes de concatenar
+                        if (!storageUrl.EndsWith("/")) storageUrl += "/";
+
+                        string fullUrl = storageUrl + blobPath;
+
+                        // 3. iTextSharp busca a imagem diretamente da URL do Azure
+                        image = Image.GetInstance(fullUrl);
                     }
                     else
                     {
-                        image = Image.GetInstance(Server.MapPath("~/Images/Prontuario_Icone_1.png"));
+                        // Caso não tenha logo, você pode carregar um placeholder local ou ignorar
+                        image = Image.GetInstance(Server.MapPath("~/Imagens/Base/logo_padrao.png"));
                     }
-                    image.ScaleAbsolute(80, 80);
-                    cell.AddElement(image);
-                    headerTable.AddCell(cell);
+
+                    image.ScaleAbsolute(50, 50);
+                    cell1.AddElement(image);
+                    cell1.Border = PdfPCell.BOTTOM_BORDER;
+                    headerTable.AddCell(cell1);
+
+                    cell1 = new PdfPCell(new Paragraph("Solicitações de Exames", meuFont2))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_CENTER
+                    };
+                    cell1.Border = 0;
+                    cell1.Colspan = 1;
+                    cell1.Border = PdfPCell.BOTTOM_BORDER;
+                    headerTable.AddCell(cell1);
                 }
                 else
                 {
@@ -14435,7 +14381,6 @@ namespace GEDSys_Presentation.Controllers
                 cell.VerticalAlignment = Element.ALIGN_MIDDLE;
                 cell.HorizontalAlignment = Element.ALIGN_LEFT;
                 table1.AddCell(cell);
-
                 cell = new PdfPCell(new Paragraph("Token para validação: " + token, meuFont));
                 cell.Border = 0;
                 cell.Colspan = 4;
@@ -14650,7 +14595,7 @@ namespace GEDSys_Presentation.Controllers
                 {
                     return RedirectToAction("VerListaSolicitacaoConsulta");
                 }
-                return RedirectToAction("MontarTelaSolicitacoes");
+                return RedirectToAction("MontarTelaSolicitacoes", "Paciente");
             }
             catch (Exception ex)
             {
@@ -14742,27 +14687,48 @@ namespace GEDSys_Presentation.Controllers
                     Image image = null;
                     if (conf.CONF_IN_LOGO_EMPRESA == 1)
                     {
-                        headerTable = new PdfPTable(new float[] { 20f, 700f });
-                        headerTable.WidthPercentage = 100;
-                        headerTable.HorizontalAlignment = 1;
-                        headerTable.SpacingBefore = 1f;
-                        headerTable.SpacingAfter = 1f;
+                        PdfPCell cell1 = new PdfPCell();
+                        cell1.Border = 0;
+                        cell1.Colspan = 1;
 
-                        cell = new PdfPCell();
-                        cell.Border = 0;
-                        cell.Colspan = 1;
-                        image = null;
-                        if (conf.CONF_IN_LOGO_EMPRESA == 1)
+                        // Verificamos se o caminho do logo existe
+                        if (!string.IsNullOrEmpty(empresa.EMPR_AQ_LOGO))
                         {
-                            image = Image.GetInstance(Server.MapPath(empresa.EMPR_AQ_LOGO));
+                            // 1. Removemos o "~" para obter o caminho interno (ex: Imagens/1/Logos/logo.png)
+                            string blobPath = empresa.EMPR_AQ_LOGO.Replace("~", "");
+
+                            // 2. Montamos a URL usando as configurações de Storage que você já tem
+                            // Recomendo usar as variáveis do seu objeto 'conf' para ficar dinâmico
+                            string storageUrl = "https://rtistoragemain.blob.core.windows.net/rti-datacontainer/";
+
+                            // Garante que a URL termine com barra antes de concatenar
+                            if (!storageUrl.EndsWith("/")) storageUrl += "/";
+
+                            string fullUrl = storageUrl + blobPath;
+
+                            // 3. iTextSharp busca a imagem diretamente da URL do Azure
+                            image = Image.GetInstance(fullUrl);
                         }
                         else
                         {
-                            image = Image.GetInstance(Server.MapPath("~/Images/Prontuario_Icone_1.png"));
+                            // Caso não tenha logo, você pode carregar um placeholder local ou ignorar
+                            image = Image.GetInstance(Server.MapPath("~/Imagens/Base/logo_padrao.png"));
                         }
-                        image.ScaleAbsolute(80, 80);
-                        cell.AddElement(image);
-                        headerTable.AddCell(cell);
+
+                        image.ScaleAbsolute(50, 50);
+                        cell1.AddElement(image);
+                        cell1.Border = PdfPCell.BOTTOM_BORDER;
+                        headerTable.AddCell(cell1);
+
+                        cell1 = new PdfPCell(new Paragraph("Solicitações de Exames", meuFont2))
+                        {
+                            VerticalAlignment = Element.ALIGN_MIDDLE,
+                            HorizontalAlignment = Element.ALIGN_CENTER
+                        };
+                        cell1.Border = 0;
+                        cell1.Colspan = 1;
+                        cell1.Border = PdfPCell.BOTTOM_BORDER;
+                        headerTable.AddCell(cell1);
                     }
                     else
                     {
@@ -21378,7 +21344,7 @@ namespace GEDSys_Presentation.Controllers
                 Session["MensPaciente"] = null;
 
                 // Carrega view
-                ValorConsulta1ViewModel vm = Mapper.Map<VALOR_CONSULTA, ValorConsulta1ViewModel>(tipo);
+                ValorConsultaAcertoViewModel vm = Mapper.Map<VALOR_CONSULTA, ValorConsultaAcertoViewModel>(tipo);
                 vm.PACI_NM_NOME = pac.PACI_NM_NOME;
                 vm.PACI_NR_CPF = pac.PACI_NR_CPF;
                 vm.PACI_NR_CELULAR = pac.PACI_NR_CELULAR;
@@ -21391,6 +21357,8 @@ namespace GEDSys_Presentation.Controllers
                 vm.VACO_DT_REFERENCIA = tipo.VACO_DT_REFERENCIA;
                 vm.VACO_IN_PADRAO = tipo.VACO_IN_PADRAO;
                 vm.VACO_NR_VALOR = tipo.VACO_NR_VALOR;
+                vm.VALOR_CONSULTA_MATERIAL = tipo.VALOR_CONSULTA_MATERIAL;
+                Session["ValorConsultaMaterial"] = tipo.VALOR_CONSULTA_MATERIAL.ToList();
 
                 // Grava Acesso
                 ControleAcessoMetodo grava = new ControleAcessoMetodo(aceApp);
@@ -21413,7 +21381,7 @@ namespace GEDSys_Presentation.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [ValidateInput(false)]
-        public ActionResult MontarTelaEncerrarConsultaMaterial(ValorConsulta1ViewModel vm1)
+        public ActionResult MontarTelaEncerrarConsultaMaterial(ValorConsultaAcertoViewModel vm1)
         {
             if ((String)Session["Ativa"] == null)
             {
@@ -21426,7 +21394,7 @@ namespace GEDSys_Presentation.Controllers
                 try
                 {
                     // Recupera informações
-                    List<VALOR_CONSULTA_MATERIAL> mats = vm1.VALOR_CONSULTA_MATERIAL.ToList();
+                    List<VALOR_CONSULTA_MATERIAL> mats = (List<VALOR_CONSULTA_MATERIAL>)Session["ValorConsultaMaterial"];
 
                     // Configura serialização
                     JsonSerializerSettings settings = new JsonSerializerSettings
@@ -21681,9 +21649,9 @@ namespace GEDSys_Presentation.Controllers
                                     crud += ". Um lançamento de recebimento foi gerado para esta consulta.";
 
                                     // Cria pastas
-                                    String caminho = "/Imagens/" + idAss.ToString() + "/Recebimento/" + rec.CORE_CD_ID.ToString() + "/Anexos/";
-                                    String map = Server.MapPath(caminho);
-                                    Directory.CreateDirectory(Server.MapPath(caminho));
+                                    //String caminho = "/Imagens/" + idAss.ToString() + "/Recebimento/" + rec.CORE_CD_ID.ToString() + "/Anexos/";
+                                    //String map = Server.MapPath(caminho);
+                                    //Directory.CreateDirectory(Server.MapPath(caminho));
                                     Session["ListaRecebimento"] = null;
                                     Session["Recebimentos"] = null;
                                     Session["RecebimentoAlterada"] = 1;
@@ -21724,13 +21692,16 @@ namespace GEDSys_Presentation.Controllers
                     Int32 voltaHist = baseApp.ValidateCreateHistorico(hist);
 
                     // Retorno
+                    Session["MsgCRUD"] = crud;
                     Session["ListaConsultasGeral"] = null;
+                    Session["ListaConsultaAberta"] = null;
                     Session["ConsultaAlterada"] = 1;
-                    if ((Int32)Session["VoltaEncerramento"] == 5)
-                    {
-                        return RedirectToAction("MontarTelaEncerrarConsulta", "Financeiro");
-                    }                   
-                    return RedirectToAction("VoltarProcederConsulta", "Paciente");
+                    Session["MensPaciente"] = 63;
+                    //if ((Int32)Session["VoltaEncerramento"] == 5)
+                    //{
+                    return RedirectToAction("MontarTelaEncerrarConsulta", "Financeiro");
+                    //}                   
+                    //return RedirectToAction("VoltarProcederConsulta", "Paciente");
                 }
                 catch (Exception ex)
                 {

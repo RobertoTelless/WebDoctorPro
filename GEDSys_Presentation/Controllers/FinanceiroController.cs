@@ -1869,12 +1869,12 @@ namespace GEDSys_Presentation.Controllers
                     Int32 volta = recApp.ValidateCreate(item, usuarioLogado);
 
                     // Cria pastas
-                    String caminho = "/Imagens/" + idAss.ToString() + "/Recebimento/" + item.CORE_CD_ID.ToString() + "/Anexos/";
-                    String map = Server.MapPath(caminho);
-                    Directory.CreateDirectory(Server.MapPath(caminho));
-                    caminho = "/Imagens/" + idAss.ToString() + "/Recebimento/" + item.CORE_CD_ID.ToString() + "/Recibo/";
-                    map = Server.MapPath(caminho);
-                    Directory.CreateDirectory(Server.MapPath(caminho));
+                    //String caminho = "/Imagens/" + idAss.ToString() + "/Recebimento/" + item.CORE_CD_ID.ToString() + "/Anexos/";
+                    //String map = Server.MapPath(caminho);
+                    //Directory.CreateDirectory(Server.MapPath(caminho));
+                    //caminho = "/Imagens/" + idAss.ToString() + "/Recebimento/" + item.CORE_CD_ID.ToString() + "/Recibo/";
+                    //map = Server.MapPath(caminho);
+                    //Directory.CreateDirectory(Server.MapPath(caminho));
 
                     // Acerta estado
                     Session["IdRecebimento"] = item.CORE_CD_ID;
@@ -3957,12 +3957,12 @@ namespace GEDSys_Presentation.Controllers
                         Int32 volta = pagApp.ValidateCreate(item, usuarioLogado);
 
                         // Cria pastas
-                        String caminho = "/Imagens/" + idAss.ToString() + "/Pagamento/" + item.COPA_CD_ID.ToString() + "/Anexos/";
-                        String map = Server.MapPath(caminho);
-                        Directory.CreateDirectory(Server.MapPath(caminho));
-                        caminho = "/Imagens/" + idAss.ToString() + "/Pagamento/" + item.COPA_CD_ID.ToString() + "/NF/";
-                        map = Server.MapPath(caminho);
-                        Directory.CreateDirectory(Server.MapPath(caminho));
+                        //String caminho = "/Imagens/" + idAss.ToString() + "/Pagamento/" + item.COPA_CD_ID.ToString() + "/Anexos/";
+                        //String map = Server.MapPath(caminho);
+                        //Directory.CreateDirectory(Server.MapPath(caminho));
+                        //caminho = "/Imagens/" + idAss.ToString() + "/Pagamento/" + item.COPA_CD_ID.ToString() + "/NF/";
+                        //map = Server.MapPath(caminho);
+                        //Directory.CreateDirectory(Server.MapPath(caminho));
 
                         // Acerta pagamento
                         CONSULTA_PAGAMENTO pagX = pagApp.GetItemById(item.COPA_CD_ID);
@@ -4076,12 +4076,12 @@ namespace GEDSys_Presentation.Controllers
                             Int32 voltaA = pagApp.ValidateEdit(pagto, pagto);
 
                             // Cria pastas
-                            String caminho = "/Imagens/" + idAss.ToString() + "/Pagamento/" + pagto.COPA_CD_ID.ToString() + "/Anexos/";
-                            String map = Server.MapPath(caminho);
-                            Directory.CreateDirectory(Server.MapPath(caminho));
-                            caminho = "/Imagens/" + idAss.ToString() + "/Pagamento/" + pagto.COPA_CD_ID.ToString() + "/NF/";
-                            map = Server.MapPath(caminho);
-                            Directory.CreateDirectory(Server.MapPath(caminho));
+                            //String caminho = "/Imagens/" + idAss.ToString() + "/Pagamento/" + pagto.COPA_CD_ID.ToString() + "/Anexos/";
+                            //String map = Server.MapPath(caminho);
+                            //Directory.CreateDirectory(Server.MapPath(caminho));
+                            //caminho = "/Imagens/" + idAss.ToString() + "/Pagamento/" + pagto.COPA_CD_ID.ToString() + "/NF/";
+                            //map = Server.MapPath(caminho);
+                            //Directory.CreateDirectory(Server.MapPath(caminho));
 
                             // Configura serialização
                             JsonSerializerSettings settings = new JsonSerializerSettings
@@ -9593,6 +9593,7 @@ namespace GEDSys_Presentation.Controllers
                     }
                     if ((Int32)Session["MensPaciente"] == 63)
                     {
+                        String msg = (String)Session["MsgCRUD"];
                         TempData["MensagemAcerto"] = (String)Session["MsgCRUD"];
                         TempData["TemMensagem"] = 1;
                     }

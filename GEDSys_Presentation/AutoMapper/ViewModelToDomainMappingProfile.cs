@@ -66,6 +66,7 @@ namespace MvcMapping.Mappers
             CreateMap<RecebimentoViewModel, CONSULTA_RECEBIMENTO>();
             CreateMap<RecebimentoAnotacaoViewModel, RECEBIMENTO_ANOTACAO>();
             CreateMap<PacienteAnamneseAnotacaoViewModel, PACIENTE_ANAMNESE_ANOTACAO>();
+            CreateMap<ValorConsultaAcertoViewModel, VALOR_CONSULTA>();
 
             CreateMap<CategoriaProdutoViewModel, CATEGORIA_PRODUTO>();
             CreateMap<ProdutoAnotacaoViewModel, PRODUTO_ANOTACAO>();

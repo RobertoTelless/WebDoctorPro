@@ -118,16 +118,20 @@
                 </ul>
             </li>
 
-            @*Importação*@
-            @*<li>
-                <a href="@Url.Action("MontarTelaPaciente", "BaseAdmin")"><i class="fa fa-th-large"></i> <span class="nav-label" data-i18n="nav.dashboard">Importação</span> <span class="fa arrow"></span></a>
+            @*Consultas*@
+            <li>
+                <a href="@Url.Action("MontarTelaPaciente", "BaseAdmin")"><i class="fa fa-th-large"></i> <span class="nav-label" data-i18n="nav.dashboard">Consultas</span> <span class="fa arrow"></span></a>
                 <ul class="nav nav-second-level collapse @Html.IsSelected(controller: "Cadastros", cssClass: "in")">
-                    @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_INCLUIR_PACIENTE == 1)
+                    @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_PACIENTE_CONSULTA_ACESSO == 1)
                     {
-                        <li class="@Html.IsSelected(action: "ImportarFichas")"><a href="@Url.Action("ImportarFichas", "Paciente2")"  data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acesso à funcionalidade de importação de fichas digitalizadas de pacientes">Importação de Fichas</a></li>
+                        <li class="@Html.IsSelected(action: "MontarTelaConsultas")"><a href="@Url.Action("MontarTelaConsultas", "Paciente")">Central de Consultas</a></li>
+                        <li class="@Html.IsSelected(action: "VerCalendarioConsulta")"><a href="@Url.Action("VerCalendarioConsulta", "Paciente")">Calendário</a></li>
+                        <li class="@Html.IsSelected(action: "ConfirmarCancelarConsulta")"><a href="@Url.Action("ConfirmarCancelarConsulta", "Paciente")">Confirmar/Cancelar</a></li>
+                        <li class="@Html.IsSelected(action: "MontarTelaEncerrarConsulta")"><a href="@Url.Action("MontarTelaEncerrarConsulta", "Financeiro")">Encerrar Consultas</a></li>
+                        <li class="@Html.IsSelected(action: "MontarTelaValorConsulta")"><a href="@Url.Action("MontarTelaValorConsulta", "Financeiro")"  data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acesso ao cadastro de tipos e valores de consultas">Consultas - Valores</a></li>
                     }
                 </ul>
-            </li>*@
+            </li>
 
             @if ((Int32)Session["PermFinanceiro"] == 1)
             {
@@ -140,8 +144,8 @@
                             <li class="@Html.IsSelected(action: "MontarTelaFinanceiro")"><a href="@Url.Action("MontarTelaFinanceiro", "Financeiro")">Financeiro - Dashboard</a></li>
                             <li class="@Html.IsSelected(action: "MontarTelaPagamento")"><a href="@Url.Action("MontarTelaPagamento", "Financeiro")">Pagamentos</a></li>
                             <li class="@Html.IsSelected(action: "MontarTelaRecebimento")"><a href="@Url.Action("MontarTelaRecebimento", "Financeiro")">Recebimentos</a></li>
-                            <li class="@Html.IsSelected(action: "MontarTelaEncerrarConsulta")"><a href="@Url.Action("MontarTelaEncerrarConsulta", "Financeiro")">Encerrar Consultas</a></li>
-                            <li class="@Html.IsSelected(action: "MontarTelaValorConsulta")"><a href="@Url.Action("MontarTelaValorConsulta", "Financeiro")"  data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acesso ao cadastro de tipos e valores de consultas">Consultas - Valores</a></li>
+                            @*<li class="@Html.IsSelected(action: "MontarTelaEncerrarConsulta")"><a href="@Url.Action("MontarTelaEncerrarConsulta", "Financeiro")">Encerrar Consultas</a></li>
+                            <li class="@Html.IsSelected(action: "MontarTelaValorConsulta")"><a href="@Url.Action("MontarTelaValorConsulta", "Financeiro")"  data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acesso ao cadastro de tipos e valores de consultas">Consultas - Valores</a></li>*@
                             @*<li class="@Html.IsSelected(action: "CarregarDesenvolvimento")"><a href="@Url.Action("CarregarDesenvolvimento", "BaseAdmin")">Envio para Contador</a></li>*@
                         }
                     </ul>
