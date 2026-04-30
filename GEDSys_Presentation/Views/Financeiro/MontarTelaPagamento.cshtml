@@ -43,7 +43,28 @@
         </ol>
         <br />
     </div>
-
+    <div class="row">
+        <div class="form-group" style=" margin-left: 15px; margin-right: 0px;">
+            @* --- INÍCIO DA AJUDA CONTEXTUAL --- *@
+            <details class="ajuda-contextual">
+                <summary><i class="fa fa-info-circle text-info"></i> Resumo das funcionalidades desta página</summary>
+                <div class="well well-sm">
+                    <p>Essa é a página da central de pagamentos do <b>WebDoctorPro</b>. Nela você poderá:</p>
+                    <ol>
+                        <li>Exibe os materiais e produtoa cadastrados.</li>
+                        <li>Localizar (filtrar) um produto/material e acessar a sua página principal.</li>
+                        <li>Acessar a página de inclusão de produto/material.</li>
+                        <li>Acessar a página de alteração de produto/material.</li>
+                        <li>Excluir um produto/material cadastrado.</li>
+                        <li>Imprimir lista de produto/material em formato PDF.</li>
+                        <li>Acessar a dashboard de produto/material.</li>
+                        <li>Selecionar relatórios para impressão em formato PDF.</li>
+                    </ol>
+                </div>
+            </details>
+            @* --- FIM DA AJUDA CONTEXTUAL --- *@
+        </div>
+    </div>
     <div class="row">
         <div class="col-lg-10 col-md-10 col-xs-12">
             <div class="col-lg-12 col-md-12 col-xs-12 ibox float-e-margins">
@@ -152,13 +173,6 @@
                             @Html.ValidationSummary(false, "", new { @class = "text-danger" })
                         </div>
                     }
-                    @*@if (TempData["TemMensagem"] != null)
-                    {
-                        <div class="alert alert-success">
-                            <button type="button" class="close" data-dismiss="alert">Fechar</button>
-                            <span>@TempData["MensagemAcerto"]</span>
-                        </div>
-                    }*@                    
                     <div class="row">
                         @if ((Int32)Session["TipoExibicaoPagamento"] == 1)
                         {
@@ -257,30 +271,6 @@
                                                         <span class="status-badge status-pending">Não</span>
                                                     }
                                                 </td>
-
-
-
-
-                                                @*@if (cond.COPA_IN_PAGO == 1)
-                                                {
-                                                    <td style="width: auto"><span class="badge badge-primary">Sim</span></td>
-
-                                                }
-                                                else
-                                                {
-                                                    <td style="width: auto"><span class="badge badge-warning">Não</span></td>
-
-                                                }
-                                                @if (cond.PAGAMENTO_NOTA_FISCAL.Count > 0)
-                                                {
-                                                    <td style="width: auto"><span class="badge badge-primary">Sim</span></td>
-
-                                                }
-                                                else
-                                                {
-                                                    <td style="width: auto"><span class="badge badge-warning">Não</span></td>
-
-                                                }*@
                                                 <td style="width: auto" class="td-one-action">
                                                     @if (cond.COPA_IN_PAGO == 0)
                                                     {

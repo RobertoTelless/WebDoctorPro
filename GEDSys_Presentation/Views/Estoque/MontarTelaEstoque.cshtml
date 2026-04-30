@@ -37,7 +37,27 @@
         </ol>
         <br />
     </div>
-
+    <div class="row">
+        <div class="form-group" style=" margin-left: 15px; margin-right: 0px;">
+            @* --- INÍCIO DA AJUDA CONTEXTUAL --- *@
+            <details class="ajuda-contextual">
+                <summary><i class="fa fa-info-circle text-info"></i> Resumo das funcionalidades desta página</summary>
+                <div class="well well-sm">
+                    <p>Essa é a página da central de estoque do <b>WebDoctorPro</b>. Nela você poderá:</p>
+                    <ol>
+                        <li>Exibe os materiais e produtoa cadastrados e seus estoques.</li>
+                        <li>Localizar (filtrar) um produto/material e acessar a sua página principal.</li>
+                        <li>Acessar a página de inclusão de nova movimentação de estoque de produto/material.</li>
+                        <li>Acessar a página de visualização das movimentações de estoque de produto/material.</li>
+                        <li>Imprimir lista de estoques de produto/material em formato PDF.</li>
+                        <li>Acessar a página principal (alteração) de produto/material.</li>
+                        <li>Acessar a página de visualização do histórico de estoque de produto/material.</li>
+                    </ol>
+                </div>
+            </details>
+            @* --- FIM DA AJUDA CONTEXTUAL --- *@
+        </div>
+    </div>
     <div class="row">
         <div class="col-lg-2">
             <div class="ibox float-e-margins">
@@ -181,13 +201,6 @@
                             <button type="button" class="close" data-dismiss="alert">Fechar</button>
                             @Html.ValidationSummary(false, "", new { @class = "text-danger" })
                         </div>}
-                        @*@if (TempData["TemMensagem"] != null)
-                        {
-                            <div class="alert alert-success">
-                                <button type="button" class="close" data-dismiss="alert">Fechar</button>
-                                <span>@TempData["MensagemAcerto"]</span>
-                            </div>
-                        }*@                    
                         <div class="row">
                             @if (ViewBag.Listas != null && (ViewBag.Listas as List<EntitiesServices.Model.PRODUTO>).Count > 0)
                             {
@@ -327,11 +340,23 @@
 
                                                 @if (!String.IsNullOrEmpty(cond.PROD_AQ_FOTO))
                                                 {
-                                                    <td style="width: auto"><img src="@Url.Content(cond.PROD_AQ_FOTO)" style="width: auto; height: auto; max-height: 75px; max-width: 65px;" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Clique Ctrl+Ctrl para ampliar a fotografia"></td>
+                                                    // Tratamento manual da URL dentro do loop
+                                                    var caminhoLimpo = cond.PROD_AQ_FOTO.Replace("~/", "").Replace("~", "");
+                                                    var urlFinal = "https://rtistoragemain.blob.core.windows.net/rti-datacontainer/" + caminhoLimpo;
+
+                                                    <td style="width: auto">
+                                                        <img src="@urlFinal" 
+                                                                style="width: auto; height: auto; max-height: 75px; max-width: 65px;" 
+                                                                data-toggle="popover" data-trigger="hover" data-placement="top" 
+                                                                data-content="Clique Ctrl+Ctrl para ampliar a fotografia"
+                                                                onerror="this.onerror=null;this.src='@Url.Content("~/Imagens/Base/icone_imagem.jpg")';">
+                                                    </td>
                                                 }
                                                 else
                                                 {
-                                                    <td style="width: auto"><img src="~/Images/icone_imagem.png" style="width: auto; height: auto; max-height: 65px; max-width: 55px;"  ></td>
+                                                    <td style="width: auto">
+                                                        <img src="~/Imagens/Base/icone_imagem.jpg" style="width: auto; height: auto; max-height: 65px; max-width: 55px;">
+                                                    </td>
                                                 }
 
                                                 <td style="width: auto" class="td-one-action">

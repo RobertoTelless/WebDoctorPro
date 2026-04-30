@@ -1002,7 +1002,7 @@ namespace GEDSys_Presentation.Controllers
 
         [HttpPost]
         [ValidateInput(false)]
-        public ActionResult IncluirProduto(ProdutoViewModel vm)
+        public async Task<ActionResult> IncluirProduto(ProdutoViewModel vm)
         {
             if ((String)Session["Ativa"] == null)
             {
@@ -1202,6 +1202,9 @@ namespace GEDSys_Presentation.Controllers
                     hist.PREH_IN_PENDENTE = 0;
                     hist.PREH_NM_TIPO = "Entrada";
                     hist.MOEP_CD_ID = mov.MOEP_CD_ID;
+                    hist.PREH_DS_ORIGEM = "Inclusão de Produto";
+                    hist.PREH_QN_ESTOQUE_TOTAL = 0;
+                    hist.PREH_IN_TIPO_MOV = 1;
                     volta = prodApp.ValidateCreateEstoqueHistorico(hist, idAss);
 
                     // Grava Log de produto
@@ -1214,10 +1217,10 @@ namespace GEDSys_Presentation.Controllers
                     Int32 volta5 = prodApp.ValidateCreateLog(logProd);
 
                     // Cria pastas
-                    String caminho = "/Imagens/" + idAss.ToString() + "/Produtos/" + item.PROD_CD_ID.ToString() + "/Fotos/";
-                    Directory.CreateDirectory(Server.MapPath(caminho));
-                    caminho = "/Imagens/" + idAss.ToString() + "/Produtos/" + item.PROD_CD_ID.ToString() + "/Anexos/";
-                    Directory.CreateDirectory(Server.MapPath(caminho));
+                    //String caminho = "/Imagens/" + idAss.ToString() + "/Produtos/" + item.PROD_CD_ID.ToString() + "/Fotos/";
+                    //Directory.CreateDirectory(Server.MapPath(caminho));
+                    //caminho = "/Imagens/" + idAss.ToString() + "/Produtos/" + item.PROD_CD_ID.ToString() + "/Anexos/";
+                    //Directory.CreateDirectory(Server.MapPath(caminho));
 
                     // Trata anexos
                     Session["IdVolta"] = item.PROD_CD_ID;
@@ -1229,11 +1232,11 @@ namespace GEDSys_Presentation.Controllers
                         {
                             if (file.Profile == null)
                             {
-                                UploadFileQueueProduto(file);
+                                await UploadFileQueueProdutoBlob(file);
                             }
                             else
                             {
-                                UploadFotoQueueProduto(file);
+                                await UploadFotoQueueProdutoBlob(file);
                             }
                         }
                         Session["FileQueueProduto"] = null;
@@ -3046,7 +3049,7 @@ namespace GEDSys_Presentation.Controllers
                 String a = extensao;
 
                 // Checa extensão
-                if (extensao.ToUpper() == ".JPG" || extensao.ToUpper() == ".GIF" || extensao.ToUpper() == ".PNG" || extensao.ToUpper() == ".JPEG")
+                if (extensao.ToUpper() == ".JPG" || extensao.ToUpper() == ".GIF" || extensao.ToUpper() == ".PNG" || extensao.ToUpper() == ".JPEG" || extensao.ToUpper() == ".WEBP")
                 {
                     // 1. DEFINIÇÃO DE CAMINHOS (Removendo a barra inicial para o Azure)
                     String caminhoRelativo = "Imagens/" + item.ASSI_CD_ID.ToString() + "/Produtos/" + item.PROD_CD_ID.ToString() + "/Fotos/";
@@ -3239,7 +3242,7 @@ namespace GEDSys_Presentation.Controllers
                 String a = extensao;
 
                 // Checa extensão
-                if (extensao.ToUpper() == ".JPG" || extensao.ToUpper() == ".GIF" || extensao.ToUpper() == ".PNG" || extensao.ToUpper() == ".JPEG")
+                if (extensao.ToUpper() == ".JPG" || extensao.ToUpper() == ".GIF" || extensao.ToUpper() == ".PNG" || extensao.ToUpper() == ".JPEG" || extensao.ToUpper() == ".WEBP")
                 {
                     // 1. DEFINIÇÃO DE CAMINHOS
                     String caminhoRelativo = "Imagens/" + item.ASSI_CD_ID.ToString() + "/Produtos/" + item.PROD_CD_ID.ToString() + "/Fotos/";
@@ -3355,13 +3358,37 @@ namespace GEDSys_Presentation.Controllers
                     cell1.Colspan = 1;
                     Image image = null;
                     EMPRESA empresa = empApp.GetItemByAssinante(idAss);
-                    image = Image.GetInstance(Server.MapPath(empresa.EMPR_AQ_LOGO));
+
+                    // Verificamos se o caminho do logo existe
+                    if (!string.IsNullOrEmpty(empresa.EMPR_AQ_LOGO))
+                    {
+                        // 1. Removemos o "~" para obter o caminho interno (ex: Imagens/1/Logos/logo.png)
+                        string blobPath = empresa.EMPR_AQ_LOGO.Replace("~", "");
+
+                        // 2. Montamos a URL usando as configurações de Storage que você já tem
+                        // Recomendo usar as variáveis do seu objeto 'conf' para ficar dinâmico
+                        string storageUrl = "https://rtistoragemain.blob.core.windows.net/rti-datacontainer/";
+
+                        // Garante que a URL termine com barra antes de concatenar
+                        if (!storageUrl.EndsWith("/")) storageUrl += "/";
+
+                        string fullUrl = storageUrl + blobPath;
+
+                        // 3. iTextSharp busca a imagem diretamente da URL do Azure
+                        image = Image.GetInstance(fullUrl);
+                    }
+                    else
+                    {
+                        // Caso não tenha logo, você pode carregar um placeholder local ou ignorar
+                        image = Image.GetInstance(Server.MapPath("~/Imagens/Base/logo_padrao.png"));
+                    }
+
                     image.ScaleAbsolute(50, 50);
                     cell1.AddElement(image);
                     cell1.Border = PdfPCell.BOTTOM_BORDER;
                     headerTable.AddCell(cell1);
 
-                    cell1 = new PdfPCell(new Paragraph("Materiais/Produtos", meuFont2))
+                    cell1 = new PdfPCell(new Paragraph("Produtos/Materiais", meuFont2))
                     {
                         VerticalAlignment = Element.ALIGN_MIDDLE,
                         HorizontalAlignment = Element.ALIGN_CENTER
@@ -3373,7 +3400,7 @@ namespace GEDSys_Presentation.Controllers
                 }
                 else
                 {
-                    PdfPCell cell2 = new PdfPCell(new Paragraph("Materiais/Produtos", meuFont2))
+                    PdfPCell cell2 = new PdfPCell(new Paragraph("Produtos/Materiais", meuFont2))
                     {
                         VerticalAlignment = Element.ALIGN_MIDDLE,
                         HorizontalAlignment = Element.ALIGN_CENTER
@@ -3411,8 +3438,8 @@ namespace GEDSys_Presentation.Controllers
                 pdfDoc.Open();
 
                 // Linha horizontal
-                Paragraph line = new Paragraph(new Chunk(new iTextSharp.text.pdf.draw.LineSeparator(0.0F, 100.0F, BaseColor.BLUE, Element.ALIGN_LEFT, 1)));
-                pdfDoc.Add(line);
+                //Paragraph line = new Paragraph(new Chunk(new iTextSharp.text.pdf.draw.LineSeparator(0.0F, 100.0F, BaseColor.BLUE, Element.ALIGN_LEFT, 1)));
+                //pdfDoc.Add(line);
 
                 // Grid
                 PdfPTable table = new PdfPTable(new float[] { 50f, 180f, 80f, 80f, 50f, 100f, 100f, 50f, 50f, 40f });
@@ -3422,14 +3449,14 @@ namespace GEDSys_Presentation.Controllers
                 table.SpacingAfter = 1f;
                 table.HeaderRows = 1;
 
-                cell = new PdfPCell(new Paragraph("Materiais/Produtos selecionados pelos parametros de filtro abaixo", meuFont1))
-                {
-                    VerticalAlignment = Element.ALIGN_MIDDLE,
-                    HorizontalAlignment = Element.ALIGN_LEFT
-                };
-                cell.Colspan = 11;
-                cell.BackgroundColor = BaseColor.LIGHT_GRAY;
-                table.AddCell(cell);
+                //cell = new PdfPCell(new Paragraph("Materiais/Produtos selecionados pelos parametros de filtro abaixo", meuFont1))
+                //{
+                //    VerticalAlignment = Element.ALIGN_MIDDLE,
+                //    HorizontalAlignment = Element.ALIGN_LEFT
+                //};
+                //cell.Colspan = 11;
+                //cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                //table.AddCell(cell);
 
                 cell = new PdfPCell(new Paragraph("Tipo", meuFont))
                 {
@@ -3611,13 +3638,40 @@ namespace GEDSys_Presentation.Controllers
                         table.AddCell(cell);
                     }
 
-                    if (System.IO.File.Exists(Server.MapPath(item.PROD_AQ_FOTO)))
+                    // 1. Defina a URL base do seu container (Pode vir do seu objeto 'conf' se preferir)
+                    string storageUrl = "https://rtistoragemain.blob.core.windows.net/rti-datacontainer/";
+
+                    if (!string.IsNullOrEmpty(item.PROD_AQ_FOTO))
                     {
-                        cell = new PdfPCell();
-                        Image image = Image.GetInstance(Server.MapPath(item.PROD_AQ_FOTO));
-                        image.ScaleAbsolute(20, 20);
-                        cell.AddElement(image);
-                        table.AddCell(cell);
+                        // 2. Limpamos o caminho (removemos o "~" se existir)
+                        string blobPath = item.PROD_AQ_FOTO.Replace("~", "");
+
+                        // Garantimos que a URL termine com barra e o path não comece com barra
+                        if (blobPath.StartsWith("/")) blobPath = blobPath.Substring(1);
+                        string fullUrl = storageUrl + blobPath;
+
+                        try
+                        {
+                            // 3. O iTextSharp faz o download automático da imagem do Azure
+                            Image image = Image.GetInstance(fullUrl);
+
+                            cell = new PdfPCell();
+                            image.ScaleAbsolute(20, 20);
+                            cell.AddElement(image);
+                            cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                            cell.HorizontalAlignment = Element.ALIGN_CENTER;
+                            table.AddCell(cell);
+                        }
+                        catch (Exception)
+                        {
+                            // Caso a imagem não exista no Storage ou haja erro de rede, exibe o traço
+                            cell = new PdfPCell(new Paragraph("-", meuFont))
+                            {
+                                VerticalAlignment = Element.ALIGN_MIDDLE,
+                                HorizontalAlignment = Element.ALIGN_CENTER
+                            };
+                            table.AddCell(cell);
+                        }
                     }
                     else
                     {
@@ -3632,81 +3686,81 @@ namespace GEDSys_Presentation.Controllers
                 pdfDoc.Add(table);
 
                 // Linha Horizontal
-                Paragraph line2 = new Paragraph(new Chunk(new iTextSharp.text.pdf.draw.LineSeparator(0.0F, 100.0F, BaseColor.BLUE, Element.ALIGN_LEFT, 1)));
-                pdfDoc.Add(line2);
+                //Paragraph line2 = new Paragraph(new Chunk(new iTextSharp.text.pdf.draw.LineSeparator(0.0F, 100.0F, BaseColor.BLUE, Element.ALIGN_LEFT, 1)));
+                //pdfDoc.Add(line2);
 
                 // Rodapé
-                Chunk chunk1 = new Chunk("Parâmetros de filtro: ", FontFactory.GetFont("Arial", 10, Font.NORMAL, BaseColor.BLACK));
-                pdfDoc.Add(chunk1);
+                //Chunk chunk1 = new Chunk("Parâmetros de filtro: ", FontFactory.GetFont("Arial", 10, Font.NORMAL, BaseColor.BLACK));
+                //pdfDoc.Add(chunk1);
 
-                String parametros = String.Empty;
-                Int32 ja = 0;
-                if (filtro != null)
-                {
-                    if (filtro.CAPR_CD_ID > 0)
-                    {
-                        parametros += "Categoria: " + filtro.CAPR_CD_ID.ToString();
-                        ja = 1;
-                    }
-                    if (filtro.SCPR_CD_ID > 0)
-                    {
-                        if (ja == 0)
-                        {
-                            parametros += "Subcategoria: " + filtro.SCPR_CD_ID.ToString();
-                            ja = 1;
-                        }
-                        else
-                        {
-                            parametros += "e Subcategoria: " + filtro.SCPR_CD_ID.ToString();
-                        }
-                    }
-                    if (filtro.PROD_CD_CODIGO != null)
-                    {
-                        if (ja == 0)
-                        {
-                            parametros += "Código: " + filtro.PROD_CD_CODIGO;
-                            ja = 1;
-                        }
-                        else
-                        {
-                            parametros += " e Código: " + filtro.PROD_CD_CODIGO;
-                        }
-                    }
-                    if (filtro.PROD_NM_NOME != null)
-                    {
-                        if (ja == 0)
-                        {
-                            parametros += "Nome: " + filtro.PROD_NM_NOME;
-                            ja = 1;
-                        }
-                        else
-                        {
-                            parametros += " e Nome: " + filtro.PROD_NM_NOME;
-                        }
-                    }
-                    if (filtro.PROD_NM_MARCA != null)
-                    {
-                        if (ja == 0)
-                        {
-                            parametros += "Marca: " + filtro.PROD_NM_MARCA;
-                            ja = 1;
-                        }
-                        else
-                        {
-                            parametros += " e Marca: " + filtro.PROD_NM_MARCA;
-                        }
-                    }
-                    if (ja == 0)
-                    {
-                        parametros = "Nenhum filtro definido.";
-                    }
-                }
-                else
-                {
-                    parametros = "Nenhum filtro definido.";
-                }
-                Chunk chunk = new Chunk(parametros, FontFactory.GetFont("Arial", 9, Font.NORMAL, BaseColor.BLACK));
-                pdfDoc.Add(chunk);
+                //String parametros = String.Empty;
+                //Int32 ja = 0;
+                //if (filtro != null)
+                //{
+                //    if (filtro.CAPR_CD_ID > 0)
+                //    {
+                //        parametros += "Categoria: " + filtro.CAPR_CD_ID.ToString();
+                //        ja = 1;
+                //    }
+                //    if (filtro.SCPR_CD_ID > 0)
+                //    {
+                //        if (ja == 0)
+                //        {
+                //            parametros += "Subcategoria: " + filtro.SCPR_CD_ID.ToString();
+                //            ja = 1;
+                //        }
+                //        else
+                //        {
+                //            parametros += "e Subcategoria: " + filtro.SCPR_CD_ID.ToString();
+                //        }
+                //    }
+                //    if (filtro.PROD_CD_CODIGO != null)
+                //    {
+                //        if (ja == 0)
+                //        {
+                //            parametros += "Código: " + filtro.PROD_CD_CODIGO;
+                //            ja = 1;
+                //        }
+                //        else
+                //        {
+                //            parametros += " e Código: " + filtro.PROD_CD_CODIGO;
+                //        }
+                //    }
+                //    if (filtro.PROD_NM_NOME != null)
+                //    {
+                //        if (ja == 0)
+                //        {
+                //            parametros += "Nome: " + filtro.PROD_NM_NOME;
+                //            ja = 1;
+                //        }
+                //        else
+                //        {
+                //            parametros += " e Nome: " + filtro.PROD_NM_NOME;
+                //        }
+                //    }
+                //    if (filtro.PROD_NM_MARCA != null)
+                //    {
+                //        if (ja == 0)
+                //        {
+                //            parametros += "Marca: " + filtro.PROD_NM_MARCA;
+                //            ja = 1;
+                //        }
+                //        else
+                //        {
+                //            parametros += " e Marca: " + filtro.PROD_NM_MARCA;
+                //        }
+                //    }
+                //    if (ja == 0)
+                //    {
+                //        parametros = "Nenhum filtro definido.";
+                //    }
+                //}
+                //else
+                //{
+                //    parametros = "Nenhum filtro definido.";
+                //}
+                //Chunk chunk = new Chunk(parametros, FontFactory.GetFont("Arial", 9, Font.NORMAL, BaseColor.BLACK));
+                //pdfDoc.Add(chunk);
 
                 // Finaliza
                 pdfWriter.CloseStream = false;
@@ -3768,13 +3822,37 @@ namespace GEDSys_Presentation.Controllers
                     cell1.Colspan = 1;
                     Image image = null;
                     EMPRESA empresa = empApp.GetItemByAssinante(idAss);
-                    image = Image.GetInstance(Server.MapPath(empresa.EMPR_AQ_LOGO));
+
+                    // Verificamos se o caminho do logo existe
+                    if (!string.IsNullOrEmpty(empresa.EMPR_AQ_LOGO))
+                    {
+                        // 1. Removemos o "~" para obter o caminho interno (ex: Imagens/1/Logos/logo.png)
+                        string blobPath = empresa.EMPR_AQ_LOGO.Replace("~", "");
+
+                        // 2. Montamos a URL usando as configurações de Storage que você já tem
+                        // Recomendo usar as variáveis do seu objeto 'conf' para ficar dinâmico
+                        string storageUrl1 = "https://rtistoragemain.blob.core.windows.net/rti-datacontainer/";
+
+                        // Garante que a URL termine com barra antes de concatenar
+                        if (!storageUrl1.EndsWith("/")) storageUrl1 += "/";
+
+                        string fullUrl = storageUrl1 + blobPath;
+
+                        // 3. iTextSharp busca a imagem diretamente da URL do Azure
+                        image = Image.GetInstance(fullUrl);
+                    }
+                    else
+                    {
+                        // Caso não tenha logo, você pode carregar um placeholder local ou ignorar
+                        image = Image.GetInstance(Server.MapPath("~/Imagens/Base/logo_padrao.png"));
+                    }
+
                     image.ScaleAbsolute(50, 50);
                     cell1.AddElement(image);
                     cell1.Border = PdfPCell.BOTTOM_BORDER;
                     headerTable.AddCell(cell1);
 
-                    cell1 = new PdfPCell(new Paragraph("Relatório Detalhado - " + aten.PROD_NM_NOME, meuFont2))
+                    cell1 = new PdfPCell(new Paragraph("Produto - Relatório Detalhado", meuFont2))
                     {
                         VerticalAlignment = Element.ALIGN_MIDDLE,
                         HorizontalAlignment = Element.ALIGN_CENTER
@@ -3786,7 +3864,7 @@ namespace GEDSys_Presentation.Controllers
                 }
                 else
                 {
-                    PdfPCell cell2 = new PdfPCell(new Paragraph("Relatório Detalhado - " + aten.PROD_NM_NOME, meuFont2))
+                    PdfPCell cell2 = new PdfPCell(new Paragraph("Produto - Relatório Detalhado", meuFont2))
                     {
                         VerticalAlignment = Element.ALIGN_MIDDLE,
                         HorizontalAlignment = Element.ALIGN_CENTER
@@ -3836,25 +3914,55 @@ namespace GEDSys_Presentation.Controllers
                 cell.HorizontalAlignment = Element.ALIGN_LEFT;
                 table.AddCell(cell);
 
-                if (System.IO.File.Exists(Server.MapPath(aten.PROD_AQ_FOTO)))
+                // 1. URL base do seu container no Azure
+                string storageUrl = "https://rtistoragemain.blob.core.windows.net/rti-datacontainer/";
+
+                if (!string.IsNullOrEmpty(aten.PROD_AQ_FOTO))
                 {
-                    cell = new PdfPCell();
-                    cell.Border = 0;
-                    cell.Colspan = 2;
-                    Image image = Image.GetInstance(Server.MapPath(aten.PROD_AQ_FOTO));
-                    image.ScaleAbsolute(150, 150);
-                    cell.AddElement(image);
-                    table.AddCell(cell);
+                    // 2. Limpa o caminho removendo o "~"
+                    string blobPath = aten.PROD_AQ_FOTO.Replace("~", "");
+                    if (blobPath.StartsWith("/")) blobPath = blobPath.Substring(1);
+                    string fullUrl = storageUrl + blobPath;
+
+                    try
+                    {
+                        // 3. iTextSharp tenta baixar e instanciar a imagem diretamente pela URL
+                        // Nota: Vai falhar silenciosamente para .webp
+                        Image image = Image.GetInstance(fullUrl);
+
+                        cell = new PdfPCell();
+                        cell.Border = 0;
+                        cell.Colspan = 2;
+                        image.ScaleAbsolute(150, 150);
+                        cell.AddElement(image);
+                        table.AddCell(cell);
+                    }
+                    catch (Exception)
+                    {
+                        // Fallback: Se a imagem for .webp ou não existir, gera célula vazia
+                        cell = new PdfPCell(new Paragraph("", meuFontBold))
+                        {
+                            Border = 0,
+                            Colspan = 2,
+                            VerticalAlignment = Element.ALIGN_MIDDLE,
+                            HorizontalAlignment = Element.ALIGN_LEFT
+                        };
+                        table.AddCell(cell);
+                    }
                 }
                 else
                 {
-                    cell = new PdfPCell(new Paragraph("", meuFontBold));
-                    cell.Border = 0;
-                    cell.Colspan = 2;
-                    cell.VerticalAlignment = Element.ALIGN_MIDDLE;
-                    cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                    // Célula vazia caso não haja foto no registro
+                    cell = new PdfPCell(new Paragraph("", meuFontBold))
+                    {
+                        Border = 0,
+                        Colspan = 2,
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
                     table.AddCell(cell);
                 }
+
                 cell = new PdfPCell(new Paragraph(" ", meuFontBold));
                 cell.Border = 0;
                 cell.Colspan = 2;
@@ -4340,7 +4448,7 @@ namespace GEDSys_Presentation.Controllers
                             HorizontalAlignment = Element.ALIGN_LEFT
                         };
                         table.AddCell(cell);
-
+                       
                         cell = new PdfPCell(new Paragraph(CrossCutting.Formatters.DecimalFormatter(item.PREH_QN_ESTOQUE.Value), meuFont))
                         {
                             VerticalAlignment = Element.ALIGN_MIDDLE,
@@ -8240,13 +8348,37 @@ namespace GEDSys_Presentation.Controllers
                     cell1.Colspan = 1;
                     Image image = null;
                     EMPRESA empresa = empApp.GetItemByAssinante(idAss);
-                    image = Image.GetInstance(Server.MapPath(empresa.EMPR_AQ_LOGO));
+
+                    // Verificamos se o caminho do logo existe
+                    if (!string.IsNullOrEmpty(empresa.EMPR_AQ_LOGO))
+                    {
+                        // 1. Removemos o "~" para obter o caminho interno (ex: Imagens/1/Logos/logo.png)
+                        string blobPath = empresa.EMPR_AQ_LOGO.Replace("~", "");
+
+                        // 2. Montamos a URL usando as configurações de Storage que você já tem
+                        // Recomendo usar as variáveis do seu objeto 'conf' para ficar dinâmico
+                        string storageUrl = "https://rtistoragemain.blob.core.windows.net/rti-datacontainer/";
+
+                        // Garante que a URL termine com barra antes de concatenar
+                        if (!storageUrl.EndsWith("/")) storageUrl += "/";
+
+                        string fullUrl = storageUrl + blobPath;
+
+                        // 3. iTextSharp busca a imagem diretamente da URL do Azure
+                        image = Image.GetInstance(fullUrl);
+                    }
+                    else
+                    {
+                        // Caso não tenha logo, você pode carregar um placeholder local ou ignorar
+                        image = Image.GetInstance(Server.MapPath("~/Imagens/Base/logo_padrao.png"));
+                    }
+
                     image.ScaleAbsolute(50, 50);
                     cell1.AddElement(image);
                     cell1.Border = PdfPCell.BOTTOM_BORDER;
                     headerTable.AddCell(cell1);
 
-                    cell1 = new PdfPCell(new Paragraph(titulo, meuFont2))
+                    cell1 = new PdfPCell(new Paragraph("Produtos/Materiais - Estoque Acima do Máximo", meuFont2))
                     {
                         VerticalAlignment = Element.ALIGN_MIDDLE,
                         HorizontalAlignment = Element.ALIGN_CENTER
@@ -8258,7 +8390,7 @@ namespace GEDSys_Presentation.Controllers
                 }
                 else
                 {
-                    PdfPCell cell2 = new PdfPCell(new Paragraph(titulo, meuFont2))
+                    PdfPCell cell2 = new PdfPCell(new Paragraph("Produtos/Materiais - Estoque Acima do Máximo", meuFont2))
                     {
                         VerticalAlignment = Element.ALIGN_MIDDLE,
                         HorizontalAlignment = Element.ALIGN_CENTER
@@ -8475,20 +8607,47 @@ namespace GEDSys_Presentation.Controllers
                     };
                     table.AddCell(cell);
 
-                    if (System.IO.File.Exists(Server.MapPath(item.PROD_AQ_FOTO)))
+                    // 1. Defina a URL base do seu container (Pode vir do seu objeto 'conf' se preferir)
+                    string storageUrl = "https://rtistoragemain.blob.core.windows.net/rti-datacontainer/";
+
+                    if (!string.IsNullOrEmpty(item.PROD_AQ_FOTO))
                     {
-                        cell = new PdfPCell();
-                        Image image = Image.GetInstance(Server.MapPath(item.PROD_AQ_FOTO));
-                        image.ScaleAbsolute(20, 20);
-                        cell.AddElement(image);
-                        table.AddCell(cell);
+                        // 2. Limpamos o caminho (removemos o "~" se existir)
+                        string blobPath = item.PROD_AQ_FOTO.Replace("~", "");
+
+                        // Garantimos que a URL termine com barra e o path não comece com barra
+                        if (blobPath.StartsWith("/")) blobPath = blobPath.Substring(1);
+                        string fullUrl = storageUrl + blobPath;
+
+                        try
+                        {
+                            // 3. O iTextSharp faz o download automático da imagem do Azure
+                            Image image = Image.GetInstance(fullUrl);
+
+                            cell = new PdfPCell();
+                            image.ScaleAbsolute(20, 20);
+                            cell.AddElement(image);
+                            cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                            cell.HorizontalAlignment = Element.ALIGN_CENTER;
+                            table.AddCell(cell);
+                        }
+                        catch (Exception)
+                        {
+                            // Caso a imagem não exista no Storage ou haja erro de rede, exibe o traço
+                            cell = new PdfPCell(new Paragraph("-", meuFont))
+                            {
+                                VerticalAlignment = Element.ALIGN_MIDDLE,
+                                HorizontalAlignment = Element.ALIGN_CENTER
+                            };
+                            table.AddCell(cell);
+                        }
                     }
                     else
                     {
                         cell = new PdfPCell(new Paragraph("-", meuFont))
                         {
                             VerticalAlignment = Element.ALIGN_MIDDLE,
-                            HorizontalAlignment = Element.ALIGN_LEFT
+                            HorizontalAlignment = Element.ALIGN_CENTER
                         };
                         table.AddCell(cell);
                     }
@@ -8555,13 +8714,37 @@ namespace GEDSys_Presentation.Controllers
                     cell1.Colspan = 1;
                     Image image = null;
                     EMPRESA empresa = empApp.GetItemByAssinante(idAss);
-                    image = Image.GetInstance(Server.MapPath(empresa.EMPR_AQ_LOGO));
+
+                    // Verificamos se o caminho do logo existe
+                    if (!string.IsNullOrEmpty(empresa.EMPR_AQ_LOGO))
+                    {
+                        // 1. Removemos o "~" para obter o caminho interno (ex: Imagens/1/Logos/logo.png)
+                        string blobPath = empresa.EMPR_AQ_LOGO.Replace("~", "");
+
+                        // 2. Montamos a URL usando as configurações de Storage que você já tem
+                        // Recomendo usar as variáveis do seu objeto 'conf' para ficar dinâmico
+                        string storageUrl = "https://rtistoragemain.blob.core.windows.net/rti-datacontainer/";
+
+                        // Garante que a URL termine com barra antes de concatenar
+                        if (!storageUrl.EndsWith("/")) storageUrl += "/";
+
+                        string fullUrl = storageUrl + blobPath;
+
+                        // 3. iTextSharp busca a imagem diretamente da URL do Azure
+                        image = Image.GetInstance(fullUrl);
+                    }
+                    else
+                    {
+                        // Caso não tenha logo, você pode carregar um placeholder local ou ignorar
+                        image = Image.GetInstance(Server.MapPath("~/Imagens/Base/logo_padrao.png"));
+                    }
+
                     image.ScaleAbsolute(50, 50);
                     cell1.AddElement(image);
                     cell1.Border = PdfPCell.BOTTOM_BORDER;
                     headerTable.AddCell(cell1);
 
-                    cell1 = new PdfPCell(new Paragraph(titulo, meuFont2))
+                    cell1 = new PdfPCell(new Paragraph("Produtos/Materiais - Estoque Abaixo do Mínimo", meuFont2))
                     {
                         VerticalAlignment = Element.ALIGN_MIDDLE,
                         HorizontalAlignment = Element.ALIGN_CENTER
@@ -8573,7 +8756,7 @@ namespace GEDSys_Presentation.Controllers
                 }
                 else
                 {
-                    PdfPCell cell2 = new PdfPCell(new Paragraph(titulo, meuFont2))
+                    PdfPCell cell2 = new PdfPCell(new Paragraph("Produtos/Materiais - Estoque Abaixo do Mínimo", meuFont2))
                     {
                         VerticalAlignment = Element.ALIGN_MIDDLE,
                         HorizontalAlignment = Element.ALIGN_CENTER
@@ -8790,20 +8973,47 @@ namespace GEDSys_Presentation.Controllers
                     };
                     table.AddCell(cell);
 
-                    if (System.IO.File.Exists(Server.MapPath(item.PROD_AQ_FOTO)))
+                    // 1. Defina a URL base do seu container (Pode vir do seu objeto 'conf' se preferir)
+                    string storageUrl = "https://rtistoragemain.blob.core.windows.net/rti-datacontainer/";
+
+                    if (!string.IsNullOrEmpty(item.PROD_AQ_FOTO))
                     {
-                        cell = new PdfPCell();
-                        Image image = Image.GetInstance(Server.MapPath(item.PROD_AQ_FOTO));
-                        image.ScaleAbsolute(20, 20);
-                        cell.AddElement(image);
-                        table.AddCell(cell);
+                        // 2. Limpamos o caminho (removemos o "~" se existir)
+                        string blobPath = item.PROD_AQ_FOTO.Replace("~", "");
+
+                        // Garantimos que a URL termine com barra e o path não comece com barra
+                        if (blobPath.StartsWith("/")) blobPath = blobPath.Substring(1);
+                        string fullUrl = storageUrl + blobPath;
+
+                        try
+                        {
+                            // 3. O iTextSharp faz o download automático da imagem do Azure
+                            Image image = Image.GetInstance(fullUrl);
+
+                            cell = new PdfPCell();
+                            image.ScaleAbsolute(20, 20);
+                            cell.AddElement(image);
+                            cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                            cell.HorizontalAlignment = Element.ALIGN_CENTER;
+                            table.AddCell(cell);
+                        }
+                        catch (Exception)
+                        {
+                            // Caso a imagem não exista no Storage ou haja erro de rede, exibe o traço
+                            cell = new PdfPCell(new Paragraph("-", meuFont))
+                            {
+                                VerticalAlignment = Element.ALIGN_MIDDLE,
+                                HorizontalAlignment = Element.ALIGN_CENTER
+                            };
+                            table.AddCell(cell);
+                        }
                     }
                     else
                     {
                         cell = new PdfPCell(new Paragraph("-", meuFont))
                         {
                             VerticalAlignment = Element.ALIGN_MIDDLE,
-                            HorizontalAlignment = Element.ALIGN_LEFT
+                            HorizontalAlignment = Element.ALIGN_CENTER
                         };
                         table.AddCell(cell);
                     }
@@ -8868,13 +9078,37 @@ namespace GEDSys_Presentation.Controllers
                     cell1.Colspan = 1;
                     Image image = null;
                     EMPRESA empresa = empApp.GetItemByAssinante(idAss);
-                    image = Image.GetInstance(Server.MapPath(empresa.EMPR_AQ_LOGO));
+
+                    // Verificamos se o caminho do logo existe
+                    if (!string.IsNullOrEmpty(empresa.EMPR_AQ_LOGO))
+                    {
+                        // 1. Removemos o "~" para obter o caminho interno (ex: Imagens/1/Logos/logo.png)
+                        string blobPath = empresa.EMPR_AQ_LOGO.Replace("~", "");
+
+                        // 2. Montamos a URL usando as configurações de Storage que você já tem
+                        // Recomendo usar as variáveis do seu objeto 'conf' para ficar dinâmico
+                        string storageUrl = "https://rtistoragemain.blob.core.windows.net/rti-datacontainer/";
+
+                        // Garante que a URL termine com barra antes de concatenar
+                        if (!storageUrl.EndsWith("/")) storageUrl += "/";
+
+                        string fullUrl = storageUrl + blobPath;
+
+                        // 3. iTextSharp busca a imagem diretamente da URL do Azure
+                        image = Image.GetInstance(fullUrl);
+                    }
+                    else
+                    {
+                        // Caso não tenha logo, você pode carregar um placeholder local ou ignorar
+                        image = Image.GetInstance(Server.MapPath("~/Imagens/Base/logo_padrao.png"));
+                    }
+
                     image.ScaleAbsolute(50, 50);
                     cell1.AddElement(image);
                     cell1.Border = PdfPCell.BOTTOM_BORDER;
                     headerTable.AddCell(cell1);
 
-                    cell1 = new PdfPCell(new Paragraph(titulo, meuFont2))
+                    cell1 = new PdfPCell(new Paragraph("Produtos/Materiais - Estoque Zerado ou Negativo", meuFont2))
                     {
                         VerticalAlignment = Element.ALIGN_MIDDLE,
                         HorizontalAlignment = Element.ALIGN_CENTER
@@ -8886,7 +9120,7 @@ namespace GEDSys_Presentation.Controllers
                 }
                 else
                 {
-                    PdfPCell cell2 = new PdfPCell(new Paragraph(titulo, meuFont2))
+                    PdfPCell cell2 = new PdfPCell(new Paragraph("Produtos/Materiais - Estoque Zerado ou Negativo", meuFont2))
                     {
                         VerticalAlignment = Element.ALIGN_MIDDLE,
                         HorizontalAlignment = Element.ALIGN_CENTER
@@ -9103,20 +9337,47 @@ namespace GEDSys_Presentation.Controllers
                     };
                     table.AddCell(cell);
 
-                    if (System.IO.File.Exists(Server.MapPath(item.PROD_AQ_FOTO)))
+                    // 1. Defina a URL base do seu container (Pode vir do seu objeto 'conf' se preferir)
+                    string storageUrl = "https://rtistoragemain.blob.core.windows.net/rti-datacontainer/";
+
+                    if (!string.IsNullOrEmpty(item.PROD_AQ_FOTO))
                     {
-                        cell = new PdfPCell();
-                        Image image = Image.GetInstance(Server.MapPath(item.PROD_AQ_FOTO));
-                        image.ScaleAbsolute(20, 20);
-                        cell.AddElement(image);
-                        table.AddCell(cell);
+                        // 2. Limpamos o caminho (removemos o "~" se existir)
+                        string blobPath = item.PROD_AQ_FOTO.Replace("~", "");
+
+                        // Garantimos que a URL termine com barra e o path não comece com barra
+                        if (blobPath.StartsWith("/")) blobPath = blobPath.Substring(1);
+                        string fullUrl = storageUrl + blobPath;
+
+                        try
+                        {
+                            // 3. O iTextSharp faz o download automático da imagem do Azure
+                            Image image = Image.GetInstance(fullUrl);
+
+                            cell = new PdfPCell();
+                            image.ScaleAbsolute(20, 20);
+                            cell.AddElement(image);
+                            cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                            cell.HorizontalAlignment = Element.ALIGN_CENTER;
+                            table.AddCell(cell);
+                        }
+                        catch (Exception)
+                        {
+                            // Caso a imagem não exista no Storage ou haja erro de rede, exibe o traço
+                            cell = new PdfPCell(new Paragraph("-", meuFont))
+                            {
+                                VerticalAlignment = Element.ALIGN_MIDDLE,
+                                HorizontalAlignment = Element.ALIGN_CENTER
+                            };
+                            table.AddCell(cell);
+                        }
                     }
                     else
                     {
                         cell = new PdfPCell(new Paragraph("-", meuFont))
                         {
                             VerticalAlignment = Element.ALIGN_MIDDLE,
-                            HorizontalAlignment = Element.ALIGN_LEFT
+                            HorizontalAlignment = Element.ALIGN_CENTER
                         };
                         table.AddCell(cell);
                     }
@@ -9181,13 +9442,37 @@ namespace GEDSys_Presentation.Controllers
                     cell1.Colspan = 1;
                     Image image = null;
                     EMPRESA empresa = empApp.GetItemByAssinante(idAss);
-                    image = Image.GetInstance(Server.MapPath(empresa.EMPR_AQ_LOGO));
+
+                    // Verificamos se o caminho do logo existe
+                    if (!string.IsNullOrEmpty(empresa.EMPR_AQ_LOGO))
+                    {
+                        // 1. Removemos o "~" para obter o caminho interno (ex: Imagens/1/Logos/logo.png)
+                        string blobPath = empresa.EMPR_AQ_LOGO.Replace("~", "");
+
+                        // 2. Montamos a URL usando as configurações de Storage que você já tem
+                        // Recomendo usar as variáveis do seu objeto 'conf' para ficar dinâmico
+                        string storageUrl = "https://rtistoragemain.blob.core.windows.net/rti-datacontainer/";
+
+                        // Garante que a URL termine com barra antes de concatenar
+                        if (!storageUrl.EndsWith("/")) storageUrl += "/";
+
+                        string fullUrl = storageUrl + blobPath;
+
+                        // 3. iTextSharp busca a imagem diretamente da URL do Azure
+                        image = Image.GetInstance(fullUrl);
+                    }
+                    else
+                    {
+                        // Caso não tenha logo, você pode carregar um placeholder local ou ignorar
+                        image = Image.GetInstance(Server.MapPath("~/Imagens/Base/logo_padrao.png"));
+                    }
+
                     image.ScaleAbsolute(50, 50);
                     cell1.AddElement(image);
                     cell1.Border = PdfPCell.BOTTOM_BORDER;
                     headerTable.AddCell(cell1);
 
-                    cell1 = new PdfPCell(new Paragraph(titulo, meuFont2))
+                    cell1 = new PdfPCell(new Paragraph("Produtos/Materiais - Estoque Esgotando em 30 Dias", meuFont2))
                     {
                         VerticalAlignment = Element.ALIGN_MIDDLE,
                         HorizontalAlignment = Element.ALIGN_CENTER
@@ -9199,7 +9484,7 @@ namespace GEDSys_Presentation.Controllers
                 }
                 else
                 {
-                    PdfPCell cell2 = new PdfPCell(new Paragraph(titulo, meuFont2))
+                    PdfPCell cell2 = new PdfPCell(new Paragraph("Produtos/Materiais - Estoque Esgotando em 30 Dias", meuFont2))
                     {
                         VerticalAlignment = Element.ALIGN_MIDDLE,
                         HorizontalAlignment = Element.ALIGN_CENTER
@@ -9414,20 +9699,47 @@ namespace GEDSys_Presentation.Controllers
                         };
                         table.AddCell(cell);
                     }
-                    if (System.IO.File.Exists(Server.MapPath(item.PROD_AQ_FOTO)))
+                    // 1. Defina a URL base do seu container (Pode vir do seu objeto 'conf' se preferir)
+                    string storageUrl = "https://rtistoragemain.blob.core.windows.net/rti-datacontainer/";
+
+                    if (!string.IsNullOrEmpty(item.PROD_AQ_FOTO))
                     {
-                        cell = new PdfPCell();
-                        Image image = Image.GetInstance(Server.MapPath(item.PROD_AQ_FOTO));
-                        image.ScaleAbsolute(20, 20);
-                        cell.AddElement(image);
-                        table.AddCell(cell);
+                        // 2. Limpamos o caminho (removemos o "~" se existir)
+                        string blobPath = item.PROD_AQ_FOTO.Replace("~", "");
+
+                        // Garantimos que a URL termine com barra e o path não comece com barra
+                        if (blobPath.StartsWith("/")) blobPath = blobPath.Substring(1);
+                        string fullUrl = storageUrl + blobPath;
+
+                        try
+                        {
+                            // 3. O iTextSharp faz o download automático da imagem do Azure
+                            Image image = Image.GetInstance(fullUrl);
+
+                            cell = new PdfPCell();
+                            image.ScaleAbsolute(20, 20);
+                            cell.AddElement(image);
+                            cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                            cell.HorizontalAlignment = Element.ALIGN_CENTER;
+                            table.AddCell(cell);
+                        }
+                        catch (Exception)
+                        {
+                            // Caso a imagem não exista no Storage ou haja erro de rede, exibe o traço
+                            cell = new PdfPCell(new Paragraph("-", meuFont))
+                            {
+                                VerticalAlignment = Element.ALIGN_MIDDLE,
+                                HorizontalAlignment = Element.ALIGN_CENTER
+                            };
+                            table.AddCell(cell);
+                        }
                     }
                     else
                     {
                         cell = new PdfPCell(new Paragraph("-", meuFont))
                         {
                             VerticalAlignment = Element.ALIGN_MIDDLE,
-                            HorizontalAlignment = Element.ALIGN_LEFT
+                            HorizontalAlignment = Element.ALIGN_CENTER
                         };
                         table.AddCell(cell);
                     }

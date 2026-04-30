@@ -68,9 +68,13 @@
                     <p>Essa é a página da central de produtos do <b>WebDoctorPro</b>. Nela você poderá:</p>
                     <ol>
                         <li>Exibe os materiais e produtoa cadastrados.</li>
-                        <li>Localizar (filtrar) um produto e acessar a sua página principal.</li>
-                        <li>Acessar a página de inclusão de produtos.</li>
-                        <li>Acessar a página de alteração de produtos.</li>
+                        <li>Localizar (filtrar) um produto/material e acessar a sua página principal.</li>
+                        <li>Acessar a página de inclusão de produto/material.</li>
+                        <li>Acessar a página de alteração de produto/material.</li>
+                        <li>Excluir um produto/material cadastrado.</li>
+                        <li>Imprimir lista de produto/material em formato PDF.</li>
+                        <li>Acessar a dashboard de produto/material.</li>
+                        <li>Selecionar relatórios para impressão em formato PDF.</li>
                     </ol>
                 </div>
             </details>
@@ -213,15 +217,6 @@
                                                     <span class="status-badge status-finish">Produto</span>
                                                 }
                                             </td>
-
-                                            @*@if (cond.PROD_IN_TIPO_PRODUTO == 1)
-                                            {
-                                                <td style="width: auto"><span class="badge badge-primary">Material</span></td>
-                                            }
-                                            else if (cond.PROD_IN_TIPO_PRODUTO == 2)
-                                            {
-                                                <td style="width: auto"><span class="badge badge-warning">Produto</span></td>
-                                            }*@
 
                                             @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_EDICAO_PROD == 1)
                                             {

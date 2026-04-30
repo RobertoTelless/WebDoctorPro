@@ -22,7 +22,23 @@
         </ol>
         <br />
     </div>
-
+    <div class="row">
+        <div class="form-group" style=" margin-left: 15px; margin-right: 0px;">
+            @* --- INÍCIO DA AJUDA CONTEXTUAL --- *@
+            <details class="ajuda-contextual">
+                <summary><i class="fa fa-info-circle text-info"></i> Resumo das funcionalidades desta página</summary>
+                <div class="well well-sm">
+                    <p>Essa é a página da de inclusão de produtos do <b>WebDoctorPro</b>. Nela você poderá:</p>
+                    <ol>
+                        <li>Permite a inclusão de materiais e produtoa cadastrados.</li>
+                        <li>Permite a especificação de uma imagem (fotografia) vinculada ao produto.</li>
+                        <li>Permite anexar arquivos ao produto.</li>
+                    </ol>
+                </div>
+            </details>
+            @* --- FIM DA AJUDA CONTEXTUAL --- *@
+        </div>
+    </div>
     @*TABS - PRINCIPAL*@
     <div class="row">
         <div class="col-lg-12 col-md-12 col-xs-12">
@@ -237,7 +253,7 @@
                                                 <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Imagem/Fotografia</h4>
                                                 <div style="margin-left: 15px;" class="col-lg-12 col-md-12 col-xs-12">
                                                     <div class="form-group">
-                                                        <input type="file" accept=".jpg, .png, .jpeg, .gif|images/*" name="file" id="imgProduto" class="btn btn-sm btn-warning" multiple />
+                                                        <input type="file" accept=".jpg, .png, .jpeg, .gif, .webp|images/*" name="file" id="imgProduto" class="btn btn-sm btn-warning" multiple />
                                                     </div>
                                                 </div>
                                             </div>

@@ -10607,8 +10607,6 @@ namespace GEDSys_Presentation.Controllers
             ViewBag.TipoExame = new SelectList(CarregaTipoExame(), "TIEX_CD_ID", "TIEX_NM_NOME");
             ViewBag.Paciente = new SelectList(CarregaPaciente(), "PACI__CD_ID", "PACI_NM_NOME");
             ViewBag.Labs = new SelectList(CarregaLaboratorio(), "LABS_CD_ID", "LABS_NM_NOME");
-            //ViewBag.SolicsTudo = new SelectList(CarregaSolicitacoes(), "PASO_CD_ID", "PASO_NM_TITULO");
-            //ViewBag.Solics = new SelectList(CarregaSolicitacoes().Where(p => p.PACI_CD_ID == (Int32)Session["IdPaciente"]), "PASO_CD_ID", "PASO_NM_TITULO");
             if (ModelState.IsValid)
             {
                 try
@@ -10628,7 +10626,6 @@ namespace GEDSys_Presentation.Controllers
                     //String caminho = "/Imagens/" + idAss.ToString() + "/Exames/" + item.PAEX_CD_ID.ToString() + "/Anexos/";
                     //String map = Server.MapPath(caminho);
                     //Directory.CreateDirectory(Server.MapPath(caminho));
-
 
                     // Acerta consulta
                     if (item.PACO_CD_ID != null)
@@ -11153,7 +11150,7 @@ namespace GEDSys_Presentation.Controllers
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
+        //[ValidateAntiForgeryToken]
         public ActionResult EditarExame(PacienteExameViewModel vm)
         {
             if ((String)Session["Ativa"] == null)
@@ -12017,7 +12014,7 @@ namespace GEDSys_Presentation.Controllers
                 baseApp.ValidateEditExame(item);
 
                 Session["NivelPaciente"] = 7;
-                Session["NivelExame"] = 2;
+                Session["NivelExame"] = 1;
                 Session["PacienteAlterada"] = 1;
                 return RedirectToAction("VoltarEditarExame");
             }
@@ -12047,7 +12044,7 @@ namespace GEDSys_Presentation.Controllers
                 // Prepara view
                 PACIENTE_EXAME_ANEXO item = baseApp.GetExameAnexoById(id);
                 Session["NivelPaciente"] = 7;
-                Session["NivelExame"] = 2;
+                Session["NivelExame"] = 1;
                 Session["IdAnexoExame"] = id;
 
                 // Grava Acesso
@@ -12120,7 +12117,7 @@ namespace GEDSys_Presentation.Controllers
                 // Prepara view
                 PACIENTE_EXAME_ANEXO item = baseApp.GetExameAnexoById(id);
                 Session["NivelPaciente"] = 7;
-                Session["NivelExame"] = 2;
+                Session["NivelExame"] = 1;
 
                 // Grava Acesso
                 ControleAcessoMetodo grava = new ControleAcessoMetodo(aceApp);
@@ -12180,7 +12177,7 @@ namespace GEDSys_Presentation.Controllers
                 Int32 volta1 = logApp.ValidateCreate(log);
 
                 Session["NivelPaciente"] = 7;
-                Session["NivelExame"] = 2;
+                Session["NivelExame"] = 1;
                 Session["PacienteAlterada"] = 1;
                 return RedirectToAction("VoltarEditarExame");
             }
@@ -25447,7 +25444,31 @@ namespace GEDSys_Presentation.Controllers
                     cell1.Colspan = 1;
                     Image image = null;
                     EMPRESA empresa = empApp.GetItemByAssinante(idAss);
-                    image = Image.GetInstance(Server.MapPath(empresa.EMPR_AQ_LOGO));
+
+                    // Verificamos se o caminho do logo existe
+                    if (!string.IsNullOrEmpty(empresa.EMPR_AQ_LOGO))
+                    {
+                        // 1. Removemos o "~" para obter o caminho interno (ex: Imagens/1/Logos/logo.png)
+                        string blobPath = empresa.EMPR_AQ_LOGO.Replace("~", "");
+
+                        // 2. Montamos a URL usando as configurações de Storage que você já tem
+                        // Recomendo usar as variáveis do seu objeto 'conf' para ficar dinâmico
+                        string storageUrl = "https://rtistoragemain.blob.core.windows.net/rti-datacontainer/";
+
+                        // Garante que a URL termine com barra antes de concatenar
+                        if (!storageUrl.EndsWith("/")) storageUrl += "/";
+
+                        string fullUrl = storageUrl + blobPath;
+
+                        // 3. iTextSharp busca a imagem diretamente da URL do Azure
+                        image = Image.GetInstance(fullUrl);
+                    }
+                    else
+                    {
+                        // Caso não tenha logo, você pode carregar um placeholder local ou ignorar
+                        image = Image.GetInstance(Server.MapPath("~/Imagens/Base/logo_padrao.png"));
+                    }
+
                     image.ScaleAbsolute(50, 50);
                     cell1.AddElement(image);
                     cell1.Border = PdfPCell.BOTTOM_BORDER;
@@ -37288,27 +37309,48 @@ namespace GEDSys_Presentation.Controllers
                 Image image = null;
                 if (conf.CONF_IN_LOGO_EMPRESA == 1)
                 {
-                    headerTable = new PdfPTable(new float[] { 20f, 700f });
-                    headerTable.WidthPercentage = 100;
-                    headerTable.HorizontalAlignment = 1;
-                    headerTable.SpacingBefore = 1f;
-                    headerTable.SpacingAfter = 1f;
+                    PdfPCell cell1 = new PdfPCell();
+                    cell1.Border = 0;
+                    cell1.Colspan = 1;
 
-                    cell = new PdfPCell();
-                    cell.Border = 0;
-                    cell.Colspan = 1;
-                    image = null;
-                    if (conf.CONF_IN_LOGO_EMPRESA == 1)
+                    // Verificamos se o caminho do logo existe
+                    if (!string.IsNullOrEmpty(empresa.EMPR_AQ_LOGO))
                     {
-                        image = Image.GetInstance(Server.MapPath(empresa.EMPR_AQ_LOGO));
+                        // 1. Removemos o "~" para obter o caminho interno (ex: Imagens/1/Logos/logo.png)
+                        string blobPath = empresa.EMPR_AQ_LOGO.Replace("~", "");
+
+                        // 2. Montamos a URL usando as configurações de Storage que você já tem
+                        // Recomendo usar as variáveis do seu objeto 'conf' para ficar dinâmico
+                        string storageUrl = "https://rtistoragemain.blob.core.windows.net/rti-datacontainer/";
+
+                        // Garante que a URL termine com barra antes de concatenar
+                        if (!storageUrl.EndsWith("/")) storageUrl += "/";
+
+                        string fullUrl = storageUrl + blobPath;
+
+                        // 3. iTextSharp busca a imagem diretamente da URL do Azure
+                        image = Image.GetInstance(fullUrl);
                     }
                     else
                     {
-                        image = Image.GetInstance(Server.MapPath("~/Images/Prontuario_Icone_1.png"));
+                        // Caso não tenha logo, você pode carregar um placeholder local ou ignorar
+                        image = Image.GetInstance(Server.MapPath("~/Imagens/Base/logo_padrao.png"));
                     }
-                    image.ScaleAbsolute(80, 80);
-                    cell.AddElement(image);
-                    headerTable.AddCell(cell);
+
+                    image.ScaleAbsolute(50, 50);
+                    cell1.AddElement(image);
+                    cell1.Border = PdfPCell.BOTTOM_BORDER;
+                    headerTable.AddCell(cell1);
+
+                    cell1 = new PdfPCell(new Paragraph("Resultado de Exame", meuFont2))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_CENTER
+                    };
+                    cell1.Border = 0;
+                    cell1.Colspan = 1;
+                    cell1.Border = PdfPCell.BOTTOM_BORDER;
+                    headerTable.AddCell(cell1);
                 }
                 else
                 {
@@ -37338,7 +37380,7 @@ namespace GEDSys_Presentation.Controllers
                     cell.Border = 0;
                     cell.Colspan = 4;
                     cell.VerticalAlignment = Element.ALIGN_MIDDLE;
-                    cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                    cell.HorizontalAlignment = Element.ALIGN_CENTER;
                     table1.AddCell(cell);
                 }
 
@@ -37741,7 +37783,7 @@ namespace GEDSys_Presentation.Controllers
                 Response.Cache.SetCacheability(HttpCacheability.NoCache);
                 Response.Write(pdfDoc);
                 Response.End();
-                return RedirectToAction("VoltarAnexoUsuario");
+                return RedirectToAction("VoltarAnexoExame");
             }
             catch (Exception ex)
             {
@@ -42784,7 +42826,7 @@ namespace GEDSys_Presentation.Controllers
                 Session["NivelPaciente"] = 7;
                 Session["AjudaNivel"] = "../BaseAdmin/Ajuda/6/Ajuda6_2.pdf";
                 Session["VoltarPesquisa"] = 0;
-                Session["VoltaAnexoExame"] = 2;
+                Session["VoltaAnexoExame"] = 1;
 
                 // Monta anexos
                 PACIENTE_EXAMES exame = baseApp.GetExameById(id);

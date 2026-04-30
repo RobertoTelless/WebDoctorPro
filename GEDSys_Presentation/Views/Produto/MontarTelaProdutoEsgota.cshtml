@@ -60,7 +60,24 @@
         </ol>
         <br />
     </div>
-
+    <div class="row">
+        <div class="form-group" style=" margin-left: 15px; margin-right: 0px;">
+            @* --- INÍCIO DA AJUDA CONTEXTUAL --- *@
+            <details class="ajuda-contextual">
+                <summary><i class="fa fa-info-circle text-info"></i> Resumo das funcionalidades desta página</summary>
+                <div class="well well-sm">
+                    <p>Essa é a página da central de produtos do <b>WebDoctorPro</b>. Nela você poderá:</p>
+                    <ol>
+                        <li>Exibe os materiais e produtos com estoque esgotando em até 30 dias.</li>
+                        <li>Localizar (filtrar) um produto/material e acessar a sua página principal.</li>
+                        <li>Acessar a página de alteração de produto/material.</li>
+                        <li>Imprimir lista de produto/material em formato PDF.</li>
+                    </ol>
+                </div>
+            </details>
+            @* --- FIM DA AJUDA CONTEXTUAL --- *@
+        </div>
+    </div>
     <div class="row">
         <div class="col-lg-12 col-md-12 col-xs-12">
             <div class="col-lg-12 col-md-12 col-xs-12 ibox float-e-margins">
@@ -229,12 +246,25 @@
 
                                             @if (!String.IsNullOrEmpty(cond.PROD_AQ_FOTO))
                                             {
-                                                <td style="width: auto"><img src="@Url.Content(cond.PROD_AQ_FOTO)" style="width: auto; height: auto; max-height: 55px; max-width: 45px;" data-toggle="modal" data-target="#fotoModal" onclick="CriaModal('@cond.PROD_NM_NOME', '@Url.Content(cond.PROD_AQ_FOTO)')"></td>
+                                                // Tratamento manual da URL dentro do loop
+                                                var caminhoLimpo = cond.PROD_AQ_FOTO.Replace("~/", "").Replace("~", "");
+                                                var urlFinal = "https://rtistoragemain.blob.core.windows.net/rti-datacontainer/" + caminhoLimpo;
+
+                                                <td style="width: auto">
+                                                    <img src="@urlFinal" 
+                                                            style="width: auto; height: auto; max-height: 75px; max-width: 65px;" 
+                                                            data-toggle="popover" data-trigger="hover" data-placement="top" 
+                                                            data-content="Clique Ctrl+Ctrl para ampliar a fotografia"
+                                                            onerror="this.onerror=null;this.src='@Url.Content("~/Imagens/Base/icone_imagem.jpg")';">
+                                                </td>
                                             }
                                             else
                                             {
-                                                <td style="width: auto"><img src="~/Images/icone_imagem.jpg" style="width: auto; height: auto; max-height: 55px; max-width: 45px;" data-toggle="modal" data-target="#fotoModal" onclick="CriaModal('@cond.PROD_NM_NOME', '/Images/icone_imagem.jpg')"></td>
+                                                <td style="width: auto">
+                                                    <img src="~/Imagens/Base/icone_imagem.jpg" style="width: auto; height: auto; max-height: 65px; max-width: 55px;">
+                                                </td>
                                             }
+
                                             <td style="width: auto" class="td-one-action">
                                                 @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_EDICAO_PROD == 1)
                                                 {
