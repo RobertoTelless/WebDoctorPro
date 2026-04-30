@@ -584,13 +584,13 @@ namespace GEDSys_Presentation.Controllers
                 ViewBag.Nome = prod.PROD_NM_NOME;
                 Session["NomeProduto"] = prod.PROD_NM_NOME;
                 Session["IdProdutoAuto"] = prod.PROD_CD_ID;
-                if (Session["ListaMovimEstoque"] == null)
+                if (Session["ListaMovimentoEstoque"] == null)
                 {
                     List<MOVIMENTO_ESTOQUE_PRODUTO> movs = prod.MOVIMENTO_ESTOQUE_PRODUTO.ToList();
                     movs = movs.Where(p => p.MOEP_IN_ATIVO == 1).ToList();
-                    Session["ListaMovimEstoque"] = movs;
+                    Session["ListaMovimentoEstoque"] = movs;
                 }
-                ViewBag.Listas = (List<MOVIMENTO_ESTOQUE_PRODUTO>)Session["ListaMovimEstoque"];
+                ViewBag.Listas = (List<MOVIMENTO_ESTOQUE_PRODUTO>)Session["ListaMovimentoEstoque"];
 
                 // Prepara lista
                 List<SelectListItem> es = new List<SelectListItem>();
@@ -758,7 +758,7 @@ namespace GEDSys_Presentation.Controllers
                 }
 
                 // Sucesso
-                Session["ListaMovimEstoque"] = lista;
+                Session["ListaMovimentoEstoque"] = lista;
                 Session["FiltroMovimEstoque"] = item;
                 return RedirectToAction("VerMovimentacaoProduto", new { id = (Int32)Session["IdProdutoAuto"] });
             }
@@ -783,7 +783,7 @@ namespace GEDSys_Presentation.Controllers
                 {
                     return RedirectToAction("Logout", "ControleAcesso");
                 }
-                Session["ListaMovimEstoque"] = null;
+                Session["ListaMovimentoEstoque"] = null;
                 return RedirectToAction("VerMovimentacaoProduto", new { id = (Int32)Session["IdProdutoAuto"] });
             }
             catch (Exception ex)
@@ -2970,7 +2970,7 @@ namespace GEDSys_Presentation.Controllers
                 pdfDoc.Open();
 
                 // Grid
-                PdfPTable table = new PdfPTable(new float[] { 50f, 50f, 180f, 80f, 70f, 70f, 70f, 70f, 70f, 70f, 40f });
+                PdfPTable table = new PdfPTable(new float[] { 50f, 50f, 180f, 80f, 70f, 70f, 70f, 90f, 70f, 90f, 40f });
                 table.WidthPercentage = 100;
                 table.HorizontalAlignment = 0;
                 table.SpacingBefore = 1f;
@@ -3214,13 +3214,40 @@ namespace GEDSys_Presentation.Controllers
                         table.AddCell(cell);
                     }
 
-                    if (System.IO.File.Exists(Server.MapPath(item.PROD_AQ_FOTO)))
+                    // 1. Defina a URL base do seu container (Pode vir do seu objeto 'conf' se preferir)
+                    string storageUrl = "https://rtistoragemain.blob.core.windows.net/rti-datacontainer/";
+
+                    if (!string.IsNullOrEmpty(item.PROD_AQ_FOTO))
                     {
-                        cell = new PdfPCell();
-                        Image image = Image.GetInstance(Server.MapPath(item.PROD_AQ_FOTO));
-                        image.ScaleAbsolute(20, 20);
-                        cell.AddElement(image);
-                        table.AddCell(cell);
+                        // 2. Limpamos o caminho (removemos o "~" se existir)
+                        string blobPath = item.PROD_AQ_FOTO.Replace("~", "");
+
+                        // Garantimos que a URL termine com barra e o path não comece com barra
+                        if (blobPath.StartsWith("/")) blobPath = blobPath.Substring(1);
+                        string fullUrl = storageUrl + blobPath;
+
+                        try
+                        {
+                            // 3. O iTextSharp faz o download automático da imagem do Azure
+                            Image image = Image.GetInstance(fullUrl);
+
+                            cell = new PdfPCell();
+                            image.ScaleAbsolute(20, 20);
+                            cell.AddElement(image);
+                            cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                            cell.HorizontalAlignment = Element.ALIGN_CENTER;
+                            table.AddCell(cell);
+                        }
+                        catch (Exception)
+                        {
+                            // Caso a imagem não exista no Storage ou haja erro de rede, exibe o traço
+                            cell = new PdfPCell(new Paragraph("-", meuFont))
+                            {
+                                VerticalAlignment = Element.ALIGN_MIDDLE,
+                                HorizontalAlignment = Element.ALIGN_CENTER
+                            };
+                            table.AddCell(cell);
+                        }
                     }
                     else
                     {
@@ -3284,7 +3311,7 @@ namespace GEDSys_Presentation.Controllers
 
                 // Define título
                 nomeRel = "EstoqueMovimentacao" + "_" + data + ".pdf";
-                titulo = "Estoque - Movimentações de " + (String)Session["NomeProduto"];
+                titulo = "Estoque - Movimentações";
 
                 // Monta lista
                 lista = (List<MOVIMENTO_ESTOQUE_PRODUTO>)Session["ListaMovimentoEstoque"];
@@ -4537,6 +4564,25 @@ namespace GEDSys_Presentation.Controllers
                 cell.HorizontalAlignment = Element.ALIGN_LEFT;
                 table.AddCell(cell);
 
+                cell = new PdfPCell(new Paragraph("Produto: " + aten.PRODUTO.PROD_NM_NOME, meuFont));
+                cell.Border = 0;
+                cell.Colspan = 4;
+                cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph("Marca: " + aten.PRODUTO.PROD_NM_MARCA, meuFont));
+                cell.Border = 0;
+                cell.Colspan = 2;
+                cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph("Modelo: " + aten.PRODUTO.PROD_NM_MODELO, meuFont));
+                cell.Border = 0;
+                cell.Colspan = 2;
+                cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                table.AddCell(cell);
+
                 cell = new PdfPCell(new Paragraph("Tipo: " + aten.TipoMovimento, meuFont));
                 cell.Border = 0;
                 cell.Colspan = 1;
@@ -4640,12 +4686,24 @@ namespace GEDSys_Presentation.Controllers
                         cell.VerticalAlignment = Element.ALIGN_MIDDLE;
                         cell.HorizontalAlignment = Element.ALIGN_LEFT;
                         table.AddCell(cell);
-                        cell = new PdfPCell(new Paragraph("Data do Pagamento: " + aten.MOEP_DT_PAGAMENTO.Value.ToShortDateString(), meuFont));
-                        cell.Border = 0;
-                        cell.Colspan = 1;
-                        cell.VerticalAlignment = Element.ALIGN_MIDDLE;
-                        cell.HorizontalAlignment = Element.ALIGN_LEFT;
-                        table.AddCell(cell);
+                        if (aten.MOEP_DT_PAGAMENTO != null)
+                        {
+                            cell = new PdfPCell(new Paragraph("Data do Pagamento: " + aten.MOEP_DT_PAGAMENTO.Value.ToShortDateString(), meuFont));
+                            cell.Border = 0;
+                            cell.Colspan = 1;
+                            cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                            cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                            table.AddCell(cell);
+                        }
+                        else
+                        {
+                            cell = new PdfPCell(new Paragraph("Data do Pagamento: Não informada", meuFont));
+                            cell.Border = 0;
+                            cell.Colspan = 1;
+                            cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                            cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                            table.AddCell(cell);
+                        }
 
                         cell = new PdfPCell(new Paragraph("Justificativa: " + aten.MOEP_DS_JUSTIFICATIVA, meuFont));
                         cell.Border = 0;

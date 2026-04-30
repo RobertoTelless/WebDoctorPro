@@ -8329,7 +8329,8 @@ namespace GEDSys_Presentation.Controllers
                 List<PRODUTO> lista = new List<PRODUTO>();
                 nomeRel = "ProdutoListaAcima" + "_" + data + ".pdf";
                 titulo = "Materiais/Produtos - Acima do Estoque Máximo";
-                lista = (List<PRODUTO>)Session["ListaProdAcima"];
+                lista = CarregarProduto();
+                lista = lista.Where(p => p.PROD_VL_ESTOQUE_ATUAL > p.PROD_VL_ESTOQUE_MAXIMO & p.PROD_IN_ATIVO == 1).ToList();
                 Font meuFont = FontFactory.GetFont("Arial", 8, iTextSharp.text.Font.NORMAL, BaseColor.BLACK);
                 Font meuFont1 = FontFactory.GetFont("Arial", 9, iTextSharp.text.Font.NORMAL, BaseColor.BLACK);
                 Font meuFont2 = FontFactory.GetFont("Arial", 12, iTextSharp.text.Font.NORMAL, BaseColor.BLACK);
@@ -8694,8 +8695,8 @@ namespace GEDSys_Presentation.Controllers
                 List<PRODUTO> lista = new List<PRODUTO>();
                 nomeRel = "ProdutoListaAbaixo" + "_" + data + ".pdf";
                 titulo = "Materiais/Produtos - Abaixo do Estoque Mínimo";
-                //lista = (List<ModeloViewModel>)Session["ListaProdutoAbaixo"];
-                lista = (List<PRODUTO>)Session["ListaProdAbaixo"];
+                lista = CarregarProduto();
+                lista = lista.Where(p => p.PROD_VL_ESTOQUE_ATUAL < p.PROD_VL_ESTOQUE_MINIMO & p.PROD_IN_ATIVO == 1).ToList();
                 Font meuFont = FontFactory.GetFont("Arial", 8, iTextSharp.text.Font.NORMAL, BaseColor.BLACK);
                 Font meuFont1 = FontFactory.GetFont("Arial", 9, iTextSharp.text.Font.NORMAL, BaseColor.BLACK);
                 Font meuFont2 = FontFactory.GetFont("Arial", 12, iTextSharp.text.Font.NORMAL, BaseColor.BLACK);
@@ -9059,7 +9060,8 @@ namespace GEDSys_Presentation.Controllers
                 List<PRODUTO> lista = new List<PRODUTO>();
                 nomeRel = "ProdutoListaZerado" + "_" + data + ".pdf";
                 titulo = "Materiais/Produtos - Estoque Zerado";
-                lista = (List<PRODUTO>)Session["ListaProdZerado"];
+                lista = CarregarProduto();
+                lista = lista.Where(p => p.PROD_VL_ESTOQUE_ATUAL <= 0 & p.PROD_IN_ATIVO == 1).ToList();
                 Font meuFont = FontFactory.GetFont("Arial", 8, iTextSharp.text.Font.NORMAL, BaseColor.BLACK);
                 Font meuFont1 = FontFactory.GetFont("Arial", 9, iTextSharp.text.Font.NORMAL, BaseColor.BLACK);
                 Font meuFont2 = FontFactory.GetFont("Arial", 12, iTextSharp.text.Font.NORMAL, BaseColor.BLACK);
@@ -9158,7 +9160,7 @@ namespace GEDSys_Presentation.Controllers
                 pdfDoc.Open();
 
                 // Grid
-                PdfPTable table = new PdfPTable(new float[] { 180f, 60f, 60f, 100f, 100f, 50f, 80f, 80f, 60f, 60f });
+                PdfPTable table = new PdfPTable(new float[] { 180f, 60f, 60f, 100f, 100f, 80f, 80f, 60f, 60f });
                 table.WidthPercentage = 100;
                 table.HorizontalAlignment = 0;
                 table.SpacingBefore = 1f;
@@ -9180,13 +9182,6 @@ namespace GEDSys_Presentation.Controllers
                 cell.BackgroundColor = BaseColor.LIGHT_GRAY;
                 table.AddCell(cell);
                 cell = new PdfPCell(new Paragraph("Est.Mínimo", meuFont))
-                {
-                    VerticalAlignment = Element.ALIGN_MIDDLE,
-                    HorizontalAlignment = Element.ALIGN_LEFT
-                };
-                cell.BackgroundColor = BaseColor.LIGHT_GRAY;
-                table.AddCell(cell);
-                cell = new PdfPCell(new Paragraph("Diferença (%)", meuFont))
                 {
                     VerticalAlignment = Element.ALIGN_MIDDLE,
                     HorizontalAlignment = Element.ALIGN_LEFT
@@ -9283,25 +9278,25 @@ namespace GEDSys_Presentation.Controllers
                         table.AddCell(cell);
                     }
 
-                    Decimal? dif = (item.PROD_VL_ESTOQUE_ATUAL * 100) / item.PROD_VL_ESTOQUE_MINIMO;
-                    if (dif > 0)
-                    {
-                        cell = new PdfPCell(new Paragraph(CrossCutting.Formatters.DecimalFormatter(dif.Value), meuFont))
-                        {
-                            VerticalAlignment = Element.ALIGN_MIDDLE,
-                            HorizontalAlignment = Element.ALIGN_RIGHT
-                        };
-                        table.AddCell(cell);
-                    }
-                    else
-                    {
-                        cell = new PdfPCell(new Paragraph("0,00", meuFont))
-                        {
-                            VerticalAlignment = Element.ALIGN_MIDDLE,
-                            HorizontalAlignment = Element.ALIGN_RIGHT
-                        };
-                        table.AddCell(cell);
-                    }
+                    //Decimal? dif = (item.PROD_VL_ESTOQUE_ATUAL * 100) / item.PROD_VL_ESTOQUE_MINIMO;
+                    //if (dif > 0)
+                    //{
+                    //    cell = new PdfPCell(new Paragraph(CrossCutting.Formatters.DecimalFormatter(dif.Value), meuFont))
+                    //    {
+                    //        VerticalAlignment = Element.ALIGN_MIDDLE,
+                    //        HorizontalAlignment = Element.ALIGN_RIGHT
+                    //    };
+                    //    table.AddCell(cell);
+                    //}
+                    //else
+                    //{
+                    //    cell = new PdfPCell(new Paragraph("0,00", meuFont))
+                    //    {
+                    //        VerticalAlignment = Element.ALIGN_MIDDLE,
+                    //        HorizontalAlignment = Element.ALIGN_RIGHT
+                    //    };
+                    //    table.AddCell(cell);
+                    //}
 
                     cell = new PdfPCell(new Paragraph(item.CATEGORIA_PRODUTO.CAPR_NM_NOME, meuFont))
                     {
@@ -9423,7 +9418,9 @@ namespace GEDSys_Presentation.Controllers
                 List<PRODUTO> lista = new List<PRODUTO>();
                 nomeRel = "ProdutoListaEsgota" + "_" + data + ".pdf";
                 titulo = "Materiais/Produtos - Estoque Esgotando em 30 Dias";
-                lista = (List<PRODUTO>)Session["ListaProdEsgota"];
+                lista = CarregarProduto();
+                lista = lista.Where(p => p.PROD_VL_MEDIA_VENDA_MENSAL > 0).ToList();
+                lista = lista.Where(p => (p.PROD_VL_ESTOQUE_ATUAL / p.PROD_VL_MEDIA_VENDA_MENSAL) <= 1 & p.PROD_IN_ATIVO == 1).ToList();
                 Font meuFont = FontFactory.GetFont("Arial", 8, iTextSharp.text.Font.NORMAL, BaseColor.BLACK);
                 Font meuFont1 = FontFactory.GetFont("Arial", 9, iTextSharp.text.Font.NORMAL, BaseColor.BLACK);
                 Font meuFont2 = FontFactory.GetFont("Arial", 12, iTextSharp.text.Font.NORMAL, BaseColor.BLACK);

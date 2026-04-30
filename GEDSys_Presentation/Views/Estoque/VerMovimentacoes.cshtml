@@ -17,6 +17,7 @@
     </div>
 </div>
 <div class="wrapper wrapper-content animated fadeInRight">
+    <div id="top"></div>
     <div class="modalContainer">
         <div id="modal" class="modal" tabindex="-1" role="dialog">
             <div class="modal-dialog" role="document">
@@ -189,14 +190,6 @@
                                                 }
                                             </td>
                                           
-                                            @*@if (cond.MOEP_IN_TIPO_MOVIMENTO == 1)
-                                            {
-                                                <td style="width: auto"><span class="badge badge-primary">Entrada</span></td>
-                                            }
-                                            else
-                                            {
-                                                <td style="width: auto"><span class="badge badge-warning">Saída</span></td>
-                                            }*@
                                             <td style="width: auto">
                                                 @if (cond.MOEP_IN_TIPO == 1) // ATIVA
                                                 {
@@ -247,7 +240,7 @@
                                             </td>
                                             <td style="width: auto">@cond.PRODUTO.PROD_NM_NOME</td>
                                             <td style="width: auto">@cond.PRODUTO.PROD_CD_CODIGO</td>
-                                            <td style="width: auto">@cond.MOEP_QN_QUANTIDADE</td>
+                                            <td style="width: auto">@cond.MOEP_VL_QUANTIDADE_MOVIMENTO</td>
                                             <td style="width: auto">@cond.MOEP_GU_GUID</td>
                                             <td style="width: auto">@cond.USUARIO.USUA_NM_NOME</td>
 
@@ -283,6 +276,9 @@
         </div>
     </div>
 </div>
+<a href="#top" class="back-to-top">
+    <i class="fa fa-chevron-up"></i>
+</a>
 
 @section Styles {
     <link href="~/Content/themes/base/jquery-ui.min.css" rel="stylesheet" />
@@ -291,7 +287,7 @@
     @Styles.Render("~/plugins/jasnyBootstrapStyles")
     @Styles.Render("~/plugins/toastrStyles")
 
-        <style>
+    <style>
         /* Estilo Base */
         .status-badge {
             display: inline-flex;
@@ -332,6 +328,45 @@
         /* OVERDUE (Gray) - Status 3 */
         .status-overdue { background-color: #f3f4f6; color: #4b5563; }
         .status-overdue::before { background-color: #6b7280; }
+
+        html { scroll-behavior: smooth; }
+
+        .back-to-top {
+            position: fixed !important;
+            bottom: 30px !important;
+            left: 260px !important; 
+            z-index: 999999 !important;
+            width: 50px !important;
+            height: 50px !important;
+            background-color: #1ab394 !important;
+            color: white !important;
+            border-radius: 50% !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            text-decoration: none !important;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3) !important;
+            transition: all 0.3s ease;
+        
+            /* Estado inicial: Invisível e deslocado para baixo */
+            opacity: 0 !important;
+            visibility: hidden !important;
+            transform: translateY(20px) !important;
+        }
+
+        /* Classe que o JavaScript vai adicionar ao rolar a tela */
+        .back-to-top.visible {
+            opacity: 1 !important;
+            visibility: visible !important;
+            transform: translateY(0px) !important;
+        }
+
+        .back-to-top:hover {
+            background-color: #18a689 !important;
+            color: white !important;
+            transform: scale(1.1) !important;
+        }
+
     </style>
 
 }
@@ -443,7 +478,35 @@
             });
         });
     </script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            // Função para verificar o scroll
+            function checkScroll() {
+                // Verifica o scroll tanto na janela quanto no wrapper do Inspinia
+                var scrollPos = $(window).scrollTop() || $('#page-wrapper').scrollTop();
+            
+                if (scrollPos > 300) {
+                    $('.back-to-top').addClass('visible');
+                } else {
+                    $('.back-to-top').removeClass('visible');
+                }
+            }
 
+            // Monitora o scroll em ambos os contextos possíveis no Inspinia
+            $(window).on('scroll', checkScroll);
+            $('#page-wrapper').on('scroll', checkScroll);
+
+            // Clique suave
+            $('.back-to-top').click(function (e) {
+                e.preventDefault();
+                $('html, body, #page-wrapper').animate({ scrollTop: 0 }, 600);
+                return false;
+            });
+        
+            // Executa uma vez ao carregar para garantir que comece oculto
+            checkScroll();
+        });
+    </script>
     <script>
         $(function () {
             limpaModal();

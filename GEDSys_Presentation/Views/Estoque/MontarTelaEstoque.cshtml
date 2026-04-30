@@ -3,6 +3,7 @@
 @model EntitiesServices.Model.PRODUTO
 @{ Layout = "~/Views/Shared/_Layout_Admin.cshtml"; }
 <div class="wrapper wrapper-content animated fadeInRight">
+    <div id="top"></div>
     <div id="containerModalDesc">
         <div class="modal fade" id="modalDesc" tabindex="-1" role="dialog" aria-labelledby="modalDesc" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered" role="document">
@@ -45,10 +46,11 @@
                 <div class="well well-sm">
                     <p>Essa é a página da central de estoque do <b>WebDoctorPro</b>. Nela você poderá:</p>
                     <ol>
-                        <li>Exibe os materiais e produtoa cadastrados e seus estoques.</li>
+                        <li>Exibe os materiais e produtos cadastrados e seus estoques.</li>
                         <li>Localizar (filtrar) um produto/material e acessar a sua página principal.</li>
                         <li>Acessar a página de inclusão de nova movimentação de estoque de produto/material.</li>
                         <li>Acessar a página de visualização das movimentações de estoque de produto/material.</li>
+                        <li>Acessar as páginas de visualização de estoques em limites (abaixo do mínimo, acima do máximo, zerado e esgotando em 30 dias).</li>
                         <li>Imprimir lista de estoques de produto/material em formato PDF.</li>
                         <li>Acessar a página principal (alteração) de produto/material.</li>
                         <li>Acessar a página de visualização do histórico de estoque de produto/material.</li>
@@ -399,7 +401,9 @@
         </div>
     </div>
 </div>
-
+<a href="#top" class="back-to-top">
+    <i class="fa fa-chevron-up"></i>
+</a>
 
 @section Styles {
     <link href="~/Content/themes/base/jquery-ui.min.css" rel="stylesheet" />
@@ -434,6 +438,45 @@
         .toast-success .toast-message {
             padding-left: 10px !important;
         }
+
+        html { scroll-behavior: smooth; }
+
+        .back-to-top {
+            position: fixed !important;
+            bottom: 30px !important;
+            left: 260px !important; 
+            z-index: 999999 !important;
+            width: 50px !important;
+            height: 50px !important;
+            background-color: #1ab394 !important;
+            color: white !important;
+            border-radius: 50% !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            text-decoration: none !important;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3) !important;
+            transition: all 0.3s ease;
+        
+            /* Estado inicial: Invisível e deslocado para baixo */
+            opacity: 0 !important;
+            visibility: hidden !important;
+            transform: translateY(20px) !important;
+        }
+
+        /* Classe que o JavaScript vai adicionar ao rolar a tela */
+        .back-to-top.visible {
+            opacity: 1 !important;
+            visibility: visible !important;
+            transform: translateY(0px) !important;
+        }
+
+        .back-to-top:hover {
+            background-color: #18a689 !important;
+            color: white !important;
+            transform: scale(1.1) !important;
+        }
+
     </style>
 
     <style>
@@ -604,6 +647,37 @@
             });
         });
     </script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            // Função para verificar o scroll
+            function checkScroll() {
+                // Verifica o scroll tanto na janela quanto no wrapper do Inspinia
+                var scrollPos = $(window).scrollTop() || $('#page-wrapper').scrollTop();
+            
+                if (scrollPos > 300) {
+                    $('.back-to-top').addClass('visible');
+                } else {
+                    $('.back-to-top').removeClass('visible');
+                }
+            }
+
+            // Monitora o scroll em ambos os contextos possíveis no Inspinia
+            $(window).on('scroll', checkScroll);
+            $('#page-wrapper').on('scroll', checkScroll);
+
+            // Clique suave
+            $('.back-to-top').click(function (e) {
+                e.preventDefault();
+                $('html, body, #page-wrapper').animate({ scrollTop: 0 }, 600);
+                return false;
+            });
+        
+            // Executa uma vez ao carregar para garantir que comece oculto
+            checkScroll();
+        });
+    </script>
+
     <script>
         function mostrarDesc(desc) {
             $('#modalDescBody').html(desc);

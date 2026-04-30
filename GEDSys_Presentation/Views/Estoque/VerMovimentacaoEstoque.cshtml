@@ -95,6 +95,24 @@
                                         </div>
 
                                         <div class="row">
+                                            <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Produto</h4>
+                                            <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                                <div class="col-lg-4 col-md-4 col-xs-12">
+                                                    Produto
+                                                    @Html.TextBoxFor(m => m.PRODUTO.PROD_NM_NOME, new { @class = "form-control", @readonly = "readonly", @style = "color: green; font-weight: bold" })
+                                                </div>
+                                                <div class="col-lg-3 col-md-3 col-xs-12">
+                                                    Marca
+                                                    @Html.TextBoxFor(m => m.PRODUTO.PROD_NM_MARCA, new { @class = "form-control", @readonly = "readonly" })
+                                                </div>
+                                                <div class="col-lg-3 col-md-3 col-xs-12">
+                                                    Modelo
+                                                    @Html.TextBoxFor(m => m.PRODUTO.PROD_NM_MODELO, new { @class = "form-control", @readonly = "readonly" })
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="row">
                                             <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Informações da Movimentação</h4>
                                             <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
                                                 <div class="col-lg-2 col-md-2 col-xs-12">
@@ -103,7 +121,7 @@
                                                 </div>
                                                 @if (Model.MOEP_IN_TIPO_MOVIMENTO == 1 || Model.MOEP_IN_TIPO_MOVIMENTO == 2)
                                                 {
-                                                    <div class="col-lg-2 col-md-2 col-xs-12" id="entrada">
+                                                    <div class="col-lg-3 col-md-3 col-xs-12" id="entrada">
                                                         Classe
                                                         @Html.TextBoxFor(m => m.TipoEntradaSaida, new { @class = "form-control", autofocus = true, @readonly = "readonly", @style = "color: darkblue; font-weight: bold" })
                                                     </div>
@@ -140,8 +158,12 @@
                                         if (Model.MOEP_IN_TIPO_MOVIMENTO == 1)
                                         {
                                             <div class="row">
-                                                <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Compra Manual</h4>
+                                                <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Entrada</h4>
                                                 <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                                    <div class="col-lg-3 col-md-3 col-xs-12">
+                                                        Tipo de Entrada
+                                                        @Html.TextBoxFor(m => m.TipoEntradaSaida, new { @class = "form-control", @readonly = "readonly", @style = "color: green; font-weight: bold"   })
+                                                    </div>
                                                     <div class="col-lg-2 col-md-2 col-xs-12">
                                                         Quantidade
                                                         @Html.TextBoxFor(m => m.MOEP_VL_QUANTIDADE_MOVIMENTO, new { @class = "form-control", @readonly = "readonly"  })
@@ -152,14 +174,14 @@
                                                             Valor (R$)
                                                             @Html.TextBoxFor(m => m.MOEP_VL_VALOR_MOVIMENTO,"{0:n2}", new { @class = "form-control", @readonly = "readonly"  })
                                                         </div>
-                                                        <div class="col-lg-2 col-md-2 col-xs-12">
+                                                        <div class="col-lg-4 col-md-4 col-xs-12">
                                                             Fornecedor
                                                             @Html.TextBoxFor(m => m.MOEP_NM_FORNECEDOR, new { @class = "form-control", @readonly = "readonly"  })
                                                         </div>
                                                     }
                                                     @if (Model.MOEP_IN_TIPO == 3)
                                                     {
-                                                        <div class="col-lg-2 col-md-2 col-xs-12">
+                                                        <div class="col-lg-4 col-md-4 col-xs-12">
                                                             Fornecedor
                                                             @Html.TextBoxFor(m => m.MOEP_NM_FORNECEDOR, new { @class = "form-control", @readonly = "readonly"  })
                                                         </div>
@@ -177,15 +199,19 @@
                                         if (Model.MOEP_IN_TIPO_MOVIMENTO == 2)
                                         {
                                             <div class="row">
-                                                <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Descartes</h4>
+                                                <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Saída</h4>
                                                 <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                                    <div class="col-lg-3 col-md-3 col-xs-12">
+                                                        Tipo de Saída
+                                                        @Html.TextBoxFor(m => m.TipoEntradaSaida, new { @class = "form-control", @readonly = "readonly", @style = "color: green; font-weight: bold"   })
+                                                    </div>
                                                     <div class="col-lg-2 col-md-2 col-xs-12">
                                                         Quantidade
                                                         @Html.TextBoxFor(m => m.MOEP_VL_QUANTIDADE_MOVIMENTO, new { @class = "form-control", autofocus = true, @readonly = "readonly" })
                                                     </div>
                                                     @if (Model.MOEP_IN_TIPO == 7)
                                                     {
-                                                        <div class="col-lg-2 col-md-2 col-xs-12">
+                                                        <div class="col-lg-4 col-md-4 col-xs-12">
                                                             Fornecedor
                                                             @Html.TextBoxFor(m => m.MOEP_NM_FORNECEDOR, new { @class = "form-control", @readonly = "readonly"  })
                                                         </div>
@@ -215,8 +241,23 @@
                                                 {
                                                     <div class="social-feed-box">
                                                         <div class="social-avatar">
-                                                            <a href="" class="pull-left">
-                                                                <img src="@Url.Content(item.USUARIO.USUA_AQ_FOTO)" style="width: auto; height: auto; max-height: 110px; max-width: 90px;">
+                                                            <a href="#" class="pull-left">
+                                                                @{
+                                                                    // Definimos a URL base do seu storage
+                                                                    string storageUrl = "https://rtistoragemain.blob.core.windows.net/rti-datacontainer/";
+        
+                                                                    // Pegamos o caminho que está no banco e removemos o "~"
+                                                                    string fotoPath = item.USUARIO.USUA_AQ_FOTO != null 
+                                                                                        ? item.USUARIO.USUA_AQ_FOTO.Replace("~", "") 
+                                                                                        : "Imagens/Base/foto_padrao.png"; // Fallback caso não tenha foto
+
+                                                                    // Montamos a URL completa
+                                                                    string fullImageUrl = storageUrl + fotoPath.TrimStart('/');
+                                                                }
+    
+                                                                <img src="@fullImageUrl" 
+                                                                        style="width: auto; height: auto; max-height: 110px; max-width: 90px;" 
+                                                                        alt="Foto do Usuário">
                                                             </a>
                                                             <span style="color: #337ab7; cursor:pointer;" alt="Excluir" class="tbl-link fa-lg fa fa-trash-o btn-loading" onclick="ShowModalExcluir('/Estoque/ExcluirAnotacao/@item.MOAN_CD_ID')" title="Excluir"></span>
                                                             <div class="media-body">
