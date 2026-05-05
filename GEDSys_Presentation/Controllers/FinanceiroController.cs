@@ -4342,6 +4342,12 @@ namespace GEDSys_Presentation.Controllers
                         TempData["MensagemAcerto"] = (String)Session["MsgCRUD"];
                         TempData["TemMensagem"] = 1;
                     }
+                    if ((Int32)Session["MensPaciente"] == 81)
+                    {
+                        String msg = (String)Session["MsgCRUD"];
+                        //String frase = CRMSys_Base.ResourceManager.GetString(msg, CultureInfo.CurrentCulture);
+                        ModelState.AddModelError("", msg);
+                    }
                 }
 
                 // Prepara registro
@@ -5675,7 +5681,7 @@ namespace GEDSys_Presentation.Controllers
                 if (!ValidarEsquemaNFe(file.InputStream, out msgErroXsd))
                 {
                     Session["MsgCRUD"] = "O arquivo XML não segue o padrão oficial da SEFAZ: " + msgErroXsd;
-                    Session["MensPaciente"] = 61; 
+                    Session["MensPaciente"] = 81; 
                     return RedirectToAction("VoltarAnexoPagamento");
                 }
 
@@ -5786,8 +5792,9 @@ namespace GEDSys_Presentation.Controllers
             try
             {
                 XmlReaderSettings settings = new XmlReaderSettings();
-                // Você deve baixar os arquivos .xsd da Receita e colocá-los em uma pasta do projeto
-                string pathXsd = Server.MapPath("~/App_Data/Schemas/nfe_v4.00.xsd");
+                string folderPath = Server.MapPath("~/App_Data/Schemas/");
+                string pathXsd = Path.Combine(folderPath, "nfe_v4.00.xsd");
+                //string pathXsd = Server.MapPath("~/App_Data/Schemas/nfe_v4.00.xsd");
 
                 settings.Schemas.Add("http://www.portalfiscal.inf.br/nfe", pathXsd);
                 settings.ValidationType = ValidationType.Schema;
@@ -10084,6 +10091,7 @@ namespace GEDSys_Presentation.Controllers
                 Session["ConsultasAlterada"] = 1;
                 Session["Consultas"] = null;
                 Session["ListaConsultasGeral"] = null;
+                Session["ListaConsultaAberta"] = null;
 
                 // Configura serilização
                 JsonSerializerSettings settings = new JsonSerializerSettings
@@ -10120,6 +10128,7 @@ namespace GEDSys_Presentation.Controllers
                 Int32 voltaHist = baseApp.ValidateCreateHistorico(hist);
 
                 // Retorno
+                Session["ListaConsultaAberta"] = null;
                 urlRedirecionamento = Url.Action("MontarTelaEncerrarConsulta", "Financeiro");
                 return Json(new { success = true, redirectUrl = urlRedirecionamento });
             }
@@ -11194,7 +11203,7 @@ namespace GEDSys_Presentation.Controllers
                     cell1.Border = PdfPCell.BOTTOM_BORDER;
                     headerTable.AddCell(cell1);
 
-                    cell1 = new PdfPCell(new Paragraph("Pagamentos - Total por Mès", meuFont2))
+                    cell1 = new PdfPCell(new Paragraph("Pagamentos - Total por Mês", meuFont2))
                     {
                         VerticalAlignment = Element.ALIGN_MIDDLE,
                         HorizontalAlignment = Element.ALIGN_CENTER
@@ -11206,7 +11215,7 @@ namespace GEDSys_Presentation.Controllers
                 }
                 else
                 {
-                    PdfPCell cell2 = new PdfPCell(new Paragraph("Pagamentos - Total por Mès", meuFont2))
+                    PdfPCell cell2 = new PdfPCell(new Paragraph("Pagamentos - Total por Mês", meuFont2))
                     {
                         VerticalAlignment = Element.ALIGN_MIDDLE,
                         HorizontalAlignment = Element.ALIGN_CENTER
@@ -11283,7 +11292,7 @@ namespace GEDSys_Presentation.Controllers
                 {
                     if (item.DataEmissao != null)
                     {
-                        cell = new PdfPCell(new Paragraph(item.Nome, meuFont))
+                        cell = new PdfPCell(new Paragraph(CrossCutting.UtilitariosGeral.NomeMesAno(item.Nome), meuFont))
                         {
                             VerticalAlignment = Element.ALIGN_MIDDLE,
                             HorizontalAlignment = Element.ALIGN_LEFT
@@ -11299,6 +11308,7 @@ namespace GEDSys_Presentation.Controllers
                         };
                         table.AddCell(cell);
                     }
+
                     cell = new PdfPCell(new Paragraph(CrossCutting.Formatters.IntegerFormatter(item.Valor), meuFont))
                     {
                         VerticalAlignment = Element.ALIGN_MIDDLE,

@@ -313,6 +313,66 @@ namespace CrossCutting
             return mes;
         }
 
+        public static String NomeMesAno(String entMes)
+        {
+            String mesVolta = String.Empty;
+            String[] partes = entMes.Split('/');
+            String mes = partes[0].PadLeft(2, '0'); // Garante que "1" vire "01"
+            String ano = partes[1];
+            Int32 numMes = Convert.ToInt32(mes);
+
+            if (numMes == 1)
+            {
+                mes = "Janeiro";
+            }
+            if (numMes == 2)
+            {
+                mes = "Fevereiro";
+            }
+            if (numMes == 3)
+            {
+                mes = "Março";
+            }
+            if (numMes == 4)
+            {
+                mes = "Abril";
+            }
+            if (numMes == 5)
+            {
+                mes = "Maio";
+            }
+            if (numMes == 6)
+            {
+                mes = "Junho";
+            }
+            if (numMes == 7)
+            {
+                mes = "Julho";
+            }
+            if (numMes == 8)
+            {
+                mes = "Agosto";
+            }
+            if (numMes == 9)
+            {
+                mes = "Setembro";
+            }
+            if (numMes == 10)
+            {
+                mes = "Outubro";
+            }
+            if (numMes == 11)
+            {
+                mes = "Novembro";
+            }
+            if (numMes == 12)
+            {
+                mes = "Dezembro";
+            }
+            mesVolta = mes + "/" + ano;
+            return mesVolta;
+        }
+
         public static String CleanStringGeral(String dirtyString)
         {
             if (dirtyString == null || dirtyString == String.Empty)

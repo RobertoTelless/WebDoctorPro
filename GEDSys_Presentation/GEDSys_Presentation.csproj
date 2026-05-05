@@ -4094,6 +4094,21 @@
     <Content Include="Imagens\35\Usuario\56\Anexos\file %281%29.enc" />
     <Content Include="Imagens\35\Usuario\58\Anexos\Anamnese_Antonio Morrendo Das Dores_Consulta_27_05_2025 %281%29.pdf" />
     <Content Include="Imagens\35\Usuario\58\Anexos\UsuarioLista_29052025 %281%29.pdf" />
+    <None Include="App_Data\Schemas\DFeTiposBasicos_v1.00.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="App_Data\Schemas\leiauteNFe_v4.00.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="App_Data\Schemas\nfe_v4.00.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="App_Data\Schemas\tiposBasico_v4.00.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="App_Data\Schemas\xmldsig-core-schema_v1.01.xsd">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Properties\PublishProfiles\eprontuario - FTP.pubxml" />
     <None Include="Properties\PublishProfiles\eprontuario - FTP1.pubxml" />
     <None Include="Properties\PublishProfiles\eprontuario - Web Deploy.pubxml" />
@@ -5529,7 +5544,6 @@
     <Content Include="Views\Noticia\MontarTelaNoticiaQuadro.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="App_Data\" />
     <Folder Include="BaseAdmin\BaseConhecimento\" />
     <Folder Include="Certificados\35\" />
     <Folder Include="Filters\" />

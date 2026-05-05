@@ -4627,6 +4627,7 @@ namespace GEDSys_Presentation.Controllers
                         vm.PAAN_NM_ABDOMEM = anamnese.PAAN_NM_ABDOMEM;
                         vm.PAAN_NM_MEMBROS_INFERIORES = anamnese.PAAN_NM_MEMBROS_INFERIORES;
                         vm.PAAN_DS_DIAGNOSTICO_1 = anamnese.PAAM_DS_DIAGNOSTICO_1;
+                        vm.PAAM_TX_TEXTO_LIVRE = anamnese.PAAM_TX_TEXTO_LIVRE;
                         vm.PAAN_DS_CONDUTA = anamnese.PAAM_DS_CONDUTA;
                         vm.PAAM_IN_CAMPO_1 = anamnese.PAAM_IN_CAMPO_1;
                         vm.PAAM_DS_CAMPO_1 = anamnese.PAAM_DS_CAMPO_1;
