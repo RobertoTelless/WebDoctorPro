@@ -28,6 +28,7 @@ using Microsoft.Ajax.Utilities;
 using System.Net.Mail;
 using EntitiesServices.Work_Classes;
 using Newtonsoft.Json;
+using Azure.Storage.Blobs;
 
 namespace GEDSys_Presentation.Controllers
 {
@@ -458,6 +459,14 @@ namespace GEDSys_Presentation.Controllers
                     {
                         TempData["MensagemAcerto"] = (String)Session["MsgCRUD"];
                         TempData["TemMensagem"] = 1;
+                    }
+                    if ((Int32)Session["MensMedico"] == 5)
+                    {
+                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0744", CultureInfo.CurrentCulture));
+                    }
+                    if ((Int32)Session["MensMedico"] == 6)
+                    {
+                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0745", CultureInfo.CurrentCulture));
                     }
                 }
 
@@ -1012,15 +1021,15 @@ namespace GEDSys_Presentation.Controllers
                     Int32 volta = baseApp.ValidateCreateEnvio(item);
 
                     // Cria pastas
-                    String caminho = "/Imagens/" + idAss.ToString() + "/Medico/" + item.MEDC_CD_ID.ToString() + "/Anexos/";
-                    String map = Server.MapPath(caminho);
-                    Directory.CreateDirectory(Server.MapPath(caminho));
-                    caminho = "/Imagens/" + idAss.ToString() + "/Envio/" + item.MEEV_CD_ID.ToString() + "/Anexos/";
-                    map = Server.MapPath(caminho);
-                    Directory.CreateDirectory(Server.MapPath(caminho));
-                    caminho = "/Imagens/" + idAss.ToString() + "/Envio/" + item.MEEV_CD_ID.ToString() + "/Anamneses/";
-                    map = Server.MapPath(caminho);
-                    Directory.CreateDirectory(Server.MapPath(caminho));
+                    //String caminho = "/Imagens/" + idAss.ToString() + "/Medico/" + item.MEDC_CD_ID.ToString() + "/Anexos/";
+                    //String map = Server.MapPath(caminho);
+                    //Directory.CreateDirectory(Server.MapPath(caminho));
+                    //caminho = "/Imagens/" + idAss.ToString() + "/Envio/" + item.MEEV_CD_ID.ToString() + "/Anexos/";
+                    //map = Server.MapPath(caminho);
+                    //Directory.CreateDirectory(Server.MapPath(caminho));
+                    //caminho = "/Imagens/" + idAss.ToString() + "/Envio/" + item.MEEV_CD_ID.ToString() + "/Anamneses/";
+                    //map = Server.MapPath(caminho);
+                    //Directory.CreateDirectory(Server.MapPath(caminho));
 
                     // Acerta estado
                     Session["IdEnvio"] = item.MEEV_CD_ID;
@@ -1062,25 +1071,25 @@ namespace GEDSys_Presentation.Controllers
                         {
                             if (file.Profile == null)
                             {
-                                volta3 = await   UploadFileQueueEnvioBlob(file);
+                                volta3 = await UploadFileQueueEnvioBlob(file);
                             }
                         }
                         Session["FileQueuePaciente"] = null;
                     }
 
                     // Processa geração da anamnese
-                    MEDICOS_ENVIO env = baseApp.GetEnvioById(item.MEEV_CD_ID);
-                    PACIENTE_ANAMNESE ana = pac.PACIENTE_ANAMNESE.FirstOrDefault();
-                    String guid = pac.PACI_GU_GUID;
-                    String hoje = DateTime.Today.Day.ToString() + DateTime.Today.Month.ToString() + DateTime.Today.Year.ToString();
-                    if ((Int32)Session["BlocoAnamnese"] == 1)
-                    {
-                        Int32 voltaz = GerarAnamnesePDFTeste(pac, med, env);
-                    }
-                    else
-                    {
-                        Int32 voltaz = GerarAnamnesePDFTesteSono(pac, med, env);
-                    }
+                    //MEDICOS_ENVIO env = baseApp.GetEnvioById(item.MEEV_CD_ID);
+                    //PACIENTE_ANAMNESE ana = pac.PACIENTE_ANAMNESE.FirstOrDefault();
+                    //String guid = pac.PACI_GU_GUID;
+                    //String hoje = DateTime.Today.Day.ToString() + DateTime.Today.Month.ToString() + DateTime.Today.Year.ToString();
+                    //if ((Int32)Session["BlocoAnamnese"] == 1)
+                    //{
+                    //    Int32 voltaz = GerarAnamnesePDFTeste(pac, med, env);
+                    //}
+                    //else
+                    //{
+                    //    Int32 voltaz = GerarAnamnesePDFTesteSono(pac, med, env);
+                    //}
 
                     // Mensagem do CRUD
                     Session["MsgCRUD"] = "O registro do envio de informações do(a) paciente " + pac.PACI_NM_NOME.ToUpper() + " para o médico(a) " + med.MEDC_NM_MEDICO.ToUpper() + " foi criado com sucesso mas ainda não enviado. Clique em Enviar na linha do envio na lista abaixo para enviar as informações";
@@ -1395,11 +1404,11 @@ namespace GEDSys_Presentation.Controllers
                 String caminhoLocal = Server.MapPath("~/" + caminhoRelativo);
                 String fullPathLocal = Path.Combine(caminhoLocal, fileName);
 
-                // Garante que a pasta local existe
-                if (!Directory.Exists(caminhoLocal)) Directory.CreateDirectory(caminhoLocal);
+                //// Garante que a pasta local existe
+                //if (!Directory.Exists(caminhoLocal)) Directory.CreateDirectory(caminhoLocal);
 
-                // 2. CÓPIA LOCAL (Escrita de Bytes)
-                System.IO.File.WriteAllBytes(fullPathLocal, file.Contents);
+                //// 2. CÓPIA LOCAL (Escrita de Bytes)
+                //System.IO.File.WriteAllBytes(fullPathLocal, file.Contents);
 
                 // 3. CÓPIA PARA O AZURE BLOB STORAGE
                 try
@@ -1839,14 +1848,14 @@ namespace GEDSys_Presentation.Controllers
                 String caminhoLocal = Server.MapPath("~/" + caminhoRelativo);
                 String fullPathLocal = Path.Combine(caminhoLocal, fileName);
 
-                // Garante que a pasta local existe
-                if (!Directory.Exists(caminhoLocal)) Directory.CreateDirectory(caminhoLocal);
+                //// Garante que a pasta local existe
+                //if (!Directory.Exists(caminhoLocal)) Directory.CreateDirectory(caminhoLocal);
 
-                // 2. CÓPIA LOCAL
-                using (var stream = new FileStream(fullPathLocal, FileMode.Create))
-                {
-                    await file.InputStream.CopyToAsync(stream);
-                }
+                //// 2. CÓPIA LOCAL
+                //using (var stream = new FileStream(fullPathLocal, FileMode.Create))
+                //{
+                //    await file.InputStream.CopyToAsync(stream);
+                //}
 
                 // 3. CÓPIA PARA O AZURE BLOB STORAGE
                 try
@@ -2446,6 +2455,21 @@ namespace GEDSys_Presentation.Controllers
             PACIENTE paciente = pacApp.GetItemById(envio.PACI_CD_ID.Value);
             Session["IdEnvio"] = envio.MEEV_CD_ID;
 
+            // Verifica possibilidade E-Mail
+            List<MENSAGENS_ENVIADAS_SISTEMA> mens = CarregaMensagemEnviada();
+            Int32 num = mens.Where(p => p.MEEN_DT_DATA_ENVIO.Value.Month == DateTime.Today.Date.Month & p.MEEN_DT_DATA_ENVIO.Value.Year == DateTime.Today.Date.Year & p.MEEN_IN_TIPO == 1).ToList().Count;
+            if ((Int32)Session["NumEMail"] <= num)
+            {
+                Session["MensMedico"] = 5;
+                return RedirectToAction("EditarMedico", new { id = (Int32)Session["IdEnvio"] });
+
+            }
+            if (medico.MEDC_EM_EMAIL == null)
+            {
+                Session["MensMedico"] = 6;
+                return RedirectToAction("EditarMedico", new { id = (Int32)Session["IdEnvio"] });
+            }
+
             // Configuração
             CONFIGURACAO conf = CarregaConfiguracaoGeral();
 
@@ -2606,78 +2630,92 @@ namespace GEDSys_Presentation.Controllers
 
             // Incluir Anamnese como anexo
             List<AttachmentModel> models = new List<AttachmentModel>();
-            AttachmentModel model = new AttachmentModel();
             if (envio.MEEV_IN_ANAMNESE == 1)
             {
-                String caminho = "/Imagens/" + idAss.ToString() + "/Envio/" + envio.MEEV_CD_ID.ToString() + "/Anamneses/";
-                String fileNamePDF = "Anamnese_" + paciente.PACI_NM_NOME + "_" + envio.MEEV_GU_IDENTIFICADOR + ".pdf";
-                String path = Path.Combine(Server.MapPath(caminho), fileNamePDF);
-                byte[] fileBytes = System.IO.File.ReadAllBytes(path);
-                String base64String = Convert.ToBase64String(fileBytes);
-
-                model = new AttachmentModel();
-                model.PATH = path;
-                model.ATTACHMENT_NAME = fileNamePDF;
-                model.CONTENT_TYPE = MediaTypeNames.Application.Pdf;
-                models.Add(model);
-            }
-
-            // Inclui demais anexos
-            List<MEDICOS_ENVIO_ANEXO> anexos = envio.MEDICOS_ENVIO_ANEXO.ToList();
-            foreach (MEDICOS_ENVIO_ANEXO item in anexos)
-            {
-                String caminhoAnexo = "/Imagens/" + idAss.ToString() + "/Envio/" + envio.MEEV_CD_ID.ToString() + "/Anexos/";
-                String fileNameAnexo = item.MVAN_NM_TITULO;
-                String pathAnexo = Path.Combine(Server.MapPath(caminhoAnexo), fileNameAnexo);
-
-                byte[] fileBytesa = System.IO.File.ReadAllBytes(pathAnexo);
-                String base64String1 = Convert.ToBase64String(fileBytesa);
-
-
-                model = new AttachmentModel();
-                model.PATH = pathAnexo;
-                model.ATTACHMENT_NAME = fileNameAnexo;
-                model.ContentBytes = base64String1;
-                if (item.MVAN_IN_TIPO == 1)
+                // 1. Geração dos arquivos físicos (mantém sua lógica atual)
+                if ((Int32)Session["BlocoAnamnese"] == 1)
                 {
-                    model.CONTENT_TYPE = System.Net.Mime.MediaTypeNames.Image.Jpeg;
-
-                }
-                else if (item.MVAN_IN_TIPO == 2)
-                {
-                    model.CONTENT_TYPE = "video/mp4" ;
-
-                }
-                else if (item.MVAN_IN_TIPO == 3)
-                {
-                    model.CONTENT_TYPE = MediaTypeNames.Application.Pdf;
-
-                }
-                else if (item.MVAN_IN_TIPO == 4)
-                {
-                    model.CONTENT_TYPE = "audio/mpeg";
-
-                }
-                else if (item.MVAN_IN_TIPO == 5)
-                {
-                    model.CONTENT_TYPE = "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
-
-                }
-                else if (item.MVAN_IN_TIPO == 6)
-                {
-                    model.CONTENT_TYPE = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
-
+                    GerarAnamnesePDFTeste(paciente, medico, envio);
                 }
                 else
                 {
-                    model.CONTENT_TYPE = "application/octet-stream";
+                    GerarAnamnesePDFTesteSono(paciente, medico, envio);
                 }
-                models.Add(model);
+
+                // Gera exame fisico em PDF
+                GerarExameFisicoPDFTeste(paciente, medico, envio);
+
+                String caminho = "/Temp/";
+
+                // --- INCLUIR ANAMNESE COMO ANEXO ---
+                String fileNameAnamnese = "Anamnese_" + paciente.PACI_NM_NOME + "_" + envio.MEEV_GU_IDENTIFICADOR + ".pdf";
+                String pathAnamnese = Path.Combine(Server.MapPath(caminho), fileNameAnamnese);
+
+                // Lê os bytes do arquivo recém-gerado no disco
+                byte[] bytesAnamnese = System.IO.File.ReadAllBytes(pathAnamnese);
+
+                AttachmentModel modelAnamnese = new AttachmentModel();
+                modelAnamnese.PATH = pathAnamnese;
+                modelAnamnese.ATTACHMENT_NAME = fileNameAnamnese;
+                modelAnamnese.CONTENT_TYPE = MediaTypeNames.Application.Pdf;
+                modelAnamnese.ContentBytes = Convert.ToBase64String(bytesAnamnese); // Padronização
+                modelAnamnese.FileBytes = bytesAnamnese; // Propriedade crucial para o SendMailAsync
+                models.Add(modelAnamnese);
+
+                // --- INCLUIR EXAME FISICO COMO ANEXO ---
+                String fileNameFisico = "ExameFisico_" + paciente.PACI_NM_NOME + "_" + envio.MEEV_GU_IDENTIFICADOR + ".pdf";
+                String pathFisico = Path.Combine(Server.MapPath(caminho), fileNameFisico);
+
+                // Lê os bytes do arquivo recém-gerado no disco
+                byte[] bytesFisico = System.IO.File.ReadAllBytes(pathFisico);
+
+                AttachmentModel modelFisico = new AttachmentModel();
+                modelFisico.PATH = pathFisico;
+                modelFisico.ATTACHMENT_NAME = fileNameFisico;
+                modelFisico.CONTENT_TYPE = MediaTypeNames.Application.Pdf;
+                modelFisico.ContentBytes = Convert.ToBase64String(bytesFisico); // Padronização
+                modelFisico.FileBytes = bytesFisico; // Propriedade crucial para o SendMailAsync
+                models.Add(modelFisico);
             }
 
-            // Decriptografa chaves
-            String emissor = CrossCutting.Cryptography.Decrypt(conf.CONF_NM_EMISSOR_AZURE_CRIP);
+            // Inclui demais anexos
             String conn = CrossCutting.Cryptography.Decrypt(conf.CONF_CS_CONNECTION_STRING_AZURE_CRIP);
+            String emissor = CrossCutting.Cryptography.Decrypt(conf.CONF_NM_EMISSOR_AZURE_CRIP);
+
+            // Inicializa o cliente do Blob Storage (necessário pacote Azure.Storage.Blobs)
+            conf = CarregaConfiguracaoGeral();
+            string connString = conf.CONF_NM_STORAGE_CONN;
+            string containerName = conf.CONF_NM_STORAGE_CONTAINER;
+
+            var blobServiceClient = new Azure.Storage.Blobs.BlobServiceClient(connString);
+            var containerClient = blobServiceClient.GetBlobContainerClient(containerName);
+
+            List<MEDICOS_ENVIO_ANEXO> anexos = envio.MEDICOS_ENVIO_ANEXO.ToList();
+            foreach (MEDICOS_ENVIO_ANEXO item in anexos)
+            {
+                // O caminho no Storage geralmente não usa "C:/" ou caminhos físicos, apenas a hierarquia de pastas
+                String blobPath = "Imagens/" + idAss.ToString() + "/Envio/" + envio.MEEV_CD_ID.ToString() + "/Anexos/" + item.MVAN_NM_TITULO;
+                var blobClient = containerClient.GetBlobClient(blobPath);
+
+                // Baixa o conteúdo do Storage para memória
+                byte[] fileBytes;
+                using (var ms = new MemoryStream())
+                {
+                    await blobClient.DownloadToAsync(ms);
+                    fileBytes = ms.ToArray();
+                }
+
+                AttachmentModel model = new AttachmentModel();
+                model.ATTACHMENT_NAME = item.MVAN_NM_TITULO;
+                model.ContentBytes = Convert.ToBase64String(fileBytes); // Mantendo compatibilidade se necessário
+                model.FileBytes = fileBytes; // Adicione esta propriedade ao seu AttachmentModel se não existir
+
+                // Mapeamento de Content Type
+                model.CONTENT_TYPE = CrossCutting.UtilitariosGeral.GetContentType(item.MVAN_IN_TIPO.Value);
+
+                models.Add(model);
+
+            }
 
             // Monta e-mail
             NetworkCredential net = new NetworkCredential(conf.CONF_NM_SENDGRID_LOGIN, conf.CONF_NM_SENDGRID_PWD);
@@ -2823,9 +2861,11 @@ namespace GEDSys_Presentation.Controllers
                 Int32 voltay = GerarExameFisicoPDFTeste(paciente, medico, envio);
 
                 // Incluir Anamnese como anexo
-                String caminho = "/Imagens/" + idAss.ToString() + "/Envio/" + envio.MEEV_CD_ID.ToString() + "/Anamneses/";
-                String fileNamePDF = "Anamnese_" + paciente.PACI_NM_NOME + "_" + paciente.PACI_GU_GUID + ".pdf";
+                String caminho = "/Temp/";
+                String fileNamePDF = "Anamnese_" + paciente.PACI_NM_NOME + "_" + envio.MEEV_GU_IDENTIFICADOR + ".pdf";
                 String path = Path.Combine(Server.MapPath(caminho), fileNamePDF);
+                byte[] fileBytes = System.IO.File.ReadAllBytes(path);
+                String base64String = Convert.ToBase64String(fileBytes);
 
                 AttachmentModel model = new AttachmentModel();
                 model.PATH = path;
@@ -2834,8 +2874,7 @@ namespace GEDSys_Presentation.Controllers
                 models.Add(model);
 
                 // Incluir exame fisico como anexo
-                caminho = "/Imagens/" + idAss.ToString() + "/Envio/" + envio.MEEV_CD_ID.ToString() + "/ExamesFisicos/";
-                fileNamePDF = "ExameFisico_" + paciente.PACI_NM_NOME + "_" + paciente.PACI_GU_GUID + "_" + hoje + ".pdf";
+                fileNamePDF = "ExameFisico_" + paciente.PACI_NM_NOME + "_" + envio.MEEV_GU_IDENTIFICADOR + ".pdf";
                 path = Path.Combine(Server.MapPath(caminho), fileNamePDF);
 
                 model = new AttachmentModel();
@@ -2845,52 +2884,41 @@ namespace GEDSys_Presentation.Controllers
                 models.Add(model);
             }
 
+            // Inicializa o cliente do Blob Storage (necessário pacote Azure.Storage.Blobs)
+            conf = CarregaConfiguracaoGeral();
+            string connString = conf.CONF_NM_STORAGE_CONN;
+            string containerName = conf.CONF_NM_STORAGE_CONTAINER;
+
+            var blobServiceClient = new Azure.Storage.Blobs.BlobServiceClient(connString);
+            var containerClient = blobServiceClient.GetBlobContainerClient(containerName);
+
             // Inclui demais anexos
             List<MEDICOS_ENVIO_ANEXO> anexos = envio.MEDICOS_ENVIO_ANEXO.ToList();
             foreach (MEDICOS_ENVIO_ANEXO item in anexos)
             {
-                String caminhoAnexo = "/Imagens/" + idAss.ToString() + "/Envio/" + envio.MEEV_CD_ID.ToString() + "/Anexos/";
-                String fileNameAnexo = item.MVAN_AQ_ARQUIVO;
-                String pathAnexo = Path.Combine(Server.MapPath(caminhoAnexo), fileNameAnexo);
+                // O caminho no Storage geralmente não usa "C:/" ou caminhos físicos, apenas a hierarquia de pastas
+                String blobPath = "Imagens/" + idAss.ToString() + "/Envio/" + envio.MEEV_CD_ID.ToString() + "/Anexos/" + item.MVAN_NM_TITULO;
+                var blobClient = containerClient.GetBlobClient(blobPath);
+
+                // Baixa o conteúdo do Storage para memória
+                byte[] fileBytes;
+                using (var ms = new MemoryStream())
+                {
+                    await blobClient.DownloadToAsync(ms);
+                    fileBytes = ms.ToArray();
+                }
 
                 AttachmentModel model = new AttachmentModel();
-                model.PATH = pathAnexo;
-                model.ATTACHMENT_NAME = fileNameAnexo;
-                if (item.MVAN_IN_TIPO == 1)
-                {
-                    model.CONTENT_TYPE = System.Net.Mime.MediaTypeNames.Image.Jpeg;
+                model.ATTACHMENT_NAME = item.MVAN_NM_TITULO;
+                model.ContentBytes = Convert.ToBase64String(fileBytes); // Mantendo compatibilidade se necessário
+                model.FileBytes = fileBytes; // Adicione esta propriedade ao seu AttachmentModel se não existir
 
-                }
-                else if (item.MVAN_IN_TIPO == 2)
-                {
-                    model.CONTENT_TYPE = "video/mp4" ;
+                // Mapeamento de Content Type
+                model.CONTENT_TYPE = CrossCutting.UtilitariosGeral.GetContentType(item.MVAN_IN_TIPO.Value);
 
-                }
-                else if (item.MVAN_IN_TIPO == 3)
-                {
-                    model.CONTENT_TYPE = MediaTypeNames.Application.Pdf;
-
-                }
-                else if (item.MVAN_IN_TIPO == 4)
-                {
-                    model.CONTENT_TYPE = "audio/mpeg";
-
-                }
-                else if (item.MVAN_IN_TIPO == 5)
-                {
-                    model.CONTENT_TYPE = "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
-
-                }
-                else if (item.MVAN_IN_TIPO == 6)
-                {
-                    model.CONTENT_TYPE = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
-
-                }
-                else
-                {
-                    model.CONTENT_TYPE = "application/octet-stream";
-                }
                 models.Add(model);
+
+
             }
 
             // Decriptografa chaves
@@ -2998,21 +3026,8 @@ namespace GEDSys_Presentation.Controllers
                 Font meuFontBold = FontFactory.GetFont("Arial", 8, iTextSharp.text.Font.BOLD, BaseColor.BLACK);
 
                 // Caminho de saida
-                String caminho = "/Imagens/" + idAss.ToString() + "/Envio/" + envio.MEEV_CD_ID.ToString() + "/Anamneses/";
+                String caminho = "/Temp/";
                 String filePath = Path.Combine(Server.MapPath(caminho), nomeRel);
-                Directory.CreateDirectory(caminho);
-                Boolean existe = System.IO.File.Exists(filePath);
-                if (existe)
-                {
-                    try
-                    {
-                        System.IO.File.Delete(filePath);
-                    }
-                    catch (Exception)
-                    {
-                        existe = false;
-                    }
-                }
 
                 // Processo
                 using (FileStream stream = new FileStream(filePath, FileMode.Create))
@@ -3025,20 +3040,48 @@ namespace GEDSys_Presentation.Controllers
 
                     if (conf.CONF_IN_LOGO_EMPRESA == 1)
                     {
-                        headerTable = new PdfPTable(new float[] { 20f, 700f });
-                        headerTable.WidthPercentage = 100;
-                        headerTable.HorizontalAlignment = 1;
-                        headerTable.SpacingBefore = 1f;
-                        headerTable.SpacingAfter = 1f;
+                        PdfPCell cell1 = new PdfPCell();
+                        cell1.Border = 0;
+                        cell1.Colspan = 1;
 
-                        cell = new PdfPCell();
-                        cell.Border = 0;
-                        cell.Colspan = 1;
-                        image = null;
-                        image = Image.GetInstance(Server.MapPath(empresa.EMPR_AQ_LOGO));
-                        image.ScaleAbsolute(80, 80);
-                        cell.AddElement(image);
-                        headerTable.AddCell(cell);
+                        // Verificamos se o caminho do logo existe
+                        if (!string.IsNullOrEmpty(empresa.EMPR_AQ_LOGO))
+                        {
+                            // 1. Removemos o "~" para obter o caminho interno (ex: Imagens/1/Logos/logo.png)
+                            string blobPath = empresa.EMPR_AQ_LOGO.Replace("~", "");
+
+                            // 2. Montamos a URL usando as configurações de Storage que você já tem
+                            // Recomendo usar as variáveis do seu objeto 'conf' para ficar dinâmico
+                            string storageUrl = "https://rtistoragemain.blob.core.windows.net/rti-datacontainer/";
+
+                            // Garante que a URL termine com barra antes de concatenar
+                            if (!storageUrl.EndsWith("/")) storageUrl += "/";
+
+                            string fullUrl = storageUrl + blobPath;
+
+                            // 3. iTextSharp busca a imagem diretamente da URL do Azure
+                            image = Image.GetInstance(fullUrl);
+                        }
+                        else
+                        {
+                            // Caso não tenha logo, você pode carregar um placeholder local ou ignorar
+                            image = Image.GetInstance(Server.MapPath("~/Imagens/Base/logo_padrao.png"));
+                        }
+
+                        image.ScaleAbsolute(50, 50);
+                        cell1.AddElement(image);
+                        cell1.Border = PdfPCell.BOTTOM_BORDER;
+                        headerTable.AddCell(cell1);
+
+                        cell1 = new PdfPCell(new Paragraph("Atestados", meuFont2))
+                        {
+                            VerticalAlignment = Element.ALIGN_MIDDLE,
+                            HorizontalAlignment = Element.ALIGN_CENTER
+                        };
+                        cell1.Border = 0;
+                        cell1.Colspan = 1;
+                        cell1.Border = PdfPCell.BOTTOM_BORDER;
+                        headerTable.AddCell(cell1);
                     }
                     else
                     {
@@ -3200,8 +3243,8 @@ namespace GEDSys_Presentation.Controllers
                     footerTable.AddCell(innerTableCell);
 
                     // Cria documento
-                    Document pdfDoc = new Document(PageSize.A4, 10, 10, 70, 120);
-                    PdfWriter pdfWriter = PdfWriter.GetInstance(pdfDoc, Response.OutputStream);
+                    Document pdfDoc = new Document(PageSize.A4, 10, 10, 70, 140);
+                    PdfWriter pdfWriter = PdfWriter.GetInstance(pdfDoc, stream);
                     pdfWriter.PageEvent = new CustomPageEventHelper(headerTable, footerTable);
                     pdfDoc.Open();
 
@@ -3273,6 +3316,23 @@ namespace GEDSys_Presentation.Controllers
                     table.SpacingAfter = 1f;
 
                     // Dados da anamnese
+                    cell = new PdfPCell(new Paragraph("Prontuário: ", meuFont1Bold))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    cell.Colspan = 1;
+                    cell.BackgroundColor = BaseColor.WHITE;
+                    table.AddCell(cell);
+                    cell = new PdfPCell(new Paragraph(anamnese.PAAM_TX_TEXTO_LIVRE, meuFont1))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    cell.Colspan = 1;
+                    cell.BackgroundColor = BaseColor.WHITE;
+                    table.AddCell(cell);
+
                     cell = new PdfPCell(new Paragraph("Motivo da Consulta: ", meuFont1Bold))
                     {
                         VerticalAlignment = Element.ALIGN_MIDDLE,
@@ -3775,21 +3835,8 @@ namespace GEDSys_Presentation.Controllers
                 Font meuFontBold = FontFactory.GetFont("Arial", 8, iTextSharp.text.Font.BOLD, BaseColor.BLACK);
 
                 // Caminho de saida
-                String caminho = "/Imagens/" + idAss.ToString() + "/Envio/" + envio.MEEV_CD_ID.ToString() + "/ExamesFisicos/";
+                String caminho = "/Temp/";
                 String filePath = Path.Combine(Server.MapPath(caminho), nomeRel);
-                Directory.CreateDirectory(caminho);
-                Boolean existe = System.IO.File.Exists(filePath);
-                if (existe)
-                {
-                    try
-                    {
-                        System.IO.File.Delete(filePath);
-                    }
-                    catch (Exception)
-                    {
-                        existe = false;
-                    }
-                }
 
                 // Processo
                 using (FileStream stream = new FileStream(filePath, FileMode.Create))
@@ -3800,20 +3847,48 @@ namespace GEDSys_Presentation.Controllers
                     Image image = null;
                     if (conf.CONF_IN_LOGO_EMPRESA == 1)
                     {
-                        headerTable = new PdfPTable(new float[] { 20f, 700f });
-                        headerTable.WidthPercentage = 100;
-                        headerTable.HorizontalAlignment = 1;
-                        headerTable.SpacingBefore = 1f;
-                        headerTable.SpacingAfter = 1f;
+                        PdfPCell cell1 = new PdfPCell();
+                        cell1.Border = 0;
+                        cell1.Colspan = 1;
 
-                        cell = new PdfPCell();
-                        cell.Border = 0;
-                        cell.Colspan = 1;
-                        image = null;
-                        image = Image.GetInstance(Server.MapPath(empresa.EMPR_AQ_LOGO));
-                        image.ScaleAbsolute(80, 80);
-                        cell.AddElement(image);
-                        headerTable.AddCell(cell);
+                        // Verificamos se o caminho do logo existe
+                        if (!string.IsNullOrEmpty(empresa.EMPR_AQ_LOGO))
+                        {
+                            // 1. Removemos o "~" para obter o caminho interno (ex: Imagens/1/Logos/logo.png)
+                            string blobPath = empresa.EMPR_AQ_LOGO.Replace("~", "");
+
+                            // 2. Montamos a URL usando as configurações de Storage que você já tem
+                            // Recomendo usar as variáveis do seu objeto 'conf' para ficar dinâmico
+                            string storageUrl = "https://rtistoragemain.blob.core.windows.net/rti-datacontainer/";
+
+                            // Garante que a URL termine com barra antes de concatenar
+                            if (!storageUrl.EndsWith("/")) storageUrl += "/";
+
+                            string fullUrl = storageUrl + blobPath;
+
+                            // 3. iTextSharp busca a imagem diretamente da URL do Azure
+                            image = Image.GetInstance(fullUrl);
+                        }
+                        else
+                        {
+                            // Caso não tenha logo, você pode carregar um placeholder local ou ignorar
+                            image = Image.GetInstance(Server.MapPath("~/Imagens/Base/logo_padrao.png"));
+                        }
+
+                        image.ScaleAbsolute(50, 50);
+                        cell1.AddElement(image);
+                        cell1.Border = PdfPCell.BOTTOM_BORDER;
+                        headerTable.AddCell(cell1);
+
+                        cell1 = new PdfPCell(new Paragraph("Atestados", meuFont2))
+                        {
+                            VerticalAlignment = Element.ALIGN_MIDDLE,
+                            HorizontalAlignment = Element.ALIGN_CENTER
+                        };
+                        cell1.Border = 0;
+                        cell1.Colspan = 1;
+                        cell1.Border = PdfPCell.BOTTOM_BORDER;
+                        headerTable.AddCell(cell1);
                     }
                     else
                     {
@@ -4839,44 +4914,59 @@ namespace GEDSys_Presentation.Controllers
                 Font meuFontBold = FontFactory.GetFont("Arial", 8, iTextSharp.text.Font.BOLD, BaseColor.BLACK);
 
                 // Caminho de saida
-                String caminho = "/Imagens/" + idAss.ToString() + "/Envio/" + envio.MEEV_CD_ID.ToString() + "/Anamneses/";
+                String caminho = "/Temp/";
                 String filePath = Path.Combine(Server.MapPath(caminho), nomeRel);
-                Directory.CreateDirectory(caminho);
-                Boolean existe = System.IO.File.Exists(filePath);
-                if (existe)
-                {
-                    try
-                    {
-                        System.IO.File.Delete(filePath);
-                    }
-                    catch (Exception)
-                    {
-                        existe = false;
-                    }
-                }
 
                 using (FileStream stream = new FileStream(filePath, FileMode.Create))
                 {
                     // Cabeçalho
-                    PdfPTable headerTable = null;
+                    PdfPTable headerTable = new PdfPTable(new float[] { 100f, 650f });
                     PdfPCell cell = new PdfPCell();
                     Image image = null;
                     if (conf.CONF_IN_LOGO_EMPRESA == 1)
                     {
-                        headerTable = new PdfPTable(new float[] { 20f, 700f });
-                        headerTable.WidthPercentage = 100;
-                        headerTable.HorizontalAlignment = 1;
-                        headerTable.SpacingBefore = 1f;
-                        headerTable.SpacingAfter = 1f;
+                        PdfPCell cell1 = new PdfPCell();
+                        cell1.Border = 0;
+                        cell1.Colspan = 1;
 
-                        cell = new PdfPCell();
-                        cell.Border = 0;
-                        cell.Colspan = 1;
-                        image = null;
-                        image = Image.GetInstance(Server.MapPath(empresa.EMPR_AQ_LOGO));
-                        image.ScaleAbsolute(80, 80);
-                        cell.AddElement(image);
-                        headerTable.AddCell(cell);
+                        // Verificamos se o caminho do logo existe
+                        if (!string.IsNullOrEmpty(empresa.EMPR_AQ_LOGO))
+                        {
+                            // 1. Removemos o "~" para obter o caminho interno (ex: Imagens/1/Logos/logo.png)
+                            string blobPath = empresa.EMPR_AQ_LOGO.Replace("~", "");
+
+                            // 2. Montamos a URL usando as configurações de Storage que você já tem
+                            // Recomendo usar as variáveis do seu objeto 'conf' para ficar dinâmico
+                            string storageUrl = "https://rtistoragemain.blob.core.windows.net/rti-datacontainer/";
+
+                            // Garante que a URL termine com barra antes de concatenar
+                            if (!storageUrl.EndsWith("/")) storageUrl += "/";
+
+                            string fullUrl = storageUrl + blobPath;
+
+                            // 3. iTextSharp busca a imagem diretamente da URL do Azure
+                            image = Image.GetInstance(fullUrl);
+                        }
+                        else
+                        {
+                            // Caso não tenha logo, você pode carregar um placeholder local ou ignorar
+                            image = Image.GetInstance(Server.MapPath("~/Imagens/Base/logo_padrao.png"));
+                        }
+
+                        image.ScaleAbsolute(50, 50);
+                        cell1.AddElement(image);
+                        cell1.Border = PdfPCell.BOTTOM_BORDER;
+                        headerTable.AddCell(cell1);
+
+                        cell1 = new PdfPCell(new Paragraph("Atestados", meuFont2))
+                        {
+                            VerticalAlignment = Element.ALIGN_MIDDLE,
+                            HorizontalAlignment = Element.ALIGN_CENTER
+                        };
+                        cell1.Border = 0;
+                        cell1.Colspan = 1;
+                        cell1.Border = PdfPCell.BOTTOM_BORDER;
+                        headerTable.AddCell(cell1);
                     }
                     else
                     {
@@ -5058,7 +5148,7 @@ namespace GEDSys_Presentation.Controllers
                     // Verifica tipo de anamnese
                     if (paciente.PACI_IN_PADRAO_ANAMNESE == 1)
                     {
-                        cell = new PdfPCell(new Paragraph("Última Consulta: " + anamnese.PACIENTE_CONSULTA.PACO_DT_CONSULTA.ToLongDateString(), meuFont1Bold));
+                        cell = new PdfPCell(new Paragraph("Última Consulta: " + anamnese.PACIENTE.PACI_DT_CONSULTA.Value.ToLongDateString(), meuFont1Bold));
                         cell.Border = 0;
                         cell.Colspan = 4;
                         cell.VerticalAlignment = Element.ALIGN_MIDDLE;
@@ -5105,6 +5195,23 @@ namespace GEDSys_Presentation.Controllers
                         table.SpacingAfter = 1f;
 
                         // Dados da anamnese
+                        cell = new PdfPCell(new Paragraph("Prontuário: ", meuFont1Bold))
+                        {
+                            VerticalAlignment = Element.ALIGN_MIDDLE,
+                            HorizontalAlignment = Element.ALIGN_LEFT
+                        };
+                        cell.Colspan = 1;
+                        cell.BackgroundColor = BaseColor.WHITE;
+                        table.AddCell(cell);
+                        cell = new PdfPCell(new Paragraph(anamnese.PAAM_TX_TEXTO_LIVRE, meuFont1))
+                        {
+                            VerticalAlignment = Element.ALIGN_MIDDLE,
+                            HorizontalAlignment = Element.ALIGN_LEFT
+                        };
+                        cell.Colspan = 1;
+                        cell.BackgroundColor = BaseColor.WHITE;
+                        table.AddCell(cell);
+
                         cell = new PdfPCell(new Paragraph("Motivo da Consulta: ", meuFont1Bold))
                         {
                             VerticalAlignment = Element.ALIGN_MIDDLE,
@@ -5607,6 +5714,7 @@ namespace GEDSys_Presentation.Controllers
                     }
 
                     // Finaliza
+                    pdfWriter.Flush();
                     pdfWriter.CloseStream = false;
                     pdfDoc.Close();
                     return 0;
@@ -5676,44 +5784,60 @@ namespace GEDSys_Presentation.Controllers
                 Font meuFontBold = FontFactory.GetFont("Arial", 8, iTextSharp.text.Font.BOLD, BaseColor.BLACK);
 
                 // Caminho de saida
-                String caminho = "/Imagens/" + idAss.ToString() + "/Envio/" + envio.MEEV_CD_ID.ToString() + "/ExamesFisicos/";
+                String caminho = "/Temp/";
                 String filePath = Path.Combine(Server.MapPath(caminho), nomeRel);
-                Directory.CreateDirectory(caminho);
-                Boolean existe = System.IO.File.Exists(filePath);
-                if (existe)
-                {
-                    try
-                    {
-                        System.IO.File.Delete(filePath);
-                    }
-                    catch (Exception)
-                    {
-                        existe = false;
-                    }
-                }
 
                 using (FileStream stream = new FileStream(filePath, FileMode.Create))
                 {
                     // Cabeçalho
-                    PdfPTable headerTable = null;
+                    //PdfPTable headerTable = null;
+                    PdfPTable headerTable = new PdfPTable(new float[] { 100f, 650f });
                     PdfPCell cell = new PdfPCell();
                     Image image = null;
                     if (conf.CONF_IN_LOGO_EMPRESA == 1)
                     {
-                        headerTable = new PdfPTable(new float[] { 20f, 700f });
-                        headerTable.WidthPercentage = 100;
-                        headerTable.HorizontalAlignment = 1;
-                        headerTable.SpacingBefore = 1f;
-                        headerTable.SpacingAfter = 1f;
+                        PdfPCell cell1 = new PdfPCell();
+                        cell1.Border = 0;
+                        cell1.Colspan = 1;
 
-                        cell = new PdfPCell();
-                        cell.Border = 0;
-                        cell.Colspan = 1;
-                        image = null;
-                        image = Image.GetInstance(Server.MapPath(empresa.EMPR_AQ_LOGO));
-                        image.ScaleAbsolute(80, 80);
-                        cell.AddElement(image);
-                        headerTable.AddCell(cell);
+                        // Verificamos se o caminho do logo existe
+                        if (!string.IsNullOrEmpty(empresa.EMPR_AQ_LOGO))
+                        {
+                            // 1. Removemos o "~" para obter o caminho interno (ex: Imagens/1/Logos/logo.png)
+                            string blobPath = empresa.EMPR_AQ_LOGO.Replace("~", "");
+
+                            // 2. Montamos a URL usando as configurações de Storage que você já tem
+                            // Recomendo usar as variáveis do seu objeto 'conf' para ficar dinâmico
+                            string storageUrl = "https://rtistoragemain.blob.core.windows.net/rti-datacontainer/";
+
+                            // Garante que a URL termine com barra antes de concatenar
+                            if (!storageUrl.EndsWith("/")) storageUrl += "/";
+
+                            string fullUrl = storageUrl + blobPath;
+
+                            // 3. iTextSharp busca a imagem diretamente da URL do Azure
+                            image = Image.GetInstance(fullUrl);
+                        }
+                        else
+                        {
+                            // Caso não tenha logo, você pode carregar um placeholder local ou ignorar
+                            image = Image.GetInstance(Server.MapPath("~/Imagens/Base/logo_padrao.png"));
+                        }
+
+                        image.ScaleAbsolute(50, 50);
+                        cell1.AddElement(image);
+                        cell1.Border = PdfPCell.BOTTOM_BORDER;
+                        headerTable.AddCell(cell1);
+
+                        cell1 = new PdfPCell(new Paragraph("Atestados", meuFont2))
+                        {
+                            VerticalAlignment = Element.ALIGN_MIDDLE,
+                            HorizontalAlignment = Element.ALIGN_CENTER
+                        };
+                        cell1.Border = 0;
+                        cell1.Colspan = 1;
+                        cell1.Border = PdfPCell.BOTTOM_BORDER;
+                        headerTable.AddCell(cell1);
                     }
                     else
                     {
@@ -5869,7 +5993,7 @@ namespace GEDSys_Presentation.Controllers
 
                     // Cria documento
                     Document pdfDoc = new Document(PageSize.A4, 10, 10, 70, 120);
-                    PdfWriter pdfWriter = PdfWriter.GetInstance(pdfDoc, Response.OutputStream);
+                    PdfWriter pdfWriter = PdfWriter.GetInstance(pdfDoc, stream);
                     pdfWriter.PageEvent = new CustomPageEventHelper(headerTable, footerTable);
                     pdfDoc.Open();
 
@@ -5891,7 +6015,7 @@ namespace GEDSys_Presentation.Controllers
                     table.SpacingBefore = 1f;
                     table.SpacingAfter = 1f;
 
-                    cell = new PdfPCell(new Paragraph("Data da Consulta: " + fisico.PACIENTE_CONSULTA.PACO_DT_CONSULTA.ToLongDateString(), meuFont1Bold));
+                    cell = new PdfPCell(new Paragraph("Última Consulta: " + fisico.PACIENTE.PACI_DT_CONSULTA.Value.ToLongDateString(), meuFont1Bold));
                     cell.Border = 0;
                     cell.Colspan = 4;
                     cell.VerticalAlignment = Element.ALIGN_MIDDLE;
@@ -6733,44 +6857,59 @@ namespace GEDSys_Presentation.Controllers
                 Font meuFontBold = FontFactory.GetFont("Arial", 8, iTextSharp.text.Font.BOLD, BaseColor.BLACK);
 
                 // Caminho de saida
-                String caminho = "/Imagens/" + idAss.ToString() + "/Envio/" + envio.MEEV_CD_ID.ToString() + "/Anamneses/";
+                String caminho = "/Temp/";
                 String filePath = Path.Combine(Server.MapPath(caminho), nomeRel);
-                Directory.CreateDirectory(caminho);
-                Boolean existe = System.IO.File.Exists(filePath);
-                if (existe)
-                {
-                    try
-                    {
-                        System.IO.File.Delete(filePath);
-                    }
-                    catch (Exception)
-                    {
-                        existe = false;
-                    }
-                }
 
                 using (FileStream stream = new FileStream(filePath, FileMode.Create))
                 {
                     // Cabeçalho
-                    PdfPTable headerTable = null;
+                    PdfPTable headerTable = new PdfPTable(new float[] { 100f, 650f });
                     PdfPCell cell = new PdfPCell();
                     Image image = null;
                     if (conf.CONF_IN_LOGO_EMPRESA == 1)
                     {
-                        headerTable = new PdfPTable(new float[] { 20f, 700f });
-                        headerTable.WidthPercentage = 100;
-                        headerTable.HorizontalAlignment = 1;
-                        headerTable.SpacingBefore = 1f;
-                        headerTable.SpacingAfter = 1f;
+                        PdfPCell cell1 = new PdfPCell();
+                        cell1.Border = 0;
+                        cell1.Colspan = 1;
 
-                        cell = new PdfPCell();
-                        cell.Border = 0;
-                        cell.Colspan = 1;
-                        image = null;
-                        image = Image.GetInstance(Server.MapPath(empresa.EMPR_AQ_LOGO));
-                        image.ScaleAbsolute(80, 80);
-                        cell.AddElement(image);
-                        headerTable.AddCell(cell);
+                        // Verificamos se o caminho do logo existe
+                        if (!string.IsNullOrEmpty(empresa.EMPR_AQ_LOGO))
+                        {
+                            // 1. Removemos o "~" para obter o caminho interno (ex: Imagens/1/Logos/logo.png)
+                            string blobPath = empresa.EMPR_AQ_LOGO.Replace("~", "");
+
+                            // 2. Montamos a URL usando as configurações de Storage que você já tem
+                            // Recomendo usar as variáveis do seu objeto 'conf' para ficar dinâmico
+                            string storageUrl = "https://rtistoragemain.blob.core.windows.net/rti-datacontainer/";
+
+                            // Garante que a URL termine com barra antes de concatenar
+                            if (!storageUrl.EndsWith("/")) storageUrl += "/";
+
+                            string fullUrl = storageUrl + blobPath;
+
+                            // 3. iTextSharp busca a imagem diretamente da URL do Azure
+                            image = Image.GetInstance(fullUrl);
+                        }
+                        else
+                        {
+                            // Caso não tenha logo, você pode carregar um placeholder local ou ignorar
+                            image = Image.GetInstance(Server.MapPath("~/Imagens/Base/logo_padrao.png"));
+                        }
+
+                        image.ScaleAbsolute(50, 50);
+                        cell1.AddElement(image);
+                        cell1.Border = PdfPCell.BOTTOM_BORDER;
+                        headerTable.AddCell(cell1);
+
+                        cell1 = new PdfPCell(new Paragraph("Atestados", meuFont2))
+                        {
+                            VerticalAlignment = Element.ALIGN_MIDDLE,
+                            HorizontalAlignment = Element.ALIGN_CENTER
+                        };
+                        cell1.Border = 0;
+                        cell1.Colspan = 1;
+                        cell1.Border = PdfPCell.BOTTOM_BORDER;
+                        headerTable.AddCell(cell1);
                     }
                     else
                     {
@@ -9318,6 +9457,45 @@ namespace GEDSys_Presentation.Controllers
                 return RedirectToAction("Logout", "ControleAcesso");
             }
             return RedirectToAction("EditarTextoEnvio", new { id = (Int32)Session["IdTexto"] });
+        }
+
+        public List<MENSAGENS_ENVIADAS_SISTEMA> CarregaMensagemEnviada()
+        {
+            try
+            {
+                Int32 idAss = (Int32)Session["IdAssinante"];
+                List<MENSAGENS_ENVIADAS_SISTEMA> conf = new List<MENSAGENS_ENVIADAS_SISTEMA>();
+                if (Session["MensagensEnviadas"] == null)
+                {
+                    conf = meApp.GetAllItens(idAss);
+                }
+                else
+                {
+                    if ((Int32)Session["MensagensEnviadaAlterada"] == 1)
+                    {
+                        conf = meApp.GetAllItens(idAss);
+                    }
+                    else
+                    {
+                        conf = (List<MENSAGENS_ENVIADAS_SISTEMA>)Session["MensagensEnviadas"];
+                    }
+                }
+                conf = conf.Where(p => p.MEEN_IN_SISTEMA == 6).ToList();
+                Session["CatAgendas"] = conf;
+                Session["MensagensEnviadaAlterada"] = 0;
+                return conf;
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Medico";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Medico", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return null;
+            }
         }
 
     }

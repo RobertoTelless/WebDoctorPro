@@ -2442,11 +2442,11 @@ namespace GEDSys_Presentation.Controllers
                 String caminhoLocal = Server.MapPath("~/" + caminhoRelativo);
                 String fullPathLocal = Path.Combine(caminhoLocal, fileName);
 
-                // Garante que a pasta local existe
-                if (!Directory.Exists(caminhoLocal)) Directory.CreateDirectory(caminhoLocal);
+                //// Garante que a pasta local existe
+                //if (!Directory.Exists(caminhoLocal)) Directory.CreateDirectory(caminhoLocal);
 
-                // 2. CÓPIA LOCAL (Escrita de Bytes)
-                System.IO.File.WriteAllBytes(fullPathLocal, file.Contents);
+                //// 2. CÓPIA LOCAL (Escrita de Bytes)
+                //System.IO.File.WriteAllBytes(fullPathLocal, file.Contents);
 
                 // 3. CÓPIA PARA O AZURE BLOB STORAGE
                 try
@@ -2638,11 +2638,11 @@ namespace GEDSys_Presentation.Controllers
                 String caminhoLocal = Server.MapPath("~/" + caminhoRelativo);
                 String fullPathLocal = Path.Combine(caminhoLocal, fileName);
 
-                // Garante que a pasta local existe
-                if (!Directory.Exists(caminhoLocal)) Directory.CreateDirectory(caminhoLocal);
+                //// Garante que a pasta local existe
+                //if (!Directory.Exists(caminhoLocal)) Directory.CreateDirectory(caminhoLocal);
 
-                // 2. CÓPIA LOCAL
-                System.IO.File.WriteAllBytes(fullPathLocal, file.Contents);
+                //// 2. CÓPIA LOCAL
+                //System.IO.File.WriteAllBytes(fullPathLocal, file.Contents);
 
                 // 3. CÓPIA PARA O AZURE BLOB STORAGE
                 try
@@ -2818,7 +2818,7 @@ namespace GEDSys_Presentation.Controllers
             {
                 return RedirectToAction("Logout", "ControleAcesso");
             }
-            return RedirectToAction("EditarAnamneseNova", new { id = (Int32)Session["IdUltimaAnamnese"] });
+            return RedirectToAction("EditarAnamneseNova", new { id = (Int32)Session["IdAnamnese"] });
         }
 
 
@@ -2828,7 +2828,7 @@ namespace GEDSys_Presentation.Controllers
             {
                 return RedirectToAction("Logout", "ControleAcesso");
             }
-            return RedirectToAction("VerAnamnese", new { id = (Int32)Session["IdUltimaAnamnese"] });
+            return RedirectToAction("VerAnamnese", new { id = (Int32)Session["IdAnamnese"] });
         }
 
         public ActionResult VoltarEditarUltimoFisico()
@@ -3321,9 +3321,9 @@ namespace GEDSys_Presentation.Controllers
 
 
                     // Cria pastas
-                    String caminho = "/Imagens/" + idAss.ToString() + "/Mensagem/" + mens.MENS_CD_ID.ToString() + "/Anexos/";
-                    String map = Server.MapPath(caminho);
-                    Directory.CreateDirectory(Server.MapPath(caminho));
+                    //String caminho = "/Imagens/" + idAss.ToString() + "/Mensagem/" + mens.MENS_CD_ID.ToString() + "/Anexos/";
+                    //String map = Server.MapPath(caminho);
+                    //Directory.CreateDirectory(Server.MapPath(caminho));
 
                     // Trata anexos
                     if (Session["FileQueuePaciente"] != null)
@@ -3333,7 +3333,7 @@ namespace GEDSys_Presentation.Controllers
                         {
                             if (file.Profile == null)
                             {
-                                Int32 x = UploadFileQueuePacienteMensagem(file);
+                                Int32 x = await UploadFileQueuePacienteMensagemBlob(file);
                             }
                         }
                         Session["FileQueuePaciente"] = null;
@@ -3445,7 +3445,7 @@ namespace GEDSys_Presentation.Controllers
         }
 
         [HttpPost]
-        public Int32 UploadFileQueuePacienteMensagem(FileQueue file)
+        public async Task<Int32> UploadFileQueuePacienteMensagemBlob(FileQueue file)
         {
             try
             {
@@ -3478,13 +3478,46 @@ namespace GEDSys_Presentation.Controllers
                     return 1;
                 }
 
-                String caminho = "/Imagens/" + idAss.ToString() + "/Mensagem/" + item.MENS_CD_ID.ToString() + "/Anexos/";
-                String path = Path.Combine(Server.MapPath(caminho), fileName);
-                System.IO.Directory.CreateDirectory(Server.MapPath(caminho));
-                System.IO.File.WriteAllBytes(path, file.Contents);
+                // 1. DEFINIÇÃO DE CAMINHOS
+                String caminhoRelativo = "Imagens/" + item.ASSI_CD_ID.ToString() + "/Pacientes/" + item.PACI_CD_ID.ToString() + "/Anexos/";
+                String caminhoLocal = Server.MapPath("~/" + caminhoRelativo);
+                String fullPathLocal = Path.Combine(caminhoLocal, fileName);
+
+                //// Garante que a pasta local existe
+                //if (!Directory.Exists(caminhoLocal)) Directory.CreateDirectory(caminhoLocal);
+
+                //// 2. CÓPIA LOCAL (Escrita de Bytes)
+                //System.IO.File.WriteAllBytes(fullPathLocal, file.Contents);
+
+                // 3. CÓPIA PARA O AZURE BLOB STORAGE
+                try
+                {
+                    CONFIGURACAO conf = CarregaConfiguracaoGeral();
+                    string connString = conf.CONF_NM_STORAGE_CONN;
+                    string containerName = conf.CONF_NM_STORAGE_CONTAINER;
+
+                    var blobServiceClient = new Azure.Storage.Blobs.BlobServiceClient(connString);
+                    var containerClient = blobServiceClient.GetBlobContainerClient(containerName);
+
+                    // O nome do blob no Azure
+                    string blobName = caminhoRelativo + fileName;
+                    var blobClient = containerClient.GetBlobClient(blobName);
+
+                    // Como file.Contents é byte[], usamos MemoryStream para o upload
+                    using (var ms = new MemoryStream(file.Contents))
+                    {
+                        await blobClient.UploadAsync(ms, overwrite: true);
+                    }
+                }
+                catch (Exception exAzure)
+                {
+                    Session["MsgCRUD"] = "Erro na sincronização: " + exAzure.Message;
+                    Session["MensPaciente"] = 61;
+                    return 0;
+                }
 
                 MENSAGEM_ANEXO foto = new MENSAGEM_ANEXO();
-                foto.MEAN_AQ_ARQUIVO = "~" + caminho + fileName;
+                foto.MEAN_AQ_ARQUIVO = "~" + caminhoRelativo + fileName;
                 foto.MEAN_DT_ANEXO = DateTime.Today;
                 foto.MEAN_IN_ATIVO = 1;
                 Int32 tipo = 3;
@@ -3519,7 +3552,7 @@ namespace GEDSys_Presentation.Controllers
                 foto.MEAN_IN_TIPO = tipo;
                 foto.MEAN_NM_TITULO = fileName;
                 foto.MENS_CD_ID = item.MENS_CD_ID;
-                foto.MEAN_BN_BINARIO = System.IO.File.ReadAllBytes(path);
+                //foto.MEAN_BN_BINARIO = System.IO.File.ReadAllBytes(path);
                 item.MENSAGEM_ANEXO.Add(foto);
                 Int32 volta = mensApp.ValidateEdit(item, item);
                 return 0;
@@ -5676,10 +5709,10 @@ namespace GEDSys_Presentation.Controllers
                 String caminhoLocal = Server.MapPath("~/" + caminhoRelativo);
                 String fullPathLocal = Path.Combine(caminhoLocal, fileName);
 
-                if (!Directory.Exists(caminhoLocal)) Directory.CreateDirectory(caminhoLocal);
+                //if (!Directory.Exists(caminhoLocal)) Directory.CreateDirectory(caminhoLocal);
 
-                // 2. CÓPIA LOCAL
-                file.SaveAs(fullPathLocal);
+                //// 2. CÓPIA LOCAL
+                //file.SaveAs(fullPathLocal);
 
                 // 3. CÓPIA PARA O AZURE BLOB STORAGE (Síncrono)
                 try
@@ -10975,11 +11008,11 @@ namespace GEDSys_Presentation.Controllers
                 String caminhoLocal = Server.MapPath("~/" + caminhoRelativo);
                 String fullPathLocal = Path.Combine(caminhoLocal, fileName);
 
-                // Garante que a pasta local existe
-                if (!Directory.Exists(caminhoLocal)) Directory.CreateDirectory(caminhoLocal);
+                //// Garante que a pasta local existe
+                //if (!Directory.Exists(caminhoLocal)) Directory.CreateDirectory(caminhoLocal);
 
-                // 2. CÓPIA LOCAL (Escrita de Bytes)
-                System.IO.File.WriteAllBytes(fullPathLocal, file.Contents);
+                //// 2. CÓPIA LOCAL (Escrita de Bytes)
+                //System.IO.File.WriteAllBytes(fullPathLocal, file.Contents);
 
                 // 3. CÓPIA PARA O AZURE BLOB STORAGE
                 try
@@ -11685,14 +11718,14 @@ namespace GEDSys_Presentation.Controllers
                 String caminhoLocal = Server.MapPath("~/" + caminhoRelativo);
                 String fullPathLocal = Path.Combine(caminhoLocal, fileName);
 
-                // Garante que a pasta local existe
-                if (!Directory.Exists(caminhoLocal)) Directory.CreateDirectory(caminhoLocal);
+                //// Garante que a pasta local existe
+                //if (!Directory.Exists(caminhoLocal)) Directory.CreateDirectory(caminhoLocal);
 
-                // 2. CÓPIA LOCAL
-                using (var stream = new FileStream(fullPathLocal, FileMode.Create))
-                {
-                    await file.InputStream.CopyToAsync(stream);
-                }
+                //// 2. CÓPIA LOCAL
+                //using (var stream = new FileStream(fullPathLocal, FileMode.Create))
+                //{
+                //    await file.InputStream.CopyToAsync(stream);
+                //}
 
                 // 3. CÓPIA PARA O AZURE BLOB STORAGE
                 try
@@ -11953,14 +11986,14 @@ namespace GEDSys_Presentation.Controllers
                 String caminhoLocal = Server.MapPath("~/" + caminhoRelativo);
                 String fullPathLocal = Path.Combine(caminhoLocal, fileName);
 
-                // Garante que a pasta local existe
-                if (!Directory.Exists(caminhoLocal)) Directory.CreateDirectory(caminhoLocal);
+                //// Garante que a pasta local existe
+                //if (!Directory.Exists(caminhoLocal)) Directory.CreateDirectory(caminhoLocal);
 
-                // 2. CÓPIA LOCAL
-                using (var stream = new FileStream(fullPathLocal, FileMode.Create))
-                {
-                    await file.InputStream.CopyToAsync(stream);
-                }
+                //// 2. CÓPIA LOCAL
+                //using (var stream = new FileStream(fullPathLocal, FileMode.Create))
+                //{
+                //    await file.InputStream.CopyToAsync(stream);
+                //}
 
                 // 3. CÓPIA PARA O AZURE BLOB STORAGE
                 try

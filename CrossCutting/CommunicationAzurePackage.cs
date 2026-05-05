@@ -118,9 +118,14 @@ namespace CrossCutting
                     {
                         foreach (AttachmentModel anexo in anexos)
                         {
+                            // Validação de segurança: ignora se os bytes forem nulos
+                            if (anexo.FileBytes == null || anexo.FileBytes.Length == 0) continue;
+
                             var contentType = anexo.CONTENT_TYPE;
-                            //var content = BinaryData.FromString(anexo.ContentBytes);
-                            var content = new BinaryData(System.IO.File.ReadAllBytes(anexo.PATH));
+
+                            // Use FromBytes em vez do construtor 'new'
+                            BinaryData content = BinaryData.FromBytes(anexo.FileBytes);
+
                             var emailAttachment = new EmailAttachment(anexo.ATTACHMENT_NAME, contentType, content);
                             emailMessage.Attachments.Add(emailAttachment);
                         }

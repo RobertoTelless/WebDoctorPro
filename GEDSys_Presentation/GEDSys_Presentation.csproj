@@ -6804,7 +6804,7 @@
   <ItemGroup>
     <EmbeddedResource Include="App_Start\CRMSys_Base.resx">
       <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>CRMSys_Base.Designer.cs</LastGenOutput>
+      <LastGenOutput>CRMSys_Base1.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <EmbeddedResource Include="App_Start\PlatMensagens_Resources.resx" />
   </ItemGroup>

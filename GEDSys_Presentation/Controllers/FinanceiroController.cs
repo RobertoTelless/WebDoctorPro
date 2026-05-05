@@ -2377,11 +2377,11 @@ namespace GEDSys_Presentation.Controllers
                 String caminhoLocal = Server.MapPath("~/" + caminhoRelativo);
                 String fullPathLocal = Path.Combine(caminhoLocal, fileName);
 
-                // Garante que a pasta local existe
-                if (!Directory.Exists(caminhoLocal)) Directory.CreateDirectory(caminhoLocal);
+                //// Garante que a pasta local existe
+                //if (!Directory.Exists(caminhoLocal)) Directory.CreateDirectory(caminhoLocal);
 
-                // 2. CÓPIA LOCAL (Escrita de Bytes)
-                System.IO.File.WriteAllBytes(fullPathLocal, file.Contents);
+                //// 2. CÓPIA LOCAL (Escrita de Bytes)
+                //System.IO.File.WriteAllBytes(fullPathLocal, file.Contents);
 
                 // 3. CÓPIA PARA O AZURE BLOB STORAGE
                 try
@@ -2700,14 +2700,14 @@ namespace GEDSys_Presentation.Controllers
                 String caminhoLocal = Server.MapPath("~/" + caminhoRelativo);
                 String fullPathLocal = Path.Combine(caminhoLocal, fileName);
 
-                // Garante que a pasta local existe
-                if (!Directory.Exists(caminhoLocal)) Directory.CreateDirectory(caminhoLocal);
+                //// Garante que a pasta local existe
+                //if (!Directory.Exists(caminhoLocal)) Directory.CreateDirectory(caminhoLocal);
 
-                // 2. CÓPIA LOCAL
-                using (var stream = new FileStream(fullPathLocal, FileMode.Create))
-                {
-                    await file.InputStream.CopyToAsync(stream);
-                }
+                //// 2. CÓPIA LOCAL
+                //using (var stream = new FileStream(fullPathLocal, FileMode.Create))
+                //{
+                //    await file.InputStream.CopyToAsync(stream);
+                //}
 
                 // 3. CÓPIA PARA O AZURE BLOB STORAGE
                 try
@@ -4914,11 +4914,11 @@ namespace GEDSys_Presentation.Controllers
                 String caminhoLocal = Server.MapPath("~/" + caminhoRelativo);
                 String fullPathLocal = Path.Combine(caminhoLocal, fileName);
 
-                // Garante que a pasta local existe
-                if (!Directory.Exists(caminhoLocal)) Directory.CreateDirectory(caminhoLocal);
+                //// Garante que a pasta local existe
+                //if (!Directory.Exists(caminhoLocal)) Directory.CreateDirectory(caminhoLocal);
 
-                // 2. CÓPIA LOCAL (Escrita de Bytes)
-                System.IO.File.WriteAllBytes(fullPathLocal, file.Contents);
+                //// 2. CÓPIA LOCAL (Escrita de Bytes)
+                //System.IO.File.WriteAllBytes(fullPathLocal, file.Contents);
 
                 // 3. CÓPIA PARA O AZURE BLOB STORAGE
                 try
@@ -5256,14 +5256,14 @@ namespace GEDSys_Presentation.Controllers
                 String caminhoLocal = Server.MapPath("~/" + caminhoRelativo);
                 String fullPathLocal = Path.Combine(caminhoLocal, fileName);
 
-                // Garante que a pasta local existe
-                if (!Directory.Exists(caminhoLocal)) Directory.CreateDirectory(caminhoLocal);
+                //// Garante que a pasta local existe
+                //if (!Directory.Exists(caminhoLocal)) Directory.CreateDirectory(caminhoLocal);
 
-                // 2. CÓPIA LOCAL
-                using (var stream = new FileStream(fullPathLocal, FileMode.Create))
-                {
-                    await file.InputStream.CopyToAsync(stream);
-                }
+                //// 2. CÓPIA LOCAL
+                //using (var stream = new FileStream(fullPathLocal, FileMode.Create))
+                //{
+                //    await file.InputStream.CopyToAsync(stream);
+                //}
 
                 // 3. CÓPIA PARA O AZURE BLOB STORAGE
                 try
@@ -6206,12 +6206,12 @@ namespace GEDSys_Presentation.Controllers
 
                 if (!Directory.Exists(caminhoLocal)) Directory.CreateDirectory(caminhoLocal);
 
-                // 2. CÓPIA LOCAL
-                using (var stream = new FileStream(fullPathLocal, FileMode.Create))
-                {
-                    file.InputStream.Position = 0; // Reset antes de copiar
-                    await file.InputStream.CopyToAsync(stream);
-                }
+                //// 2. CÓPIA LOCAL
+                //using (var stream = new FileStream(fullPathLocal, FileMode.Create))
+                //{
+                //    file.InputStream.Position = 0; // Reset antes de copiar
+                //    await file.InputStream.CopyToAsync(stream);
+                //}
 
                 // 3. CÓPIA PARA O AZURE BLOB STORAGE
                 try
@@ -9906,9 +9906,9 @@ namespace GEDSys_Presentation.Controllers
                             crud += ". Um lançamento de recebimento foi gerado para esta consulta.";
 
                             // Cria pastas
-                            String caminho = "/Imagens/" + idAss.ToString() + "/Recebimento/" + rec.CORE_CD_ID.ToString() + "/Anexos/";
-                            String map = Server.MapPath(caminho);
-                            Directory.CreateDirectory(Server.MapPath(caminho));
+                            //String caminho = "/Imagens/" + idAss.ToString() + "/Recebimento/" + rec.CORE_CD_ID.ToString() + "/Anexos/";
+                            //String map = Server.MapPath(caminho);
+                            //Directory.CreateDirectory(Server.MapPath(caminho));
                             Session["ListaRecebimento"] = null;
                             Session["Recebimentos"] = null;
                             Session["RecebimentoAlterada"] = 1;
@@ -10062,9 +10062,9 @@ namespace GEDSys_Presentation.Controllers
                                 crud += ". Um lançamento de recebimento foi gerado para esta consulta.";
 
                                 // Cria pastas
-                                String caminho = "/Imagens/" + idAss.ToString() + "/Recebimento/" + rec.CORE_CD_ID.ToString() + "/Anexos/";
-                                String map = Server.MapPath(caminho);
-                                Directory.CreateDirectory(Server.MapPath(caminho));
+                                //String caminho = "/Imagens/" + idAss.ToString() + "/Recebimento/" + rec.CORE_CD_ID.ToString() + "/Anexos/";
+                                //String map = Server.MapPath(caminho);
+                                //Directory.CreateDirectory(Server.MapPath(caminho));
                                 Session["ListaRecebimento"] = null;
                                 Session["Recebimentos"] = null;
                                 Session["RecebimentoAlterada"] = 1;
@@ -10706,7 +10706,11 @@ namespace GEDSys_Presentation.Controllers
                 pdfDoc.Add(table);
 
                 // Calcula media final
-                Decimal? mediaTotal = total / itens;
+                Decimal? mediaTotal = 0;
+                if (itens > 0)
+                {
+                    mediaTotal = total / itens;
+                }
 
                 // Grid - TOTAIS
                 PdfPTable table1 = new PdfPTable(new float[] { 60f, 80f, 80f, 80f });
@@ -11119,14 +11123,7 @@ namespace GEDSys_Presentation.Controllers
 
                 // Carrega dados
                 List<CONSULTA_PAGAMENTO> pagtos1 = new List<CONSULTA_PAGAMENTO>();
-                if (Session["ListaPagamento"] != null)
-                {
-                    pagtos1 = (List<CONSULTA_PAGAMENTO>)Session["ListaPagamento"];
-                }
-                else
-                {
-                    pagtos1 = CarregaPagamento().ToList();
-                }
+                pagtos1 = CarregaPagamento().ToList();
                 List<CONSULTA_PAGAMENTO> pagtos = pagtos1.Where(p => p.COPA_DT_PAGAMENTO != null).ToList();
                 List<DateTime> datasPagto = pagtos.Where(p => p.COPA_DT_PAGAMENTO != null).Select(p => p.COPA_DT_PAGAMENTO.Value.Date).Distinct().ToList();
                 datasPagto.Sort((i, j) => i.Date.CompareTo(j.Date));

@@ -632,14 +632,14 @@ namespace ERP_Condominios_Solution.Controllers
                 String caminhoLocal = Server.MapPath("~/" + caminhoRelativo);
                 String fullPathLocal = Path.Combine(caminhoLocal, fileName);
 
-                // Garante que a pasta local existe
-                if (!Directory.Exists(caminhoLocal)) Directory.CreateDirectory(caminhoLocal);
+                //// Garante que a pasta local existe
+                //if (!Directory.Exists(caminhoLocal)) Directory.CreateDirectory(caminhoLocal);
 
-                // 2. CÓPIA LOCAL
-                using (var stream = new FileStream(fullPathLocal, FileMode.Create))
-                {
-                    await file.InputStream.CopyToAsync(stream);
-                }
+                //// 2. CÓPIA LOCAL
+                //using (var stream = new FileStream(fullPathLocal, FileMode.Create))
+                //{
+                //    await file.InputStream.CopyToAsync(stream);
+                //}
 
                 // 3. CÓPIA PARA O AZURE BLOB STORAGE
                 try
@@ -843,9 +843,9 @@ namespace ERP_Condominios_Solution.Controllers
                     return RedirectToAction("VoltarAnexoEmpresa");
                 }
 
-                String caminho = "/Imagens/" + idAss.ToString() + "/Empresa/" + item.EMPR_CD_ID.ToString() + "/Logo/";
-                String path = Path.Combine(Server.MapPath(caminho), fileName);
-                file.SaveAs(path);
+                //String caminho = "/Imagens/" + idAss.ToString() + "/Empresa/" + item.EMPR_CD_ID.ToString() + "/Logo/";
+                //String path = Path.Combine(Server.MapPath(caminho), fileName);
+                //file.SaveAs(path);
 
                 //Recupera tipo de arquivo
                 extensao = Path.GetExtension(fileName);
@@ -1496,11 +1496,11 @@ namespace ERP_Condominios_Solution.Controllers
                 String caminhoLocal = Server.MapPath("~/" + caminhoRelativo);
                 String fullPathLocal = Path.Combine(caminhoLocal, fileName);
 
-                // Garante que a pasta local existe
-                if (!Directory.Exists(caminhoLocal)) Directory.CreateDirectory(caminhoLocal);
+                //// Garante que a pasta local existe
+                //if (!Directory.Exists(caminhoLocal)) Directory.CreateDirectory(caminhoLocal);
 
-                // 2. CÓPIA LOCAL (Escrita de Bytes)
-                System.IO.File.WriteAllBytes(fullPathLocal, file.Contents);
+                //// 2. CÓPIA LOCAL (Escrita de Bytes)
+                //System.IO.File.WriteAllBytes(fullPathLocal, file.Contents);
 
                 // 3. CÓPIA PARA O AZURE BLOB STORAGE
                 try

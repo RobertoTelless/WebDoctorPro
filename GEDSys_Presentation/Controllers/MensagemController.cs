@@ -386,7 +386,7 @@ namespace ERP_Condominios_Solution.Controllers
         }
 
         [HttpPost]
-        public ActionResult UploadFileQueueMensagem(FileQueue file)
+        public async Task<ActionResult> UploadFileQueueMensagem(FileQueue file)
         {
             if ((String)Session["Ativa"] == null)
             {
@@ -401,7 +401,7 @@ namespace ERP_Condominios_Solution.Controllers
                 {
                     ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0019", CultureInfo.CurrentCulture));
                     Session["MensMensagem"] = 10;
-                    return RedirectToAction("VoltarBaseMensagemSMS");
+                    return RedirectToAction("VoltarBaseMensagem");
                 }
 
                 MENSAGENS item = baseApp.GetItemById(idNot);
@@ -411,19 +411,58 @@ namespace ERP_Condominios_Solution.Controllers
                 {
                     ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0024", CultureInfo.CurrentCulture));
                     Session["MensMensagem"] = 11;
-                    return RedirectToAction("VoltarBaseMensagemSMS");
+                    return RedirectToAction("VoltarBaseMensagem");
                 }
-                String caminho = "/Imagens/" + idAss.ToString() + "/Mensagem/" + item.MENS_CD_ID.ToString() + "/Anexos/";
-                String path = Path.Combine(Server.MapPath(caminho), fileName);
-                System.IO.Directory.CreateDirectory(Server.MapPath(caminho));
-                System.IO.File.WriteAllBytes(path, file.Contents);
+
+                //String caminho = "/Imagens/" + idAss.ToString() + "/Mensagem/" + item.MENS_CD_ID.ToString() + "/Anexos/";
+                //String path = Path.Combine(Server.MapPath(caminho), fileName);
+                //System.IO.Directory.CreateDirectory(Server.MapPath(caminho));
+                //System.IO.File.WriteAllBytes(path, file.Contents);
+
+                // 1. DEFINIÇÃO DE CAMINHOS
+                String caminhoRelativo = "Imagens/" + idAss.ToString() + "/Mensagem/" + item.MENS_CD_ID.ToString() + "/Anexos/";
+                String caminhoLocal = Server.MapPath("~/" + caminhoRelativo);
+                String fullPathLocal = Path.Combine(caminhoLocal, fileName);
+
+                //// Garante que a pasta local existe
+                //if (!Directory.Exists(caminhoLocal)) Directory.CreateDirectory(caminhoLocal);
+
+                //// 2. CÓPIA LOCAL (Escrita de Bytes)
+                //System.IO.File.WriteAllBytes(fullPathLocal, file.Contents);
+
+                // 3. CÓPIA PARA O AZURE BLOB STORAGE
+                try
+                {
+                    CONFIGURACAO conf = CarregaConfiguracaoGeral();
+                    string connString = conf.CONF_NM_STORAGE_CONN;
+                    string containerName = conf.CONF_NM_STORAGE_CONTAINER;
+
+                    var blobServiceClient = new Azure.Storage.Blobs.BlobServiceClient(connString);
+                    var containerClient = blobServiceClient.GetBlobContainerClient(containerName);
+
+                    // O nome do blob no Azure
+                    string blobName = caminhoRelativo + fileName;
+                    var blobClient = containerClient.GetBlobClient(blobName);
+
+                    // Como file.Contents é byte[], usamos MemoryStream para o upload
+                    using (var ms = new MemoryStream(file.Contents))
+                    {
+                        await blobClient.UploadAsync(ms, overwrite: true);
+                    }
+                }
+                catch (Exception exAzure)
+                {
+                    Session["MsgCRUD"] = "Erro na sincronização: " + exAzure.Message;
+                    Session["MensPaciente"] = 61;
+                    return RedirectToAction("VoltarBaseMensagem");
+                }
 
                 //Recupera tipo de arquivo
                 extensao = Path.GetExtension(fileName);
                 String a = extensao;
 
                 MENSAGEM_ANEXO foto = new MENSAGEM_ANEXO();
-                foto.MEAN_AQ_ARQUIVO = "~" + caminho + fileName;
+                foto.MEAN_AQ_ARQUIVO = "~" + caminhoRelativo + fileName;
                 foto.MEAN_DT_ANEXO = DateTime.Today;
                 foto.MEAN_IN_ATIVO = 1;
                 Int32 tipo = 3;
@@ -466,7 +505,7 @@ namespace ERP_Condominios_Solution.Controllers
                 }
                 foto.MEAN_NM_TITULO = fileName;
                 foto.MENS_CD_ID = item.MENS_CD_ID;
-                foto.MEAN_BN_BINARIO = System.IO.File.ReadAllBytes(path);
+                //foto.MEAN_BN_BINARIO = System.IO.File.ReadAllBytes(path);
                 item.MENSAGEM_ANEXO.Add(foto);
                 objetoAntes = item;
                 Int32 volta = baseApp.ValidateEdit(item, item);
@@ -2326,7 +2365,7 @@ namespace ERP_Condominios_Solution.Controllers
 
         [HttpPost]
         [ValidateInput(false)]
-        public ActionResult IncluirMensagemEMail(MensagemViewModel vm)
+        public async Task<ActionResult> IncluirMensagemEMail(MensagemViewModel vm)
         {
             if ((String)Session["Ativa"] == null)
             {
@@ -2546,9 +2585,9 @@ namespace ERP_Condominios_Solution.Controllers
                     Session["IdMensagem"] = item.MENS_CD_ID;
 
                     // Cria pastas
-                    String caminho = "/Imagens/" + idAss.ToString() + "/Mensagem/" + item.MENS_CD_ID.ToString() + "/Anexos/";
-                    String map = Server.MapPath(caminho);
-                    Directory.CreateDirectory(Server.MapPath(caminho));
+                    //String caminho = "/Imagens/" + idAss.ToString() + "/Mensagem/" + item.MENS_CD_ID.ToString() + "/Anexos/";
+                    //String map = Server.MapPath(caminho);
+                    //Directory.CreateDirectory(Server.MapPath(caminho));
 
                     // Trata anexos
                     if (Session["FileQueueMensagem"] != null)
@@ -2558,7 +2597,7 @@ namespace ERP_Condominios_Solution.Controllers
                         {
                             if (file.Profile == null)
                             {
-                                UploadFileQueueMensagem(file);
+                                await UploadFileQueueMensagem(file);
                             }
                         }
                         Session["FileQueueMensagem"] = null;

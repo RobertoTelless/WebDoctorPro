@@ -3128,6 +3128,164 @@ namespace GEDSys_Presentation.Controllers
             }
         }
 
+        [HttpPost]
+        public async Task<Int32> UploadFileQueueAreaBlob(FileQueue file)
+        {
+            try
+            {
+                if (file == null)
+                {
+                    Session["MensArea"] = 5;
+                    return 1;
+                }
+
+                // Recupera paciente
+                PACIENTE paciente = (PACIENTE)Session["UserCredentials"];
+                USUARIO item = usuApp.GetItemById(paciente.USUA_CD_ID.Value);
+                Int32 idNot = paciente.PACI__CD_ID;
+                Int32 idAss = paciente.ASSI_CD_ID;
+                Int32 idArea = (Int32)Session["IdArea"];
+                AREA_PACIENTE area = areaApp.GetItemById(idArea);
+
+                var fileName = file.Name;
+                if (fileName.Length > 250)
+                {
+                    Session["MensArea"] = 6;
+                    return 2;
+                }
+
+                // Critica tamanho arquivo
+                var fileSize = file.Contents.Length;
+                if (fileSize > 50000000)
+                {
+                    Session["MensArea"] = 7;
+                    return 3;
+                }
+
+                // Recupera tipo de arquivo
+                String extensao = Path.GetExtension(fileName);
+                if (!((String)Session["ExtensoesPossiveis"]).Contains(extensao.ToUpper()))
+                {
+                    Session["MensArea"] = 8;
+                    return 4;
+                }
+
+                // 1. DEFINIÇÃO DE CAMINHOS
+                String caminhoRelativo = "Imagens/" + idAss.ToString() + "/AreaPaciente/" + idArea.ToString() + "/Anexos/";
+                String caminhoLocal = Server.MapPath("~/" + caminhoRelativo);
+                String fullPathLocal = Path.Combine(caminhoLocal, fileName);
+
+                //// Garante que a pasta local existe
+                //if (!Directory.Exists(caminhoLocal)) Directory.CreateDirectory(caminhoLocal);
+
+                //// 2. CÓPIA LOCAL (Escrita de Bytes)
+                //System.IO.File.WriteAllBytes(fullPathLocal, file.Contents);
+
+                // 3. CÓPIA PARA O AZURE BLOB STORAGE
+                try
+                {
+                    CONFIGURACAO conf = CarregaConfiguracaoGeral();
+                    string connString = conf.CONF_NM_STORAGE_CONN;
+                    string containerName = conf.CONF_NM_STORAGE_CONTAINER;
+
+                    var blobServiceClient = new Azure.Storage.Blobs.BlobServiceClient(connString);
+                    var containerClient = blobServiceClient.GetBlobContainerClient(containerName);
+
+                    // O nome do blob no Azure
+                    string blobName = caminhoRelativo + fileName;
+                    var blobClient = containerClient.GetBlobClient(blobName);
+
+                    // Como file.Contents é byte[], usamos MemoryStream para o upload
+                    using (var ms = new MemoryStream(file.Contents))
+                    {
+                        await blobClient.UploadAsync(ms, overwrite: true);
+                    }
+                }
+                catch (Exception exAzure)
+                {
+                    Session["MsgCRUD"] = "Erro na sincronização: " + exAzure.Message;
+                    Session["MensPaciente"] = 61;
+                    return 0;
+                }
+
+                // Gravar registro
+                AREA_PACIENTE_ANEXO foto = new AREA_PACIENTE_ANEXO();
+                foto.APAN_AQ_ARQUIVO = "~" + caminhoRelativo + fileName;
+                foto.APAN_DT_ANEXO = DateTime.Today;
+                foto.APAN_IN_ATIVO = 1;
+                Int32 tipo = 3;
+                if (extensao.ToUpper() == ".JPG" || extensao.ToUpper() == ".GIF" || extensao.ToUpper() == ".PNG" || extensao.ToUpper() == ".JPEG")
+                {
+                    tipo = 1;
+                }
+                else if (extensao.ToUpper() == ".MP4" || extensao.ToUpper() == ".AVI" || extensao.ToUpper() == ".MPEG")
+                {
+                    tipo = 2;
+                }
+                else if (extensao.ToUpper() == ".PDF")
+                {
+                    tipo = 3;
+                }
+                else if (extensao.ToUpper() == ".MP3" || extensao.ToUpper() == ".MPEG")
+                {
+                    tipo = 4;
+                }
+                else if (extensao.ToUpper() == ".DOCX" || extensao.ToUpper() == ".DOC" || extensao.ToUpper() == ".ODT")
+                {
+                    tipo = 5;
+                }
+                else if (extensao.ToUpper() == ".XLSX" || extensao.ToUpper() == ".XLS" || extensao.ToUpper() == ".ODS")
+                {
+                    tipo = 6;
+                }
+                else
+                {
+                    tipo = 7;
+                }
+                foto.APAN_IN_TIPO = tipo;
+                foto.APAN_NM_TITULO = fileName;
+                foto.AREA_CD_ID = idArea;
+                area.AREA_PACIENTE_ANEXO.Add(foto);
+                Int32 volta = areaApp.ValidateEdit(area, item);
+
+                // Configura serilização
+                JsonSerializerSettings settings = new JsonSerializerSettings
+                {
+                    ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+                    NullValueHandling = NullValueHandling.Ignore
+                };
+
+                // Monta Log
+                DTO_Area_Paciente_Anexo dto = MontarAreaPacienteAnexoDTOObj(foto);
+                String json = JsonConvert.SerializeObject(dto, settings);
+                LOG log = new LOG
+                {
+                    LOG_DT_DATA = DateTime.Now,
+                    ASSI_CD_ID = item.ASSI_CD_ID,
+                    USUA_CD_ID = item.USUA_CD_ID,
+                    LOG_NM_OPERACAO = "Anexação de arquivos à informação da área do paciente",
+                    LOG_IN_ATIVO = 1,
+                    LOG_TX_REGISTRO = json,
+                    LOG_IN_SISTEMA = 6
+                };
+                Int32 volta1 = logApp.ValidateCreate(log);
+
+                return 0;
+            }
+            catch (Exception ex)
+            {
+                Session["MensagemLogin"] = 100;
+                Session["MensagemErro"] = ex.Message;
+                Session["Excecao"] = ex;
+                Session["TipoVolta"] = 2;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                Session["VoltaExcecao"] = "AreaPaciente";
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Exceção", "WebDoctor", 1, (USUARIO)Session["UsuarioArea"]);
+                return 0;
+            }
+        }
+
         public DTO_Area_Paciente MontarAreaPacienteDTOObj(AREA_PACIENTE l)
         {
             using (var context = new CRMSysDBEntities())

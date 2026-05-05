@@ -278,6 +278,17 @@ namespace ERP_Condominios_Solution.ViewModels
             }
         }
 
+        public string FotoAzureUrl
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(PACIENTE.PACI_AQ_FOTO)) return null;
+                string path = PACIENTE.PACI_AQ_FOTO.Replace("~/", "").Replace("~", "");
+                return $"https://rtistoragemain.blob.core.windows.net/rti-datacontainer/{path}";
+            }
+        }
+
+
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<CONSULTA_RECEBIMENTO> CONSULTA_RECEBIMENTO { get; set; }
         public virtual PACIENTE PACIENTE { get; set; }

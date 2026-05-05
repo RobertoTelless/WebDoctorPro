@@ -1777,11 +1777,11 @@ namespace ERP_Condominios_Solution.Controllers
                 String caminhoLocal = Server.MapPath("~/" + caminhoRelativo);
                 String fullPathLocal = Path.Combine(caminhoLocal, fileName);
 
-                // Garante que a pasta local existe
-                if (!Directory.Exists(caminhoLocal)) Directory.CreateDirectory(caminhoLocal);
+                //// Garante que a pasta local existe
+                //if (!Directory.Exists(caminhoLocal)) Directory.CreateDirectory(caminhoLocal);
 
-                // 2. CÓPIA LOCAL (Escrita de Bytes)
-                System.IO.File.WriteAllBytes(fullPathLocal, file.Contents);
+                //// 2. CÓPIA LOCAL (Escrita de Bytes)
+                //System.IO.File.WriteAllBytes(fullPathLocal, file.Contents);
 
                 // 3. CÓPIA PARA O AZURE BLOB STORAGE
                 try
@@ -2041,14 +2041,14 @@ namespace ERP_Condominios_Solution.Controllers
                 String caminhoLocal = Server.MapPath("~/" + caminhoRelativo);
                 String fullPathLocal = Path.Combine(caminhoLocal, fileName);
 
-                // Garante que a pasta local existe
-                if (!Directory.Exists(caminhoLocal)) Directory.CreateDirectory(caminhoLocal);
+                //// Garante que a pasta local existe
+                //if (!Directory.Exists(caminhoLocal)) Directory.CreateDirectory(caminhoLocal);
 
-                // 2. CÓPIA LOCAL
-                using (var stream = new FileStream(fullPathLocal, FileMode.Create))
-                {
-                    await file.InputStream.CopyToAsync(stream);
-                }
+                //// 2. CÓPIA LOCAL
+                //using (var stream = new FileStream(fullPathLocal, FileMode.Create))
+                //{
+                //    await file.InputStream.CopyToAsync(stream);
+                //}
 
                 // 3. CÓPIA PARA O AZURE BLOB STORAGE
                 try
@@ -2266,11 +2266,11 @@ namespace ERP_Condominios_Solution.Controllers
                     String caminhoLocal = Server.MapPath("~/" + caminhoRelativo);
                     String fullPathLocal = Path.Combine(caminhoLocal, fileName);
 
-                    // Garante que a pasta local existe
-                    if (!Directory.Exists(caminhoLocal)) Directory.CreateDirectory(caminhoLocal);
+                    //// Garante que a pasta local existe
+                    //if (!Directory.Exists(caminhoLocal)) Directory.CreateDirectory(caminhoLocal);
 
-                    // 2. CÓPIA LOCAL
-                    System.IO.File.WriteAllBytes(fullPathLocal, file.Contents);
+                    //// 2. CÓPIA LOCAL
+                    //System.IO.File.WriteAllBytes(fullPathLocal, file.Contents);
 
                     // 3. CÓPIA PARA O AZURE BLOB STORAGE
                     try
@@ -2464,10 +2464,10 @@ namespace ERP_Condominios_Solution.Controllers
                     String caminhoLocal = Server.MapPath("~/" + caminhoRelativo);
                     String fullPathLocal = Path.Combine(caminhoLocal, fileName);
 
-                    if (!Directory.Exists(caminhoLocal)) Directory.CreateDirectory(caminhoLocal);
+                    //if (!Directory.Exists(caminhoLocal)) Directory.CreateDirectory(caminhoLocal);
 
-                    // 2. CÓPIA LOCAL
-                    file.SaveAs(fullPathLocal);
+                    //// 2. CÓPIA LOCAL
+                    //file.SaveAs(fullPathLocal);
 
                     // 3. CÓPIA PARA O AZURE BLOB STORAGE (Síncrono)
                     try

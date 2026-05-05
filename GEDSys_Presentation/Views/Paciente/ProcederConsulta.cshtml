@@ -99,13 +99,6 @@
                                 @Html.ValidationSummary(false, "", new { @class = "text-danger" })
                             </div>
                         }
-                        @*@if (TempData["TemMensagem"] != null)
-                        {
-                            <div class="alert alert-success">
-                                <button type="button" class="close" data-dismiss="alert">Fechar</button>
-                                <span>@TempData["MensagemAcerto"]</span>
-                            </div>
-                        }*@                    
                         <div class="row">
                             <div class="form-group" style=" margin-left: 0px; margin-right: 0px;">    
                                 <a href="@Url.Action("VoltarAnexoPaciente", "Paciente")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acesso à página de edição do paciente" class="btn btn-sm btn-success btn-loading" OnClick = "Fade()">Paciente</a>                
@@ -126,17 +119,26 @@
                         </div>
                         <div class="row" style="width: 100%;">
                             <div class="col-lg-2 col-md-3 col-sm-4 col-xs-12">
-                                @if (!String.IsNullOrEmpty(Model.PACIENTE.PACI_AQ_FOTO))
-                                {
-                                    <img src="@Url.Content(Model.PACIENTE.PACI_AQ_FOTO)" 
-                                         class="img-responsive thumbnail" 
-                                         style="max-height: 270px; margin: 0 auto;">
+                                @if (Model.PACIENTE.PACI_AQ_FOTO.Contains("icon_morador.png"))
+	                            {
+                                    <img src="~/Images/icon_morador.png" 
+                                            class="img-responsive thumbnail" 
+                                            style="max-height: 230px; margin: 0 auto;">
                                 }
                                 else
                                 {
-                                    <img src="~/Images/icon_morador.png" 
-                                         class="img-responsive thumbnail" 
-                                         style="max-height: 230px; margin: 0 auto;">
+                                    if (!String.IsNullOrEmpty(Model.PACIENTE.PACI_AQ_FOTO))
+                                    {
+                                        <img src="@Model.FotoAzureUrl" 
+                                                class="img-responsive thumbnail" 
+                                                style="max-height: 270px; margin: 0 auto;">
+                                    }
+                                    else
+                                    {
+                                        <img src="~/Images/icon_morador.png" 
+                                                class="img-responsive thumbnail" 
+                                                style="max-height: 230px; margin: 0 auto;">
+                                    }
                                 }
                             </div>
                             <div class="col-lg-10 col-md-10 col-xs-12">

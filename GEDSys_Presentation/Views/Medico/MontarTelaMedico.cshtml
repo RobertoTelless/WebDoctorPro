@@ -88,6 +88,9 @@
                                     @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaPaciente", controller: "Paciente")
                                 }
                                 <a href="@Url.Action((String)Session["AjudaNivel"])"  class="btn btn-sm btn-danger" target="_blank">Ajuda</a>                
+                                <span id="loadingIndicator" style="display: none; margin-left: 10px; color: #007bff;">
+                                    <i class="fa fa-spinner fa-spin"></i> Processando...
+                                </span>
                             </div>
                         </div>
                     </div>
@@ -109,13 +112,6 @@
                             @Html.ValidationSummary(false, "", new { @class = "text-danger" })
                         </div>
                     }
-                    @*@if (TempData["TemMensagem"] != null)
-                    {
-                        <div class="alert alert-success">
-                            <button type="button" class="close" data-dismiss="alert">Fechar</button>
-                            <span>@TempData["MensagemAcerto"]</span>
-                        </div>
-                    }*@
                     
                     <div class="row">
                         @if (ViewBag.Listas != null && (ViewBag.Listas as List<EntitiesServices.Model.MEDICOS>).Count > 0)
@@ -170,14 +166,14 @@
                                                 <td style="width: auto">Nenhum</td>
                                             }
                                             <td class="td-one-action">
-                                                @Html.TableLinkDetails(cond.MEDC_CD_ID, "EditarMedico", "fa-edit", "Acessar Informações")
+                                                @Html.TableLinkDetails(cond.MEDC_CD_ID, "EditarMedico", "fa-edit btn-loading", "Acessar Informações")
                                                 @if (cond.MEDC_IN_ATIVO == 1)
                                                 {
-                                                    <span style="color: #337ab7; cursor:pointer;" alt="Desativar" class="tbl-link fa-lg fa fa-trash-o" onclick="ShowModalExcluir('/Medico/ExcluirMedico/@cond.MEDC_CD_ID')" title="Excluir Medico"></span>
+                                                    <span style="color: #337ab7; cursor:pointer;" alt="Desativar" class="tbl-link fa-lg fa fa-trash-o btn-loading" onclick="ShowModalExcluir('/Medico/ExcluirMedico/@cond.MEDC_CD_ID')" title="Excluir Medico"></span>
                                                 }
                                                 else
                                                 {
-                                                    <span style="color: #337ab7; cursor:pointer;" alt="Reativar" class="tbl-link fa-lg fa fa-refresh" onclick="ShowModalReativar('/Medico/ReativarMedico/@cond.MEDC_CD_ID')" title="Reativar Medico"></span>
+                                                    <span style="color: #337ab7; cursor:pointer;" alt="Reativar" class="tbl-link fa-lg fa fa-refresh btn-loading" onclick="ShowModalReativar('/Medico/ReativarMedico/@cond.MEDC_CD_ID')" title="Reativar Medico"></span>
                                                 }
                                             </td>
                                         </tr>

@@ -101,6 +101,27 @@
         <br />
     </div>
     <div class="row">
+        <div class="form-group" style=" margin-left: 15px; margin-right: 0px;">
+            @* --- INÍCIO DA AJUDA CONTEXTUAL --- *@
+            <details class="ajuda-contextual">
+                <summary><i class="fa fa-info-circle text-info"></i> Resumo das funcionalidades desta página</summary>
+                <div class="well well-sm">
+                    <p>Essa é a página de alteração de recebimentos do <b>WebDoctorPro</b>. Nela você poderá:</p>
+                    <ol>
+                        <li>Alterar informações de um recebimento</li>
+                        <li>Informar a quitação desse recebimento</li>
+                        <li>Criar anotações a esse recebimento</li>
+                        <li>Anexar, excluir ou visualizar arquivos desse recebimento</li>
+                        <li>Anexar um recibo a esse pagamento (Apenas recibos gerados pelo eCaC da Receita Federal)</li>
+                        <li>Visualizar, excluir ou baixar recibos anexados a esse recebimento</li>
+                    </ol>
+                </div>
+            </details>
+            @* --- FIM DA AJUDA CONTEXTUAL --- *@
+        </div>
+    </div>
+
+    <div class="row">
         <div class="col-lg-12 col-md-12 col-xs-12">
             <div class="col-lg-12 col-md-12 col-xs-12 ibox float-e-margins">
                 <div class="ibox-title">
@@ -316,8 +337,6 @@
                                                             </div>
                                                         </div>
 
-
-
                                                         if (listaAnexos.Count > 0)
                                                         {
                                                             <div id="sectionList" class="view-section active">
@@ -348,7 +367,6 @@
                                                                                         // Monta a URL direta do Azure
                                                                                         var caminhoPdf = cond.REAN_AQ_ARQUIVO.Replace("~/", "").Replace("~", "");
                                                                                         var urlAzurePdf = "https://rtistoragemain.blob.core.windows.net/rti-datacontainer/" + caminhoPdf;
-
                                                                                         <a href="@urlAzurePdf" target="_blank">@cond.REAN_NM_TITULO</a>
                                                                                     }
                                                                                     else { @cond.REAN_NM_TITULO }
@@ -357,8 +375,6 @@
                                                                                 <td>@(cond.REAN_IN_TIPO == 1 ? "Imagem" : cond.REAN_IN_TIPO == 2 ? "Vídeo" : cond.REAN_IN_TIPO == 3 ? "PDF" : "Outros")</td>
                                                                                 <td class="td-one-action">
                                                                                     <span class="fa fa-trash-o" onclick="PrepararExclusaoAnexo('/Financeiro/ExcluirAnexoRecebimento/@cond.REAN_CD_ID')" style="cursor:pointer; color:#337ab7"></span>
-                                                                                    @*@Html.TableLinkDetails(cond.PAAN_CD_ID, "DownloadPagamento", "fa-download", "Download")*@
-
                                                                                     <a href="@Url.Action("DownloadRecebimento", "Financeiro", new { id = cond.REAN_CD_ID })" 
                                                                                        class="btn btn-default" 
                                                                                        title="Download">
@@ -472,8 +488,6 @@
                                                             </div>
                                                         </div>
 
-
-
                                                         if (listaAnexos.Count > 0)
                                                         {
                                                             <div id="sectionList" class="view-section active">
@@ -504,7 +518,6 @@
                                                                                         // Monta a URL direta do Azure
                                                                                         var caminhoPdf = cond.REAN_AQ_ARQUIVO.Replace("~/", "").Replace("~", "");
                                                                                         var urlAzurePdf = "https://rtistoragemain.blob.core.windows.net/rti-datacontainer/" + caminhoPdf;
-
                                                                                         <a href="@urlAzurePdf" target="_blank">@cond.REAN_NM_TITULO</a>
                                                                                     }
                                                                                     else { @cond.REAN_NM_TITULO }
@@ -513,8 +526,6 @@
                                                                                 <td>@(cond.REAN_IN_TIPO == 1 ? "Imagem" : cond.REAN_IN_TIPO == 2 ? "Vídeo" : cond.REAN_IN_TIPO == 3 ? "PDF" : "Outros")</td>
                                                                                 <td class="td-one-action">
                                                                                     <span class="fa fa-trash-o" onclick="PrepararExclusaoAnexo('/Financeiro/ExcluirAnexoRecebimento/@cond.REAN_CD_ID')" style="cursor:pointer; color:#337ab7"></span>
-                                                                                    @*@Html.TableLinkDetails(cond.PAAN_CD_ID, "DownloadPagamento", "fa-download", "Download")*@
-
                                                                                     <a href="@Url.Action("DownloadRecebimento", "Financeiro", new { id = cond.REAN_CD_ID })" 
                                                                                        class="btn btn-default" 
                                                                                        title="Download">
@@ -619,8 +630,23 @@
                                                     {
                                                         <div class="social-feed-box">
                                                             <div class="social-avatar">
-                                                                <a href="" class="pull-left">
-                                                                    <img src="@Url.Content(item.USUARIO.USUA_AQ_FOTO)" style="width: auto; height: auto; max-height: 110px; max-width: 90px;">
+                                                                <a href="#" class="pull-left">
+                                                                    @{
+                                                                        // Definimos a URL base do seu storage
+                                                                        string storageUrl = "https://rtistoragemain.blob.core.windows.net/rti-datacontainer/";
+        
+                                                                        // Pegamos o caminho que está no banco e removemos o "~"
+                                                                        string fotoPath = item.USUARIO.USUA_AQ_FOTO != null 
+                                                                                          ? item.USUARIO.USUA_AQ_FOTO.Replace("~", "") 
+                                                                                          : "Imagens/Base/foto_padrao.png"; // Fallback caso não tenha foto
+
+                                                                        // Montamos a URL completa
+                                                                        string fullImageUrl = storageUrl + fotoPath.TrimStart('/');
+                                                                    }
+    
+                                                                    <img src="@fullImageUrl" 
+                                                                         style="width: auto; height: auto; max-height: 110px; max-width: 90px;" 
+                                                                         alt="Foto do Usuário">
                                                                 </a>
                                                                 <span style="color: #337ab7; cursor:pointer;" alt="Excluir" class="tbl-link fa-lg fa fa-trash-o btn-loading" onclick="ShowModalExcluirAnotacao('/Financeiro/ExcluirAnotacaoRecebimento/@item.REAT_CD_ID')" title="Excluir Anotação"></span>
                                                                 <div class="media-body">
@@ -660,8 +686,23 @@
                                                     {
                                                         <div class="social-feed-box">
                                                             <div class="social-avatar">
-                                                                <a href="" class="pull-left">
-                                                                    <img src="@Url.Content(item.USUARIO.USUA_AQ_FOTO)" style="width: auto; height: auto; max-height: 110px; max-width: 90px;">
+                                                                <a href="#" class="pull-left">
+                                                                    @{
+                                                                        // Definimos a URL base do seu storage
+                                                                        string storageUrl = "https://rtistoragemain.blob.core.windows.net/rti-datacontainer/";
+        
+                                                                        // Pegamos o caminho que está no banco e removemos o "~"
+                                                                        string fotoPath = item.USUARIO.USUA_AQ_FOTO != null 
+                                                                                          ? item.USUARIO.USUA_AQ_FOTO.Replace("~", "") 
+                                                                                          : "Imagens/Base/foto_padrao.png"; // Fallback caso não tenha foto
+
+                                                                        // Montamos a URL completa
+                                                                        string fullImageUrl = storageUrl + fotoPath.TrimStart('/');
+                                                                    }
+    
+                                                                    <img src="@fullImageUrl" 
+                                                                         style="width: auto; height: auto; max-height: 110px; max-width: 90px;" 
+                                                                         alt="Foto do Usuário">
                                                                 </a>
                                                                 <span style="color: #337ab7; cursor:pointer;" alt="Excluir" class="tbl-link fa-lg fa fa-trash-o btn-loading" onclick="ShowModalExcluirAnotacao('/Financeiro/ExcluirAnotacaoRecebimento/@item.REAT_CD_ID')" title="Excluir Anotação"></span>
                                                                 <div class="media-body">
@@ -728,7 +769,6 @@
                                                                             <td style="width: auto">@CrossCutting.Formatters.DecimalFormatter(cond.RERC_VL_VALOR.Value)</td>
                                                                             <td class="td-one-action">
                                                                                 <span class="fa fa-trash-o" onclick="PrepararExclusaoRecibo('/Financeiro/ExcluirRecibo/@cond.RERC_CD_ID')" style="cursor:pointer; color:#337ab7"></span>
-                                                                                @*<span style="color: #337ab7; cursor:pointer;" alt="Desativar" class="tbl-link fa-lg fa fa-trash-o btn-loading" onclick="ShowModalExcluirNota('/Financeiro/ExcluirNotaFiscalPagamento/@cond.PANF_CD_ID')" title="Excluir Nota Fiscal"></span>*@
                                                                                 @Html.TableLinkDetails(cond.RERC_CD_ID, "DownloadRecibo", "fa-download", "Download")
                                                                             </td>
                                                                         </tr>
@@ -790,7 +830,6 @@
                                                                             <td style="width: auto">@CrossCutting.Formatters.DecimalFormatter(cond.RERC_VL_VALOR.Value)</td>
                                                                             <td class="td-one-action">
                                                                                 <span class="fa fa-trash-o" onclick="PrepararExclusaoRecibo('/Financeiro/ExcluirRecibo/@cond.RERC_CD_ID')" style="cursor:pointer; color:#337ab7"></span>
-                                                                                @*<span style="color: #337ab7; cursor:pointer;" alt="Desativar" class="tbl-link fa-lg fa fa-trash-o btn-loading" onclick="ShowModalExcluirNota('/Financeiro/ExcluirNotaFiscalPagamento/@cond.PANF_CD_ID')" title="Excluir Nota Fiscal"></span>*@
                                                                                 @Html.TableLinkDetails(cond.RERC_CD_ID, "DownloadRecibo", "fa-download", "Download")
                                                                             </td>
                                                                         </tr>

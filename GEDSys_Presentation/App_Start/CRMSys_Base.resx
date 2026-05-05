@@ -2281,6 +2281,12 @@
     <value>Vacina já cadastrada</value>
   </data>
   <data name="M0743" xml:space="preserve">
-    <value>Imposs[ivel excluir essa vacina. Ela está relacionada com outros registros</value>
+    <value>Impossível excluir essa vacina. Ela está relacionada com outros registros</value>
+  </data>
+  <data name="M0744" xml:space="preserve">
+    <value>O limite mensal de mensagens de e-mail foi atingido. Impossível enviar a mensagem</value>
+  </data>
+  <data name="M0745" xml:space="preserve">
+    <value>E-mail não especificado para o médico</value>
   </data>
 </root>

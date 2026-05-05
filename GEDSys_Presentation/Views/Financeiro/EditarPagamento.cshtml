@@ -501,7 +501,6 @@
                                                                                         // Monta a URL direta do Azure
                                                                                         var caminhoPdf = cond.PAAN_AQ_ARQUIVO.Replace("~/", "").Replace("~", "");
                                                                                         var urlAzurePdf = "https://rtistoragemain.blob.core.windows.net/rti-datacontainer/" + caminhoPdf;
-
                                                                                         <a href="@urlAzurePdf" target="_blank">@cond.PAAN_NM_TITULO</a>
                                                                                     }
                                                                                     else { @cond.PAAN_NM_TITULO }

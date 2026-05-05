@@ -796,5 +796,25 @@ namespace CrossCutting
             return tupla;
         }
 
+        public static string GetContentType(int tipo)
+        {
+            switch (tipo)
+            {
+                case 1:
+                    return System.Net.Mime.MediaTypeNames.Image.Jpeg;
+                case 2:
+                    return "video/mp4";
+                case 3:
+                    return System.Net.Mime.MediaTypeNames.Application.Pdf;
+                case 4:
+                    return "audio/mpeg";
+                case 5:
+                    return "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+                case 6:
+                    return "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+                default:
+                    return "application/octet-stream";
+            }
+        }
     }
 }
