@@ -524,8 +524,239 @@ namespace ERP_Condominios_Solution.Controllers
             }
         }
 
+        public async Task<ActionResult> UploadFileQueueMensagemBlob(FileQueue file)
+        {
+            if (Session["Ativa"] == null)
+            {
+                return RedirectToAction("Logout", "ControleAcesso");
+            }
+
+            try
+            {
+                Int32 idNot = (Int32)Session["IdMensagem"];
+                Int32 idAss = (Int32)Session["IdAssinante"];
+
+                if (file == null || file.Contents == null)
+                {
+                    Session["MensMensagem"] = 10;
+                    return RedirectToAction("VoltarBaseMensagem");
+                }
+
+                MENSAGENS item = baseApp.GetItemById(idNot);
+                var fileName = Path.GetFileName(file.Name); // Garante apenas o nome do arquivo
+
+                if (fileName.Length > 250)
+                {
+                    Session["MensMensagem"] = 11;
+                    return RedirectToAction("VoltarBaseMensagem");
+                }
+
+                // 1. DEFINIÇÃO DE CAMINHOS (Removido o ~ e garantido que não comece com /)
+                String caminhoRelativo = $"Imagens/{idAss}/Mensagem/{item.MENS_CD_ID}/Anexos/";
+                //String caminhoRelativo = "Imagens/" + idAss.ToString() + "/Mensagem/" + item.MENS_CD_ID.ToString() + "/Anexos/";
+
+                // 2. UPLOAD PARA O AZURE BLOB STORAGE
+                try
+                {
+                    CONFIGURACAO conf = CarregaConfiguracaoGeral();
+                    string connString = conf.CONF_NM_STORAGE_CONN;
+                    string containerName = conf.CONF_NM_STORAGE_CONTAINER;
+
+                    var blobServiceClient = new Azure.Storage.Blobs.BlobServiceClient(connString);
+                    var containerClient = blobServiceClient.GetBlobContainerClient(containerName);
+
+                    // Garante que o container existe (opcional, mas seguro)
+                    await containerClient.CreateIfNotExistsAsync();
+
+                    // O nome do blob NÃO deve começar com barra / para evitar pastas vazias no início
+                    string blobName = (caminhoRelativo + fileName).Replace("\\", "/");
+                    var blobClient = containerClient.GetBlobClient(blobName);
+
+                    using (var ms = new MemoryStream(file.Contents))
+                    {
+                        ms.Position = 0;
+                        // Definir o ContentType ajuda o navegador a abrir o arquivo corretamente depois
+                        var blobHttpHeader = new Azure.Storage.Blobs.Models.BlobHttpHeaders
+                        {
+                            ContentType = MimeMapping.GetMimeMapping(fileName)
+                        };
+
+                        await blobClient.UploadAsync(ms, new Azure.Storage.Blobs.Models.BlobUploadOptions
+                        {
+                            HttpHeaders = blobHttpHeader
+                        });
+                    }
+                }
+                catch (Exception exAzure)
+                {
+                    Session["MsgCRUD"] = "Erro no Storage: " + exAzure.Message;
+                    Session["MensMensagens"] = 99;
+                    return RedirectToAction("VoltarBaseMensagemEMail");
+                }
+
+                // 3. GRAVAÇÃO NO BANCO DE DADOS
+                string extensao = Path.GetExtension(fileName).ToLower();
+
+                MENSAGEM_ANEXO foto = new MENSAGEM_ANEXO();
+                // Guardamos o caminho relativo para montar a URL depois
+                foto.MEAN_AQ_ARQUIVO = caminhoRelativo + fileName;
+                foto.MEAN_DT_ANEXO = DateTime.Now;
+                foto.MEAN_IN_ATIVO = 1;
+
+                // Lógica de definição de tipo
+                if (new[] { ".jpg", ".gif", ".png", ".jpeg" }.Contains(extensao)) foto.MEAN_IN_TIPO = 1;
+                else if (new[] { ".mp4", ".avi", ".mpeg" }.Contains(extensao)) foto.MEAN_IN_TIPO = 2;
+                else if (extensao == ".pdf") foto.MEAN_IN_TIPO = 3;
+                else if (extensao == ".mp3") foto.MEAN_IN_TIPO = 4;
+                else if (new[] { ".docx", ".doc", ".odt" }.Contains(extensao)) foto.MEAN_IN_TIPO = 5;
+                else if (new[] { ".xlsx", ".xls", ".ods" }.Contains(extensao)) foto.MEAN_IN_TIPO = 6;
+                else foto.MEAN_IN_TIPO = 7;
+
+                foto.MEAN_NM_TITULO = fileName;
+                foto.MEAN_NM_TITULO_NOVO = fileName.Length > 245 ? fileName.Substring(0, 245) : fileName;
+                foto.MENS_CD_ID = item.MENS_CD_ID;
+
+                item.MENSAGEM_ANEXO.Add(foto);
+                baseApp.ValidateEdit(item, item);
+
+                return RedirectToAction("VoltarBaseMensagemEMail");
+            }
+            catch (Exception ex)
+            {
+                // Tratamento de erro geral e Log
+                return RedirectToAction("TrataExcecao", "BaseAdmin");
+            }
+        }
+
+        [HttpPost]
+        //public async Task<ActionResult> UploadFileQueueMensagemBlob(FileQueue file)
+        //{
+        //    if ((String)Session["Ativa"] == null)
+        //    {
+        //        return RedirectToAction("Logout", "ControleAcesso");
+        //    }
+        //    try
+        //    {
+        //        Int32 idNot = (Int32)Session["IdMensagem"];
+        //        Int32 idAss = (Int32)Session["IdAssinante"];
+
+        //        if (file == null)
+        //        {
+        //            ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0019", CultureInfo.CurrentCulture));
+        //            Session["MensMensagem"] = 10;
+        //            return RedirectToAction("VoltarBaseMensagem");
+        //        }
+
+        //        MENSAGENS item = baseApp.GetItemById(idNot);
+        //        USUARIO usu = (USUARIO)Session["UserCredentials"];
+        //        var fileName = file.Name;
+        //        if (fileName.Length > 250)
+        //        {
+        //            ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0024", CultureInfo.CurrentCulture));
+        //            Session["MensMensagem"] = 11;
+        //            return RedirectToAction("VoltarBaseMensagem");
+        //        }
+
+        //        // 1. DEFINIÇÃO DE CAMINHOS
+        //        String caminhoRelativo = "Imagens/" + idAss.ToString() + "/Mensagem/" + item.MENS_CD_ID.ToString() + "/Anexos/";
+        //        String caminhoLocal = Server.MapPath("~/" + caminhoRelativo);
+        //        String fullPathLocal = Path.Combine(caminhoLocal, fileName);
+
+        //        // 3. CÓPIA PARA O AZURE BLOB STORAGE
+        //        try
+        //        {
+        //            CONFIGURACAO conf = CarregaConfiguracaoGeral();
+        //            string connString = conf.CONF_NM_STORAGE_CONN;
+        //            string containerName = conf.CONF_NM_STORAGE_CONTAINER;
+
+        //            var blobServiceClient = new Azure.Storage.Blobs.BlobServiceClient(connString);
+        //            var containerClient = blobServiceClient.GetBlobContainerClient(containerName);
+
+        //            // O nome do blob no Azure
+        //            string blobName = caminhoRelativo + fileName;
+        //            var blobClient = containerClient.GetBlobClient(blobName);
+
+        //            // Como file.Contents é byte[], usamos MemoryStream para o upload
+        //            using (var ms = new MemoryStream(file.Contents))
+        //            {
+        //                await blobClient.UploadAsync(ms, overwrite: true);
+        //            }
+        //        }
+        //        catch (Exception exAzure)
+        //        {
+        //            Session["MsgCRUD"] = "Erro na sincronização: " + exAzure.Message;
+        //            Session["MensMensagens"] = 99;
+        //            return RedirectToAction("VoltarBaseMensagemEMail");
+        //        }
+
+        //        //Recupera tipo de arquivo
+        //        extensao = Path.GetExtension(fileName);
+        //        String a = extensao;
+
+        //        MENSAGEM_ANEXO foto = new MENSAGEM_ANEXO();
+        //        foto.MEAN_AQ_ARQUIVO = "~" + caminhoRelativo + fileName;
+        //        foto.MEAN_DT_ANEXO = DateTime.Today;
+        //        foto.MEAN_IN_ATIVO = 1;
+        //        Int32 tipo = 3;
+        //        if (extensao.ToUpper() == ".JPG" || extensao.ToUpper() == ".GIF" || extensao.ToUpper() == ".PNG" || extensao.ToUpper() == ".JPEG")
+        //        {
+        //            tipo = 1;
+        //        }
+        //        else if (extensao.ToUpper() == ".MP4" || extensao.ToUpper() == ".AVI" || extensao.ToUpper() == ".MPEG")
+        //        {
+        //            tipo = 2;
+        //        }
+        //        else if (extensao.ToUpper() == ".PDF")
+        //        {
+        //            tipo = 3;
+        //        }
+        //        else if (extensao.ToUpper() == ".MP3" || extensao.ToUpper() == ".MPEG")
+        //        {
+        //            tipo = 4;
+        //        }
+        //        else if (extensao.ToUpper() == ".DOCX" || extensao.ToUpper() == ".DOC" || extensao.ToUpper() == ".ODT")
+        //        {
+        //            tipo = 5;
+        //        }
+        //        else if (extensao.ToUpper() == ".XLSX" || extensao.ToUpper() == ".XLS" || extensao.ToUpper() == ".ODS")
+        //        {
+        //            tipo = 6;
+        //        }
+        //        else
+        //        {
+        //            tipo = 7;
+        //        }
+        //        foto.MEAN_IN_TIPO = tipo;
+        //        if (fileName.Length > 245)
+        //        {
+        //            foto.MEAN_NM_TITULO_NOVO = fileName.Substring(0, 245);
+        //        }
+        //        else
+        //        {
+        //            foto.MEAN_NM_TITULO_NOVO = fileName;
+        //        }
+        //        foto.MEAN_NM_TITULO = fileName;
+        //        foto.MENS_CD_ID = item.MENS_CD_ID;
+        //        item.MENSAGEM_ANEXO.Add(foto);
+        //        objetoAntes = item;
+        //        Int32 volta = baseApp.ValidateEdit(item, item);
+        //        return RedirectToAction("VoltarBaseMensagemEMail");
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        ViewBag.Message = ex.Message;
+        //        Session["TipoVolta"] = 2;
+        //        Session["VoltaExcecao"] = "Mensageria";
+        //        Session["Excecao"] = ex;
+        //        Session["ExcecaoTipo"] = ex.GetType().ToString();
+        //        GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+        //        Int32 voltaX = grava.GravarLogExcecao(ex, "Mensageria", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+        //        return RedirectToAction("TrataExcecao", "BaseAdmin");
+        //    }
+        //}
+
         [ValidateInput(false)]
-        public Int32 ProcessarEnvioMensagemEMail(MensagemViewModel vm, USUARIO usuario)
+        public async Task<Int32> ProcessarEnvioMensagemEMail(MensagemViewModel vm, USUARIO usuario)
         {
             // Recupera dados
             Int32 idAss = (Int32)Session["IdAssinante"];
@@ -665,29 +896,41 @@ namespace ERP_Condominios_Solution.Controllers
             // Trata anexos
             List<MENSAGEM_ANEXO> anexos = mens.MENSAGEM_ANEXO.ToList();
             List<AttachmentModel> models = new List<AttachmentModel>();
+
             if (anexos.Count > 0)
             {
-                String caminho = "/Imagens/" + idAss.ToString() + "/Mensagem/" + mens.MENS_CD_ID.ToString() + "/Anexos/";
-                foreach (MENSAGEM_ANEXO anexo in anexos)
+                // Inicializa o cliente do Blob Storage (necessário pacote Azure.Storage.Blobs)
+                conf = CarregaConfiguracaoGeral();
+                string connString = conf.CONF_NM_STORAGE_CONN;
+                string containerName = conf.CONF_NM_STORAGE_CONTAINER;
+
+                var blobServiceClient = new Azure.Storage.Blobs.BlobServiceClient(connString);
+                var containerClient = blobServiceClient.GetBlobContainerClient(containerName);
+
+                foreach (MENSAGEM_ANEXO item in anexos)
                 {
-                    String path = Path.Combine(Server.MapPath(caminho), anexo.MEAN_NM_TITULO_NOVO);
+                    // O caminho no Storage geralmente não usa "C:/" ou caminhos físicos, apenas a hierarquia de pastas
+                    String blobPath = "Imagens/" + idAss.ToString() + "/Mensagem/" + mens.MENS_CD_ID.ToString() + "/Anexos/" + item.MEAN_NM_TITULO_NOVO;
+                    var blobClient = containerClient.GetBlobClient(blobPath);
+
+                    // Baixa o conteúdo do Storage para memória
+                    byte[] fileBytes;
+                    using (var ms = new MemoryStream())
+                    {
+                        await blobClient.DownloadToAsync(ms);
+                        fileBytes = ms.ToArray();
+                    }
 
                     AttachmentModel model = new AttachmentModel();
-                    model.PATH = path;
-                    model.ATTACHMENT_NAME = anexo.MEAN_NM_TITULO_NOVO;
-                    if (anexo.MEAN_IN_TIPO == 1)
-                    {
-                        model.CONTENT_TYPE = MediaTypeNames.Image.Jpeg;
-                    }
-                    if (anexo.MEAN_IN_TIPO == 3)
-                    {
-                        model.CONTENT_TYPE = MediaTypeNames.Application.Pdf;
-                    }
-                    if (anexo.MEAN_IN_TIPO != 1 & anexo.MEAN_IN_TIPO != 3)
-                    {
-                        model.CONTENT_TYPE = MediaTypeNames.Application.Octet;
-                    }
+                    model.ATTACHMENT_NAME = item.MEAN_NM_TITULO_NOVO;
+                    model.ContentBytes = Convert.ToBase64String(fileBytes); // Mantendo compatibilidade se necessário
+                    model.FileBytes = fileBytes; // Adicione esta propriedade ao seu AttachmentModel se não existir
+
+                    // Mapeamento de Content Type
+                    model.CONTENT_TYPE = CrossCutting.UtilitariosGeral.GetContentType(item.MEAN_IN_TIPO.Value);
+
                     models.Add(model);
+
                 }
             }
             else
@@ -739,11 +982,7 @@ namespace ERP_Condominios_Solution.Controllers
                         // Envia mensagem
                         try
                         {
-                            Tuple<EmailSendStatus, String, Boolean> voltaMail = CrossCutting.CommunicationAzurePackage.SendMail(mensagem, models);
-                            status = voltaMail.Item1.ToString();
-                            iD = voltaMail.Item2;
-                            Session["IdMail"] = iD;
-                            Session["StatusMail"] = status;
+                            await CrossCutting.CommunicationAzurePackage.SendMailAsync(mensagem, models);
                         }
                         catch (Exception ex)
                         {
@@ -772,6 +1011,8 @@ namespace ERP_Condominios_Solution.Controllers
                         dest.MEDE_DT_ENVIO = DateTime.Now;
                         dest.ASSI_CD_ID = idAss;
                         dest.MEDE_IN_SISTEMA = 6;
+                        Int32 volta1 = baseApp.ValidateCreateDestino(dest);
+
                         mens.MENSAGENS_DESTINOS.Add(dest);
                         mens.MENS_DT_ENVIO = DateTime.Now;
                         mens.MENS_IN_OCORRENCIAS = 1;
@@ -1734,6 +1975,11 @@ namespace ERP_Condominios_Solution.Controllers
                     {
                         ModelState.AddModelError("", (String)Session["MsgCRUD"]);
                     }
+                    if ((Int32)Session["MensMensagem"] == 81)
+                    {
+                        TempData["MensagemAcerto"] = (String)Session["MsgCRUD"];
+                        TempData["TemMensagem"] = 1;
+                    }
                 }
 
                 // Grava Acesso
@@ -2494,7 +2740,8 @@ namespace ERP_Condominios_Solution.Controllers
                             if ((Int32)Session["NumEMail"] <= numBase)
                             {
                                 Session["MensEMail"] = 50;
-                                return RedirectToAction("MontarTelaMensagemEMail", "Mensagem");
+                                ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0260", CultureInfo.CurrentCulture));
+                                return View(vm);
                             }
                             destinos = 1;
                         }
@@ -2506,7 +2753,8 @@ namespace ERP_Condominios_Solution.Controllers
                             if ((Int32)Session["NumEMail"] <= numBase)
                             {
                                 Session["MensEMail"] = 50;
-                                return RedirectToAction("MontarTelaMensagemEMail", "Mensagem");
+                                ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0260", CultureInfo.CurrentCulture));
+                                return View(vm);
                             }
                             destinos = numGrupo;
                         }
@@ -2534,7 +2782,8 @@ namespace ERP_Condominios_Solution.Controllers
                             if ((Int32)Session["NumEMail"] <= numBase)
                             {
                                 Session["MensEMail"] = 50;
-                                return RedirectToAction("MontarTelaMensagemEMail", "Mensagem");
+                                ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0260", CultureInfo.CurrentCulture));
+                                return View(vm);
                             }
                             destinos = quant;
                         }
@@ -2546,7 +2795,8 @@ namespace ERP_Condominios_Solution.Controllers
                         if ((Int32)Session["NumEMail"] <= numBase)
                         {
                             Session["MensEMail"] = 50;
-                            return RedirectToAction("MontarTelaMensagemEMail", "Mensagem");
+                            ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0260", CultureInfo.CurrentCulture));
+                            return View(vm);
                         }
                         destinos = numPacientes;
                     }
@@ -2584,11 +2834,6 @@ namespace ERP_Condominios_Solution.Controllers
                     Int32 volta = baseApp.ValidateCreate(item, usuario);
                     Session["IdMensagem"] = item.MENS_CD_ID;
 
-                    // Cria pastas
-                    //String caminho = "/Imagens/" + idAss.ToString() + "/Mensagem/" + item.MENS_CD_ID.ToString() + "/Anexos/";
-                    //String map = Server.MapPath(caminho);
-                    //Directory.CreateDirectory(Server.MapPath(caminho));
-
                     // Trata anexos
                     if (Session["FileQueueMensagem"] != null)
                     {
@@ -2597,7 +2842,7 @@ namespace ERP_Condominios_Solution.Controllers
                         {
                             if (file.Profile == null)
                             {
-                                await UploadFileQueueMensagem(file);
+                                await UploadFileQueueMensagemBlob(file);
                             }
                         }
                         Session["FileQueueMensagem"] = null;
@@ -2606,16 +2851,16 @@ namespace ERP_Condominios_Solution.Controllers
                     // Processa
                     MENSAGENS mens = baseApp.GetItemById(item.MENS_CD_ID);
                     Session["IdMensagem"] = mens.MENS_CD_ID;
-                    //MensagemViewModel vm1 = Mapper.Map<MENSAGENS, MensagemViewModel>(mens);
                     vm.MENS_CD_ID = mens.MENS_CD_ID;
                     vm.MENSAGEM_ANEXO = mens.MENSAGEM_ANEXO;
-                    Int32 retGrava = ProcessarEnvioMensagemEMail(vm, usuario);
+                    Int32 retGrava = await ProcessarEnvioMensagemEMail(vm, usuario);
 
                     // Retornos de erros
                     if (retGrava == 1)
                     {
                         Session["MensMensagem"] = 51;
-                        return RedirectToAction("MontarTelaMensagemEMail");
+                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0258", CultureInfo.CurrentCulture));
+                        return View(vm);
                     }
 
                     // Sucesso
@@ -2647,7 +2892,7 @@ namespace ERP_Condominios_Solution.Controllers
 
                     // Mensagem do CRUD
                     Session["MsgCRUD"] = "Foram enviadas/agendadas mensagens para " + totMens.ToString() + " destinatários";
-                    Session["MensMensagem"] = 99;
+                    Session["MensMensagem"] = 81;
 
                     return RedirectToAction("MontarTelaMensagemEMail");
                 }

@@ -6144,14 +6144,14 @@ namespace GEDSys_Presentation.Controllers
                 }
 
                 // --- INÍCIO DA VALIDAÇÃO DE ESQUEMA (XSD) ---
-                string erroValidacao = string.Empty;
-                file.InputStream.Position = 0; // Reset para leitura da validação
-                if (!ValidarEsquemaRecibo(file.InputStream, out erroValidacao))
-                {
-                    Session["MsgCRUD"] = "O arquivo não segue o padrão oficial da Receita Federal: " + erroValidacao;
-                    Session["MensPaciente"] = 61; 
-                    return RedirectToAction("VoltarAnexoRecebimento");
-                }
+                //string erroValidacao = string.Empty;
+                //file.InputStream.Position = 0; // Reset para leitura da validação
+                //if (!ValidarEsquemaRecibo(file.InputStream, out erroValidacao))
+                //{
+                //    Session["MsgCRUD"] = "O arquivo não segue o padrão oficial da Receita Federal: " + erroValidacao;
+                //    Session["MensPaciente"] = 61; 
+                //    return RedirectToAction("VoltarAnexoRecebimento");
+                //}
                 // --- FIM DA VALIDAÇÃO ---
 
                 // Lê e processa o XML recém-salvo
@@ -6207,41 +6207,27 @@ namespace GEDSys_Presentation.Controllers
                 }
 
                 // 1. DEFINIÇÃO DO CAMINHO
-                String caminhoRelativo = "/Imagens/" + idAss.ToString() + "/Recebimento/" + item.CORE_CD_ID.ToString() + "/Recibo/";
-                String caminhoLocal = Server.MapPath("~/" + caminhoRelativo);
-                String fullPathLocal = Path.Combine(caminhoLocal, fileName);
+                // --- 6. PREPARAÇÃO DOS CAMINHOS ---
+                String caminhoRelativo = "Imagens/" + idAss.ToString() + "/Recebimento/" + item.CORE_CD_ID.ToString() + "/Recibo/";
+                fileName = Path.GetFileName(file.FileName);
 
-                if (!Directory.Exists(caminhoLocal)) Directory.CreateDirectory(caminhoLocal);
-
-                //// 2. CÓPIA LOCAL
-                //using (var stream = new FileStream(fullPathLocal, FileMode.Create))
-                //{
-                //    file.InputStream.Position = 0; // Reset antes de copiar
-                //    await file.InputStream.CopyToAsync(stream);
-                //}
-
-                // 3. CÓPIA PARA O AZURE BLOB STORAGE
+                // --- 7. UPLOAD PARA O AZURE BLOB STORAGE ---
                 try
                 {
-                    file.InputStream.Position = 0; // Reset antes de enviar para o Azure
-
                     CONFIGURACAO conf = CarregaConfiguracaoGeral();
-                    string connString = conf.CONF_NM_STORAGE_CONN;
-                    string containerName = conf.CONF_NM_STORAGE_CONTAINER;
+                    var blobServiceClient = new Azure.Storage.Blobs.BlobServiceClient(conf.CONF_NM_STORAGE_CONN);
+                    var containerClient = blobServiceClient.GetBlobContainerClient(conf.CONF_NM_STORAGE_CONTAINER);
 
-                    var blobServiceClient = new Azure.Storage.Blobs.BlobServiceClient(connString);
-                    var containerClient = blobServiceClient.GetBlobContainerClient(containerName);
-
-                    string blobName = caminhoRelativo.TrimStart('/') + fileName;
+                    string blobName = caminhoRelativo + fileName;
                     var blobClient = containerClient.GetBlobClient(blobName);
 
+                    file.InputStream.Position = 0;
                     await blobClient.UploadAsync(file.InputStream, overwrite: true);
                 }
                 catch (Exception exAzure)
                 {
-                    Session["MsgCRUD"] = "Erro na sincronização: " + exAzure.Message;
-                    Session["MensPaciente"] = 61;
-                    return RedirectToAction("VoltarAnexoRecebimento");
+                    Session["MsgCRUD"] = "Erro no Azure Storage: " + exAzure.Message;
+                    return RedirectToAction("VoltarAnexoPagamento");
                 }
 
                 // Gravar registro
@@ -11882,7 +11868,7 @@ namespace GEDSys_Presentation.Controllers
                 {
                     if (item.DataEmissao != null)
                     {
-                        cell = new PdfPCell(new Paragraph(item.Nome, meuFont))
+                        cell = new PdfPCell(new Paragraph(CrossCutting.UtilitariosGeral.NomeMesAno(item.Nome), meuFont))
                         {
                             VerticalAlignment = Element.ALIGN_MIDDLE,
                             HorizontalAlignment = Element.ALIGN_LEFT
@@ -17260,18 +17246,31 @@ namespace GEDSys_Presentation.Controllers
             try
             {
                 XmlReaderSettings settings = new XmlReaderSettings();
-                // Caminho para o XSD oficial de recibos (deve ser salvo na sua pasta App_Data)
-                string pathXsd = Server.MapPath("~/App_Data/Schemas/recibo_consulta_v1.00.xsd");
 
+                // 1. Correção do caminho utilizando Path.Combine para evitar erros de concatenação no Azure
+                string folderPath = Server.MapPath("~/App_Data/Schemas/");
+                string pathXsd = Path.Combine(folderPath, "recibo_consulta_v1.00.xsd");
+
+                // 2. Verificação de segurança: garante que o arquivo XSD foi publicado corretamente no servidor
+                if (!System.IO.File.Exists(pathXsd))
+                {
+                    erroMensagem = $"Erro interno: O arquivo de esquema (XSD) não foi localizado no caminho: {pathXsd}. Verifique se o arquivo foi incluído no deploy.";
+                    return false;
+                }
+
+                // 3. Configuração do esquema oficial da Receita Federal
+                // Certifique-se de que o targetNamespace dentro do seu .xsd seja exatamente este:
                 settings.Schemas.Add("https://www.gov.br/receita-federal/recibos/consulta-medica/v1", pathXsd);
                 settings.ValidationType = ValidationType.Schema;
 
+                // Callback de erro para capturar falhas de estrutura do XML
                 string validationErrors = "";
                 settings.ValidationEventHandler += (s, e) =>
                 {
                     validationErrors += e.Message + " | ";
                 };
 
+                // Realiza a leitura e validação do Stream
                 using (XmlReader reader = XmlReader.Create(xmlStream, settings))
                 {
                     while (reader.Read()) { }
@@ -17279,14 +17278,16 @@ namespace GEDSys_Presentation.Controllers
 
                 if (!string.IsNullOrEmpty(validationErrors))
                 {
-                    erroMensagem = validationErrors;
+                    erroMensagem = "O arquivo XML não segue o padrão oficial da SEFAZ/Receita: " + validationErrors;
                     return false;
                 }
+
                 return true;
             }
             catch (Exception ex)
             {
-                erroMensagem = ex.Message;
+                // Captura erros de sistema (ex: arquivo corrompido ou problemas de permissão no Azure)
+                erroMensagem = "Erro ao processar validação: " + ex.Message;
                 return false;
             }
         }

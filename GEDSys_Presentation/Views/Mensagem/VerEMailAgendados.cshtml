@@ -74,7 +74,10 @@
                     <div class="row">
                         <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
                             <div class="col-lg-12 col-md-12 col-xs-12">
-                                @Html.ButtonLinkIndex(text: "Voltar", controller: "Mensagem", action: "MontarTelaMensagemEMail")
+                                @Html.ButtonLinkIndex(text: "Voltar", controller: "Mensagem", action: "MontarTelaMensagemEMail", htmlAttributes: new { @class = "btn-loading" })
+                                <span id="loadingIndicator" style="display: none; margin-left: 10px; color: #007bff;">
+                                    <i class="fa fa-spinner fa-spin"></i> Processando...
+                                </span>               
                             </div>
                         </div>
                         @if (ViewBag.Listas != null && (ViewBag.Listas as List<EntitiesServices.Model.MENSAGENS>).Count > 0)
@@ -94,7 +97,10 @@
                                     @foreach (var cond in (ViewBag.Listas as List<EntitiesServices.Model.MENSAGENS>))
                                     {
                                         <tr>
-                                            <td style="width: auto">@cond.MENS_DT_CRIACAO.Value.ToShortDateString() @cond.MENS_DT_CRIACAO.Value.ToShortTimeString()</td>
+                                            <td>
+                                                <span style="display:none; width: auto">@cond.MENS_DT_CRIACAO.Value.ToString("yyyyMMdd")</span>
+                                                @cond.MENS_DT_CRIACAO.Value.ToString("dd/MM/yyyy")
+                                            </td>
                                             <td style="width: auto">@cond.MENS_GU_GUID</td>
                                             <td style="width: auto">@cond.MENS_NM_NOME</td>
                                             @if (cond.MENS_DT_AGENDAMENTO != null)
@@ -107,7 +113,7 @@
                                             }
                                             <td style="width: auto">@cond.MENS_IN_AGENDAMENTO</td>
                                             <td class="td-one-action">
-                                                @Html.TableLinkDetails(cond.MENS_IN_TIPO_SMS.Value, "VerMensagemEMail", "fa-search", "Consultar")
+                                                @Html.TableLinkDetails(cond.MENS_IN_TIPO_SMS.Value, "VerMensagemEMail", "fa-search btn-loading", "Consultar")
                                             </td>
                                         </tr>
                                     }
@@ -140,7 +146,117 @@
     <link href="~/Content/themes/base/all.css" rel="stylesheet" />  
     @Styles.Render("~/Content/plugins/dataTables/dataTablesStyles")
     @Styles.Render("~/plugins/jasnyBootstrapStyles")
-<link href="~/Content/plugins/select2/select2.min.css" rel="stylesheet" />
+    <link href="~/Content/plugins/select2/select2.min.css" rel="stylesheet" />
+
+    <style>
+        /* 1. Aumenta a largura e garante o espaço interno */
+        #toast-container > .toast {
+            width: 500px !important; 
+            max-width: 500px !important;
+            opacity: 0.95 !important;
+        }
+
+        /* 2. Remove o ícone nativo do Toastr (Background Image) */
+        #toast-container > .toast-success {
+            background-image: none !important;
+        }
+
+        /* 3. Remove ícones do FontAwesome/Inspinia injetados via ::before no Título */
+        .toast-success .toast-title::before, 
+        .toast-success .toast-title::after,
+        .toast-success::before {
+            content: none !important;
+            display: none !important;
+        }
+
+        /* 4. Ajusta o recuo do texto já que removemos o ícone */
+        .toast-success .toast-title, 
+        .toast-success .toast-message {
+            padding-left: 10px !important;
+        }
+
+        html { scroll-behavior: smooth; }
+
+        .back-to-top {
+            position: fixed !important;
+            bottom: 30px !important;
+            left: 260px !important; 
+            z-index: 999999 !important;
+            width: 50px !important;
+            height: 50px !important;
+            background-color: #1ab394 !important;
+            color: white !important;
+            border-radius: 50% !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            text-decoration: none !important;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3) !important;
+            transition: all 0.3s ease;
+        
+            /* Estado inicial: Invisível e deslocado para baixo */
+            opacity: 0 !important;
+            visibility: hidden !important;
+            transform: translateY(20px) !important;
+        }
+
+        /* Classe que o JavaScript vai adicionar ao rolar a tela */
+        .back-to-top.visible {
+            opacity: 1 !important;
+            visibility: visible !important;
+            transform: translateY(0px) !important;
+        }
+
+        .back-to-top:hover {
+            background-color: #18a689 !important;
+            color: white !important;
+            transform: scale(1.1) !important;
+        }
+
+    </style>
+    <style>
+        /* Estilo Base */
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .status-badge::before {
+            content: "";
+            display: inline-block;
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            margin-right: 6px;
+        }
+
+        /* PENDING (Gold) - Status 0 */
+        .status-pending { background-color: #fef9c3; color: #a16207; }
+        .status-pending::before { background-color: #ca8a04; }
+
+        /* ACTIVE (Green) - Status 1 */
+        .status-active { background-color: #dcfce7; color: #15803d; }
+        .status-active::before { background-color: #16a34a; }
+
+        /* CANCEL (Red) - Status 4 */
+        .status-cancel { background-color: #fee2e2; color: #b91c1c; }
+        .status-cancel::before { background-color: #dc2626; }
+
+        /* FINISH (Dark Blue) - Status 2 */
+        .status-finish { background-color: #dbeafe; color: #1e40af; }
+        .status-finish::before { background-color: #2563eb; }
+
+        /* OVERDUE (Gray) - Status 3 */
+        .status-overdue { background-color: #f3f4f6; color: #4b5563; }
+        .status-overdue::before { background-color: #6b7280; }
+    </style>
+
 }
 
 @section Scripts {
@@ -163,13 +279,42 @@
             $('#modalDescF').modal('show');
         }
     </script>
+    <script type="text/javascript">
+        $(document).ready(function () { 
+            $('.btn-loading').on('click', function (e) {            
+                $(this).prop('disabled', true);
+                $(this).addClass('disabled');
+                $('#loadingIndicator').show();
+                var tagName = $(this).prop('tagName').toLowerCase();
+                if (tagName === 'a') {
+                    e.preventDefault(); 
+                    var targetUrl = $(this).attr('href');
+                    window.location.href = targetUrl;
 
+                } else if (tagName === 'button' || tagName === 'input') {
+                    $(this).closest('form').submit();
+                }
+            });
+        });
+    </script>
     <script type="text/javascript">
         $(document).ready(function () {
 
             $('.dataTables-example').DataTable({
                 pageLength: 25,
                 dom: '<"html5buttons"B>lTfgitp',
+                // --- NOVO BLOCO DE CONFIGURAÇÃO ---
+                columnDefs: [
+                    {
+                        // Altera o tipo de ordenação para a primeira coluna (índice 0)
+                        //"type": "datetime-moment", // Se você incluiu o momento.js
+                        // OU
+                         "type": "date-eu", // Para o formato DD/MM/AAAA
+                        "targets": 0 // Aplica à coluna "Data da Transação"
+                    }
+                ],
+                // ---------------------------------       
+
                 buttons: [
                     { extend: 'excel', title: 'EMailAgendado_Planilha' },
                     { extend: 'pdf', title: 'EMailAgendado_PDF' },

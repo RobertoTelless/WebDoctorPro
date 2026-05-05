@@ -167,7 +167,6 @@
                                                                             <th>Título</th>
                                                                             <th>Data</th>
                                                                             <th>Tipo</th>
-                                                                            <th class="td-one-action">Ações</th>
                                                                         </tr>
                                                                     </thead>
                                                                     <tbody>
@@ -192,17 +191,6 @@
                                                                                 {
                                                                                     <td>Arquivo</td>
                                                                                 }
-                                                                                <td class="td-one-action">
-                                                                                    @if (cond.MEAN_IN_TIPO == 1 || cond.MEAN_IN_TIPO == 2)
-                                                                                    {
-                                                                                        @Html.TableLinkDetails(cond.MEAN_CD_ID, "VerAnexoMensagem", "fa-camera", "Visualizar")
-                                                                                    }
-                                                                                    @if (cond.MEAN_IN_TIPO == 3)
-                                                                                    {
-                                                                                        <a title="Visualizar" class="fa fa-camera fa-lg" href="~/PdfViewer/web/viewer.html?file=@(cond.MEAN_AQ_ARQUIVO.Replace("~", ""))&ReturnUrl=@Request.Url.AbsolutePath" target="_blank"></a>
-                                                                                    }
-                                                                                    @Html.TableLinkDetails(cond.MEAN_CD_ID, "DownloadMensagem", "fa-download", "Download")
-                                                                                </td>
                                                                             </tr>
                                                                         }
                                                                     </tbody>
