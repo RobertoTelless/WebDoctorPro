@@ -36,7 +36,7 @@
                         <span style="color:green; font-weight: 500; font-size: 20px;">@ViewBag.NomePaciente</span>
                     </div>
                 </div>
-                @using (Html.BeginForm("VerAnexoLocacao", "Locacao", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal", @id = "pwd-container1" }))
+                @using (Html.BeginForm("VerAnexoLocacaoAudio", "Locacao", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal", @id = "pwd-container1" }))
                 {
                     <div class="ibox-content">
                         <div class="form-group">
@@ -74,9 +74,21 @@
                         </div>
                         <div class="form-group">
                             <div class="col-lg-12 col-md-12 col-sm-12">
+                                @*<audio controls>
+                                    <source src="@Url.Content(Model.PAAX_AQ_ARQUIVO)" type="audio/mp3" />
+                                </audio>*@      
                                 <audio controls>
-                                    <source src="@Url.Content(Model.LOAX_AQ_ARQUIVO)" type="audio/mp3" />
-                                </audio>                                
+                                    @{
+                                        // 1. Removemos o "~/ " ou "~" do início do caminho vindo do banco
+                                        var blobPathAudio = Model.LOAX_AQ_ARQUIVO.Replace("~/", "").Replace("~", "");
+        
+                                        // 2. Montamos a URL completa do Azure Blob Storage
+                                        var urlAudioAzure = "https://rtistoragemain.blob.core.windows.net/rti-datacontainer/" + blobPathAudio;
+                                    }
+                                    <source src="@urlAudioAzure" type="audio/mpeg" />
+                                    Seu navegador não suporta o elemento de áudio.
+                                </audio>
+                          
                             </div>
                         </div>
                     </div>

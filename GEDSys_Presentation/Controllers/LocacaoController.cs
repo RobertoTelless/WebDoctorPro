@@ -596,21 +596,21 @@ namespace GEDSys_Presentation.Controllers
                     }
 
                     // Cria pastas
-                    String caminho = "/Imagens/" + idAss.ToString() + "/Locacao/" + item.LOCA_CD_ID.ToString() + "/Anexos/";
-                    String map = Server.MapPath(caminho);
-                    Directory.CreateDirectory(Server.MapPath(caminho));
-                    caminho = "/Imagens/" + idAss.ToString() + "/Locacao/" + item.LOCA_CD_ID.ToString() + "/Contrato/";
-                    map = Server.MapPath(caminho);
-                    Directory.CreateDirectory(Server.MapPath(caminho));
-                    caminho = "/Imagens/" + idAss.ToString() + "/Locacao/" + item.LOCA_CD_ID.ToString() + "/QRCode/";
-                    map = Server.MapPath(caminho);
-                    Directory.CreateDirectory(Server.MapPath(caminho));
-                    caminho = "/Imagens/" + idAss.ToString() + "/Locacao/" + item.LOCA_CD_ID.ToString() + "/Distrato/";
-                    map = Server.MapPath(caminho);
-                    Directory.CreateDirectory(Server.MapPath(caminho));
-                    caminho = "/Imagens/" + idAss.ToString() + "/Locacao/" + item.LOCA_CD_ID.ToString() + "/Assinado/";
-                    map = Server.MapPath(caminho);
-                    Directory.CreateDirectory(Server.MapPath(caminho));
+                    //String caminho = "/Imagens/" + idAss.ToString() + "/Locacao/" + item.LOCA_CD_ID.ToString() + "/Anexos/";
+                    //String map = Server.MapPath(caminho);
+                    //Directory.CreateDirectory(Server.MapPath(caminho));
+                    //caminho = "/Imagens/" + idAss.ToString() + "/Locacao/" + item.LOCA_CD_ID.ToString() + "/Contrato/";
+                    //map = Server.MapPath(caminho);
+                    //Directory.CreateDirectory(Server.MapPath(caminho));
+                    //caminho = "/Imagens/" + idAss.ToString() + "/Locacao/" + item.LOCA_CD_ID.ToString() + "/QRCode/";
+                    //map = Server.MapPath(caminho);
+                    //Directory.CreateDirectory(Server.MapPath(caminho));
+                    //caminho = "/Imagens/" + idAss.ToString() + "/Locacao/" + item.LOCA_CD_ID.ToString() + "/Distrato/";
+                    //map = Server.MapPath(caminho);
+                    //Directory.CreateDirectory(Server.MapPath(caminho));
+                    //caminho = "/Imagens/" + idAss.ToString() + "/Locacao/" + item.LOCA_CD_ID.ToString() + "/Assinado/";
+                    //map = Server.MapPath(caminho);
+                    //Directory.CreateDirectory(Server.MapPath(caminho));
 
                     // Configura serialização
                     JsonSerializerSettings settings = new JsonSerializerSettings
@@ -680,7 +680,7 @@ namespace GEDSys_Presentation.Controllers
                         {
                             if (file.Profile == null)
                             {
-                                Int32 volta3 = UploadFileQueueLocacao(file);
+                                Int32 volta3 = await UploadFileQueueLocacaoBlob(file);
                             }
                         }
                         Session["FileQueuePaciente"] = null;
@@ -697,21 +697,65 @@ namespace GEDSys_Presentation.Controllers
                     hist.LOHI_NM_OPERACAO = "Criação de Locação Pendente";
                     Int32 voltaHist = baseApp.ValidateCreateHistorico(hist);
 
-                    // Prepara QRCode
+                    // 1. Configurações de Caminho (Removendo Server.MapPath para o Azure)
                     String fileNameQR = "Contrato_QRCode_" + item.LOCA_GU_GUID + ".png";
-                    String caminhoQR = "/Imagens/" + usuario.ASSI_CD_ID.ToString() + "/Locacao/" + item.LOCA_CD_ID.ToString() + "/QRCode/";
-                    String pathQR = Path.Combine(Server.MapPath(caminhoQR), fileNameQR);
+                    String caminhoBlob = $"Imagens/{usuario.ASSI_CD_ID}/Locacao/{item.LOCA_CD_ID}/QRCode/{fileNameQR}";
 
-                    // Gera e grava QRCode
+                    // 2. Gera a URL do QRCode
                     LOCACAO loca = baseApp.GetItemById(item.LOCA_CD_ID);
                     String linkBase = "https://webdoctorformbase.azurewebsites.net/api/ExibirFormulario";
-                    String sufixo = "?Token=" + loca.LOCA_TK_TOKEN;
-                    sufixo += "&ID=" + loca.LOCA_CD_ID.ToString();
-                    sufixo += "&Tipo=1";
+                    String sufixo = $"?Token={loca.LOCA_TK_TOKEN}&ID={loca.LOCA_CD_ID}&Tipo=1";
                     String url = linkBase + sufixo;
-                    QrCodeHelper.GenerateQrCodeAndSave(url, pathQR);
-                    loca.LOCA_AQ_ARQUIVO_QRCODE = "~" + caminhoQR + fileNameQR;
-                    Int32 voltaP = baseApp.ValidateEdit(loca, loca, usuario);
+
+                    // 3. Gera o QRCode em memória e envia para o Storage
+                    try
+                    {
+                        // Aqui assumo que você tem ou pode criar um método que retorna byte[] no seu QrCodeHelper
+                        // Se não tiver, você pode usar a biblioteca QRCoder diretamente:
+                        byte[] qrCodeBytes = QrCodeHelper.GenerateQrCodeBytes(url);
+
+                        //CONFIGURACAO conf = CarregaConfiguracaoGeral();
+                        string connString = conf.CONF_NM_STORAGE_CONN;
+                        string containerName = conf.CONF_NM_STORAGE_CONTAINER;
+
+                        var blobServiceClient = new Azure.Storage.Blobs.BlobServiceClient(connString);
+                        var containerClient = blobServiceClient.GetBlobContainerClient(containerName);
+                        var blobClient = containerClient.GetBlobClient(caminhoBlob);
+
+                        using (var ms = new MemoryStream(qrCodeBytes))
+                        {
+                            // Upload para o Azure
+                            await blobClient.UploadAsync(ms, new Azure.Storage.Blobs.Models.BlobUploadOptions
+                            {
+                                HttpHeaders = new Azure.Storage.Blobs.Models.BlobHttpHeaders { ContentType = "image/png" }
+                            });
+                        }
+
+                        // 4. Grava o caminho relativo no banco (sem o ~ para facilitar a montagem da URL do Blob)
+                        loca.LOCA_AQ_ARQUIVO_QRCODE = caminhoBlob;
+                        baseApp.ValidateEdit(loca, loca, usuario);
+                    }
+                    catch (Exception ex)
+                    {
+                        // Log de erro (Ex: Gravar Log de Exceção como você faz nos outros métodos)
+                        Session["MsgCRUD"] = "Erro ao gerar/salvar QRCode no Storage: " + ex.Message;
+                    }
+
+                    //// Prepara QRCode
+                    //String fileNameQR = "Contrato_QRCode_" + item.LOCA_GU_GUID + ".png";
+                    //String caminhoQR = "/Imagens/" + usuario.ASSI_CD_ID.ToString() + "/Locacao/" + item.LOCA_CD_ID.ToString() + "/QRCode/";
+                    //String pathQR = Path.Combine(Server.MapPath(caminhoQR), fileNameQR);
+
+                    //// Gera e grava QRCode
+                    //LOCACAO loca = baseApp.GetItemById(item.LOCA_CD_ID);
+                    //String linkBase = "https://webdoctorformbase.azurewebsites.net/api/ExibirFormulario";
+                    //String sufixo = "?Token=" + loca.LOCA_TK_TOKEN;
+                    //sufixo += "&ID=" + loca.LOCA_CD_ID.ToString();
+                    //sufixo += "&Tipo=1";
+                    //String url = linkBase + sufixo;
+                    //QrCodeHelper.GenerateQrCodeAndSave(url, pathQR);
+                    //loca.LOCA_AQ_ARQUIVO_QRCODE = "~" + caminhoQR + fileNameQR;
+                    //Int32 voltaP = baseApp.ValidateEdit(loca, loca, usuario);
 
                     // Envia mensagem
                     LOCACAO locMensagem = baseApp.GetItemById(item.LOCA_CD_ID);
@@ -847,7 +891,7 @@ namespace GEDSys_Presentation.Controllers
                 EMPRESA emp = empApp.GetItemById(usuario.EMPR_CD_ID.Value);
                 assinatura = "<b>" + emp.EMPR_NM_NOME + "</b><br />";
                 assinatura += "<b>CNPJ: </b>" + emp.EMPR_NR_CNPJ + "<br />";
-                assinatura += "Enviado por <b>WebDoctor</b><br />";
+                assinatura += "Enviado por <b>WebDoctorPro</b><br />";
 
                 // Prepara corpo da mensagem
                 String texto = template.TEEM_TX_CORPO;
@@ -1028,11 +1072,11 @@ namespace GEDSys_Presentation.Controllers
                 {
                     ViewBag.Message = ex.Message;
                     Session["TipoVolta"] = 2;
-                    Session["VoltaExcecao"] = "Paciente";
+                    Session["VoltaExcecao"] = "Locacao";
                     Session["Excecao"] = ex;
                     Session["ExcecaoTipo"] = ex.GetType().ToString();
                     GravaLogExcecao grava = new GravaLogExcecao(usuApp);
-                    Int32 voltaX = grava.GravarLogExcecao(ex, "Paciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                    Int32 voltaX = grava.GravarLogExcecao(ex, "Locacao", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
                     return 0;
                 }
 
@@ -1150,7 +1194,7 @@ namespace GEDSys_Presentation.Controllers
                 EMPRESA emp = empApp.GetItemById(usuario.EMPR_CD_ID.Value);
                 assinatura = emp.EMPR_NM_NOME;
                 assinatura += " CNPJ: " + emp.EMPR_NR_CNPJ;
-                assinatura += " Enviado por WebDoctor";
+                assinatura += " Enviado por WebDoctorPro";
 
                 // Prepara corpo da mensagem
                 String texto = template.TSMS_TX_CORPO;
@@ -1263,7 +1307,7 @@ namespace GEDSys_Presentation.Controllers
                             to = listaDest,
                             text = smsBody,
                             customId = customId,
-                            from = "WebDoctor"
+                            from = "WebDoctorPro"
                         }
     }
                 };
@@ -1500,6 +1544,146 @@ namespace GEDSys_Presentation.Controllers
             }
         }
 
+        [HttpPost]
+        public async Task<ActionResult> UploadFileLocacaoBlob(HttpPostedFileBase file)
+        {
+            try
+            {
+                // Inicializa
+                if ((String)Session["Ativa"] == null)
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+                Int32 idNot = (Int32)Session["IdLocacao"];
+                Int32 idAss = (Int32)Session["IdAssinante"];
+
+                // Recupera exame
+                LOCACAO item = baseApp.GetItemById(idNot);
+                USUARIO usu = (USUARIO)Session["UserCredentials"];
+
+                // Criticas
+                if (file == null)
+                {
+                    Session["MensLocacao"] = 5;
+                    return RedirectToAction("VoltarEditarLocacao");
+                }
+
+                // Critica tamanho nome
+                var fileName = Path.GetFileName(file.FileName);
+                if (fileName.Length > 250)
+                {
+                    Session["MensLocacao"] = 6;
+                    return RedirectToAction("VoltarEditarLocacao");
+                }
+
+                // Critica tamanho arquivo
+                var fileSize = file.ContentLength;
+                if (fileSize > 50000000)
+                {
+                    Session["MensLocacao"] = 7;
+                    return RedirectToAction("VoltarEditarLocacao");
+                }
+
+                //Recupera tipo de arquivo
+                extensao = Path.GetExtension(fileName);
+                String a = extensao;
+                if (!((String)Session["ExtensoesPossiveis"]).Contains(extensao.ToUpper()))
+                {
+                    Session["MensLocacao"] = 12;
+                    return RedirectToAction("VoltarEditarLocacao");
+                }
+
+                // 1. DEFINIÇÃO DO CAMINHO (Mesmo para Local e Azure)
+                // Removida a barra inicial para o Azure não criar uma pasta raiz vazia
+                String caminhoRelativo = "Imagens/" + idAss.ToString() + "/Locacao/" + item.LOCA_CD_ID.ToString() + "/Anexos/";
+                String caminhoLocal = Server.MapPath("~/" + caminhoRelativo);
+                String fullPathLocal = Path.Combine(caminhoLocal, fileName);
+
+                // 3. CÓPIA PARA O AZURE BLOB STORAGE
+                try
+                {
+                    // Reinicia o ponteiro do stream para o início após a cópia local
+                    file.InputStream.Position = 0;
+
+                    CONFIGURACAO conf = CarregaConfiguracaoGeral();
+                    string connString = conf.CONF_NM_STORAGE_CONN;
+                    string containerName = conf.CONF_NM_STORAGE_CONTAINER;
+
+                    var blobServiceClient = new Azure.Storage.Blobs.BlobServiceClient(connString);
+                    var containerClient = blobServiceClient.GetBlobContainerClient(containerName);
+
+                    // O nome do blob no Azure incluirá toda a estrutura de pastas
+                    string blobName = caminhoRelativo + fileName;
+                    var blobClient = containerClient.GetBlobClient(blobName);
+
+                    // Upload para o Azure (Idempotente: Se já existe, sobrescreve com true)
+                    await blobClient.UploadAsync(file.InputStream, overwrite: true);
+                }
+                catch (Exception exAzure)
+                {
+                    Session["MsgCRUD"] = "Erro na sincronização: " + exAzure.Message;
+                    Session["MensPaciente"] = 61;
+                    return RedirectToAction("VoltarAnexoPagamento");
+                }
+
+                // Gravar registro
+                LOCACAO_ANEXO foto = new LOCACAO_ANEXO();
+                foto.LOAX_AQ_ARQUIVO = "~" + caminhoRelativo + fileName;
+                foto.LOAX_DT_ANEXO = DateTime.Today;
+                foto.LOAX_IN_ATIVO = 1;
+                Int32 tipo = 3;
+                if (extensao.ToUpper() == ".JPG" || extensao.ToUpper() == ".GIF" || extensao.ToUpper() == ".PNG" || extensao.ToUpper() == ".JPEG" || extensao.ToUpper() == ".WEBP")
+                {
+                    tipo = 1;
+                }
+                else if (extensao.ToUpper() == ".MP4" || extensao.ToUpper() == ".AVI" || extensao.ToUpper() == ".MPEG")
+                {
+                    tipo = 2;
+                }
+                else if (extensao.ToUpper() == ".PDF")
+                {
+                    tipo = 3;
+                }
+                else if (extensao.ToUpper() == ".MP3" || extensao.ToUpper() == ".MPEG")
+                {
+                    tipo = 4;
+                }
+                else if (extensao.ToUpper() == ".DOCX" || extensao.ToUpper() == ".DOC" || extensao.ToUpper() == ".ODT")
+                {
+                    tipo = 5;
+                }
+                else if (extensao.ToUpper() == ".XLSX" || extensao.ToUpper() == ".XLS" || extensao.ToUpper() == ".ODS")
+                {
+                    tipo = 6;
+                }
+                else
+                {
+                    tipo = 7;
+                }
+                foto.LOAX_IN_TIPO = tipo;
+                foto.LOAX_NM_TITULO = fileName;
+                foto.LOCA_CD_ID = item.LOCA_CD_ID;
+
+                item.LOCACAO_ANEXO.Add(foto);
+                Int32 volta = baseApp.ValidateEdit(item, item, usu);
+                Session["NivelPaciente"] = 17;
+                Session["NivelProduto"] = 13;
+                Session["NivelLocacao"] = 2;
+                Session["LocacaoAlterada"] = 1;
+                return RedirectToAction("VoltarEditarLocacao");
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Locacao";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Locacao", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return RedirectToAction("TrataExcecao", "BaseAdmin");
+            }
+        }
 
 
 
@@ -1566,6 +1750,136 @@ namespace GEDSys_Presentation.Controllers
                 // Gravar registro
                 LOCACAO_ANEXO foto = new LOCACAO_ANEXO();
                 foto.LOAX_AQ_ARQUIVO = "~" + caminho + fileName;
+                foto.LOAX_DT_ANEXO = DateTime.Today;
+                foto.LOAX_IN_ATIVO = 1;
+                Int32 tipo = 3;
+                if (extensao.ToUpper() == ".JPG" || extensao.ToUpper() == ".GIF" || extensao.ToUpper() == ".PNG" || extensao.ToUpper() == ".JPEG")
+                {
+                    tipo = 1;
+                }
+                else if (extensao.ToUpper() == ".MP4" || extensao.ToUpper() == ".AVI" || extensao.ToUpper() == ".MPEG")
+                {
+                    tipo = 2;
+                }
+                else if (extensao.ToUpper() == ".PDF")
+                {
+                    tipo = 3;
+                }
+                else if (extensao.ToUpper() == ".MP3" || extensao.ToUpper() == ".MPEG")
+                {
+                    tipo = 4;
+                }
+                else if (extensao.ToUpper() == ".DOCX" || extensao.ToUpper() == ".DOC" || extensao.ToUpper() == ".ODT")
+                {
+                    tipo = 5;
+                }
+                else if (extensao.ToUpper() == ".XLSX" || extensao.ToUpper() == ".XLS" || extensao.ToUpper() == ".ODS")
+                {
+                    tipo = 6;
+                }
+                else
+                {
+                    tipo = 7;
+                }
+                foto.LOAX_IN_TIPO = tipo;
+                foto.LOAX_NM_TITULO = fileName;
+                foto.LOCA_CD_ID = item.LOCA_CD_ID;
+                item.LOCACAO_ANEXO.Add(foto);
+                Int32 volta = baseApp.ValidateEdit(item, item, usu);
+                Session["NivelPaciente"] = 17;
+                Session["NivelProduto"] = 13;
+                return 0;
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Locacao";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Locacao", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return 0;
+            }
+        }
+
+        [HttpPost]
+        public async Task<Int32> UploadFileQueueLocacaoBlob(FileQueue file)
+        {
+            try
+            {
+                // Inicializa
+                Int32 idNot = (Int32)Session["IdLocacao"];
+                Int32 idAss = (Int32)Session["IdAssinante"];
+
+                if (file == null)
+                {
+                    Session["MensLocacao"] = 5;
+                    return 1;
+                }
+
+                // Recupera exame
+                LOCACAO item = baseApp.GetItemById(idNot);
+                USUARIO usu = (USUARIO)Session["UserCredentials"];
+                var fileName = file.Name;
+                if (fileName.Length > 250)
+                {
+                    Session["MensLocacao"] = 6;
+                    return 2;
+                }
+
+                // Critica tamanho arquivo
+                var fileSize = file.Contents.Length;
+                if (fileSize > 50000000)
+                {
+                    Session["MensLocacao"] = 7;
+                    return 3;
+                }
+
+                //Recupera tipo de arquivo
+                extensao = Path.GetExtension(fileName);
+                String a = extensao;
+                if (!((String)Session["ExtensoesPossiveis"]).Contains(extensao.ToUpper()))
+                {
+                    Session["MensLocacao"] = 12;
+                    return 4;
+                }
+
+                // 1. DEFINIÇÃO DE CAMINHOS
+                String caminhoRelativo = "Imagens/" + idAss.ToString() + "/Locacao/" + item.LOCA_CD_ID.ToString() + "/Anexos/";
+                String caminhoLocal = Server.MapPath("~/" + caminhoRelativo);
+                String fullPathLocal = Path.Combine(caminhoLocal, fileName);
+
+                // 3. CÓPIA PARA O AZURE BLOB STORAGE
+                try
+                {
+                    CONFIGURACAO conf = CarregaConfiguracaoGeral();
+                    string connString = conf.CONF_NM_STORAGE_CONN;
+                    string containerName = conf.CONF_NM_STORAGE_CONTAINER;
+
+                    var blobServiceClient = new Azure.Storage.Blobs.BlobServiceClient(connString);
+                    var containerClient = blobServiceClient.GetBlobContainerClient(containerName);
+
+                    // O nome do blob no Azure
+                    string blobName = caminhoRelativo + fileName;
+                    var blobClient = containerClient.GetBlobClient(blobName);
+
+                    // Como file.Contents é byte[], usamos MemoryStream para o upload
+                    using (var ms = new MemoryStream(file.Contents))
+                    {
+                        await blobClient.UploadAsync(ms, overwrite: true);
+                    }
+                }
+                catch (Exception exAzure)
+                {
+                    Session["MsgCRUD"] = "Erro na sincronização: " + exAzure.Message;
+                    Session["MensPaciente"] = 61;
+                    return 0;
+                }
+
+                // Gravar registro
+                LOCACAO_ANEXO foto = new LOCACAO_ANEXO();
+                foto.LOAX_AQ_ARQUIVO = "~" + caminhoRelativo + fileName;
                 foto.LOAX_DT_ANEXO = DateTime.Today;
                 foto.LOAX_IN_ATIVO = 1;
                 Int32 tipo = 3;
@@ -2128,7 +2442,7 @@ namespace GEDSys_Presentation.Controllers
             }
         }
 
-        public FileResult DownloadLocacao(Int32 id)
+        public FileResult DownloadLocacaoOld(Int32 id)
         {
             try
             {
@@ -2188,6 +2502,86 @@ namespace GEDSys_Presentation.Controllers
                 GravaLogExcecao grava = new GravaLogExcecao(usuApp);
                 Int32 voltaX = grava.GravarLogExcecao(ex, "Locacao", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
                 return null;
+            }
+        }
+
+        [HttpGet]
+        public ActionResult DownloadLocacao(Int32 id)
+        {
+            // Força o uso de TLS 1.2 (Obrigatório para Azure Storage no .NET 4.8)
+            System.Net.ServicePointManager.SecurityProtocol = System.Net.SecurityProtocolType.Tls12;
+
+            try
+            {
+                // 1. Carrega as configurações de Storage da sua tabela CONFIGURACAO
+                CONFIGURACAO conf = CarregaConfiguracaoGeral();
+                if (conf == null) return Content("Erro: Configurações de Storage não encontradas.");
+
+                string connString = conf.CONF_NM_STORAGE_CONN;
+                string containerName = conf.CONF_NM_STORAGE_CONTAINER;
+
+                if (string.IsNullOrEmpty(connString)) return Content("Erro: String de conexão do Azure está vazia.");
+
+                // 2. Busca o registro do anexo no banco
+                LOCACAO_ANEXO item = baseApp.GetLocacaoAnexoById(id);
+                if (item == null || string.IsNullOrEmpty(item.LOAX_AQ_ARQUIVO))
+                {
+                    return Content("Erro: Registro do anexo não encontrado no banco de dados.");
+                }
+
+                // 3. LIMPEZA DO CAMINHO (Tratamento para o Azure)
+                // Remove o '~', remove barras do início e padroniza as barras invertidas
+                string caminhoFormatado = item.LOAX_AQ_ARQUIVO.Replace("~", "");
+                caminhoFormatado = caminhoFormatado.TrimStart('/');
+                caminhoFormatado = caminhoFormatado.Replace("\\", "/");
+
+                // 4. Conexão com o Azure Blob Storage
+                var blobServiceClient = new Azure.Storage.Blobs.BlobServiceClient(connString);
+                var containerClient = blobServiceClient.GetBlobContainerClient(containerName);
+                var blobClient = containerClient.GetBlobClient(caminhoFormatado);
+
+                // 5. Verifica se o arquivo realmente existe no container
+                if (!blobClient.Exists())
+                {
+                    return Content("Erro: Arquivo não localizado no Azure. Caminho tentado: [" + caminhoFormatado + "]");
+                }
+
+                // 6. Download do conteúdo para a memória do servidor
+                var download = blobClient.DownloadContent();
+                byte[] dados = download.Value.Content.ToArray();
+
+                // 7. Define nome e tipo do arquivo
+                string nomeDownload = Path.GetFileName(caminhoFormatado);
+                string contentType = MimeMapping.GetMimeMapping(nomeDownload);
+
+                // 8. Entrega o arquivo forçando o download no navegador
+                Response.Clear();
+                Response.ClearContent();
+                Response.ClearHeaders();
+                Response.Buffer = true;
+
+                Response.ContentType = contentType;
+                // Aspas duplas no nome do arquivo tratam nomes com espaços
+                Response.AddHeader("Content-Disposition", "attachment; filename=\"" + nomeDownload + "\"");
+
+                Response.BinaryWrite(dados);
+                Response.Flush();
+                Response.End();
+
+                return null;
+            }
+            catch (Exception ex)
+            {
+                // Gravação de Log de Exceção padrão WebDoctor/RTI
+                try
+                {
+                    var user = Session["UserCredentials"] as USUARIO;
+                    GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                    grava.GravarLogExcecao(ex, "Paciente", "WebDoctor", 1, user);
+                }
+                catch { /* Evita erro no catch se a sessão estiver expirada */ }
+
+                return Content("Erro técnico ao realizar download: " + ex.Message);
             }
         }
 
@@ -2810,7 +3204,7 @@ namespace GEDSys_Presentation.Controllers
                 EMPRESA emp = empApp.GetItemById(usuario.EMPR_CD_ID.Value);
                 assinatura = "<b>" + emp.EMPR_NM_NOME + "</b><br />";
                 assinatura += "<b>CNPJ: </b>" + emp.EMPR_NR_CNPJ + "<br />";
-                assinatura += "Enviado por <b>WebDoctor</b><br />";
+                assinatura += "Enviado por <b>WebDoctorPro</b><br />";
 
                 // Prepara corpo da mensagem
                 String urlDestino = conf.CONF_LK_LINK_SISTEMA;
@@ -2902,11 +3296,11 @@ namespace GEDSys_Presentation.Controllers
                 {
                     ViewBag.Message = ex.Message;
                     Session["TipoVolta"] = 2;
-                    Session["VoltaExcecao"] = "Paciente";
+                    Session["VoltaExcecao"] = "Locacao";
                     Session["Excecao"] = ex;
                     Session["ExcecaoTipo"] = ex.GetType().ToString();
                     GravaLogExcecao grava = new GravaLogExcecao(usuApp);
-                    Int32 voltaX = grava.GravarLogExcecao(ex, "Paciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                    Int32 voltaX = grava.GravarLogExcecao(ex, "Locacao", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
                     return 0;
                 }
 
@@ -2989,7 +3383,7 @@ namespace GEDSys_Presentation.Controllers
                 EMPRESA emp = empApp.GetItemById(usuario.EMPR_CD_ID.Value);
                 assinatura = emp.EMPR_NM_NOME;
                 assinatura += "CNPJ: " + emp.EMPR_NR_CNPJ;
-                assinatura += "Enviado por WebDoctor";
+                assinatura += "Enviado por WebDoctorPro";
 
                 // Prepara corpo da mensagem
                 String texto = template.TSMS_TX_CORPO;
@@ -3059,7 +3453,7 @@ namespace GEDSys_Presentation.Controllers
                             to = listaDest,
                             text = smsBody,
                             customId = customId,
-                            from = "WebDoctor"
+                            from = "WebDoctorPro"
                         }
     }
                 };
@@ -3152,7 +3546,7 @@ namespace GEDSys_Presentation.Controllers
                 EMPRESA emp = empApp.GetItemById(usuario.EMPR_CD_ID.Value);
                 assinatura = "<b>" + emp.EMPR_NM_NOME + "</b><br />";
                 assinatura += "<b>CNPJ: </b>" + emp.EMPR_NR_CNPJ + "<br />";
-                assinatura += "Enviado por <b>WebDoctor</b><br />";
+                assinatura += "Enviado por <b>WebDoctorPro</b><br />";
 
                 // Prepara corpo da mensagem
                 String texto = template.TEEM_TX_CORPO;
@@ -3219,11 +3613,11 @@ namespace GEDSys_Presentation.Controllers
                 {
                     ViewBag.Message = ex.Message;
                     Session["TipoVolta"] = 2;
-                    Session["VoltaExcecao"] = "Paciente";
+                    Session["VoltaExcecao"] = "Locacao";
                     Session["Excecao"] = ex;
                     Session["ExcecaoTipo"] = ex.GetType().ToString();
                     GravaLogExcecao grava = new GravaLogExcecao(usuApp);
-                    Int32 voltaX = grava.GravarLogExcecao(ex, "Paciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                    Int32 voltaX = grava.GravarLogExcecao(ex, "Locacao", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
                     return RedirectToAction("TrataExcecao", "BaseAdmin");
                 }
 
@@ -3757,9 +4151,9 @@ namespace GEDSys_Presentation.Controllers
                                 crud += ". Um lançamento de recebimento foi gerado para esta consulta.";
 
                                 // Cria pastas
-                                String caminho = "/Imagens/" + idAss.ToString() + "/Recebimento/" + rec.CORE_CD_ID.ToString() + "/Anexos/";
-                                String map = Server.MapPath(caminho);
-                                Directory.CreateDirectory(Server.MapPath(caminho));
+                                //String caminho = "/Imagens/" + idAss.ToString() + "/Recebimento/" + rec.CORE_CD_ID.ToString() + "/Anexos/";
+                                //String map = Server.MapPath(caminho);
+                                //Directory.CreateDirectory(Server.MapPath(caminho));
                             }
                             else
                             {
@@ -4742,7 +5136,31 @@ namespace GEDSys_Presentation.Controllers
                     cell1.Colspan = 1;
                     Image image = null;
                     EMPRESA empresa = empApp.GetItemByAssinante(idAss);
-                    image = Image.GetInstance(Server.MapPath(empresa.EMPR_AQ_LOGO));
+
+                    // Verificamos se o caminho do logo existe
+                    if (!string.IsNullOrEmpty(empresa.EMPR_AQ_LOGO))
+                    {
+                        // 1. Removemos o "~" para obter o caminho interno (ex: Imagens/1/Logos/logo.png)
+                        string blobPath = empresa.EMPR_AQ_LOGO.Replace("~", "");
+
+                        // 2. Montamos a URL usando as configurações de Storage que você já tem
+                        // Recomendo usar as variáveis do seu objeto 'conf' para ficar dinâmico
+                        string storageUrl = "https://rtistoragemain.blob.core.windows.net/rti-datacontainer/";
+
+                        // Garante que a URL termine com barra antes de concatenar
+                        if (!storageUrl.EndsWith("/")) storageUrl += "/";
+
+                        string fullUrl = storageUrl + blobPath;
+
+                        // 3. iTextSharp busca a imagem diretamente da URL do Azure
+                        image = Image.GetInstance(fullUrl);
+                    }
+                    else
+                    {
+                        // Caso não tenha logo, você pode carregar um placeholder local ou ignorar
+                        image = Image.GetInstance(Server.MapPath("~/Imagens/Base/logo_padrao.png"));
+                    }
+
                     image.ScaleAbsolute(50, 50);
                     cell1.AddElement(image);
                     cell1.Border = PdfPCell.BOTTOM_BORDER;
@@ -5072,13 +5490,40 @@ namespace GEDSys_Presentation.Controllers
                         table.AddCell(cell);
                     }
 
-                    if (System.IO.File.Exists(Server.MapPath(item.PRODUTO.PROD_AQ_FOTO)))
+                    // 1. Defina a URL base do seu container (Pode vir do seu objeto 'conf' se preferir)
+                    string storageUrl = "https://rtistoragemain.blob.core.windows.net/rti-datacontainer/";
+
+                    if (!string.IsNullOrEmpty(item.PRODUTO.PROD_AQ_FOTO))
                     {
-                        cell = new PdfPCell();
-                        Image image = Image.GetInstance(Server.MapPath(item.PRODUTO.PROD_AQ_FOTO));
-                        image.ScaleAbsolute(20, 20);
-                        cell.AddElement(image);
-                        table.AddCell(cell);
+                        // 2. Limpamos o caminho (removemos o "~" se existir)
+                        string blobPath = item.PRODUTO.PROD_AQ_FOTO.Replace("~", "");
+
+                        // Garantimos que a URL termine com barra e o path não comece com barra
+                        if (blobPath.StartsWith("/")) blobPath = blobPath.Substring(1);
+                        string fullUrl = storageUrl + blobPath;
+
+                        try
+                        {
+                            // 3. O iTextSharp faz o download automático da imagem do Azure
+                            Image image = Image.GetInstance(fullUrl);
+
+                            cell = new PdfPCell();
+                            image.ScaleAbsolute(20, 20);
+                            cell.AddElement(image);
+                            cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                            cell.HorizontalAlignment = Element.ALIGN_CENTER;
+                            table.AddCell(cell);
+                        }
+                        catch (Exception)
+                        {
+                            // Caso a imagem não exista no Storage ou haja erro de rede, exibe o traço
+                            cell = new PdfPCell(new Paragraph("-", meuFont))
+                            {
+                                VerticalAlignment = Element.ALIGN_MIDDLE,
+                                HorizontalAlignment = Element.ALIGN_CENTER
+                            };
+                            table.AddCell(cell);
+                        }
                     }
                     else
                     {
@@ -5128,11 +5573,11 @@ namespace GEDSys_Presentation.Controllers
             {
                 ViewBag.Message = ex.Message;
                 Session["TipoVolta"] = 2;
-                Session["VoltaExcecao"] = "Produto";
+                Session["VoltaExcecao"] = "Locacao";
                 Session["Excecao"] = ex;
                 Session["ExcecaoTipo"] = ex.GetType().ToString();
                 GravaLogExcecao grava = new GravaLogExcecao(usuApp);
-                Int32 voltaX = grava.GravarLogExcecao(ex, "Produto", "CRMsys", 1, (USUARIO)Session["UserCredentials"]);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Locacao", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
                 return RedirectToAction("TrataExcecao", "BaseAdmin");
             }
         }
@@ -5555,27 +6000,38 @@ namespace GEDSys_Presentation.Controllers
                     Image image = null;
                     if (conf.CONF_IN_LOGO_EMPRESA == 1)
                     {
-                        headerTable = new PdfPTable(new float[] { 20f, 700f });
-                        headerTable.WidthPercentage = 100;
-                        headerTable.HorizontalAlignment = 1;
-                        headerTable.SpacingBefore = 1f;
-                        headerTable.SpacingAfter = 1f;
+                        PdfPCell cell1 = new PdfPCell();
+                        cell1.Border = 0;
+                        cell1.Colspan = 1;
 
-                        cell = new PdfPCell();
-                        cell.Border = 0;
-                        cell.Colspan = 1;
-                        image = null;
-                        if (conf.CONF_IN_LOGO_EMPRESA == 1)
+                        // Verificamos se o caminho do logo existe
+                        if (!string.IsNullOrEmpty(empresa.EMPR_AQ_LOGO))
                         {
-                            image = Image.GetInstance(Server.MapPath(empresa.EMPR_AQ_LOGO));
+                            // 1. Removemos o "~" para obter o caminho interno (ex: Imagens/1/Logos/logo.png)
+                            string blobPath = empresa.EMPR_AQ_LOGO.Replace("~", "");
+
+                            // 2. Montamos a URL usando as configurações de Storage que você já tem
+                            // Recomendo usar as variáveis do seu objeto 'conf' para ficar dinâmico
+                            string storageUrl = "https://rtistoragemain.blob.core.windows.net/rti-datacontainer/";
+
+                            // Garante que a URL termine com barra antes de concatenar
+                            if (!storageUrl.EndsWith("/")) storageUrl += "/";
+
+                            string fullUrl = storageUrl + blobPath;
+
+                            // 3. iTextSharp busca a imagem diretamente da URL do Azure
+                            image = Image.GetInstance(fullUrl);
                         }
                         else
                         {
-                            image = Image.GetInstance(Server.MapPath("~/Images/Prontuario_Icone_1.png"));
+                            // Caso não tenha logo, você pode carregar um placeholder local ou ignorar
+                            image = Image.GetInstance(Server.MapPath("~/Imagens/Base/logo_padrao.png"));
                         }
-                        image.ScaleAbsolute(80, 80);
-                        cell.AddElement(image);
-                        headerTable.AddCell(cell);
+
+                        image.ScaleAbsolute(50, 50);
+                        cell1.AddElement(image);
+                        cell1.Border = PdfPCell.BOTTOM_BORDER;
+                        headerTable.AddCell(cell1);
                     }
                     else
                     {
@@ -5622,12 +6078,24 @@ namespace GEDSys_Presentation.Controllers
                     cell.Border = 0;
                     cell.Colspan = 1;
                     image = null;
-                    if (locacao.LOCA_AQ_ARQUIVO_QRCODE != null)
+                    if (!String.IsNullOrEmpty(locacao.LOCA_AQ_ARQUIVO_QRCODE))
                     {
-                        image = Image.GetInstance(Server.MapPath(locacao.LOCA_AQ_ARQUIVO_QRCODE));
+                        // 1. Pegamos o caminho gravado (ex: ~Imagens/1/Pacientes/...)
+                        // 2. Removemos o "~" para obter o nome do Blob no Azure
+                        String blobPath = locacao.LOCA_AQ_ARQUIVO_QRCODE.Replace("~", "");
+
+                        // 3. Montamos a URL completa do Storage
+                        // Você pode pegar o domínio da sua config (conf.CONF_NM_STORAGE_URL) 
+                        // ou montar dinamicamente:
+                        String storageUrl = "https://rtistoragemain.blob.core.windows.net/rti-datacontainer/";
+                        String fullUrl = storageUrl + blobPath;
+
+                        // 4. iTextSharp baixa a imagem da URL para incluir no PDF
+                        image = Image.GetInstance(fullUrl);
                     }
                     else
                     {
+                        // Mantém o local para o QR Code padrão do sistema
                         image = Image.GetInstance(Server.MapPath("~/Imagens/Base/qrcode.png"));
                     }
                     image.ScaleAbsolute(100, 100);
@@ -7173,13 +7641,23 @@ namespace GEDSys_Presentation.Controllers
             String emailBody = cab + "<br />" + texto + "<br /><br />" + assinatura;
 
             // Incluir PDF como anexo
+            // 1. Defina a base do seu Storage (pode vir de um Web.config ou AppSettings)
+            string storageBaseUrl = "https://meustorage.blob.core.windows.net/arquivos";
+
             List<AttachmentModel> models = new List<AttachmentModel>();
-            String caminho = "/Imagens/" + idAss.ToString() + "/Locacao/" + vm.LOCA_CD_ID.ToString() + "/Distrato/";
-            String fileNamePDF = "Distrato_Locacao" + paciente.PACI_NM_NOME.ToUpper() + "_" + vm.LOCA_GU_GUID + ".pdf";
-            String path = Path.Combine(Server.MapPath(caminho), fileNamePDF);
+
+            // 2. Montagem do caminho lógico (pastas)
+            string estruturaPastas = $"/Imagens/{idAss}/Locacao/{vm.LOCA_CD_ID}/Distrato/";
+            string fileNamePDF = $"Distrato_Locacao_{paciente.PACI_NM_NOME.ToUpper()}_{vm.LOCA_GU_GUID}.pdf";
+
+            // 3. O 'path' agora é uma URL completa ou um caminho relativo no Storage
+            // Path.Combine não funciona bem com URLs, então usamos concatenação ou UriBuilder
+            string fullPathStorage = storageBaseUrl + estruturaPastas + fileNamePDF;
 
             AttachmentModel model = new AttachmentModel();
-            model.PATH = path;
+
+            // IMPORTANTE: Verifique se sua classe AttachmentModel aceita URL ou se precisa do Stream
+            model.PATH = fullPathStorage;
             model.ATTACHMENT_NAME = fileNamePDF;
             model.CONTENT_TYPE = MediaTypeNames.Application.Pdf;
             models.Add(model);
@@ -7452,27 +7930,38 @@ namespace GEDSys_Presentation.Controllers
                 Image image = null;
                 if (conf.CONF_IN_LOGO_EMPRESA == 1)
                 {
-                    headerTable = new PdfPTable(new float[] { 20f, 700f });
-                    headerTable.WidthPercentage = 100;
-                    headerTable.HorizontalAlignment = 1;
-                    headerTable.SpacingBefore = 1f;
-                    headerTable.SpacingAfter = 1f;
+                    PdfPCell cell1 = new PdfPCell();
+                    cell1.Border = 0;
+                    cell1.Colspan = 1;
 
-                    cell = new PdfPCell();
-                    cell.Border = 0;
-                    cell.Colspan = 1;
-                    image = null;
-                    if (conf.CONF_IN_LOGO_EMPRESA == 1)
+                    // Verificamos se o caminho do logo existe
+                    if (!string.IsNullOrEmpty(empresa.EMPR_AQ_LOGO))
                     {
-                        image = Image.GetInstance(Server.MapPath(empresa.EMPR_AQ_LOGO));
+                        // 1. Removemos o "~" para obter o caminho interno (ex: Imagens/1/Logos/logo.png)
+                        string blobPath = empresa.EMPR_AQ_LOGO.Replace("~", "");
+
+                        // 2. Montamos a URL usando as configurações de Storage que você já tem
+                        // Recomendo usar as variáveis do seu objeto 'conf' para ficar dinâmico
+                        string storageUrl = "https://rtistoragemain.blob.core.windows.net/rti-datacontainer/";
+
+                        // Garante que a URL termine com barra antes de concatenar
+                        if (!storageUrl.EndsWith("/")) storageUrl += "/";
+
+                        string fullUrl = storageUrl + blobPath;
+
+                        // 3. iTextSharp busca a imagem diretamente da URL do Azure
+                        image = Image.GetInstance(fullUrl);
                     }
                     else
                     {
-                        image = Image.GetInstance(Server.MapPath("~/Images/Prontuario_Icone_1.png"));
+                        // Caso não tenha logo, você pode carregar um placeholder local ou ignorar
+                        image = Image.GetInstance(Server.MapPath("~/Imagens/Base/logo_padrao.png"));
                     }
-                    image.ScaleAbsolute(80, 80);
-                    cell.AddElement(image);
-                    headerTable.AddCell(cell);
+
+                    image.ScaleAbsolute(50, 50);
+                    cell1.AddElement(image);
+                    cell1.Border = PdfPCell.BOTTOM_BORDER;
+                    headerTable.AddCell(cell1);
                 }
                 else
                 {
@@ -7519,12 +8008,24 @@ namespace GEDSys_Presentation.Controllers
                 cell.Border = 0;
                 cell.Colspan = 1;
                 image = null;
-                if (locacao.LOCA_AQ_ARQUIVO_QRCODE != null)
+                if (!String.IsNullOrEmpty(locacao.LOCA_AQ_ARQUIVO_QRCODE))
                 {
-                    image = Image.GetInstance(Server.MapPath(locacao.LOCA_AQ_ARQUIVO_QRCODE));
+                    // 1. Pegamos o caminho gravado (ex: ~Imagens/1/Pacientes/...)
+                    // 2. Removemos o "~" para obter o nome do Blob no Azure
+                    String blobPath = locacao.LOCA_AQ_ARQUIVO_QRCODE.Replace("~", "");
+
+                    // 3. Montamos a URL completa do Storage
+                    // Você pode pegar o domínio da sua config (conf.CONF_NM_STORAGE_URL) 
+                    // ou montar dinamicamente:
+                    String storageUrl = "https://rtistoragemain.blob.core.windows.net/rti-datacontainer/";
+                    String fullUrl = storageUrl + blobPath;
+
+                    // 4. iTextSharp baixa a imagem da URL para incluir no PDF
+                    image = Image.GetInstance(fullUrl);
                 }
                 else
                 {
+                    // Mantém o local para o QR Code padrão do sistema
                     image = Image.GetInstance(Server.MapPath("~/Imagens/Base/qrcode.png"));
                 }
                 image.ScaleAbsolute(100, 100);
@@ -8025,6 +8526,7 @@ namespace GEDSys_Presentation.Controllers
                 String nomeRel = "Contrato_Locacao" + paciente.PACI_NM_NOME + "_" + locacao.LOCA_GU_GUID + ".pdf";
                 USUARIO usuario = usuApp.GetItemById(paciente.USUA_CD_ID.Value);
                 Int32 idAss = paciente.ASSI_CD_ID;
+                Int32? id = locacao.PACI_CD_ID;
 
                 EMPRESA empresa = empApp.GetItemById(usuario.EMPR_CD_ID.Value);
                 String token = locacao.LOCA_TK_TOKEN;
@@ -8219,27 +8721,38 @@ namespace GEDSys_Presentation.Controllers
                 Image image = null;
                 if (conf.CONF_IN_LOGO_EMPRESA == 1)
                 {
-                    headerTable = new PdfPTable(new float[] { 20f, 700f });
-                    headerTable.WidthPercentage = 100;
-                    headerTable.HorizontalAlignment = 1;
-                    headerTable.SpacingBefore = 1f;
-                    headerTable.SpacingAfter = 1f;
+                    PdfPCell cell1 = new PdfPCell();
+                    cell1.Border = 0;
+                    cell1.Colspan = 1;
 
-                    cell = new PdfPCell();
-                    cell.Border = 0;
-                    cell.Colspan = 1;
-                    image = null;
-                    if (conf.CONF_IN_LOGO_EMPRESA == 1)
+                    // Verificamos se o caminho do logo existe
+                    if (!string.IsNullOrEmpty(empresa.EMPR_AQ_LOGO))
                     {
-                        image = Image.GetInstance(Server.MapPath(empresa.EMPR_AQ_LOGO));
+                        // 1. Removemos o "~" para obter o caminho interno (ex: Imagens/1/Logos/logo.png)
+                        string blobPath = empresa.EMPR_AQ_LOGO.Replace("~", "");
+
+                        // 2. Montamos a URL usando as configurações de Storage que você já tem
+                        // Recomendo usar as variáveis do seu objeto 'conf' para ficar dinâmico
+                        string storageUrl = "https://rtistoragemain.blob.core.windows.net/rti-datacontainer/";
+
+                        // Garante que a URL termine com barra antes de concatenar
+                        if (!storageUrl.EndsWith("/")) storageUrl += "/";
+
+                        string fullUrl = storageUrl + blobPath;
+
+                        // 3. iTextSharp busca a imagem diretamente da URL do Azure
+                        image = Image.GetInstance(fullUrl);
                     }
                     else
                     {
-                        image = Image.GetInstance(Server.MapPath("~/Images/Prontuario_Icone_1.png"));
+                        // Caso não tenha logo, você pode carregar um placeholder local ou ignorar
+                        image = Image.GetInstance(Server.MapPath("~/Imagens/Base/logo_padrao.png"));
                     }
-                    image.ScaleAbsolute(80, 80);
-                    cell.AddElement(image);
-                    headerTable.AddCell(cell);
+
+                    image.ScaleAbsolute(50, 50);
+                    cell1.AddElement(image);
+                    cell1.Border = PdfPCell.BOTTOM_BORDER;
+                    headerTable.AddCell(cell1);
                 }
                 else
                 {
@@ -8286,17 +8799,30 @@ namespace GEDSys_Presentation.Controllers
                 cell.Border = 0;
                 cell.Colspan = 1;
                 image = null;
-                if (locacao.LOCA_AQ_ARQUIVO_QRCODE != null)
+                if (!String.IsNullOrEmpty(locacao.LOCA_AQ_ARQUIVO_QRCODE))
                 {
-                    image = Image.GetInstance(Server.MapPath(locacao.LOCA_AQ_ARQUIVO_QRCODE));
+                    // 1. Pegamos o caminho gravado (ex: ~Imagens/1/Pacientes/...)
+                    // 2. Removemos o "~" para obter o nome do Blob no Azure
+                    String blobPath = locacao.LOCA_AQ_ARQUIVO_QRCODE.Replace("~", "");
+
+                    // 3. Montamos a URL completa do Storage
+                    // Você pode pegar o domínio da sua config (conf.CONF_NM_STORAGE_URL) 
+                    // ou montar dinamicamente:
+                    String storageUrl = "https://rtistoragemain.blob.core.windows.net/rti-datacontainer/";
+                    String fullUrl = storageUrl + blobPath;
+
+                    // 4. iTextSharp baixa a imagem da URL para incluir no PDF
+                    image = Image.GetInstance(fullUrl);
                 }
                 else
                 {
+                    // Mantém o local para o QR Code padrão do sistema
                     image = Image.GetInstance(Server.MapPath("~/Imagens/Base/qrcode.png"));
                 }
                 image.ScaleAbsolute(100, 100);
                 cell.AddElement(image);
                 footerTable.AddCell(cell);
+
 
                 // Dados da empresa
                 table1 = new PdfPTable(new float[] { 120f, 120f, 120f, 120f });
@@ -8421,6 +8947,12 @@ namespace GEDSys_Presentation.Controllers
                     cell.VerticalAlignment = Element.ALIGN_MIDDLE;
                     cell.HorizontalAlignment = Element.ALIGN_LEFT;
                     table1.AddCell(cell);
+                    cell = new PdfPCell(new Paragraph("Documento não assinado digitalmente", meuFont));
+                    cell.Border = 0;
+                    cell.Colspan = 4;
+                    cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                    cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                    table1.AddCell(cell);
 
                     cell = new PdfPCell(new Paragraph("  ", meuFont));
                     cell.Border = 0;
@@ -8433,7 +8965,7 @@ namespace GEDSys_Presentation.Controllers
                     innerTableCell.Border = Rectangle.NO_BORDER;
                     innerTableCell.Colspan = 4;
                     footerTable.AddCell(innerTableCell);
-                    String msg = "(*) Para validar este documento use o QR Code acima ou acesse " + conf.CONF_LK_LINK_VALIDACAO + " usando o token de acesso " + token;
+                    String msg = "(*) Para validar este documento use o código QR acima acima ou acesse " + conf.CONF_LK_LINK_VALIDACAO + " e use o token de acesso " + token;
                     cell.AddElement(new Chunk(msg, FontFactory.GetFont("Arial", 8, Font.NORMAL, BaseColor.BLACK)));
                     footerTable.AddCell(cell);
                 }
@@ -8788,13 +9320,21 @@ namespace GEDSys_Presentation.Controllers
                 pdfWriter.CloseStream = false;
                 pdfDoc.Close();
 
-                byte[] pdfFinal;
+                // --- FINALIZAÇÃO DO DOCUMENTO BASE ---
+                byte[] pdfOriginalBytes = msInput.ToArray();
+                msInput.Dispose(); // Libera o stream original para garantir que não há travas
+
+                if (pdfOriginalBytes == null || pdfOriginalBytes.Length == 0)
+                    throw new Exception("Erro: PDF base não foi extraído corretamente.");
+
+                byte[] pdfFinal = null;
                 if (locacao.LOCA_IN_ASSINADO_DIGITAL == 1) // Se for para assinar com PFX
                 {
                     if (certificado == 1)
                     {
                         // Monta o caminho relativo: ~/Certificados/ID/NomeArquivo.pfx
                         string caminhoRelativo = "~/Certificados/" + idAss.ToString() + "/" + conf.CONF_NM_LOCAL_CERTIFICADO;
+                        PACIENTE paciente1 = pacApp.GetItemById(id.Value);
 
                         // Converte para o caminho físico real do servidor
                         string caminhoPFX = Server.MapPath(caminhoRelativo);
@@ -8802,61 +9342,69 @@ namespace GEDSys_Presentation.Controllers
 
                         using (MemoryStream msOutput = new MemoryStream())
                         {
-                            // Validação de segurança: verifica se o arquivo realmente existe fisicamente
                             if (!System.IO.File.Exists(caminhoPFX))
                             {
                                 throw new Exception("Arquivo de certificado não encontrado em: " + caminhoPFX);
                             }
 
-                            // Carrega o certificado (Adicionado MachineKeySet para evitar erros no IIS)
-                            X509Certificate2 cert = new X509Certificate2(caminhoPFX, senhaPFX, X509KeyStorageFlags.Exportable | X509KeyStorageFlags.MachineKeySet);
+                            // 1. Carrega o certificado com flags de persistência para o Azure
+                            X509Certificate2 cert = new X509Certificate2(caminhoPFX, senhaPFX,
+                                X509KeyStorageFlags.Exportable |
+                                X509KeyStorageFlags.MachineKeySet |
+                                X509KeyStorageFlags.PersistKeySet);
 
-                            // Extrai a chave privada e a cadeia de certificados para o iText
+                            // 2. Prepara componentes do BouncyCastle
                             Org.BouncyCastle.X509.X509Certificate bcCert = Org.BouncyCastle.Security.DotNetUtilities.FromX509Certificate(cert);
                             Org.BouncyCastle.Crypto.AsymmetricKeyParameter key = Org.BouncyCastle.Security.DotNetUtilities.GetKeyPair(cert.PrivateKey).Private;
                             Org.BouncyCastle.X509.X509Certificate[] chain = new Org.BouncyCastle.X509.X509Certificate[] { bcCert };
 
-                            // Cria o Stamper para assinar
-                            PdfReader reader = new PdfReader(msInput.ToArray());
-                            PdfStamper stamper = PdfStamper.CreateSignature(reader, msOutput, '\0');
+                            // 3. Cria o Reader e o Stamper
+                            // IMPORTANTE: Usamos pdfOriginalBytes para garantir que os dados estão lá após o dispose do msInput
+                            using (PdfReader reader = new PdfReader(pdfOriginalBytes))
+                            {
+                                // O '\0' indica que não estamos criando uma nova revisão, mas assinando
+                                PdfStamper stamper = PdfStamper.CreateSignature(reader, msOutput, '\0');
 
-                            // Configura a aparência da assinatura
-                            PdfSignatureAppearance appearance = stamper.SignatureAppearance;
-                            appearance.Reason = "Assinatura de Atestado Médico";
-                            appearance.Location = paciente.PACI_NM_CIDADE + ", " + paciente.UF.UF_SG_SIGLA;
+                                PdfSignatureAppearance appearance = stamper.SignatureAppearance;
+                                appearance.Reason = "Contrato de Locação";
+                                appearance.Location = paciente1.PACI_NM_CIDADE + ", " + (paciente1.UF != null ? paciente1.UF.UF_SG_SIGLA : "");
 
-                            // --- AJUSTE DE POSIÇÃO ---
-                            float xPos = 60;
-                            float yPos = 160;
-                            float largura = 300;
-                            float altura = 60;
+                                // Posição da assinatura
+                                float xPos = 60;
+                                float yPos = 160;
+                                Rectangle posicaoAssinatura = new Rectangle(xPos, yPos, xPos + 300, yPos + 60);
 
-                            Rectangle posicaoAssinatura = new Rectangle(xPos, yPos, xPos + largura, yPos + altura);
-                            // Descomente a linha abaixo para exibir o carimbo visual no PDF
-                            // appearance.SetVisibleSignature(posicaoAssinatura, reader.NumberOfPages, "Signature");
+                                // Se quiser que a assinatura apareça visualmente, descomente:
+                                // appearance.SetVisibleSignature(posicaoAssinatura, reader.NumberOfPages, "Signature");
 
-                            // Aplica a assinatura digital SHA-256
-                            IExternalSignature es = new PrivateKeySignature(key, "SHA-256");
-                            MakeSignature.SignDetached(appearance, es, chain, null, null, null, 0, CryptoStandard.CMS);
+                                // 4. Realiza a assinatura
+                                IExternalSignature es = new PrivateKeySignature(key, "SHA-256");
+                                MakeSignature.SignDetached(appearance, es, chain, null, null, null, 0, CryptoStandard.CMS);
+
+                                // --- AJUSTE CRÍTICO: FECHAR O STAMPER ANTES DE PEGAR O TOARRAY ---
+                                stamper.Close();
+                            }
 
                             pdfFinal = msOutput.ToArray();
                         }
                     }
                     else
                     {
-                        pdfFinal = msInput.ToArray();
+                        pdfFinal = pdfOriginalBytes;
                     }
                 }
                 else
                 {
-                    pdfFinal = msInput.ToArray();
+                    pdfFinal = pdfOriginalBytes;
                 }
 
                 // 2. Envia o arquivo final (assinado ou não) para o navegador
                 Response.Clear();
                 Response.ContentType = "application/pdf";
                 Response.AddHeader("content-disposition", "attachment;filename=" + nomeRel);
+                Response.AddHeader("Content-Length", pdfFinal.Length.ToString());
                 Response.BinaryWrite(pdfFinal);
+                Response.Flush();
                 Response.End();
 
                 if ((Int32)Session["VoltaContrato"] == 2)
@@ -9414,22 +9962,8 @@ namespace GEDSys_Presentation.Controllers
                 Font meuFontBold = FontFactory.GetFont("Arial", 8, iTextSharp.text.Font.BOLD, BaseColor.BLACK);
 
                 // Caminho de saida
-                String caminhoVirtual = "/Imagens/" + idAss.ToString() + "/Locacao/" + locacao.LOCA_CD_ID.ToString() + "/Distrato/";
-                String pastaFisica = Server.MapPath(caminhoVirtual);
-                String filePath = Path.Combine(pastaFisica, nomeRel);
-                Directory.CreateDirectory(pastaFisica);
-                Boolean existe = System.IO.File.Exists(filePath);
-                if (existe)
-                {
-                    try
-                    {
-                        System.IO.File.Delete(filePath);
-                    }
-                    catch (Exception)
-                    {
-                        existe = false;
-                    }
-                }
+                String caminho = "/Temp/";
+                String filePath = Path.Combine(Server.MapPath(caminho), nomeRel);
 
                 // Recupera texto legal
                 CONTRATO_LOCACAO template = baseApp.GetContratoById(locacao.LOCA_CD_DISTRATO_ID.Value);
@@ -9511,27 +10045,38 @@ namespace GEDSys_Presentation.Controllers
                 Image image = null;
                 if (conf.CONF_IN_LOGO_EMPRESA == 1)
                 {
-                    headerTable = new PdfPTable(new float[] { 20f, 700f });
-                    headerTable.WidthPercentage = 100;
-                    headerTable.HorizontalAlignment = 1;
-                    headerTable.SpacingBefore = 1f;
-                    headerTable.SpacingAfter = 1f;
+                    PdfPCell cell1 = new PdfPCell();
+                    cell1.Border = 0;
+                    cell1.Colspan = 1;
 
-                    cell = new PdfPCell();
-                    cell.Border = 0;
-                    cell.Colspan = 1;
-                    image = null;
-                    if (conf.CONF_IN_LOGO_EMPRESA == 1)
+                    // Verificamos se o caminho do logo existe
+                    if (!string.IsNullOrEmpty(empresa.EMPR_AQ_LOGO))
                     {
-                        image = Image.GetInstance(Server.MapPath(empresa.EMPR_AQ_LOGO));
+                        // 1. Removemos o "~" para obter o caminho interno (ex: Imagens/1/Logos/logo.png)
+                        string blobPath = empresa.EMPR_AQ_LOGO.Replace("~", "");
+
+                        // 2. Montamos a URL usando as configurações de Storage que você já tem
+                        // Recomendo usar as variáveis do seu objeto 'conf' para ficar dinâmico
+                        string storageUrl = "https://rtistoragemain.blob.core.windows.net/rti-datacontainer/";
+
+                        // Garante que a URL termine com barra antes de concatenar
+                        if (!storageUrl.EndsWith("/")) storageUrl += "/";
+
+                        string fullUrl = storageUrl + blobPath;
+
+                        // 3. iTextSharp busca a imagem diretamente da URL do Azure
+                        image = Image.GetInstance(fullUrl);
                     }
                     else
                     {
-                        image = Image.GetInstance(Server.MapPath("~/Images/Prontuario_Icone_1.png"));
+                        // Caso não tenha logo, você pode carregar um placeholder local ou ignorar
+                        image = Image.GetInstance(Server.MapPath("~/Imagens/Base/logo_padrao.png"));
                     }
-                    image.ScaleAbsolute(80, 80);
-                    cell.AddElement(image);
-                    headerTable.AddCell(cell);
+
+                    image.ScaleAbsolute(50, 50);
+                    cell1.AddElement(image);
+                    cell1.Border = PdfPCell.BOTTOM_BORDER;
+                    headerTable.AddCell(cell1);
                 }
                 else
                 {
@@ -9578,12 +10123,24 @@ namespace GEDSys_Presentation.Controllers
                 cell.Border = 0;
                 cell.Colspan = 1;
                 image = null;
-                if (locacao.LOCA_AQ_ARQUIVO_QRCODE != null)
+                if (!String.IsNullOrEmpty(locacao.LOCA_AQ_ARQUIVO_QRCODE))
                 {
-                    image = Image.GetInstance(Server.MapPath(locacao.LOCA_AQ_ARQUIVO_QRCODE));
+                    // 1. Pegamos o caminho gravado (ex: ~Imagens/1/Pacientes/...)
+                    // 2. Removemos o "~" para obter o nome do Blob no Azure
+                    String blobPath = locacao.LOCA_AQ_ARQUIVO_QRCODE.Replace("~", "");
+
+                    // 3. Montamos a URL completa do Storage
+                    // Você pode pegar o domínio da sua config (conf.CONF_NM_STORAGE_URL) 
+                    // ou montar dinamicamente:
+                    String storageUrl = "https://rtistoragemain.blob.core.windows.net/rti-datacontainer/";
+                    String fullUrl = storageUrl + blobPath;
+
+                    // 4. iTextSharp baixa a imagem da URL para incluir no PDF
+                    image = Image.GetInstance(fullUrl);
                 }
                 else
                 {
+                    // Mantém o local para o QR Code padrão do sistema
                     image = Image.GetInstance(Server.MapPath("~/Imagens/Base/qrcode.png"));
                 }
                 image.ScaleAbsolute(100, 100);
@@ -9951,6 +10508,7 @@ namespace GEDSys_Presentation.Controllers
                 String nomeRel = "Distrato_Locacao" + paciente.PACI_NM_NOME + "_" + locacao.LOCA_GU_GUID + ".pdf";
                 USUARIO usuario = usuApp.GetItemById(paciente.USUA_CD_ID.Value);
                 Int32 idAss = paciente.ASSI_CD_ID;
+                Int32? id = locacao.PACI_CD_ID;
 
                 EMPRESA empresa = empApp.GetItemById(usuario.EMPR_CD_ID.Value);
                 String token = locacao.LOCA_TK_TOKEN;
@@ -10133,27 +10691,38 @@ namespace GEDSys_Presentation.Controllers
                 Image image = null;
                 if (conf.CONF_IN_LOGO_EMPRESA == 1)
                 {
-                    headerTable = new PdfPTable(new float[] { 20f, 700f });
-                    headerTable.WidthPercentage = 100;
-                    headerTable.HorizontalAlignment = 1;
-                    headerTable.SpacingBefore = 1f;
-                    headerTable.SpacingAfter = 1f;
+                    PdfPCell cell1 = new PdfPCell();
+                    cell1.Border = 0;
+                    cell1.Colspan = 1;
 
-                    cell = new PdfPCell();
-                    cell.Border = 0;
-                    cell.Colspan = 1;
-                    image = null;
-                    if (conf.CONF_IN_LOGO_EMPRESA == 1)
+                    // Verificamos se o caminho do logo existe
+                    if (!string.IsNullOrEmpty(empresa.EMPR_AQ_LOGO))
                     {
-                        image = Image.GetInstance(Server.MapPath(empresa.EMPR_AQ_LOGO));
+                        // 1. Removemos o "~" para obter o caminho interno (ex: Imagens/1/Logos/logo.png)
+                        string blobPath = empresa.EMPR_AQ_LOGO.Replace("~", "");
+
+                        // 2. Montamos a URL usando as configurações de Storage que você já tem
+                        // Recomendo usar as variáveis do seu objeto 'conf' para ficar dinâmico
+                        string storageUrl = "https://rtistoragemain.blob.core.windows.net/rti-datacontainer/";
+
+                        // Garante que a URL termine com barra antes de concatenar
+                        if (!storageUrl.EndsWith("/")) storageUrl += "/";
+
+                        string fullUrl = storageUrl + blobPath;
+
+                        // 3. iTextSharp busca a imagem diretamente da URL do Azure
+                        image = Image.GetInstance(fullUrl);
                     }
                     else
                     {
-                        image = Image.GetInstance(Server.MapPath("~/Images/Prontuario_Icone_1.png"));
+                        // Caso não tenha logo, você pode carregar um placeholder local ou ignorar
+                        image = Image.GetInstance(Server.MapPath("~/Imagens/Base/logo_padrao.png"));
                     }
-                    image.ScaleAbsolute(80, 80);
-                    cell.AddElement(image);
-                    headerTable.AddCell(cell);
+
+                    image.ScaleAbsolute(50, 50);
+                    cell1.AddElement(image);
+                    cell1.Border = PdfPCell.BOTTOM_BORDER;
+                    headerTable.AddCell(cell1);
                 }
                 else
                 {
@@ -10200,12 +10769,24 @@ namespace GEDSys_Presentation.Controllers
                 cell.Border = 0;
                 cell.Colspan = 1;
                 image = null;
-                if (locacao.LOCA_AQ_ARQUIVO_QRCODE != null)
+                if (!String.IsNullOrEmpty(locacao.LOCA_AQ_ARQUIVO_QRCODE))
                 {
-                    image = Image.GetInstance(Server.MapPath(locacao.LOCA_AQ_ARQUIVO_QRCODE));
+                    // 1. Pegamos o caminho gravado (ex: ~Imagens/1/Pacientes/...)
+                    // 2. Removemos o "~" para obter o nome do Blob no Azure
+                    String blobPath = locacao.LOCA_AQ_ARQUIVO_QRCODE.Replace("~", "");
+
+                    // 3. Montamos a URL completa do Storage
+                    // Você pode pegar o domínio da sua config (conf.CONF_NM_STORAGE_URL) 
+                    // ou montar dinamicamente:
+                    String storageUrl = "https://rtistoragemain.blob.core.windows.net/rti-datacontainer/";
+                    String fullUrl = storageUrl + blobPath;
+
+                    // 4. iTextSharp baixa a imagem da URL para incluir no PDF
+                    image = Image.GetInstance(fullUrl);
                 }
                 else
                 {
+                    // Mantém o local para o QR Code padrão do sistema
                     image = Image.GetInstance(Server.MapPath("~/Imagens/Base/qrcode.png"));
                 }
                 image.ScaleAbsolute(100, 100);
@@ -10335,6 +10916,12 @@ namespace GEDSys_Presentation.Controllers
                     cell.VerticalAlignment = Element.ALIGN_MIDDLE;
                     cell.HorizontalAlignment = Element.ALIGN_LEFT;
                     table1.AddCell(cell);
+                    cell = new PdfPCell(new Paragraph("Documento não assinado digitalmente", meuFont));
+                    cell.Border = 0;
+                    cell.Colspan = 4;
+                    cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                    cell.HorizontalAlignment = Element.ALIGN_LEFT;
+                    table1.AddCell(cell);
 
                     cell = new PdfPCell(new Paragraph("  ", meuFont));
                     cell.Border = 0;
@@ -10347,7 +10934,7 @@ namespace GEDSys_Presentation.Controllers
                     innerTableCell.Border = Rectangle.NO_BORDER;
                     innerTableCell.Colspan = 4;
                     footerTable.AddCell(innerTableCell);
-                    String msg = "(*) Para validar este documento use o QR Code acima ou acesse " + conf.CONF_LK_LINK_VALIDACAO + " usando o token de acesso " + token;
+                    String msg = "(*) Para validar este documento use o código QR acima acima ou acesse " + conf.CONF_LK_LINK_VALIDACAO + " e use o token de acesso " + token;
                     cell.AddElement(new Chunk(msg, FontFactory.GetFont("Arial", 8, Font.NORMAL, BaseColor.BLACK)));
                     footerTable.AddCell(cell);
                 }
@@ -10569,13 +11156,21 @@ namespace GEDSys_Presentation.Controllers
                 pdfWriter.CloseStream = false;
                 pdfDoc.Close();
 
-                byte[] pdfFinal;
+                // --- FINALIZAÇÃO DO DOCUMENTO BASE ---
+                byte[] pdfOriginalBytes = msInput.ToArray();
+                msInput.Dispose(); // Libera o stream original para garantir que não há travas
+
+                if (pdfOriginalBytes == null || pdfOriginalBytes.Length == 0)
+                    throw new Exception("Erro: PDF base não foi extraído corretamente.");
+
+                byte[] pdfFinal = null;
                 if (locacao.LOCA_IN_ASSINADO_DIGITAL == 1) // Se for para assinar com PFX
                 {
                     if (certificado == 1)
                     {
                         // Monta o caminho relativo: ~/Certificados/ID/NomeArquivo.pfx
                         string caminhoRelativo = "~/Certificados/" + idAss.ToString() + "/" + conf.CONF_NM_LOCAL_CERTIFICADO;
+                        PACIENTE paciente1 = pacApp.GetItemById(id.Value);
 
                         // Converte para o caminho físico real do servidor
                         string caminhoPFX = Server.MapPath(caminhoRelativo);
@@ -10583,54 +11178,60 @@ namespace GEDSys_Presentation.Controllers
 
                         using (MemoryStream msOutput = new MemoryStream())
                         {
-                            // Validação de segurança: verifica se o arquivo realmente existe fisicamente
                             if (!System.IO.File.Exists(caminhoPFX))
                             {
                                 throw new Exception("Arquivo de certificado não encontrado em: " + caminhoPFX);
                             }
 
-                            // Carrega o certificado (Adicionado MachineKeySet para evitar erros no IIS)
-                            X509Certificate2 cert = new X509Certificate2(caminhoPFX, senhaPFX, X509KeyStorageFlags.Exportable | X509KeyStorageFlags.MachineKeySet);
+                            // 1. Carrega o certificado com flags de persistência para o Azure
+                            X509Certificate2 cert = new X509Certificate2(caminhoPFX, senhaPFX,
+                                X509KeyStorageFlags.Exportable |
+                                X509KeyStorageFlags.MachineKeySet |
+                                X509KeyStorageFlags.PersistKeySet);
 
-                            // Extrai a chave privada e a cadeia de certificados para o iText
+                            // 2. Prepara componentes do BouncyCastle
                             Org.BouncyCastle.X509.X509Certificate bcCert = Org.BouncyCastle.Security.DotNetUtilities.FromX509Certificate(cert);
                             Org.BouncyCastle.Crypto.AsymmetricKeyParameter key = Org.BouncyCastle.Security.DotNetUtilities.GetKeyPair(cert.PrivateKey).Private;
                             Org.BouncyCastle.X509.X509Certificate[] chain = new Org.BouncyCastle.X509.X509Certificate[] { bcCert };
 
-                            // Cria o Stamper para assinar
-                            PdfReader reader = new PdfReader(msInput.ToArray());
-                            PdfStamper stamper = PdfStamper.CreateSignature(reader, msOutput, '\0');
+                            // 3. Cria o Reader e o Stamper
+                            // IMPORTANTE: Usamos pdfOriginalBytes para garantir que os dados estão lá após o dispose do msInput
+                            using (PdfReader reader = new PdfReader(pdfOriginalBytes))
+                            {
+                                // O '\0' indica que não estamos criando uma nova revisão, mas assinando
+                                PdfStamper stamper = PdfStamper.CreateSignature(reader, msOutput, '\0');
 
-                            // Configura a aparência da assinatura
-                            PdfSignatureAppearance appearance = stamper.SignatureAppearance;
-                            appearance.Reason = "Assinatura de Atestado Médico";
-                            appearance.Location = paciente.PACI_NM_CIDADE + ", " + paciente.UF.UF_SG_SIGLA;
+                                PdfSignatureAppearance appearance = stamper.SignatureAppearance;
+                                appearance.Reason = "Contrato de Locação";
+                                appearance.Location = paciente1.PACI_NM_CIDADE + ", " + (paciente1.UF != null ? paciente1.UF.UF_SG_SIGLA : "");
 
-                            // --- AJUSTE DE POSIÇÃO ---
-                            float xPos = 60;
-                            float yPos = 160;
-                            float largura = 300;
-                            float altura = 60;
+                                // Posição da assinatura
+                                float xPos = 60;
+                                float yPos = 160;
+                                Rectangle posicaoAssinatura = new Rectangle(xPos, yPos, xPos + 300, yPos + 60);
 
-                            Rectangle posicaoAssinatura = new Rectangle(xPos, yPos, xPos + largura, yPos + altura);
-                            // Descomente a linha abaixo para exibir o carimbo visual no PDF
-                            // appearance.SetVisibleSignature(posicaoAssinatura, reader.NumberOfPages, "Signature");
+                                // Se quiser que a assinatura apareça visualmente, descomente:
+                                // appearance.SetVisibleSignature(posicaoAssinatura, reader.NumberOfPages, "Signature");
 
-                            // Aplica a assinatura digital SHA-256
-                            IExternalSignature es = new PrivateKeySignature(key, "SHA-256");
-                            MakeSignature.SignDetached(appearance, es, chain, null, null, null, 0, CryptoStandard.CMS);
+                                // 4. Realiza a assinatura
+                                IExternalSignature es = new PrivateKeySignature(key, "SHA-256");
+                                MakeSignature.SignDetached(appearance, es, chain, null, null, null, 0, CryptoStandard.CMS);
+
+                                // --- AJUSTE CRÍTICO: FECHAR O STAMPER ANTES DE PEGAR O TOARRAY ---
+                                stamper.Close();
+                            }
 
                             pdfFinal = msOutput.ToArray();
                         }
                     }
                     else
                     {
-                        pdfFinal = msInput.ToArray();
+                        pdfFinal = pdfOriginalBytes;
                     }
                 }
                 else
                 {
-                    pdfFinal = msInput.ToArray();
+                    pdfFinal = pdfOriginalBytes;
                 }
 
                 // 2. Envia o arquivo final (assinado ou não) para o navegador
@@ -10765,22 +11366,8 @@ namespace GEDSys_Presentation.Controllers
                 Font meuFontBold = FontFactory.GetFont("Arial", 8, iTextSharp.text.Font.BOLD, BaseColor.BLACK);
 
                 // Caminho de saida
-                String caminhoVirtual = "/Imagens/" + idAss.ToString() + "/Locacao/" + locacao.LOCA_CD_ID.ToString() + "/Distrato/";
-                String pastaFisica = Server.MapPath(caminhoVirtual);
-                String filePath = Path.Combine(pastaFisica, nomeRel);
-                Directory.CreateDirectory(pastaFisica);
-                Boolean existe = System.IO.File.Exists(filePath);
-                if (existe)
-                {
-                    try
-                    {
-                        System.IO.File.Delete(filePath);
-                    }
-                    catch (Exception)
-                    {
-                        existe = false;
-                    }
-                }
+                String caminho = "/Temp/";
+                String filePath = Path.Combine(Server.MapPath(caminho), nomeRel);
 
                 // Recupera texto legal
                 CONTRATO_LOCACAO template = baseApp.GetContratoById(locacao.LOCA_CD_DISTRATO_ID.Value);
@@ -10869,27 +11456,38 @@ namespace GEDSys_Presentation.Controllers
                     Image image = null;
                     if (conf.CONF_IN_LOGO_EMPRESA == 1)
                     {
-                        headerTable = new PdfPTable(new float[] { 20f, 700f });
-                        headerTable.WidthPercentage = 100;
-                        headerTable.HorizontalAlignment = 1;
-                        headerTable.SpacingBefore = 1f;
-                        headerTable.SpacingAfter = 1f;
+                        PdfPCell cell1 = new PdfPCell();
+                        cell1.Border = 0;
+                        cell1.Colspan = 1;
 
-                        cell = new PdfPCell();
-                        cell.Border = 0;
-                        cell.Colspan = 1;
-                        image = null;
-                        if (conf.CONF_IN_LOGO_EMPRESA == 1)
+                        // Verificamos se o caminho do logo existe
+                        if (!string.IsNullOrEmpty(empresa.EMPR_AQ_LOGO))
                         {
-                            image = Image.GetInstance(Server.MapPath(empresa.EMPR_AQ_LOGO));
+                            // 1. Removemos o "~" para obter o caminho interno (ex: Imagens/1/Logos/logo.png)
+                            string blobPath = empresa.EMPR_AQ_LOGO.Replace("~", "");
+
+                            // 2. Montamos a URL usando as configurações de Storage que você já tem
+                            // Recomendo usar as variáveis do seu objeto 'conf' para ficar dinâmico
+                            string storageUrl = "https://rtistoragemain.blob.core.windows.net/rti-datacontainer/";
+
+                            // Garante que a URL termine com barra antes de concatenar
+                            if (!storageUrl.EndsWith("/")) storageUrl += "/";
+
+                            string fullUrl = storageUrl + blobPath;
+
+                            // 3. iTextSharp busca a imagem diretamente da URL do Azure
+                            image = Image.GetInstance(fullUrl);
                         }
                         else
                         {
-                            image = Image.GetInstance(Server.MapPath("~/Images/Prontuario_Icone_1.png"));
+                            // Caso não tenha logo, você pode carregar um placeholder local ou ignorar
+                            image = Image.GetInstance(Server.MapPath("~/Imagens/Base/logo_padrao.png"));
                         }
-                        image.ScaleAbsolute(80, 80);
-                        cell.AddElement(image);
-                        headerTable.AddCell(cell);
+
+                        image.ScaleAbsolute(50, 50);
+                        cell1.AddElement(image);
+                        cell1.Border = PdfPCell.BOTTOM_BORDER;
+                        headerTable.AddCell(cell1);
                     }
                     else
                     {
@@ -10936,12 +11534,24 @@ namespace GEDSys_Presentation.Controllers
                     cell.Border = 0;
                     cell.Colspan = 1;
                     image = null;
-                    if (locacao.LOCA_AQ_ARQUIVO_QRCODE != null)
+                    if (!String.IsNullOrEmpty(locacao.LOCA_AQ_ARQUIVO_QRCODE))
                     {
-                        image = Image.GetInstance(Server.MapPath(locacao.LOCA_AQ_ARQUIVO_QRCODE));
+                        // 1. Pegamos o caminho gravado (ex: ~Imagens/1/Pacientes/...)
+                        // 2. Removemos o "~" para obter o nome do Blob no Azure
+                        String blobPath = locacao.LOCA_AQ_ARQUIVO_QRCODE.Replace("~", "");
+
+                        // 3. Montamos a URL completa do Storage
+                        // Você pode pegar o domínio da sua config (conf.CONF_NM_STORAGE_URL) 
+                        // ou montar dinamicamente:
+                        String storageUrl = "https://rtistoragemain.blob.core.windows.net/rti-datacontainer/";
+                        String fullUrl = storageUrl + blobPath;
+
+                        // 4. iTextSharp baixa a imagem da URL para incluir no PDF
+                        image = Image.GetInstance(fullUrl);
                     }
                     else
                     {
+                        // Mantém o local para o QR Code padrão do sistema
                         image = Image.GetInstance(Server.MapPath("~/Imagens/Base/qrcode.png"));
                     }
                     image.ScaleAbsolute(100, 100);
@@ -12648,27 +13258,38 @@ namespace GEDSys_Presentation.Controllers
                     Image image = null;
                     if (conf.CONF_IN_LOGO_EMPRESA == 1)
                     {
-                        headerTable = new PdfPTable(new float[] { 20f, 700f });
-                        headerTable.WidthPercentage = 100;
-                        headerTable.HorizontalAlignment = 1;
-                        headerTable.SpacingBefore = 1f;
-                        headerTable.SpacingAfter = 1f;
+                        PdfPCell cell1 = new PdfPCell();
+                        cell1.Border = 0;
+                        cell1.Colspan = 1;
 
-                        cell = new PdfPCell();
-                        cell.Border = 0;
-                        cell.Colspan = 1;
-                        image = null;
-                        if (conf.CONF_IN_LOGO_EMPRESA == 1)
+                        // Verificamos se o caminho do logo existe
+                        if (!string.IsNullOrEmpty(empresa.EMPR_AQ_LOGO))
                         {
-                            image = Image.GetInstance(Server.MapPath(empresa.EMPR_AQ_LOGO));
+                            // 1. Removemos o "~" para obter o caminho interno (ex: Imagens/1/Logos/logo.png)
+                            string blobPath = empresa.EMPR_AQ_LOGO.Replace("~", "");
+
+                            // 2. Montamos a URL usando as configurações de Storage que você já tem
+                            // Recomendo usar as variáveis do seu objeto 'conf' para ficar dinâmico
+                            string storageUrl = "https://rtistoragemain.blob.core.windows.net/rti-datacontainer/";
+
+                            // Garante que a URL termine com barra antes de concatenar
+                            if (!storageUrl.EndsWith("/")) storageUrl += "/";
+
+                            string fullUrl = storageUrl + blobPath;
+
+                            // 3. iTextSharp busca a imagem diretamente da URL do Azure
+                            image = Image.GetInstance(fullUrl);
                         }
                         else
                         {
-                            image = Image.GetInstance(Server.MapPath("~/Images/Prontuario_Icone_1.png"));
+                            // Caso não tenha logo, você pode carregar um placeholder local ou ignorar
+                            image = Image.GetInstance(Server.MapPath("~/Imagens/Base/logo_padrao.png"));
                         }
-                        image.ScaleAbsolute(80, 80);
-                        cell.AddElement(image);
-                        headerTable.AddCell(cell);
+
+                        image.ScaleAbsolute(50, 50);
+                        cell1.AddElement(image);
+                        cell1.Border = PdfPCell.BOTTOM_BORDER;
+                        headerTable.AddCell(cell1);
                     }
                     else
                     {
@@ -12715,12 +13336,24 @@ namespace GEDSys_Presentation.Controllers
                     cell.Border = 0;
                     cell.Colspan = 1;
                     image = null;
-                    if (locacao.LOCA_AQ_ARQUIVO_QRCODE != null)
+                    if (!String.IsNullOrEmpty(locacao.LOCA_AQ_ARQUIVO_QRCODE))
                     {
-                        image = Image.GetInstance(Server.MapPath(locacao.LOCA_AQ_ARQUIVO_QRCODE));
+                        // 1. Pegamos o caminho gravado (ex: ~Imagens/1/Pacientes/...)
+                        // 2. Removemos o "~" para obter o nome do Blob no Azure
+                        String blobPath = locacao.LOCA_AQ_ARQUIVO_QRCODE.Replace("~", "");
+
+                        // 3. Montamos a URL completa do Storage
+                        // Você pode pegar o domínio da sua config (conf.CONF_NM_STORAGE_URL) 
+                        // ou montar dinamicamente:
+                        String storageUrl = "https://rtistoragemain.blob.core.windows.net/rti-datacontainer/";
+                        String fullUrl = storageUrl + blobPath;
+
+                        // 4. iTextSharp baixa a imagem da URL para incluir no PDF
+                        image = Image.GetInstance(fullUrl);
                     }
                     else
                     {
+                        // Mantém o local para o QR Code padrão do sistema
                         image = Image.GetInstance(Server.MapPath("~/Imagens/Base/qrcode.png"));
                     }
                     image.ScaleAbsolute(100, 100);
@@ -13750,7 +14383,7 @@ namespace GEDSys_Presentation.Controllers
             EMPRESA emp = empApp.GetItemById(usuario.EMPR_CD_ID.Value);
             assinatura = "<b>" + emp.EMPR_NM_NOME + "</b><br />";
             assinatura += "<b>CNPJ: </b>" + emp.EMPR_NR_CNPJ + "<br />";
-            assinatura += "Enviado por <b>WebDoctor</b><br />";
+            assinatura += "Enviado por <b>WebDoctorPro</b><br />";
 
             // Prepara corpo da mensagem
             String texto = template.TEEM_TX_CORPO;
@@ -13783,13 +14416,23 @@ namespace GEDSys_Presentation.Controllers
             String emailBody = cab + "<br />" + texto + "<br /><br />" + assinatura;
 
             // Incluir PDF como anexo
+            // 1. Defina a base do seu Storage (pode vir de um Web.config ou AppSettings)
+            string storageBaseUrl = "https://meustorage.blob.core.windows.net/arquivos";
+
             List<AttachmentModel> models = new List<AttachmentModel>();
-            String caminho = "/Imagens/" + idAss.ToString() + "/Locacao/" + vm.LOCA_CD_ID.ToString() + "/Distrato/";
-            String fileNamePDF = "Encerra_Locacao" + paciente.PACI_NM_NOME.ToUpper() + "_" + vm.LOCA_GU_GUID + ".pdf";
-            String path = Path.Combine(Server.MapPath(caminho), fileNamePDF);
+
+            // 2. Montagem do caminho lógico (pastas)
+            string estruturaPastas = $"/Imagens/{idAss}/Locacao/{vm.LOCA_CD_ID}/Distrato/";
+            string fileNamePDF = $"Distrato_Locacao_{paciente.PACI_NM_NOME.ToUpper()}_{vm.LOCA_GU_GUID}.pdf";
+
+            // 3. O 'path' agora é uma URL completa ou um caminho relativo no Storage
+            // Path.Combine não funciona bem com URLs, então usamos concatenação ou UriBuilder
+            string fullPathStorage = storageBaseUrl + estruturaPastas + fileNamePDF;
 
             AttachmentModel model = new AttachmentModel();
-            model.PATH = path;
+
+            // IMPORTANTE: Verifique se sua classe AttachmentModel aceita URL ou se precisa do Stream
+            model.PATH = fullPathStorage;
             model.ATTACHMENT_NAME = fileNamePDF;
             model.CONTENT_TYPE = MediaTypeNames.Application.Pdf;
             models.Add(model);
@@ -14002,22 +14645,8 @@ namespace GEDSys_Presentation.Controllers
                 Font meuFontBold = FontFactory.GetFont("Arial", 8, iTextSharp.text.Font.BOLD, BaseColor.BLACK);
 
                 // Caminho de saida
-                String caminhoVirtual = "/Imagens/" + idAss.ToString() + "/Locacao/" + locacao.LOCA_CD_ID.ToString() + "/Distrato/";
-                String pastaFisica = Server.MapPath(caminhoVirtual);
-                String filePath = Path.Combine(pastaFisica, nomeRel);
-                Directory.CreateDirectory(pastaFisica);
-                Boolean existe = System.IO.File.Exists(filePath);
-                if (existe)
-                {
-                    try
-                    {
-                        System.IO.File.Delete(filePath);
-                    }
-                    catch (Exception)
-                    {
-                        existe = false;
-                    }
-                }
+                String caminho = "/Temp/";
+                String filePath = Path.Combine(Server.MapPath(caminho), nomeRel);
 
                 // Recupera texto legal
                 CONTRATO_LOCACAO template = baseApp.GetContratoById(locacao.LOCA_CD_ENCERRA_ID.Value);
@@ -14099,27 +14728,38 @@ namespace GEDSys_Presentation.Controllers
                 Image image = null;
                 if (conf.CONF_IN_LOGO_EMPRESA == 1)
                 {
-                    headerTable = new PdfPTable(new float[] { 20f, 700f });
-                    headerTable.WidthPercentage = 100;
-                    headerTable.HorizontalAlignment = 1;
-                    headerTable.SpacingBefore = 1f;
-                    headerTable.SpacingAfter = 1f;
+                    PdfPCell cell1 = new PdfPCell();
+                    cell1.Border = 0;
+                    cell1.Colspan = 1;
 
-                    cell = new PdfPCell();
-                    cell.Border = 0;
-                    cell.Colspan = 1;
-                    image = null;
-                    if (conf.CONF_IN_LOGO_EMPRESA == 1)
+                    // Verificamos se o caminho do logo existe
+                    if (!string.IsNullOrEmpty(empresa.EMPR_AQ_LOGO))
                     {
-                        image = Image.GetInstance(Server.MapPath(empresa.EMPR_AQ_LOGO));
+                        // 1. Removemos o "~" para obter o caminho interno (ex: Imagens/1/Logos/logo.png)
+                        string blobPath = empresa.EMPR_AQ_LOGO.Replace("~", "");
+
+                        // 2. Montamos a URL usando as configurações de Storage que você já tem
+                        // Recomendo usar as variáveis do seu objeto 'conf' para ficar dinâmico
+                        string storageUrl = "https://rtistoragemain.blob.core.windows.net/rti-datacontainer/";
+
+                        // Garante que a URL termine com barra antes de concatenar
+                        if (!storageUrl.EndsWith("/")) storageUrl += "/";
+
+                        string fullUrl = storageUrl + blobPath;
+
+                        // 3. iTextSharp busca a imagem diretamente da URL do Azure
+                        image = Image.GetInstance(fullUrl);
                     }
                     else
                     {
-                        image = Image.GetInstance(Server.MapPath("~/Images/Prontuario_Icone_1.png"));
+                        // Caso não tenha logo, você pode carregar um placeholder local ou ignorar
+                        image = Image.GetInstance(Server.MapPath("~/Imagens/Base/logo_padrao.png"));
                     }
-                    image.ScaleAbsolute(80, 80);
-                    cell.AddElement(image);
-                    headerTable.AddCell(cell);
+
+                    image.ScaleAbsolute(50, 50);
+                    cell1.AddElement(image);
+                    cell1.Border = PdfPCell.BOTTOM_BORDER;
+                    headerTable.AddCell(cell1);
                 }
                 else
                 {
@@ -14166,12 +14806,24 @@ namespace GEDSys_Presentation.Controllers
                 cell.Border = 0;
                 cell.Colspan = 1;
                 image = null;
-                if (locacao.LOCA_AQ_ARQUIVO_QRCODE != null)
+                if (!String.IsNullOrEmpty(locacao.LOCA_AQ_ARQUIVO_QRCODE))
                 {
-                    image = Image.GetInstance(Server.MapPath(locacao.LOCA_AQ_ARQUIVO_QRCODE));
+                    // 1. Pegamos o caminho gravado (ex: ~Imagens/1/Pacientes/...)
+                    // 2. Removemos o "~" para obter o nome do Blob no Azure
+                    String blobPath = locacao.LOCA_AQ_ARQUIVO_QRCODE.Replace("~", "");
+
+                    // 3. Montamos a URL completa do Storage
+                    // Você pode pegar o domínio da sua config (conf.CONF_NM_STORAGE_URL) 
+                    // ou montar dinamicamente:
+                    String storageUrl = "https://rtistoragemain.blob.core.windows.net/rti-datacontainer/";
+                    String fullUrl = storageUrl + blobPath;
+
+                    // 4. iTextSharp baixa a imagem da URL para incluir no PDF
+                    image = Image.GetInstance(fullUrl);
                 }
                 else
                 {
+                    // Mantém o local para o QR Code padrão do sistema
                     image = Image.GetInstance(Server.MapPath("~/Imagens/Base/qrcode.png"));
                 }
                 image.ScaleAbsolute(100, 100);
@@ -14513,11 +15165,11 @@ namespace GEDSys_Presentation.Controllers
             {
                 ViewBag.Message = ex.Message;
                 Session["TipoVolta"] = 2;
-                Session["VoltaExcecao"] = "Paciente";
+                Session["VoltaExcecao"] = "Locacao";
                 Session["Excecao"] = ex;
                 Session["ExcecaoTipo"] = ex.GetType().ToString();
                 GravaLogExcecao grava = new GravaLogExcecao(usuApp);
-                Int32 voltaX = grava.GravarLogExcecao(ex, "Paciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Locacao", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
                 return RedirectToAction("TrataExcecao", "BaseAdmin");
             }
         }
@@ -14539,6 +15191,7 @@ namespace GEDSys_Presentation.Controllers
                 String nomeRel = "Encerra_Locacao" + paciente.PACI_NM_NOME + "_" + locacao.LOCA_GU_GUID + ".pdf";
                 USUARIO usuario = usuApp.GetItemById(paciente.USUA_CD_ID.Value);
                 Int32 idAss = paciente.ASSI_CD_ID;
+                Int32? id = locacao.PACI_CD_ID;
 
                 EMPRESA empresa = empApp.GetItemById(usuario.EMPR_CD_ID.Value);
                 String token = locacao.LOCA_TK_TOKEN;
@@ -14721,27 +15374,38 @@ namespace GEDSys_Presentation.Controllers
                 Image image = null;
                 if (conf.CONF_IN_LOGO_EMPRESA == 1)
                 {
-                    headerTable = new PdfPTable(new float[] { 20f, 700f });
-                    headerTable.WidthPercentage = 100;
-                    headerTable.HorizontalAlignment = 1;
-                    headerTable.SpacingBefore = 1f;
-                    headerTable.SpacingAfter = 1f;
+                    PdfPCell cell1 = new PdfPCell();
+                    cell1.Border = 0;
+                    cell1.Colspan = 1;
 
-                    cell = new PdfPCell();
-                    cell.Border = 0;
-                    cell.Colspan = 1;
-                    image = null;
-                    if (conf.CONF_IN_LOGO_EMPRESA == 1)
+                    // Verificamos se o caminho do logo existe
+                    if (!string.IsNullOrEmpty(empresa.EMPR_AQ_LOGO))
                     {
-                        image = Image.GetInstance(Server.MapPath(empresa.EMPR_AQ_LOGO));
+                        // 1. Removemos o "~" para obter o caminho interno (ex: Imagens/1/Logos/logo.png)
+                        string blobPath = empresa.EMPR_AQ_LOGO.Replace("~", "");
+
+                        // 2. Montamos a URL usando as configurações de Storage que você já tem
+                        // Recomendo usar as variáveis do seu objeto 'conf' para ficar dinâmico
+                        string storageUrl = "https://rtistoragemain.blob.core.windows.net/rti-datacontainer/";
+
+                        // Garante que a URL termine com barra antes de concatenar
+                        if (!storageUrl.EndsWith("/")) storageUrl += "/";
+
+                        string fullUrl = storageUrl + blobPath;
+
+                        // 3. iTextSharp busca a imagem diretamente da URL do Azure
+                        image = Image.GetInstance(fullUrl);
                     }
                     else
                     {
-                        image = Image.GetInstance(Server.MapPath("~/Images/Prontuario_Icone_1.png"));
+                        // Caso não tenha logo, você pode carregar um placeholder local ou ignorar
+                        image = Image.GetInstance(Server.MapPath("~/Imagens/Base/logo_padrao.png"));
                     }
-                    image.ScaleAbsolute(80, 80);
-                    cell.AddElement(image);
-                    headerTable.AddCell(cell);
+
+                    image.ScaleAbsolute(50, 50);
+                    cell1.AddElement(image);
+                    cell1.Border = PdfPCell.BOTTOM_BORDER;
+                    headerTable.AddCell(cell1);
                 }
                 else
                 {
@@ -14788,12 +15452,24 @@ namespace GEDSys_Presentation.Controllers
                 cell.Border = 0;
                 cell.Colspan = 1;
                 image = null;
-                if (locacao.LOCA_AQ_ARQUIVO_QRCODE != null)
+                if (!String.IsNullOrEmpty(locacao.LOCA_AQ_ARQUIVO_QRCODE))
                 {
-                    image = Image.GetInstance(Server.MapPath(locacao.LOCA_AQ_ARQUIVO_QRCODE));
+                    // 1. Pegamos o caminho gravado (ex: ~Imagens/1/Pacientes/...)
+                    // 2. Removemos o "~" para obter o nome do Blob no Azure
+                    String blobPath = locacao.LOCA_AQ_ARQUIVO_QRCODE.Replace("~", "");
+
+                    // 3. Montamos a URL completa do Storage
+                    // Você pode pegar o domínio da sua config (conf.CONF_NM_STORAGE_URL) 
+                    // ou montar dinamicamente:
+                    String storageUrl = "https://rtistoragemain.blob.core.windows.net/rti-datacontainer/";
+                    String fullUrl = storageUrl + blobPath;
+
+                    // 4. iTextSharp baixa a imagem da URL para incluir no PDF
+                    image = Image.GetInstance(fullUrl);
                 }
                 else
                 {
+                    // Mantém o local para o QR Code padrão do sistema
                     image = Image.GetInstance(Server.MapPath("~/Imagens/Base/qrcode.png"));
                 }
                 image.ScaleAbsolute(100, 100);
@@ -15157,13 +15833,21 @@ namespace GEDSys_Presentation.Controllers
                 pdfWriter.CloseStream = false;
                 pdfDoc.Close();
 
-                byte[] pdfFinal;
+                // --- FINALIZAÇÃO DO DOCUMENTO BASE ---
+                byte[] pdfOriginalBytes = msInput.ToArray();
+                msInput.Dispose(); // Libera o stream original para garantir que não há travas
+
+                if (pdfOriginalBytes == null || pdfOriginalBytes.Length == 0)
+                    throw new Exception("Erro: PDF base não foi extraído corretamente.");
+
+                byte[] pdfFinal = null;
                 if (locacao.LOCA_IN_ASSINADO_DIGITAL == 1) // Se for para assinar com PFX
                 {
                     if (certificado == 1)
                     {
                         // Monta o caminho relativo: ~/Certificados/ID/NomeArquivo.pfx
                         string caminhoRelativo = "~/Certificados/" + idAss.ToString() + "/" + conf.CONF_NM_LOCAL_CERTIFICADO;
+                        PACIENTE paciente1 = pacApp.GetItemById(id.Value);
 
                         // Converte para o caminho físico real do servidor
                         string caminhoPFX = Server.MapPath(caminhoRelativo);
@@ -15171,54 +15855,60 @@ namespace GEDSys_Presentation.Controllers
 
                         using (MemoryStream msOutput = new MemoryStream())
                         {
-                            // Validação de segurança: verifica se o arquivo realmente existe fisicamente
                             if (!System.IO.File.Exists(caminhoPFX))
                             {
                                 throw new Exception("Arquivo de certificado não encontrado em: " + caminhoPFX);
                             }
 
-                            // Carrega o certificado (Adicionado MachineKeySet para evitar erros no IIS)
-                            X509Certificate2 cert = new X509Certificate2(caminhoPFX, senhaPFX, X509KeyStorageFlags.Exportable | X509KeyStorageFlags.MachineKeySet);
+                            // 1. Carrega o certificado com flags de persistência para o Azure
+                            X509Certificate2 cert = new X509Certificate2(caminhoPFX, senhaPFX,
+                                X509KeyStorageFlags.Exportable |
+                                X509KeyStorageFlags.MachineKeySet |
+                                X509KeyStorageFlags.PersistKeySet);
 
-                            // Extrai a chave privada e a cadeia de certificados para o iText
+                            // 2. Prepara componentes do BouncyCastle
                             Org.BouncyCastle.X509.X509Certificate bcCert = Org.BouncyCastle.Security.DotNetUtilities.FromX509Certificate(cert);
                             Org.BouncyCastle.Crypto.AsymmetricKeyParameter key = Org.BouncyCastle.Security.DotNetUtilities.GetKeyPair(cert.PrivateKey).Private;
                             Org.BouncyCastle.X509.X509Certificate[] chain = new Org.BouncyCastle.X509.X509Certificate[] { bcCert };
 
-                            // Cria o Stamper para assinar
-                            PdfReader reader = new PdfReader(msInput.ToArray());
-                            PdfStamper stamper = PdfStamper.CreateSignature(reader, msOutput, '\0');
+                            // 3. Cria o Reader e o Stamper
+                            // IMPORTANTE: Usamos pdfOriginalBytes para garantir que os dados estão lá após o dispose do msInput
+                            using (PdfReader reader = new PdfReader(pdfOriginalBytes))
+                            {
+                                // O '\0' indica que não estamos criando uma nova revisão, mas assinando
+                                PdfStamper stamper = PdfStamper.CreateSignature(reader, msOutput, '\0');
 
-                            // Configura a aparência da assinatura
-                            PdfSignatureAppearance appearance = stamper.SignatureAppearance;
-                            appearance.Reason = "Assinatura de Atestado Médico";
-                            appearance.Location = paciente.PACI_NM_CIDADE + ", " + paciente.UF.UF_SG_SIGLA;
+                                PdfSignatureAppearance appearance = stamper.SignatureAppearance;
+                                appearance.Reason = "Encerramento de Locação";
+                                appearance.Location = paciente1.PACI_NM_CIDADE + ", " + (paciente1.UF != null ? paciente1.UF.UF_SG_SIGLA : "");
 
-                            // --- AJUSTE DE POSIÇÃO ---
-                            float xPos = 60;
-                            float yPos = 160;
-                            float largura = 300;
-                            float altura = 60;
+                                // Posição da assinatura
+                                float xPos = 60;
+                                float yPos = 160;
+                                Rectangle posicaoAssinatura = new Rectangle(xPos, yPos, xPos + 300, yPos + 60);
 
-                            Rectangle posicaoAssinatura = new Rectangle(xPos, yPos, xPos + largura, yPos + altura);
-                            // Descomente a linha abaixo para exibir o carimbo visual no PDF
-                            // appearance.SetVisibleSignature(posicaoAssinatura, reader.NumberOfPages, "Signature");
+                                // Se quiser que a assinatura apareça visualmente, descomente:
+                                // appearance.SetVisibleSignature(posicaoAssinatura, reader.NumberOfPages, "Signature");
 
-                            // Aplica a assinatura digital SHA-256
-                            IExternalSignature es = new PrivateKeySignature(key, "SHA-256");
-                            MakeSignature.SignDetached(appearance, es, chain, null, null, null, 0, CryptoStandard.CMS);
+                                // 4. Realiza a assinatura
+                                IExternalSignature es = new PrivateKeySignature(key, "SHA-256");
+                                MakeSignature.SignDetached(appearance, es, chain, null, null, null, 0, CryptoStandard.CMS);
+
+                                // --- AJUSTE CRÍTICO: FECHAR O STAMPER ANTES DE PEGAR O TOARRAY ---
+                                stamper.Close();
+                            }
 
                             pdfFinal = msOutput.ToArray();
                         }
                     }
                     else
                     {
-                        pdfFinal = msInput.ToArray();
+                        pdfFinal = pdfOriginalBytes;
                     }
                 }
                 else
                 {
-                    pdfFinal = msInput.ToArray();
+                    pdfFinal = pdfOriginalBytes;
                 }
 
                 // 2. Envia o arquivo final (assinado ou não) para o navegador
@@ -16883,6 +17573,128 @@ namespace GEDSys_Presentation.Controllers
             }
         }
 
+        [HttpPost]
+        public async Task<ActionResult> UploadFileLocacaoContratoBlob(HttpPostedFileBase file)
+        {
+            try
+            {
+                // Inicializa
+                if ((String)Session["Ativa"] == null)
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+                Int32 idNot = (Int32)Session["IdLocacao"];
+                Int32 idPac = (Int32)Session["IdPaciente"];
+                Int32 idAss = (Int32)Session["IdAssinante"];
+
+                // Recupera dados
+                LOCACAO item = baseApp.GetItemById(idNot);
+                PACIENTE pac = pacApp.GetItemById(idPac);
+                USUARIO usu = usuApp.GetItemById(pac.USUA_CD_ID.Value);
+
+                // Criticas
+                if (file == null)
+                {
+                    Session["MensLocacao"] = 5;
+                    return RedirectToAction("CarregarContrato");
+                }
+
+                // Critica tamanho nome
+                var fileName = Path.GetFileName(file.FileName);
+                if (fileName.Length > 250)
+                {
+                    Session["MensLocacao"] = 6;
+                    return RedirectToAction("CarregarContrato");
+                }
+
+                // Critica tamanho arquivo
+                var fileSize = file.ContentLength;
+                if (fileSize > 50000000)
+                {
+                    Session["MensLocacao"] = 7;
+                    return RedirectToAction("CarregarContrato");
+                }
+
+                //Recupera tipo de arquivo
+                extensao = Path.GetExtension(fileName).ToUpper();
+                if (extensao != ".PDF")
+                {
+                    Session["MensLocacao"] = 8;
+                    return RedirectToAction("CarregarContrato");
+                }
+
+                // Verifica exatidão do nome
+                String nome = "Contrato_Locacao" + pac.PACI_NM_NOME + "_" + item.LOCA_GU_GUID + ".pdf";
+                if (fileName.ToUpper() != nome.ToUpper())
+                {
+                    Session["MensLocacao"] = 9;
+                    return RedirectToAction("CarregarContrato");
+                }
+
+                // 1. DEFINIÇÃO DO CAMINHO (Mesmo para Local e Azure)
+                // Removida a barra inicial para o Azure não criar uma pasta raiz vazia
+                String caminhoRelativo = "Imagens/" + idAss.ToString() + "/Locacao/" + item.LOCA_CD_ID.ToString() + "/Assinado/";
+                String caminhoLocal = Server.MapPath("~/" + caminhoRelativo);
+                String fullPathLocal = Path.Combine(caminhoLocal, fileName);
+
+                // 3. CÓPIA PARA O AZURE BLOB STORAGE
+                try
+                {
+                    // Reinicia o ponteiro do stream para o início após a cópia local
+                    file.InputStream.Position = 0;
+
+                    CONFIGURACAO conf = CarregaConfiguracaoGeral();
+                    string connString = conf.CONF_NM_STORAGE_CONN;
+                    string containerName = conf.CONF_NM_STORAGE_CONTAINER;
+
+                    var blobServiceClient = new Azure.Storage.Blobs.BlobServiceClient(connString);
+                    var containerClient = blobServiceClient.GetBlobContainerClient(containerName);
+
+                    // O nome do blob no Azure incluirá toda a estrutura de pastas
+                    string blobName = caminhoRelativo + fileName;
+                    var blobClient = containerClient.GetBlobClient(blobName);
+
+                    // Upload para o Azure (Idempotente: Se já existe, sobrescreve com true)
+                    await blobClient.UploadAsync(file.InputStream, overwrite: true);
+                }
+                catch (Exception exAzure)
+                {
+                    Session["MsgCRUD"] = "Erro na sincronização: " + exAzure.Message;
+                    Session["MensPaciente"] = 61;
+                    return RedirectToAction("VoltarAnexoPagamento");
+                }
+
+                // Atualiza locacao
+                item.LOCA_IN_CONTRATO_ASSINA = 1;
+                Int32 volta = baseApp.ValidateEdit(item, item, usu);
+
+                // Mensagem do CRUD
+                Session["MsgCRUD"] = "O contrato de locação assinado de " + pac.PACI_NM_NOME.ToUpper() + " foi anexado com sucesso";
+                Session["MensLocacao"] = 91;
+                Session["MensArea"] = 61;
+
+                // Finaliza
+                Session["NivelLocacao"] = 1;
+                Session["LocacaoAlterada"] = 1;
+                if ((Int32)Session["VoltaContrato"] == 2)
+                {
+                    return RedirectToAction("VoltarVerLocacao", "AreaPaciente");
+                }
+                return RedirectToAction("VoltarEditarLocacao");
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Locacao";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Locacao", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return RedirectToAction("TrataExcecao", "BaseAdmin");
+            }
+        }
+
         [HttpGet]
         public ActionResult MontarTelaDashboardLocacao()
         {
@@ -17625,7 +18437,31 @@ namespace GEDSys_Presentation.Controllers
                     cell1.Colspan = 1;
                     Image image = null;
                     EMPRESA empresa = empApp.GetItemByAssinante(idAss);
-                    image = Image.GetInstance(Server.MapPath(empresa.EMPR_AQ_LOGO));
+
+                    // Verificamos se o caminho do logo existe
+                    if (!string.IsNullOrEmpty(empresa.EMPR_AQ_LOGO))
+                    {
+                        // 1. Removemos o "~" para obter o caminho interno (ex: Imagens/1/Logos/logo.png)
+                        string blobPath = empresa.EMPR_AQ_LOGO.Replace("~", "");
+
+                        // 2. Montamos a URL usando as configurações de Storage que você já tem
+                        // Recomendo usar as variáveis do seu objeto 'conf' para ficar dinâmico
+                        string storageUrl = "https://rtistoragemain.blob.core.windows.net/rti-datacontainer/";
+
+                        // Garante que a URL termine com barra antes de concatenar
+                        if (!storageUrl.EndsWith("/")) storageUrl += "/";
+
+                        string fullUrl = storageUrl + blobPath;
+
+                        // 3. iTextSharp busca a imagem diretamente da URL do Azure
+                        image = Image.GetInstance(fullUrl);
+                    }
+                    else
+                    {
+                        // Caso não tenha logo, você pode carregar um placeholder local ou ignorar
+                        image = Image.GetInstance(Server.MapPath("~/Imagens/Base/logo_padrao.png"));
+                    }
+
                     image.ScaleAbsolute(50, 50);
                     cell1.AddElement(image);
                     cell1.Border = PdfPCell.BOTTOM_BORDER;
@@ -17956,7 +18792,31 @@ namespace GEDSys_Presentation.Controllers
                     cell1.Colspan = 1;
                     Image image = null;
                     EMPRESA empresa = empApp.GetItemByAssinante(idAss);
-                    image = Image.GetInstance(Server.MapPath(empresa.EMPR_AQ_LOGO));
+
+                    // Verificamos se o caminho do logo existe
+                    if (!string.IsNullOrEmpty(empresa.EMPR_AQ_LOGO))
+                    {
+                        // 1. Removemos o "~" para obter o caminho interno (ex: Imagens/1/Logos/logo.png)
+                        string blobPath = empresa.EMPR_AQ_LOGO.Replace("~", "");
+
+                        // 2. Montamos a URL usando as configurações de Storage que você já tem
+                        // Recomendo usar as variáveis do seu objeto 'conf' para ficar dinâmico
+                        string storageUrl = "https://rtistoragemain.blob.core.windows.net/rti-datacontainer/";
+
+                        // Garante que a URL termine com barra antes de concatenar
+                        if (!storageUrl.EndsWith("/")) storageUrl += "/";
+
+                        string fullUrl = storageUrl + blobPath;
+
+                        // 3. iTextSharp busca a imagem diretamente da URL do Azure
+                        image = Image.GetInstance(fullUrl);
+                    }
+                    else
+                    {
+                        // Caso não tenha logo, você pode carregar um placeholder local ou ignorar
+                        image = Image.GetInstance(Server.MapPath("~/Imagens/Base/logo_padrao.png"));
+                    }
+
                     image.ScaleAbsolute(50, 50);
                     cell1.AddElement(image);
                     cell1.Border = PdfPCell.BOTTOM_BORDER;
@@ -18040,7 +18900,7 @@ namespace GEDSys_Presentation.Controllers
 
                 foreach (ModeloViewModel item in listaMes)
                 {
-                    cell = new PdfPCell(new Paragraph(item.Nome, meuFontBold))
+                    cell = new PdfPCell(new Paragraph(CrossCutting.UtilitariosGeral.NomeMesAno(item.Nome), meuFont))
                     {
                         VerticalAlignment = Element.ALIGN_MIDDLE,
                         HorizontalAlignment = Element.ALIGN_LEFT
@@ -18124,7 +18984,31 @@ namespace GEDSys_Presentation.Controllers
                     cell1.Colspan = 1;
                     Image image = null;
                     EMPRESA empresa = empApp.GetItemByAssinante(idAss);
-                    image = Image.GetInstance(Server.MapPath(empresa.EMPR_AQ_LOGO));
+
+                    // Verificamos se o caminho do logo existe
+                    if (!string.IsNullOrEmpty(empresa.EMPR_AQ_LOGO))
+                    {
+                        // 1. Removemos o "~" para obter o caminho interno (ex: Imagens/1/Logos/logo.png)
+                        string blobPath = empresa.EMPR_AQ_LOGO.Replace("~", "");
+
+                        // 2. Montamos a URL usando as configurações de Storage que você já tem
+                        // Recomendo usar as variáveis do seu objeto 'conf' para ficar dinâmico
+                        string storageUrl = "https://rtistoragemain.blob.core.windows.net/rti-datacontainer/";
+
+                        // Garante que a URL termine com barra antes de concatenar
+                        if (!storageUrl.EndsWith("/")) storageUrl += "/";
+
+                        string fullUrl = storageUrl + blobPath;
+
+                        // 3. iTextSharp busca a imagem diretamente da URL do Azure
+                        image = Image.GetInstance(fullUrl);
+                    }
+                    else
+                    {
+                        // Caso não tenha logo, você pode carregar um placeholder local ou ignorar
+                        image = Image.GetInstance(Server.MapPath("~/Imagens/Base/logo_padrao.png"));
+                    }
+
                     image.ScaleAbsolute(50, 50);
                     cell1.AddElement(image);
                     cell1.Border = PdfPCell.BOTTOM_BORDER;
@@ -18453,7 +19337,31 @@ namespace GEDSys_Presentation.Controllers
                     cell1.Colspan = 1;
                     Image image = null;
                     EMPRESA empresa = empApp.GetItemByAssinante(idAss);
-                    image = Image.GetInstance(Server.MapPath(empresa.EMPR_AQ_LOGO));
+
+                    // Verificamos se o caminho do logo existe
+                    if (!string.IsNullOrEmpty(empresa.EMPR_AQ_LOGO))
+                    {
+                        // 1. Removemos o "~" para obter o caminho interno (ex: Imagens/1/Logos/logo.png)
+                        string blobPath = empresa.EMPR_AQ_LOGO.Replace("~", "");
+
+                        // 2. Montamos a URL usando as configurações de Storage que você já tem
+                        // Recomendo usar as variáveis do seu objeto 'conf' para ficar dinâmico
+                        string storageUrl = "https://rtistoragemain.blob.core.windows.net/rti-datacontainer/";
+
+                        // Garante que a URL termine com barra antes de concatenar
+                        if (!storageUrl.EndsWith("/")) storageUrl += "/";
+
+                        string fullUrl = storageUrl + blobPath;
+
+                        // 3. iTextSharp busca a imagem diretamente da URL do Azure
+                        image = Image.GetInstance(fullUrl);
+                    }
+                    else
+                    {
+                        // Caso não tenha logo, você pode carregar um placeholder local ou ignorar
+                        image = Image.GetInstance(Server.MapPath("~/Imagens/Base/logo_padrao.png"));
+                    }
+
                     image.ScaleAbsolute(50, 50);
                     cell1.AddElement(image);
                     cell1.Border = PdfPCell.BOTTOM_BORDER;
@@ -18556,7 +19464,7 @@ namespace GEDSys_Presentation.Controllers
                     total += item.ValorDec;
                     totalPag += item.ValorDec1;
 
-                    cell = new PdfPCell(new Paragraph(item.Nome, meuFontBold))
+                    cell = new PdfPCell(new Paragraph(CrossCutting.UtilitariosGeral.NomeMesAno(item.Nome), meuFont))
                     {
                         VerticalAlignment = Element.ALIGN_MIDDLE,
                         HorizontalAlignment = Element.ALIGN_LEFT
@@ -18693,7 +19601,31 @@ namespace GEDSys_Presentation.Controllers
                     cell1.Colspan = 1;
                     Image image = null;
                     EMPRESA empresa = empApp.GetItemByAssinante(idAss);
-                    image = Image.GetInstance(Server.MapPath(empresa.EMPR_AQ_LOGO));
+
+                    // Verificamos se o caminho do logo existe
+                    if (!string.IsNullOrEmpty(empresa.EMPR_AQ_LOGO))
+                    {
+                        // 1. Removemos o "~" para obter o caminho interno (ex: Imagens/1/Logos/logo.png)
+                        string blobPath = empresa.EMPR_AQ_LOGO.Replace("~", "");
+
+                        // 2. Montamos a URL usando as configurações de Storage que você já tem
+                        // Recomendo usar as variáveis do seu objeto 'conf' para ficar dinâmico
+                        string storageUrl = "https://rtistoragemain.blob.core.windows.net/rti-datacontainer/";
+
+                        // Garante que a URL termine com barra antes de concatenar
+                        if (!storageUrl.EndsWith("/")) storageUrl += "/";
+
+                        string fullUrl = storageUrl + blobPath;
+
+                        // 3. iTextSharp busca a imagem diretamente da URL do Azure
+                        image = Image.GetInstance(fullUrl);
+                    }
+                    else
+                    {
+                        // Caso não tenha logo, você pode carregar um placeholder local ou ignorar
+                        image = Image.GetInstance(Server.MapPath("~/Imagens/Base/logo_padrao.png"));
+                    }
+
                     image.ScaleAbsolute(50, 50);
                     cell1.AddElement(image);
                     cell1.Border = PdfPCell.BOTTOM_BORDER;
@@ -18984,7 +19916,31 @@ namespace GEDSys_Presentation.Controllers
                     cell1.Colspan = 1;
                     Image image = null;
                     EMPRESA empresa = empApp.GetItemByAssinante(idAss);
-                    image = Image.GetInstance(Server.MapPath(empresa.EMPR_AQ_LOGO));
+
+                    // Verificamos se o caminho do logo existe
+                    if (!string.IsNullOrEmpty(empresa.EMPR_AQ_LOGO))
+                    {
+                        // 1. Removemos o "~" para obter o caminho interno (ex: Imagens/1/Logos/logo.png)
+                        string blobPath = empresa.EMPR_AQ_LOGO.Replace("~", "");
+
+                        // 2. Montamos a URL usando as configurações de Storage que você já tem
+                        // Recomendo usar as variáveis do seu objeto 'conf' para ficar dinâmico
+                        string storageUrl = "https://rtistoragemain.blob.core.windows.net/rti-datacontainer/";
+
+                        // Garante que a URL termine com barra antes de concatenar
+                        if (!storageUrl.EndsWith("/")) storageUrl += "/";
+
+                        string fullUrl = storageUrl + blobPath;
+
+                        // 3. iTextSharp busca a imagem diretamente da URL do Azure
+                        image = Image.GetInstance(fullUrl);
+                    }
+                    else
+                    {
+                        // Caso não tenha logo, você pode carregar um placeholder local ou ignorar
+                        image = Image.GetInstance(Server.MapPath("~/Imagens/Base/logo_padrao.png"));
+                    }
+
                     image.ScaleAbsolute(50, 50);
                     cell1.AddElement(image);
                     cell1.Border = PdfPCell.BOTTOM_BORDER;
@@ -19256,7 +20212,31 @@ namespace GEDSys_Presentation.Controllers
                     cell1.Colspan = 1;
                     Image image = null;
                     EMPRESA empresa = empApp.GetItemByAssinante(idAss);
-                    image = Image.GetInstance(Server.MapPath(empresa.EMPR_AQ_LOGO));
+
+                    // Verificamos se o caminho do logo existe
+                    if (!string.IsNullOrEmpty(empresa.EMPR_AQ_LOGO))
+                    {
+                        // 1. Removemos o "~" para obter o caminho interno (ex: Imagens/1/Logos/logo.png)
+                        string blobPath = empresa.EMPR_AQ_LOGO.Replace("~", "");
+
+                        // 2. Montamos a URL usando as configurações de Storage que você já tem
+                        // Recomendo usar as variáveis do seu objeto 'conf' para ficar dinâmico
+                        string storageUrl = "https://rtistoragemain.blob.core.windows.net/rti-datacontainer/";
+
+                        // Garante que a URL termine com barra antes de concatenar
+                        if (!storageUrl.EndsWith("/")) storageUrl += "/";
+
+                        string fullUrl = storageUrl + blobPath;
+
+                        // 3. iTextSharp busca a imagem diretamente da URL do Azure
+                        image = Image.GetInstance(fullUrl);
+                    }
+                    else
+                    {
+                        // Caso não tenha logo, você pode carregar um placeholder local ou ignorar
+                        image = Image.GetInstance(Server.MapPath("~/Imagens/Base/logo_padrao.png"));
+                    }
+
                     image.ScaleAbsolute(50, 50);
                     cell1.AddElement(image);
                     cell1.Border = PdfPCell.BOTTOM_BORDER;
@@ -19581,7 +20561,31 @@ namespace GEDSys_Presentation.Controllers
                     cell1.Colspan = 1;
                     Image image = null;
                     EMPRESA empresa = empApp.GetItemByAssinante(idAss);
-                    image = Image.GetInstance(Server.MapPath(empresa.EMPR_AQ_LOGO));
+
+                    // Verificamos se o caminho do logo existe
+                    if (!string.IsNullOrEmpty(empresa.EMPR_AQ_LOGO))
+                    {
+                        // 1. Removemos o "~" para obter o caminho interno (ex: Imagens/1/Logos/logo.png)
+                        string blobPath = empresa.EMPR_AQ_LOGO.Replace("~", "");
+
+                        // 2. Montamos a URL usando as configurações de Storage que você já tem
+                        // Recomendo usar as variáveis do seu objeto 'conf' para ficar dinâmico
+                        string storageUrl = "https://rtistoragemain.blob.core.windows.net/rti-datacontainer/";
+
+                        // Garante que a URL termine com barra antes de concatenar
+                        if (!storageUrl.EndsWith("/")) storageUrl += "/";
+
+                        string fullUrl = storageUrl + blobPath;
+
+                        // 3. iTextSharp busca a imagem diretamente da URL do Azure
+                        image = Image.GetInstance(fullUrl);
+                    }
+                    else
+                    {
+                        // Caso não tenha logo, você pode carregar um placeholder local ou ignorar
+                        image = Image.GetInstance(Server.MapPath("~/Imagens/Base/logo_padrao.png"));
+                    }
+
                     image.ScaleAbsolute(50, 50);
                     cell1.AddElement(image);
                     cell1.Border = PdfPCell.BOTTOM_BORDER;
@@ -19772,7 +20776,31 @@ namespace GEDSys_Presentation.Controllers
                     cell1.Colspan = 1;
                     Image image = null;
                     EMPRESA empresa = empApp.GetItemByAssinante(idAss);
-                    image = Image.GetInstance(Server.MapPath(empresa.EMPR_AQ_LOGO));
+
+                    // Verificamos se o caminho do logo existe
+                    if (!string.IsNullOrEmpty(empresa.EMPR_AQ_LOGO))
+                    {
+                        // 1. Removemos o "~" para obter o caminho interno (ex: Imagens/1/Logos/logo.png)
+                        string blobPath = empresa.EMPR_AQ_LOGO.Replace("~", "");
+
+                        // 2. Montamos a URL usando as configurações de Storage que você já tem
+                        // Recomendo usar as variáveis do seu objeto 'conf' para ficar dinâmico
+                        string storageUrl = "https://rtistoragemain.blob.core.windows.net/rti-datacontainer/";
+
+                        // Garante que a URL termine com barra antes de concatenar
+                        if (!storageUrl.EndsWith("/")) storageUrl += "/";
+
+                        string fullUrl = storageUrl + blobPath;
+
+                        // 3. iTextSharp busca a imagem diretamente da URL do Azure
+                        image = Image.GetInstance(fullUrl);
+                    }
+                    else
+                    {
+                        // Caso não tenha logo, você pode carregar um placeholder local ou ignorar
+                        image = Image.GetInstance(Server.MapPath("~/Imagens/Base/logo_padrao.png"));
+                    }
+
                     image.ScaleAbsolute(50, 50);
                     cell1.AddElement(image);
                     cell1.Border = PdfPCell.BOTTOM_BORDER;
@@ -20000,7 +21028,31 @@ namespace GEDSys_Presentation.Controllers
                     cell1.Colspan = 1;
                     Image image = null;
                     EMPRESA empresa = empApp.GetItemByAssinante(idAss);
-                    image = Image.GetInstance(Server.MapPath(empresa.EMPR_AQ_LOGO));
+
+                    // Verificamos se o caminho do logo existe
+                    if (!string.IsNullOrEmpty(empresa.EMPR_AQ_LOGO))
+                    {
+                        // 1. Removemos o "~" para obter o caminho interno (ex: Imagens/1/Logos/logo.png)
+                        string blobPath = empresa.EMPR_AQ_LOGO.Replace("~", "");
+
+                        // 2. Montamos a URL usando as configurações de Storage que você já tem
+                        // Recomendo usar as variáveis do seu objeto 'conf' para ficar dinâmico
+                        string storageUrl = "https://rtistoragemain.blob.core.windows.net/rti-datacontainer/";
+
+                        // Garante que a URL termine com barra antes de concatenar
+                        if (!storageUrl.EndsWith("/")) storageUrl += "/";
+
+                        string fullUrl = storageUrl + blobPath;
+
+                        // 3. iTextSharp busca a imagem diretamente da URL do Azure
+                        image = Image.GetInstance(fullUrl);
+                    }
+                    else
+                    {
+                        // Caso não tenha logo, você pode carregar um placeholder local ou ignorar
+                        image = Image.GetInstance(Server.MapPath("~/Imagens/Base/logo_padrao.png"));
+                    }
+
                     image.ScaleAbsolute(50, 50);
                     cell1.AddElement(image);
                     cell1.Border = PdfPCell.BOTTOM_BORDER;
@@ -20496,7 +21548,31 @@ namespace GEDSys_Presentation.Controllers
                     cell1.Colspan = 1;
                     Image image = null;
                     EMPRESA empresa = empApp.GetItemByAssinante(idAss);
-                    image = Image.GetInstance(Server.MapPath(empresa.EMPR_AQ_LOGO));
+
+                    // Verificamos se o caminho do logo existe
+                    if (!string.IsNullOrEmpty(empresa.EMPR_AQ_LOGO))
+                    {
+                        // 1. Removemos o "~" para obter o caminho interno (ex: Imagens/1/Logos/logo.png)
+                        string blobPath = empresa.EMPR_AQ_LOGO.Replace("~", "");
+
+                        // 2. Montamos a URL usando as configurações de Storage que você já tem
+                        // Recomendo usar as variáveis do seu objeto 'conf' para ficar dinâmico
+                        string storageUrl = "https://rtistoragemain.blob.core.windows.net/rti-datacontainer/";
+
+                        // Garante que a URL termine com barra antes de concatenar
+                        if (!storageUrl.EndsWith("/")) storageUrl += "/";
+
+                        string fullUrl = storageUrl + blobPath;
+
+                        // 3. iTextSharp busca a imagem diretamente da URL do Azure
+                        image = Image.GetInstance(fullUrl);
+                    }
+                    else
+                    {
+                        // Caso não tenha logo, você pode carregar um placeholder local ou ignorar
+                        image = Image.GetInstance(Server.MapPath("~/Imagens/Base/logo_padrao.png"));
+                    }
+
                     image.ScaleAbsolute(50, 50);
                     cell1.AddElement(image);
                     cell1.Border = PdfPCell.BOTTOM_BORDER;

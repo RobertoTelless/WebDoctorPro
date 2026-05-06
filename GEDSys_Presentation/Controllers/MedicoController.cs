@@ -2645,22 +2645,18 @@ namespace GEDSys_Presentation.Controllers
                 // Gera exame fisico em PDF
                 GerarExameFisicoPDFTeste(paciente, medico, envio);
 
-                String caminho = "/Temp/";
+                String caminho = "~/Temp/";
 
                 // --- INCLUIR ANAMNESE COMO ANEXO ---
                 String fileNameAnamnese = "Anamnese_" + paciente.PACI_NM_NOME + "_" + envio.MEEV_GU_IDENTIFICADOR + ".pdf";
-                String diretorioTemp = Path.Combine(Path.GetTempPath(), "Temp");
-                if (!Directory.Exists(diretorioTemp))
-                {
-                    Directory.CreateDirectory(diretorioTemp);
-                }
-                String pathAnamnese = Path.Combine(diretorioTemp, fileNameAnamnese);
+                String pathAnamnese = Path.Combine(Server.MapPath(caminho), fileNameAnamnese);
+
+                // Lê os bytes do arquivo recém-gerado no disco
+                byte[] bytesAnamnese = System.IO.File.ReadAllBytes(pathAnamnese);
 
                 // Lê os bytes do arquivo recém-gerado no disco
                 if (System.IO.File.Exists(pathAnamnese)) 
                 {
-                    byte[] bytesAnamnese = System.IO.File.ReadAllBytes(pathAnamnese);
-
                     AttachmentModel modelAnamnese = new AttachmentModel();
                     modelAnamnese.PATH = pathAnamnese;
                     modelAnamnese.ATTACHMENT_NAME = fileNameAnamnese;
@@ -2672,18 +2668,14 @@ namespace GEDSys_Presentation.Controllers
 
                 // --- INCLUIR EXAME FISICO COMO ANEXO ---
                 String fileNameFisico = "ExameFisico_" + paciente.PACI_NM_NOME + "_" + envio.MEEV_GU_IDENTIFICADOR + ".pdf";
-                diretorioTemp = Path.Combine(Path.GetTempPath(), "Temp");
-                if (!Directory.Exists(diretorioTemp))
-                {
-                    Directory.CreateDirectory(diretorioTemp);
-                }
-                String pathFisico = Path.Combine(diretorioTemp, fileNameFisico);
+                String pathFisico = Path.Combine(Server.MapPath(caminho), fileNameFisico);
+
+                // Lê os bytes do arquivo recém-gerado no disco
+                byte[] bytesFisico = System.IO.File.ReadAllBytes(pathFisico);
 
                 // Lê os bytes do arquivo recém-gerado no disco
                 if (System.IO.File.Exists(pathFisico))
                 {
-                    byte[] bytesFisico = System.IO.File.ReadAllBytes(pathFisico);
-
                     AttachmentModel modelFisico = new AttachmentModel();
                     modelFisico.PATH = pathFisico;
                     modelFisico.ATTACHMENT_NAME = fileNameFisico;

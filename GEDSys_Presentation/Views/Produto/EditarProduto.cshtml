@@ -648,7 +648,7 @@
                                                 <div class="row" id="locacao">
                                                     <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Locação</h4>
                                                     <div class="col-lg-2 col-md-2 col-xs-12">
-                                                        Locação*
+                                                        Permite Locação*
                                                         @Html.DropDownListFor(m => m.PROD_IN_LOCACAO, (SelectList)ViewBag.Locacao, "Selecionar", new { @class = "form-control", autofocus = true, @id = "locId", onchange = "ValidaLocacao($(this).val())" })
                                                         @Html.ValidationMessageFor(m => m.PROD_IN_LOCACAO, "", new { @style = "color:red" })
                                                     </div>
@@ -939,7 +939,7 @@
                                                 <div class="row" id="locacao">
                                                     <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Locação</h4>
                                                     <div class="col-lg-2 col-md-2 col-xs-12">
-                                                        Locação*
+                                                        Permite Locação*
                                                         @Html.DropDownListFor(m => m.PROD_IN_LOCACAO, (SelectList)ViewBag.Locacao, "Selecionar", new { @class = "form-control", autofocus = true, @id = "locId", onchange = "ValidaLocacao($(this).val())" })
                                                         @Html.ValidationMessageFor(m => m.PROD_IN_LOCACAO, "", new { @style = "color:red" })
                                                     </div>
@@ -3139,7 +3139,7 @@
 
             $('#basictoast').click(function () {
                 // Display a success toast, with a title
-                toastr.success('Edição em andamento!')
+                toastr.success('Alteração em andamento!')
             });
             $('#showtoast').click(function () {
                 var shortCutFunction = $("#toastTypeGroup input:radio:checked").val();
@@ -3313,7 +3313,7 @@
             });
         }
     </script>
-        <script type="text/javascript">
+    @*<script type="text/javascript">
         $(document).ready(function () {
             // Configurações globais do Toastr
             toastr.options = {
@@ -3348,7 +3348,7 @@
                 toastr.error(msgErro, 'Erro!');
             }
         });
-    </script>
+    </script>*@
 
     <script type="text/javascript">
         // 1. FUNÇÃO GLOBAL (Define O QUE o alerta faz)

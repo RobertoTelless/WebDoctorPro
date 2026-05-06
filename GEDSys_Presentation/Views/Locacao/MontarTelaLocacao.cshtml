@@ -3,6 +3,7 @@
 @model EntitiesServices.Model.LOCACAO
 @{ Layout = "~/Views/Shared/_Layout_Admin.cshtml"; }
 <div class="wrapper wrapper-content animated fadeInRight">
+    <div id="top"></div>
     <div id="containerModalDesc">
         <div class="modal fade" id="modalDesc" tabindex="-1" role="dialog" aria-labelledby="modalDesc" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered" role="document">
@@ -56,7 +57,31 @@
         </ol>
         <br />
     </div>
-
+    <div class="row">
+        <div class="form-group" style=" margin-left: 15px; margin-right: 0px;">
+            @* --- INÍCIO DA AJUDA CONTEXTUAL --- *@
+            <details class="ajuda-contextual">
+                <summary><i class="fa fa-info-circle text-info"></i> Resumo das funcionalidades desta página</summary>
+                <div class="well well-sm">
+                    <p>Essa é a página da central de locações do <b>WebDoctorPro</b>. Nela você poderá:</p>
+                    <ol>
+                        <li>Exibe as locações cadastrados.</li>
+                        <li>Localizar (filtrar) uma locação e acessar suas informações.</li>
+                        <li>Acessar a página de inclusão de nova locação.</li>
+                        <li>Acessar a página de alteração de uma locação.</li>
+                        <li>Excluir uma locação cadastrada.</li>
+                        <li>Imprimir lista de locações em formato PDF.</li>
+                        <li>Acessar a página de histórico das locações.</li>
+                        <li>Acessar a página de histórico das locações.</li>
+                        <li>Acessar a página de parcelas das locações.</li>
+                        <li>Acessar o dashboard das locações.</li>
+                        <li>Selecionar relatórios para impressão em formato PDF.</li>
+                    </ol>
+                </div>
+            </details>
+            @* --- FIM DA AJUDA CONTEXTUAL --- *@
+        </div>
+    </div>
     <div class="row">
         <div class="col-lg-2">
             <div class="ibox float-e-margins">
@@ -224,14 +249,8 @@
                             <div class="alert alert-danger">
                                 <button type="button" class="close" data-dismiss="alert">Fechar</button>
                                 @Html.ValidationSummary(false, "", new { @class = "text-danger" })
-                            </div>}
-                        @*@if (TempData["TemMensagem"] != null)
-                        {
-                            <div class="alert alert-success">
-                                <button type="button" class="close" data-dismiss="alert">Fechar</button>
-                                <span>@TempData["MensagemAcerto"]</span>
                             </div>
-                        }*@                    
+                        }
                         <div class="row">
                             @if (ViewBag.Listas != null && (ViewBag.Listas as List<EntitiesServices.Model.LOCACAO>).Count > 0)
                             {
@@ -312,46 +331,27 @@
                                                     }
                                                 </td>
 
-                                                @*@if (cond.LOCA_IN_STATUS == 1)
-                                                {
-                                                    <td style="width: auto"><span class="badge badge-primary">Ativa</span></td>
-
-                                                }
-                                                else if (cond.LOCA_IN_STATUS == 2)
-                                                {
-                                                    <td style="width: auto"><span class="badge badge-success">Encerrada</span></td>
-
-                                                }
-                                                else if (cond.LOCA_IN_STATUS == 3)
-                                                {
-                                                    <td style="width: auto"><span class="badge badge-danger">Vencida</span></td>
-
-                                                }
-                                                else if (cond.LOCA_IN_STATUS == 4)
-                                                {
-                                                    <td style="width: auto"><span class="badge badge-danger">Cancelada</span></td>
-
-                                                }
-                                                else if (cond.LOCA_IN_STATUS == 0)
-                                                {
-                                                    <td style="width: auto"><span class="badge badge-warning">Pendente</span></td>
-
-                                                }
-                                                else 
-                                                {
-                                                    <td style="width: auto"><span class="badge badge-warning">-</span></td>
-
-                                                }*@
-
-
                                                 <td style="width: auto">@cond.USUARIO.USUA_NM_NOME</td>
+
                                                 @if (!String.IsNullOrEmpty(cond.PRODUTO.PROD_AQ_FOTO))
                                                 {
-                                                    <td style="width: auto"><img src="@Url.Content(cond.PRODUTO.PROD_AQ_FOTO)" style="width: auto; height: auto; max-height: 75px; max-width: 65px;" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Clique Ctrl+Ctrl para ampliar a fotografia"></td>
+                                                    // Tratamento manual da URL dentro do loop
+                                                    var caminhoLimpo = cond.PRODUTO.PROD_AQ_FOTO.Replace("~/", "").Replace("~", "");
+                                                    var urlFinal = "https://rtistoragemain.blob.core.windows.net/rti-datacontainer/" + caminhoLimpo;
+
+                                                    <td style="width: auto">
+                                                        <img src="@urlFinal" 
+                                                                style="width: auto; height: auto; max-height: 75px; max-width: 65px;" 
+                                                                data-toggle="popover" data-trigger="hover" data-placement="top" 
+                                                                data-content="Clique Ctrl+Ctrl para ampliar a fotografia"
+                                                                onerror="this.onerror=null;this.src='@Url.Content("~/Imagens/Base/icone_imagem.jpg")';">
+                                                    </td>
                                                 }
                                                 else
                                                 {
-                                                    <td style="width: auto"><img src="~/Images/icone_imagem.png" style="width: auto; height: auto; max-height: 65px; max-width: 55px;"  ></td>
+                                                    <td style="width: auto">
+                                                        <img src="~/Imagens/Base/icone_imagem.jpg" style="width: auto; height: auto; max-height: 65px; max-width: 55px;">
+                                                    </td>
                                                 }
 
                                                 <td style="width: auto" class="td-one-action">
@@ -456,7 +456,9 @@
         </div>
     </div>
 </div>
-
+<a href="#top" class="back-to-top">
+    <i class="fa fa-chevron-up"></i>
+</a>
 
 @section Styles {
     <link href="~/Content/themes/base/jquery-ui.min.css" rel="stylesheet" />
@@ -465,7 +467,7 @@
     @Styles.Render("~/plugins/jasnyBootstrapStyles")
     @Styles.Render("~/plugins/toastrStyles")
 
-        <style>
+    <style>
         /* 1. Aumenta a largura e garante o espaço interno */
         #toast-container > .toast {
             width: 500px !important; 
@@ -491,8 +493,46 @@
         .toast-success .toast-message {
             padding-left: 10px !important;
         }
-    </style>
 
+        html { scroll-behavior: smooth; }
+
+        .back-to-top {
+            position: fixed !important;
+            bottom: 30px !important;
+            left: 260px !important; 
+            z-index: 999999 !important;
+            width: 50px !important;
+            height: 50px !important;
+            background-color: #1ab394 !important;
+            color: white !important;
+            border-radius: 50% !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            text-decoration: none !important;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3) !important;
+            transition: all 0.3s ease;
+        
+            /* Estado inicial: Invisível e deslocado para baixo */
+            opacity: 0 !important;
+            visibility: hidden !important;
+            transform: translateY(20px) !important;
+        }
+
+        /* Classe que o JavaScript vai adicionar ao rolar a tela */
+        .back-to-top.visible {
+            opacity: 1 !important;
+            visibility: visible !important;
+            transform: translateY(0px) !important;
+        }
+
+        .back-to-top:hover {
+            background-color: #18a689 !important;
+            color: white !important;
+            transform: scale(1.1) !important;
+        }
+
+    </style>
     <style>
         /* Estilo Base */
         .status-badge {
@@ -674,7 +714,35 @@
             });
         });
     </script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            // Função para verificar o scroll
+            function checkScroll() {
+                // Verifica o scroll tanto na janela quanto no wrapper do Inspinia
+                var scrollPos = $(window).scrollTop() || $('#page-wrapper').scrollTop();
+            
+                if (scrollPos > 300) {
+                    $('.back-to-top').addClass('visible');
+                } else {
+                    $('.back-to-top').removeClass('visible');
+                }
+            }
 
+            // Monitora o scroll em ambos os contextos possíveis no Inspinia
+            $(window).on('scroll', checkScroll);
+            $('#page-wrapper').on('scroll', checkScroll);
+
+            // Clique suave
+            $('.back-to-top').click(function (e) {
+                e.preventDefault();
+                $('html, body, #page-wrapper').animate({ scrollTop: 0 }, 600);
+                return false;
+            });
+        
+            // Executa uma vez ao carregar para garantir que comece oculto
+            checkScroll();
+        });
+    </script>
     <script type="text/javascript">
         $(document).ready(function () {
 
@@ -756,7 +824,7 @@
         });
     </script>
 
-        <script type="text/javascript">
+    <script type="text/javascript">
         $(document).ready(function () {
             // Configurações globais do Toastr
             toastr.options = {

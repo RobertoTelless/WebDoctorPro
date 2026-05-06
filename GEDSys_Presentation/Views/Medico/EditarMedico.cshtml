@@ -215,7 +215,10 @@
                                                         @foreach (var cond in (ViewBag.Envios as List<EntitiesServices.Model.MEDICOS_ENVIO>).OrderByDescending(p => p.MEEV_DT_ENVIO.Value.Date))
                                                         {   
                                                             <tr>
-                                                                <td style="width: auto">@cond.MEEV_DT_ENVIO.Value.ToShortDateString() @cond.MEEV_DT_ENVIO.Value.ToShortTimeString()</td>
+                                                                <td>
+                                                                    <span style="display:none; width: auto">@cond.MEEV_DT_ENVIO.Value.ToString("yyyyMMdd")</span>
+                                                                    @cond.MEEV_DT_ENVIO.Value.ToString("dd/MM/yyyy")
+                                                                </td>
                                                                 <td style="width: auto; cursor: pointer; text-decoration: underline;"><a href="@Url.Action("EditarEnvio", "Medico", new { id = cond.MEEV_CD_ID })" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página de edição do envio de informações"/>@cond.MEEV_GU_IDENTIFICADOR</td>
                                                                 <td style="width: auto">@cond.MEEV_NM_TITULO</td>
                                                                 <td style="width: auto">@cond.PACIENTE.PACI_NM_NOME</td>
@@ -310,10 +313,12 @@
 @section Scripts {
     @Scripts.Render("~/plugins/toastr")
     <script src="~/Scripts/jquery-ui-1.12.1.min.js"></script>
+    @Scripts.Render("~/plugins/dataTables")
     @Scripts.Render("~/bundles/inputmask")
     @Scripts.Render("~/plugins/jasnyBootstrap")
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.maskedinput/1.4.1/jquery.maskedinput.js"></script>
-
+    <script src="~/Scripts/uploadAnexo.js"></script>
+   
     <script type="text/javascript" src="~/Scripts/moment.min.js"></script>
     <script type="text/javascript" src="~/Scripts/bootstrap.min.js"></script>
    
@@ -561,7 +566,40 @@
             }
         });
     </script>
+    <script type="text/javascript">
+        $(document).ready(function () {
 
+            $('.dataTables-example').DataTable({
+                pageLength: 25,
+                dom: '<"html5buttons"B>lTfgitp',
+                // --- NOVO BLOCO DE CONFIGURAÇÃO ---
+                columnDefs: [
+                    {
+                        // Altera o tipo de ordenação para a primeira coluna (índice 0)
+                        //"type": "datetime-moment", // Se você incluiu o momento.js
+                        // OU
+                         "type": "date-eu", // Para o formato DD/MM/AAAA
+                        "targets": 0 // Aplica à coluna "Data da Transação"
+                    }
+                ],
+                // ---------------------------------       
+                buttons: [
+                    { extend: 'excel', title: 'Pagamento_Planilha' },
+                    {
+                        extend: 'print',
+                        customize: function (win) {
+                            $(win.document.body).addClass('white-bg');
+                            $(win.document.body).css('font-size', '10px');
+
+                            $(win.document.body).find('table')
+                                    .addClass('compact')
+                                    .css('font-size', 'inherit');
+                        }
+                    }
+                ]
+            });         
+        });
+    </script>
 
     @if (ViewBag.Message != null)
     {
