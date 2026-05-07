@@ -115,6 +115,7 @@ namespace ERP_Condominios_Solution.Controllers
             Session["VacinaAlterada"] = 0;
             Session["Medicamentos"] = null;
             Session["Vacina"] = null;
+            Session["AssinanteLogado"] = null;
 
             // Permissões
             Session["PermProntuario"] = 0;
@@ -984,6 +985,7 @@ namespace ERP_Condominios_Solution.Controllers
                 }
 
                 // Armazena credenciais para autorização
+                Session["AssinanteLogado"] = assinante;
                 Session["UserCredentials"] = usuario;
                 Session["Usuario"] = usuario;
                 Session["IdAssinante"] = usuario.ASSI_CD_ID;

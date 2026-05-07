@@ -24,7 +24,24 @@
         </ol>
         <br />
     </div>
-
+    <div class="row">
+        <div class="form-group" style=" margin-left: 15px; margin-right: 0px;">
+            @* --- INÍCIO DA AJUDA CONTEXTUAL --- *@
+            <details class="ajuda-contextual">
+                <summary><i class="fa fa-info-circle text-info"></i> Resumo das funcionalidades desta página</summary>
+                <div class="well well-sm">
+                    <p>Essa é a página de inclusão de locações do <b>WebDoctorPro</b>. Nela você poderá:</p>
+                    <ol>
+                        <li>Cadastrar uma nova locação de equipamento</li>
+                        <li>Definir se envia ou não o contrato de locação ao contratante</li>
+                        <li>Definir prazo de locação e dia do vencimento das parcelas</li>
+                        <li>Anexar arquivos à locação.  </li>
+                    </ol>
+                </div>
+            </details>
+            @* --- FIM DA AJUDA CONTEXTUAL --- *@
+        </div>
+    </div>
     <div class="row">
         <div class="col-lg-12 col-md-12 col-xs-12">
             <div class="col-lg-12 col-md-12 col-xs-12 ibox float-e-margins">
@@ -230,12 +247,12 @@
                                     </div>
                                     <div class="col-lg-2 col-md-2 col-xs-12">
                                         Envia Contrato
-                                        @Html.DropDownListFor(m => m.LOCA_IN_CONTRATO, (SelectList)ViewBag.Contrato, "Selecionar", new { @class = "form-control", data_toggle = "popover", data_content = "Indica se o contrato de locação será enviado ao paciente no momento da criação da locação", data_trigger="hover", data_placement="top", autofocus = true, @id="contrato" })
+                                        @Html.DropDownListFor(m => m.LOCA_IN_CONTRATO, (SelectList)ViewBag.Contrato, "Selecionar", new { @class = "form-control", data_toggle = "popover", data_content = "Indica se o contrato de locação será enviado ao paciente no momento da criação da locação", data_trigger="hover", data_placement="top", autofocus = true, @id="contrato", onchange = "ValidaContrato($(this).val())"  })
                                         @Html.ValidationMessageFor(m => m.LOCA_IN_CONTRATO, "", new { @style = "color:red" })
                                     </div>
-                                    <div class="col-lg-4 col-md-4 col-xs-12">
+                                    <div class="col-lg-4 col-md-4 col-xs-12" id="tipoContrato" style="display: none">
                                         Tipo de Contrato*
-                                        @Html.DropDownListFor(m => m.COLO_CD_ID, (SelectList)ViewBag.ContratoLocacao, "Selecionar", new { @class = "form-control", data_toggle = "popover", data_content = "Seleciona o tipo de contrato a ser usado para enviar ao paciente ", data_trigger="hover", data_placement="top", autofocus = true, @id="preco", onchange = "ValidaPreco($(this).val())" })
+                                        @Html.DropDownListFor(m => m.COLO_CD_ID, (SelectList)ViewBag.ContratoLocacao, "Selecionar", new { @class = "form-control", data_toggle = "popover", data_content = "Seleciona o tipo de contrato a ser usado para enviar ao paciente ", data_trigger="hover", data_placement="top", autofocus = true })
                                         @Html.ValidationMessageFor(m => m.COLO_CD_ID, "", new { @style = "color:red" })
                                     </div>
                                 </div>
@@ -393,7 +410,18 @@
             });
         });
     </script>
-
+    <script type="text/javascript">
+        function ValidaContrato(men) {
+            if (men == '1') {
+                $("#tipoContrato").show();
+            } else {
+                $("#tipoContrato").hide();
+            }
+        }
+        $(document).ready(function () {
+            ValidaContrato($('#contrato').val());
+        });
+    </script>
     <script>
         function GetPaciente(id) {
             var data = {
