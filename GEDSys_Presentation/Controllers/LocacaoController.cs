@@ -2978,6 +2978,7 @@ namespace GEDSys_Presentation.Controllers
 
                     // Executa a operação
                     LOCACAO item = Mapper.Map<LocacaoViewModel, LOCACAO>(vm);
+                    Int32 locId = item.LOCA_CD_ID;
                     PACIENTE pac = pacApp.GetItemById(vm.PACI_CD_ID);
                     PRODUTO prod = prodApp.GetItemById(vm.PROD_CD_ID);
                     Session["ProdAntes"] = prod;
@@ -3048,6 +3049,36 @@ namespace GEDSys_Presentation.Controllers
                         Int32 voltaH = prodApp.ValidateCreateEstoqueHistorico(est, idAss);
                     }
 
+                    // Trata parcelas
+                    LOCACAO loca = baseApp.GetItemById(locId);
+                    List<LOCACAO_PARCELA> parcelas = loca.LOCACAO_PARCELA.Where(p => p.LOPA_IN_ATIVO == 1).ToList();
+                    foreach (LOCACAO_PARCELA parc in parcelas)
+                    {
+                        LOCACAO_PARCELA nova = new LOCACAO_PARCELA();
+                        nova.LOCA_CD_ID = parc.LOCA_CD_ID;
+                        nova.LOPA_CD_ID = parc.LOPA_CD_ID;
+                        nova.LOPA_DS_DESCRICAO = parc.LOPA_DS_DESCRICAO;
+                        nova.LOPA_DT_DUMMY = parc.LOPA_DT_DUMMY;
+                        nova.LOPA_DT_PAGAMENTO = DateTime.Today.Date;
+                        nova.LOPA_DT_VENCIMENTO = parc.LOPA_DT_VENCIMENTO;
+                        nova.LOPA_IN_ATIVO = parc.LOPA_IN_ATIVO;
+                        nova.LOPA_IN_ATRASO = parc.LOPA_IN_ATRASO;
+                        nova.LOPA_IN_LANCAMENTO = parc.LOPA_IN_LANCAMENTO;
+                        nova.LOPA_IN_PACIENTE_DUMMY = parc.LOPA_IN_PACIENTE_DUMMY;
+                        nova.LOPA_IN_PARCELA = parc.LOPA_IN_PARCELA;
+                        nova.LOPA_IN_QUITADA = 1;
+                        nova.LOPA_IN_STATUS = parc.LOPA_IN_STATUS;
+                        nova.LOPA_NM_PARCELAS = parc.LOPA_NM_PARCELAS;
+                        nova.LOPA_NR_PACELAS = parc.LOPA_NR_PACELAS;
+                        nova.LOPA_VL_DESCONTO = parc.LOPA_VL_DESCONTO;
+                        nova.LOPA_VL_JUROS = parc.LOPA_VL_JUROS;
+                        nova.LOPA_VL_TAXAS = parc.LOPA_VL_TAXAS;
+                        nova.LOPA_VL_VALOR = parc.LOPA_VL_VALOR;
+                        nova.LOPA_VL_VALOR_PAGO = parc.LOPA_VL_VALOR_PAGO;
+                        nova.ASSI_CD_ID = parc.ASSI_CD_ID;
+                        Int32 voltaP = baseApp.ValidateEditParcela(nova);
+                    }
+
                     // Grava historico
                     LOCACAO_HISTORICO hist = new LOCACAO_HISTORICO();
                     hist.ASSI_CD_ID = idAss;
@@ -3068,15 +3099,6 @@ namespace GEDSys_Presentation.Controllers
                     if (pac.PACI_NR_CELULAR != null)
                     {
                         Int32 voltaCons = EnviarSMSLocacao(locMensagem, 2);
-                    }
-
-                    // Mensages do CRUD
-                    Session["MsgCRUD"] = "A Locação de " + prod.PROD_NM_NOME.ToUpper() + " para " + pac.PACI_NM_NOME.ToUpper() + " - foi cancelada com sucesso.";
-                    Session["MensLocacao"] = 61;
-                    if (item.LOCA_IN_ESTOQUE == 0)
-                    {
-                        Session["MsgCRUD1"] = "Não foi feita a entrada no estoque para " + prod.PROD_NM_NOME.ToUpper() + " referente à locação de " + pac.PACI_NM_NOME.ToUpper() + " - Deve ser feita entrada manual.";
-                        Session["MensProduto"] = 62;
                     }
 
                     // Trata distrato
@@ -3101,7 +3123,15 @@ namespace GEDSys_Presentation.Controllers
                     Session["NivelLocacao"] = 1;
                     Session["ListaHistoricoLocacao"] = null;
                     Session["LocacoesHistoricos"] = null;
-                    Session["MensLocacao"] = null;
+
+                    // Mensages do CRUD
+                    Session["MsgCRUD"] = "A Locação de " + prod.PROD_NM_NOME.ToUpper() + " para " + pac.PACI_NM_NOME.ToUpper() + " - foi cancelada com sucesso.";
+                    Session["MensLocacao"] = 61;
+                    if (item.LOCA_IN_ESTOQUE == 0)
+                    {
+                        Session["MsgCRUD1"] = "Não foi feita a entrada no estoque para " + prod.PROD_NM_NOME.ToUpper() + " referente à locação de " + pac.PACI_NM_NOME.ToUpper() + " - Deve ser feita entrada manual.";
+                        Session["MensProduto"] = 62;
+                    }
 
                     if ((Int32)Session["VoltaLocacao"] == 2)
                     {
@@ -7707,17 +7737,26 @@ namespace GEDSys_Presentation.Controllers
             }
             String emailBody = cab + "<br />" + texto + "<br /><br />" + assinatura;
 
-            // Incluir PDF como anexo
+            // Incluir contrato como anexo
             List<AttachmentModel> models = new List<AttachmentModel>();
-            String caminho = "/Temp/";
+            String caminho = "~/Temp/";
             String fileNamePDF = "Distrato_Locacao_" + paciente.PACI_NM_NOME.ToUpper() + "_" + vm.LOCA_GU_GUID + ".pdf";
-            String path = Path.Combine(Server.MapPath(caminho), fileNamePDF);
+            String pathPDF = Path.Combine(Server.MapPath(caminho), fileNamePDF);
 
-            AttachmentModel model = new AttachmentModel();
-            model.PATH = path;
-            model.ATTACHMENT_NAME = fileNamePDF;
-            model.CONTENT_TYPE = MediaTypeNames.Application.Pdf;
-            models.Add(model);
+            // Lê os bytes do arquivo recém-gerado no disco
+            byte[] bytesAnamnese = System.IO.File.ReadAllBytes(pathPDF);
+
+            // Lê os bytes do arquivo recém-gerado no disco
+            if (System.IO.File.Exists(pathPDF))
+            {
+                AttachmentModel modelAnamnese = new AttachmentModel();
+                modelAnamnese.PATH = pathPDF;
+                modelAnamnese.ATTACHMENT_NAME = fileNamePDF;
+                modelAnamnese.CONTENT_TYPE = MediaTypeNames.Application.Pdf;
+                modelAnamnese.ContentBytes = Convert.ToBase64String(bytesAnamnese); // Padronização
+                modelAnamnese.FileBytes = bytesAnamnese; // Propriedade crucial para o SendMailAsync
+                models.Add(modelAnamnese);
+            }
 
             // Decriptografa chaves
             String emissor = CrossCutting.Cryptography.Decrypt(conf.CONF_NM_EMISSOR_AZURE_CRIP);
@@ -14612,11 +14651,26 @@ namespace GEDSys_Presentation.Controllers
             }
             String emailBody = cab + "<br />" + texto + "<br /><br />" + assinatura;
 
-            // Incluir PDF como anexo
+            // Incluir contrato como anexo
             List<AttachmentModel> models = new List<AttachmentModel>();
-            String caminho = "/Temp/";
+            String caminho = "~/Temp/";
             String fileNamePDF = "Encerra_Locacao_" + paciente.PACI_NM_NOME.ToUpper() + "_" + vm.LOCA_GU_GUID + ".pdf";
-            String path = Path.Combine(Server.MapPath(caminho), fileNamePDF);
+            String pathPDF = Path.Combine(Server.MapPath(caminho), fileNamePDF);
+
+            // Lê os bytes do arquivo recém-gerado no disco
+            byte[] bytesAnamnese = System.IO.File.ReadAllBytes(pathPDF);
+
+            // Lê os bytes do arquivo recém-gerado no disco
+            if (System.IO.File.Exists(pathPDF))
+            {
+                AttachmentModel modelAnamnese = new AttachmentModel();
+                modelAnamnese.PATH = pathPDF;
+                modelAnamnese.ATTACHMENT_NAME = fileNamePDF;
+                modelAnamnese.CONTENT_TYPE = MediaTypeNames.Application.Pdf;
+                modelAnamnese.ContentBytes = Convert.ToBase64String(bytesAnamnese); // Padronização
+                modelAnamnese.FileBytes = bytesAnamnese; // Propriedade crucial para o SendMailAsync
+                models.Add(modelAnamnese);
+            }
 
             // Decriptografa chaves
             String emissor = CrossCutting.Cryptography.Decrypt(conf.CONF_NM_EMISSOR_AZURE_CRIP);
