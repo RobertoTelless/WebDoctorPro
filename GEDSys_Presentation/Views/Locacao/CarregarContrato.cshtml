@@ -188,14 +188,44 @@
                                     <div class="row">
                                         <div class="col-lg-12 col-md-12 col-xs-12">
                                             <h4 style="margin-left: -15px; margin-right: -15px; color:green; background-color: beige; font-weight:bold">Selecionar Contrato Assinado</h4>
+                                            <div class="row">
+                                                <div class="form-group" style=" margin-left: 15px; margin-right: 0px;">
+                                                    @* --- INÍCIO DA AJUDA CONTEXTUAL --- *@
+                                                    <details class="ajuda-contextual">
+                                                        <summary><i class="fa fa-question-circle text-info"></i> Regras para importação do contrato de locação assinado</summary>
+                                                        <div class="well well-sm">
+                                                            <p>O nome do arquivo do contrato assinado tem que ser identico ao do contrato de locação enviado acrescido do sufixo <b>"_Assinado"</b>.</p>
+                                                            <ul>
+                                                                <li>Contrato de Locação enviado: <strong>Contrato_Locacao_ESNÁSIO BOTRÓPICO_d7v3454n0008fv3plu7g.pdf</strong></li>
+                                                                <li>Contrato de Locação assinado: <strong>Contrato_Locacao_ESNÁSIO BOTRÓPICO_d7v3454n0008fv3plu7g.pdf_Assinado</strong></li>
+                                                            </ul>
+                                                            <p>Se o nome do arquivo do contrato assinado não seguir estritamente essa regra o contrato assinado será rejeitado".</p>
+                                                        </div>
+                                                    </details>
+                                                    @* --- FIM DA AJUDA CONTEXTUAL --- *@
+                                                </div>
+                                            </div>
                                             <div class="form-group">
                                                 @using (Html.BeginForm("UploadFileLocacaoContratoBlob", "Locacao", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { enctype = "multipart/form-data", @id = "pwd-container2" }))
                                                 {
                                                     <div class="form-group">
                                                         <div class="col-lg-12 col-md-12 col-xs-12" style="margin-left: -30px;">
-                                                            <input style="float: left; margin-right: 5px;" type="file" name="file" id="file" accept=".pdf" class="btn btn-sm btn-warning" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="ATENÇÃO - Antes de anexar arquivos certifique-se de que eles estejam livres de vírus e outras ameaças.  " />
+                                                            <!-- Input de arquivo local -->
+                                                            <input style="float: left; margin-right: 5px;" type="file" name="file" id="file" accept=".pdf" class="btn btn-sm btn-warning" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="ATENÇÃO - Antes de anexar arquivos certifique-se de que eles estejam livres de vírus e outras ameaças." />
+    
+                                                            <!-- Botão de Conferência (Inicia Oculto) -->
+                                                            <button type="button" id="btnConferirLocal" class="btn btn-sm btn-info" style="float: left; margin-right: 5px; display: none;">
+                                                                <i class="fa fa-search"></i> Conferir Arquivo Selecionado
+                                                            </button>
+
+                                                            <!-- Botão de Upload -->
                                                             <input style="float: left; margin-right: 5px;" type="submit" value="Incluir Contrato Assinado" class="btn btn-sm btn-success" />
                                                         </div>
+
+                                                        @*<div class="col-lg-12 col-md-12 col-xs-12" style="margin-left: -30px;">
+                                                            <input style="float: left; margin-right: 5px;" type="file" name="file" id="file" accept=".pdf" class="btn btn-sm btn-warning" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="ATENÇÃO - Antes de anexar arquivos certifique-se de que eles estejam livres de vírus e outras ameaças.  " />
+                                                            <input style="float: left; margin-right: 5px;" type="submit" value="Incluir Contrato Assinado" class="btn btn-sm btn-success" />
+                                                        </div>*@
                                                     </div>
                                                 }
                                             </div>
@@ -456,6 +486,54 @@
             });
         });
     </script>
+
+    <script>
+        $(document).ready(function () {
+            var inputDoc = $('#file');
+            var btnConferir = $('#btnConferirLocal');
+
+            // Detecta quando o usuário seleciona um arquivo no Windows/Mac
+            inputDoc.change(function () {
+                if (this.files && this.files.length > 0) {
+                    // Verifica se o arquivo é PDF por segurança
+                    var file = this.files[0];
+                    if (file.type === "application/pdf") {
+                        btnConferir.fadeIn(); // Mostra o botão de conferência
+                    } else {
+                        btnConferir.fadeOut();
+                        alert("Por favor, selecione um arquivo no formato PDF.");
+                        inputDoc.val(''); // Limpa o input se não for PDF
+                    }
+                } else {
+                    btnConferir.fadeOut();
+                }
+            });
+
+            // Função para abrir o arquivo local em nova aba
+            btnConferir.click(function () {
+                var file = inputDoc[0].files[0];
+                if (file) {
+                    // Cria um endereço temporário para o arquivo local
+                    var blobUrl = URL.createObjectURL(file);
+            
+                    // Abre o visualizador de PDF do navegador
+                    var novaAba = window.open(blobUrl, '_blank');
+            
+                    // Caso o navegador bloqueie o pop-up
+                    if (!novaAba) {
+                        alert("Por favor, permita pop-ups para visualizar o contrato.");
+                    }
+
+                    // Boa prática: libera o link da memória após fechar/usar
+                    // (Opcional, mas evita leak em máquinas com pouca RAM)
+                    setTimeout(function() {
+                        URL.revokeObjectURL(blobUrl);
+                    }, 10000); 
+                }
+            });
+        });
+    </script>
+
     @if (ViewBag.Message != null)
     {
         <script type="text/javascript">

@@ -2233,7 +2233,7 @@
     <value>Nenhum contrato assinado selecionado</value>
   </data>
   <data name="M0727" xml:space="preserve">
-    <value>Somente serão aceitos arquivos de formato PDF</value>
+    <value>O nome do contrato assinado selecionado não atende ao padrão de nomenclatura</value>
   </data>
   <data name="M0728" xml:space="preserve">
     <value>Esse contrato não está associado ao paciente</value>

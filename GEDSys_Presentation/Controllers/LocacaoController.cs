@@ -6239,19 +6239,29 @@ namespace GEDSys_Presentation.Controllers
                     pdfDoc.Add(line1);
 
                     // Area de Assinatura do paciente
+                    line1 = new Paragraph("  ");
+                    pdfDoc.Add(line1);
                     Chunk chunk2 = new Chunk(dataContrato, FontFactory.GetFont("Arial", 9, Font.NORMAL, BaseColor.BLACK));
-                    pdfDoc.Add(chunk2);
+                    Paragraph pNome1 = new Paragraph(chunk2);
+                    pNome1.Alignment = Element.ALIGN_CENTER; // Parâmetro de centralização
+                    pdfDoc.Add(pNome1);
                     line1 = new Paragraph("  ");
                     pdfDoc.Add(line1);
                     line1 = new Paragraph("  ");
+                    // 1. Centralizando a linha de assinatura
+                    line1 = new Paragraph("_____________________________________________________________");
+                    line1.Alignment = Element.ALIGN_CENTER; // Parâmetro de centralização
                     pdfDoc.Add(line1);
-                    line1 = new Paragraph("_____________________________________________________________  ");
-                    pdfDoc.Add(line1);
-                    Chunk chunk3 = new Chunk(paciente.PACI_NM_NOME, FontFactory.GetFont("Arial", 9, Font.BOLD, BaseColor.BLACK));
-                    pdfDoc.Add(chunk3);
+
+                    // 2. Centralizando o nome do paciente
+                    // Nota: Criamos um Paragraph para conter o Chunk, pois Paragraph aceita o Alinhamento
+                    Chunk chunk3 = new Chunk(paciente.PACI_NM_NOME.ToUpper(), FontFactory.GetFont("Arial", 9, Font.NORMAL, BaseColor.BLACK));
+                    Paragraph pNome = new Paragraph(chunk3);
+                    pNome.Alignment = Element.ALIGN_CENTER; // Parâmetro de centralização
+                    pdfDoc.Add(pNome);
                     line1 = new Paragraph("  ");
                     pdfDoc.Add(line1);
-                    line1 = new Paragraph("=========================================================================");
+                    line1 = new Paragraph("=============================================================================");
                     pdfDoc.Add(line1);
 
                     // Dados do paciente
@@ -7091,19 +7101,29 @@ namespace GEDSys_Presentation.Controllers
                     pdfDoc.Add(line1);
 
                     // Area de Assinatura do paciente
+                    line1 = new Paragraph("  ");
+                    pdfDoc.Add(line1);
                     Chunk chunk2 = new Chunk(dataContrato, FontFactory.GetFont("Arial", 9, Font.NORMAL, BaseColor.BLACK));
-                    pdfDoc.Add(chunk2);
+                    Paragraph pNome1 = new Paragraph(chunk2);
+                    pNome1.Alignment = Element.ALIGN_CENTER; // Parâmetro de centralização
+                    pdfDoc.Add(pNome1);
                     line1 = new Paragraph("  ");
                     pdfDoc.Add(line1);
                     line1 = new Paragraph("  ");
+                    // 1. Centralizando a linha de assinatura
+                    line1 = new Paragraph("_____________________________________________________________");
+                    line1.Alignment = Element.ALIGN_CENTER; // Parâmetro de centralização
                     pdfDoc.Add(line1);
-                    line1 = new Paragraph("_____________________________________________________________  ");
-                    pdfDoc.Add(line1);
-                    Chunk chunk3 = new Chunk(paciente.PACI_NM_NOME, FontFactory.GetFont("Arial", 9, Font.BOLD, BaseColor.BLACK));
-                    pdfDoc.Add(chunk3);
+
+                    // 2. Centralizando o nome do paciente
+                    // Nota: Criamos um Paragraph para conter o Chunk, pois Paragraph aceita o Alinhamento
+                    Chunk chunk3 = new Chunk(paciente.PACI_NM_NOME.ToUpper(), FontFactory.GetFont("Arial", 9, Font.NORMAL, BaseColor.BLACK));
+                    Paragraph pNome = new Paragraph(chunk3);
+                    pNome.Alignment = Element.ALIGN_CENTER; // Parâmetro de centralização
+                    pdfDoc.Add(pNome);
                     line1 = new Paragraph("  ");
                     pdfDoc.Add(line1);
-                    line1 = new Paragraph("=========================================================================");
+                    line1 = new Paragraph("=============================================================================");
                     pdfDoc.Add(line1);
 
                     // Dados do paciente
@@ -8268,16 +8288,31 @@ namespace GEDSys_Presentation.Controllers
                 // Area de Assinatura do paciente
                 line1 = new Paragraph("  ");
                 pdfDoc.Add(line1);
+
                 Chunk chunk2 = new Chunk(dataContrato, FontFactory.GetFont("Arial", 9, Font.NORMAL, BaseColor.BLACK));
-                pdfDoc.Add(chunk2);
+                Paragraph pNome1 = new Paragraph(chunk2);
+                pNome1.Alignment = Element.ALIGN_CENTER; // Parâmetro de centralização
+                pdfDoc.Add(pNome1);
+
                 line1 = new Paragraph("  ");
                 pdfDoc.Add(line1);
                 line1 = new Paragraph("  ");
                 pdfDoc.Add(line1);
-                line1 = new Paragraph("_____________________________________________________________  ");
+                // 1. Centralizando a linha de assinatura
+                line1 = new Paragraph("_____________________________________________________________");
+                line1.Alignment = Element.ALIGN_CENTER; // Parâmetro de centralização
                 pdfDoc.Add(line1);
-                Chunk chunk3 = new Chunk(paciente.PACI_NM_NOME, FontFactory.GetFont("Arial", 9, Font.NORMAL, BaseColor.BLACK));
-                pdfDoc.Add(chunk3);
+
+                // 2. Centralizando o nome do paciente
+                // Nota: Criamos um Paragraph para conter o Chunk, pois Paragraph aceita o Alinhamento
+                Chunk chunk3 = new Chunk(paciente.PACI_NM_NOME.ToUpper(), FontFactory.GetFont("Arial", 9, Font.NORMAL, BaseColor.BLACK));
+                Paragraph pNome = new Paragraph(chunk3);
+                pNome.Alignment = Element.ALIGN_CENTER; // Parâmetro de centralização
+                pdfDoc.Add(pNome);
+                //line1 = new Paragraph("_____________________________________________________________  ");
+                //pdfDoc.Add(line1);
+                //Chunk chunk3 = new Chunk(paciente.PACI_NM_NOME, FontFactory.GetFont("Arial", 9, Font.NORMAL, BaseColor.BLACK));
+                //pdfDoc.Add(chunk3);
                 line1 = new Paragraph("  ");
                 pdfDoc.Add(line1);
                 line1 = new Paragraph("=============================================================================");
@@ -9127,15 +9162,23 @@ namespace GEDSys_Presentation.Controllers
                 line1 = new Paragraph("  ");
                 pdfDoc.Add(line1);
                 Chunk chunk2 = new Chunk(dataContrato, FontFactory.GetFont("Arial", 9, Font.NORMAL, BaseColor.BLACK));
-                pdfDoc.Add(chunk2);
+                Paragraph pNome1 = new Paragraph(chunk2);
+                pNome1.Alignment = Element.ALIGN_CENTER; // Parâmetro de centralização
+                pdfDoc.Add(pNome1);
                 line1 = new Paragraph("  ");
                 pdfDoc.Add(line1);
                 line1 = new Paragraph("  ");
+                // 1. Centralizando a linha de assinatura
+                line1 = new Paragraph("_____________________________________________________________");
+                line1.Alignment = Element.ALIGN_CENTER; // Parâmetro de centralização
                 pdfDoc.Add(line1);
-                line1 = new Paragraph("_____________________________________________________________  ");
-                pdfDoc.Add(line1);
-                Chunk chunk3 = new Chunk(paciente.PACI_NM_NOME, FontFactory.GetFont("Arial", 9, Font.NORMAL, BaseColor.BLACK));
-                pdfDoc.Add(chunk3);
+
+                // 2. Centralizando o nome do paciente
+                // Nota: Criamos um Paragraph para conter o Chunk, pois Paragraph aceita o Alinhamento
+                Chunk chunk3 = new Chunk(paciente.PACI_NM_NOME.ToUpper(), FontFactory.GetFont("Arial", 9, Font.NORMAL, BaseColor.BLACK));
+                Paragraph pNome = new Paragraph(chunk3);
+                pNome.Alignment = Element.ALIGN_CENTER; // Parâmetro de centralização
+                pdfDoc.Add(pNome);
                 line1 = new Paragraph("  ");
                 pdfDoc.Add(line1);
                 line1 = new Paragraph("=============================================================================");
@@ -10420,15 +10463,23 @@ namespace GEDSys_Presentation.Controllers
                 line1 = new Paragraph("  ");
                 pdfDoc.Add(line1);
                 Chunk chunk2 = new Chunk(dataContrato, FontFactory.GetFont("Arial", 9, Font.NORMAL, BaseColor.BLACK));
-                pdfDoc.Add(chunk2);
+                Paragraph pNome1 = new Paragraph(chunk2);
+                pNome1.Alignment = Element.ALIGN_CENTER; // Parâmetro de centralização
+                pdfDoc.Add(pNome1);
                 line1 = new Paragraph("  ");
                 pdfDoc.Add(line1);
                 line1 = new Paragraph("  ");
+                // 1. Centralizando a linha de assinatura
+                line1 = new Paragraph("_____________________________________________________________");
+                line1.Alignment = Element.ALIGN_CENTER; // Parâmetro de centralização
                 pdfDoc.Add(line1);
-                line1 = new Paragraph("_____________________________________________________________  ");
-                pdfDoc.Add(line1);
-                Chunk chunk3 = new Chunk(paciente.PACI_NM_NOME, FontFactory.GetFont("Arial", 9, Font.NORMAL, BaseColor.BLACK));
-                pdfDoc.Add(chunk3);
+
+                // 2. Centralizando o nome do paciente
+                // Nota: Criamos um Paragraph para conter o Chunk, pois Paragraph aceita o Alinhamento
+                Chunk chunk3 = new Chunk(paciente.PACI_NM_NOME.ToUpper(), FontFactory.GetFont("Arial", 9, Font.NORMAL, BaseColor.BLACK));
+                Paragraph pNome = new Paragraph(chunk3);
+                pNome.Alignment = Element.ALIGN_CENTER; // Parâmetro de centralização
+                pdfDoc.Add(pNome);
                 line1 = new Paragraph("  ");
                 pdfDoc.Add(line1);
                 line1 = new Paragraph("=============================================================================");
@@ -11114,15 +11165,23 @@ namespace GEDSys_Presentation.Controllers
                 line1 = new Paragraph("  ");
                 pdfDoc.Add(line1);
                 Chunk chunk2 = new Chunk(dataContrato, FontFactory.GetFont("Arial", 9, Font.NORMAL, BaseColor.BLACK));
-                pdfDoc.Add(chunk2);
+                Paragraph pNome1 = new Paragraph(chunk2);
+                pNome1.Alignment = Element.ALIGN_CENTER; // Parâmetro de centralização
+                pdfDoc.Add(pNome1);
                 line1 = new Paragraph("  ");
                 pdfDoc.Add(line1);
                 line1 = new Paragraph("  ");
+                // 1. Centralizando a linha de assinatura
+                line1 = new Paragraph("_____________________________________________________________");
+                line1.Alignment = Element.ALIGN_CENTER; // Parâmetro de centralização
                 pdfDoc.Add(line1);
-                line1 = new Paragraph("_____________________________________________________________  ");
-                pdfDoc.Add(line1);
-                Chunk chunk3 = new Chunk(paciente.PACI_NM_NOME, FontFactory.GetFont("Arial", 9, Font.NORMAL, BaseColor.BLACK));
-                pdfDoc.Add(chunk3);
+
+                // 2. Centralizando o nome do paciente
+                // Nota: Criamos um Paragraph para conter o Chunk, pois Paragraph aceita o Alinhamento
+                Chunk chunk3 = new Chunk(paciente.PACI_NM_NOME.ToUpper(), FontFactory.GetFont("Arial", 9, Font.NORMAL, BaseColor.BLACK));
+                Paragraph pNome = new Paragraph(chunk3);
+                pNome.Alignment = Element.ALIGN_CENTER; // Parâmetro de centralização
+                pdfDoc.Add(pNome);
                 line1 = new Paragraph("  ");
                 pdfDoc.Add(line1);
                 line1 = new Paragraph("=============================================================================");
@@ -11828,19 +11887,29 @@ namespace GEDSys_Presentation.Controllers
                     pdfDoc.Add(line1);
 
                     // Area de Assinatura do paciente
+                    line1 = new Paragraph("  ");
+                    pdfDoc.Add(line1);
                     Chunk chunk2 = new Chunk(dataContrato, FontFactory.GetFont("Arial", 9, Font.NORMAL, BaseColor.BLACK));
-                    pdfDoc.Add(chunk2);
+                    Paragraph pNome1 = new Paragraph(chunk2);
+                    pNome1.Alignment = Element.ALIGN_CENTER; // Parâmetro de centralização
+                    pdfDoc.Add(pNome1);
                     line1 = new Paragraph("  ");
                     pdfDoc.Add(line1);
                     line1 = new Paragraph("  ");
+                    // 1. Centralizando a linha de assinatura
+                    line1 = new Paragraph("_____________________________________________________________");
+                    line1.Alignment = Element.ALIGN_CENTER; // Parâmetro de centralização
                     pdfDoc.Add(line1);
-                    line1 = new Paragraph("_____________________________________________________________  ");
-                    pdfDoc.Add(line1);
-                    Chunk chunk3 = new Chunk(paciente.PACI_NM_NOME, FontFactory.GetFont("Arial", 9, Font.BOLD, BaseColor.BLACK));
-                    pdfDoc.Add(chunk3);
+
+                    // 2. Centralizando o nome do paciente
+                    // Nota: Criamos um Paragraph para conter o Chunk, pois Paragraph aceita o Alinhamento
+                    Chunk chunk3 = new Chunk(paciente.PACI_NM_NOME.ToUpper(), FontFactory.GetFont("Arial", 9, Font.NORMAL, BaseColor.BLACK));
+                    Paragraph pNome = new Paragraph(chunk3);
+                    pNome.Alignment = Element.ALIGN_CENTER; // Parâmetro de centralização
+                    pdfDoc.Add(pNome);
                     line1 = new Paragraph("  ");
                     pdfDoc.Add(line1);
-                    line1 = new Paragraph("=========================================================================");
+                    line1 = new Paragraph("=============================================================================");
                     pdfDoc.Add(line1);
 
                     // Dados do paciente
@@ -12513,19 +12582,29 @@ namespace GEDSys_Presentation.Controllers
                     pdfDoc.Add(line1);
 
                     // Area de Assinatura do paciente
+                    line1 = new Paragraph("  ");
+                    pdfDoc.Add(line1);
                     Chunk chunk2 = new Chunk(dataContrato, FontFactory.GetFont("Arial", 9, Font.NORMAL, BaseColor.BLACK));
-                    pdfDoc.Add(chunk2);
+                    Paragraph pNome1 = new Paragraph(chunk2);
+                    pNome1.Alignment = Element.ALIGN_CENTER; // Parâmetro de centralização
+                    pdfDoc.Add(pNome1);
                     line1 = new Paragraph("  ");
                     pdfDoc.Add(line1);
                     line1 = new Paragraph("  ");
+                    // 1. Centralizando a linha de assinatura
+                    line1 = new Paragraph("_____________________________________________________________");
+                    line1.Alignment = Element.ALIGN_CENTER; // Parâmetro de centralização
                     pdfDoc.Add(line1);
-                    line1 = new Paragraph("_____________________________________________________________  ");
-                    pdfDoc.Add(line1);
-                    Chunk chunk3 = new Chunk(paciente.PACI_NM_NOME, FontFactory.GetFont("Arial", 9, Font.BOLD, BaseColor.BLACK));
-                    pdfDoc.Add(chunk3);
+
+                    // 2. Centralizando o nome do paciente
+                    // Nota: Criamos um Paragraph para conter o Chunk, pois Paragraph aceita o Alinhamento
+                    Chunk chunk3 = new Chunk(paciente.PACI_NM_NOME.ToUpper(), FontFactory.GetFont("Arial", 9, Font.NORMAL, BaseColor.BLACK));
+                    Paragraph pNome = new Paragraph(chunk3);
+                    pNome.Alignment = Element.ALIGN_CENTER; // Parâmetro de centralização
+                    pdfDoc.Add(pNome);
                     line1 = new Paragraph("  ");
                     pdfDoc.Add(line1);
-                    line1 = new Paragraph("=========================================================================");
+                    line1 = new Paragraph("=============================================================================");
                     pdfDoc.Add(line1);
 
                     // Dados do paciente
@@ -12782,7 +12861,7 @@ namespace GEDSys_Presentation.Controllers
         }
 
         [HttpGet]
-        public ActionResult AprovarLocacao(Int32 id)
+        public async Task<ActionResult> AprovarLocacao(Int32 id)
         {
             try
             {
@@ -12823,25 +12902,17 @@ namespace GEDSys_Presentation.Controllers
                 ViewBag.Saida = new SelectList(saida, "Value", "Text");
 
                 // Verifica se tem contrato assinado
-                String nomeArq = "Contrato_Locacao" + pac.PACI_NM_NOME + "_" + item.LOCA_GU_GUID + ".pdf";
-                String caminho = "/Imagens/" + idAss.ToString() + "/Locacao/" + item.LOCA_CD_ID.ToString() + "/Assinado/";
-                String filePath = Path.Combine(Server.MapPath(caminho), nomeArq);
-                Boolean existe = System.IO.File.Exists(filePath);
-                if (!existe)
+                Int32 existe = 1;
+                if (item.LOCA_IN_CONTRATO_ASSINA == 0 || item.LOCA_IN_CONTRATO_ASSINA == null)
                 {
-                    Session["MensLocacao"] = 88;
-                    if ((Int32)Session["VoltaLocacao"] == 2)
-                    {
-                        return RedirectToAction("VoltarAnexoLocacao");
-                    }
-                    return RedirectToAction("MontarTelaLocacao");
+                    existe = 0;
                 }
 
                 // Prepara view
                 Session["LocacaoAntes"] = item;
                 LocacaoViewModel vm = Mapper.Map<LOCACAO, LocacaoViewModel>(item);
                 vm.LOCA_DT_APROVACAO = DateTime.Today.Date;
-                vm.CONTRATO_ASSINA = existe ? "Sim" : "Não";
+                vm.CONTRATO_ASSINA = existe == 1 ? "Sim" : "Não";
                 return View(vm);
             }
             catch (Exception ex)
@@ -12980,13 +13051,17 @@ namespace GEDSys_Presentation.Controllers
                     }
 
                     // Mensages do CRUD
-                    Session["MsgCRUD"] = "A Locação de " + prod.PROD_NM_NOME.ToUpper() + " para " + pac.PACI_NM_NOME.ToUpper() + " - foi aprovada com sucesso.";
-                    Session["MensLocacao"] = 61;
+                    String fraseCRUD = "A Locação de " + prod.PROD_NM_NOME.ToUpper() + " para " + pac.PACI_NM_NOME.ToUpper() + " - foi aprovada com sucesso.";
                     if (item.LOCA_IN_ESTOQUE == 0)
                     {
-                        Session["MsgCRUD1"] = "Não foi feita a saída no estoque para " + prod.PROD_NM_NOME.ToUpper() + " referente à locação de " + pac.PACI_NM_NOME.ToUpper() + " - Deve ser feita saída manual.";
-                        Session["MensProduto"] = 62;
+                        fraseCRUD += "Não foi feita a saída do estoque para " + prod.PROD_NM_NOME.ToUpper() + " referente à locação de " + pac.PACI_NM_NOME.ToUpper() + " - Deverá ser feita saída manual.";
                     }
+                    else
+                    {
+                        fraseCRUD += "O estoque d " + prod.PROD_NM_NOME.ToUpper() + " referente à locação de " + pac.PACI_NM_NOME.ToUpper() + " foi atualizado automaticamente.";
+                    }
+                    Session["MsgCRUD"] = fraseCRUD;
+                    Session["MensLocacao"] = 61;
 
                     // Retorno
                     listaMaster = new List<LOCACAO>();
@@ -13681,19 +13756,29 @@ namespace GEDSys_Presentation.Controllers
                     pdfDoc.Add(line1);
 
                     // Area de Assinatura do paciente
+                    line1 = new Paragraph("  ");
+                    pdfDoc.Add(line1);
                     Chunk chunk2 = new Chunk(dataContrato, FontFactory.GetFont("Arial", 9, Font.NORMAL, BaseColor.BLACK));
-                    pdfDoc.Add(chunk2);
+                    Paragraph pNome1 = new Paragraph(chunk2);
+                    pNome1.Alignment = Element.ALIGN_CENTER; // Parâmetro de centralização
+                    pdfDoc.Add(pNome1);
                     line1 = new Paragraph("  ");
                     pdfDoc.Add(line1);
                     line1 = new Paragraph("  ");
+                    // 1. Centralizando a linha de assinatura
+                    line1 = new Paragraph("_____________________________________________________________");
+                    line1.Alignment = Element.ALIGN_CENTER; // Parâmetro de centralização
                     pdfDoc.Add(line1);
-                    line1 = new Paragraph("_____________________________________________________________  ");
-                    pdfDoc.Add(line1);
-                    Chunk chunk3 = new Chunk(paciente.PACI_NM_NOME, FontFactory.GetFont("Arial", 9, Font.BOLD, BaseColor.BLACK));
-                    pdfDoc.Add(chunk3);
+
+                    // 2. Centralizando o nome do paciente
+                    // Nota: Criamos um Paragraph para conter o Chunk, pois Paragraph aceita o Alinhamento
+                    Chunk chunk3 = new Chunk(paciente.PACI_NM_NOME.ToUpper(), FontFactory.GetFont("Arial", 9, Font.NORMAL, BaseColor.BLACK));
+                    Paragraph pNome = new Paragraph(chunk3);
+                    pNome.Alignment = Element.ALIGN_CENTER; // Parâmetro de centralização
+                    pdfDoc.Add(pNome);
                     line1 = new Paragraph("  ");
                     pdfDoc.Add(line1);
-                    line1 = new Paragraph("=========================================================================");
+                    line1 = new Paragraph("=============================================================================");
                     pdfDoc.Add(line1);
 
                     // Dados do paciente
@@ -14321,19 +14406,29 @@ namespace GEDSys_Presentation.Controllers
                     pdfDoc.Add(line1);
 
                     // Area de Assinatura do paciente
+                    line1 = new Paragraph("  ");
+                    pdfDoc.Add(line1);
                     Chunk chunk2 = new Chunk(dataContrato, FontFactory.GetFont("Arial", 9, Font.NORMAL, BaseColor.BLACK));
-                    pdfDoc.Add(chunk2);
+                    Paragraph pNome1 = new Paragraph(chunk2);
+                    pNome1.Alignment = Element.ALIGN_CENTER; // Parâmetro de centralização
+                    pdfDoc.Add(pNome1);
                     line1 = new Paragraph("  ");
                     pdfDoc.Add(line1);
                     line1 = new Paragraph("  ");
+                    // 1. Centralizando a linha de assinatura
+                    line1 = new Paragraph("_____________________________________________________________");
+                    line1.Alignment = Element.ALIGN_CENTER; // Parâmetro de centralização
                     pdfDoc.Add(line1);
-                    line1 = new Paragraph("_____________________________________________________________  ");
-                    pdfDoc.Add(line1);
-                    Chunk chunk3 = new Chunk(paciente.PACI_NM_NOME, FontFactory.GetFont("Arial", 9, Font.BOLD, BaseColor.BLACK));
-                    pdfDoc.Add(chunk3);
+
+                    // 2. Centralizando o nome do paciente
+                    // Nota: Criamos um Paragraph para conter o Chunk, pois Paragraph aceita o Alinhamento
+                    Chunk chunk3 = new Chunk(paciente.PACI_NM_NOME.ToUpper(), FontFactory.GetFont("Arial", 9, Font.NORMAL, BaseColor.BLACK));
+                    Paragraph pNome = new Paragraph(chunk3);
+                    pNome.Alignment = Element.ALIGN_CENTER; // Parâmetro de centralização
+                    pdfDoc.Add(pNome);
                     line1 = new Paragraph("  ");
                     pdfDoc.Add(line1);
-                    line1 = new Paragraph("=========================================================================");
+                    line1 = new Paragraph("=============================================================================");
                     pdfDoc.Add(line1);
 
                     // Dados do paciente
@@ -15206,15 +15301,23 @@ namespace GEDSys_Presentation.Controllers
                 line1 = new Paragraph("  ");
                 pdfDoc.Add(line1);
                 Chunk chunk2 = new Chunk(dataContrato, FontFactory.GetFont("Arial", 9, Font.NORMAL, BaseColor.BLACK));
-                pdfDoc.Add(chunk2);
+                Paragraph pNome1 = new Paragraph(chunk2);
+                pNome1.Alignment = Element.ALIGN_CENTER; // Parâmetro de centralização
+                pdfDoc.Add(pNome1);
                 line1 = new Paragraph("  ");
                 pdfDoc.Add(line1);
                 line1 = new Paragraph("  ");
+                // 1. Centralizando a linha de assinatura
+                line1 = new Paragraph("_____________________________________________________________");
+                line1.Alignment = Element.ALIGN_CENTER; // Parâmetro de centralização
                 pdfDoc.Add(line1);
-                line1 = new Paragraph("_____________________________________________________________  ");
-                pdfDoc.Add(line1);
-                Chunk chunk3 = new Chunk(paciente.PACI_NM_NOME, FontFactory.GetFont("Arial", 9, Font.NORMAL, BaseColor.BLACK));
-                pdfDoc.Add(chunk3);
+
+                // 2. Centralizando o nome do paciente
+                // Nota: Criamos um Paragraph para conter o Chunk, pois Paragraph aceita o Alinhamento
+                Chunk chunk3 = new Chunk(paciente.PACI_NM_NOME.ToUpper(), FontFactory.GetFont("Arial", 9, Font.NORMAL, BaseColor.BLACK));
+                Paragraph pNome = new Paragraph(chunk3);
+                pNome.Alignment = Element.ALIGN_CENTER; // Parâmetro de centralização
+                pdfDoc.Add(pNome);
                 line1 = new Paragraph("  ");
                 pdfDoc.Add(line1);
                 line1 = new Paragraph("=============================================================================");
@@ -15894,15 +15997,23 @@ namespace GEDSys_Presentation.Controllers
                 line1 = new Paragraph("  ");
                 pdfDoc.Add(line1);
                 Chunk chunk2 = new Chunk(dataContrato, FontFactory.GetFont("Arial", 9, Font.NORMAL, BaseColor.BLACK));
-                pdfDoc.Add(chunk2);
+                Paragraph pNome1 = new Paragraph(chunk2);
+                pNome1.Alignment = Element.ALIGN_CENTER; // Parâmetro de centralização
+                pdfDoc.Add(pNome1);
                 line1 = new Paragraph("  ");
                 pdfDoc.Add(line1);
                 line1 = new Paragraph("  ");
+                // 1. Centralizando a linha de assinatura
+                line1 = new Paragraph("_____________________________________________________________");
+                line1.Alignment = Element.ALIGN_CENTER; // Parâmetro de centralização
                 pdfDoc.Add(line1);
-                line1 = new Paragraph("_____________________________________________________________  ");
-                pdfDoc.Add(line1);
-                Chunk chunk3 = new Chunk(paciente.PACI_NM_NOME, FontFactory.GetFont("Arial", 9, Font.NORMAL, BaseColor.BLACK));
-                pdfDoc.Add(chunk3);
+
+                // 2. Centralizando o nome do paciente
+                // Nota: Criamos um Paragraph para conter o Chunk, pois Paragraph aceita o Alinhamento
+                Chunk chunk3 = new Chunk(paciente.PACI_NM_NOME.ToUpper(), FontFactory.GetFont("Arial", 9, Font.NORMAL, BaseColor.BLACK));
+                Paragraph pNome = new Paragraph(chunk3);
+                pNome.Alignment = Element.ALIGN_CENTER; // Parâmetro de centralização
+                pdfDoc.Add(pNome);
                 line1 = new Paragraph("  ");
                 pdfDoc.Add(line1);
                 line1 = new Paragraph("=============================================================================");
@@ -17687,7 +17798,7 @@ namespace GEDSys_Presentation.Controllers
                     }
                     if ((Int32)Session["MensLocacao"] == 9)
                     {
-                        String frase = CRMSys_Base.ResourceManager.GetString("M0727", CultureInfo.CurrentCulture) + " " + pac.PACI_NM_NOME.ToUpper();
+                        String frase = CRMSys_Base.ResourceManager.GetString("M0727", CultureInfo.CurrentCulture);
                         ModelState.AddModelError("", frase);
                     }
                 }
@@ -17809,6 +17920,128 @@ namespace GEDSys_Presentation.Controllers
         }
 
         [HttpPost]
+        public async Task<ActionResult> UploadFileLocacaoContratoBlobOld(HttpPostedFileBase file)
+        {
+            try
+            {
+                // Inicializa
+                if ((String)Session["Ativa"] == null)
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+                Int32 idNot = (Int32)Session["IdLocacao"];
+                Int32 idPac = (Int32)Session["IdPaciente"];
+                Int32 idAss = (Int32)Session["IdAssinante"];
+
+                // Recupera dados
+                LOCACAO item = baseApp.GetItemById(idNot);
+                PACIENTE pac = pacApp.GetItemById(idPac);
+                USUARIO usu = usuApp.GetItemById(pac.USUA_CD_ID.Value);
+
+                // Criticas
+                if (file == null)
+                {
+                    Session["MensLocacao"] = 5;
+                    return RedirectToAction("CarregarContrato");
+                }
+
+                // Critica tamanho nome
+                var fileName = Path.GetFileName(file.FileName);
+                if (fileName.Length > 250)
+                {
+                    Session["MensLocacao"] = 6;
+                    return RedirectToAction("CarregarContrato");
+                }
+
+                // Critica tamanho arquivo
+                var fileSize = file.ContentLength;
+                if (fileSize > 50000000)
+                {
+                    Session["MensLocacao"] = 7;
+                    return RedirectToAction("CarregarContrato");
+                }
+
+                //Recupera tipo de arquivo
+                extensao = Path.GetExtension(fileName).ToUpper();
+                if (extensao != ".PDF")
+                {
+                    Session["MensLocacao"] = 8;
+                    return RedirectToAction("CarregarContrato");
+                }
+
+                // Verifica exatidão do nome
+                String nome = "Contrato_Locacao_" + pac.PACI_NM_NOME + "_" + item.LOCA_GU_GUID + "_Assinado.pdf";
+                if (fileName.ToUpper() != nome.ToUpper())
+                {
+                    Session["MensLocacao"] = 9;
+                    return RedirectToAction("CarregarContrato");
+                }
+
+                // 1. DEFINIÇÃO DO CAMINHO (Mesmo para Local e Azure)
+                // Removida a barra inicial para o Azure não criar uma pasta raiz vazia
+                String caminhoRelativo = "Imagens/" + idAss.ToString() + "/Locacao/" + item.LOCA_CD_ID.ToString() + "/Assinado/";
+                String caminhoLocal = Server.MapPath("~/" + caminhoRelativo);
+                String fullPathLocal = Path.Combine(caminhoLocal, fileName);
+
+                // 3. CÓPIA PARA O AZURE BLOB STORAGE
+                try
+                {
+                    // Reinicia o ponteiro do stream para o início após a cópia local
+                    file.InputStream.Position = 0;
+
+                    CONFIGURACAO conf = CarregaConfiguracaoGeral();
+                    string connString = conf.CONF_NM_STORAGE_CONN;
+                    string containerName = conf.CONF_NM_STORAGE_CONTAINER;
+
+                    var blobServiceClient = new Azure.Storage.Blobs.BlobServiceClient(connString);
+                    var containerClient = blobServiceClient.GetBlobContainerClient(containerName);
+
+                    // O nome do blob no Azure incluirá toda a estrutura de pastas
+                    string blobName = caminhoRelativo + fileName;
+                    var blobClient = containerClient.GetBlobClient(blobName);
+
+                    // Upload para o Azure (Idempotente: Se já existe, sobrescreve com true)
+                    await blobClient.UploadAsync(file.InputStream, overwrite: true);
+                }
+                catch (Exception exAzure)
+                {
+                    Session["MsgCRUD"] = "Erro na sincronização: " + exAzure.Message;
+                    Session["MensPaciente"] = 61;
+                    return RedirectToAction("VoltarAnexoPagamento");
+                }
+
+                // Atualiza locacao
+                item.LOCA_IN_CONTRATO_ASSINA = 1;
+                Int32 volta = baseApp.ValidateEdit(item, item, usu);
+
+                // Mensagem do CRUD
+                Session["MsgCRUD"] = "O contrato de locação assinado de " + pac.PACI_NM_NOME.ToUpper() + " foi anexado com sucesso";
+                Session["MensLocacao"] = 91;
+                Session["MensArea"] = 61;
+
+                // Finaliza
+                Session["NivelLocacao"] = 1;
+                Session["LocacaoAlterada"] = 1;
+                if ((Int32)Session["VoltaContrato"] == 2)
+                {
+                    return RedirectToAction("VoltarVerLocacao", "AreaPaciente");
+                }
+                return RedirectToAction("VoltarEditarLocacao");
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Locacao";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Locacao", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return RedirectToAction("TrataExcecao", "BaseAdmin");
+            }
+        }
+
+        [HttpPost]
         public async Task<ActionResult> UploadFileLocacaoContratoBlob(HttpPostedFileBase file)
         {
             try
@@ -17859,7 +18092,7 @@ namespace GEDSys_Presentation.Controllers
                 }
 
                 // Verifica exatidão do nome
-                String nome = "Contrato_Locacao" + pac.PACI_NM_NOME + "_" + item.LOCA_GU_GUID + ".pdf";
+                String nome = "Contrato_Locacao_" + pac.PACI_NM_NOME + "_" + item.LOCA_GU_GUID + "_Assinado.pdf";
                 if (fileName.ToUpper() != nome.ToUpper())
                 {
                     Session["MensLocacao"] = 9;

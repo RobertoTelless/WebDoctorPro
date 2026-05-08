@@ -72,7 +72,34 @@
         </ol>
         <br />
     </div>
-
+    <div class="row">
+        <div class="form-group" style=" margin-left: 15px; margin-right: 0px;">
+            @* --- INÍCIO DA AJUDA CONTEXTUAL --- *@
+            <details class="ajuda-contextual">
+                <summary><i class="fa fa-info-circle text-info"></i> Resumo das funcionalidades desta página</summary>
+                <div class="well well-sm">
+                    <p>Essa é a página da de alteração de informações de uma locação do <b>WebDoctorPro</b>. Nela você poderá:</p>
+                    <ol>
+                        <li>Permite a consulta e alteração de informações de locações cadastradas.</li>
+                        <li>Permite anexar arquivos á locação.</li>
+                        <li>Permite excluir anexos vinculados à locação.</li>
+                        <li>Permite a impressão do contrato de locação em formato PDF.</li>
+                        <li>Permite a impressão do distrato de locação em formato PDF.</li>
+                        <li>Permite a visualização do Histórico da locação.</li>
+                        <li>Permite acessar a página de cancelamento da locação.</li>
+                        <li>Permite acessar a página de aprovação da locação.</li>
+                        <li>Permite incluir o contrato assinado pelo contratante (upload).</li>
+                        <li>Permite a visualização das parcelas da locação.</li>
+                        <li>Permite acessar a página de alteração e quitação das parcelas da locação.</li>
+                        <li>Permite a visualização as ocorrências cadastradas para a locação.</li>
+                        <li>Permite a visualização, alteração e exclusão das anotações da locação.</li>
+                        <li>Permite a inclusão de uma nova anotação da locação.</li>
+                    </ol>
+                </div>
+            </details>
+            @* --- FIM DA AJUDA CONTEXTUAL --- *@
+        </div>
+    </div>
     <div class="row">
         <div class="col-lg-12 col-md-12 col-xs-12">
             <div class="col-lg-12 col-md-12 col-xs-12 ibox float-e-margins">
@@ -93,37 +120,76 @@
                     }
 
                     <div class="row">
-                        <div class="col-lg-2">
-                            <div class="widget style1 navy-bg">
-                                <div class="row vertical-align">
-                                    <div class="col-xs-2">
-                                        <i class="fa fa-check fa-3x"></i>
-                                    </div>
-                                    <div class="col-xs-9 text-right">
-                                        @if (Model.LOCA_IN_STATUS == 1)
-	                                    {
-                                            <h3 class="font-normal">Ativa</h3>
-                                        }
-                                        else if (Model.LOCA_IN_STATUS == 2)
-                                        {
-                                            <h3 class="font-normal">Encerrada</h3>
-                                        }
-                                        else if (Model.LOCA_IN_STATUS == 3)
-                                        {
-                                            <h3 class="font-normal">Vencida</h3>
-                                        }
-                                        else if (Model.LOCA_IN_STATUS == 0)
-                                        {
-                                            <h3 class="font-normal">Pendente</h3>
-                                        }
-                                        else
-                                        {
+                        @if (Model.LOCA_IN_STATUS == 4)
+                        {
+                            <div class="col-lg-2">
+                                <div class="widget style1 red-bg">
+                                    <div class="row vertical-align">
+                                        <div class="col-xs-2">
+                                            <i class="fa fa-times fa-3x"></i>
+                                        </div>
+                                        <div class="col-xs-9 text-right">
                                             <h3 class="font-normal">Cancelada</h3>
-                                        }
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                        }
+                        else if (Model.LOCA_IN_STATUS == 1)
+                        {
+                            <div class="col-lg-2">
+                                <div class="widget style1 navy-bg">
+                                    <div class="row vertical-align">
+                                        <div class="col-xs-2">
+                                            <i class="fa fa-check fa-3x"></i>
+                                        </div>
+                                        <div class="col-xs-9 text-right">
+                                            <h3 class="font-normal">Ativa</h3>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+
+                        }
+                        else if (Model.LOCA_IN_STATUS == 0)
+                        {
+                            <div class="col-lg-2">
+                                <div class="widget style1 blue-bg">
+                                    <div class="row vertical-align">
+                                        <div class="col-xs-2">
+                                            <i class="fa fa-check fa-3x"></i>
+                                        </div>
+                                        <div class="col-xs-9 text-right">
+                                            <h3 class="font-normal">Pendente</h3>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="col-lg-2">
+                                <div class="widget style1 yellow-bg">
+                                    <div class="row vertical-align">
+                                        <div class="col-xs-2">
+                                            <i class="fa fa-check fa-3x"></i>
+                                        </div>
+                                        <div class="col-xs-9 text-right">
+                                            @if (Model.LOCA_IN_STATUS == 2)
+                                            {
+                                                <h3 class="font-normal">Encerrada</h3>
+                                            }
+                                            else if (Model.LOCA_IN_STATUS == 3)
+                                            {
+                                                <h3 class="font-normal">Vencida</h3>
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+
                         <div class="col-lg-3">
                             <div class="widget style1 yellow-bg">
                                 <div class="row vertical-align">
@@ -136,6 +202,7 @@
                                 </div>
                             </div>
                         </div>
+
                         <div class="col-lg-3">
                             <div class="widget style1 blue-bg">
                                 <div class="row vertical-align">
@@ -143,7 +210,7 @@
                                         <i class="fa fa-refresh fa-3x"></i>
                                     </div>
                                     <div class="col-xs-9 text-right">
-                                        <h3 class="font-normal">Estoque Atualizado: @Model.Estoque</h3>
+                                        <h3 class="font-normal">Contrato Assinado: @Model.ContratoAssinado</h3>
                                     </div>
                                 </div>
                             </div>
@@ -200,12 +267,17 @@
                         {
                             if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_LOCACAO_ALTERAR == 1)
                             {
-                                if (Model.LOCA_IN_CONTRATO_ASSINA == 0)
-                                {
-                                    <a href="@Url.Action("CarregarContrato", "Locacao")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Inclui o contrato de locação assinado" class="btn btn-sm btn-primary btn-loading" id="emp" OnClick = "Fade()">Contrato Assinado</a>                
-                                }
+                                <a href="@Url.Action("CarregarContrato", "Locacao")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Importar o contrato de locação assinado" class="btn btn-sm btn-primary btn-loading" id="emp" OnClick = "Fade()">Contrato Assinado</a>                
                             }
                         }
+                        @if (Model.LOCA_IN_STATUS == 4)
+                        {
+                            if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_LOCACAO_ENCERRAR == 1)
+                            {
+                                <a href="@Url.Action("CarregarDistrato", "Locacao")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Importar o distrato da locação assinado" class="btn btn-sm btn-primary btn-loading" id="emp" OnClick = "Fade()">Distrato Assinado</a>                
+                            }
+                        }
+
                         @if ((Int32)Session["TipoLocacao"] == 1)
                         {
                             @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarAnexoPaciente", controller: "Paciente", htmlAttributes: new { @class = "btn-loading" })
@@ -1002,8 +1074,6 @@
                                                             </div>
                                                         </div>
 
-
-
                                                         if (listaAnexos.Count > 0)
                                                         {
                                                             <div id="sectionList" class="view-section active">
@@ -1062,7 +1132,7 @@
                         
                                                                                     @if (cond.LOAX_IN_TIPO == 1) // IMAGEM - Exibe miniatura
                                                                                     {
-                                                                                        <a href="@Url.Action("VerAnexoPagamento", "Financeiro", new { id = cond.LOAX_CD_ID })" title="Visualizar Imagem">
+                                                                                        <a href="@Url.Action("VerAnexoLocacao", "Locacao", new { id = cond.LOAX_CD_ID })" title="Visualizar Imagem">
                                                                                             <img src="@("https://rtistoragemain.blob.core.windows.net/rti-datacontainer/" + cond.LOAX_AQ_ARQUIVO.Replace("~/", "").Replace("~", ""))" 
                                                                                                     class="img-thumbnail" 
                                                                                                     style="width: 70px; height: 70px; object-fit: cover; border: 1px solid #eee;"
@@ -1071,7 +1141,7 @@
                                                                                     }
                                                                                     else if (cond.LOAX_IN_TIPO == 2) // VÍDEO - Ícone de câmera
                                                                                     {
-                                                                                        <a href="@Url.Action("VerAnexoPagamento", "Financeiro", new { id = cond.LOAX_CD_ID })" title="Visualizar Vídeo">
+                                                                                        <a href="@Url.Action("VerAnexoLocacao", "Locacao", new { id = cond.LOAX_CD_ID })" title="Visualizar Vídeo">
                                                                                             <i class="fa fa-video-camera fa-4x text-navy"></i>
                                                                                         </a>
                                                                                     }
@@ -1082,6 +1152,12 @@
 
                                                                                         <a href="@urlAzurePdf" target="_blank" title="Visualizar PDF">
                                                                                             <i class="fa fa-file-pdf-o fa-4x text-danger"></i>
+                                                                                        </a>
+                                                                                    }
+                                                                                    else if (cond.LOAX_IN_TIPO == 4) // AUDIO
+                                                                                    {
+                                                                                        <a href="@Url.Action("VerAnexoLocacaoAudio", "Locacao", new { id = cond.LOAX_CD_ID })" title="Audio">
+                                                                                            <i class="fa fa-microphone fa-4x text-navy"></i>
                                                                                         </a>
                                                                                     }
                                                                                     else // PADRÃO - Ícone de arquivo genérico
@@ -1100,7 +1176,7 @@
                                                                                     <span style="cursor:pointer;" onclick="PrepararExclusaoAnexo('/Locacao/ExcluirAnexoLocacao/@cond.LOAX_CD_ID')" title="Excluir">
                                                                                         <i class="fa fa-trash-o fa-lg text-navy"></i>
                                                                                     </span>
-                                                                                    <a href="@Url.Action("DownloadLocacao", "Paciente", new { id = cond.LOAX_CD_ID })" title="Download">
+                                                                                    <a href="@Url.Action("DownloadLocacao", "Locacao", new { id = cond.LOAX_CD_ID })" title="Download">
                                                                                         <i class="fa fa-download fa-lg text-navy"></i>
                                                                                     </a>
                                                                                 </div>
@@ -1149,8 +1225,6 @@
                                                                 </div>
                                                             </div>
                                                         </div>
-
-
 
                                                         if (listaAnexos.Count > 0)
                                                         {
@@ -1230,6 +1304,12 @@
 
                                                                                         <a href="@urlAzurePdf" target="_blank" title="Visualizar PDF">
                                                                                             <i class="fa fa-file-pdf-o fa-4x text-danger"></i>
+                                                                                        </a>
+                                                                                    }
+                                                                                    else if (cond.LOAX_IN_TIPO == 4) // AUDIO
+                                                                                    {
+                                                                                        <a href="@Url.Action("VerAnexoLocacaoAudio", "Locacao", new { id = cond.LOAX_CD_ID })" title="Audio">
+                                                                                            <i class="fa fa-microphone fa-4x text-navy"></i>
                                                                                         </a>
                                                                                     }
                                                                                     else // PADRÃO - Ícone de arquivo genérico
@@ -1960,6 +2040,39 @@
             transform: scale(1.1) !important;
         }
 
+        .toggle-container {
+                background-color: #ebf9eb; /* Verde bem claro */
+                border-radius: 20px;
+                display: inline-flex;
+                padding: 4px;
+                margin-bottom: 20px;
+                border: 1px solid #d0e9d0;
+            }
+
+            .toggle-option {
+                padding: 6px 20px;
+                border-radius: 18px;
+                cursor: pointer;
+                font-weight: bold;
+                color: #5cb85c; /* Letra Verde */
+                transition: all 0.3s ease;
+                user-select: none;
+            }
+
+            .toggle-option.active {
+                background-color: #ffffff; /* Fundo branco da opção ativa */
+                color: #28a745; 
+                box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            }
+
+            /* Controle de visibilidade das seções */
+            .view-section {
+                display: none !important;
+            }
+
+            .view-section.active {
+                display: block !important;
+            }
     </style>
     <style>
         /* Estilo Base */
@@ -2316,7 +2429,20 @@
             }
         });
     </script>*@
+    <script>
+        $(document).ready(function () {
+            $('.toggle-option').click(function () {
+                // Remove 'active' de todos os botões e adiciona no clicado
+                $('.toggle-option').removeClass('active');
+                $(this).addClass('active');
 
+                // Esconde todas as seções e mostra a selecionada
+                var targetSection = $(this).data('target');
+                $('.view-section').removeClass('active');
+                $('#' + targetSection).addClass('active');
+            });
+        });
+    </script>
 
     <script type="text/javascript">
         // 1. FUNÇÃO GLOBAL (Define O QUE o alerta faz)

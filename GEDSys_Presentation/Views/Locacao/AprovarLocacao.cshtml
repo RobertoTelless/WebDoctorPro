@@ -21,6 +21,24 @@
         </ol>
         <br />
     </div>
+    <div class="row">
+        <div class="form-group" style=" margin-left: 15px; margin-right: 0px;">
+            @* --- INÍCIO DA AJUDA CONTEXTUAL --- *@
+            <details class="ajuda-contextual">
+                <summary><i class="fa fa-info-circle text-info"></i> Resumo das funcionalidades desta página</summary>
+                <div class="well well-sm">
+                    <p>Essa é a página de aprovação de locações do <b>WebDoctorPro</b>. Nela você poderá:</p>
+                    <ol>
+                        <li>Aprovar uma locação de equipamento</li>
+                        <li>Incluir observações para a aprovação</li>
+                        <li>Selecionar se o estoque do produto sendo locado vai ser baixado automaticamente.</li>
+                    </ol>
+                </div>
+            </details>
+            @* --- FIM DA AJUDA CONTEXTUAL --- *@
+        </div>
+    </div>
+
     <div class="modal inmodal fade" id="modalConfirmacaoAprovacao" tabindex="-1" role="dialog" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
@@ -178,6 +196,7 @@
                                                     @Html.HiddenFor(m => m.LOCA_AQ_ARQUIVO_QRCODE)
                                                     @Html.HiddenFor(m => m.COLO_CD_ID)
                                                     @Html.HiddenFor(m => m.LOCA_CD_DISTRATO_ID)
+                                                    @Html.HiddenFor(m => m.LOCA_IN_CONTRATO_ASSINA)
                                                     Data Inicial
                                                     @Html.TextBoxFor(m => m.LOCA_DT_INICIO, "{0:dd/MM/yyyy}", new { @class = "form-control", @tabindex = "-1", @readonly = "readonly" })
                                                 </div>
