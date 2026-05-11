@@ -9,6 +9,33 @@
 }
 
 <div class="wrapper wrapper-content animated fadeInRight">
+    <div class="modal inmodal fade" id="modalConfirmacaoExclusaoOcorrencia" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header" style="position: relative; padding: 30px 15px;">
+                    <img src="@Url.Content("~/Images/Prontuario/prontuario_icon_3.png?v=1.1")" 
+                         style="position: absolute; left: 15px; top: 15px; width: 40px; height: auto;" 
+                         alt="Ícone" />
+
+                    <i class="fa fa-trash-o modal-icon text-danger" style="display: block;"></i>
+                    <h4 class="modal-title">Confirmação de Exclusão de Ocorrência</h4>
+                    <small class="font-bold">WebDoctorPro - Gestão de Locação</small>
+                </div>
+        
+                <div class="modal-body text-center">
+                    <h3>Confirma a exclusão desta ocorrência da Locação?</h3>
+                    <p>Esta ação excluirá a ocorrência selecionada.</p>
+                </div>
+        
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-white" data-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-danger" id="btnConfirmarExclusaoOcorrenciaSubmit">Confirmar Exclusão</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
     <div class="modal inmodal fade" id="modalConfirmacaoExclusaoAnexo" tabindex="-1" role="dialog" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content animated bounceInRight">
@@ -1819,7 +1846,10 @@
                                                                                 {
                                                                                     if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_LOCACAO_ALTERAR == 1)
                                                                                     {
-                                                                                        <span style="color: #337ab7; cursor:pointer;" alt="Desativar" class="tbl-link fa-lg fa fa-trash-o btn-loading" onclick="ShowModalExcluirOcorrencia('/Locacao/ExcluirLocacaoOcorrencia/@cond.LOOC_CD_ID')" title="Excluir"></span>
+                                                                                        <span style="color: #337ab7; cursor:pointer;" 
+                                                                                              class="tbl-link fa-lg fa fa-trash-o" 
+                                                                                              onclick="ChamarModalExcluirOcorrencia('@cond.LOOC_CD_ID')" 
+                                                                                              title="Excluir"></span>
                                                                                     }
                                                                                 }
                                                                             }
@@ -1918,7 +1948,10 @@
                                                                                 {
                                                                                     if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_LOCACAO_ALTERAR == 1)
                                                                                     {
-                                                                                        <span style="color: #337ab7; cursor:pointer;" alt="Desativar" class="tbl-link fa-lg fa fa-trash-o btn-loading" onclick="ShowModalExcluirOcorrencia('/Locacao/ExcluirLocacaoOcorrencia/@cond.LOOC_CD_ID')" title="Excluir"></span>
+                                                                                        <span style="color: #337ab7; cursor:pointer;" 
+                                                                                              class="tbl-link fa-lg fa fa-trash-o" 
+                                                                                              onclick="ChamarModalExcluirOcorrencia('@cond.LOOC_CD_ID')" 
+                                                                                              title="Excluir"></span>
                                                                                     }
                                                                                 }
                                                                             }
@@ -2566,7 +2599,37 @@
         });
     </script>
 
+    <script type="text/javascript">
+        var locacaoIdParaExcluir = null;
 
+        function ChamarModalExcluirOcorrencia(id) {
+            locacaoIdParaExcluir = id;
+            $('#modalConfirmacaoExclusaoOcorrencia').modal('show');
+        }
+
+        $(document).ready(function () {
+            $('#btnConfirmarExclusaoOcorrenciaSubmit').click(function () {
+                if (locacaoIdParaExcluir != null) {
+                    var $btn = $(this);
+                
+                    // Feedback visual
+                    $btn.prop('disabled', true).addClass('disabled');
+                    $btn.html('<i class="fa fa-spinner fa-spin"></i> Excluindo...');
+                
+                    $('#loadingIndicator').show();
+
+                    // Monta a URL e redireciona
+                    var urlFinal = '/Locacao/ExcluirLocacaoOcorrencia/' + locacaoIdParaExcluir;
+                    window.location.href = urlFinal;
+                }
+            });
+
+            // Limpeza de segurança ao fechar a modal
+            $('#modalConfirmacaoExclusaoOcorrencia').on('hidden.bs.modal', function () {
+                locacaoIdParaExcluir = null;
+            });
+        });
+    </script>
 
     @if (ViewBag.Message != null)
     {

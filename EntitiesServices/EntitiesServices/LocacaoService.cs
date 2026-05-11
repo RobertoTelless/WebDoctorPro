@@ -330,6 +330,7 @@ namespace ModelServices.EntitiesServices
                 try
                 {
                     item.LOCACAO = null;
+                    item.TIPO_OCORRENCIA = null;
                     LOCACAO_OCORRENCIA obj = _ocoRepository.GetById(item.LOOC_CD_ID);
                     _ocoRepository.Detach(obj);
                     _ocoRepository.Update(item);

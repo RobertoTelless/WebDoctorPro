@@ -595,7 +595,7 @@ namespace GEDSys_Presentation.Controllers
                         return View(vm);
                     }
 
-                    // Configura serialização
+                    // Configura serialização   
                     JsonSerializerSettings settings = new JsonSerializerSettings
                     {
                         ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
@@ -5094,26 +5094,26 @@ namespace GEDSys_Presentation.Controllers
                 if (id == 1)
                 {
                     lista = (List<LOCACAO>)Session["ListaLocacaoAtiva"];
-                    titulo = "Locações - Ativa";
+                    titulo = "Locações - Ativas";
                 }
                 if (id == 2)
                 {
                     lista = (List<LOCACAO>)Session["ListaLocacaoEncerrada"];
-                    titulo = "Locações - Encerrada";
+                    titulo = "Locações - Encerradas";
                 }
                 if (id == 3)
                 {
                     lista = (List<LOCACAO>)Session["ListaLocacaoAtrasada"];
-                    titulo = "Locações - Atrasada";
+                    titulo = "Locações - Atrasadas";
                 }
                 if (id == 4)
                 {
                     lista = (List<LOCACAO>)Session["ListaLocacaoCancelada"];
-                    titulo = "Locações - Cancelada";
+                    titulo = "Locações - Canceladas";
                 }
                 if (id == 5)
                 {
-                    lista = (List<LOCACAO>)Session["ListaLocacao"];
+                    lista = (List<LOCACAO>)Session["ListaLocacaoPendente"];
                     titulo = "Locações - Pendentes";
                 }
                 lista = lista.OrderBy(p => p.PACIENTE.PACI_NM_NOME).ToList();
@@ -5235,6 +5235,10 @@ namespace GEDSys_Presentation.Controllers
                 if (id == 4)
                 {
                     table = new PdfPTable(new float[] { 150f, 180f, 80f, 70f, 70f, 70f, 70f, 160f, 50f });
+                }
+                if (id == 5)
+                {
+                    table = new PdfPTable(new float[] { 150f, 180f, 80f, 70f, 70f, 70f, 70f, 50f });
                 }
                 table.WidthPercentage = 100;
                 table.HorizontalAlignment = 0;
@@ -5670,7 +5674,7 @@ namespace GEDSys_Presentation.Controllers
                 Int32 voltaX = grava.GravaAcesso(usuario.USUA_CD_ID, usuario.ASSI_CD_ID, "LOCACAO_PENDENTES", "Locacao", "MontarTelaLocacaoPendentes");
 
                 // Abre view
-                Session["TipoLocacaoRel"] = 1;
+                Session["TipoLocacaoRel"] = 5;
                 Session["TipoLocacao"] = 2;
                 Session["MensLocacao"] = null;
                 Session["ListaLog"] = null;
@@ -13215,6 +13219,7 @@ namespace GEDSys_Presentation.Controllers
 
                     // Executa a operação
                     LOCACAO item = Mapper.Map<LocacaoViewModel, LOCACAO>(vm);
+                    Int32 locId = item.LOCA_CD_ID;
                     PACIENTE pac = pacApp.GetItemById(vm.PACI_CD_ID);
                     PRODUTO prod = prodApp.GetItemById(vm.PROD_CD_ID);
                     Session["ProdAntes"] = prod;
@@ -13282,6 +13287,36 @@ namespace GEDSys_Presentation.Controllers
                         est.PREH_DS_ORIGEM = "Encerramento de Locação";
                         est.MOEP_CD_ID = mov.MOEP_CD_ID;
                         Int32 voltaH = prodApp.ValidateCreateEstoqueHistorico(est, idAss);
+                    }
+
+                    // Trata parcelas
+                    LOCACAO loca = baseApp.GetItemById(locId);
+                    List<LOCACAO_PARCELA> parcelas = loca.LOCACAO_PARCELA.Where(p => p.LOPA_IN_ATIVO == 1).ToList();
+                    foreach (LOCACAO_PARCELA parc in parcelas)
+                    {
+                        LOCACAO_PARCELA nova = new LOCACAO_PARCELA();
+                        nova.LOCA_CD_ID = parc.LOCA_CD_ID;
+                        nova.LOPA_CD_ID = parc.LOPA_CD_ID;
+                        nova.LOPA_DS_DESCRICAO = parc.LOPA_DS_DESCRICAO;
+                        nova.LOPA_DT_DUMMY = parc.LOPA_DT_DUMMY;
+                        nova.LOPA_DT_PAGAMENTO = DateTime.Today.Date;
+                        nova.LOPA_DT_VENCIMENTO = parc.LOPA_DT_VENCIMENTO;
+                        nova.LOPA_IN_ATIVO = parc.LOPA_IN_ATIVO;
+                        nova.LOPA_IN_ATRASO = parc.LOPA_IN_ATRASO;
+                        nova.LOPA_IN_LANCAMENTO = parc.LOPA_IN_LANCAMENTO;
+                        nova.LOPA_IN_PACIENTE_DUMMY = parc.LOPA_IN_PACIENTE_DUMMY;
+                        nova.LOPA_IN_PARCELA = parc.LOPA_IN_PARCELA;
+                        nova.LOPA_IN_QUITADA = 1;
+                        nova.LOPA_IN_STATUS = parc.LOPA_IN_STATUS;
+                        nova.LOPA_NM_PARCELAS = parc.LOPA_NM_PARCELAS;
+                        nova.LOPA_NR_PACELAS = parc.LOPA_NR_PACELAS;
+                        nova.LOPA_VL_DESCONTO = parc.LOPA_VL_DESCONTO;
+                        nova.LOPA_VL_JUROS = parc.LOPA_VL_JUROS;
+                        nova.LOPA_VL_TAXAS = parc.LOPA_VL_TAXAS;
+                        nova.LOPA_VL_VALOR = parc.LOPA_VL_VALOR;
+                        nova.LOPA_VL_VALOR_PAGO = parc.LOPA_VL_VALOR_PAGO;
+                        nova.ASSI_CD_ID = parc.ASSI_CD_ID;
+                        Int32 voltaP = baseApp.ValidateEditParcela(nova);
                     }
 
                     // Grava historico
@@ -16359,7 +16394,7 @@ namespace GEDSys_Presentation.Controllers
                 Session["MensLocacao"] = 61;
 
                 // Retorno
-                return RedirectToAction("MontarTelaLocacao");
+                return RedirectToAction("VoltarAnexoLocacao");
             }
             catch (Exception ex)
             {
@@ -19368,7 +19403,7 @@ namespace GEDSys_Presentation.Controllers
 
                 foreach (ModeloViewModel item in listaMes)
                 {
-                    cell = new PdfPCell(new Paragraph(CrossCutting.UtilitariosGeral.NomeMesAno(item.Nome), meuFont))
+                    cell = new PdfPCell(new Paragraph(item.Nome, meuFont))
                     {
                         VerticalAlignment = Element.ALIGN_MIDDLE,
                         HorizontalAlignment = Element.ALIGN_LEFT
@@ -19434,7 +19469,7 @@ namespace GEDSys_Presentation.Controllers
 
                 // Monta lista
                 List<LOCACAO_PARCELA> parcs = new List<LOCACAO_PARCELA>();
-                parcs = CarregarParcelas().Where(p => p.LOPA_DT_PAGAMENTO != null).ToList();
+                parcs = CarregarParcelas().Where(p => p.LOPA_DT_PAGAMENTO != null & p.LOCACAO.LOCA_IN_ATIVO == 1).ToList();
                 parcs = parcs.Where(p => p.LOPA_DT_PAGAMENTO.Value.Month == DateTime.Today.Month & p.LOPA_DT_PAGAMENTO.Value.Year == DateTime.Today.Year).ToList();
                 parcs = parcs.OrderBy(p => p.LOPA_DT_PAGAMENTO).ToList();
 
@@ -19760,7 +19795,7 @@ namespace GEDSys_Presentation.Controllers
                 // Monta lista
                 List<LOCACAO_PARCELA> parcs = new List<LOCACAO_PARCELA>();
                 List<LOCACAO_PARCELA> parcsLim = new List<LOCACAO_PARCELA>();
-                parcs = CarregarParcelas().ToList();
+                parcs = CarregarParcelas().Where(p => p.LOCACAO.LOCA_IN_ATIVO == 1).ToList();
                 List<DateTime> datasLocacao = parcs.Where(p => p.LOPA_DT_PAGAMENTO != null).Select(p => p.LOPA_DT_PAGAMENTO.Value.Date).Distinct().ToList();
                 datasLocacao.Sort((i, j) => i.Date.CompareTo(j.Date));
                 List<ModeloViewModel> listaMes = new List<ModeloViewModel>();
@@ -19932,7 +19967,7 @@ namespace GEDSys_Presentation.Controllers
                     total += item.ValorDec;
                     totalPag += item.ValorDec1;
 
-                    cell = new PdfPCell(new Paragraph(CrossCutting.UtilitariosGeral.NomeMesAno(item.Nome), meuFont))
+                    cell = new PdfPCell(new Paragraph(item.Nome, meuFont))
                     {
                         VerticalAlignment = Element.ALIGN_MIDDLE,
                         HorizontalAlignment = Element.ALIGN_LEFT
@@ -20052,7 +20087,7 @@ namespace GEDSys_Presentation.Controllers
 
                 // Monta lista
                 List<LOCACAO_PARCELA> parcs = new List<LOCACAO_PARCELA>();
-                parcs = CarregarParcelas().Where(p => p.LOPA_IN_ATRASO > 0 & p.LOPA_DT_PAGAMENTO == null & p.LOCACAO.LOCA_IN_STATUS == 1).ToList();
+                parcs = CarregarParcelas().Where(p => p.LOPA_IN_ATRASO > 0 & p.LOPA_DT_PAGAMENTO == null & p.LOCACAO.LOCA_IN_STATUS == 1 & p.LOCACAO.LOCA_IN_ATIVO == 1).ToList();
                 parcs = parcs.OrderByDescending(p => p.LOPA_IN_ATRASO).ToList();
 
                 // Cabeçalho
@@ -20361,6 +20396,11 @@ namespace GEDSys_Presentation.Controllers
                     Int32 numE = lista.Where(p => p.PACI_CD_ID == item.PACI__CD_ID & p.LOCA_IN_STATUS == 2).ToList().Count;
                     Int32 numP = lista.Where(p => p.PACI_CD_ID == item.PACI__CD_ID & p.LOCA_IN_STATUS == 0).ToList().Count;
 
+                    if (num == 0 & numC == 0 & numE == 0 & numP == 0)
+                    {
+                        continue;
+                    }
+
                     ModeloViewModel mod1 = new ModeloViewModel();
                     mod1.Nome = item.PACI_NM_NOME;
                     mod1.Valor = num;
@@ -20653,6 +20693,11 @@ namespace GEDSys_Presentation.Controllers
                     Int32 numC = lista.Where(p => p.PROD_CD_ID == item.PROD_CD_ID & p.LOCA_IN_STATUS == 4).ToList().Count;
                     Int32 numE = lista.Where(p => p.PROD_CD_ID == item.PROD_CD_ID & p.LOCA_IN_STATUS == 2).ToList().Count;
                     Int32 numP = lista.Where(p => p.PROD_CD_ID == item.PROD_CD_ID & p.LOCA_IN_STATUS == 0).ToList().Count;
+
+                    if (num == 0 & numC == 0 & numE == 0 & numP == 0)
+                    {
+                        continue;
+                    }
 
                     ModeloViewModel mod1 = new ModeloViewModel();
                     mod1.Nome = item.PROD_NM_NOME;

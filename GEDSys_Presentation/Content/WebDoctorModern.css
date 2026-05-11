@@ -1,0 +1,157 @@
+/* WebDoctorModern.css - Versão Estável para WebDoctorPro 2 */
+
+:root {
+    --primary-green: #2d6a4f;
+    --medium-green: #40916c;
+    --light-green: #b7e4c7;
+    --background-mint: #f8faf9;
+    --text-dark: #1b4332;
+    --accent-red: #c0392b;
+}
+
+body {
+    font-family: 'Open Sans', sans-serif;
+    background-color: var(--background-mint);
+    color: var(--text-dark);
+    overflow-x: hidden;
+}
+
+/* Navbar */
+.navbar-default {
+    background-color: rgba(255, 255, 255, 0.95) !important;
+    border-bottom: 2px solid var(--light-green) !important;
+    transition: all 0.4s;
+    padding: 10px 0;
+}
+
+.navbar-default.navbar-scroll {
+    padding: 5px 0;
+    box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+}
+
+.nav > li > a {
+    color: var(--primary-green) !important;
+    font-weight: 600;
+    transition: all 0.3s;
+}
+
+.nav > li > a:hover {
+    color: var(--medium-green) !important;
+    background: transparent !important;
+}
+
+/* Destaque para o link 'Solicitar Demonstração' (sem keyframes) */
+.pisca {
+    color: #fff !important;
+    background-color: var(--medium-green);
+    border-radius: 4px;
+    margin: 10px 5px;
+    padding: 8px 15px !important;
+}
+
+.pisca:hover {
+    background-color: var(--primary-green);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+/* Slider / Hero Section */
+#inSlider {
+    background: linear-gradient(135deg, #2d6a4f 0%, #1b4332 100%);
+    margin-top: 70px;
+    padding: 60px 0;
+}
+
+.carousel-caption h1 {
+    font-family: 'Playfair Display', serif !important;
+    font-size: 4.5rem !important;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+}
+
+/* Blocos de Funcionalidades */
+.services {
+    padding: 80px 0;
+}
+
+.services h2 {
+    color: var(--primary-green);
+    border-left: 4px solid var(--medium-green);
+    padding-left: 15px;
+    margin-bottom: 20px;
+    font-size: 1.5rem;
+}
+
+.navy-line {
+    border-bottom: 3px solid var(--medium-green) !important;
+    width: 80px;
+    margin: 20px auto;
+}
+
+/* Ícones e Destaques */
+.features-icon {
+    color: var(--medium-green);
+    font-size: 40px;
+    margin-bottom: 15px;
+}
+
+/* Planos de Preço */
+.pricing-plan {
+    background: #fff;
+    border: 1px solid var(--light-green);
+    border-radius: 12px;
+    list-style: none;
+    padding: 0;
+    margin-bottom: 20px;
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.pricing-plan:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+}
+
+.pricing-title {
+    background: var(--primary-green) !important;
+    color: white;
+    padding: 20px !important;
+    border-radius: 11px 11px 0 0;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.pricing-price {
+    padding: 20px;
+    font-size: 1.2em;
+    background: #f1f8f4;
+}
+
+.pricing-plan li {
+    padding: 12px;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+/* Timeline */
+.vertical-timeline-icon {
+    background: var(--medium-green) !important;
+}
+
+.navy-link {
+    color: var(--medium-green) !important;
+    font-weight: bold;
+    text-decoration: underline;
+}
+
+/* Ajustes Gerais */
+.gray-section {
+    background: #f0f4f2;
+    border-top: 1px solid var(--light-green);
+    border-bottom: 1px solid var(--light-green);
+}
+
+.btn-success {
+    background-color: var(--medium-green) !important;
+    border-color: var(--medium-green) !important;
+}
+
+.btn-success:hover {
+    background-color: var(--primary-green) !important;
+}

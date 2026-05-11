@@ -1182,6 +1182,7 @@
     <Content Include="Content\Custom.css" />
     <Content Include="Content\Epworth_Style.css" />
     <Content Include="Content\StopBang_style.css" />
+    <Content Include="Content\WebDoctorModern.css" />
     <Content Include="Content\style.css" />
     <Content Include="Content\themes\base\accordion.css" />
     <Content Include="Content\themes\base\all.css" />
@@ -5542,6 +5543,7 @@
     <Content Include="Views\Vacina\EditarVacina.cshtml" />
     <Content Include="Views\Noticia\VerNoticia.cshtml" />
     <Content Include="Views\Noticia\MontarTelaNoticiaQuadro.cshtml" />
+    <Content Include="Views\BaseAdmin\CarregarLandingPageNova.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="BaseAdmin\BaseConhecimento\" />

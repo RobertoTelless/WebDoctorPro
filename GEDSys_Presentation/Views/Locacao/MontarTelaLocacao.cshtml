@@ -4,6 +4,31 @@
 @{ Layout = "~/Views/Shared/_Layout_Admin.cshtml"; }
 <div class="wrapper wrapper-content animated fadeInRight">
     <div id="top"></div>
+    <div class="modal inmodal fade" id="modalConfirmacaoExclusao" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header" style="position: relative; padding: 30px 15px;">
+                    <img src="@Url.Content("~/Images/Prontuario/prontuario_icon_3.png?v=1.1")" 
+                         style="position: absolute; left: 15px; top: 15px; width: 40px; height: auto;" 
+                         alt="Ícone" />
+
+                    <i class="fa fa-trash-o modal-icon text-danger" style="display: block;"></i>
+                    <h4 class="modal-title">Confirmação de Exclusão</h4>
+                    <small class="font-bold">WebDoctorPro - Gestão de Locação</small>
+                </div>
+        
+                <div class="modal-body text-center">
+                    <h3>Confirma a exclusão desta Locação?</h3>
+                    <p>Esta ação excluirá a locação selecionada.</p>
+                </div>
+        
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-white" data-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-danger" id="btnConfirmarExclusaoSubmit">Confirmar Exclusão</button>
+                </div>
+            </div>
+        </div>
+    </div>
     <div id="containerModalDesc">
         <div class="modal fade" id="modalDesc" tabindex="-1" role="dialog" aria-labelledby="modalDesc" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered" role="document">
@@ -24,26 +49,26 @@
             </div>
         </div>
     </div>
-    <div class="modalContainer">
+    <!--<div class="modalContainer">
         <div id="modal" class="modal" tabindex="-1" role="dialog">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
-                    <div class="modal-header">
+                    <div class="modal-header">-->
                         @*titulo gerado dinamicamente*@
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <!--<button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
-                    <div class="modal-body">
+                    <div class="modal-body">-->
                         @*Gerado dinamicamente*@
-                    </div>
+                    <!--</div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
+    </div>-->
     <div class="page-title">
         <h3 class="title">Locação</h3>
         <br />
@@ -365,7 +390,12 @@
                                                         {
                                                             if (cond.LOCA_IN_STATUS == 0)
                                                             {
-                                                                <span style="color: #337ab7; cursor:pointer;" alt="Desativar" class="tbl-link fa-lg fa fa-trash-o btn-loading" onclick="ShowModalExcluir('/Locacao/ExcluirLocacao/@cond.LOCA_CD_ID')" title="Excluir"></span>
+                                                                <span style="color: #337ab7; cursor:pointer;" 
+                                                                      class="tbl-link fa-lg fa fa-trash-o" 
+                                                                      onclick="ChamarModalExcluir('@cond.LOCA_CD_ID')" 
+                                                                      title="Excluir"></span>
+
+                                                                @*<span style="color: #337ab7; cursor:pointer;" alt="Desativar" class="tbl-link fa-lg fa fa-trash-o btn-loading" onclick="ShowModalExcluir('/Locacao/ExcluirLocacao/@cond.LOCA_CD_ID')" title="Excluir"></span>*@
                                                             }
                                                         }
                                                     }
@@ -860,6 +890,39 @@
             }
         });
     </script>
+
+    <script type="text/javascript">
+        var locacaoIdParaExcluir = null;
+
+        function ChamarModalExcluir(id) {
+            locacaoIdParaExcluir = id;
+            $('#modalConfirmacaoExclusao').modal('show');
+        }
+
+        $(document).ready(function () {
+            $('#btnConfirmarExclusaoSubmit').click(function () {
+                if (locacaoIdParaExcluir != null) {
+                    var $btn = $(this);
+                
+                    // Feedback visual
+                    $btn.prop('disabled', true).addClass('disabled');
+                    $btn.html('<i class="fa fa-spinner fa-spin"></i> Excluindo...');
+                
+                    $('#loadingIndicator').show();
+
+                    // Monta a URL e redireciona
+                    var urlFinal = '/Locacao/ExcluirLocacao/' + locacaoIdParaExcluir;
+                    window.location.href = urlFinal;
+                }
+            });
+
+            // Limpeza de segurança ao fechar a modal
+            $('#modalConfirmacaoExclusao').on('hidden.bs.modal', function () {
+                locacaoIdParaExcluir = null;
+            });
+        });
+    </script>
+
 
 }
 

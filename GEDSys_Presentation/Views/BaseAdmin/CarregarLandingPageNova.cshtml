@@ -1,0 +1,242 @@
+﻿@{
+    Layout = null;
+    ViewBag.Title = "Página Principal";
+}
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+    <title>WebDoctorPro 2 | @ViewBag.Title</title>
+    
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700|Playfair+Display:400,700' rel='stylesheet' type='text/css'>
+
+    <!-- Estilos Originais Mantidos para Compatibilidade -->
+    <link href="@Url.Content("~/Scripts/plugins/jquery-ui/jquery-ui.min.css")" rel="stylesheet" type="text/css" />
+    <link rel="shortcut icon" href="@Url.Content("~/Images/Prontuario/prontuario_icon_3.png?v=1.1")" type="image/png">
+    
+    @Styles.Render("~/Content/css")
+    @Styles.Render("~/font-awesome/css")
+    
+    <!-- Novo Estilo Customizado -->
+    <link href="~/Content/WebDoctorModern.css" rel="stylesheet" />
+</head>
+
+<body id="page-top" class="landing-page">
+    
+    <!-- Navbar -->
+    <div class="navbar-wrapper">
+        <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
+            <div class="container-fluid" style="padding: 0 40px;">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="#page-top" style="color: #2d6a4f; font-weight: 700;">WEBDOCTOR PRO 2</a>
+                </div>
+                <div id="navbar" class="navbar-collapse collapse">
+                    <ul class="nav navbar-nav navbar-right">
+                        <li><a class="page-scroll" href="#page-top">Início</a></li>
+                        <li><a class="page-scroll" href="#features">Funcionalidades</a></li>
+                        <li><a class="page-scroll" href="#pricing">Planos & Preços</a></li>
+                        <li><a href="javascript:void(0)" onclick="location.href='@Url.Action("MontarTelaCompraBasicoNova", "BaseAdmin")'">Contratar</a></li>
+                        <li><a class="pisca" href="javascript:void(0)" onclick="location.href='@Url.Action("MontarTelaDemo", "BaseAdmin")'">Demonstração</a></li>
+                        <li><a href="javascript:void(0)" onclick="location.href='@Url.Action("Login", "ControleAcesso")'" style="color: #c0392b !important; font-size: 1.2em;">LOGIN</a></li>
+                    </ul>
+                    <div class="navbar-form navbar-left">
+                        <a class="btn btn-outline btn-success" href="@Url.Action("LoginAreaPaciente", "AreaPaciente")">Área do Paciente</a>
+                        <a class="btn btn-outline btn-success" href="@Url.Action("MontarTelaValidacaoDocumento", "ValidacaoDocumento")">Validar Documentos</a>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </div>
+
+    <!-- Hero Section -->
+    <section id="inSlider">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-6">
+                    <div class="carousel-caption blank" style="position: static; text-align: left; padding: 0;">
+                        <h1 class="wow fadeInLeft">WebDoctorPro 2</h1>
+                        <p class="lead" style="color: #b7e4c7;">Sistema Integrado de Prontuário Eletrônico e Automação de Consultórios</p>
+                        <p class="text-warning" style="font-weight:bold; font-size: 1.3em;">Promoção por tempo limitado!!!</p>
+                        <br />
+                        <p><a class="btn btn-lg btn-success" href="#pricing" role="button" style="padding: 15px 40px;">Conhecer Planos</a></p>
+                    </div>
+                </div>
+                <div class="col-lg-6 wow zoomIn">
+                    <img src="@Url.Content("~/Images/Prontuario/WebDoctor_Geral_info_3.png")" class="img-responsive" style="border-radius: 10px; box-shadow: 0 20px 40px rgba(0,0,0,0.4);" />
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Funcionalidades Grid -->
+    <section id="features" class="container services">
+        <div class="row text-center m-b-lg">
+            <div class="col-lg-12">
+                <div class="navy-line"></div>
+                <h1>Módulos Completos</h1>
+                <p>Tudo o que sua clínica precisa em um só lugar.</p>
+            </div>
+        </div>
+        
+        <div class="row">
+            @{
+                var funcs = new[] { 
+                    new { T = "Cadastros", D = "Tenha suas informações organizadas com segurança.", L = "#Cadastros" },
+                    new { T = "Pacientes", D = "Cadastre, acompanhe e crie documentos.", L = "#Pacientes" },
+                    new { T = "Consultas", D = "Marcação, confirmação e encerramento.", L = "#Consultas" },
+                    new { T = "Consultas - Executar", D = "Preencha anamneses e exames físicos.", L = "#Executar" },
+                    new { T = "Documentos", D = "Atestados e prescrições com assinatura eletrônica.", L = "#Prontuarios" },
+                    new { T = "Financeiro", D = "Visualize e acompanhe pagamentos e recebimentos.", L = "#Financeiro" },
+                    new { T = "Estoque", D = "Controle de materiais e produtos.", L = "#Estoque" },
+                    new { T = "Locação", D = "Funcionalidade completa de locação.", L = "#Locacao" }
+                };
+            }
+
+            @foreach (var f in funcs) {
+                <div class="col-md-3 m-b-md">
+                    <h2>@f.T</h2>
+                    <p>@f.D</p>
+                    <p><a class="navy-link" href="@f.L">Detalhes &raquo;</a></p>
+                </div>
+            }
+        </div>
+    </section>
+
+    <!-- Seção de Destaque com Imagem perspectiva -->
+    <section class="gray-section" style="padding: 60px 0;">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12 text-center">
+                    <div class="navy-line"></div>
+                    <h1>Eficiência e Produtividade</h1>
+                </div>
+            </div>
+            <div class="row m-t-lg">
+                <div class="col-md-4 text-right wow fadeInLeft">
+                    <div class="m-b-lg">
+                        <i class="fa fa-envelope-open-o features-icon"></i>
+                        <h3>Mensageria</h3>
+                        <p>Envio de E-Mails agendados e recursivos de forma assíncrona.</p>
+                    </div>
+                    <div>
+                        <i class="fa fa-area-chart features-icon"></i>
+                        <h3>Financeiro</h3>
+                        <p>Controle total integrado com as consultas realizadas.</p>
+                    </div>
+                </div>
+                <div class="col-md-4 text-center wow zoomIn">
+                    <img src="~/Images/landing/perspective.png" class="img-responsive" style="max-height: 450px; margin: 0 auto;">
+                </div>
+                <div class="col-md-4 text-left wow fadeInRight">
+                    <div class="m-b-lg">
+                        <i class="fa fa-edit features-icon"></i>
+                        <h3>Documentos</h3>
+                        <p>Validação via QR Code e assinatura eletrônica segura.</p>
+                    </div>
+                    <div>
+                        <i class="fa fa-check-square-o features-icon"></i>
+                        <h3>Locação</h3>
+                        <h3>Gestão de contratos e produtos integrada ao estoque.</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Planos de Preços -->
+    <section id="pricing" class="container" style="padding: 80px 0;">
+        <div class="row text-center">
+            <div class="col-lg-12">
+                <div class="navy-line"></div>
+                <h1>Planos & Preços</h1>
+                <h2 class="text-danger"><b>Promoção!! Parcelamento em até 12 vezes no cartão!</b></h2>
+            </div>
+        </div>
+        <div class="row m-t-lg">
+            <!-- Plano Básico -->
+            <div class="col-lg-4">
+                <ul class="pricing-plan list-unstyled text-center">
+                    <li class="pricing-title">Plano Básico</li>
+                    <li class="pricing-price">R$ 2.000,00 <span>/ Ano</span></li>
+                    <li>300 Pacientes Ativos</li>
+                    <li>Mensageria Incluída</li>
+                    <li>10 Usuários Ativos</li>
+                    <li class="p-v-md"><a class="btn btn-success" href="@Url.Action("MontarTelaCompraBasico", "BaseAdmin")">Contratar</a></li>
+                </ul>
+            </div>
+            <!-- Plano Super -->
+            <div class="col-lg-4">
+                <ul class="pricing-plan list-unstyled text-center" style="border: 2px solid #2d6a4f;">
+                    <li class="pricing-title">Plano Super</li>
+                    <li class="pricing-price">R$ 3.500,00 <span>/ Ano</span></li>
+                    <li>Pacientes Ilimitados</li>
+                    <li>Mensageria Ilimitada</li>
+                    <li>Usuários Ilimitados</li>
+                    <li class="p-v-md"><a class="btn btn-success" href="@Url.Action("MontarTelaCompraBasico", "BaseAdmin")">Contratar</a></li>
+                </ul>
+            </div>
+            <!-- Plano Super Financeiro -->
+            <div class="col-lg-4">
+                <ul class="pricing-plan list-unstyled text-center">
+                    <li class="pricing-title">Super + Financeiro</li>
+                    <li class="pricing-price">R$ 4.000,00 <span>/ Ano</span></li>
+                    <li>Financeiro & Estoque</li>
+                    <li>Gestão de Locações</li>
+                    <li>Suporte Prioritário</li>
+                    <li class="p-v-md"><a class="btn btn-success" href="@Url.Action("MontarTelaCompraBasico", "BaseAdmin")">Contratar</a></li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <section id="contact" class="gray-section" style="padding: 40px 0;">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12 text-center">
+                    <p><strong>&copy; @DateTime.Now.Year WebDoctorPro</strong> - Todos os direitos reservados</p>
+                    <p>Desenvolvido por RTi Ltda & SystemBR Ltda</p>
+                    <ul class="list-inline">
+                        <li><a href="https://wa.me/5521973024096"><i class="fa fa-whatsapp fa-2x text-success"></i></a></li>
+                        <li><a href="#"><i class="fa fa-facebook fa-2x text-navy"></i></a></li>
+                        <li><a href="#"><i class="fa fa-linkedin fa-2x text-navy"></i></a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Scripts -->
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/bootstrap")
+    @Scripts.Render("~/plugins/wow")
+    @Scripts.Render("~/bundles/inspinia")
+
+    <script>
+        $(document).ready(function () {
+            new WOW().init();
+
+            $('body').scrollspy({
+                target: '.navbar-fixed-top',
+                offset: 80
+            });
+
+            $('a.page-scroll').bind('click', function (event) {
+                var link = $(this);
+                $('html, body').stop().animate({
+                    scrollTop: $(link.attr('href')).offset().top - 70
+                }, 500);
+                event.preventDefault();
+            });
+        });
+    </script>
+</body>
+</html>

@@ -5,6 +5,32 @@
 }
 
 <div class="wrapper wrapper-content animated fadeInRight">
+    <div class="modal inmodal fade" id="modalConfirmacaoAlteracaoOcorrencia" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header" style="position: relative; padding: 30px 15px;">
+                    <img src="@Url.Content("~/Images/Prontuario/prontuario_icon_3.png?v=1.1")" 
+                         style="position: absolute; left: 15px; top: 15px; width: 40px; height: auto;" 
+                         alt="Ícone" />
+
+                    <i class="fa fa-pencil-square-o modal-icon text-primary" style="display: block;"></i>
+                    <h4 class="modal-title">Confirmação de Alteração</h4>
+                    <small class="font-bold">WebDoctorPro - Gestão de Locação</small>
+                </div>
+        
+                <div class="modal-body text-center">
+                    <h3>Deseja confirmar as alterações nesta ocorrência?</h3>
+                    <p>Os dados modificados serão salvos permanentemente no histórico da locação.</p>
+                </div>
+        
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-white" data-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" id="btnConfirmarAlteracaoSubmit">Confirmar Alteração</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="page-title">
         <h3 class="title">Locação</h3>
         <br />
@@ -24,7 +50,21 @@
         </ol>
         <br />
     </div>
-
+    <div class="row">
+        <div class="form-group" style=" margin-left: 15px; margin-right: 0px;">
+            @* --- INÍCIO DA AJUDA CONTEXTUAL --- *@
+            <details class="ajuda-contextual">
+                <summary><i class="fa fa-info-circle text-info"></i> Resumo das funcionalidades desta página</summary>
+                <div class="well well-sm">
+                    <p>Essa é a página de alteração de ocorrèncias de locações do <b>WebDoctorPro</b>. Nela você poderá:</p>
+                    <ol>
+                        <li>Alterar algumas das informações uma ocorrência para a locação selecionada</li>
+                    </ol>
+                </div>
+            </details>
+            @* --- FIM DA AJUDA CONTEXTUAL --- *@
+        </div>
+    </div>
     <div class="row">
         <div class="col-lg-12 col-md-12 col-xs-12">
             <div class="col-lg-12 col-md-12 col-xs-12 ibox float-e-margins">
@@ -129,7 +169,9 @@
                                         <div class="row">
                                             <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Ocorrência</h4>
                                             <div class="form-group" style=" margin-left: 0px; margin-right: 0px;">
-                                                @Html.ButtonActionSubmit(text: "Confirma a Criação da Ocorrência", htmlAttributes: new { id = "basictoast", @class = "btn-loading", onclick = "return confirm('Tem certeza que deseja criar essa ocorrência?');" })
+                                                <button type="button" class="btn btn-primary" id="btnDispararModalAlteracao">
+                                                    Confirma a Alteração da Ocorrência
+                                                </button>
                                                 @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarAnexoLocacao", controller: "Locacao", htmlAttributes: new { @class = "btn-loading" })
                                                 <span id="loadingIndicator" style="display: none; margin-left: 10px; color: #007bff;">
                                                     <i class="fa fa-spinner fa-spin"></i> Processando...
@@ -149,6 +191,8 @@
                                                     @Html.HiddenFor(m => m.LOOC_IN_ATIVO)
                                                     @Html.HiddenFor(m => m.LOOC_IN_ATIVO)
                                                     @Html.HiddenFor(m => m.LOOC_IN_ATIVO)
+                                                    @Html.HiddenFor(m => m.TIOC_CD_ID)
+                                                    @Html.HiddenFor(m => m.LOOC_CD_ID)
                                                     Data da Ocorrência
                                                     @Html.TextBoxFor(m => m.LOOC_DT_OCORRENCIA, "{0:dd/MM/yyyy}", new { @class = "form-control", @tabindex = "-1", @readonly = "readonly" })
                                                 </div>
@@ -398,6 +442,53 @@
 
     <script>
         $('#filGeral option[value=10]').prop('selected', true);
+    </script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            var $modal = $('#modalConfirmacaoAlteracaoOcorrencia');
+
+            // 1. Abre a modal ao clicar no botão
+            $('#btnDispararModalAlteracao').click(function () {
+                $modal.modal('show');
+            });
+
+            // 2. Ação de confirmar dentro da modal
+            $('#btnConfirmarAlteracaoSubmit').click(function (e) {
+                e.preventDefault();
+
+                var $btn = $(this);
+            
+                // Feedback visual no botão da modal
+                $btn.prop('disabled', true).addClass('disabled');
+                $btn.html('<i class="fa fa-spinner fa-spin"></i> Gravando...');
+
+                // Esconde a modal para processar
+                $modal.modal('hide');
+
+                // 3. Limpeza de ambiente e Submit
+                setTimeout(function () {
+                    $('.modal-backdrop').remove();
+                    $('body').removeClass('modal-open').css('padding-right', '');
+                
+                    $('#loadingIndicator').show();
+
+                    // Exibe o Toastr que você já tem no projeto
+                    if (typeof toastr !== 'undefined') {
+                        toastr.info('Gravando alterações da ocorrência...');
+                    }
+
+                    // Envio do formulário via DOM
+                    document.getElementById('pwd-container1').submit();
+                }, 400);
+            });
+
+            // Limpeza de segurança se o usuário cancelar
+            $modal.on('hidden.bs.modal', function () {
+                $('.modal-backdrop').remove();
+                $('body').removeClass('modal-open');
+            });
+        });
     </script>
 
     @if (ViewBag.Message != null)
