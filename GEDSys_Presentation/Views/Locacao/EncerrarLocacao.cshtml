@@ -221,16 +221,16 @@
                                         <div class="row">
                                             <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Encerramento</h4>
                                             <div class="form-group" style=" margin-left: 0px; margin-right: 0px;">
-                                                <button type="button" class="btn btn-primary" id="btnDispararModal">
+                                                <button type="button" class="btn btn-primary show-spinner" id="btnDispararModal">
                                                     Confirma o Encerramento da Locação
                                                 </button>
                                                 @if ((Int32)Session["VoltaLocacao"] == 2)
                                                 {
-                                                    @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarAnexoLocacao", controller: "Locacao", htmlAttributes: new { @class = "btn-loading" })
+                                                    @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarAnexoLocacao", controller: "Locacao", htmlAttributes: new { @class = "btn-loading show-spinner" })
                                                 }
                                                 else
                                                 {
-                                                    @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaLocacao", controller: "Locacao", htmlAttributes: new { @class = "btn-loading" })
+                                                    @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaLocacao", controller: "Locacao", htmlAttributes: new { @class = "btn-loading show-spinner" })
                                                 }
                                                 <span id="loadingIndicator" style="display: none; margin-left: 10px; color: #007bff;">
                                                     <i class="fa fa-spinner fa-spin"></i> Processando...

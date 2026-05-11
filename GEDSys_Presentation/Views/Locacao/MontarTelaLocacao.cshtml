@@ -119,7 +119,7 @@
                     <small>Pendentes</small>
                     <br />
                     <br />
-                    @Html.ButtonLinkIndex(text: "Ver", controller: "Locacao", action: "MontarTelaLocacaoPendentes", buttonClass: "white", htmlAttributes: new { @id = "aci", OnClick = "Fade1()" })
+                    @Html.ButtonLinkIndex(text: "Ver", controller: "Locacao", action: "MontarTelaLocacaoPendentes", buttonClass: "white", htmlAttributes: new { @id = "aci", @class="show-spinner"})
                 </div>
             </div>
         </div>
@@ -134,7 +134,7 @@
                     <small>Ativas</small>
                     <br />
                     <br />
-                    @Html.ButtonLinkIndex(text: "Ver", controller: "Locacao", action: "MontarTelaLocacaoAtivas", buttonClass: "white", htmlAttributes: new { @id = "aci", OnClick = "Fade1()" })
+                    @Html.ButtonLinkIndex(text: "Ver", controller: "Locacao", action: "MontarTelaLocacaoAtivas", buttonClass: "white", htmlAttributes: new { @id = "aci", @class="show-spinner" })
                 </div>
             </div>
         </div>
@@ -149,7 +149,7 @@
                     <small>Encerradas</small>
                     <br />
                     <br />
-                    @Html.ButtonLinkIndex(text: "Ver", controller: "Locacao", action: "MontarTelaLocacaoEncerradas", buttonClass: "white", htmlAttributes: new { @id = "aci", OnClick = "Fade1()" })
+                    @Html.ButtonLinkIndex(text: "Ver", controller: "Locacao", action: "MontarTelaLocacaoEncerradas", buttonClass: "white", htmlAttributes: new { @id = "aci", @class="show-spinner"})
                 </div>
             </div>
         </div>
@@ -164,7 +164,7 @@
                     <small>Vencidas</small>
                     <br />
                     <br />
-                    @Html.ButtonLinkIndex(text: "Ver", controller: "Locacao", action: "MontarTelaLocacaoAtrasadas", buttonClass: "white", htmlAttributes: new { @id = "aci", OnClick = "Fade1()" })
+                    @Html.ButtonLinkIndex(text: "Ver", controller: "Locacao", action: "MontarTelaLocacaoAtrasadas", buttonClass: "white", htmlAttributes: new { @id = "aci", @class="show-spinner" })
                 </div>
             </div>
         </div>
@@ -219,18 +219,18 @@
                         </div>
                         <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
                             <div class="col-lg-12 col-md-12 col-xs-12">
-                                @Html.ButtonActionSubmit(text: "Filtrar", htmlAttributes: new { @class = "btn-loading1" })
-                                <a href="@Url.Action("RetirarFiltroLocacao", "Locacao")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Retorna a exibição padrão das locações" class="btn btn-sm btn-warning btn-loading" id="emp" OnClick = "Fade()">Retirar Filtro</a>                
-                                <a href="@Url.Action("MostrarTudoLocacao", "Locacao")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Exibe todas as locações" class="btn btn-sm btn-warning btn-loading" id="emp" OnClick = "Fade()">Exibir Todas</a>                
+                                @Html.ButtonActionSubmit(text: "Filtrar", htmlAttributes: new { @class = "btn-loading1 show-spinner" })
+                                <a href="@Url.Action("RetirarFiltroLocacao", "Locacao")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Retorna a exibição padrão das locações" class="btn btn-sm btn-warning btn-loading show-spinner" id="emp" OnClick = "Fade()">Retirar Filtro</a>                
+                                <a href="@Url.Action("MostrarTudoLocacao", "Locacao")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Exibe todas as locações" class="btn btn-sm btn-warning btn-loading show-spinner" id="emp" OnClick = "Fade()">Exibir Todas</a>                
                                 @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_LOCACAO_INCLUIR == 1)
                                 {
-                                    <a href="@Url.Action("IncluirLocacao", "Locacao")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessa a página de criação de locações" class="btn btn-sm btn-primary btn-loading" id="emp" OnClick = "Fade()">Nova Locação</a>                
+                                    <a href="@Url.Action("IncluirLocacao", "Locacao")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessa a página de criação de locações" class="btn btn-sm btn-primary btn-loading show-spinner" id="emp" OnClick = "Fade()">Nova Locação</a>                
                                 }
-                                <a href="@Url.Action("VerHistoricoLocacoes", "Locacao")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Ver o histórico de todas as locações" class="btn btn-sm btn-warning btn-loading" id="emp" OnClick = "Fade()">Histórico</a>                
-                                <a href="@Url.Action("VerParcelasLocacoes", "Locacao")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Ver as parcelas de todas as locações" class="btn btn-sm btn-warning btn-loading" id="emp" OnClick = "Fade()">Parcelas</a>                
-                                <a href="@Url.Action("MontarTelaContratoLocacao", "Locacao")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acesso a página de contratos de locação e afins" class="btn btn-sm btn-warning btn-loading" id="emp" OnClick = "Fade()">Contratos</a>                
-                                <a href="@Url.Action("MontarTelaDashboardLocacao", "Locacao")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acesso ao dashboard de locações" class="btn btn-sm btn-primary btn-loading" id="emp" OnClick = "Fade()">Dashboard</a>                
-                                @Html.ButtonLinkIndex(text: "Voltar", controller: "Paciente", action: "MontarTelaPaciente", htmlAttributes: new { @class = "btn-loading" })
+                                <a href="@Url.Action("VerHistoricoLocacoes", "Locacao")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Ver o histórico de todas as locações" class="btn btn-sm btn-warning btn-loading show-spinner" id="emp" OnClick = "Fade()">Histórico</a>                
+                                <a href="@Url.Action("VerParcelasLocacoes", "Locacao")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Ver as parcelas de todas as locações" class="btn btn-sm btn-warning btn-loading show-spinner" id="emp" OnClick = "Fade()">Parcelas</a>                
+                                <a href="@Url.Action("MontarTelaContratoLocacao", "Locacao")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acesso a página de contratos de locação e afins" class="btn btn-sm btn-warning btn-loading show-spinner" id="emp" OnClick = "Fade()">Contratos</a>                
+                                <a href="@Url.Action("MontarTelaDashboardLocacao", "Locacao")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acesso ao dashboard de locações" class="btn btn-sm btn-primary btn-loading show-spinner" id="emp" OnClick = "Fade()">Dashboard</a>                
+                                @Html.ButtonLinkIndex(text: "Voltar", controller: "Paciente", action: "MontarTelaPaciente", htmlAttributes: new { @class = "btn-loading show-spinner" })
                                 <span id="loadingIndicator" style="display: none; margin-left: 10px; color: #007bff;">
                                     <i class="fa fa-spinner fa-spin"></i> Processando...
                                 </span>
@@ -301,19 +301,19 @@
                                             <tr>
                                                 @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_ALTERAR_PACIENTE == 1)
                                                 {
-                                                    <td style="width: auto; cursor: pointer; text-decoration: underline;"><a href="@Url.Action("EditarPaciente", "Paciente", new { id = cond.PACI_CD_ID })" class="btn-loading" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Editar/Consultar paciente"/>@cond.PACIENTE.PACI_NM_NOME</td>
+                                                    <td style="width: auto; cursor: pointer; text-decoration: underline;"><a href="@Url.Action("EditarPaciente", "Paciente", new { id = cond.PACI_CD_ID })" class="btn-loading show-spinner" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Editar/Consultar paciente"/>@cond.PACIENTE.PACI_NM_NOME</td>
                                                 }
                                                 else
                                                 {
-                                                    <td style="width: auto; cursor: pointer; text-decoration: underline;"><a href="@Url.Action("ConsultarPaciente", "Paciente", new { id = cond.PACI_CD_ID })" class="btn-loading" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Consultar paciente"/>@cond.PACIENTE.PACI_NM_NOME</td>
+                                                    <td style="width: auto; cursor: pointer; text-decoration: underline;"><a href="@Url.Action("ConsultarPaciente", "Paciente", new { id = cond.PACI_CD_ID })" class="btn-loading show-spinner" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Consultar paciente"/>@cond.PACIENTE.PACI_NM_NOME</td>
                                                 }
                                                 @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_EDITAR_PRODUTO == 1)
                                                 {
-                                                    <td style="width: auto; cursor: pointer; text-decoration: underline;"><a href="@Url.Action("EditarProduto", "Produto", new { id = cond.PROD_CD_ID })" class="btn-loading" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Editar/Consultar Produto"/>@cond.PRODUTO.PROD_NM_NOME</td>
+                                                    <td style="width: auto; cursor: pointer; text-decoration: underline;"><a href="@Url.Action("EditarProduto", "Produto", new { id = cond.PROD_CD_ID })" class="btn-loading show-spinner" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Editar/Consultar Produto"/>@cond.PRODUTO.PROD_NM_NOME</td>
                                                 }
                                                 else
                                                 {
-                                                    <td style="width: auto; cursor: pointer; text-decoration: underline;"><a href="@Url.Action("ConsultarProduto", "Produto", new { id = cond.PROD_CD_ID })" class="btn-loading" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Consultar Produto"/>@cond.PRODUTO.PROD_NM_NOME</td>
+                                                    <td style="width: auto; cursor: pointer; text-decoration: underline;"><a href="@Url.Action("ConsultarProduto", "Produto", new { id = cond.PROD_CD_ID })" class="btn-loading show-spinner" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Consultar Produto"/>@cond.PRODUTO.PROD_NM_NOME</td>
                                                 }
 
                                                 <td>
@@ -382,7 +382,7 @@
                                                 <td style="width: auto" class="td-one-action">
                                                     @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_LOCACAO_ALTERAR == 1)
                                                     {
-                                                        @Html.TableLinkDetails(cond.LOCA_CD_ID, "EditarLocacao", "fa-edit btn-loading", "Editar")
+                                                        @Html.TableLinkDetails(cond.LOCA_CD_ID, "EditarLocacao", "fa-edit btn-loading show-spinner", "Editar")
                                                     }
                                                     @if (cond.LOCA_IN_ATIVO == 1)
                                                     {
@@ -413,11 +413,11 @@
                                                     }
                                                     @if (cond.LOCA_IN_ATIVO == 1)
                                                     {
-                                                        @Html.TableLinkDetails(cond.LOCA_CD_ID, "VerHistoricoLocacao", "fa-line-chart btn-loading", "Histórico")
+                                                        @Html.TableLinkDetails(cond.LOCA_CD_ID, "VerHistoricoLocacao", "fa-line-chart btn-loading show-spinner", "Histórico")
                                                     }
                                                     @if (cond.LOCA_IN_ATIVO == 1)
                                                     {
-                                                        @Html.TableLinkDetails(cond.LOCA_CD_ID, "VerParcelasLocacao", "fa-calendar-o btn-loading", "Parcelas")
+                                                        @Html.TableLinkDetails(cond.LOCA_CD_ID, "VerParcelasLocacao", "fa-calendar-o btn-loading show-spinner", "Parcelas")
                                                     }
                                                     @if (cond.LOCA_IN_ATIVO == 1)
                                                     {
@@ -425,7 +425,7 @@
                                                         {
                                                             if (cond.LOCA_IN_STATUS == 1 || cond.LOCA_IN_STATUS == 3 || cond.LOCA_IN_STATUS == 0)
                                                             {
-                                                                @Html.TableLinkDetails(cond.LOCA_CD_ID, "CancelarLocacao", "fa-times btn-loading", "Cancelar")
+                                                                @Html.TableLinkDetails(cond.LOCA_CD_ID, "CancelarLocacao", "fa-times btn-loading show-spinner", "Cancelar")
                                                             }
                                                         }
                                                     }
@@ -435,7 +435,7 @@
                                                         {
                                                             if (cond.LOCA_IN_STATUS == 0)
                                                             {
-                                                                @Html.TableLinkDetails(cond.LOCA_CD_ID, "AprovarLocacao", "fa-check btn-loading", "Aprovar")
+                                                                @Html.TableLinkDetails(cond.LOCA_CD_ID, "AprovarLocacao", "fa-check btn-loading show-spinner", "Aprovar")
                                                             }
                                                         }
                                                     }
@@ -445,7 +445,7 @@
                                                         {
                                                             if (cond.LOCA_IN_STATUS == 3)
                                                             {
-                                                                @Html.TableLinkDetails(cond.LOCA_CD_ID, "RenovarLocacao", "fa-refresh btn-loading", "Renovar")
+                                                                @Html.TableLinkDetails(cond.LOCA_CD_ID, "RenovarLocacao", "fa-refresh btn-loading show-spinner", "Renovar")
                                                             }
                                                         }
                                                     }
@@ -455,7 +455,7 @@
                                                         {
                                                             if (cond.LOCA_IN_STATUS == 1 || cond.LOCA_IN_STATUS == 3)
                                                             {
-                                                                @Html.TableLinkDetails(cond.LOCA_CD_ID, "EncerrarLocacao", "fa-minus btn-loading", "Encerrar")
+                                                                @Html.TableLinkDetails(cond.LOCA_CD_ID, "EncerrarLocacao", "fa-minus btn-loading show-spinner", "Encerrar")
                                                             }
                                                         }
                                                     }

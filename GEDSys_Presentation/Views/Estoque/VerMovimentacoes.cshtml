@@ -122,13 +122,13 @@
                         <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
                             <div class="col-lg-12 col-md-12 col-xs-12">                                     
                                 @Html.ButtonActionSubmit(text: "Filtrar", htmlAttributes: new { @class = "btn-loading1" })
-                                @Html.ButtonLinkIndex(text: "Retirar Filtro", controller: "Estoque", action: "RetirarFiltroMovimento", htmlAttributes: new { @class = "btn-loading" })
+                                @Html.ButtonLinkIndex(text: "Retirar Filtro", controller: "Estoque", action: "RetirarFiltroMovimento", htmlAttributes: new { @class = "btn-loading show-spinner" })
                                 @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_INCLUIR_MOVIMENTACAO_ESTOQUE == 1)
                                 {
-                                    @Html.ButtonLinkIndex(text: "Nova Movimentação", controller: "Estoque", action: "IncluirMovimentacaoGeral", buttonClass: "primary", htmlAttributes: new { @class = "btn-loading" })
+                                    @Html.ButtonLinkIndex(text: "Nova Movimentação", controller: "Estoque", action: "IncluirMovimentacaoGeral", buttonClass: "primary", htmlAttributes: new { @class = "btn-loading show-spinner" })
                                 }
                                 @Html.ButtonLinkIndex(text: "Imprimir", controller: "Estoque", action: "GerarListagemMovimentacaoProduto")
-                                @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaEstoque", controller: "Estoque", htmlAttributes: new { @class = "btn-loading" })                
+                                @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaEstoque", controller: "Estoque", htmlAttributes: new { @class = "btn-loading show-spinner" })                
                                 <span id="loadingIndicator" style="display: none; margin-left: 10px; color: #007bff;">
                                     <i class="fa fa-spinner fa-spin"></i> Processando...
                                 </span>
@@ -233,7 +233,6 @@
                                                 }
                                             </td>
 
-                                            @*<td style="cursor: pointer; text-decoration: underline; color: #337ab7; width: auto" onclick="mostrarDesc('@cond.MOEP_DS_JUSTIFICATIVA')" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Ver a justificativa da movimentação de estoque">*@
                                             <td style="cursor: pointer; text-decoration: underline; color: #337ab7; width: auto"  onclick="mostrarDesc('@cond.MOEP_DS_JUSTIFICATIVA')" >
                                                 <span style="display:none; width: auto">@cond.MOEP_DT_MOVIMENTO.ToString("yyyyMMdd")</span>
                                                 @cond.MOEP_DT_MOVIMENTO.ToString("dd/MM/yyyy")
@@ -247,7 +246,7 @@
                                             <td style="width: auto" class="td-one-action">
                                                 @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_VER_MOVIMENTACAO_ESTOQUE == 1)
                                                 {
-                                                    @Html.TableLinkDetails(cond.MOEP_CD_ID, "VerMovimentacaoEstoque", "fa-search btn-loading", "Ver Movimentação")
+                                                    @Html.TableLinkDetails(cond.MOEP_CD_ID, "VerMovimentacaoEstoque", "fa-search btn-loading show-spinner", "Ver Movimentação")
                                                 }
                                             </td>
                                         </tr>
@@ -263,7 +262,7 @@
                                 </div>
                                 <div style="border: 5px solid #F6A54A; padding: 10px; border-radius: 8px 8px; " class="col-lg-8 col-md-8 col-xs-8">
                                     <h2 style="font-weight: bold">Nenhuma movimentação atendeu ao filtro especificado ou nenhuma movimentação de estoque registrada</h2>
-                                    @Html.ButtonLinkIndex(text: "Retirar Filtro", controller: "Estoque", action: "RetirarFiltroMovimento", htmlAttributes: new { @class = "btn-loading" })
+                                    @Html.ButtonLinkIndex(text: "Retirar Filtro", controller: "Estoque", action: "RetirarFiltroMovimento", htmlAttributes: new { @class = "btn-loading show-spinner" })
                                 </div>
                                 <div class="col-lg-2 col-md-2 col-xs-2">
 

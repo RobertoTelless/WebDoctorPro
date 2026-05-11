@@ -73,13 +73,13 @@
                         <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
                             <div class="col-lg-12 col-md-12 col-xs-12">
                                 @Html.ButtonActionSubmit(text: "Filtrar")
-                                @Html.ButtonLinkIndex(text: "Novo Aviso", controller: "Aviso", action: "IncluirAviso", buttonClass: "primary")
-                                @Html.ButtonLinkIndex(text: "Avisos de Hoje", controller: "Aviso", action: "VerAvisoHoje")
-                                @Html.ButtonLinkIndex(text: "Avisos do Mês", controller: "Aviso", action: "VerAvisoMes")
-                                @Html.ButtonLinkIndex(text: "Avisos Futuros", controller: "Aviso", action: "VerAvisoFuturo")
-                                @Html.ButtonLinkIndex(text: "Avisos em Aberto", controller: "Aviso", action: "VerAvisoAberto")
+                                @Html.ButtonLinkIndex(text: "Novo Aviso", controller: "Aviso", action: "IncluirAviso", buttonClass: "primary", htmlAttributes: new { @class = "show-spinner" })
+                                @Html.ButtonLinkIndex(text: "Avisos de Hoje", controller: "Aviso", action: "VerAvisoHoje", htmlAttributes: new { @class = "show-spinner" })
+                                @Html.ButtonLinkIndex(text: "Avisos do Mês", controller: "Aviso", action: "VerAvisoMes", htmlAttributes: new { @class = "show-spinner" })
+                                @Html.ButtonLinkIndex(text: "Avisos Futuros", controller: "Aviso", action: "VerAvisoFuturo", htmlAttributes: new { @class = "show-spinner" })
+                                @Html.ButtonLinkIndex(text: "Avisos em Aberto", controller: "Aviso", action: "VerAvisoAberto", htmlAttributes: new { @class = "show-spinner" })
                                 @Html.ButtonLinkIndex(text: "Imprimir Avisos", controller: "Aviso", action: "GerarListagemAviso")
-                                @Html.ButtonLinkIndex(text: "Voltar", controller: "Paciente", action: "MontarTelaPaciente")
+                                @Html.ButtonLinkIndex(text: "Voltar", controller: "Paciente", action: "MontarTelaPaciente", htmlAttributes: new { @class = "show-spinner" } )
                                 <a href="@Url.Action((String)Session["AjudaNivel"])"  class="btn btn-sm btn-danger" target="_blank">Ajuda</a>                
                             </div>
                         </div>
@@ -137,11 +137,11 @@
                                                 </td>
                                                 @if (cond.AVIS_DT_AVISO.Value.Date >= DateTime.Today.Date)
                                                 {
-                                                    <td style="width: auto"><a href="@Url.Action("EditarAviso", "Aviso", new { id = cond.AVIS_CD_ID })"  data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página de edição do aviso"/>@cond.AVIS_NM_TITULO</td>
+                                                    <td style="width: auto"><a href="@Url.Action("EditarAviso", "Aviso", new { id = cond.AVIS_CD_ID })" class="show-spinner"   data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página de edição do aviso"/>@cond.AVIS_NM_TITULO</td>
                                                 }
                                                 else
                                                 {
-                                                    <td style="width: auto"><a href="@Url.Action("VerAviso", "Aviso", new { id = cond.AVIS_CD_ID })"  data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página de visualização do aviso"/>@cond.AVIS_NM_TITULO</td>
+                                                    <td style="width: auto"><a href="@Url.Action("VerAviso", "Aviso", new { id = cond.AVIS_CD_ID })" class="show-spinner"  data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página de visualização do aviso"/>@cond.AVIS_NM_TITULO</td>
                                                 }
                                                 <td style="width: auto">@cond.AVIS_DT_CRIACAO.Value.ToShortDateString()</td>                                                
                                                 @if (cond.AVIS_IN_CIENTE == 1)
@@ -163,22 +163,22 @@
                                                 <td style="width: auto" class="td-one-action">
                                                     @if (cond.AVIS_DT_AVISO.Value.Date >= DateTime.Today.Date)
                                                     {
-                                                        @Html.TableLinkDetails(cond.AVIS_CD_ID, "EditarAviso", "fa-edit", "Editar Aviso")
+                                                        @Html.TableLinkDetails(cond.AVIS_CD_ID, "EditarAviso", "fa-edit show-spinner", "Editar Aviso")
                                                     }
                                                     else
                                                     {
-                                                        @Html.TableLinkDetails(cond.AVIS_CD_ID, "VerAviso", "fa-search", "Ver Aviso")
+                                                        @Html.TableLinkDetails(cond.AVIS_CD_ID, "VerAviso", "fa-search show-spinner", "Ver Aviso")
                                                     }
                                                     @if (cond.AVIS_IN_ATIVO == 1)
                                                     {
                                                         if (cond.AVIS_DT_AVISO.Value.Date > DateTime.Today.Date)
                                                         {
-                                                            <span style="color: #337ab7; cursor:pointer;" alt="Desativar" class="tbl-link fa-lg fa fa-trash-o" onclick="ShowModalExcluirAviso('/Aviso/ExcluirAviso/@cond.AVIS_CD_ID')" title="Excluir Aviso"></span>
+                                                            <span style="color: #337ab7; cursor:pointer;" alt="Desativar" class="tbl-link fa-lg fa fa-trash-o  show-spinner" onclick="ShowModalExcluirAviso('/Aviso/ExcluirAviso/@cond.AVIS_CD_ID')" title="Excluir Aviso"></span>
                                                         }
                                                     }
                                                     @if (cond.AVIS_IN_ATIVO == 1 & cond.AVIS_IN_CIENTE == 0)
                                                     {
-                                                        <span style="color: #337ab7; cursor:pointer;" alt="Aceitar" class="tbl-link fa-lg fa fa-check" onclick="ShowModalConfirmar('/Aviso/ConfirmarVisualizacao/@cond.AVIS_CD_ID')" title="Tomar Ciência do Aviso"></span>
+                                                        <span style="color: #337ab7; cursor:pointer;" alt="Aceitar" class="tbl-link fa-lg fa fa-check  show-spinner" onclick="ShowModalConfirmar('/Aviso/ConfirmarVisualizacao/@cond.AVIS_CD_ID')" title="Tomar Ciência do Aviso"></span>
                                                     }
                                                 </td>
                                             </tr>
@@ -189,11 +189,11 @@
                                                 <td style="width: auto">@cond.AVIS_DT_AVISO.Value.ToShortDateString()</td>                                                
                                                 @if (cond.AVIS_DT_AVISO.Value.Date >= DateTime.Today.Date)
                                                 {
-                                                    <td style="width: auto"><a href="@Url.Action("EditarAviso", "Aviso", new { id = cond.AVIS_CD_ID })"  data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página de edição do aviso"/>@cond.AVIS_NM_TITULO</td>
+                                                    <td style="width: auto"><a href="@Url.Action("EditarAviso", "Aviso", new { id = cond.AVIS_CD_ID })" class="show-spinner"  data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página de edição do aviso"/>@cond.AVIS_NM_TITULO</td>
                                                 }
                                                 else
                                                 {
-                                                    <td style="width: auto"><a href="@Url.Action("VerAviso", "Aviso", new { id = cond.AVIS_CD_ID })"  data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página de visualização do aviso"/>@cond.AVIS_NM_TITULO</td>
+                                                    <td style="width: auto"><a href="@Url.Action("VerAviso", "Aviso", new { id = cond.AVIS_CD_ID })" class="show-spinner"  data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página de visualização do aviso"/>@cond.AVIS_NM_TITULO</td>
                                                 }
                                                 <td style="width: auto">@cond.AVIS_DT_CRIACAO.Value.ToShortDateString()</td>                                                
                                                 @if (cond.AVIS_IN_CIENTE == 1)
@@ -215,22 +215,22 @@
                                                 <td style="width: auto" class="td-one-action">
                                                     @if (cond.AVIS_DT_AVISO.Value.Date >= DateTime.Today.Date)
                                                     {
-                                                        @Html.TableLinkDetails(cond.AVIS_CD_ID, "EditarAviso", "fa-edit", "Editar Aviso")
+                                                        @Html.TableLinkDetails(cond.AVIS_CD_ID, "EditarAviso", "fa-edit show-spinner", "Editar Aviso")
                                                     }
                                                     else
                                                     {
-                                                        @Html.TableLinkDetails(cond.AVIS_CD_ID, "VerAviso", "fa-search", "Ver Aviso")
+                                                        @Html.TableLinkDetails(cond.AVIS_CD_ID, "VerAviso", "fa-search show-spinner", "Ver Aviso")
                                                     }
                                                     @if (cond.AVIS_IN_ATIVO == 1)
                                                     {
                                                         if (cond.AVIS_DT_AVISO.Value.Date > DateTime.Today.Date)
                                                         {
-                                                            <span style="color: #337ab7; cursor:pointer;" alt="Desativar" class="tbl-link fa-lg fa fa-trash-o" onclick="ShowModalExcluirAviso('/Aviso/ExcluirAviso/@cond.AVIS_CD_ID')" title="Excluir Aviso"></span>
+                                                            <span style="color: #337ab7; cursor:pointer;" alt="Desativar" class="tbl-link fa-lg fa fa-trash-o show-spinner" onclick="ShowModalExcluirAviso('/Aviso/ExcluirAviso/@cond.AVIS_CD_ID')" title="Excluir Aviso"></span>
                                                         }
                                                     }
                                                     @if (cond.AVIS_IN_ATIVO == 1 & cond.AVIS_IN_CIENTE == 0)
                                                     {
-                                                        <span style="color: #337ab7; cursor:pointer;" alt="Aceitar" class="tbl-link fa-lg fa fa-check" onclick="ShowModalConfirmar('/Aviso/ConfirmarVisualizacao/@cond.AVIS_CD_ID')" title="Tomar Ciência do Aviso"></span>
+                                                        <span style="color: #337ab7; cursor:pointer;" alt="Aceitar" class="tbl-link fa-lg fa fa-check show-spinner" onclick="ShowModalConfirmar('/Aviso/ConfirmarVisualizacao/@cond.AVIS_CD_ID')" title="Tomar Ciência do Aviso"></span>
                                                     }
                                                 </td>
                                             </tr>
@@ -241,11 +241,11 @@
                                                 <td style="width: auto">@cond.AVIS_DT_AVISO.Value.ToShortDateString()</td>                                                
                                                 @if (cond.AVIS_DT_AVISO.Value.Date >= DateTime.Today.Date)
                                                 {
-                                                    <td style="width: auto"><a href="@Url.Action("EditarAviso", "Aviso", new { id = cond.AVIS_CD_ID })"  data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página de edição do aviso"/>@cond.AVIS_NM_TITULO</td>
+                                                    <td style="width: auto"><a href="@Url.Action("EditarAviso", "Aviso", new { id = cond.AVIS_CD_ID })" class="show-spinner"  data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página de edição do aviso"/>@cond.AVIS_NM_TITULO</td>
                                                 }
                                                 else
                                                 {
-                                                    <td style="width: auto"><a href="@Url.Action("VerAviso", "Aviso", new { id = cond.AVIS_CD_ID })"  data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página de visualização do aviso"/>@cond.AVIS_NM_TITULO</td>
+                                                    <td style="width: auto"><a href="@Url.Action("VerAviso", "Aviso", new { id = cond.AVIS_CD_ID })" class="show-spinner"  data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página de visualização do aviso"/>@cond.AVIS_NM_TITULO</td>
                                                 }
                                                 <td style="width: auto">@cond.AVIS_DT_CRIACAO.Value.ToShortDateString()</td>                                                
                                                 @if (cond.AVIS_IN_CIENTE == 1)
@@ -267,22 +267,22 @@
                                                 <td style="width: auto" class="td-one-action">
                                                     @if (cond.AVIS_DT_AVISO.Value.Date >= DateTime.Today.Date)
                                                     {
-                                                        @Html.TableLinkDetails(cond.AVIS_CD_ID, "EditarAviso", "fa-edit", "Editar Aviso")
+                                                        @Html.TableLinkDetails(cond.AVIS_CD_ID, "EditarAviso", "fa-edit show-spinner", "Editar Aviso")
                                                     }
                                                     else
                                                     {
-                                                        @Html.TableLinkDetails(cond.AVIS_CD_ID, "VerAviso", "fa-search", "Ver Aviso")
+                                                        @Html.TableLinkDetails(cond.AVIS_CD_ID, "VerAviso", "fa-search show-spinner", "Ver Aviso")
                                                     }
                                                     @if (cond.AVIS_IN_ATIVO == 1)
                                                     {
                                                         if (cond.AVIS_DT_AVISO.Value.Date > DateTime.Today.Date)
                                                         {
-                                                            <span style="color: #337ab7; cursor:pointer;" alt="Desativar" class="tbl-link fa-lg fa fa-trash-o" onclick="ShowModalExcluirAviso('/Aviso/ExcluirAviso/@cond.AVIS_CD_ID')" title="Excluir Aviso"></span>
+                                                            <span style="color: #337ab7; cursor:pointer;" alt="Desativar" class="tbl-link fa-lg fa fa-trash-o show-spinner" onclick="ShowModalExcluirAviso('/Aviso/ExcluirAviso/@cond.AVIS_CD_ID')" title="Excluir Aviso"></span>
                                                         }
                                                     }
                                                     @if (cond.AVIS_IN_ATIVO == 1 & cond.AVIS_IN_CIENTE == 0)
                                                     {
-                                                        <span style="color: #337ab7; cursor:pointer;" alt="Aceitar" class="tbl-link fa-lg fa fa-check" onclick="ShowModalConfirmar('/Aviso/ConfirmarVisualizacao/@cond.AVIS_CD_ID')" title="Tomar Ciência do Aviso"></span>
+                                                        <span style="color: #337ab7; cursor:pointer;" alt="Aceitar" class="tbl-link fa-lg fa fa-check show-spinner" onclick="ShowModalConfirmar('/Aviso/ConfirmarVisualizacao/@cond.AVIS_CD_ID')" title="Tomar Ciência do Aviso"></span>
                                                     }
                                                 </td>
                                             </tr>

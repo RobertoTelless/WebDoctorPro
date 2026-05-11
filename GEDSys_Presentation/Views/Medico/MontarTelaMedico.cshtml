@@ -75,17 +75,17 @@
                         </div>
                         <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
                             <div class="col-lg-12 col-md-12 col-xs-12">
-                                @Html.ButtonActionSubmit(text: "Filtrar")
-                                <a href="@Url.Action("RetirarFiltroMedico", "Medico")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Retorna a exibição padrão dos médicos" class="btn btn-sm btn-warning btn-loading" id="emp" OnClick = "Fade()">Retirar Filtro</a>                
-                                <a href="@Url.Action("IncluirMedico", "Medico")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessa a página de inclusão de médicos" class="btn btn-sm btn-primary btn-loading" id="emp" OnClick = "Fade()">Novo Médico</a>                
-                                <a href="@Url.Action("MontarTelaTextoEnvio", "Medico")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acesso a página de textos de mensagens para médicos" class="btn btn-sm btn-warning btn-loading" id="emp" OnClick = "Fade()">Texto das Mensagens</a>                
+                                @Html.ButtonActionSubmit(text: "Filtrar", htmlAttributes: new { @class = "btn-loading show-spinner" })
+                                <a href="@Url.Action("RetirarFiltroMedico", "Medico")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Retorna a exibição padrão dos médicos" class="btn btn-sm btn-warning btn-loading show-spinner" id="emp" OnClick = "Fade()">Retirar Filtro</a>                
+                                <a href="@Url.Action("IncluirMedico", "Medico")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessa a página de inclusão de médicos" class="btn btn-sm btn-primary btn-loading show-spinner" id="emp" OnClick = "Fade()">Novo Médico</a>                
+                                <a href="@Url.Action("MontarTelaTextoEnvio", "Medico")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acesso a página de textos de mensagens para médicos" class="btn btn-sm btn-warning btn-loading show-spinner" id="emp" OnClick = "Fade()">Texto das Mensagens</a>                
                                 @if ((Int32)Session["VoltaMedico"] == 2)
                                 {
-                                    @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarProcederConsulta", controller: "Paciente")
+                                    @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarProcederConsulta", controller: "Paciente"  )
                                 }
                                 else
                                 {
-                                    @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaPaciente", controller: "Paciente")
+                                    @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaPaciente", controller: "Paciente", htmlAttributes: new { @class = "show-spinner" })
                                 }
                                 <a href="@Url.Action((String)Session["AjudaNivel"])"  class="btn btn-sm btn-danger" target="_blank">Ajuda</a>                
                                 <span id="loadingIndicator" style="display: none; margin-left: 10px; color: #007bff;">
@@ -135,7 +135,7 @@
                                     @foreach (var cond in (ViewBag.Listas as List<EntitiesServices.Model.MEDICOS>))
                                     {
                                         <tr>
-                                            <td style="width: auto; cursor: pointer; text-decoration: underline;"><a href="@Url.Action("EditarMedico", "Medico", new { id = cond.MEDC_CD_ID })" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página de informações do médico para edição ou para envio de informações"/>@cond.MEDC_NM_MEDICO</td>
+                                            <td style="width: auto; cursor: pointer; text-decoration: underline;"><a href="@Url.Action("EditarMedico", "Medico", new { id = cond.MEDC_CD_ID })" class="btn-loading show-spinner" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página de informações do médico para edição ou para envio de informações"/>@cond.MEDC_NM_MEDICO</td>
                                             <td style="width: auto">@cond.MEDC_NR_CRM</td>
                                             @if (cond.ESPECIALIDADE !=  null)
                                             {
@@ -166,14 +166,14 @@
                                                 <td style="width: auto">Nenhum</td>
                                             }
                                             <td class="td-one-action">
-                                                @Html.TableLinkDetails(cond.MEDC_CD_ID, "EditarMedico", "fa-edit btn-loading", "Acessar Informações")
+                                                @Html.TableLinkDetails(cond.MEDC_CD_ID, "EditarMedico", "fa-edit btn-loading show-spinner", "Acessar Informações")
                                                 @if (cond.MEDC_IN_ATIVO == 1)
                                                 {
-                                                    <span style="color: #337ab7; cursor:pointer;" alt="Desativar" class="tbl-link fa-lg fa fa-trash-o btn-loading" onclick="ShowModalExcluir('/Medico/ExcluirMedico/@cond.MEDC_CD_ID')" title="Excluir Medico"></span>
+                                                    <span style="color: #337ab7; cursor:pointer;" alt="Desativar" class="tbl-link fa-lg fa fa-trash-o btn-loading show-spinner" onclick="ShowModalExcluir('/Medico/ExcluirMedico/@cond.MEDC_CD_ID')" title="Excluir Medico"></span>
                                                 }
                                                 else
                                                 {
-                                                    <span style="color: #337ab7; cursor:pointer;" alt="Reativar" class="tbl-link fa-lg fa fa-refresh btn-loading" onclick="ShowModalReativar('/Medico/ReativarMedico/@cond.MEDC_CD_ID')" title="Reativar Medico"></span>
+                                                    <span style="color: #337ab7; cursor:pointer;" alt="Reativar" class="tbl-link fa-lg fa fa-refresh btn-loading show-spinner" onclick="ShowModalReativar('/Medico/ReativarMedico/@cond.MEDC_CD_ID')" title="Reativar Medico"></span>
                                                 }
                                             </td>
                                         </tr>
@@ -189,7 +189,7 @@
                                 </div>
                                 <div style="border: 5px solid #F6A54A; padding: 10px; border-radius: 8px 8px; " class="col-lg-10 col-md-10 col-xs-8">
                                     <h2 style="font-weight: bold">Sua pesquisa não retornou nenhum resultado ou nenhum médico está cadastrado</h2>
-                                    @Html.ButtonLinkIndex(text: "Retirar Filtro", controller: "Medico", action: "RetirarFiltroMedico")
+                                    @Html.ButtonLinkIndex(text: "Retirar Filtro", controller: "Medico", action: "RetirarFiltroMedico", htmlAttributes: new { @class = "show-spinner" })
                                 </div>
                                 <div class="col-lg-1 col-md-1 col-xs-2">
 
@@ -338,7 +338,7 @@
         });
     </script>
 
-        <script type="text/javascript">
+    <script type="text/javascript">
         $(document).ready(function () {
             // Configurações globais do Toastr
             toastr.options = {

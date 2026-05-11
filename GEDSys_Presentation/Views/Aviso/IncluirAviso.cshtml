@@ -43,8 +43,8 @@
                         <div class="row">
                             <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Informações do Aviso</h4>
                             <div class="form-group" style=" margin-left: 5px; margin-right: 5px;">                
-                                @Html.ButtonActionSubmit(text: "Confirma Criação de Aviso", htmlAttributes: new { id = "basictoast" })
-                                @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaAviso", controller: "Aviso")
+                                @Html.ButtonActionSubmit(text: "Confirma Criação de Aviso", htmlAttributes: new { id = "basictoast",@class = "show-spinner"  })
+                                @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaAviso", controller: "Aviso", htmlAttributes: new { @class = "show-spinner" } )
                                 <a href="@Url.Action((String)Session["AjudaNivel"])"  class="btn btn-sm btn-danger" target="_blank">Ajuda</a>                
                             </div>                           
                             <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">                

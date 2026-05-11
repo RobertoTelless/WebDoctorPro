@@ -1181,6 +1181,7 @@
     <Content Include="Content\plugins\touchspin\jquery.bootstrap-touchspin.min.css" />
     <Content Include="Content\Custom.css" />
     <Content Include="Content\Epworth_Style.css" />
+    <Content Include="Content\Spinner_style.css" />
     <Content Include="Content\StopBang_style.css" />
     <Content Include="Content\WebDoctorModern.css" />
     <Content Include="Content\style.css" />

@@ -71,9 +71,9 @@
                                             </div>      
                                         </div>
                                         <div class="form-group">
-                                            @Html.ButtonActionSubmit(text: "Confirma Paciente e Prossegue Inclusão de Pacientes no Grupo", htmlAttributes: new { id = "basictoast" })
-                                            @Html.ButtonLinkIndex(text: "Encerra Inclusão", action: "VoltarAnexoGrupo", controller: "Grupo")
-                                            @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarAnexoGrupo", controller: "Grupo")
+                                            @Html.ButtonActionSubmit(text: "Confirma Paciente e Prossegue Inclusão de Pacientes no Grupo", htmlAttributes: new { id = "basictoast", @class = "show-spinner" })
+                                            @Html.ButtonLinkIndex(text: "Encerra Inclusão", action: "VoltarAnexoGrupo", controller: "Grupo", htmlAttributes: new { @class = "show-spinner" })
+                                            @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarAnexoGrupo", controller: "Grupo", htmlAttributes: new { @class = "show-spinner" })
                                         </div>
                                     </div>
                                 </div>

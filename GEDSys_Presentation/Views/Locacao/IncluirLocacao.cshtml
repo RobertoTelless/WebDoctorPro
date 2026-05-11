@@ -156,19 +156,19 @@
                             <div class="col-lg-8 col-md-8 col-xs-12">
                                 <h4 style="margin-left: -15px; color:green; background-color: beige; font-weight:bold">Dados da Locação</h4>
                                 <div class="form-group" style=" margin-left: -30px; margin-right: -15px;">
-                                    @Html.ButtonActionSubmit(text: "BtnSubmit", htmlAttributes: new { id = "submit", style = "display: none;" })
+                                    @Html.ButtonActionSubmit(text: "BtnSubmit", htmlAttributes: new { id = "submit", style = "display: none;" , @class = "btn-loading1 show-spinner"})
                                     <button style="margin-left: 15px;" class="btnSubmit btn btn-sm btn-success btn-loading1" id="basictoast" type="button">Confirmar criação da Locação</button>
                                     @if ((Int32)Session["TipoLocacao"] == 1)
                                     {
-                                        @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarAnexoPaciente", controller: "Paciente", htmlAttributes: new { @class = "btn-loading" })
+                                        @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarAnexoPaciente", controller: "Paciente", htmlAttributes: new { @class = "btn-loading show-spinner" })
                                     }
                                     else if ((Int32)Session["VoltaLocacaoBase"] == 1)
                                     {
-                                        @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarAnexoPaciente", controller: "Paciente", htmlAttributes: new { @class = "btn-loading" })
+                                        @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarAnexoPaciente", controller: "Paciente", htmlAttributes: new { @class = "btn-loading show-spinner" })
                                     }
                                     else
                                     {
-                                        @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaLocacao", controller: "Locacao", htmlAttributes: new { @class = "btn-loading" })
+                                        @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaLocacao", controller: "Locacao", htmlAttributes: new { @class = "btn-loading show-spinner" })
                                     }
                                     <a href="@Url.Action((String)Session["AjudaNivel"])" class="btn btn-sm btn-danger" target="_blank">Ajuda</a>
                                     <span id="loadingIndicator" style="display: none; margin-left: 10px; color: #007bff;">

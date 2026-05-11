@@ -40,7 +40,7 @@
                 {
                     <div class="ibox-content">
                         <div class="form-group">
-                            @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarAnexoEnvio", controller: "Medico")
+                            @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarAnexoEnvio", controller: "Medico", htmlAttributes: new { @class = "show-spinner" })
                             <a href="@Url.Action((String)Session["AjudaNivel"])"  class="btn btn-sm btn-danger" target="_blank">Ajuda</a>                
                         </div>
                         <div class="row">

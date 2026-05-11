@@ -29,11 +29,11 @@
                         <br />
                         @if ((Int32)Session["VoltaNoticia"] == 1)
                         {
-                            @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarBaseNoticia", controller: "Noticia")
+                            @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarBaseNoticia", controller: "Noticia", htmlAttributes: new { @class = "show-spinner" })
                         }
                         else
                         {
-                            @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaNoticiaQuadro", controller: "Noticia")
+                            @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaNoticiaQuadro", controller: "Noticia", htmlAttributes: new { @class = "show-spinner" })
                         }
                     </div>
                     <div class="form-group text-center" style="display: block; width: 100%;">
@@ -73,7 +73,7 @@
                     </div>
                     <div class="row">
                         <br />
-                        @Html.ButtonLinkIndex(text: "Novo Comentário", action: "IncluirComentario", controller: "Noticia")
+                        @Html.ButtonLinkIndex(text: "Novo Comentário", action: "IncluirComentario", controller: "Noticia", htmlAttributes: new { @class = "show-spinner" })
                         <br />
                     </div>
                     <div class="row">

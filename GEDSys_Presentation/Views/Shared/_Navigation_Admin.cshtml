@@ -24,7 +24,7 @@
             <li>
                 <a href="@Url.Action("MontarTelaPaciente", "Paciente")"><i class="fa fa-dashboard"></i> <span class="nav-label" data-i18n="nav.dashboard">Dashboard Inicial</span> <span class="fa arrow"></span></a>
                 <ul class="nav nav-second-level collapse @Html.IsSelected(controller: "Cadastros", cssClass: "in")">
-                    <li class="@Html.IsSelected(action: "MontarTelaPaciente")"><a href="@Url.Action("MontarTelaPaciente", "Paciente")">Dashboard Inicial</a></li>
+                    <li class="@Html.IsSelected(action: "MontarTelaPaciente")"><a href="@Url.Action("MontarTelaPaciente", "Paciente")" class="show-spinner">Dashboard Inicial</a></li>
                 </ul>
             </li>
 
@@ -32,7 +32,7 @@
             <li>
                 <a href="@Url.Action("MontarTelaPaciente", "BaseAdmin")"><i class="fa fa-lock"></i> <span class="nav-label" data-i18n="nav.dashboard">Controle de Acesso</span> <span class="fa arrow"></span></a>
                 <ul class="nav nav-second-level collapse @Html.IsSelected(controller: "Cadastros", cssClass: "in")">
-                    <li class="@Html.IsSelected(action: "TrocarSenha")"><a href="@Url.Action("TrocarSenha", "ControleAcesso")">Alterar Senha</a></li>
+                    <li class="@Html.IsSelected(action: "TrocarSenha")"><a href="@Url.Action("TrocarSenha", "ControleAcesso")" class="show-spinner">Alterar Senha</a></li>
                 </ul>
             </li>
 
@@ -42,41 +42,41 @@
                 <ul class="nav nav-second-level collapse @Html.IsSelected(controller: "Cadastros", cssClass: "in")">
                     @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_ACESSO_PACIENTE == 1)
                     {
-                        <li class="@Html.IsSelected(action: "MontarTelaCentralPaciente")"><a href="@Url.Action("MontarTelaCentralPaciente", "Paciente")">Central de Pacientes</a></li>
+                        <li class="@Html.IsSelected(action: "MontarTelaCentralPaciente")"><a href="@Url.Action("MontarTelaCentralPaciente", "Paciente")" class="show-spinner">Central de Pacientes</a></li>
                         if ((Int32)Session["PermMensageria"] == 1)
                         {
-                            <li class="@Html.IsSelected(action: "MontarTelaGrupo")"><a href="@Url.Action("MontarTelaGrupo", "Grupo")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acesso ao cadastro de grupos de pacientes ">Grupos de Pacientes</a></li>
+                            <li class="@Html.IsSelected(action: "MontarTelaGrupo")"><a href="@Url.Action("MontarTelaGrupo", "Grupo")" class="show-spinner" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acesso ao cadastro de grupos de pacientes ">Grupos de Pacientes</a></li>
                         } 
                     }
                     @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_ACESSO_PROD == 1)
                     {
-                        <li class="@Html.IsSelected(action: "MontarTelaMedicamento")"><a href="@Url.Action("MontarTelaMedicamento", "Medicamento")"  data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acesso ao cadastro de medicamentos usados nas prescrições">Medicamentos</a></li>
+                        <li class="@Html.IsSelected(action: "MontarTelaMedicamento")"><a href="@Url.Action("MontarTelaMedicamento", "Medicamento")" class="show-spinner"  data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acesso ao cadastro de medicamentos usados nas prescrições">Medicamentos</a></li>
                     }
-                    <li class="@Html.IsSelected(action: "MontarTelaVacina")"><a href="@Url.Action("MontarTelaVacina", "Vacina")"  data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acesso à lista de vacinas">Vacinas</a></li>
+                    <li class="@Html.IsSelected(action: "MontarTelaVacina")"><a href="@Url.Action("MontarTelaVacina", "Vacina")" class="show-spinner"  data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acesso à lista de vacinas">Vacinas</a></li>
                     @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_ACESSO_ESTOQUE == 1)
                     {
-                        <li class="@Html.IsSelected(action: "MontarTelaProduto")"><a href="@Url.Action("MontarTelaProduto", "Produto")">Materiais/Produtos</a></li>
+                        <li class="@Html.IsSelected(action: "MontarTelaProduto")"><a href="@Url.Action("MontarTelaProduto", "Produto")" class="show-spinner">Materiais/Produtos</a></li>
                     }
                     @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_SOLICITACAO_ACESSO == 1)
                     {
-                        <li class="@Html.IsSelected(action: "MontarTelaSolicitacaoBase")"><a href="@Url.Action("MontarTelaSolicitacaoBase", "Solicitacao")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acesso ao cadastro de modelos de solicitações de exames">Solicitações</a></li>
+                        <li class="@Html.IsSelected(action: "MontarTelaSolicitacaoBase")"><a href="@Url.Action("MontarTelaSolicitacaoBase", "Solicitacao") class="show-spinner"" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acesso ao cadastro de modelos de solicitações de exames">Solicitações</a></li>
                     }
-                    <li class="@Html.IsSelected(action: "MontarTelaAviso")"><a href="@Url.Action("MontarTelaAviso", "Aviso")"  data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acesso à lista de envios/lembretes cadastrados, ativos ou não">Avisos/Lembretes</a></li>
+                    <li class="@Html.IsSelected(action: "MontarTelaAviso")"><a href="@Url.Action("MontarTelaAviso", "Aviso")" class="show-spinner""  data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acesso à lista de envios/lembretes cadastrados, ativos ou não">Avisos/Lembretes</a></li>
                     @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_ACESSO_TEMPLATE == 1)
                     {
-                        <li class="@Html.IsSelected(action: "MontarTelaTemplateEMail")"><a href="@Url.Action("MontarTelaTemplateEMail", "TemplateEMail")"  data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acesso ao cadastro de modelos de mensagens de e-mail">Modelos E-Mails</a></li>
-                        <li class="@Html.IsSelected(action: "MontarTelaTemplateSMS")"><a href="@Url.Action("MontarTelaTemplateSMS", "TemplateSMS")"  data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acesso ao cadastro de modelos de mensagens de SMS">Modelos SMS</a></li>
+                        <li class="@Html.IsSelected(action: "MontarTelaTemplateEMail")"><a href="@Url.Action("MontarTelaTemplateEMail", "TemplateEMail")" class="show-spinner"  data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acesso ao cadastro de modelos de mensagens de e-mail">Modelos E-Mails</a></li>
+                        <li class="@Html.IsSelected(action: "MontarTelaTemplateSMS")"><a href="@Url.Action("MontarTelaTemplateSMS", "TemplateSMS")" class="show-spinner"  data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acesso ao cadastro de modelos de mensagens de SMS">Modelos SMS</a></li>
                     }
                     @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_ACESSO_FINANCEIRO == 1)
                     {
-                        <li class="@Html.IsSelected(action: "MontarTelaValorConsulta")"><a href="@Url.Action("MontarTelaValorConsulta", "Financeiro")"  data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acesso ao cadastro de tipos e valores de consultas">Tipos de Consultas</a></li>
+                        <li class="@Html.IsSelected(action: "MontarTelaValorConsulta")"><a href="@Url.Action("MontarTelaValorConsulta", "Financeiro")" class="show-spinner"  data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acesso ao cadastro de tipos e valores de consultas">Tipos de Consultas</a></li>
                     }
-                    <li class="@Html.IsSelected(action: "MontarTelaMensagensEnviadas")"><a href="@Url.Action("MontarTelaMensagensEnviadas", "BaseAdmin")"  data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acesso à lista de mensagens enviadas pelo WebDoctor, sob demanda ou automaticas">Mensagens Enviadas</a></li>
-                    <li class="@Html.IsSelected(action: "MontarTelaMedico")"><a href="@Url.Action("MontarTelaMedico", "Medico")"  data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acesso ao cadastro de médicos para enviar informações de pacientes com funcionalidades de envio">Médicos</a></li>
-                    <li class="@Html.IsSelected(action: "MontarTelaVideo")"><a href="@Url.Action("MontarTelaVideo", "Video")"  data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acesso ao cadastro de vídeos">Vídeos</a></li>
+                    <li class="@Html.IsSelected(action: "MontarTelaMensagensEnviadas")"><a href="@Url.Action("MontarTelaMensagensEnviadas", "BaseAdmin")" class="show-spinner"  data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acesso à lista de mensagens enviadas pelo WebDoctor, sob demanda ou automaticas">Mensagens Enviadas</a></li>
+                    <li class="@Html.IsSelected(action: "MontarTelaMedico")"><a href="@Url.Action("MontarTelaMedico", "Medico")" class="show-spinner"  data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acesso ao cadastro de médicos para enviar informações de pacientes com funcionalidades de envio">Médicos</a></li>
+                    <li class="@Html.IsSelected(action: "MontarTelaVideo")"><a href="@Url.Action("MontarTelaVideo", "Video")" class="show-spinner"  data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acesso ao cadastro de vídeos">Vídeos</a></li>
                     @if ((Int32)Session["PermLocacao"] == 1)
                     {
-                        <li class="@Html.IsSelected(action: "MontarTelaContratoLocacao")"><a href="@Url.Action("MontarTelaContratoLocacao", "Locacao")"  data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acesso ao editor de contratos de locação e demais documentos para locação de equipamentos">Contratos de Locação</a></li>
+                        <li class="@Html.IsSelected(action: "MontarTelaContratoLocacao")"><a href="@Url.Action("MontarTelaContratoLocacao", "Locacao")" class="show-spinner"  data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acesso ao editor de contratos de locação e demais documentos para locação de equipamentos">Contratos de Locação</a></li>
                     }
                 </ul>
             </li>
@@ -87,33 +87,33 @@
                 <ul class="nav nav-second-level collapse @Html.IsSelected(controller: "Cadastros", cssClass: "in")">
                     @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_ACESSO_PACIENTE == 1)
                     {
-                        <li class="@Html.IsSelected(action: "MontarTelaCentralPaciente")"><a href="@Url.Action("MontarTelaCentralPaciente", "Paciente")">Central de Pacientes</a></li>
+                        <li class="@Html.IsSelected(action: "MontarTelaCentralPaciente")"><a href="@Url.Action("MontarTelaCentralPaciente", "Paciente") class="show-spinner"">Central de Pacientes</a></li>
                     }
                     @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_PACIENTE_CONSULTA_ACESSO == 1)
                     {
-                        <li class="@Html.IsSelected(action: "MontarTelaConsultas")"><a href="@Url.Action("MontarTelaConsultas", "Paciente")">Central de Consultas</a></li>
+                        <li class="@Html.IsSelected(action: "MontarTelaConsultas")"><a href="@Url.Action("MontarTelaConsultas", "Paciente")" class="show-spinner">Central de Consultas</a></li>
                     }
                     @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_PRESCRICAO_ACESSO == 1)
                     {
-                        <li class="@Html.IsSelected(action: "MontarTelaPrescricoes")"><a href="@Url.Action("MontarTelaPrescricoes", "Paciente")">Central de Prescrições</a></li>
+                        <li class="@Html.IsSelected(action: "MontarTelaPrescricoes")"><a href="@Url.Action("MontarTelaPrescricoes", "Paciente")" class="show-spinner">Central de Prescrições</a></li>
                     }
                     @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_ATESTADO_ACESSO == 1)
                     {
-                        <li class="@Html.IsSelected(action: "MontarTelaAtestados")"><a href="@Url.Action("MontarTelaAtestados", "Paciente")">Central de Atestados</a></li>
+                        <li class="@Html.IsSelected(action: "MontarTelaAtestados")"><a href="@Url.Action("MontarTelaAtestados", "Paciente")" class="show-spinner">Central de Atestados</a></li>
                     }
                     @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_SOLICITACAO_ACESSO == 1)
                     {
-                        <li class="@Html.IsSelected(action: "MontarTelaSolicitacoes")"><a href="@Url.Action("MontarTelaSolicitacoes", "Paciente")">Central de Solicitações</a></li>
+                        <li class="@Html.IsSelected(action: "MontarTelaSolicitacoes")"><a href="@Url.Action("MontarTelaSolicitacoes", "Paciente") class="show-spinner"">Central de Solicitações</a></li>
 
                     }
                     @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_EXAME_ACESSO == 1)
                     {
-                        <li class="@Html.IsSelected(action: "MontarTelaExames")"><a href="@Url.Action("MontarTelaExames", "Paciente")">Central de Exames</a></li>
+                        <li class="@Html.IsSelected(action: "MontarTelaExames")"><a href="@Url.Action("MontarTelaExames", "Paciente")" class="show-spinner">Central de Exames</a></li>
 
                     }
                     @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_ACESSO_PACIENTE == 1)
                     {
-                        <li class="@Html.IsSelected(action: "MontarTelaMedico")"><a href="@Url.Action("MontarTelaMedico", "Medico")">Repassar Informações</a></li>
+                        <li class="@Html.IsSelected(action: "MontarTelaMedico")"><a href="@Url.Action("MontarTelaMedico", "Medico")" class="show-spinner">Repassar Informações</a></li>
                     }
                 </ul>
             </li>
@@ -124,11 +124,11 @@
                 <ul class="nav nav-second-level collapse @Html.IsSelected(controller: "Cadastros", cssClass: "in")">
                     @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_PACIENTE_CONSULTA_ACESSO == 1)
                     {
-                        <li class="@Html.IsSelected(action: "MontarTelaConsultas")"><a href="@Url.Action("MontarTelaConsultas", "Paciente")">Central de Consultas</a></li>
-                        <li class="@Html.IsSelected(action: "VerCalendarioConsulta")"><a href="@Url.Action("VerCalendarioConsulta", "Paciente")">Calendário</a></li>
-                        <li class="@Html.IsSelected(action: "ConfirmarCancelarConsulta")"><a href="@Url.Action("ConfirmarCancelarConsulta", "Paciente")">Confirmar/Cancelar</a></li>
-                        <li class="@Html.IsSelected(action: "MontarTelaEncerrarConsulta")"><a href="@Url.Action("MontarTelaEncerrarConsulta", "Financeiro")">Encerrar Consultas</a></li>
-                        <li class="@Html.IsSelected(action: "MontarTelaValorConsulta")"><a href="@Url.Action("MontarTelaValorConsulta", "Financeiro")"  data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acesso ao cadastro de tipos e valores de consultas">Consultas - Valores</a></li>
+                        <li class="@Html.IsSelected(action: "MontarTelaConsultas")"><a href="@Url.Action("MontarTelaConsultas", "Paciente")" class="show-spinner">Central de Consultas</a></li>
+                        <li class="@Html.IsSelected(action: "VerCalendarioConsulta")"><a href="@Url.Action("VerCalendarioConsulta", "Paciente")" class="show-spinner">Calendário</a></li>
+                        <li class="@Html.IsSelected(action: "ConfirmarCancelarConsulta")"><a href="@Url.Action("ConfirmarCancelarConsulta", "Paciente")" class="show-spinner">Confirmar/Cancelar</a></li>
+                        <li class="@Html.IsSelected(action: "MontarTelaEncerrarConsulta")"><a href="@Url.Action("MontarTelaEncerrarConsulta", "Financeiro")" class="show-spinner">Encerrar Consultas</a></li>
+                        <li class="@Html.IsSelected(action: "MontarTelaValorConsulta")"><a href="@Url.Action("MontarTelaValorConsulta", "Financeiro")" class="show-spinner"  data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acesso ao cadastro de tipos e valores de consultas">Consultas - Valores</a></li>
                     }
                 </ul>
             </li>
@@ -141,9 +141,9 @@
                     <ul class="nav nav-second-level collapse @Html.IsSelected(controller: "Cadastros", cssClass: "in")">
                         @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_ACESSO_FINANCEIRO == 1)
                         {
-                            <li class="@Html.IsSelected(action: "MontarTelaFinanceiro")"><a href="@Url.Action("MontarTelaFinanceiro", "Financeiro")">Financeiro - Dashboard</a></li>
-                            <li class="@Html.IsSelected(action: "MontarTelaPagamento")"><a href="@Url.Action("MontarTelaPagamento", "Financeiro")">Pagamentos</a></li>
-                            <li class="@Html.IsSelected(action: "MontarTelaRecebimento")"><a href="@Url.Action("MontarTelaRecebimento", "Financeiro")">Recebimentos</a></li>
+                            <li class="@Html.IsSelected(action: "MontarTelaFinanceiro")"><a href="@Url.Action("MontarTelaFinanceiro", "Financeiro")" class="show-spinner">Financeiro - Dashboard</a></li>
+                            <li class="@Html.IsSelected(action: "MontarTelaPagamento")"><a href="@Url.Action("MontarTelaPagamento", "Financeiro")" class="show-spinner">Pagamentos</a></li>
+                            <li class="@Html.IsSelected(action: "MontarTelaRecebimento")"><a href="@Url.Action("MontarTelaRecebimento", "Financeiro")" class="show-spinner">Recebimentos</a></li>
                             @*<li class="@Html.IsSelected(action: "MontarTelaEncerrarConsulta")"><a href="@Url.Action("MontarTelaEncerrarConsulta", "Financeiro")">Encerrar Consultas</a></li>
                             <li class="@Html.IsSelected(action: "MontarTelaValorConsulta")"><a href="@Url.Action("MontarTelaValorConsulta", "Financeiro")"  data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acesso ao cadastro de tipos e valores de consultas">Consultas - Valores</a></li>*@
                             @*<li class="@Html.IsSelected(action: "CarregarDesenvolvimento")"><a href="@Url.Action("CarregarDesenvolvimento", "BaseAdmin")">Envio para Contador</a></li>*@
@@ -160,7 +160,7 @@
                     <ul class="nav nav-second-level collapse @Html.IsSelected(controller: "Cadastros", cssClass: "in")">
                         @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_ACESSO_FINANCEIRO == 1)
                         {
-                            <li class="@Html.IsSelected(action: "MontarTelaLocacao")"><a href="@Url.Action("MontarTelaLocacao", "Locacao")">Locações</a></li>
+                            <li class="@Html.IsSelected(action: "MontarTelaLocacao")"><a href="@Url.Action("MontarTelaLocacao", "Locacao")" class="show-spinner">Locações</a></li>
                         }
                     </ul>
                 </li>
@@ -174,8 +174,8 @@
                     <ul class="nav nav-second-level collapse @Html.IsSelected(controller: "Cadastros", cssClass: "in")">
                         @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_ACESSO_ESTOQUE == 1)
                         {
-                            <li class="@Html.IsSelected(action: "MontarTelaProduto")"><a href="@Url.Action("MontarTelaProduto", "Produto")">Materiais/Produtos</a></li>
-                            <li class="@Html.IsSelected(action: "MontarTelaEstoque")"><a href="@Url.Action("MontarTelaEstoque", "Estoque")">Estoque</a></li>
+                            <li class="@Html.IsSelected(action: "MontarTelaProduto")"><a href="@Url.Action("MontarTelaProduto", "Produto")" class="show-spinner">Materiais/Produtos</a></li>
+                            <li class="@Html.IsSelected(action: "MontarTelaEstoque")"><a href="@Url.Action("MontarTelaEstoque", "Estoque")" class="show-spinner">Estoque</a></li>
                         }
                     </ul>
                 </li>
@@ -189,10 +189,10 @@
                     <ul class="nav nav-second-level collapse @Html.IsSelected(controller: "Cadastros", cssClass: "in")">
                         @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_ACESSO_MENSAGEM == 1)
                         {
-                            <li class="@Html.IsSelected(action: "MontarTelaMensagemEMail")"><a href="@Url.Action("MontarTelaMensagemEMail", "Mensagem")">Mensageria</a></li>
-                            <li class="@Html.IsSelected(action: "IncluirMensagemEMail")"><a href="@Url.Action("IncluirMensagemEMail", "Mensagem")">Criação de Mensagem</a></li>
+                            <li class="@Html.IsSelected(action: "MontarTelaMensagemEMail")"><a href="@Url.Action("MontarTelaMensagemEMail", "Mensagem")" class="show-spinner">Mensageria</a></li>
+                            <li class="@Html.IsSelected(action: "IncluirMensagemEMail")"><a href="@Url.Action("IncluirMensagemEMail", "Mensagem")" class="show-spinner">Criação de Mensagem</a></li>
                         }
-                        <li class="@Html.IsSelected(action: "MontarTelaMensagensEnviadas")"><a href="@Url.Action("MontarTelaMensagensEnviadas", "BaseAdmin")"  data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acesso à lista de mensagens enviadas pelo WebDoctor, sob demanda ou automaticas">Mensagens Automáticas</a></li>
+                        <li class="@Html.IsSelected(action: "MontarTelaMensagensEnviadas")"><a href="@Url.Action("MontarTelaMensagensEnviadas", "BaseAdmin")" class="show-spinner"  data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acesso à lista de mensagens enviadas pelo WebDoctor, sob demanda ou automaticas">Mensagens Automáticas</a></li>
                     </ul>
                 </li>   
             }
@@ -201,7 +201,7 @@
             <li>
                 <a href="@Url.Action("MontarTelaPaciente", "BaseAdmin")"><i class="fa fa-user"></i> <span class="nav-label" data-i18n="nav.dashboard">Assinante</span> <span class="fa arrow"></span></a>
                 <ul class="nav nav-second-level collapse @Html.IsSelected(controller: "Cadastros", cssClass: "in")">
-                    <li class="@Html.IsSelected(action: "MontarTelaEmpresa")"><a href="@Url.Action("MontarTelaEmpresa", "Empresa")">Assinante</a></li>
+                    <li class="@Html.IsSelected(action: "MontarTelaEmpresa")"><a href="@Url.Action("MontarTelaEmpresa", "Empresa")" class="show-spinner">Assinante</a></li>
                 </ul>
             </li>
 
@@ -211,13 +211,13 @@
                 <li>
                     <a href="@Url.Action("MontarTelaPaciente", "BaseAdmin")"><i class="fa fa-tasks"></i> <span class="nav-label" data-i18n="nav.dashboard">Administração</span> <span class="fa arrow"></span></a>
                     <ul class="nav nav-second-level collapse @Html.IsSelected(controller: "Cadastros", cssClass: "in")">
-                        <li class="@Html.IsSelected(action: "MontarTelaLog")"><a href="@Url.Action("MontarTelaLog", "Auditoria")">Auditoria</a></li>
-                        <li class="@Html.IsSelected(action: "MontarTelaUsuario")"><a href="@Url.Action("MontarTelaUsuario", "Usuario")">Central de Usuários</a></li>
-                        <li class="@Html.IsSelected(action: "MontarTelaPerfil")"><a href="@Url.Action("MontarTelaPerfil", "Perfil")">Perfis de Acesso</a></li>
-                        <li class="@Html.IsSelected(action: "MontarTelaTabelasAuxiliares")"><a href="@Url.Action("MontarTelaTabelasAuxiliares", "BaseAdmin")">Tabelas Auxiliares</a></li>
-                        <li class="@Html.IsSelected(action: "MontarTelaControleAcessoNova")"><a href="@Url.Action("MontarTelaControleAcessoNova", "BaseAdmin")">Resumo de Acessos</a></li>
-                        <li class="@Html.IsSelected(action: "MontarTelaMensagensEnviadas")"><a href="@Url.Action("MontarTelaMensagensEnviadas", "BaseAdmin")">Mensagens Enviadas</a></li>
-                        <li class="@Html.IsSelected(action: "MontarTelaNoticia")"><a href="@Url.Action("MontarTelaNoticia", "Noticia")">Notícias</a></li>
+                        <li class="@Html.IsSelected(action: "MontarTelaLog")"><a href="@Url.Action("MontarTelaLog", "Auditoria")" class="show-spinner">Auditoria</a></li>
+                        <li class="@Html.IsSelected(action: "MontarTelaUsuario")"><a href="@Url.Action("MontarTelaUsuario", "Usuario")" class="show-spinner">Central de Usuários</a></li>
+                        <li class="@Html.IsSelected(action: "MontarTelaPerfil")"><a href="@Url.Action("MontarTelaPerfil", "Perfil")" class="show-spinner">Perfis de Acesso</a></li>
+                        <li class="@Html.IsSelected(action: "MontarTelaTabelasAuxiliares")"><a href="@Url.Action("MontarTelaTabelasAuxiliares", "BaseAdmin")" class="show-spinner">Tabelas Auxiliares</a></li>
+                        <li class="@Html.IsSelected(action: "MontarTelaControleAcessoNova")"><a href="@Url.Action("MontarTelaControleAcessoNova", "BaseAdmin")" class="show-spinner">Resumo de Acessos</a></li>
+                        <li class="@Html.IsSelected(action: "MontarTelaMensagensEnviadas")"><a href="@Url.Action("MontarTelaMensagensEnviadas", "BaseAdmin")" class="show-spinner">Mensagens Enviadas</a></li>
+                        <li class="@Html.IsSelected(action: "MontarTelaNoticia")"><a href="@Url.Action("MontarTelaNoticia", "Noticia")" class="show-spinner">Notícias</a></li>
                     </ul>
                 </li>
             }
@@ -228,11 +228,11 @@
                 <ul class="nav nav-second-level collapse @Html.IsSelected(controller: "Cadastros", cssClass: "in")">
                     @if (((EntitiesServices.Model.PERFIL)Session["Perfil"]).PERF_SG_SIGLA == "ADM" || ((EntitiesServices.Model.PERFIL)Session["Perfil"]).PERF_SG_SIGLA == "GER")
                     {
-                        <li class="@Html.IsSelected(action: "MontarTelaConfiguracao")"><a href="@Url.Action("MontarTelaConfiguracao", "Configuracao")">Configurações</a></li>
-                        <li class="@Html.IsSelected(action: "MontarTelaConfiguracaoAnamnese")"><a href="@Url.Action("MontarTelaConfiguracaoAnamnese", "Configuracao")">Config.Anamnese</a></li>
+                        <li class="@Html.IsSelected(action: "MontarTelaConfiguracao")"><a href="@Url.Action("MontarTelaConfiguracao", "Configuracao")" class="show-spinner">Configurações</a></li>
+                        <li class="@Html.IsSelected(action: "MontarTelaConfiguracaoAnamnese")"><a href="@Url.Action("MontarTelaConfiguracaoAnamnese", "Configuracao")" class="show-spinner">Config.Anamnese</a></li>
                     }
-                    <li class="@Html.IsSelected(action: "MontarTelaConfiguracaoCalendario")"><a href="@Url.Action("MontarTelaConfiguracaoCalendario", "Configuracao")">Config.Calendário</a></li>
-                    <li class="@Html.IsSelected(action: "MontarTelaBloqueio")"><a href="@Url.Action("MontarTelaBloqueio", "Configuracao")">Bloqueio de Horário</a></li>
+                    <li class="@Html.IsSelected(action: "MontarTelaConfiguracaoCalendario")"><a href="@Url.Action("MontarTelaConfiguracaoCalendario", "Configuracao")" class="show-spinner">Config.Calendário</a></li>
+                    <li class="@Html.IsSelected(action: "MontarTelaBloqueio")"><a href="@Url.Action("MontarTelaBloqueio", "Configuracao")" class="show-spinner">Bloqueio de Horário</a></li>
                 </ul>
             </li>
 
@@ -240,8 +240,8 @@
             <li>
                 <a href="@Url.Action("MontarTelaPaciente", "BaseAdmin")"><i class="fa fa-check"></i> <span class="nav-label" data-i18n="nav.dashboard">Indicações</span> <span class="fa arrow"></span></a>
                 <ul class="nav nav-second-level collapse @Html.IsSelected(controller: "Cadastros", cssClass: "in")">
-                    <li class="@Html.IsSelected(action: "MontarTelaIncluirIndicacao")"><a href="@Url.Action("MontarTelaIncluirIndicacao", "Usuario")">Fazer Indicação</a></li>
-                    <li class="@Html.IsSelected(action: "MontarTelaIndicacao")"><a href="@Url.Action("MontarTelaIndicacao", "Usuario")">Acompanhar Indicações</a></li>
+                    <li class="@Html.IsSelected(action: "MontarTelaIncluirIndicacao")"><a href="@Url.Action("MontarTelaIncluirIndicacao", "Usuario")" class="show-spinner">Fazer Indicação</a></li>
+                    <li class="@Html.IsSelected(action: "MontarTelaIndicacao")"><a href="@Url.Action("MontarTelaIndicacao", "Usuario")" class="show-spinner">Acompanhar Indicações</a></li>
                 </ul>
             </li>
 
@@ -249,9 +249,9 @@
             <li>
                 <a href="@Url.Action("MontarTelaPaciente", "BaseAdmin")"><i class="fa fa-legal"></i> <span class="nav-label" data-i18n="nav.dashboard">Institucional</span> <span class="fa arrow"></span></a>
                 <ul class="nav nav-second-level collapse @Html.IsSelected(controller: "Cadastros", cssClass: "in")">
-                    <li class="@Html.IsSelected(action: "MontarTelaFaleConosco")"><a href="@Url.Action("MontarTelaFaleConosco", "BaseAdmin")">Fale Conosco</a></li>
-                    <li class="@Html.IsSelected(action: "MontarTelaSobre")"><a href="@Url.Action("MontarTelaSobre", "BaseAdmin")">Sobre...</a></li>
-                    <li class="@Html.IsSelected(action: "CarregarDesenvolvimento")"><a href="@Url.Action("CarregarDesenvolvimento", "BaseAdmin")">Informações Legais</a></li>
+                    <li class="@Html.IsSelected(action: "MontarTelaFaleConosco")"><a href="@Url.Action("MontarTelaFaleConosco", "BaseAdmin")" class="show-spinner">Fale Conosco</a></li>
+                    <li class="@Html.IsSelected(action: "MontarTelaSobre")"><a href="@Url.Action("MontarTelaSobre", "BaseAdmin")" class="show-spinner">Sobre...</a></li>
+                    <li class="@Html.IsSelected(action: "CarregarDesenvolvimento")"><a href="@Url.Action("CarregarDesenvolvimento", "BaseAdmin")" class="show-spinner">Informações Legais</a></li>
                 </ul>
             </li>
 

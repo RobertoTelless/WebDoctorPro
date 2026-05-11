@@ -85,11 +85,11 @@
                     <div class="form-group">
                         @if ((Int32)Session["VoltaHistLocacao"] == 1)
                         {
-                             @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaLocacao", controller: "Locacao", htmlAttributes: new { @class = "btn-loading" })
+                             @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaLocacao", controller: "Locacao", htmlAttributes: new { @class = "btn-loading show-spinner" })
                         }
                         else
                         {
-                             @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarAnexoLocacao", controller: "Locacao", htmlAttributes: new { @class = "btn-loading" })
+                             @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarAnexoLocacao", controller: "Locacao", htmlAttributes: new { @class = "btn-loading show-spinner" })
                         }
                         <a href="@Url.Action((String)Session["AjudaNivel"])"  class="btn btn-sm btn-danger" target="_blank">Ajuda</a>                
                         <span id="loadingIndicator" style="display: none; margin-left: 10px; color: #007bff;">

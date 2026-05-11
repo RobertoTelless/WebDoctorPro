@@ -460,11 +460,11 @@
                                                                             <td style="width: auto">
                                                                                 @if (cond.EMAN_IN_TIPO == 1 || cond.EMAN_IN_TIPO == 2)
                                                                                 {
-                                                                                    <a href="@Url.Action("VerAnexoEmpresa", "Empresa", new { id = cond.EMAN_CD_ID })">@cond.EMAN_NM_TITULO</a>
+                                                                                    <a href="@Url.Action("VerAnexoEmpresa", "Empresa", new { id = cond.EMAN_CD_ID })" class="btn-loading show-spinner">@cond.EMAN_NM_TITULO</a>
                                                                                 }
                                                                                 else if (cond.EMAN_IN_TIPO == 4)
                                                                                 {
-                                                                                    <a href="@Url.Action("VerAnexoEmpresaAudio", "Empresa", new { id = cond.EMAN_CD_ID })">@cond.EMAN_NM_TITULO</a>
+                                                                                    <a href="@Url.Action("VerAnexoEmpresaAudio", "Empresa", new { id = cond.EMAN_CD_ID })" class="btn-loading show-spinner">@cond.EMAN_NM_TITULO</a>
                                                                                 }
                                                                                 else if (cond.EMAN_IN_TIPO == 3)
                                                                                 {
@@ -529,11 +529,11 @@
                                                                             <td style="width: auto">
                                                                                 @if (cond.EMAN_IN_TIPO == 1 || cond.EMAN_IN_TIPO == 2)
                                                                                 {
-                                                                                    <a href="@Url.Action("VerAnexoEmpresa", "Empresa", new { id = cond.EMAN_CD_ID })">@cond.EMAN_NM_TITULO</a>
+                                                                                    <a href="@Url.Action("VerAnexoEmpresa", "Empresa", new { id = cond.EMAN_CD_ID })" class="btn-loading show-spinner">@cond.EMAN_NM_TITULO</a>
                                                                                 }
                                                                                 else if (cond.EMAN_IN_TIPO == 4)
                                                                                 {
-                                                                                    <a href="@Url.Action("VerAnexoEmpresaAudio", "Empresa", new { id = cond.EMAN_CD_ID })">@cond.EMAN_NM_TITULO</a>
+                                                                                    <a href="@Url.Action("VerAnexoEmpresaAudio", "Empresa", new { id = cond.EMAN_CD_ID })" class="btn-loading show-spinner">@cond.EMAN_NM_TITULO</a>
                                                                                 }
                                                                                 else if (cond.EMAN_IN_TIPO == 3)
                                                                                 {

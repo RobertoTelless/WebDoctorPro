@@ -64,8 +64,8 @@
                     }
                     <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
                         <div class="col-lg-12 col-md-12 col-xs-12">
-                            <a href="@Url.Action("IncluirGrupo", "Grupo")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Possibilita a criação de um novo grupo de pacientes" class="btn btn-sm btn-primary btn-loading" id="emp" OnClick = "Fade()">Novo Grupo de Pacientes</a>                
-                            @Html.ButtonLinkIndex(text: "Voltar", controller: "Paciente", action: "MontarTelaPaciente")
+                            <a href="@Url.Action("IncluirGrupo", "Grupo")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Possibilita a criação de um novo grupo de pacientes" class="btn btn-sm btn-primary btn-loading show-spinner" id="emp" OnClick = "Fade()">Novo Grupo de Pacientes</a>                
+                            @Html.ButtonLinkIndex(text: "Voltar", controller: "Paciente", action: "MontarTelaPaciente", htmlAttributes: new { @class = "btn-loading show-spinner" })
                             <a href="@Url.Action((String)Session["AjudaNivel"])"  class="btn btn-sm btn-danger" target="_blank">Ajuda</a>                
                         </div>
                     </div>
@@ -89,11 +89,11 @@
                                         <tr>
                                             @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_EDICAO_GRUPO == 1)
                                             {
-                                                <td style="width: auto"><a href="@Url.Action("EditarGrupo", "Grupo", new { id = cond.GRUP_CD_ID })" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página de edição de grupos de pacientes"/>@cond.GRUP_NM_NOME</td>
+                                                <td style="width: auto"><a href="@Url.Action("EditarGrupo", "Grupo", new { id = cond.GRUP_CD_ID })" class="btn-loading show-spinner" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página de edição de grupos de pacientes"/>@cond.GRUP_NM_NOME</td>
                                             }
                                             else
                                             {
-                                                <td style="width: auto"><a href="@Url.Action("VerGrupo", "Grupo", new { id = cond.GRUP_CD_ID })" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página de visualização de grupos de pacientes"/>@cond.GRUP_NM_NOME</td>
+                                                <td style="width: auto"><a href="@Url.Action("VerGrupo", "Grupo", new { id = cond.GRUP_CD_ID })" class="btn-loading show-spinner" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página de visualização de grupos de pacientes"/>@cond.GRUP_NM_NOME</td>
                                             }
                                             <td style="width: auto">@cond.USUARIO.USUA_NM_NOME</td>
                                             <td style="width: auto">@cond.GRUP_DT_CADASTRO.Value.ToShortDateString()</td>
@@ -108,18 +108,18 @@
                                             <td style="width: auto" class="td-one-action">
                                                 @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_EDICAO_GRUPO == 1)
                                                 {
-                                                    @Html.TableLinkDetails(cond.GRUP_CD_ID, "EditarGrupo", "fa-edit", "Editar/Ver Grupo")
+                                                    @Html.TableLinkDetails(cond.GRUP_CD_ID, "EditarGrupo", "fa-edit show-spinner", "Editar/Ver Grupo")
                                                 }
                                                 else
                                                 {
-                                                    @Html.TableLinkDetails(cond.GRUP_CD_ID, "VerGrupo", "fa-search", "Ver Grupo")
+                                                    @Html.TableLinkDetails(cond.GRUP_CD_ID, "VerGrupo", "fa-search show-spinner", "Ver Grupo")
                                                 }
-                                                <span style="color: #337ab7; cursor:pointer;" alt="Remontar" class="tbl-link fa-lg fa fa-refresh" onclick="ShowModalRemontar('/Grupo/RemontarGrupo/@cond.GRUP_CD_ID')" title="Remontar Grupo"></span>
+                                                <span style="color: #337ab7; cursor:pointer;" alt="Remontar" class="tbl-link fa-lg fa fa-refresh show-spinner" onclick="ShowModalRemontar('/Grupo/RemontarGrupo/@cond.GRUP_CD_ID')" title="Remontar Grupo"></span>
                                                 @if (cond.GRUP_IN_ATIVO == 1)
                                                 {
                                                     if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_EXCLUSAO_GRUPO == 1)
                                                     {
-                                                        <span style="color: #337ab7; cursor:pointer;" alt="Desativar" class="tbl-link fa-lg fa fa-trash-o" onclick="ShowModalExcluir('/Grupo/ExcluirGrupo/@cond.GRUP_CD_ID')" title="Excluir Grupo"></span>
+                                                        <span style="color: #337ab7; cursor:pointer;" alt="Desativar" class="tbl-link fa-lg fa fa-trash-o show-spinner" onclick="ShowModalExcluir('/Grupo/ExcluirGrupo/@cond.GRUP_CD_ID')" title="Excluir Grupo"></span>
                                                     }
                                                 }
                                             </td>

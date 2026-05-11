@@ -48,6 +48,7 @@
     <!-- Primary Inspinia style -->
     @Styles.Render("~/Content/css")
     @Styles.Render("~/font-awesome/css")
+    @Styles.Render("~/Content/Spinner_Style.css")
 
 
     <!--NOTIFICACAO EM TODAS AS PÁGINAS-->
@@ -81,6 +82,18 @@
 
 </head>
 <body>
+    <!-- Spinner de Carregamento Global -->
+    <div id="global-loader">
+        <div class="sk-spinner sk-spinner-wave">
+            <div class="sk-rect1"></div>
+            <div class="sk-rect2"></div>
+            <div class="sk-rect3"></div>
+            <div class="sk-rect4"></div>
+            <div class="sk-rect5"></div>
+        </div>
+    </div>
+
+
     <!-- Skin configuration box -->
     <!-- @Html.Partial("_SkinConfig") -->
     @using Inspinia_MVC5;
@@ -162,6 +175,26 @@
     @Scripts.Render("~/Scripts/plugins/fullcalendar/moment.min.js")
     @Scripts.Render("~/Scripts/plugins/fullcalendar/fullcalendar.min.js")
     @Scripts.Render("~/plugins/chartjs")
+
+    <script>
+        $(document).ready(function () {
+            // 1. Ativa apenas em links que tenham a classe 'show-spinner'
+            $('a.show-spinner').click(function (e) {
+                // Verifica se não é um link vazio ou âncora interna
+                if (this.href && this.href.indexOf('#') === -1) {
+                    $("#global-loader").css("display", "flex");
+                }
+            });
+
+            // 2. Ativa apenas em formulários que tenham a classe 'show-spinner'
+            $('form.show-spinner').submit(function () {
+                if ($(this).valid()) {
+                    $("#global-loader").css("display", "flex");
+                }
+            });
+        });
+    </script>
+
 
     <!-- Skin config script - only for demo purpose-->
     @Scripts.Render("~/bundles/skinConfig")

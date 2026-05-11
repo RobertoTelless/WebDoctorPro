@@ -45,11 +45,11 @@
                             <div class="form-group" style=" margin-left: 5px; margin-right: 5px;">  
                                 @if ((Int32)Session["VoltaAviso"] == 4)
                                 {
-                                    @Html.ButtonLinkIndex(text: "Voltar", controller: "Paciente", action: "MontarTelaPaciente")
+                                    @Html.ButtonLinkIndex(text: "Voltar", controller: "Paciente", action: "MontarTelaPaciente", htmlAttributes: new { @class = "show-spinner" })
                                 }
                                 else
                                 {
-                                    @Html.ButtonLinkIndex(text: "Voltar", controller: "Aviso", action: "MontarTelaAviso")
+                                    @Html.ButtonLinkIndex(text: "Voltar", controller: "Aviso", action: "MontarTelaAviso", htmlAttributes: new { @class = "show-spinner" })
                                 }
                                 <a href="@Url.Action((String)Session["AjudaNivel"])"  class="btn btn-sm btn-danger" target="_blank">Ajuda</a>                
                             </div>                           
