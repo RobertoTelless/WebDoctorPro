@@ -275,7 +275,7 @@
                                                     {
                                                         <td style="width: auto; color: darkblue; font-weight:bold; background-color: aliceblue">@CrossCutting.Formatters.IntegerFormatter(cond.PROD_VL_ESTOQUE_ATUAL.Value)</td>
                                                     }
-                                                    else if (cond.PROD_VL_ESTOQUE_ATUAL < cond.PROD_VL_ESTOQUE_MINIMO)
+                                                    else if ((cond.PROD_VL_ESTOQUE_ATUAL < cond.PROD_VL_ESTOQUE_MINIMO) & (cond.PROD_VL_ESTOQUE_ATUAL > 0))
                                                     {
                                                         <td style="width: auto; color: brown; font-weight:bold; background-color: antiquewhite">@CrossCutting.Formatters.IntegerFormatter(cond.PROD_VL_ESTOQUE_ATUAL.Value)</td>
                                                     }

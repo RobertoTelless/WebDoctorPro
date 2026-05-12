@@ -91,6 +91,32 @@
     @Styles.Render("~/plugins/jasnyBootstrapStyles")
     @Styles.Render("~/plugins/toastrStyles")
     @Styles.Render("~/Content/fullcalendar.min.css")
+
+    <style>
+        /* Estilização Customizada para o WebDoctorPro */
+        #toast-container > .toast {
+            width: 500px !important; 
+            max-width: 500px !important;
+            opacity: 0.95 !important;
+        }
+
+        #toast-container > .toast-success, 
+        #toast-container > .toast-error {
+            background-image: none !important;
+        }
+
+        /* Remove ícones Inspinia/FontAwesome injetados */
+        .toast-success .toast-title::before, .toast-error .toast-title::before,
+        .toast-success::before, .toast-error::before {
+            content: none !important;
+            display: none !important;
+        }
+
+        .toast-title, .toast-message {
+            padding-left: 15px !important;
+        }
+    </style>
+
 }
 
 @section Scripts {
@@ -152,7 +178,7 @@
             $('#calendario').fullCalendar('removeEvents', 0);
         });
 
-$.ajax({
+            $.ajax({
             url: '../Paciente/GetEventosCalendario'
             , type: 'POST'
             , success: function (r) {
@@ -249,35 +275,72 @@ $.ajax({
                         // Inicializa o tooltip após configurar o title
                         $(element).tooltip();
                     }
-                    , eventDrop: function (info) {
-                        // Impede arrastar se for bloqueio (segurança adicional ao frontend)
-                        if (info.tipoEvento === 'bloqueio') {
-                            toastr.warning("Não é possível alterar o horário de um bloqueio pela agenda.");
-                            location.reload(); // Recarrega para voltar o evento pro lugar
-                            return false;
-                        }
-
-                        // Sua lógica existente de Drop para consultas
-                        // Como mudamos o ID no backend (cons_XX), precisamos extrair o número
-                        var realId = info.id.toString().replace('cons_', '');
-
-                        var data = {
-                            id: realId
-                            , data: info.start.toISOString()
-                        }
-
-                        $.ajax({
-                            url: '../Paciente/EditarConsultaOnChange'
-                            , type: 'POST'
-                            , data: data
-                            , success: function (r) {
-                                if (r.volta > 0) {
-                                    alert(r.desc);
-                                    location.reload();
-                                }
+                        , eventDrop: function (info) {
+                            if (info.tipoEvento === 'bloqueio') {
+                                toastr.warning("Não é possível alterar o horário de um bloqueio pela agenda.");
+                                location.reload(); 
+                                return false;
                             }
-                        });
-                    }
+
+                            var realId = info.id.toString().replace('cons_', '');
+                            var data = {
+                                id: realId,
+                                data: info.start.toISOString()
+                            };
+
+                            $.ajax({
+                                url: '../Paciente/EditarConsultaOnChange',
+                                type: 'POST',
+                                data: data,
+                                success: function (r) {
+                                    if (r.volta > 0) {
+                                        // Configura o Toastr para recarregar a página APÓS sumir
+                                        toastr.options.onHidden = function () { 
+                                            location.reload(); 
+                                        };
+
+                                        // Dispara o Toastr estilizado (Sucesso ou Erro baseado no retorno)
+                                        if (r.volta == 1) {
+                                            toastr.success(r.desc, 'Sucesso!');
+                                        } else {
+                                            toastr.error(r.desc, 'Atenção!');
+                                        }
+                                    }
+                                },
+                                error: function() {
+                                    toastr.error("Erro interno ao processar a alteração.", "Erro!");
+                                }
+                            });
+                        }
+                //    , eventDrop: function (info) {
+                //        // Impede arrastar se for bloqueio (segurança adicional ao frontend)
+                //        if (info.tipoEvento === 'bloqueio') {
+                //            toastr.warning("Não é possível alterar o horário de um bloqueio pela agenda.");
+                //            location.reload(); // Recarrega para voltar o evento pro lugar
+                //            return false;
+                //        }
+
+                //        // Sua lógica existente de Drop para consultas
+                //        // Como mudamos o ID no backend (cons_XX), precisamos extrair o número
+                //        var realId = info.id.toString().replace('cons_', '');
+
+                //        var data = {
+                //            id: realId
+                //            , data: info.start.toISOString()
+                //        }
+
+                //            $.ajax({
+                //                url: '../Paciente/EditarConsultaOnChange'
+                //                , type: 'POST'
+                //                , data: data
+                //                , success: function (r) {
+                //                    if (r.volta > 0) {
+                //                        alert(r.desc);
+                //                        location.reload();
+                //                    }
+                //                }
+                //            });
+                //    }
                 });
 
             }

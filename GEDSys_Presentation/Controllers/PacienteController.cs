@@ -3190,6 +3190,8 @@ namespace GEDSys_Presentation.Controllers
                 mens.PACI_CD_ID = cont.PACI__CD_ID;
                 mens.MENS_NM_RODAPE = cont.PACI_NR_TELEFONE;
                 mens.MENS_NM_ASSINATURA = cont.PACI_NR_CELULAR;
+                mens.MENS_IN_TIPO_EMAIL = 1;
+                mens.TIPO_ENVIO = 1;
                 return View(mens);
             }
             catch (Exception ex)
@@ -3216,6 +3218,7 @@ namespace GEDSys_Presentation.Controllers
             Int32 idAss = (Int32)Session["IdAssinante"];
             USUARIO usuario = (USUARIO)Session["UserCredentials"];
             PACIENTE cont = (PACIENTE)Session["Paciente"];
+            CONFIGURACAO conf = CarregaConfiguracaoGeral();
             if (ModelState.IsValid)
             {
                 try
@@ -3261,137 +3264,80 @@ namespace GEDSys_Presentation.Controllers
                     body = body.Replace("\r\n", "<br />");
                     String emailBody = cab + "<br />" + body + "<br />" + rod;
 
-                    // Prepara registro de mensagem
-                    String id = Xid.NewXid().ToString();
-                    MENSAGENS mens = new MENSAGENS();
-                    mens.ASSI_CD_ID = idAss;
-                    mens.MENS_DT_CRIACAO = DateTime.Now;
-                    mens.MENS_IN_ATIVO = 1;
-                    mens.USUA_CD_ID = usuario.USUA_CD_ID;
-                    mens.EMFI_CD_ID = usuario.EMFI_CD_ID;
-                    mens.EMPR_CD_ID = usuario.EMPR_CD_ID;
-                    mens.MENS_IN_TIPO = 1;
-                    mens.MENS_TX_TEXTO = null;
-                    mens.MENS_IN_REPETICAO = null;
-                    mens.MENS_NR_REPETICOES = 0;
-                    mens.MENS_IN_STATUS = 1;
-                    mens.MENS_IN_OCORRENCIAS = 1;
-                    mens.MENS_IN_ENVIADAS = 1;
-                    mens.MENS_DT_AGENDAMENTO = DateTime.Now;
-                    mens.MENS_IN_AGENDAMENTO = 0;
-                    mens.MENS_IN_SISTEMA = 6;
-                    mens.MENS_NM_LINK = vm.MENS_NM_LINK;
-                    mens.MENS_TX_TEXTO = emailBody;
-                    mens.MENS_GU_GUID = id;
-                    mens.MENS_ID_IDENTIFICADOR = id;
-                    mens.MENS_IN_DESTINOS = 1;
-                    mens.MENS_IN_STATUS = 2;
-                    mens.MENS_IN_TIPO_EMAIL = 1;
-                    mens.MENS_IN_DESTINOS = 1;
-                    mens.MENS_IN_REPETICAO = 0;
-                    mens.PACI_CD_ID = cont.PACI__CD_ID;
-                    mens.MENS_NM_NOME = "Mensagem para " + cont.PACI_NM_NOME;
-                    MENSAGENS item = Mapper.Map<MensagemViewModel, MENSAGENS>(vm);
-                    Int32 volta = mensApp.ValidateCreate(mens, usuario);
-                    Session["IdMensagem"] = mens.MENS_CD_ID;
-                    Session["MensagemAlterada"] = 1;
-
-                    // Grava mensagem/destino e erros
-                    MENSAGENS mens1 = mensApp.GetItemById(mens.MENS_CD_ID);
-                    MENSAGENS_DESTINOS dest = new MENSAGENS_DESTINOS();
-                    dest.MEDE_IN_ATIVO = 1;
-                    dest.MEDE_IN_POSICAO = 1;
-                    dest.MEDE_IN_STATUS = 1;
-                    dest.PACI_CD_ID = cont.PACI__CD_ID;
-                    dest.MEDE_DS_ERRO_ENVIO = "Succeeded";
-                    dest.MENS_CD_ID = mens.MENS_CD_ID;
-                    dest.MEDE_SG_STATUS = "Succeeded";
-                    dest.MEDE_GU_ID_MENSAGEM = mens1.MENS_GU_GUID;
-                    dest.MEDE_IN_CRM = 0;
-                    dest.MEDE_DT_ENVIO = DateTime.Now;
-                    dest.ASSI_CD_ID = idAss;
-                    dest.MEDE_IN_SISTEMA = 6;
-                    mens1.MENSAGENS_DESTINOS.Add(dest);
-                    mens1.MENS_DT_ENVIO = DateTime.Now;
-                    mens1.MENS_IN_OCORRENCIAS = 1;
-                    mens1.MENS_IN_ENVIADAS = 1;
-                    mens1.MENS_IN_STATUS = 2;
-                    mens.MENS_IN_DESTINOS = 1;
-                    volta = mensApp.ValidateEdit(mens1, mens1);
-
-
-                    // Cria pastas
-                    //String caminho = "/Imagens/" + idAss.ToString() + "/Mensagem/" + mens.MENS_CD_ID.ToString() + "/Anexos/";
-                    //String map = Server.MapPath(caminho);
-                    //Directory.CreateDirectory(Server.MapPath(caminho));
+                    // Decriptografa chaves
+                    String emissor = CrossCutting.Cryptography.Decrypt(conf.CONF_NM_EMISSOR_AZURE_CRIP);
+                    String conn = CrossCutting.Cryptography.Decrypt(conf.CONF_CS_CONNECTION_STRING_AZURE_CRIP);
 
                     // Trata anexos
-                    if (Session["FileQueuePaciente"] != null)
+                    List<AttachmentModel> models = new List<AttachmentModel>();
+                    List<FileQueue> queue = Session["FileQueuePaciente"] as List<FileQueue>;
+
+                    if (queue != null && queue.Count > 0)
                     {
-                        List<FileQueue> fq = (List<FileQueue>)Session["FileQueuePaciente"];
-                        foreach (var file in fq)
+                        foreach (var item in queue)
                         {
-                            if (file.Profile == null)
-                            {
-                                Int32 x = await UploadFileQueuePacienteMensagemBlob(file);
-                            }
+                            AttachmentModel att = new AttachmentModel();
+                            att.ATTACHMENT_NAME = item.Name;
+                            att.ATTACHMENT_BYTES = item.Contents; // Array de bytes salvo no MemoryStream
+                            att.CONTENT_TYPE = item.ContentType; // Extensão do arquivo (.pdf, .jpg, etc)
+                            models.Add(att);
                         }
+
+                        // OPCIONAL: Limpa a sessão após carregar os modelos para não enviar duplicado em um Refresh
                         Session["FileQueuePaciente"] = null;
                     }
 
-                    // Prepara
-                    MENSAGENS item1 = mensApp.GetItemById(mens.MENS_CD_ID);
-                    MensagemViewModel vm1 = Mapper.Map<MENSAGENS, MensagemViewModel>(item1);
-                    vm1.MENS_CD_ID = item1.MENS_CD_ID;
-                    vm1.MENSAGEM_ANEXO = item1.MENSAGEM_ANEXO;
-                    vm1.ID = cont.PACI__CD_ID;
-                    Session["IdMensagem"] = item1.MENS_CD_ID;
+                    // Monta e-mail
+                    NetworkCredential net = new NetworkCredential(conf.CONF_NM_SENDGRID_LOGIN, conf.CONF_NM_SENDGRID_PWD);
+                    EmailAzure mensagem = new EmailAzure();
+                    mensagem.ASSUNTO = "Paciente - " + cont.PACI_NM_NOME.ToUpper() + " - Envio de Mensagem";
+                    mensagem.CORPO = emailBody;
+                    mensagem.DEFAULT_CREDENTIALS = false;
+                    mensagem.EMAIL_TO_DESTINO = cont.PACI_NM_EMAIL;
+                    mensagem.NOME_EMISSOR_AZURE = emissor;
+                    mensagem.ENABLE_SSL = true;
+                    mensagem.NOME_EMISSOR = usuario.USUA_NM_NOME;
+                    mensagem.PORTA = conf.CONF_NM_PORTA_SMTP;
+                    mensagem.PRIORIDADE = System.Net.Mail.MailPriority.High;
+                    mensagem.SENHA_EMISSOR = conf.CONF_NM_SENDGRID_PWD;
+                    mensagem.SMTP = conf.CONF_NM_HOST_SMTP;
+                    mensagem.IS_HTML = true;
+                    mensagem.NETWORK_CREDENTIAL = net;
+                    mensagem.ConnectionString = conn;
 
-                    // Monta recursividade
-                    RECURSIVIDADE rec = new RECURSIVIDADE();
-                    rec.ASSI_CD_ID = idAss;
-                    rec.MENS_CD_ID = null;
-                    rec.EMPR_CD_ID = usuario.EMPR_CD_ID;
-                    rec.RECU_IN_TIPO_MENSAGEM = 1;
-                    rec.RECU_DT_CRIACAO = DateTime.Today.Date;
-                    rec.RECU_IN_TIPO_SMS = 0;
-                    rec.RECU_NM_NOME = "Envio de Mensagem para Paciente - " + cont.PACI_NM_NOME + " - " + DateTime.Now.ToString();
-                    rec.RECU_LK_LINK = null;
-                    rec.RECU_IN_SISTEMA = 6;
-                    rec.EMFI_CD_ID = usuario.EMFI_CD_ID;
-                    rec.RECU_IN_TIPO_ENVIO = 4;
-                    rec.RECU_TX_TEXTO = emailBody;
-                    rec.RECU_IN_ATIVO = 1;
+                    // Envia mensagem
+                    try
+                    {
+                        await CrossCutting.CommunicationAzurePackage.SendMailAsync(mensagem, models);
+                    }
+                    catch (Exception ex)
+                    {
+                        ViewBag.Message = ex.Message;
+                        Session["TipoVolta"] = 2;
+                        Session["VoltaExcecao"] = "Locacao";
+                        Session["Excecao"] = ex;
+                        Session["ExcecaoTipo"] = ex.GetType().ToString();
+                        GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                        Int32 voltaX = grava.GravarLogExcecao(ex, "Locacao", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                        return RedirectToAction("TrataExcecao", "BaseAdmin");
+                    }
 
-                    // Monta destinos
-                    RECURSIVIDADE_DESTINO dest1 = new RECURSIVIDADE_DESTINO();
-                    dest1.ASSI_CD_ID = idAss;
-                    dest1.FORN_CD_ID = null;
-                    dest1.CLIE_CD_ID = null;
-                    dest1.USUA_CD_ID = usuario.USUA_CD_ID;
-                    dest1.REDE_EM_EMAIL = cont.PACI_NM_EMAIL;
-                    dest1.REDE_NM_NOME = cont.PACI_NM_NOME;
-                    dest1.REDE_TX_CORPO = emailBody;
-                    dest1.REDE_IN_ATIVO = 1;
-                    dest1.PACI_CD_ID = cont.PACI__CD_ID;
-                    rec.RECURSIVIDADE_DESTINO.Add(dest1);
+                    // Grava mensagem enviada
+                    MensagemViewModel mens = new MensagemViewModel();
+                    mens.NOME = cont.PACI_NM_NOME;
+                    mens.ID = cont.PACI__CD_ID;
+                    mens.MODELO = cont.PACI_NM_EMAIL;
+                    mens.MENS_DT_CRIACAO = DateTime.Today.Date;
+                    mens.MENS_IN_TIPO = 1;
+                    mens.MENS_NM_CAMPANHA = cont.PACI_NM_EMAIL;
+                    mens.MENS_NM_NOME = "Mensagem para Paciente";
+                    mens.PACI_CD_ID = cont.PACI__CD_ID;
+                    mens.MENS_TX_TEXTO = emailBody;
 
-                    // Monta Datas
-                    RECURSIVIDADE_DATA data1 = new RECURSIVIDADE_DATA();
-                    data1.ASSI_CD_ID = idAss;
-                    data1.REDA_DT_PROGRAMADA = DateTime.Now.AddMinutes(10);
-                    data1.REDA_IN_PROCESSADA = 0;
-                    data1.REDA_IN_ATIVO = 1;
-                    data1.REDA_IN_SISTEMA = 6;
-                    rec.RECURSIVIDADE_DATA.Add(data1);
-
-                    // Grava recursividade
-                    Int32 voltaRec = recuApp.ValidateCreate(rec, usuario);
-
-                    // Grava envio
                     EnvioEMailGeralBase envio = new EnvioEMailGeralBase(usuApp, confApp, meApp);
                     String guid = Xid.NewXid().ToString();
-                    Int32 volta1 = envio.GravarMensagemEnviada(vm, usuario, vm.MENS_TX_TEXTO, "Success", guid, null, "Mensagem E-Mail para Cliente");
+                    Int32 volta1 = envio.GravarMensagemEnviada(mens, usuario, mens.MENS_TX_TEXTO, "Succeeded", guid, null, "Paciente - " + cont.PACI_NM_NOME.ToUpper());
+
 
                     // Monta Log
                     LOG log = new LOG
@@ -3399,7 +3345,7 @@ namespace GEDSys_Presentation.Controllers
                         LOG_DT_DATA = DateTime.Now,
                         ASSI_CD_ID = usuario.ASSI_CD_ID,
                         USUA_CD_ID = usuario.USUA_CD_ID,
-                        LOG_NM_OPERACAO = "emaPACI",
+                        LOG_NM_OPERACAO = "Paciente - Envio de E-Mail",
                         LOG_IN_ATIVO = 1,
                         LOG_TX_REGISTRO = cont.PACI_NM_NOME + " | Data:" + DateTime.Today.Date.ToShortDateString(),
                         LOG_IN_SISTEMA = 6

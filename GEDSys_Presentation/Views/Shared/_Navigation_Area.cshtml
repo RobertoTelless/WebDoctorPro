@@ -24,7 +24,7 @@
             <li>
                 <a href="@Url.Action("MontarTelaAreaPaciente", "AreaPaciente")"><i class="fa fa-th-large"></i> <span class="nav-label" data-i18n="nav.dashboard">Início</span> <span class="fa arrow"></span></a>
                 <ul class="nav nav-second-level collapse @Html.IsSelected(controller: "Cadastros", cssClass: "in")">
-                    <li class="@Html.IsSelected(action: "MontarTelaAreaPaciente")"><a href="@Url.Action("MontarTelaAreaPaciente", "AreaPaciente")">Página Inicial</a></li>
+                    <li class="@Html.IsSelected(action: "MontarTelaAreaPaciente")"><a href="@Url.Action("MontarTelaAreaPaciente", "AreaPaciente")" class="show-spinner">Página Inicial</a></li>
                 </ul>
             </li>
 
@@ -32,7 +32,7 @@
             <li>
                 <a href="@Url.Action("MontarTelaAreaPaciente", "AreaPaciente")"><i class="fa fa-th-large"></i> <span class="nav-label" data-i18n="nav.dashboard">Controle de Acesso</span> <span class="fa arrow"></span></a>
                 <ul class="nav nav-second-level collapse @Html.IsSelected(controller: "Cadastros", cssClass: "in")">
-                    <li class="@Html.IsSelected(action: "TrocarSenha")"><a href="@Url.Action("TrocarSenhaAreaPaciente", "AreaPaciente")">Alterar Senha</a></li>
+                    <li class="@Html.IsSelected(action: "TrocarSenha")"><a href="@Url.Action("TrocarSenhaAreaPaciente", "AreaPaciente")" class="show-spinner">Alterar Senha</a></li>
                 </ul>
             </li>
 
@@ -40,7 +40,7 @@
             <li>
                 <a href="@Url.Action("MontarTelaAreaPaciente", "AreaPaciente")"><i class="fa fa-th-large"></i> <span class="nav-label" data-i18n="nav.dashboard">Cadastros</span> <span class="fa arrow"></span></a>
                 <ul class="nav nav-second-level collapse @Html.IsSelected(controller: "Cadastros", cssClass: "in")">
-                    <li class="@Html.IsSelected(action: "AlterarDadosCadastrais")"><a href="@Url.Action("AlterarDadosCadastrais", "AreaPaciente")">Dados Cadastrais</a></li>
+                    <li class="@Html.IsSelected(action: "AlterarDadosCadastrais")"><a href="@Url.Action("AlterarDadosCadastrais", "AreaPaciente")" class="show-spinner">Dados Cadastrais</a></li>
                 </ul>
             </li>
 
@@ -48,9 +48,9 @@
             <li>
                 <a href="@Url.Action("MontarTelaAreaPaciente", "AreaPaciente")"><i class="fa fa-th-large"></i> <span class="nav-label" data-i18n="nav.dashboard">Informações</span> <span class="fa arrow"></span></a>
                 <ul class="nav nav-second-level collapse @Html.IsSelected(controller: "Cadastros", cssClass: "in")">
-                    <li class="@Html.IsSelected(action: "MarcarConsulta")"><a href="@Url.Action("MarcarConsulta", "AreaPaciente")">Solicitar Consulta</a></li>
-                    <li class="@Html.IsSelected(action: "EnviarInformacaoConsulta")"><a href="@Url.Action("EnviarInformacaoConsulta", "AreaPaciente")">Envio de Informações</a></li>
-                    <li class="@Html.IsSelected(action: "MontarTelaEnvioDocumento")"><a href="@Url.Action("MontarTelaEnvioDocumento", "AreaPaciente")">Envio de Documento</a></li>
+                    <li class="@Html.IsSelected(action: "MarcarConsulta")"><a href="@Url.Action("MarcarConsulta", "AreaPaciente")" class="show-spinner">Solicitar Consulta</a></li>
+                    <li class="@Html.IsSelected(action: "EnviarInformacaoConsulta")"><a href="@Url.Action("EnviarInformacaoConsulta", "AreaPaciente")" class="show-spinner">Envio de Informações</a></li>
+                    <li class="@Html.IsSelected(action: "MontarTelaEnvioDocumento")"><a href="@Url.Action("MontarTelaEnvioDocumento", "AreaPaciente")" class="show-spinner">Envio de Documento</a></li>
                 </ul>
             </li>
 

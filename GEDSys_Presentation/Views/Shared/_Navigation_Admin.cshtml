@@ -42,7 +42,6 @@
                 <ul class="nav nav-second-level collapse @Html.IsSelected(controller: "Cadastros", cssClass: "in")">
                     @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_ACESSO_PACIENTE == 1)
                     {
-                        <li class="@Html.IsSelected(action: "MontarTelaCentralPaciente")"><a href="@Url.Action("MontarTelaCentralPaciente", "Paciente")" class="show-spinner">Central de Pacientes</a></li>
                         if ((Int32)Session["PermMensageria"] == 1)
                         {
                             <li class="@Html.IsSelected(action: "MontarTelaGrupo")"><a href="@Url.Action("MontarTelaGrupo", "Grupo")" class="show-spinner" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acesso ao cadastro de grupos de pacientes ">Grupos de Pacientes</a></li>
@@ -53,13 +52,9 @@
                         <li class="@Html.IsSelected(action: "MontarTelaMedicamento")"><a href="@Url.Action("MontarTelaMedicamento", "Medicamento")" class="show-spinner"  data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acesso ao cadastro de medicamentos usados nas prescrições">Medicamentos</a></li>
                     }
                     <li class="@Html.IsSelected(action: "MontarTelaVacina")"><a href="@Url.Action("MontarTelaVacina", "Vacina")" class="show-spinner"  data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acesso à lista de vacinas">Vacinas</a></li>
-                    @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_ACESSO_ESTOQUE == 1)
-                    {
-                        <li class="@Html.IsSelected(action: "MontarTelaProduto")"><a href="@Url.Action("MontarTelaProduto", "Produto")" class="show-spinner">Materiais/Produtos</a></li>
-                    }
                     @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_SOLICITACAO_ACESSO == 1)
                     {
-                        <li class="@Html.IsSelected(action: "MontarTelaSolicitacaoBase")"><a href="@Url.Action("MontarTelaSolicitacaoBase", "Solicitacao") class="show-spinner"" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acesso ao cadastro de modelos de solicitações de exames">Solicitações</a></li>
+                        <li class="@Html.IsSelected(action: "MontarTelaSolicitacaoBase")"><a href="@Url.Action("MontarTelaSolicitacaoBase", "Solicitacao")" class="show-spinner"  data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acesso ao cadastro de modelos de solicitações de exames">Solicitações</a></li>
                     }
                     <li class="@Html.IsSelected(action: "MontarTelaAviso")"><a href="@Url.Action("MontarTelaAviso", "Aviso")" class="show-spinner""  data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acesso à lista de envios/lembretes cadastrados, ativos ou não">Avisos/Lembretes</a></li>
                     @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_ACESSO_TEMPLATE == 1)
@@ -71,7 +66,7 @@
                     {
                         <li class="@Html.IsSelected(action: "MontarTelaValorConsulta")"><a href="@Url.Action("MontarTelaValorConsulta", "Financeiro")" class="show-spinner"  data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acesso ao cadastro de tipos e valores de consultas">Tipos de Consultas</a></li>
                     }
-                    <li class="@Html.IsSelected(action: "MontarTelaMensagensEnviadas")"><a href="@Url.Action("MontarTelaMensagensEnviadas", "BaseAdmin")" class="show-spinner"  data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acesso à lista de mensagens enviadas pelo WebDoctor, sob demanda ou automaticas">Mensagens Enviadas</a></li>
+                    @*<li class="@Html.IsSelected(action: "MontarTelaMensagensEnviadas")"><a href="@Url.Action("MontarTelaMensagensEnviadas", "BaseAdmin")" class="show-spinner"  data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acesso à lista de mensagens enviadas pelo WebDoctor, sob demanda ou automaticas">Mensagens Enviadas</a></li>*@
                     <li class="@Html.IsSelected(action: "MontarTelaMedico")"><a href="@Url.Action("MontarTelaMedico", "Medico")" class="show-spinner"  data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acesso ao cadastro de médicos para enviar informações de pacientes com funcionalidades de envio">Médicos</a></li>
                     <li class="@Html.IsSelected(action: "MontarTelaVideo")"><a href="@Url.Action("MontarTelaVideo", "Video")" class="show-spinner"  data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acesso ao cadastro de vídeos">Vídeos</a></li>
                     @if ((Int32)Session["PermLocacao"] == 1)
