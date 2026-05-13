@@ -50,21 +50,21 @@
                         <div class="form-group">
                             @if ((Int32)Session["TipoSolicitacao"] == 5)
                             {
-                                @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaPrescricoes", controller: "Paciente", htmlAttributes: new { @class = "btn-loading" })
+                                @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaPrescricoes", controller: "Paciente", htmlAttributes: new { @class = "btn-loading show-spinner" })
                             }
                             else if ((Int32)Session["TipoSolicitacao"] == 8)
                             {
-                                @Html.ButtonLinkIndex(text: "Voltar", action: "VerMedicamentosPacienteForm", controller: "Paciente", htmlAttributes: new { @class = "btn-loading" })
+                                @Html.ButtonLinkIndex(text: "Voltar", action: "VerMedicamentosPacienteForm", controller: "Paciente", htmlAttributes: new { @class = "btn-loading show-spinner" })
                             }
                             else
                             {
                                 if ((Int32)Session["EditarVer"] == 0)
                                 {
-                                    @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarAnexoPaciente", controller: "Paciente", htmlAttributes: new { @class = "btn-loading" })
+                                    @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarAnexoPaciente", controller: "Paciente", htmlAttributes: new { @class = "btn-loading show-spinner" })
                                 }
                                 else
                                 {
-                                    @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarVerPaciente", controller: "Paciente", htmlAttributes: new { @class = "btn-loading" })
+                                    @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarVerPaciente", controller: "Paciente", htmlAttributes: new { @class = "btn-loading show-spinner" })
                                 }
                             }
                             <span id="loadingIndicator" style="display: none; margin-left: 10px; color: #007bff;">

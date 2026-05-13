@@ -107,13 +107,13 @@
                             @Html.ButtonLinkIndex(text: "Imprimir Atestado", action: "ImprimirAtestadoForm", controller: "Paciente")
                             @if ((Int32)Session["VoltarPesquisa"] == 99)
                             {
-                                @Html.ButtonLinkIndex(text: "Voltar", action: "PesquisarTudo", controller: "BaseAdmin", htmlAttributes: new { @class = "btn-loading" })
+                                @Html.ButtonLinkIndex(text: "Voltar", action: "PesquisarTudo", controller: "BaseAdmin", htmlAttributes: new { @class = "btn-loading show-spinner" })
                             }
                             else
                             {
                                 if ((Int32)Session["EditarVer"] == 1)
                                 {
-                                    @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarVerPaciente", controller: "Paciente", htmlAttributes: new { @class = "btn-loading" })
+                                    @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarVerPaciente", controller: "Paciente", htmlAttributes: new { @class = "btn-loading show-spinner" })
                                 }
                                 else
                                 {
@@ -121,7 +121,7 @@
                                     {
                                         if ((Int32)Session["ModoConsulta"] == 1)
                                         {
-                                            @Html.ButtonLinkIndex(text: "Voltar", action: "VerListaAtestadoConsulta", controller: "Paciente", htmlAttributes: new { @class = "btn-loading" })
+                                            @Html.ButtonLinkIndex(text: "Voltar", action: "VerListaAtestadoConsulta", controller: "Paciente", htmlAttributes: new { @class = "btn-loading show-spinner" })
                                         }
                                         else
                                         {
@@ -130,11 +130,11 @@
                                     }
                                     else if ((Int32)Session["TipoSolicitacao"] == 1)
                                     {
-                                        @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarAnexoPaciente", controller: "Paciente", htmlAttributes: new { @class = "btn-loading" })
+                                        @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarAnexoPaciente", controller: "Paciente", htmlAttributes: new { @class = "btn-loading show-spinner" })
                                     }
                                     else if ((Int32)Session["TipoSolicitacao"] == 3)
                                     {
-                                        @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaAtestados", controller: "Paciente", htmlAttributes: new { @class = "btn-loading" })
+                                        @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaAtestados", controller: "Paciente", htmlAttributes: new { @class = "btn-loading show-spinner" })
                                     }
                                 }
                             }

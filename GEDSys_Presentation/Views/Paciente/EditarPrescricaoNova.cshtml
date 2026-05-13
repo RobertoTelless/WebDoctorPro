@@ -129,7 +129,7 @@
                         <div class="form-group">
                             @if (Model.PAPR_IN_ENVIADO == 0)
                             {
-                                @Html.ButtonActionSubmit(text: "Confirma Edição da Prescrição", htmlAttributes: new { id = "basictoast", @class = "btn-loading1" })
+                                @Html.ButtonActionSubmit(text: "Confirma Edição da Prescrição", htmlAttributes: new { id = "basictoast", @class = "btn-loading1 show-spinner" })
                             }
                             @if (Model.TICO_CD_ID == 1)
                             {
@@ -137,7 +137,7 @@
                                 {
                                     if (Model.PACIENTE_PRESCRICAO_ITEM.Count > 0)
                                     {
-                                        @Html.ButtonLinkIndex(text: "Enviar por E-Mail", action: "EnviarPrescricaoEMailForm", controller: "Paciente", htmlAttributes: new { @class = "btn-loading" })
+                                        @Html.ButtonLinkIndex(text: "Enviar por E-Mail", action: "EnviarPrescricaoEMailForm", controller: "Paciente", htmlAttributes: new { @class = "btn-loading show-spinner" })
                                     }
                                 }
                             }
@@ -145,33 +145,33 @@
                             {
                                 if (Model.PACIENTE_PRESCRICAO_ITEM.Count > 0)
                                 {
-                                    @Html.ButtonLinkIndex(text: "Imprimir Prescrição", action: "ImprimirPrescricaoFormEdt", controller: "Paciente", htmlAttributes: new { @class = "btn-loading" })
+                                    @Html.ButtonLinkIndex(text: "Imprimir Prescrição", action: "ImprimirPrescricaoFormEdt", controller: "Paciente", htmlAttributes: new { @class = "btn-loading show-spinner" })
                                 }
                             }
                             @if ((Int32)Session["TipoSolicitacao"] == 1)
                             {
                                 if ((Int32)Session["ModoConsulta"] == 1)
                                 {
-                                    <a href="@Url.Action("VerListaPrescricaoConsulta", "Paciente")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Voltando sem Confirmar, as alreações/inclusões da prescrição NÃO serão gravadas" class="btn btn-sm btn-warning btn-loading" id="emp" OnClick = "Fade()">Voltar</a>                
+                                    <a href="@Url.Action("VerListaPrescricaoConsulta", "Paciente")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Voltando sem Confirmar, as alreações/inclusões da prescrição NÃO serão gravadas" class="btn btn-sm btn-warning btn-loading show-spinner" id="emp" OnClick = "Fade()">Voltar</a>                
                                 }
                                 else
                                 {
-                                    <a href="@Url.Action("VoltarAnexoPaciente", "Paciente")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Voltando sem Confirmar, as alreações/inclusões da prescrição NÃO serão gravadas" class="btn btn-sm btn-warning btn-loading" id="emp" OnClick = "Fade()">Voltar</a>                
+                                    <a href="@Url.Action("VoltarAnexoPaciente", "Paciente")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Voltando sem Confirmar, as alreações/inclusões da prescrição NÃO serão gravadas" class="btn btn-sm btn-warning btn-loading show-spinner" id="emp" OnClick = "Fade()">Voltar</a>                
                                 }
                             }
                             else if ((Int32)Session["TipoSolicitacao"] == 8)
                             {
-                                <a href="@Url.Action("VerMedicamentosPacienteForm", "Paciente")"  data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Voltando sem Confirmar, as alreações/inclusões da prescrição NÃO serão gravadas" class="btn btn-sm btn-warning btn-loading" id="emp" OnClick = "Fade()">Voltar</a>                
+                                <a href="@Url.Action("VerMedicamentosPacienteForm", "Paciente")"  data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Voltando sem Confirmar, as alreações/inclusões da prescrição NÃO serão gravadas" class="btn btn-sm btn-warning btn-loading show-spinner" id="emp" OnClick = "Fade()">Voltar</a>                
                             }
                             else
                             {
                                 if ((Int32)Session["ModoConsulta"] == 1)
                                 {
-                                    <a href="@Url.Action("VerListaPrescricaoConsulta", "Paciente")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Voltando sem Confirmar, as alreações/inclusões da prescrição NÃO serão gravadas" class="btn btn-sm btn-warning btn-loading" id="emp" OnClick = "Fade()">Voltar</a>                
+                                    <a href="@Url.Action("VerListaPrescricaoConsulta", "Paciente")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Voltando sem Confirmar, as alreações/inclusões da prescrição NÃO serão gravadas" class="btn btn-sm btn-warning btn-loading show-spinner" id="emp" OnClick = "Fade()">Voltar</a>                
                                 }
                                 else
                                 {
-                                    <a href="@Url.Action("MontarTelaPrescricoes", "Paciente")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Voltando sem Confirmar, as alreações/inclusões da prescrição NÃO serão gravadas" class="btn btn-sm btn-warning btn-loading" id="emp" OnClick = "Fade()">Voltar</a>                
+                                    <a href="@Url.Action("MontarTelaPrescricoes", "Paciente")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Voltando sem Confirmar, as alreações/inclusões da prescrição NÃO serão gravadas" class="btn btn-sm btn-warning btn-loading show-spinner" id="emp" OnClick = "Fade()">Voltar</a>                
                                 }
                             }
                             <a href="@Url.Action((String)Session["AjudaNivel"])"  class="btn btn-sm btn-danger" target="_blank">Ajuda</a>                
@@ -324,7 +324,7 @@
                                                         {
                                                             if (cond.PACIENTE_PRESCRICAO.PAPR_IN_ENVIADO == 0)
                                                             {
-                                                                <td style="width: auto"><a href="@Url.Action("EditarItemPrescricao", "Paciente", new { id = cond.PAPI_CD_ID })" class="btn-loading" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página de edição de itens da prescrição" />@cond.PAPI_NM_REMEDIO</td>
+                                                                <td style="width: auto"><a href="@Url.Action("EditarItemPrescricao", "Paciente", new { id = cond.PAPI_CD_ID })" class="btn-loading show-spinner" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página de edição de itens da prescrição" />@cond.PAPI_NM_REMEDIO</td>
                                                             }
                                                             else
                                                             {
@@ -342,7 +342,7 @@
                                                             {
                                                                 if (cond.PACIENTE_PRESCRICAO.PAPR_IN_ENVIADO == 0)
                                                                 {
-                                                                    @Html.TableLinkDetails(cond.PAPI_CD_ID, "EditarItemPrescricao", "fa-edit btn-loading", "Editar/Consultar Item")
+                                                                    @Html.TableLinkDetails(cond.PAPI_CD_ID, "EditarItemPrescricao", "fa-edit btn-loading show-spinner", "Editar/Consultar Item")
                                                                 }
 
                                                             }
@@ -352,7 +352,7 @@
                                                                 {
                                                                     if (cond.PACIENTE_PRESCRICAO.PAPR_IN_ENVIADO == 0)
                                                                     {
-                                                                        <span style="color: #337ab7; cursor:pointer;" alt="Desativar" class="tbl-link fa-lg fa fa-trash-o btn-loading" onclick="ShowModalExcluirItemPrescricao('/Paciente/ExcluirItemPrescricao/@cond.PAPI_CD_ID')" title="Excluir Item"></span>
+                                                                        <span style="color: #337ab7; cursor:pointer;" alt="Desativar" class="tbl-link fa-lg fa fa-trash-o btn-loading show-spinner" onclick="ShowModalExcluirItemPrescricao('/Paciente/ExcluirItemPrescricao/@cond.PAPI_CD_ID')" title="Excluir Item"></span>
                                                                     }
 	                                                            }
                                                             }
@@ -386,7 +386,7 @@
                                 {
                                     if (Model.PAPR_IN_ENVIADO == 0)
                                     {
-                                        @Html.ButtonLinkIndex(text: "Incluir Novo Item na Prescrição", action: "IncluirPrescricaoItem", controller: "Paciente", buttonClass: "primary", htmlAttributes: new { @class = "btn-loading" })
+                                        @Html.ButtonLinkIndex(text: "Incluir Novo Item na Prescrição", action: "IncluirPrescricaoItem", controller: "Paciente", buttonClass: "primary", htmlAttributes: new { @class = "btn-loading show-spinner" })
                                     }
                                 }
                             }
@@ -394,7 +394,7 @@
                             {
                                 if (Model.PAPR_IN_ENVIADO == 0)
                                 {
-                                    @Html.ButtonLinkIndex(text: "Incluir Novo Item na Prescrição", action: "IncluirPrescricaoItem", controller: "Paciente", buttonClass: "primary", htmlAttributes: new { @class = "btn-loading" })
+                                    @Html.ButtonLinkIndex(text: "Incluir Novo Item na Prescrição", action: "IncluirPrescricaoItem", controller: "Paciente", buttonClass: "primary", htmlAttributes: new { @class = "btn-loading show-spinner" })
                                 }
                             }
                         </div>

@@ -60,36 +60,35 @@
                         <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
                             <div class="col-lg-4 col-md-4 col-xs-12">
                                 Nome do Medicamento
-                                @*@Html.TextBoxFor(m => m.Nome, new { @class = "form-control", autofocus = true })*@
                                 @Html.TextBoxFor(m => m.Nome, new { @class = "form-control", autofocus = true, @id = "txtNomeRemedio", data_toggle = "popover", data_content = "Selecione o medicamento a pesquisar", data_trigger="hover", data_placement="top"  })
                             </div>
                         </div>
 
                         <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
                             <div class="col-lg-12 col-md-12 col-xs-12">
-                                @Html.ButtonActionSubmit(text: "Filtrar", htmlAttributes: new { @class = "btn-loading1" })
-                                @Html.ButtonLinkIndex(text: "Retirar Filtro", controller: "Paciente", action: "RetirarFiltroMedicamentos", htmlAttributes: new { @class = "btn-loading" })
+                                @Html.ButtonActionSubmit(text: "Filtrar", htmlAttributes: new { @class = "btn-loading1 show-spinner" })
+                                @Html.ButtonLinkIndex(text: "Retirar Filtro", controller: "Paciente", action: "RetirarFiltroMedicamentos", htmlAttributes: new { @class = "btn-loading show-spinner" })
                                 @if ((Int32)Session["TipoSolicitacao"] == 1)
                                 {
                                     if ((Int32)Session["ModoConsulta"] == 1)
                                     {
-                                        @Html.ButtonLinkIndex(text: "Voltar", action: "VerListaPrescricaoConsulta", controller: "Paciente", htmlAttributes: new { @class = "btn-loading" })
+                                        @Html.ButtonLinkIndex(text: "Voltar", action: "VerListaPrescricaoConsulta", controller: "Paciente", htmlAttributes: new { @class = "btn-loading show-spinner" })
                                     }
                                     else
                                     {
                                         if ((Int32)Session["VoltarCentral"] == 2)
                                         {
-                                            @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaCentralPaciente", controller: "Paciente", htmlAttributes: new { @class = "btn-loading" })
+                                            @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaCentralPaciente", controller: "Paciente", htmlAttributes: new { @class = "btn-loading show-spinner" })
                                         }
                                         else
                                         {
-                                            @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarAnexoPaciente", controller: "Paciente", htmlAttributes: new { @class = "btn-loading" })
+                                            @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarAnexoPaciente", controller: "Paciente", htmlAttributes: new { @class = "btn-loading show-spinner" })
                                         }
                                     }
                                 }
                                 else
                                 {
-                                    @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaPrescricoes", controller: "Paciente", htmlAttributes: new { @class = "btn-loading" })
+                                    @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaPrescricoes", controller: "Paciente", htmlAttributes: new { @class = "btn-loading show-spinner" })
                                 }
                                 <a href="@Url.Action((String)Session["AjudaNivel"])"  class="btn btn-sm btn-danger" target="_blank">Ajuda</a>                
                                 <span id="loadingIndicator" style="display: none; margin-left: 10px; color: #007bff;">
@@ -132,7 +131,7 @@
                                     @foreach (var cond in (ViewBag.Listas as List<ERP_Condominios_Solution.ViewModels.MedicamentoViewModel>).OrderBy(p => p.Nome))
                                     {
                                         <tr>
-                                            <td style="width: auto"><a href="@Url.Action("VerMedicamentosPaciente", "Paciente", new { nome = cond.Nome})" class="btn-loading" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Ver prescrições com este medicamento"/>@cond.Nome</td>
+                                            <td style="width: auto"><a href="@Url.Action("VerMedicamentosPaciente", "Paciente", new { nome = cond.Nome})" class="btn-loading show-spinner" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Ver prescrições com este medicamento"/>@cond.Nome</td>
                                             <td style="width: auto">@cond.Prescricoes</td>
                                         </tr>
                                     }
@@ -146,7 +145,7 @@
                                 </div>
                                 <div style="border: 5px solid #F6A54A; padding: 10px; border-radius: 8px 8px; " class="col-lg-6 col-md-6 col-xs-8">
                                     <h2 style="font-weight: bold">Sua pesquisa não retornou nenhum resultado ou nenhuma medicamento prescrito</h2>
-                                    @Html.ButtonLinkIndex(text: "Retirar Filtro", controller: "Paciente", action: "RetirarFiltroMedicamentos", htmlAttributes: new { @class = "btn-loading" })
+                                    @Html.ButtonLinkIndex(text: "Retirar Filtro", controller: "Paciente", action: "RetirarFiltroMedicamentos", htmlAttributes: new { @class = "btn-loading show-spinner" })
                                 </div>
                                 <div class="col-lg-3 col-md-3 col-xs-2">
                                 </div>

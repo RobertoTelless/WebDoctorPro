@@ -50,17 +50,17 @@
                             @Html.ButtonLinkIndex(text: "Imprimir Exame Físico", action: "GerarExameFisicoPDF", controller: "Paciente")
                             @if ((Int32)Session["VoltarPesquisa"] == 1)
                             {
-                                @Html.ButtonLinkIndex(text: "Voltar", action: "PesquisarTudo", controller: "BaseAdmin")
+                                @Html.ButtonLinkIndex(text: "Voltar", action: "PesquisarTudo", controller: "BaseAdmin", htmlAttributes: new { @class = "show-spinner" })
                             }
                             else
                             {
                                 if ((Int32)Session["EditarVer"] == 1)
                                 {
-                                    @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarVerPaciente", controller: "Paciente")
+                                    @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarVerPaciente", controller: "Paciente", htmlAttributes: new { @class = "show-spinner" })
                                 }
                                 else
                                 {
-                                    @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarAnexoPaciente", controller: "Paciente")
+                                    @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarAnexoPaciente", controller: "Paciente", htmlAttributes: new { @class = "show-spinner" })
                                 }
                             }
                         </div>

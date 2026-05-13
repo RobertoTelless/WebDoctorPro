@@ -125,36 +125,36 @@
 
                         <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
                             <div class="col-lg-12 col-md-12 col-xs-12">
-                                @Html.ButtonActionSubmit(text: "Filtrar", htmlAttributes: new { @class = "btn-loading1" })
+                                @Html.ButtonActionSubmit(text: "Filtrar", htmlAttributes: new { @class = "btn-loading1 show-spinner" })
                                 @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_INCLUIR_PACIENTE == 1)
                                 {
-                                    <a href="@Url.Action("IncluirPaciente", "Paciente")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Abre a página de inclusão de novo paciente" class="btn btn-sm btn-primary btn-loading" id="emp" OnClick = "Fade()">Novo Paciente</a>                
+                                    <a href="@Url.Action("IncluirPaciente", "Paciente")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Abre a página de inclusão de novo paciente" class="btn btn-sm btn-primary btn-loading show-spinner" id="emp" OnClick = "Fade()">Novo Paciente</a>                
                                 }
                                 @Html.ButtonLinkIndex(text: "Retirar Filtro", controller: "Paciente", action: "RetirarFiltroPaciente")
                                 @Html.ButtonLinkIndex(text: "Ver Todos", controller: "Paciente", action: "MostrarTudoPaciente")
                                 @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_PACIENTE_CONSULTA_ACESSO == 1)
                                 {
-                                    <a href="@Url.Action("MontarTelaConsultas", "Paciente")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acesso à Central de Consultas" class="btn btn-sm btn-warning btn-loading" id="emp" OnClick = "Fade()">Consultas</a>                
+                                    <a href="@Url.Action("MontarTelaConsultas", "Paciente")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acesso à Central de Consultas" class="btn btn-sm btn-warning btn-loading show-spinner" id="emp" OnClick = "Fade()">Consultas</a>                
                                 }
                                 @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_PRESCRICAO_ACESSO == 1)
                                 {
-                                    <a href="@Url.Action("MontarTelaPrescricoes", "Paciente")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acesso à Central de Prescrições para todos os pacientes" class="btn btn-sm btn-warning btn-loading" id="emp" OnClick = "Fade()">Prescrições</a>                
+                                    <a href="@Url.Action("MontarTelaPrescricoes", "Paciente")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acesso à Central de Prescrições para todos os pacientes" class="btn btn-sm btn-warning btn-loading show-spinner" id="emp" OnClick = "Fade()">Prescrições</a>                
                                 }
                                 @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_ATESTADO_ACESSO == 1)
                                 {
-                                    <a href="@Url.Action("MontarTelaAtestados", "Paciente")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acesso à Central de Atestados para todos os pacientes" class="btn btn-sm btn-warning btn-loading" id="emp" OnClick = "Fade()">Atestados</a>                
+                                    <a href="@Url.Action("MontarTelaAtestados", "Paciente")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acesso à Central de Atestados para todos os pacientes" class="btn btn-sm btn-warning btn-loading show-spinner" id="emp" OnClick = "Fade()">Atestados</a>                
                                 }
                                 @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_SOLICITACAO_ACESSO == 1)
                                 {
-                                    <a href="@Url.Action("MontarTelaSolicitacoes", "Paciente")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acesso à Central de Solicitações de Exames para todos os pacientes" class="btn btn-sm btn-warning btn-loading" id="emp" OnClick = "Fade()">Solicitações de Exames</a>                
+                                    <a href="@Url.Action("MontarTelaSolicitacoes", "Paciente")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acesso à Central de Solicitações de Exames para todos os pacientes" class="btn btn-sm btn-warning btn-loading show-spinner" id="emp" OnClick = "Fade()">Solicitações de Exames</a>                
                                 }
                                 @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_EXAME_ACESSO == 1)
                                 {
-                                    <a href="@Url.Action("MontarTelaExames", "Paciente")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acesso à Central de Resultados de Exames para todos os pacientes" class="btn btn-sm btn-warning btn-loading" id="emp" OnClick = "Fade()">Resultados de Exames</a>                
+                                    <a href="@Url.Action("MontarTelaExames", "Paciente")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acesso à Central de Resultados de Exames para todos os pacientes" class="btn btn-sm btn-warning btn-loading show-spinner" id="emp" OnClick = "Fade()">Resultados de Exames</a>                
                                 }
                                 @if (ViewBag.ListaClienteAnivDiaConta > 0)
                                 {
-                                    <a href="@Url.Action("EnviarMailAniversario", "Paciente")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acesso à Central de Aniversariantes" class="btn btn-sm btn-success btn-loading" id="emp" OnClick = "Fade()">Aniversariantes</a>                
+                                    <a href="@Url.Action("EnviarMailAniversario", "Paciente")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acesso à Central de Aniversariantes" class="btn btn-sm btn-success btn-loading show-spinner" id="emp" OnClick = "Fade()">Aniversariantes</a>                
                                 }
                                 @Html.ButtonLinkIndex(text: "Voltar", controller: "Paciente", action: "MontarTelaPaciente")
                                 <a href="@Url.Action((String)Session["AjudaNivel"])"  class="btn btn-sm btn-danger" target="_blank">Ajuda</a>                
@@ -232,11 +232,11 @@
                                                 <tr>
                                                     @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_ALTERAR_PACIENTE == 1)
                                                     {
-                                                        <td style="width: auto; cursor: pointer; text-decoration: underline;"><a href="@Url.Action("EditarPaciente", "Paciente", new { id = cond.PACI__CD_ID })" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Abre a página de Editar/Consultar paciente"/>@cond.PACI_NM_NOME</td>
+                                                        <td style="width: auto; cursor: pointer; text-decoration: underline;"><a href="@Url.Action("EditarPaciente", "Paciente", new { id = cond.PACI__CD_ID })" class="show-spinner" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Abre a página de Editar/Consultar paciente"/>@cond.PACI_NM_NOME</td>
                                                     }
                                                     else
                                                     {
-                                                        <td style="width: auto; cursor: pointer; text-decoration: underline;"><a href="@Url.Action("VerPaciente", "Paciente", new { id = cond.PACI__CD_ID })" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Abre a página de Ver paciente"/>@cond.PACI_NM_NOME</td>
+                                                        <td style="width: auto; cursor: pointer; text-decoration: underline;"><a href="@Url.Action("VerPaciente", "Paciente", new { id = cond.PACI__CD_ID })" class="show-spinner" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Abre a página de Ver paciente"/>@cond.PACI_NM_NOME</td>
                                                     }
 
                                                     <td style="width: auto">@cond.PACI_NR_CPF</td>
@@ -245,7 +245,7 @@
                                                     {
                                                         if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PAERF_IN_PACIENTE_MENSAGEM == 1)
                                                         {
-                                                            <td style="width: auto; cursor: pointer; text-decoration: underline;"><a href="@Url.Action("EnviarEMailPaciente", "Paciente", new { id = cond.PACI__CD_ID })" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Abre a página de envio de e-mail ao paciente"/>@cond.PACI_NM_EMAIL</td>
+                                                            <td style="width: auto; cursor: pointer; text-decoration: underline;"><a href="@Url.Action("EnviarEMailPaciente", "Paciente", new { id = cond.PACI__CD_ID })" class="show-spinner" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Abre a página de envio de e-mail ao paciente"/>@cond.PACI_NM_EMAIL</td>
                                                         }
                                                         else
                                                         {
@@ -261,7 +261,7 @@
                                                     {
                                                         if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PAERF_IN_PACIENTE_MENSAGEM == 1)
                                                         {
-                                                            <td style="width: auto; cursor: pointer; text-decoration: underline;"><a href="@Url.Action("EnviarSMSPaciente", "Paciente", new { id = cond.PACI__CD_ID })" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Abre a página de envio de SMS ao paciente"/>@cond.PACI_NR_CELULAR</td>
+                                                            <td style="width: auto; cursor: pointer; text-decoration: underline;"><a href="@Url.Action("EnviarSMSPaciente", "Paciente", new { id = cond.PACI__CD_ID })" class="show-spinner" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Abre a página de envio de SMS ao paciente"/>@cond.PACI_NR_CELULAR</td>
                                                         }
                                                         else
                                                         {
@@ -336,37 +336,37 @@
                                                     <td class="td-one-action">
                                                         @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_ALTERAR_PACIENTE == 1)
                                                         {
-                                                            @Html.TableLinkDetails(cond.PACI__CD_ID, "EditarPaciente", "fa-edit", "Editar/Consultar Paciente")
+                                                            @Html.TableLinkDetails(cond.PACI__CD_ID, "EditarPaciente", "fa-edit show-spinner", "Editar/Consultar Paciente")
                                                         }
                                                         else
                                                         {
-                                                            @Html.TableLinkDetails(cond.PACI__CD_ID, "VerPaciente", "fa-search", "Consultar Paciente")
+                                                            @Html.TableLinkDetails(cond.PACI__CD_ID, "VerPaciente", "fa-search show-spinner", "Consultar Paciente")
                                                         }
                                                         @if (cond.PACI_IN_ATIVO == 1)
                                                         {
                                                             if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_EXCLUIR_PACIENTE == 1)
                                                             {
-                                                                <span style="color: #337ab7; cursor:pointer;" alt="Excluir" class="tbl-link fa-lg fa fa-trash-o" onclick="ShowModalExcluir('/Paciente/ExcluirPaciente/@cond.PACI__CD_ID')" title="Excluir Paciente"></span>
+                                                                <span style="color: #337ab7; cursor:pointer;" alt="Excluir" class="tbl-link fa-lg fa fa-trash-o show-spinner" onclick="ShowModalExcluir('/Paciente/ExcluirPaciente/@cond.PACI__CD_ID')" title="Excluir Paciente"></span>
                                                             }
                                                         }
                                                         else
                                                         {
                                                             if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_REATIVA_CLIENTE == 1)
                                                             {
-                                                                <span style="color: #337ab7; cursor:pointer;" alt="Reativar" class="tbl-link fa-lg fa fa-refresh" onclick="ShowModalReativar('/Paciente/ReativarPaciente/@cond.PACI__CD_ID')" title="Reativar Paciente"></span>
+                                                                <span style="color: #337ab7; cursor:pointer;" alt="Reativar" class="tbl-link fa-lg fa fa-refresh show-spinner" onclick="ShowModalReativar('/Paciente/ReativarPaciente/@cond.PACI__CD_ID')" title="Reativar Paciente"></span>
                                                             }
                                                         }
                                                         @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_PRESCRICAO_INCLUIR == 1)
                                                         {
-                                                            @Html.TableLinkDetails(cond.PACI__CD_ID, "IncluirPrescricaoDireto", "fa-file-powerpoint-o", "Nova Prescricao")
+                                                            @Html.TableLinkDetails(cond.PACI__CD_ID, "IncluirPrescricaoDireto", "fa-file-powerpoint-o show-spinner", "Nova Prescricao")
                                                         }
                                                         @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_ATESTADO_INCLUIR == 1)
                                                         {
-                                                            @Html.TableLinkDetails(cond.PACI__CD_ID, "IncluirAtestadoDireto", "fa-external-link", "Novo Atestado")
+                                                            @Html.TableLinkDetails(cond.PACI__CD_ID, "IncluirAtestadoDireto", "fa-external-link show-spinner", "Novo Atestado")
                                                         }
                                                         @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_SOLICITACAO_INCLUIR == 1)
                                                         {
-                                                            @Html.TableLinkDetails(cond.PACI__CD_ID, "IncluirSolicitacaoDireto", "fa-certificate", "Nova Solicitação de Exame")
+                                                            @Html.TableLinkDetails(cond.PACI__CD_ID, "IncluirSolicitacaoDireto show-spinner", "fa-certificate", "Nova Solicitação de Exame")
                                                         }
                                                     </td>
                                                 </tr>
@@ -376,11 +376,11 @@
                                 <tr style="background-color: beige">
                                                     @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_ALTERAR_PACIENTE == 1)
                                                     {
-                                                        <td style="width: auto; cursor: pointer; text-decoration: underline;"><a href="@Url.Action("EditarPaciente", "Paciente", new { id = cond.PACI__CD_ID })" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Abre a página de Editar/Consultar paciente"/>@cond.PACI_NM_NOME</td>
+                                                        <td style="width: auto; cursor: pointer; text-decoration: underline;"><a href="@Url.Action("EditarPaciente", "Paciente", new { id = cond.PACI__CD_ID })" class="show-spinner" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Abre a página de Editar/Consultar paciente"/>@cond.PACI_NM_NOME</td>
                                                     }
                                                     else
                                                     {
-                                                        <td style="width: auto; cursor: pointer; text-decoration: underline;"><a href="@Url.Action("VerPaciente", "Paciente", new { id = cond.PACI__CD_ID })" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Abre a página de Ver paciente"/>@cond.PACI_NM_NOME</td>
+                                                        <td style="width: auto; cursor: pointer; text-decoration: underline;"><a href="@Url.Action("VerPaciente", "Paciente", new { id = cond.PACI__CD_ID })" class="show-spinner" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Abre a página de Ver paciente"/>@cond.PACI_NM_NOME</td>
                                                     }
 
                                     <td style="width: auto">@cond.PACI_NR_CPF</td>
@@ -389,7 +389,7 @@
                                                     {
                                                         if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PAERF_IN_PACIENTE_MENSAGEM == 1)
                                                         {
-                                                            <td style="width: auto; cursor: pointer; text-decoration: underline;"><a href="@Url.Action("EnviarEMailPaciente", "Paciente", new { id = cond.PACI__CD_ID })" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Abre a página de envio de e-mail ao paciente"/>@cond.PACI_NM_EMAIL</td>
+                                                            <td style="width: auto; cursor: pointer; text-decoration: underline;"><a href="@Url.Action("EnviarEMailPaciente", "Paciente", new { id = cond.PACI__CD_ID })" class="show-spinner" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Abre a página de envio de e-mail ao paciente"/>@cond.PACI_NM_EMAIL</td>
                                                         }
                                                         else
                                                         {
@@ -405,7 +405,7 @@
                                                     {
                                                         if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PAERF_IN_PACIENTE_MENSAGEM == 1)
                                                         {
-                                                            <td style="width: auto; cursor: pointer; text-decoration: underline;"><a href="@Url.Action("EnviarSMSPaciente", "Paciente", new { id = cond.PACI__CD_ID })" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Abre a página de envio de SMS ao paciente"/>@cond.PACI_NR_CELULAR</td>
+                                                            <td style="width: auto; cursor: pointer; text-decoration: underline;"><a href="@Url.Action("EnviarSMSPaciente", "Paciente", new { id = cond.PACI__CD_ID })" class="show-spinner" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Abre a página de envio de SMS ao paciente"/>@cond.PACI_NR_CELULAR</td>
                                                         }
                                                         else
                                                         {
@@ -438,15 +438,6 @@
                                     </td>
 
 
-                                    @*@if (cond.PACI_IN_MENOR == 1)
-                                    {
-                                        <td style="width: auto"><span class="badge badge-primary">Sim</span></td>
-                                    }
-                                    else
-                                    {
-                                        <td style="width: auto"><span class="badge badge-warning">Não</span></td>
-                                    }*@
-
                                     @if (cond.PACI_DT_CONSULTA != null)
                                     {
                                         <td style="width: auto">@cond.PACI_DT_CONSULTA.Value.ToShortDateString()</td>
@@ -475,37 +466,37 @@
                                                     <td class="td-one-action">
                                                         @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_ALTERAR_PACIENTE == 1)
                                                         {
-                                                            @Html.TableLinkDetails(cond.PACI__CD_ID, "EditarPaciente", "fa-edit", "Editar/Consultar Paciente")
+                                                            @Html.TableLinkDetails(cond.PACI__CD_ID, "EditarPaciente", "fa-edit show-spinner", "Editar/Consultar Paciente")
                                                         }
                                                         else
                                                         {
-                                                            @Html.TableLinkDetails(cond.PACI__CD_ID, "VerPaciente", "fa-search", "Consultar Paciente")
+                                                            @Html.TableLinkDetails(cond.PACI__CD_ID, "VerPaciente", "fa-search show-spinner", "Consultar Paciente")
                                                         }
                                                         @if (cond.PACI_IN_ATIVO == 1)
                                                         {
                                                             if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_EXCLUIR_PACIENTE == 1)
                                                             {
-                                                                <span style="color: #337ab7; cursor:pointer;" alt="Excluir" class="tbl-link fa-lg fa fa-trash-o" onclick="ShowModalExcluir('/Paciente/ExcluirPaciente/@cond.PACI__CD_ID')" title="Excluir Paciente"></span>
+                                                                <span style="color: #337ab7; cursor:pointer;" alt="Excluir" class="tbl-link fa-lg fa fa-trash-o show-spinner" onclick="ShowModalExcluir('/Paciente/ExcluirPaciente/@cond.PACI__CD_ID')" title="Excluir Paciente"></span>
                                                             }
                                                         }
                                                         else
                                                         {
                                                             if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_REATIVA_CLIENTE == 1)
                                                             {
-                                                                <span style="color: #337ab7; cursor:pointer;" alt="Reativar" class="tbl-link fa-lg fa fa-refresh" onclick="ShowModalReativar('/Paciente/ReativarPaciente/@cond.PACI__CD_ID')" title="Reativar Paciente"></span>
+                                                                <span style="color: #337ab7; cursor:pointer;" alt="Reativar" class="tbl-link fa-lg fa fa-refresh show-spinner" onclick="ShowModalReativar('/Paciente/ReativarPaciente/@cond.PACI__CD_ID')" title="Reativar Paciente"></span>
                                                             }
                                                         }
                                                         @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_PRESCRICAO_INCLUIR == 1)
                                                         {
-                                                            @Html.TableLinkDetails(cond.PACI__CD_ID, "IncluirPrescricaoDireto", "fa-file-powerpoint-o", "Nova Prescricao")
+                                                            @Html.TableLinkDetails(cond.PACI__CD_ID, "IncluirPrescricaoDireto", "fa-file-powerpoint-o show-spinner", "Nova Prescricao")
                                                         }
                                                         @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_ATESTADO_INCLUIR == 1)
                                                         {
-                                                            @Html.TableLinkDetails(cond.PACI__CD_ID, "IncluirAtestadoDireto", "fa-external-link", "Novo Atestado")
+                                                            @Html.TableLinkDetails(cond.PACI__CD_ID, "IncluirAtestadoDireto", "fa-external-link show-spinner", "Novo Atestado")
                                                         }
                                                         @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_SOLICITACAO_INCLUIR == 1)
                                                         {
-                                                            @Html.TableLinkDetails(cond.PACI__CD_ID, "IncluirSolicitacaoDireto", "fa-certificate", "Nova Solicitação de Exame")
+                                                            @Html.TableLinkDetails(cond.PACI__CD_ID, "IncluirSolicitacaoDireto", "fa-certificate show-spinner", "Nova Solicitação de Exame")
                                                         }
                                                     </td>
                                 </tr>
@@ -516,11 +507,11 @@
                                 <tr style="background-color: lavender">
                                                     @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_ALTERAR_PACIENTE == 1)
                                                     {
-                                                        <td style="width: auto; cursor: pointer; text-decoration: underline;"><a href="@Url.Action("EditarPaciente", "Paciente", new { id = cond.PACI__CD_ID })" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Abre a página de Editar/Consultar paciente"/>@cond.PACI_NM_NOME</td>
+                                                        <td style="width: auto; cursor: pointer; text-decoration: underline;"><a href="@Url.Action("EditarPaciente", "Paciente", new { id = cond.PACI__CD_ID })" class="show-spinner" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Abre a página de Editar/Consultar paciente"/>@cond.PACI_NM_NOME</td>
                                                     }
                                                     else
                                                     {
-                                                        <td style="width: auto; cursor: pointer; text-decoration: underline;"><a href="@Url.Action("VerPaciente", "Paciente", new { id = cond.PACI__CD_ID })" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Abre a página de Ver paciente"/>@cond.PACI_NM_NOME</td>
+                                                        <td style="width: auto; cursor: pointer; text-decoration: underline;"><a href="@Url.Action("VerPaciente", "Paciente", new { id = cond.PACI__CD_ID })" class="show-spinner" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Abre a página de Ver paciente"/>@cond.PACI_NM_NOME</td>
                                                     }
 
                                     <td style="width: auto">@cond.PACI_NR_CPF</td>
@@ -529,7 +520,7 @@
                                                     {
                                                         if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PAERF_IN_PACIENTE_MENSAGEM == 1)
                                                         {
-                                                            <td style="width: auto; cursor: pointer; text-decoration: underline;"><a href="@Url.Action("EnviarEMailPaciente", "Paciente", new { id = cond.PACI__CD_ID })" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Abre a página de envio de e-mail ao paciente"/>@cond.PACI_NM_EMAIL</td>
+                                                            <td style="width: auto; cursor: pointer; text-decoration: underline;"><a href="@Url.Action("EnviarEMailPaciente", "Paciente", new { id = cond.PACI__CD_ID })" class="show-spinner" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Abre a página de envio de e-mail ao paciente"/>@cond.PACI_NM_EMAIL</td>
                                                         }
                                                         else
                                                         {
@@ -545,7 +536,7 @@
                                                     {
                                                         if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PAERF_IN_PACIENTE_MENSAGEM == 1)
                                                         {
-                                                            <td style="width: auto; cursor: pointer; text-decoration: underline;"><a href="@Url.Action("EnviarSMSPaciente", "Paciente", new { id = cond.PACI__CD_ID })" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Abre a página de envio de SMS ao paciente"/>@cond.PACI_NR_CELULAR</td>
+                                                            <td style="width: auto; cursor: pointer; text-decoration: underline;"><a href="@Url.Action("EnviarSMSPaciente", "Paciente", new { id = cond.PACI__CD_ID })" class="show-spinner" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Abre a página de envio de SMS ao paciente"/>@cond.PACI_NR_CELULAR</td>
                                                         }
                                                         else
                                                         {
@@ -606,37 +597,37 @@
                                                     <td class="td-one-action">
                                                         @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_ALTERAR_PACIENTE == 1)
                                                         {
-                                                            @Html.TableLinkDetails(cond.PACI__CD_ID, "EditarPaciente", "fa-edit", "Editar/Consultar Paciente")
+                                                            @Html.TableLinkDetails(cond.PACI__CD_ID, "EditarPaciente", "fa-edit show-spinner", "Editar/Consultar Paciente")
                                                         }
                                                         else
                                                         {
-                                                            @Html.TableLinkDetails(cond.PACI__CD_ID, "VerPaciente", "fa-search", "Consultar Paciente")
+                                                            @Html.TableLinkDetails(cond.PACI__CD_ID, "VerPaciente", "fa-search show-spinner", "Consultar Paciente")
                                                         }
                                                         @if (cond.PACI_IN_ATIVO == 1)
                                                         {
                                                             if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_EXCLUIR_PACIENTE == 1)
                                                             {
-                                                                <span style="color: #337ab7; cursor:pointer;" alt="Excluir" class="tbl-link fa-lg fa fa-trash-o" onclick="ShowModalExcluir('/Paciente/ExcluirPaciente/@cond.PACI__CD_ID')" title="Excluir Paciente"></span>
+                                                                <span style="color: #337ab7; cursor:pointer;" alt="Excluir" class="tbl-link fa-lg fa fa-trash-o show-spinner" onclick="ShowModalExcluir('/Paciente/ExcluirPaciente/@cond.PACI__CD_ID')" title="Excluir Paciente"></span>
                                                             }
                                                         }
                                                         else
                                                         {
                                                             if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_REATIVA_CLIENTE == 1)
                                                             {
-                                                                <span style="color: #337ab7; cursor:pointer;" alt="Reativar" class="tbl-link fa-lg fa fa-refresh" onclick="ShowModalReativar('/Paciente/ReativarPaciente/@cond.PACI__CD_ID')" title="Reativar Paciente"></span>
+                                                                <span style="color: #337ab7; cursor:pointer;" alt="Reativar" class="tbl-link fa-lg fa fa-refresh show-spinner" onclick="ShowModalReativar('/Paciente/ReativarPaciente/@cond.PACI__CD_ID')" title="Reativar Paciente"></span>
                                                             }
                                                         }
                                                         @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_PRESCRICAO_INCLUIR == 1)
                                                         {
-                                                            @Html.TableLinkDetails(cond.PACI__CD_ID, "IncluirPrescricaoDireto", "fa-file-powerpoint-o", "Nova Prescricao")
+                                                            @Html.TableLinkDetails(cond.PACI__CD_ID, "IncluirPrescricaoDireto", "fa-file-powerpoint-o show-spinner", "Nova Prescricao")
                                                         }
                                                         @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_ATESTADO_INCLUIR == 1)
                                                         {
-                                                            @Html.TableLinkDetails(cond.PACI__CD_ID, "IncluirAtestadoDireto", "fa-external-link", "Novo Atestado")
+                                                            @Html.TableLinkDetails(cond.PACI__CD_ID, "IncluirAtestadoDireto", "fa-external-link show-spinner", "Novo Atestado")
                                                         }
                                                         @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_SOLICITACAO_INCLUIR == 1)
                                                         {
-                                                            @Html.TableLinkDetails(cond.PACI__CD_ID, "IncluirSolicitacaoDireto", "fa-certificate", "Nova Solicitação de Exame")
+                                                            @Html.TableLinkDetails(cond.PACI__CD_ID, "IncluirSolicitacaoDireto", "fa-certificate show-spinner", "Nova Solicitação de Exame")
                                                         }
                                                     </td>
                                 </tr>

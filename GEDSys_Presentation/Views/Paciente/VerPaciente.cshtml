@@ -70,7 +70,7 @@
                             {
                                 if (Model.PACI_NM_EMAIL != null)
                                 {
-                                    @Html.ButtonLinkIndex(text: "Enviar E-Mail", action: "EnviarEMailPacienteForm", controller: "Paciente")
+                                    @Html.ButtonLinkIndex(text: "Enviar E-Mail", action: "EnviarEMailPacienteForm", controller: "Paciente", htmlAttributes: new { @class = "show-spinner" })
                                 }
                             }
                         }
@@ -80,11 +80,11 @@
                             {
                                 if (Model.PACI_NR_CELULAR != null)
                                 {
-                                    @Html.ButtonLinkIndex(text: "Enviar SMS", action: "EnviarSMSPacienteForm", controller: "Paciente")
+                                    @Html.ButtonLinkIndex(text: "Enviar SMS", action: "EnviarSMSPacienteForm", controller: "Paciente", htmlAttributes: new { @class = "show-spinner" })
                                 }
                             }
                         }
-                        @Html.ButtonLinkIndex(text: "Histórico de Atividades", action: "MontarTelaPacienteHistorico", controller: "Paciente")
+                        @Html.ButtonLinkIndex(text: "Histórico de Atividades", action: "MontarTelaPacienteHistorico", controller: "Paciente", htmlAttributes: new { @class = "show-spinner" })
                         @Html.ButtonLinkIndex(text: "Informações do Paciente", action: "GerarRelatorioDetalhe", controller: "Paciente")
                         @if ((Int32)Session["VoltarPesquisa"] == 1)
                         {
@@ -94,40 +94,40 @@
                         {
                             if ((Int32)Session["IncluirConsultaArea"] == 2)
                             {
-                                @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaAreaPacienteVer", controller: "AreaPaciente",  htmlAttributes: new { @class = "btn-loading" })
+                                @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaAreaPacienteVer", controller: "AreaPaciente", htmlAttributes: new { @class = "show-spinner" })
                             }
 
                             if ((Int32)Session["TipoSolicitacao"] == 2)
                             {
-                                @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaSolicitacoes", controller: "Paciente")
+                                @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaSolicitacoes", controller: "Paciente", htmlAttributes: new { @class = "show-spinner" })
                             }
                             else if ((Int32)Session["TipoSolicitacao"] == 3)
                             {
-                                @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaAtestados", controller: "Paciente")
+                                @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaAtestados", controller: "Paciente", htmlAttributes: new { @class = "show-spinner" })
                             }
                             else if ((Int32)Session["TipoSolicitacao"] == 4)
                             {
-                                @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaExames", controller: "Paciente")
+                                @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaExames", controller: "Paciente", htmlAttributes: new { @class = "show-spinner" })
                             }
                             else if ((Int32)Session["TipoSolicitacao"] == 5)
                             {
-                                @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaPrescricoes", controller: "Paciente")
+                                @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaPrescricoes", controller: "Paciente", htmlAttributes: new { @class = "show-spinner" })
                             }
                             else if ((Int32)Session["TipoSolicitacao"] == 8)
                             {
-                                @Html.ButtonLinkIndex(text: "Voltar", action: "VerMedicamentosPacienteForm", controller: "Paciente")
+                                @Html.ButtonLinkIndex(text: "Voltar", action: "VerMedicamentosPacienteForm", controller: "Paciente", htmlAttributes: new { @class = "show-spinner" })
                             }
                             else if ((Int32)Session["TipoSolicitacao"] == 12)
                             {
-                                @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaHistoricoGeral", controller: "Paciente")
+                                @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaHistoricoGeral", controller: "Paciente", htmlAttributes: new { @class = "show-spinner" })
                             }
                             else if ((Int32)Session["TipoSolicitacao"] == 99)
                             {
-                                @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaAusencias", controller: "Paciente2")
+                                @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaAusencias", controller: "Paciente2", htmlAttributes: new { @class = "show-spinner" })
                             }
                             else
                             {
-                                @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarBasePaciente", controller: "Paciente")
+                                @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarBasePaciente", controller: "Paciente", htmlAttributes: new { @class = "show-spinner" })
                             }
                         }
                     </div>
@@ -1124,11 +1124,11 @@
                                                                             <tr>
                                                                                 @if (cond.PAAX_IN_TIPO == 1 || cond.PAAX_IN_TIPO == 2)
                                                                                 {
-                                                                                    <td style="width: auto"><a href="@Url.Action("VerAnexoPaciente", "Paciente", new { id = cond.PAAX_CD_ID })" />@cond.PAAX_NM_TITULO</td>
+                                                                                    <td style="width: auto"><a href="@Url.Action("VerAnexoPaciente", "Paciente", new { id = cond.PAAX_CD_ID })" class="show-spinner" />@cond.PAAX_NM_TITULO</td>
                                                                                 }
                                                                                 else if (cond.PAAX_IN_TIPO == 4)
                                                                                 {
-                                                                                    <td style="width: auto"><a href="@Url.Action("VerAnexoPacienteAudio", "Paciente", new { id = cond.PAAX_CD_ID })" />@cond.PAAX_NM_TITULO</td>
+                                                                                    <td style="width: auto"><a href="@Url.Action("VerAnexoPacienteAudio", "Paciente", new { id = cond.PAAX_CD_ID })" class="show-spinner" />@cond.PAAX_NM_TITULO</td>
                                                                                 }
                                                                                 else if (cond.PAAX_IN_TIPO == 3)
                                                                                 {
@@ -1171,11 +1171,11 @@
                                                                                 <td class="td-one-action">
                                                                                     @if (cond.PAAX_IN_TIPO == 1 || cond.PAAX_IN_TIPO == 2)
                                                                                     {
-                                                                                        @Html.TableLinkDetails(cond.PAAX_CD_ID, "VerAnexoPaciente", "fa-camera", "Visualizar")
+                                                                                        @Html.TableLinkDetails(cond.PAAX_CD_ID, "VerAnexoPaciente", "fa-camera show-spinner", "Visualizar")
                                                                                     }
                                                                                     @if (cond.PAAX_IN_TIPO == 4)
 	                                                                                {
-                                                                                        @Html.TableLinkDetails(cond.PAAX_CD_ID, "VerAnexoPacienteAudio","fa-volume-up", "Visualizar")
+                                                                                        @Html.TableLinkDetails(cond.PAAX_CD_ID, "VerAnexoPacienteAudio","fa-volume-up show-spinner", "Visualizar")
 	                                                                                }
                                                                                     @if (cond.PAAX_IN_TIPO == 3)
                                                                                     {
@@ -1217,7 +1217,7 @@
                                                                         <tr>
                                                                             @if (cond.PAFC_IN_TIPO == 1 || cond.PAFC_IN_TIPO == 2)
                                                                             {
-                                                                                <td style="width: auto"><a href="@Url.Action("VerFichaPaciente", "Paciente2", new { id = cond.PAFC_CD_ID })" />@cond.PAFC_NM_TITULO</td>
+                                                                                <td style="width: auto"><a href="@Url.Action("VerFichaPaciente", "Paciente2", new { id = cond.PAFC_CD_ID })" class="show-spinner" />@cond.PAFC_NM_TITULO</td>
                                                                             }
                                                                             else if (cond.PAFC_IN_TIPO == 3)
                                                                             {
@@ -1302,11 +1302,11 @@
                                                                             <tr>
                                                                                 @if (cond.PAAX_IN_TIPO == 1 || cond.PAAX_IN_TIPO == 2)
                                                                                 {
-                                                                                    <td style="width: auto"><a href="@Url.Action("VerAnexoPaciente", "Paciente", new { id = cond.PAAX_CD_ID })" />@cond.PAAX_NM_TITULO</td>
+                                                                                    <td style="width: auto"><a href="@Url.Action("VerAnexoPaciente", "Paciente", new { id = cond.PAAX_CD_ID })" class="show-spinner" />@cond.PAAX_NM_TITULO</td>
                                                                                 }
                                                                                 else if (cond.PAAX_IN_TIPO == 4)
                                                                                 {
-                                                                                    <td style="width: auto"><a href="@Url.Action("VerAnexoPacienteAudio", "Paciente", new { id = cond.PAAX_CD_ID })" />@cond.PAAX_NM_TITULO</td>
+                                                                                    <td style="width: auto"><a href="@Url.Action("VerAnexoPacienteAudio", "Paciente", new { id = cond.PAAX_CD_ID })" class="show-spinner" />@cond.PAAX_NM_TITULO</td>
                                                                                 }
                                                                                 else if (cond.PAAX_IN_TIPO == 3)
                                                                                 {
@@ -1349,11 +1349,11 @@
                                                                                 <td class="td-one-action">
                                                                                     @if (cond.PAAX_IN_TIPO == 1 || cond.PAAX_IN_TIPO == 2)
                                                                                     {
-                                                                                        @Html.TableLinkDetails(cond.PAAX_CD_ID, "VerAnexoPaciente", "fa-camera", "Visualizar")
+                                                                                        @Html.TableLinkDetails(cond.PAAX_CD_ID, "VerAnexoPaciente", "fa-camera show-spinner", "Visualizar")
                                                                                     }
                                                                                     @if (cond.PAAX_IN_TIPO == 4)
 	                                                                                {
-                                                                                        @Html.TableLinkDetails(cond.PAAX_CD_ID, "VerAnexoPacienteAudio","fa-volume-up", "Visualizar")
+                                                                                        @Html.TableLinkDetails(cond.PAAX_CD_ID, "VerAnexoPacienteAudio","fa-volume-up show-spinner", "Visualizar")
 	                                                                                }
                                                                                     @if (cond.PAAX_IN_TIPO == 3)
                                                                                     {
@@ -1395,7 +1395,7 @@
                                                                         <tr>
                                                                             @if (cond.PAFC_IN_TIPO == 1 || cond.PAFC_IN_TIPO == 2)
                                                                             {
-                                                                                <td style="width: auto"><a href="@Url.Action("VerFichaPaciente", "Paciente2", new { id = cond.PAFC_CD_ID })" />@cond.PAFC_NM_TITULO</td>
+                                                                                <td style="width: auto"><a href="@Url.Action("VerFichaPaciente", "Paciente2", new { id = cond.PAFC_CD_ID })" class="show-spinner" />@cond.PAFC_NM_TITULO</td>
                                                                             }
                                                                             else if (cond.PAFC_IN_TIPO == 3)
                                                                             {
@@ -1452,7 +1452,6 @@
                                                                     <img src="@Url.Content(item.USUARIO.USUA_AQ_FOTO)" style="width: auto; height: auto; max-height: 110px; max-width: 90px;">
                                                                 </a>
                                                                 <br />
-                                                                @*<span style="color: #337ab7; cursor:pointer;" alt="Excluir" class="tbl-link fa-lg fa fa-trash-o" onclick="ShowModalExcluirAnotacao('/Paciente/ExcluirAnotacaoPaciente/@item.PAAN_CD_ID')" title="Excluir"></span>*@
                                                                 <div class="media-body">
                                                                     @item.USUARIO.USUA_NM_NOME
                                                                     <br />
@@ -1490,7 +1489,6 @@
                                                                     <img src="@Url.Content(item.USUARIO.USUA_AQ_FOTO)" style="width: auto; height: auto; max-height: 110px; max-width: 90px;">
                                                                 </a>
                                                                 <br />
-                                                                @*<span style="color: #337ab7; cursor:pointer;" alt="Excluir" class="tbl-link fa-lg fa fa-trash-o" onclick="ShowModalExcluirAnotacao('/Paciente/ExcluirAnotacaoPaciente/@item.PAAN_CD_ID')" title="Excluir"></span>*@
                                                                 <div class="media-body">
                                                                     @item.USUARIO.USUA_NM_NOME
                                                                     <br />
@@ -1539,7 +1537,7 @@
                                                                         <tr>
                                                                             <td>@cond.GRUPO_PAC.GRUP_NM_NOME</td>
                                                                             <td class="td-one-action">
-                                                                                @Html.TableLinkDetails(cond.GRUP_CD_ID.Value, "VerGrupoTela", "fa-search", "Ver Grupo")
+                                                                                @Html.TableLinkDetails(cond.GRUP_CD_ID.Value, "VerGrupoTela", "fa-search show-spinner", "Ver Grupo")
                                                                             </td>
                                                                         </tr>
                                                                     }
@@ -1548,7 +1546,7 @@
                                                                         <tr style="background-color: beige">
                                                                             <td>@cond.GRUPO_PAC.GRUP_NM_NOME</td>
                                                                             <td class="td-one-action">
-                                                                                @Html.TableLinkDetails(cond.GRUP_CD_ID.Value, "VerGrupoTela", "fa-search", "Ver Grupo")
+                                                                                @Html.TableLinkDetails(cond.GRUP_CD_ID.Value, "VerGrupoTela", "fa-search show-spinner", "Ver Grupo")
                                                                             </td>
                                                                         </tr>
                                                                     }
@@ -1588,7 +1586,7 @@
                                                                         <tr>
                                                                             <td>@cond.GRUPO_PAC.GRUP_NM_NOME</td>
                                                                             <td class="td-one-action">
-                                                                                @Html.TableLinkDetails(cond.GRUP_CD_ID.Value, "VerGrupoTela", "fa-search", "Ver Grupo")
+                                                                                @Html.TableLinkDetails(cond.GRUP_CD_ID.Value, "VerGrupoTela", "fa-search show-spinner", "Ver Grupo")
                                                                             </td>
                                                                         </tr>
                                                                     }
@@ -1597,7 +1595,7 @@
                                                                         <tr style="background-color: beige">
                                                                             <td>@cond.GRUPO_PAC.GRUP_NM_NOME</td>
                                                                             <td class="td-one-action">
-                                                                                @Html.TableLinkDetails(cond.GRUP_CD_ID.Value, "VerGrupoTela", "fa-search", "Ver Grupo")
+                                                                                @Html.TableLinkDetails(cond.GRUP_CD_ID.Value, "VerGrupoTela", "fa-search show-spinner", "Ver Grupo")
                                                                             </td>
                                                                         </tr>
                                                                     }
@@ -1649,7 +1647,7 @@
                                                                         }
                                                                         @if (ViewBag.EMail == 1)
                                                                         {
-                                                                            <td style="width: auto"><a href="@Url.Action("EnviarEMailContato", "Paciente", new { id = cond.PACO_CD_ID })" />@cond.PACO_EM_EMAIL</td>
+                                                                            <td style="width: auto"><a href="@Url.Action("EnviarEMailContato", "Paciente", new { id = cond.PACO_CD_ID })" class="show-spinner" />@cond.PACO_EM_EMAIL</td>
                                                                         }
                                                                         else
                                                                         {
@@ -1658,7 +1656,7 @@
                                                                         <td style="width: auto">@cond.PACO_NR_TELEFONE</td>
                                                                         @if (ViewBag.SMS == 1)
                                                                         {
-                                                                            <td style="width: auto"><a href="@Url.Action("EnviarSMSContato", "Paciente", new { id = cond.PACO_CD_ID })" />@cond.PACO_NR_CELULAR</td>
+                                                                            <td style="width: auto"><a href="@Url.Action("EnviarSMSContato", "Paciente", new { id = cond.PACO_CD_ID })" class="show-spinner" />@cond.PACO_NR_CELULAR</td>
                                                                         }
                                                                         else
                                                                         {
@@ -1725,7 +1723,7 @@
                                                                         }
                                                                         @if (ViewBag.EMail == 1)
                                                                         {
-                                                                            <td style="width: auto"><a href="@Url.Action("EnviarEMailContato", "Paciente", new { id = cond.PACO_CD_ID })" />@cond.PACO_EM_EMAIL</td>
+                                                                            <td style="width: auto"><a href="@Url.Action("EnviarEMailContato", "Paciente", new { id = cond.PACO_CD_ID })" class="show-spinner" />@cond.PACO_EM_EMAIL</td>
                                                                         }
                                                                         else
                                                                         {
@@ -1734,7 +1732,7 @@
                                                                         <td style="width: auto">@cond.PACO_NR_TELEFONE</td>
                                                                         @if (ViewBag.SMS == 1)
                                                                         {
-                                                                            <td style="width: auto"><a href="@Url.Action("EnviarSMSContato", "Paciente", new { id = cond.PACO_CD_ID })" />@cond.PACO_NR_CELULAR</td>
+                                                                            <td style="width: auto"><a href="@Url.Action("EnviarSMSContato", "Paciente", new { id = cond.PACO_CD_ID })" class="show-spinner" />@cond.PACO_NR_CELULAR</td>
                                                                         }
                                                                         else
                                                                         {
@@ -1796,7 +1794,7 @@
                                                                 {
                                                                     <tr>
                                                                         <td style="width: auto">@cond.PAPR_DT_EMISSAO.Value.Date.ToShortDateString() @cond.PAPR_DT_EMISSAO.Value.ToShortTimeString()</td>
-                                                                        <td style="width: auto"><a href="@Url.Action("VerPrescricaoNova", "Paciente", new { id = cond.PAPR_CD_ID })" />@cond.PAPR_GU_GUID</td>
+                                                                        <td style="width: auto"><a href="@Url.Action("VerPrescricaoNova", "Paciente", new { id = cond.PAPR_CD_ID })" class="show-spinner" />@cond.PAPR_GU_GUID</td>
                                                                         @if (cond.PAPR_IN_ENVIADO == 1)
                                                                         {
                                                                             <td style="width: auto"><span class="badge badge-primary">Sim</span></td>
@@ -1871,7 +1869,7 @@
                                                                     <tr>
                                                                         <td style="width: auto">@cond.PAPI_NM_REMEDIO</td>
                                                                         <td style="width: auto">@cond.PAPI_NM_GENERICO</td>
-                                                                        <td style="width: auto"><a href="@Url.Action("VerPrescricaoNova", "Paciente", new { id = cond.PAPR_CD_ID })" />@cond.PACIENTE_PRESCRICAO.PAPR_GU_GUID</td>
+                                                                        <td style="width: auto"><a href="@Url.Action("VerPrescricaoNova", "Paciente", new { id = cond.PAPR_CD_ID })" class="show-spinner" />@cond.PACIENTE_PRESCRICAO.PAPR_GU_GUID</td>
                                                                         <td style="width: auto">@cond.PACIENTE_PRESCRICAO.PAPR_DT_EMISSAO.Value.Date.ToShortDateString() @cond.PACIENTE_PRESCRICAO.PAPR_DT_EMISSAO.Value.ToShortTimeString()</td>
                                                                     </tr>
                                                                 }
@@ -1927,7 +1925,7 @@
                                                                 {
                                                                     <tr>
                                                                         <td style="width: auto">@cond.PAPR_DT_EMISSAO.Value.Date.ToShortDateString() @cond.PAPR_DT_EMISSAO.Value.ToShortTimeString()</td>
-                                                                        <td style="width: auto"><a href="@Url.Action("VerPrescricaoNova", "Paciente", new { id = cond.PAPR_CD_ID })" />@cond.PAPR_GU_GUID</td>
+                                                                        <td style="width: auto"><a href="@Url.Action("VerPrescricaoNova", "Paciente", new { id = cond.PAPR_CD_ID })" class="show-spinner" />@cond.PAPR_GU_GUID</td>
                                                                         @if (cond.PAPR_IN_ENVIADO == 1)
                                                                         {
                                                                             <td style="width: auto"><span class="badge badge-primary">Sim</span></td>
@@ -2002,7 +2000,7 @@
                                                                     <tr>
                                                                         <td style="width: auto">@cond.PAPI_NM_REMEDIO</td>
                                                                         <td style="width: auto">@cond.PAPI_NM_GENERICO</td>
-                                                                        <td style="width: auto"><a href="@Url.Action("VerPrescricaoNova", "Paciente", new { id = cond.PAPR_CD_ID })" />@cond.PACIENTE_PRESCRICAO.PAPR_GU_GUID</td>
+                                                                        <td style="width: auto"><a href="@Url.Action("VerPrescricaoNova", "Paciente", new { id = cond.PAPR_CD_ID })" class="show-spinner" />@cond.PACIENTE_PRESCRICAO.PAPR_GU_GUID</td>
                                                                         <td style="width: auto">@cond.PACIENTE_PRESCRICAO.PAPR_DT_EMISSAO.Value.Date.ToShortDateString() @cond.PACIENTE_PRESCRICAO.PAPR_DT_EMISSAO.Value.ToShortTimeString()</td>
                                                                     </tr>
                                                                 }
@@ -2060,7 +2058,7 @@
                                                                 {
                                                                     <tr>
                                                                         <td style="width: auto">@cond.PAAT_DT_DATA.Value.ToShortDateString()</td>
-                                                                        <td style="width: auto"><a href="@Url.Action("VerAtestado", "Paciente", new { id = cond.PAAT_CD_ID })" />@cond.PAAT_GU_GUID</td>
+                                                                        <td style="width: auto"><a href="@Url.Action("VerAtestado", "Paciente", new { id = cond.PAAT_CD_ID })" class="show-spinner" />@cond.PAAT_GU_GUID</td>
                                                                         <td style="width: auto">@cond.TIPO_ATESTADO.TIAT_NM_NOME</td>
                                                                         <td style="width: auto">@cond.PAAT_NM_TITULO</td>
                                                                         @if (cond.PAAT__IN_ENVIADO == 1)
@@ -2143,7 +2141,7 @@
                                                                 {
                                                                     <tr>
                                                                         <td style="width: auto">@cond.PAAT_DT_DATA.Value.ToShortDateString()</td>
-                                                                        <td style="width: auto"><a href="@Url.Action("VerAtestado", "Paciente", new { id = cond.PAAT_CD_ID })" />@cond.PAAT_GU_GUID</td>
+                                                                        <td style="width: auto"><a href="@Url.Action("VerAtestado", "Paciente", new { id = cond.PAAT_CD_ID })" class="show-spinner" />@cond.PAAT_GU_GUID</td>
                                                                         <td style="width: auto">@cond.TIPO_ATESTADO.TIAT_NM_NOME</td>
                                                                         <td style="width: auto">@cond.PAAT_NM_TITULO</td>
                                                                         @if (cond.PAAT__IN_ENVIADO == 1)
@@ -2229,7 +2227,7 @@
                                                                 {
                                                                     <tr>
                                                                         <td style="width: auto">@cond.PASO_DT_EMISSAO.Value.ToShortDateString()</td>
-                                                                        <td style="width: auto"><a href="@Url.Action("VerSolicitacao", "Paciente", new { id = cond.PASO_CD_ID })" />@cond.PASO_GU_GUID</td>
+                                                                        <td style="width: auto"><a href="@Url.Action("VerSolicitacao", "Paciente", new { id = cond.PASO_CD_ID })" class="show-spinner" />@cond.PASO_GU_GUID</td>
                                                                         <td style="width: auto">@cond.TIPO_EXAME.TIEX_NM_NOME</td>
                                                                         <td style="width: auto">@cond.PASO_NM_TITULO</td>
                                                                         @if (cond.PASO_IN_ENVIADO == 1)
@@ -2314,7 +2312,7 @@
                                                                 {
                                                                     <tr>
                                                                         <td style="width: auto">@cond.PASO_DT_EMISSAO.Value.ToShortDateString()</td>
-                                                                        <td style="width: auto"><a href="@Url.Action("VerSolicitacao", "Paciente", new { id = cond.PASO_CD_ID })" />@cond.PASO_GU_GUID</td>
+                                                                        <td style="width: auto"><a href="@Url.Action("VerSolicitacao", "Paciente", new { id = cond.PASO_CD_ID })" class="show-spinner" />@cond.PASO_GU_GUID</td>
                                                                         <td style="width: auto">@cond.TIPO_EXAME.TIEX_NM_NOME</td>
                                                                         <td style="width: auto">@cond.PASO_NM_TITULO</td>
                                                                         @if (cond.PASO_IN_ENVIADO == 1)
@@ -2405,7 +2403,7 @@
                                                                         {
                                                                             <td style="width: auto">-</td>                                                                       
                                                                         }
-                                                                        <td style="width: auto"><a href="@Url.Action("VerExame", "Paciente", new { id = cond.PAEX_CD_ID })" />@cond.PAEX_NM_NOME</td>
+                                                                        <td style="width: auto"><a href="@Url.Action("VerExame", "Paciente", new { id = cond.PAEX_CD_ID })" class="show-spinner" />@cond.PAEX_NM_NOME</td>
                                                                         <td style="width: auto">@cond.TIPO_EXAME.TIEX_NM_NOME</td>
                                                                         @if (cond.PACIENTE_EXAME_ANEXO.Count > 0)
                                                                         {
@@ -2483,7 +2481,7 @@
                                                                         {
                                                                             <td style="width: auto">-</td>                                                                       
                                                                         }
-                                                                        <td style="width: auto"><a href="@Url.Action("VerExame", "Paciente", new { id = cond.PAEX_CD_ID })" />@cond.PAEX_NM_NOME</td>
+                                                                        <td style="width: auto"><a href="@Url.Action("VerExame", "Paciente", new { id = cond.PAEX_CD_ID })" class="show-spinner" />@cond.PAEX_NM_NOME</td>
                                                                         <td style="width: auto">@cond.TIPO_EXAME.TIEX_NM_NOME</td>
                                                                         @if (cond.PACIENTE_EXAME_ANEXO.Count > 0)
                                                                         {
@@ -2552,27 +2550,27 @@
                                                                 if (cond.PACIENTE_CONSULTA.PACO_DT_CONSULTA > DateTime.Today.Date)
                                                                 {
                                                                     <tr>
-                                                                        <td style="width: auto"><a href="@Url.Action("VerAnamnese", "Paciente", new { id = cond.PAAM_CD_ID })" />@cond.PACIENTE_CONSULTA.PACO_DT_CONSULTA.ToShortDateString()</td>
+                                                                        <td style="width: auto"><a href="@Url.Action("VerAnamnese", "Paciente", new { id = cond.PAAM_CD_ID })" class="show-spinner" />@cond.PACIENTE_CONSULTA.PACO_DT_CONSULTA.ToShortDateString()</td>
                                                                         <td style="width: auto" class="td-one-action">
-                                                                            @Html.TableLinkDetails(cond.PAAM_CD_ID, "VerAnamnese", "fa-search", "Consultar")
+                                                                            @Html.TableLinkDetails(cond.PAAM_CD_ID, "VerAnamnese", "fa-search show-spinner", "Consultar")
                                                                         </td>
                                                                     </tr>
                                                                 }
                                                                 else if (cond.PACIENTE_CONSULTA.PACO_DT_CONSULTA < DateTime.Today.Date)
                                                                 {
                                                                     <tr style="background-color: beige">
-                                                                        <td style="width: auto"><a href="@Url.Action("VerAnamnese", "Paciente", new { id = cond.PAAM_CD_ID })" />@cond.PACIENTE_CONSULTA.PACO_DT_CONSULTA.ToShortDateString()</td>
+                                                                        <td style="width: auto"><a href="@Url.Action("VerAnamnese", "Paciente", new { id = cond.PAAM_CD_ID })" class="show-spinner" />@cond.PACIENTE_CONSULTA.PACO_DT_CONSULTA.ToShortDateString()</td>
                                                                         <td style="width: auto" class="td-one-action">
-                                                                            @Html.TableLinkDetails(cond.PAAM_CD_ID, "VerAnamnese", "fa-search", "Consultar")
+                                                                            @Html.TableLinkDetails(cond.PAAM_CD_ID, "VerAnamnese", "fa-search show-spinner", "Consultar")
                                                                         </td>
                                                                     </tr>
                                                                 }
                                                                 else
                                                                 {
                                                                     <tr style="background-color: aliceblue">
-                                                                        <td style="width: auto"><a href="@Url.Action("VerAnamnese", "Paciente", new { id = cond.PAAM_CD_ID })" />@cond.PACIENTE_CONSULTA.PACO_DT_CONSULTA.ToShortDateString()</td>
+                                                                        <td style="width: auto"><a href="@Url.Action("VerAnamnese", "Paciente", new { id = cond.PAAM_CD_ID })" class="show-spinner" />@cond.PACIENTE_CONSULTA.PACO_DT_CONSULTA.ToShortDateString()</td>
                                                                         <td style="width: auto" class="td-one-action">
-                                                                            @Html.TableLinkDetails(cond.PAAM_CD_ID, "VerAnamnese", "fa-search", "Consultar")
+                                                                            @Html.TableLinkDetails(cond.PAAM_CD_ID, "VerAnamnese", "fa-search show-spinner", "Consultar")
                                                                         </td>
                                                                     </tr>
                                                                 }
@@ -2708,27 +2706,27 @@
                                                                 if (cond.PACIENTE_CONSULTA.PACO_DT_CONSULTA > DateTime.Today.Date)
                                                                 {
                                                                     <tr>
-                                                                        <td style="width: auto"><a href="@Url.Action("VerAnamnese", "Paciente", new { id = cond.PAAM_CD_ID })" />@cond.PACIENTE_CONSULTA.PACO_DT_CONSULTA.ToShortDateString()</td>
+                                                                        <td style="width: auto"><a href="@Url.Action("VerAnamnese", "Paciente", new { id = cond.PAAM_CD_ID })" class="show-spinner" />@cond.PACIENTE_CONSULTA.PACO_DT_CONSULTA.ToShortDateString()</td>
                                                                         <td style="width: auto" class="td-one-action">
-                                                                            @Html.TableLinkDetails(cond.PAAM_CD_ID, "VerAnamnese", "fa-search", "Consultar")
+                                                                            @Html.TableLinkDetails(cond.PAAM_CD_ID, "VerAnamnese", "fa-search show-spinner", "Consultar")
                                                                         </td>
                                                                     </tr>
                                                                 }
                                                                 else if (cond.PACIENTE_CONSULTA.PACO_DT_CONSULTA < DateTime.Today.Date)
                                                                 {
                                                                     <tr style="background-color: beige">
-                                                                        <td style="width: auto"><a href="@Url.Action("VerAnamnese", "Paciente", new { id = cond.PAAM_CD_ID })" />@cond.PACIENTE_CONSULTA.PACO_DT_CONSULTA.ToShortDateString()</td>
+                                                                        <td style="width: auto"><a href="@Url.Action("VerAnamnese", "Paciente", new { id = cond.PAAM_CD_ID })" class="show-spinner" />@cond.PACIENTE_CONSULTA.PACO_DT_CONSULTA.ToShortDateString()</td>
                                                                         <td style="width: auto" class="td-one-action">
-                                                                            @Html.TableLinkDetails(cond.PAAM_CD_ID, "VerAnamnese", "fa-search", "Consultar")
+                                                                            @Html.TableLinkDetails(cond.PAAM_CD_ID, "VerAnamnese", "fa-search show-spinner", "Consultar")
                                                                         </td>
                                                                     </tr>
                                                                 }
                                                                 else
                                                                 {
                                                                     <tr style="background-color: aliceblue">
-                                                                        <td style="width: auto"><a href="@Url.Action("VerAnamnese", "Paciente", new { id = cond.PAAM_CD_ID })" />@cond.PACIENTE_CONSULTA.PACO_DT_CONSULTA.ToShortDateString()</td>
+                                                                        <td style="width: auto"><a href="@Url.Action("VerAnamnese", "Paciente", new { id = cond.PAAM_CD_ID })" class="show-spinner" />@cond.PACIENTE_CONSULTA.PACO_DT_CONSULTA.ToShortDateString()</td>
                                                                         <td style="width: auto" class="td-one-action">
-                                                                            @Html.TableLinkDetails(cond.PAAM_CD_ID, "VerAnamnese", "fa-search", "Consultar")
+                                                                            @Html.TableLinkDetails(cond.PAAM_CD_ID, "VerAnamnese", "fa-search show-spinner", "Consultar")
                                                                         </td>
                                                                     </tr>
                                                                 }
@@ -2866,27 +2864,27 @@
                                                                 if (cond.PACIENTE_CONSULTA.PACO_DT_CONSULTA > DateTime.Today.Date)
                                                                 {
                                                                     <tr>
-                                                                        <td style="width: auto"><a href="@Url.Action("VerExameFisico", "Paciente", new { id = cond.PAEF_CD_ID })" />@cond.PACIENTE_CONSULTA.PACO_DT_CONSULTA.ToShortDateString()</td>
+                                                                        <td style="width: auto"><a href="@Url.Action("VerExameFisico", "Paciente", new { id = cond.PAEF_CD_ID })" class="show-spinner" />@cond.PACIENTE_CONSULTA.PACO_DT_CONSULTA.ToShortDateString()</td>
                                                                         <td style="width: auto" class="td-one-action">
-                                                                            @Html.TableLinkDetails(cond.PAEF_CD_ID, "VerExameFisico", "fa-search", "Consultar")
+                                                                            @Html.TableLinkDetails(cond.PAEF_CD_ID, "VerExameFisico", "fa-search show-spinner", "Consultar")
                                                                         </td>
                                                                     </tr>
                                                                 }
                                                                 else if (cond.PACIENTE_CONSULTA.PACO_DT_CONSULTA < DateTime.Today.Date)
                                                                 {
                                                                     <tr style="background-color: beige">
-                                                                        <td style="width: auto"><a href="@Url.Action("VerExameFisico", "Paciente", new { id = cond.PAEF_CD_ID })" />@cond.PACIENTE_CONSULTA.PACO_DT_CONSULTA.ToShortDateString()</td>
+                                                                        <td style="width: auto"><a href="@Url.Action("VerExameFisico", "Paciente", new { id = cond.PAEF_CD_ID })" class="show-spinner" />@cond.PACIENTE_CONSULTA.PACO_DT_CONSULTA.ToShortDateString()</td>
                                                                         <td style="width: auto" class="td-one-action">
-                                                                            @Html.TableLinkDetails(cond.PAEF_CD_ID, "VerExameFisico", "fa-search", "Consultar")
+                                                                            @Html.TableLinkDetails(cond.PAEF_CD_ID, "VerExameFisico", "fa-search show-spinner", "Consultar")
                                                                         </td>
                                                                     </tr>
                                                                 }
                                                                 else
                                                                 {
                                                                     <tr style="background-color: aliceblue">
-                                                                        <td style="width: auto"><a href="@Url.Action("VerExameFisico", "Paciente", new { id = cond.PAEF_CD_ID })" />@cond.PACIENTE_CONSULTA.PACO_DT_CONSULTA.ToShortDateString()</td>
+                                                                        <td style="width: auto"><a href="@Url.Action("VerExameFisico", "Paciente", new { id = cond.PAEF_CD_ID })" class="show-spinner" />@cond.PACIENTE_CONSULTA.PACO_DT_CONSULTA.ToShortDateString()</td>
                                                                         <td style="width: auto" class="td-one-action">
-                                                                            @Html.TableLinkDetails(cond.PAEF_CD_ID, "VerExameFisico", "fa-search", "Consultar")
+                                                                            @Html.TableLinkDetails(cond.PAEF_CD_ID, "VerExameFisico", "fa-search show-spinner", "Consultar")
                                                                         </td>
                                                                     </tr>
                                                                 }
@@ -3023,27 +3021,27 @@
                                                                 if (cond.PACIENTE_CONSULTA.PACO_DT_CONSULTA > DateTime.Today.Date)
                                                                 {
                                                                     <tr>
-                                                                        <td style="width: auto"><a href="@Url.Action("VerExameFisico", "Paciente", new { id = cond.PAEF_CD_ID })" />@cond.PACIENTE_CONSULTA.PACO_DT_CONSULTA.ToShortDateString()</td>
+                                                                        <td style="width: auto"><a href="@Url.Action("VerExameFisico", "Paciente", new { id = cond.PAEF_CD_ID })" class="show-spinner" />@cond.PACIENTE_CONSULTA.PACO_DT_CONSULTA.ToShortDateString()</td>
                                                                         <td style="width: auto" class="td-one-action">
-                                                                            @Html.TableLinkDetails(cond.PAEF_CD_ID, "VerExameFisico", "fa-search", "Consultar")
+                                                                            @Html.TableLinkDetails(cond.PAEF_CD_ID, "VerExameFisico", "fa-search show-spinner", "Consultar")
                                                                         </td>
                                                                     </tr>
                                                                 }
                                                                 else if (cond.PACIENTE_CONSULTA.PACO_DT_CONSULTA < DateTime.Today.Date)
                                                                 {
                                                                     <tr style="background-color: beige">
-                                                                        <td style="width: auto"><a href="@Url.Action("VerExameFisico", "Paciente", new { id = cond.PAEF_CD_ID })" />@cond.PACIENTE_CONSULTA.PACO_DT_CONSULTA.ToShortDateString()</td>
+                                                                        <td style="width: auto"><a href="@Url.Action("VerExameFisico", "Paciente", new { id = cond.PAEF_CD_ID })" class="show-spinner" />@cond.PACIENTE_CONSULTA.PACO_DT_CONSULTA.ToShortDateString()</td>
                                                                         <td style="width: auto" class="td-one-action">
-                                                                            @Html.TableLinkDetails(cond.PAEF_CD_ID, "VerExameFisico", "fa-search", "Consultar")
+                                                                            @Html.TableLinkDetails(cond.PAEF_CD_ID, "VerExameFisico", "fa-search show-spinner", "Consultar")
                                                                         </td>
                                                                     </tr>
                                                                 }
                                                                 else
                                                                 {
                                                                     <tr style="background-color: aliceblue">
-                                                                        <td style="width: auto"><a href="@Url.Action("VerExameFisico", "Paciente", new { id = cond.PAEF_CD_ID })" />@cond.PACIENTE_CONSULTA.PACO_DT_CONSULTA.ToShortDateString()</td>
+                                                                        <td style="width: auto"><a href="@Url.Action("VerExameFisico", "Paciente", new { id = cond.PAEF_CD_ID })" class="show-spinner" />@cond.PACIENTE_CONSULTA.PACO_DT_CONSULTA.ToShortDateString()</td>
                                                                         <td style="width: auto" class="td-one-action">
-                                                                            @Html.TableLinkDetails(cond.PAEF_CD_ID, "VerExameFisico", "fa-search", "Consultar")
+                                                                            @Html.TableLinkDetails(cond.PAEF_CD_ID, "VerExameFisico", "fa-search show-spinner", "Consultar")
                                                                         </td>
                                                                     </tr>
                                                                 }

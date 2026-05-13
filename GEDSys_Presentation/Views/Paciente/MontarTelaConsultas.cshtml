@@ -181,20 +181,20 @@
 
                         <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
                             <div class="col-lg-12 col-md-12 col-xs-12">
-                                @Html.ButtonActionSubmit(text: "Filtrar", htmlAttributes: new { @class = "btn-loading1" })
-                                @Html.ButtonLinkIndex(text: "Nova Consulta", controller: "Paciente", action: "IncluirConsultaCompleta", buttonClass: "primary", htmlAttributes: new { @class = "btn-loading" })
-                                @Html.ButtonLinkIndex(text: "Hoje", controller: "Paciente", action: "VerConsultasHoje", htmlAttributes: new { @class = "btn-loading" })
-                                @Html.ButtonLinkIndex(text: "Mês Atual", controller: "Paciente", action: "VerConsultasMes", htmlAttributes: new { @class = "btn-loading" })
-                                @Html.ButtonLinkIndex(text: "Futuras", controller: "Paciente", action: "VerConsultasFuturas", htmlAttributes: new { @class = "btn-loading" })
-                                @Html.ButtonLinkIndex(text: "Anteriores", controller: "Paciente", action: "VerConsultasAnteriores", htmlAttributes: new { @class = "btn-loading" })
-                                <a href="@Url.Action("VerCalendarioConsulta", "Paciente")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Ver as consultas marcadas em formato de calendário" class="btn btn-sm btn-warning btn-loading" id="emp" OnClick = "Fade()">Ver Calendário</a>                
+                                @Html.ButtonActionSubmit(text: "Filtrar", htmlAttributes: new { @class = "btn-loading1 show-spinner" })
+                                @Html.ButtonLinkIndex(text: "Nova Consulta", controller: "Paciente", action: "IncluirConsultaCompleta", buttonClass: "primary", htmlAttributes: new { @class = "btn-loading show-spinner" })
+                                @Html.ButtonLinkIndex(text: "Hoje", controller: "Paciente", action: "VerConsultasHoje", htmlAttributes: new { @class = "btn-loading show-spinner" })
+                                @Html.ButtonLinkIndex(text: "Mês Atual", controller: "Paciente", action: "VerConsultasMes", htmlAttributes: new { @class = "btn-loading show-spinner" })
+                                @Html.ButtonLinkIndex(text: "Futuras", controller: "Paciente", action: "VerConsultasFuturas", htmlAttributes: new { @class = "btn-loading show-spinner" })
+                                @Html.ButtonLinkIndex(text: "Anteriores", controller: "Paciente", action: "VerConsultasAnteriores", htmlAttributes: new { @class = "btn-loading show-spinner" })
+                                <a href="@Url.Action("VerCalendarioConsulta", "Paciente")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Ver as consultas marcadas em formato de calendário" class="btn btn-sm btn-warning btn-loading show-spinner" id="emp" OnClick = "Fade()">Ver Calendário</a>                
                                 @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_CONF_CANC_CONSULTA == 1)
                                 {
-                                    <a href="@Url.Action("ConfirmarCancelarConsulta", "Paciente")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acesso à página de confirmação/cancelamento de consultas" class="btn btn-sm btn-warning btn-loading" id="emp" OnClick = "Fade()">Confirmação</a>                
+                                    <a href="@Url.Action("ConfirmarCancelarConsulta", "Paciente")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acesso à página de confirmação/cancelamento de consultas" class="btn btn-sm btn-warning btn-loading show-spinner" id="emp" OnClick = "Fade()">Confirmação</a>                
                                 }
-                                <a href="@Url.Action("MontarTelaEncerrarConsulta", "Financeiro")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acesso à página de encerramento de consultas" class="btn btn-sm btn-warning btn-loading" id="emp" OnClick = "Fade()">Encerramento</a>                
+                                <a href="@Url.Action("MontarTelaEncerrarConsulta", "Financeiro")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acesso à página de encerramento de consultas" class="btn btn-sm btn-warning btn-loading show-spinner" id="emp" OnClick = "Fade()">Encerramento</a>                
                                 @Html.ButtonLinkIndex(text: "Imprimir", controller: "Paciente", action: "GerarRelatorioConsultas")
-                                @Html.ButtonLinkIndex(text: "Voltar", controller: "Paciente", action: "VoltarCentrais", htmlAttributes: new { @class = "btn-loading" })
+                                @Html.ButtonLinkIndex(text: "Voltar", controller: "Paciente", action: "VoltarCentrais", htmlAttributes: new { @class = "btn-loading show-spinner" })
                                 <a href="@Url.Action((String)Session["AjudaNivel"])" class="btn btn-sm btn-danger" target="_blank">Ajuda</a>
                                 <span id="loadingIndicator" style="display: none; margin-left: 10px; color: #007bff;">
                                     <i class="fa fa-spinner fa-spin"></i> Processando...
@@ -250,20 +250,20 @@
                                                     {
                                                         if (cond.PACO_DT_CONSULTA.Date >= DateTime.Today.Date & cond.PACO_IN_CONFIRMADA < 2)
                                                         {
-                                                            <a href="@Url.Action("EditarConsultaCompleta", "Paciente", new { id = cond.PACO_CD_ID })" class="btn-loading">
+                                                            <a href="@Url.Action("EditarConsultaCompleta", "Paciente", new { id = cond.PACO_CD_ID })" class="btn-loading show-spinner">
                                                                 @cond.PACO_DT_CONSULTA.ToShortDateString()
                                                             </a>
                                                         }
                                                         else
                                                         {
-                                                            <a href="@Url.Action("VerConsultaCompleta", "Paciente", new { id = cond.PACO_CD_ID })" class="btn-loading">
+                                                            <a href="@Url.Action("VerConsultaCompleta", "Paciente", new { id = cond.PACO_CD_ID })" class="btn-loading show-spinner">
                                                                 @cond.PACO_DT_CONSULTA.ToShortDateString()
                                                             </a>
                                                         }
                                                     }
                                                     else
                                                     {
-                                                            <a href="@Url.Action("VerConsultaCompleta", "Paciente", new { id = cond.PACO_CD_ID })" class="btn-loading">
+                                                            <a href="@Url.Action("VerConsultaCompleta", "Paciente", new { id = cond.PACO_CD_ID })" class="btn-loading show-spinner">
                                                                 @cond.PACO_DT_CONSULTA.ToShortDateString()
                                                             </a>
                                                     }
@@ -307,16 +307,16 @@
                                                     {
                                                         if (cond.PACO_DT_CONSULTA.Date >= DateTime.Today.Date & cond.PACO_IN_CONFIRMADA < 2)
                                                         {
-                                                            @Html.TableLinkDetails(cond.PACO_CD_ID, "EditarConsultaCompleta", "fa-edit btn-loading", "Remarcar")
+                                                            @Html.TableLinkDetails(cond.PACO_CD_ID, "EditarConsultaCompleta", "fa-edit btn-loading show-spinner", "Remarcar")
                                                         }
                                                         else
                                                         {
-                                                            @Html.TableLinkDetails(cond.PACO_CD_ID, "VerConsultaCompleta", "fa-search btn-loading", "Ver")
+                                                            @Html.TableLinkDetails(cond.PACO_CD_ID, "VerConsultaCompleta", "fa-search btn-loading show-spinner", "Ver")
                                                         }
                                                     }
                                                     else
                                                     {
-                                                        @Html.TableLinkDetails(cond.PACO_CD_ID, "VerConsultaCompleta", "fa-search btn-loading", "Ver")
+                                                        @Html.TableLinkDetails(cond.PACO_CD_ID, "VerConsultaCompleta", "fa-search btn-loading show-spinner", "Ver")
                                                     }
                                                     @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_PACIENTE_CONSULTA_EXCLUIR == 1)
                                                     {
@@ -324,7 +324,7 @@
                                                         {
                                                             if (cond.PACO_DT_CONSULTA.Date > DateTime.Today.Date)
                                                             {
-                                                                <span style="color: #337ab7; cursor:pointer;" alt="Desativar" class="tbl-link fa-lg fa fa-trash-o btn-loading" onclick="ShowModalExcluirConsulta('/Paciente/ExcluirConsulta/@cond.PACO_CD_ID')" title="Excluir"></span>
+                                                                <span style="color: #337ab7; cursor:pointer;" alt="Desativar" class="tbl-link fa-lg fa fa-trash-o btn-loading show-spinner" onclick="ShowModalExcluirConsulta('/Paciente/ExcluirConsulta/@cond.PACO_CD_ID')" title="Excluir"></span>
                                                             }
                                                         }
 	                                                }
@@ -334,11 +334,11 @@
                                                         {
                                                             if (cond.PACO_DT_CONSULTA.Date == DateTime.Today.Date)
                                                             {
-                                                                @Html.TableLinkDetails(cond.PACO_CD_ID, "ProcederConsulta", "fa-clock-o btn-loading", "Proceder Consulta")
+                                                                @Html.TableLinkDetails(cond.PACO_CD_ID, "ProcederConsulta", "fa-clock-o btn-loading show-spinner", "Proceder Consulta")
                                                             }
                                                             else if (cond.PACO_DT_CONSULTA.Date < DateTime.Today.Date)
                                                             {
-                                                                @Html.TableLinkDetails(cond.PACO_CD_ID, "ProcederConsulta", "fa-history btn-loading", "Rever Consulta")
+                                                                @Html.TableLinkDetails(cond.PACO_CD_ID, "ProcederConsulta", "fa-history btn-loading show-spinner", "Rever Consulta")
                                                             }
                                                         }
                                                     }
@@ -355,7 +355,6 @@
                                                                     <i class="fa fa-check" style="font-size: 17px; margin-left: -5px;"></i>
                                                             </button>
 
-                                                            @*<span style="color: #337ab7; cursor:pointer;" alt="Confirmar" class="tbl-link fa-lg fa fa-check btn-loading" onclick="ShowModalConfirmar('/Paciente/ConfirmarConsulta/@cond.PACO_CD_ID')" title="Confirmar Consulta"></span>*@
                                                         }
                                                         if (cond.PACO_IN_ATIVO == 1 & cond.PACO_IN_CONFIRMADA < 2)
                                                         {
@@ -367,7 +366,6 @@
                                                                     style="padding: 3px; color: #337ab7;">
                                                                 <i class="fa fa-times" style="font-size: 17px; margin-left: -5px;"></i>
                                                             </button>
-                                                            @*<span style="color: #337ab7; cursor:pointer;" alt="Mensagem" class="tbl-link fa-lg fa fa-times btn-loading" onclick="ShowModalCancelar('/Paciente2/CancelarConsulta/@cond.PACO_CD_ID')" title="Cancelar Consulta"></span>*@     
                                                         }
                                                     }
                                                     @if (cond.PACO_IN_ATIVO == 1 & cond.PACO_IN_CONFIRMADA == 0)
@@ -380,8 +378,6 @@
                                                                 style="padding: 3px; color: #337ab7;">
                                                             <i class="fa fa-mail-forward" style="font-size: 17px; margin-left: -5px;"></i>
                                                         </button>
-
-                                                        @*<span style="color: #337ab7; cursor:pointer;" alt="Mensagem" class="tbl-link fa-lg fa fa-mail-forward btn-loading" onclick="ShowModalEnviar('/Paciente2/EnviarEMailConfirmacao/@cond.PACO_CD_ID')" title="Enviar Confirmação"></span>*@
                                                     }
                                                 </td>
                                             </tr>
@@ -391,7 +387,7 @@
                                             <tr style="background-color: floralwhite">
                                                 <td>
                                                     <span style="display:none; width: auto">@cond.PACO_DT_CONSULTA.ToString("yyyyMMdd")</span>
-                                                    <a href="@Url.Action("VerConsultaCompleta", "Paciente", new { id = cond.PACO_CD_ID })" class="btn-loading">
+                                                    <a href="@Url.Action("VerConsultaCompleta", "Paciente", new { id = cond.PACO_CD_ID })" class="btn-loading show-spinner">
                                                         @cond.PACO_DT_CONSULTA.ToShortDateString()
                                                     </a>
                                                 </td>
@@ -430,18 +426,18 @@
 
                                                 <td style="width: auto; color: green; font-weight: bold">@cond.USUARIO.USUA_NM_NOME</td>
                                                 <td style="width: auto" class="td-one-action">
-                                                    @Html.TableLinkDetails(cond.PACO_CD_ID, "VerConsultaCompleta", "fa-search btn-loading", "Ver")
+                                                    @Html.TableLinkDetails(cond.PACO_CD_ID, "VerConsultaCompleta", "fa-search btn-loading show-spinner", "Ver")
                                                     @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_PACIENTE_CONSULTA_ALTERAR == 1)
                                                     {
                                                         if (cond.PACO_IN_ATIVO == 1 & (cond.PACO_IN_CONFIRMADA == 1 || cond.PACO_IN_CONFIRMADA == 3 || cond.PACO_IN_ENCERRADA == 1))
                                                         {
                                                             if (cond.PACO_DT_CONSULTA.Date == DateTime.Today.Date)
                                                             {
-                                                                @Html.TableLinkDetails(cond.PACO_CD_ID, "ProcederConsulta", "fa-clock-o btn-loading", "Proceder Consulta")
+                                                                @Html.TableLinkDetails(cond.PACO_CD_ID, "ProcederConsulta", "fa-clock-o btn-loading show-spinner", "Proceder Consulta")
                                                             }
                                                             else if (cond.PACO_DT_CONSULTA.Date < DateTime.Today.Date)
                                                             {
-                                                                @Html.TableLinkDetails(cond.PACO_CD_ID, "ProcederConsulta", "fa-history btn-loading", "Rever Consulta")
+                                                                @Html.TableLinkDetails(cond.PACO_CD_ID, "ProcederConsulta", "fa-history btn-loading show-spinner", "Rever Consulta")
                                                             }
                                                         }
                                                     }
@@ -457,7 +453,6 @@
                                                                     style="padding: 3px; color: #337ab7;">
                                                                 <i class="fa fa-times" style="font-size: 17px; margin-left: -5px;"></i>
                                                             </button>
-                                                            @*<span style="color: #337ab7; cursor:pointer;" alt="Mensagem" class="tbl-link fa-lg fa fa-times btn-loading" onclick="ShowModalCancelar('/Paciente2/CancelarConsulta/@cond.PACO_CD_ID')" title="Cancelar Consulta"></span>*@     
                                                         }
                                                     }
                                                 </td>
@@ -473,20 +468,20 @@
                                                     {
                                                         if (cond.PACO_DT_CONSULTA.Date >= DateTime.Today.Date & cond.PACO_IN_CONFIRMADA < 2)
                                                         {
-                                                            <a href="@Url.Action("EditarConsultaCompleta", "Paciente", new { id = cond.PACO_CD_ID })" class="btn-loading">
+                                                            <a href="@Url.Action("EditarConsultaCompleta", "Paciente", new { id = cond.PACO_CD_ID })" class="btn-loading show-spinner">
                                                                 @cond.PACO_DT_CONSULTA.ToShortDateString()
                                                             </a>
                                                         }
                                                         else
                                                         {
-                                                            <a href="@Url.Action("VerConsultaCompleta", "Paciente", new { id = cond.PACO_CD_ID })" class="btn-loading">
+                                                            <a href="@Url.Action("VerConsultaCompleta", "Paciente", new { id = cond.PACO_CD_ID })" class="btn-loading show-spinner">
                                                                 @cond.PACO_DT_CONSULTA.ToShortDateString()
                                                             </a>
                                                         }
                                                     }
                                                     else
                                                     {
-                                                            <a href="@Url.Action("VerConsultaCompleta", "Paciente", new { id = cond.PACO_CD_ID })" class="btn-loading">
+                                                            <a href="@Url.Action("VerConsultaCompleta", "Paciente", new { id = cond.PACO_CD_ID })" class="btn-loading show-spinner">
                                                                 @cond.PACO_DT_CONSULTA.ToShortDateString()
                                                             </a>
                                                     }
@@ -530,16 +525,16 @@
                                                     {
                                                         if (cond.PACO_DT_CONSULTA.Date >= DateTime.Today.Date & cond.PACO_IN_CONFIRMADA < 2)
                                                         {
-                                                            @Html.TableLinkDetails(cond.PACO_CD_ID, "EditarConsultaCompleta", "fa-edit btn-loading", "Remarcar")
+                                                            @Html.TableLinkDetails(cond.PACO_CD_ID, "EditarConsultaCompleta", "fa-edit btn-loading show-spinner", "Remarcar")
                                                         }
                                                         else
                                                         {
-                                                            @Html.TableLinkDetails(cond.PACO_CD_ID, "VerConsultaCompleta", "fa-search btn-loading", "Ver")
+                                                            @Html.TableLinkDetails(cond.PACO_CD_ID, "VerConsultaCompleta", "fa-search btn-loading show-spinner", "Ver")
                                                         }
                                                     }
                                                     else
                                                     {
-                                                        @Html.TableLinkDetails(cond.PACO_CD_ID, "VerConsultaCompleta", "fa-search btn-loading", "Ver")
+                                                        @Html.TableLinkDetails(cond.PACO_CD_ID, "VerConsultaCompleta", "fa-search btn-loading show-spinner", "Ver")
                                                     }
                                                     @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_PACIENTE_CONSULTA_EXCLUIR == 1)
                                                     {
@@ -557,11 +552,11 @@
                                                         {
                                                             if (cond.PACO_DT_CONSULTA.Date == DateTime.Today.Date)
                                                             {
-                                                                @Html.TableLinkDetails(cond.PACO_CD_ID, "ProcederConsulta", "fa-clock-o btn-loading", "Proceder Consulta")
+                                                                @Html.TableLinkDetails(cond.PACO_CD_ID, "ProcederConsulta", "fa-clock-o btn-loading show-spinner", "Proceder Consulta")
                                                             }
                                                             else if (cond.PACO_DT_CONSULTA.Date < DateTime.Today.Date)
                                                             {
-                                                                @Html.TableLinkDetails(cond.PACO_CD_ID, "ProcederConsulta", "fa-history btn-loading", "Rever Consulta")
+                                                                @Html.TableLinkDetails(cond.PACO_CD_ID, "ProcederConsulta", "fa-history btn-loading show-spinner", "Rever Consulta")
                                                             }
                                                         }
                                                     }
@@ -589,7 +584,6 @@
                                                                     style="padding: 3px; color: #337ab7;">
                                                                 <i class="fa fa-times" style="font-size: 17px; margin-left: -5px;"></i>
                                                             </button>
-                                                            @*<span style="color: #337ab7; cursor:pointer;" alt="Mensagem" class="tbl-link fa-lg fa fa-times btn-loading" onclick="ShowModalCancelar('/Paciente2/CancelarConsulta/@cond.PACO_CD_ID')" title="Cancelar Consulta"></span>*@     
                                                         }
                                                     }
 
@@ -603,8 +597,6 @@
                                                                 style="padding: 3px; color: #337ab7;">
                                                             <i class="fa fa-mail-forward" style="font-size: 17px; margin-left: -5px;"></i>
                                                         </button>
-
-                                                        @*<span style="color: #337ab7; cursor:pointer;" alt="Mensagem" class="tbl-link fa-lg fa fa-mail-forward btn-loading" onclick="ShowModalEnviar('/Paciente2/EnviarEMailConfirmacao/@cond.PACO_CD_ID')" title="Enviar Confirmação"></span>*@
                                                     }
                                                 </td>
                                             </tr>
@@ -620,7 +612,7 @@
                                 </div>
                                 <div style="border: 5px solid #F6A54A; padding: 10px; border-radius: 8px 8px; " class="col-lg-8 col-md-8 col-xs-12">
                                     <h2 style="font-weight: bold">Sua pesquisa não retornou nenhum resultado ou nenhuma consulta cadastrada</h2>
-                                    @Html.ButtonLinkIndex(text: "Retirar Filtro", controller: "Paciente", action: "VerConsultasHoje" , htmlAttributes: new { @class = "btn-loading" })
+                                    @Html.ButtonLinkIndex(text: "Retirar Filtro", controller: "Paciente", action: "VerConsultasHoje" , htmlAttributes: new { @class = "btn-loading show-spinner" })
                                 </div>
                                 <div class="col-lg-2 col-md-2 col-xs-2">
                                 </div>

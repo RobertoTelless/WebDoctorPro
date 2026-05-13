@@ -26,6 +26,22 @@
         <br />
     </div>
     <div class="row">
+        <div class="form-group" style=" margin-left: 15px; margin-right: 0px;">
+            @* --- INÍCIO DA AJUDA CONTEXTUAL --- *@
+            <details class="ajuda-contextual">
+                <summary><i class="fa fa-info-circle text-info"></i> Resumo das funcionalidades desta página</summary>
+                <div class="well well-sm">
+                    <p>Essa é a página de inclusão de pacientes em um grupo do <b>WebDoctorPro</b>. Nela você poderá:</p>
+                    <ol>
+                        <li>Incluir o paciente em um grupo de pacientes cadastrado</li>
+                    </ol>
+                </div>
+            </details>
+            @* --- FIM DA AJUDA CONTEXTUAL --- *@
+        </div>
+    </div>
+
+    <div class="row">
         <div class="col-lg-12 col-md-12 col-xs-12">
             <div class="col-lg-12 col-md-12 col-xs-12 ibox float-e-margins">
                 <div class="ibox-title">
@@ -64,8 +80,8 @@
                             </div>
                         </div>
                         <div class="form-group">
-                            @Html.ButtonActionSubmit(text: "Confirma Inclusão do Paciente neste Grupo", htmlAttributes: new { id = "basictoast" })
-                            @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarAnexoPaciente", controller: "Paciente")
+                            @Html.ButtonActionSubmit(text: "Confirma Inclusão do Paciente neste Grupo", htmlAttributes: new { id = "basictoast", @class = "show-spinner" })
+                            @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarAnexoPaciente", controller: "Paciente", htmlAttributes: new { @class = "show-spinner" })
                         </div>
                     </div>
                 }

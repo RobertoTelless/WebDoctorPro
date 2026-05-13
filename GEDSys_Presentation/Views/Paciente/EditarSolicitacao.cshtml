@@ -105,10 +105,10 @@
                         }
                         <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">  
                             @Html.ButtonLinkIndex(text: "Imprimir Solicitação", action: "ImprimirSolicitacaoForm", controller: "Paciente")
-                            @Html.ButtonLinkIndex(text: "Enviar Solicitação por E-Mail", action: "EnviarSolicitacaoEMailForm", controller: "Paciente", htmlAttributes: new { @class = "btn-loading" })
+                            @Html.ButtonLinkIndex(text: "Enviar Solicitação por E-Mail", action: "EnviarSolicitacaoEMailForm", controller: "Paciente", htmlAttributes: new { @class = "btn-loading show-spinner" })
                             @if ((Int32)Session["VoltarPesquisa"] == 1)
                             {
-                                @Html.ButtonLinkIndex(text: "Voltar", action: "PesquisarTudo", controller: "BaseAdmin", htmlAttributes: new { @class = "btn-loading" })
+                                @Html.ButtonLinkIndex(text: "Voltar", action: "PesquisarTudo", controller: "BaseAdmin", htmlAttributes: new { @class = "btn-loading show-spinner" })
                             }
                             else
                             {
@@ -116,16 +116,16 @@
                                 {
                                     if ((Int32)Session["ModoConsulta"] == 1)
                                     {
-                                        @Html.ButtonLinkIndex(text: "Voltar", action: "VerListaSolicitacaoConsulta", controller: "Paciente", htmlAttributes: new { @class = "btn-loading" })
+                                        @Html.ButtonLinkIndex(text: "Voltar", action: "VerListaSolicitacaoConsulta", controller: "Paciente", htmlAttributes: new { @class = "btn-loading show-spinner" })
                                     }
                                     else
                                     {
-                                        @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarAnexoPaciente", controller: "Paciente", htmlAttributes: new { @class = "btn-loading" })
+                                        @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarAnexoPaciente", controller: "Paciente", htmlAttributes: new { @class = "btn-loading show-spinner" })
                                     }
                                 }
                                 else
                                 {
-                                    @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaSolicitacoes", controller: "Paciente", htmlAttributes: new { @class = "btn-loading" })
+                                    @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaSolicitacoes", controller: "Paciente", htmlAttributes: new { @class = "btn-loading show-spinner" })
                                 }
                             }
                             <a href="@Url.Action((String)Session["AjudaNivel"])"  class="btn btn-sm btn-danger" target="_blank">Ajuda</a>                
@@ -170,7 +170,7 @@
                         <div class="row">
                             <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Solicitação de Exame</h4>
                             <div class="form-group" style=" margin-left: 5px; margin-right: 5px;">                
-                                @Html.ButtonActionSubmit(text: "Confirma Alteração de Solicitação de Exame", htmlAttributes: new { id = "basictoast", @class = "btn-loading1" })
+                                @Html.ButtonActionSubmit(text: "Confirma Alteração de Solicitação de Exame", htmlAttributes: new { id = "basictoast", @class = "btn-loading1 show-spinner" })
                             </div>
                             <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">                
                                 <div class="col-lg-2 col-md-2 col-xs-12">

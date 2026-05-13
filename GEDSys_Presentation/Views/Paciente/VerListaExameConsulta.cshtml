@@ -63,19 +63,12 @@
                                 @Html.ValidationSummary(false, "Erros Encontrados:", new { @class = "text-danger" })
                             </div>
                         }
-                        @*@if (TempData["TemMensagem"] != null)
-                        {
-                            <div class="alert alert-success">
-                                <button type="button" class="close" data-dismiss="alert">Fechar</button>
-                                <span>@TempData["MensagemAcerto"]</span>
-                            </div>
-                        }*@                    
                         <div class="row">
                             <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
                                 <div class="col-lg-12 col-md-12 col-xs-12">
-                                    @Html.ButtonLinkIndex(text: "Novo Resultado de Exame", controller: "Paciente", action: "IncluirExame", buttonClass: "primary", htmlAttributes: new { @class = "btn-loading" })
-                                    @Html.ButtonLinkIndex(text: "Ver Todos Exames", controller: "Paciente", action: "MontarTelaExames", htmlAttributes: new { @class = "btn-loading" })
-                                    @Html.ButtonLinkIndex(text: "Voltar", controller: "Paciente", action: "VoltarProcederConsulta", htmlAttributes: new { @class = "btn-loading" })
+                                    @Html.ButtonLinkIndex(text: "Novo Resultado de Exame", controller: "Paciente", action: "IncluirExame", buttonClass: "primary", htmlAttributes: new { @class = "btn-loading show-spinner" })
+                                    @Html.ButtonLinkIndex(text: "Ver Todos Exames", controller: "Paciente", action: "MontarTelaExames", htmlAttributes: new { @class = "btn-loading show-spinner" })
+                                    @Html.ButtonLinkIndex(text: "Voltar", controller: "Paciente", action: "VoltarProcederConsulta", htmlAttributes: new { @class = "btn-loading show-spinner" })
                                     <a href="@Url.Action((String)Session["AjudaNivel"])"  class="btn btn-sm btn-danger" target="_blank">Ajuda</a>                
                                     <span id="loadingIndicator" style="display: none; margin-left: 10px; color: #007bff;">
                                         <i class="fa fa-spinner fa-spin"></i> Processando...
@@ -118,34 +111,6 @@
                                 }
                             </div>
                         </div>
-                        @*<br />*@
-                        @*<div class="row">
-                            <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Dados da Consulta</h4>
-                            <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">                
-                                <div class="col-lg-2 col-md-2 col-xs-12">
-                                    Tipo de Consulta
-                                    @Html.TextBoxFor(m => m.TipoConsulta, new { @class = "form-control", @readonly = "readonly"})
-                                </div>
-                                <div class="col-lg-2 col-md-2 col-xs-12">
-                                    @Html.HiddenFor(m => m.PACI_CD_ID)
-                                    @Html.HiddenFor(m => m.PACO_IN_ATIVO)
-                                    @Html.HiddenFor(m => m.PACO_IN_ENCERRADA)
-                                    @Html.HiddenFor(m => m.USUA_CD_ID)
-                                    @Html.HiddenFor(m => m.ASSI_CD_ID)
-                                    @Html.HiddenFor(m => m.PACO_CD_ID)
-                                    Data da Consulta
-                                    @Html.TextBoxFor(m => m.PACO_DT_CONSULTA, "{0:dd/MM/yyyy}", new { @class = "form-control", @id = "dn", @readonly = "readonly" })
-                                </div>
-                                <div class="col-lg-2 col-md-2 col-xs-12">
-                                    Início
-                                    @Html.TextBoxFor(m => m.PACO_HR_INICIO, new { @class = "form-control", @id = "hora", @readonly = "readonly" })
-                                </div>
-                                <div class="col-lg-2 col-md-2 col-xs-12">
-                                    Final
-                                    @Html.TextBoxFor(m => m.PACO_HR_FINAL, new { @class = "form-control", @id = "hora1", @readonly = "readonly" })
-                                </div>
-                            </div>
-                        </div>*@
 
                         <div class="row">
                             <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
@@ -177,11 +142,11 @@
                                                         <td style="width: auto">@cond.TIPO_EXAME.TIEX_NM_NOME</td>                                                      
                                                         @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_EXAME_ALTERAR == 1)
                                                         {
-                                                            <td style="width: auto"><a href="@Url.Action("EditarExame", "Paciente", new { id = cond.PAEX_CD_ID })" class="btn-loading" />@cond.PAEX_NM_NOME</td>
+                                                            <td style="width: auto"><a href="@Url.Action("EditarExame", "Paciente", new { id = cond.PAEX_CD_ID })" class="btn-loading show-spinner" />@cond.PAEX_NM_NOME</td>
                                                         }
                                                         else
                                                         {
-                                                            <td style="width: auto"><a href="@Url.Action("VerExame", "Paciente", new { id = cond.PAEX_CD_ID })" class="btn-loading" />@cond.PAEX_NM_NOME</td>
+                                                            <td style="width: auto"><a href="@Url.Action("VerExame", "Paciente", new { id = cond.PAEX_CD_ID })" class="btn-loading show-spinner" />@cond.PAEX_NM_NOME</td>
                                                         }
                                                         @if (cond.LABS_CD_ID != null)
                                                         {
@@ -215,18 +180,18 @@
                                                         <td style="width: auto" class="td-one-action">
                                                             @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_EXAME_ALTERAR == 1)
                                                             {
-                                                                @Html.TableLinkDetails(cond.PAEX_CD_ID, "EditarExame", "fa-edit btn-loading", "Editar")
+                                                                @Html.TableLinkDetails(cond.PAEX_CD_ID, "EditarExame", "fa-edit btn-loading show-spinner", "Editar")
                                                             }
                                                             else
                                                             {
-                                                                @Html.TableLinkDetails(cond.PAEX_CD_ID, "VerExame", "fa-search btn-loading", "Consultar")
+                                                                @Html.TableLinkDetails(cond.PAEX_CD_ID, "VerExame", "fa-search btn-loading show-spinner", "Consultar")
                                                             }
-                                                            @Html.TableLinkDetails(cond.PAEX_CD_ID, "MontarTelaComparaExames", "fa-gears", "Comparar Exames do Mesmo Tipo")
+                                                            @Html.TableLinkDetails(cond.PAEX_CD_ID, "MontarTelaComparaExames", "fa-gears show-spinner", "Comparar Exames do Mesmo Tipo")
                                                             @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_EXAME_EXCLUIR == 1)
                                                             {
                                                                 if (cond.PAEX_IN_ATIVO == 1)
                                                                 {
-                                                                    <span style="color: #337ab7; cursor:pointer;" alt="Desativar" class="tbl-link fa-lg fa fa-trash-o  btn-loading" onclick="ShowModalExcluirExame('/Paciente/ExcluirExame/@cond.PAEX_CD_ID')" title="Excluir"></span>
+                                                                    <span style="color: #337ab7; cursor:pointer;" alt="Desativar" class="tbl-link fa-lg fa fa-trash-o  btn-loading show-spinner" onclick="ShowModalExcluirExame('/Paciente/ExcluirExame/@cond.PAEX_CD_ID')" title="Excluir"></span>
                                                                 }
 	                                                        }
                                                         </td>

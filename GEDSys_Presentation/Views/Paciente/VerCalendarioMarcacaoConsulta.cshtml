@@ -34,8 +34,8 @@
             <div class="ibox-content">
                 <div class="form-group">
                     <br />
-                    @Html.ButtonLinkIndex(text: "Nova Consulta", controller: "Paciente", action: "IncluirConsultaCompleta", buttonClass: "primary", htmlAttributes: new { @class = "btn-loading" })
-                    @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaMarcacaoConsulta", controller: "Paciente", htmlAttributes: new { @class = "btn-loading" })
+                    @Html.ButtonLinkIndex(text: "Nova Consulta", controller: "Paciente", action: "IncluirConsultaCompleta", buttonClass: "primary", htmlAttributes: new { @class = "btn-loading show-spinner" })
+                    @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaMarcacaoConsulta", controller: "Paciente", htmlAttributes: new { @class = "btn-loading show-spinner" })
                     <span id="loadingIndicator" style="display: none; margin-left: 10px; color: #007bff;">
                         <i class="fa fa-spinner fa-spin"></i> Processando...
                     </span>

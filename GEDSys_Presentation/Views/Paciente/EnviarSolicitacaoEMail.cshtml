@@ -156,26 +156,26 @@
                             </div>
                         </div>
                         <div class="form-group">
-                            @Html.ButtonActionSubmit(text: "Confirma Envio da Solicitação de Exame", htmlAttributes: new { id = "basictoast" })
+                            @Html.ButtonActionSubmit(text: "Confirma Envio da Solicitação de Exame", htmlAttributes: new { id = "basictoast",  @class=" show-spinner" })
                             @if ((Int32)Session["VoltaMail"] == 1)
                             {
-                                @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarAnexoPaciente", controller: "Paciente")
+                                @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarAnexoPaciente", controller: "Paciente", htmlAttributes: new { @class=" show-spinner" })
                             }
                             else if ((Int32)Session["VoltaMail"] == 2)
                             {
-                                @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaSolicitacoes", controller: "Paciente")
+                                @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaSolicitacoes", controller: "Paciente", htmlAttributes: new { @class=" show-spinner" })
                             }
                             else if ((Int32)Session["VoltaMail"] == 3)
                             {
-                                @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarProcederConsulta", controller: "Paciente")
+                                @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarProcederConsulta", controller: "Paciente", htmlAttributes: new { @class=" show-spinner" })
                             }
                             else if ((Int32)Session["VoltaMail"] == 4)
                             {
-                                @Html.ButtonLinkIndex(text: "Voltar", action: "VerListaSolicitacaoConsulta", controller: "Paciente")
+                                @Html.ButtonLinkIndex(text: "Voltar", action: "VerListaSolicitacaoConsulta", controller: "Paciente", htmlAttributes: new { @class=" show-spinner" })
                             }
                             else if ((Int32)Session["VoltaMail"] == 5)
                             {
-                                @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaCentralPaciente", controller: "Paciente")
+                                @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaCentralPaciente", controller: "Paciente", htmlAttributes: new { @class=" show-spinner" })
                             }
                             <a href="@Url.Action((String)Session["AjudaNivel"])"  class="btn btn-sm btn-danger" target="_blank">Ajuda</a>                
                         </div>

@@ -104,11 +104,11 @@
                         <div class="form-group">
                             @if ((Int32)Session["VoltaAnexoExame"] == 2)
                             {
-                                @Html.ButtonLinkIndex(text: "Voltar", action: "VerAnexoExamesPaciente", controller: "Paciente", routeValues: new { id = Model.PAEX_CD_ID }, htmlAttributes: new { @class = "btn-loading" })
+                                @Html.ButtonLinkIndex(text: "Voltar", action: "VerAnexoExamesPaciente", controller: "Paciente", routeValues: new { id = Model.PAEX_CD_ID }, htmlAttributes: new { @class = "btn-loading show-spinner" })
                             }
                             else
                             {
-                                @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarEditarExame", controller: "Paciente", htmlAttributes: new { @class = "btn-loading" })
+                                @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarEditarExame", controller: "Paciente", htmlAttributes: new { @class = "btn-loading show-spinner" })
                             }
                             <a href="@Url.Action((String)Session["AjudaNivel"])"  class="btn btn-sm btn-danger" target="_blank">Ajuda</a>                
                             <span id="loadingIndicator" style="display: none; margin-left: 10px; color: #007bff;">

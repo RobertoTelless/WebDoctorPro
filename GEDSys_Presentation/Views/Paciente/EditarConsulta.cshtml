@@ -105,28 +105,28 @@
                         <div class="row">
                             <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Dados da Consulta</h4>
                             <div class="form-group" style=" margin-left: 5px; margin-right: 5px;">                
-                                @Html.ButtonActionSubmit(text: "Confirma Edição de Consulta", htmlAttributes: new { id = "basictoast", @class = "btn-loading1" })
+                                @Html.ButtonActionSubmit(text: "Confirma Edição de Consulta", htmlAttributes: new { id = "basictoast", @class = "btn-loading1 show-spinner" })
                                 @if ((Int32)Session["VoltaCalendario"] == 1)
                                 {
-                                    @Html.ButtonLinkIndex(text: "Voltar", action: "VerCalendarioConsulta", controller: "Paciente", htmlAttributes: new { @class = "btn-loading" })
+                                    @Html.ButtonLinkIndex(text: "Voltar", action: "VerCalendarioConsulta", controller: "Paciente", htmlAttributes: new { @class = "btn-loading show-spinner" })
                                 }
                                 else
                                 {
                                     if ((Int32)Session["TipoSolicitacao"] == 1)
                                     {
-                                        @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarAnexoPaciente", controller: "Paciente", htmlAttributes: new { @class = "btn-loading" })
+                                        @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarAnexoPaciente", controller: "Paciente", htmlAttributes: new { @class = "btn-loading show-spinner" })
                                     }
                                     else if ((Int32)Session["TipoSolicitacao"] == 6)
                                     {
-                                        @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaConsultas", controller: "Paciente", htmlAttributes: new { @class = "btn-loading" })
+                                        @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaConsultas", controller: "Paciente", htmlAttributes: new { @class = "btn-loading show-spinner" })
                                     }
                                     else if ((Int32)Session["VoltaConfirmarCancelar"] == 1)
                                     {
-                                        @Html.ButtonLinkIndex(text: "Voltar", action: "ConfirmarCancelarConsulta", controller: "Paciente", htmlAttributes: new { @class = "btn-loading" })
+                                        @Html.ButtonLinkIndex(text: "Voltar", action: "ConfirmarCancelarConsulta", controller: "Paciente", htmlAttributes: new { @class = "btn-loading show-spinner" })
                                     }
                                     else
                                     {
-                                        @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaConsultas", controller: "Paciente", htmlAttributes: new { @class = "btn-loading" })
+                                        @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaConsultas", controller: "Paciente", htmlAttributes: new { @class = "btn-loading show-spinner" })
                                     }
                                 }
                                 <a href="@Url.Action((String)Session["AjudaNivel"])"  class="btn btn-sm btn-danger" target="_blank">Ajuda</a>                

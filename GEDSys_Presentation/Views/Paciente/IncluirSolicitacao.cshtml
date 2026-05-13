@@ -173,32 +173,32 @@
                         <div class="row">
                             <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Solicitação de Exame</h4>
                             <div class="form-group" style=" margin-left: 5px; margin-right: 5px;">                
-                                @Html.ButtonActionSubmit(text: "Confirma Criação de Solicitação de Exame", htmlAttributes: new { id = "basictoast", @class = "btn-loading1" })
+                                @Html.ButtonActionSubmit(text: "Confirma Criação de Solicitação de Exame", htmlAttributes: new { id = "basictoast", @class = "btn-loading1 show-spinner" })
                                 @if ((Int32)Session["TemCertificado"] == 0)
                                 {
-                                    @Html.ButtonLinkIndex(text: "Cadastrar Certificado Digital", controller: "Configuracao", action: "MontarTelaConfiguracao", htmlAttributes: new { @class = "btn btn-sm btn-danger btn-loading" })
+                                    @Html.ButtonLinkIndex(text: "Cadastrar Certificado Digital", controller: "Configuracao", action: "MontarTelaConfiguracao", htmlAttributes: new { @class = "btn btn-sm btn-danger btn-loading show-spinner" })
                                 }
                                 @if ((Int32)Session["TipoSolicitacao"] == 1)
                                 {
                                     if ((Int32)Session["ModoConsulta"] == 1)
                                     {
-                                        @Html.ButtonLinkIndex(text: "Voltar", action: "VerListaSolicitacaoConsulta", controller: "Paciente", htmlAttributes: new { @class = "btn-loading" })
+                                        @Html.ButtonLinkIndex(text: "Voltar", action: "VerListaSolicitacaoConsulta", controller: "Paciente", htmlAttributes: new { @class = "btn-loading show-spinner" })
                                     }
                                     else
                                     {
                                         if ((Int32)Session["VoltarCentral"] == 2)
                                         {
-                                            @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaCentralPaciente", controller: "Paciente", htmlAttributes: new { @class = "btn-loading" })
+                                            @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaCentralPaciente", controller: "Paciente", htmlAttributes: new { @class = "btn-loading show-spinner" })
                                         }
                                         else
                                         {
-                                            @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarAnexoPaciente", controller: "Paciente", htmlAttributes: new { @class = "btn-loading" })
+                                            @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarAnexoPaciente", controller: "Paciente", htmlAttributes: new { @class = "btn-loading show-spinner" })
                                         }
                                     }
                                 }
                                 else
                                 {
-                                    @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaSolicitacoes", controller: "Paciente", htmlAttributes: new { @class = "btn-loading" })
+                                    @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaSolicitacoes", controller: "Paciente", htmlAttributes: new { @class = "btn-loading show-spinner" })
                                 }
                                 <a href="@Url.Action((String)Session["AjudaNivel"])"  class="btn btn-sm btn-danger" target="_blank">Ajuda</a>                
                                 <span id="loadingIndicator" style="display: none; margin-left: 10px; color: #007bff;">
@@ -237,7 +237,7 @@
                                 </div>
                                 <div class="col-lg-2 col-md-2 col-xs-12">
                                     <br />
-                                    <a href="@Url.Action("IncluirSolicitacaoBase", "Solicitacao")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acesso à página de inclusão de novos modelos de solicitações de exames" class="btn btn-sm btn-warning btn-loading" id="emp" OnClick = "Fade()">Incluir Novo Modelo de Solicitação</a>                
+                                    <a href="@Url.Action("IncluirSolicitacaoBase", "Solicitacao")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acesso à página de inclusão de novos modelos de solicitações de exames" class="btn btn-sm btn-warning btn-loading show-spinner" id="emp" OnClick = "Fade()">Incluir Novo Modelo de Solicitação</a>                
                                 </div>
                             </div>
                             <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">                

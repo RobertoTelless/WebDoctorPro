@@ -125,21 +125,21 @@
 
                         <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
                             <div class="col-lg-12 col-md-12 col-xs-12">
-                                @Html.ButtonActionSubmit(text: "Filtrar", htmlAttributes: new { @class = "btn-loading1" })
+                                @Html.ButtonActionSubmit(text: "Filtrar", htmlAttributes: new { @class = "btn-loading1 show-spinner" })
                                 @if (ViewBag.Classe == 0)
                                 {
-                                    @Html.ButtonLinkIndex(text: "Nova Solicitação de Exame", controller: "Paciente", action: "IncluirSolicitacaoCompleta", buttonClass: "primary", htmlAttributes: new { @class = "btn-loading" })
+                                    @Html.ButtonLinkIndex(text: "Nova Solicitação de Exame", controller: "Paciente", action: "IncluirSolicitacaoCompleta", buttonClass: "primary", htmlAttributes: new { @class = "btn-loading show-spinner" })
                                 }
-                                @Html.ButtonLinkIndex(text: "Solicitações do Mês", controller: "Paciente", action: "VerSolicitacoesMes", htmlAttributes: new { @class = "btn-loading" })
-                                @Html.ButtonLinkIndex(text: "Todas as Solicitações", controller: "Paciente", action: "RetirarFiltroSolicitacoes", htmlAttributes: new { @class = "btn-loading" })
+                                @Html.ButtonLinkIndex(text: "Solicitações do Mês", controller: "Paciente", action: "VerSolicitacoesMes", htmlAttributes: new { @class = "btn-loading show-spinner" })
+                                @Html.ButtonLinkIndex(text: "Todas as Solicitações", controller: "Paciente", action: "RetirarFiltroSolicitacoes", htmlAttributes: new { @class = "btn-loading show-spinner" })
                                 @Html.ButtonLinkIndex(text: "Imprimir Lista de Solicitações", controller: "Paciente", action: "GerarRelatorioSolicitacoes")
                                 @if ((Int32)Session["VoltaListaConsulta"] == 1)
                                 {
-                                    @Html.ButtonLinkIndex(text: "Voltar", controller: "Paciente", action: "VerListaSolicitacaoConsulta", htmlAttributes: new { @class = "btn-loading" })
+                                    @Html.ButtonLinkIndex(text: "Voltar", controller: "Paciente", action: "VerListaSolicitacaoConsulta", htmlAttributes: new { @class = "btn-loading show-spinner" })
                                 }
                                 else
                                 {
-                                    @Html.ButtonLinkIndex(text: "Voltar", controller: "Paciente", action: "VoltarCentrais", htmlAttributes: new { @class = "btn-loading" })
+                                    @Html.ButtonLinkIndex(text: "Voltar", controller: "Paciente", action: "VoltarCentrais", htmlAttributes: new { @class = "btn-loading show-spinner" })
                                 }
                                 <a href="@Url.Action((String)Session["AjudaNivel"])"  class="btn btn-sm btn-danger" target="_blank">Ajuda</a>                
                                 <span id="loadingIndicator" style="display: none; margin-left: 10px; color: #007bff;">
@@ -195,26 +195,26 @@
                                             </td>
                                             @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_ACESSO_PACIENTE == 1)
                                             {
-                                                <td style="width: auto"><a href="@Url.Action("EditarPacienteSolicitacao", "Paciente", new { id = cond.PACIENTE.PACI__CD_ID })" class="btn-loading" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página de alteração de dados do paciente" />@cond.PACIENTE.PACI_NM_NOME</td>
+                                                <td style="width: auto"><a href="@Url.Action("EditarPacienteSolicitacao", "Paciente", new { id = cond.PACIENTE.PACI__CD_ID })" class="btn-loading show-spinner" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página de alteração de dados do paciente" />@cond.PACIENTE.PACI_NM_NOME</td>
                                             }
                                             else
                                             {
-                                                <td style="width: auto"><a href="@Url.Action("VerPacienteSolicitacao", "Paciente", new { id = cond.PACIENTE.PACI__CD_ID })" class="btn-loading" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página de visualização de dados do paciente"/>@cond.PACIENTE.PACI_NM_NOME</td>
+                                                <td style="width: auto"><a href="@Url.Action("VerPacienteSolicitacao", "Paciente", new { id = cond.PACIENTE.PACI__CD_ID })" class="btn-loading show-spinner" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página de visualização de dados do paciente"/>@cond.PACIENTE.PACI_NM_NOME</td>
                                             }
                                             @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_SOLICITACAO_ALTERAR == 1)
                                             {
                                                 if (cond.PASO_IN_ENVIADO == 0)
                                                 {
-                                                    <td style="width: auto"><a href="@Url.Action("EditarSolicitacaoCompleta", "Paciente", new { id = cond.PASO_CD_ID })" class="btn-loading" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página de alteração de dados da solicitação de exame"/>@cond.PASO_GU_GUID</td>
+                                                    <td style="width: auto"><a href="@Url.Action("EditarSolicitacaoCompleta", "Paciente", new { id = cond.PASO_CD_ID })" class="btn-loading show-spinner" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página de alteração de dados da solicitação de exame"/>@cond.PASO_GU_GUID</td>
                                                 }
                                                 else
                                                 {
-                                                    <td style="width: auto"><a href="@Url.Action("VerSolicitacaoCompleta", "Paciente", new { id = cond.PASO_CD_ID })" class="btn-loading" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página de visualiação de dados da solicitação de exame" />@cond.PASO_GU_GUID</td>
+                                                    <td style="width: auto"><a href="@Url.Action("VerSolicitacaoCompleta", "Paciente", new { id = cond.PASO_CD_ID })" class="btn-loading show-spinner" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página de visualiação de dados da solicitação de exame" />@cond.PASO_GU_GUID</td>
                                                 }
                                             }
                                             else
                                             {
-                                                <td style="width: auto"><a href="@Url.Action("VerSolicitacaoCompleta", "Paciente", new { id = cond.PASO_CD_ID })" class="btn-loading" />@cond.PASO_GU_GUID</td>
+                                                <td style="width: auto"><a href="@Url.Action("VerSolicitacaoCompleta", "Paciente", new { id = cond.PASO_CD_ID })" class="btn-loading show-spinner" />@cond.PASO_GU_GUID</td>
                                             }
                                             <td style="width: auto">@cond.TIPO_EXAME.TIEX_NM_NOME</td>
                                             @if (cond.PASO_NM_TITULO.Length > 200)
@@ -258,16 +258,16 @@
                                                 {
                                                     if (cond.PASO_IN_ENVIADO == 0)
                                                     {
-                                                        @Html.TableLinkDetails(cond.PASO_CD_ID, "EditarSolicitacaoCompleta", "fa-edit btn-loading", "Alterar a Solicitação")
+                                                        @Html.TableLinkDetails(cond.PASO_CD_ID, "EditarSolicitacaoCompleta", "fa-edit btn-loading show-spinner", "Alterar a Solicitação")
                                                     }
                                                     else
                                                     {
-                                                        @Html.TableLinkDetails(cond.PASO_CD_ID, "VerSolicitacaoCompleta", "fa-search btn-loading", "Consultar a Solicitação")
+                                                        @Html.TableLinkDetails(cond.PASO_CD_ID, "VerSolicitacaoCompleta", "fa-search btn-loading show-spinner", "Consultar a Solicitação")
                                                     }
                                                 }
                                                 else
                                                 {
-                                                    @Html.TableLinkDetails(cond.PASO_CD_ID, "VerSolicitacaoCompleta", "fa-search btn-loading", "Consultar a Solicitação")
+                                                    @Html.TableLinkDetails(cond.PASO_CD_ID, "VerSolicitacaoCompleta", "fa-search btn-loading show-spinner", "Consultar a Solicitação")
                                                 }
                                                 @if (cond.PACIENTE.PACI_NM_EMAIL != null)
                                                 {
@@ -275,7 +275,7 @@
                                                     {
                                                         if (cond.PASO_IN_ATIVO == 1 )
                                                         {
-                                                            @Html.TableLinkDetails(cond.PASO_CD_ID, "EnviarSolicitacaoEMailBase", "fa-send-o btn-loading", "Enviar Solicitação ao Paciente")
+                                                            @Html.TableLinkDetails(cond.PASO_CD_ID, "EnviarSolicitacaoEMailBase", "fa-send-o btn-loading show-spinner", "Enviar Solicitação ao Paciente")
                                                         }
 	                                                }
                                                 }
@@ -292,7 +292,7 @@
                                                     {
                                                         if (cond.PASO_IN_ENVIADO == 0)
                                                         {
-                                                            <span style="color: #337ab7; cursor:pointer;" alt="Desativar" class="tbl-link fa-lg fa fa-trash-o btn-loading" onclick="ShowModalExcluirSolicitacao('/Paciente/ExcluirSolicitacao/@cond.PASO_CD_ID')" title="Excluir Solicitação"></span>
+                                                            <span style="color: #337ab7; cursor:pointer;" alt="Desativar" class="tbl-link fa-lg fa fa-trash-o btn-loading show-spinner" onclick="ShowModalExcluirSolicitacao('/Paciente/ExcluirSolicitacao/@cond.PASO_CD_ID')" title="Excluir Solicitação"></span>
                                                         }
                                                     }
 	                                            }
@@ -309,7 +309,7 @@
                                 </div>
                                 <div style="border: 5px solid #F6A54A; padding: 10px; border-radius: 8px 8px; " class="col-lg-10 col-md-10 col-xs-8">
                                     <h2 style="font-weight: bold">Sua pesquisa não retornou nenhum resultado ou nenhuma solicitação de exame cadastrada no mês corrente</h2>
-                                    @Html.ButtonLinkIndex(text: "Retirar Filtro", controller: "Paciente", action: "RetirarFiltroSolicitacoes", htmlAttributes: new { @class = "btn-loading" })
+                                    @Html.ButtonLinkIndex(text: "Retirar Filtro", controller: "Paciente", action: "RetirarFiltroSolicitacoes", htmlAttributes: new { @class = "btn-loading show-spinner" })
                                 </div>
                                 <div class="col-lg-1 col-md-1 col-xs-2">
                                 </div>

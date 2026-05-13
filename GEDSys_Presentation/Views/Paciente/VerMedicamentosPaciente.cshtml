@@ -83,9 +83,9 @@
 
                         <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
                             <div class="col-lg-12 col-md-12 col-xs-12">
-                                @Html.ButtonActionSubmit(text: "Filtrar", htmlAttributes: new { @class = "btn-loading1" })
-                                @Html.ButtonLinkIndex(text: "Retirar Filtro", controller: "Paciente", action: "RetirarFiltroMedicamentosPaciente", htmlAttributes: new { @class = "btn-loading" })
-                                @Html.ButtonLinkIndex(text: "Voltar", controller: "Paciente", action: "VerMedicamentos", htmlAttributes: new { @class = "btn-loading" })
+                                @Html.ButtonActionSubmit(text: "Filtrar", htmlAttributes: new { @class = "btn-loading1 show-spinner" })
+                                @Html.ButtonLinkIndex(text: "Retirar Filtro", controller: "Paciente", action: "RetirarFiltroMedicamentosPaciente", htmlAttributes: new { @class = "btn-loading show-spinner" })
+                                @Html.ButtonLinkIndex(text: "Voltar", controller: "Paciente", action: "VerMedicamentos", htmlAttributes: new { @class = "btn-loading show-spinner" })
                                 <span id="loadingIndicator" style="display: none; margin-left: 10px; color: #007bff;">
                                     <i class="fa fa-spinner fa-spin"></i> Processando...
                                 </span>
@@ -131,26 +131,26 @@
                                             <td style="width: auto">@cond.PACIENTE_PRESCRICAO.PAPR_DT_EMISSAO.Value.Date.ToShortDateString() @cond.PACIENTE_PRESCRICAO.PAPR_DT_EMISSAO.Value.ToShortTimeString()</td>
                                             @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_ACESSO_PACIENTE == 1)
                                             {
-                                                <td style="width: auto"><a href="@Url.Action("EditarPacienteMedicamento", "Paciente", new { id = cond.PACIENTE.PACI__CD_ID })" class="btn-loading" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acesso a página de edição de paciente"/>@cond.PACIENTE.PACI_NM_NOME</td>
+                                                <td style="width: auto"><a href="@Url.Action("EditarPacienteMedicamento", "Paciente", new { id = cond.PACIENTE.PACI__CD_ID })" class="btn-loading show-spinner" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acesso a página de edição de paciente"/>@cond.PACIENTE.PACI_NM_NOME</td>
                                             }
                                             else
                                             {
-                                                <td style="width: auto"><a href="@Url.Action("VerPacienteMedicamento", "Paciente", new { id = cond.PACIENTE.PACI__CD_ID })" class="btn-loading" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acesso a página de visualização de paciente"/>@cond.PACIENTE.PACI_NM_NOME</td>
+                                                <td style="width: auto"><a href="@Url.Action("VerPacienteMedicamento", "Paciente", new { id = cond.PACIENTE.PACI__CD_ID })" class="btn-loading show-spinner" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acesso a página de visualização de paciente"/>@cond.PACIENTE.PACI_NM_NOME</td>
                                             }                                       
                                             @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_PRESCRICAO_ALTERAR == 1)
                                             {
                                                 if (cond.PACIENTE_PRESCRICAO.PAPR_IN_ENVIADO == 0)
                                                 {                                                                              
-                                                    <td style="width: auto"><a href="@Url.Action("EditarPrescricaoMedicamento", "Paciente", new { id = cond.PAPR_CD_ID })" class="btn-loading" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acesso a página de edição de prescrição"/>@cond.PACIENTE_PRESCRICAO.PAPR_GU_GUID</td>
+                                                    <td style="width: auto"><a href="@Url.Action("EditarPrescricaoMedicamento", "Paciente", new { id = cond.PAPR_CD_ID })" class="btn-loading show-spinner" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acesso a página de edição de prescrição"/>@cond.PACIENTE_PRESCRICAO.PAPR_GU_GUID</td>
                                                 }
                                                 else
                                                 {
-                                                    <td style="width: auto"><a href="@Url.Action("VerPrescricaoMedicamento", "Paciente", new { id = cond.PAPR_CD_ID })" class="btn-loading" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acesso a página de visualização de prescrição"/>@cond.PACIENTE_PRESCRICAO.PAPR_GU_GUID</td>
+                                                    <td style="width: auto"><a href="@Url.Action("VerPrescricaoMedicamento", "Paciente", new { id = cond.PAPR_CD_ID })" class="btn-loading show-spinner" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acesso a página de visualização de prescrição"/>@cond.PACIENTE_PRESCRICAO.PAPR_GU_GUID</td>
                                                 }
                                             }
                                             else
                                             {
-                                                <td style="width: auto"><a href="@Url.Action("VerPrescricaoMedicamento", "Paciente", new { id = cond.PAPR_CD_ID })" class="btn-loading" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acesso a página de visualização de prescrição"/>@cond.PACIENTE_PRESCRICAO.PAPR_GU_GUID</td>
+                                                <td style="width: auto"><a href="@Url.Action("VerPrescricaoMedicamento", "Paciente", new { id = cond.PAPR_CD_ID })" class="btn-loading show-spinner" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acesso a página de visualização de prescrição"/>@cond.PACIENTE_PRESCRICAO.PAPR_GU_GUID</td>
                                             }
                                             @if (cond.PACIENTE_PRESCRICAO.PACIENTE_CONSULTA != null)
                                             {
@@ -172,7 +172,7 @@
                                 </div>
                                 <div style="border: 5px solid #F6A54A; padding: 10px; border-radius: 8px 8px; " class="col-lg-6 col-md-6 col-xs-8">
                                     <h2 style="font-weight: bold">Sua pesquisa não retornou nenhum resultado ou nenhuma prescrição cadastrada</h2>
-                                    @Html.ButtonLinkIndex(text: "Retirar Filtro", controller: "Paciente", action: "RetirarFiltroPrescricoes", htmlAttributes: new { @class = "btn-loading" })
+                                    @Html.ButtonLinkIndex(text: "Retirar Filtro", controller: "Paciente", action: "RetirarFiltroPrescricoes", htmlAttributes: new { @class = "btn-loading show-spinner" })
                                 </div>
                                 <div class="col-lg-3 col-md-3 col-xs-2">
                                 </div>

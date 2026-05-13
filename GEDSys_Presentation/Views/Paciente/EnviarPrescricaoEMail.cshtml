@@ -24,7 +24,21 @@
         </ol>
         <br />
     </div>
-
+    <div class="row">
+        <div class="form-group" style=" margin-left: 15px; margin-right: 0px;">
+            @* --- INÍCIO DA AJUDA CONTEXTUAL --- *@
+            <details class="ajuda-contextual">
+                <summary><i class="fa fa-info-circle text-info"></i> Resumo das funcionalidades desta página</summary>
+                <div class="well well-sm">
+                    <p>Essa é a página de envio de prescrições ao paciente do <b>WebDoctorPro</b>. Nela você poderá:</p>
+                    <ol>
+                        <li>Redigir o conteúdo da mensagm que será enviada ap paciente por e-mail com a prescrição em anexo</li>
+                    </ol>
+                </div>
+            </details>
+            @* --- FIM DA AJUDA CONTEXTUAL --- *@
+        </div>
+    </div>
     <div class="row">
         <div class="col-lg-12 col-md-12 col-xs-12">
             <div class="col-lg-12 col-md-12 col-xs-12 ibox float-e-margins">
@@ -102,26 +116,26 @@
                             </div>
                         </div>
                         <div class="form-group">
-                            @Html.ButtonActionSubmit(text: "Confirma Envio da Prescrição", htmlAttributes: new { id = "basictoast" })
+                            @Html.ButtonActionSubmit(text: "Confirma Envio da Prescrição", htmlAttributes: new { id = "basictoast", @class=" show-spinner" })
                             @if ((Int32)Session["VoltaMail"] == 1)
                             {
-                                @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarAnexoPaciente", controller: "Paciente")
+                                @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarAnexoPaciente", controller: "Paciente", htmlAttributes: new { @class=" show-spinner" })
                             }
                             else if ((Int32)Session["VoltaMail"] == 2)
                             {
-                                @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaPrescricoes", controller: "Paciente")
+                                @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaPrescricoes", controller: "Paciente", htmlAttributes: new { @class=" show-spinner" })
                             }
                             else if ((Int32)Session["VoltaMail"] == 3)
                             {
-                                @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarProcederConsulta", controller: "Paciente")
+                                @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarProcederConsulta", controller: "Paciente", htmlAttributes: new { @class=" show-spinner" })
                             }
                             else if ((Int32)Session["VoltaMail"] == 4)
                             {
-                                @Html.ButtonLinkIndex(text: "Voltar", action: "VerListaPrescricaoConsulta", controller: "Paciente")
+                                @Html.ButtonLinkIndex(text: "Voltar", action: "VerListaPrescricaoConsulta", controller: "Paciente", htmlAttributes: new { @class=" show-spinner" })
                             }
                             else if ((Int32)Session["VoltaMail"] == 5)
                             {
-                                @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaCentralPaciente", controller: "Paciente")
+                                @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaCentralPaciente", controller: "Paciente", htmlAttributes: new { @class=" show-spinner" })
                             }
                             <a href="@Url.Action((String)Session["AjudaNivel"])"  class="btn btn-sm btn-danger" target="_blank">Ajuda</a>                
                         </div>

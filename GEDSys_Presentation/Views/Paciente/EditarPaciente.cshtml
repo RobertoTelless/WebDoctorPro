@@ -134,7 +134,6 @@
             </div>
         </div>
     </div>
-
     <div class="page-title">
         <ol class="breadcrumb">
             <li>
@@ -8085,7 +8084,7 @@
                                                                             @cond.PAVI_DT_PROXIMA.Value.ToShortDateString()
                                                                         </td>
                                                                         <td style="width: auto" class="td-one-action">
-                                                                            @Html.TableLinkDetails(cond.PAVI_CD_ID, "EditarVacina", "fa-edit btn-loadingVac", "Editar Vacina")
+                                                                            @Html.TableLinkDetails(cond.PAVI_CD_ID, "EditarVacina", "fa-edit btn-loadingVac show-spinner", "Editar Vacina")
                                                                             @if (cond.PAVI_IN_ATIVO == 1)
                                                                             {
                                                                                 <span style="color: #337ab7; cursor:pointer;" alt="Desativar" class="tbl-link fa-lg fa fa-trash-o btn-loadingVac  show-spinner" onclick="ShowModalExcluirVacina('/Paciente/ExcluirVacina/@cond.PAVI_CD_ID')" title="Excluir Vacina"></span>
@@ -8161,7 +8160,7 @@
                                                                             @cond.PAVI_DT_PROXIMA.Value.ToShortDateString()
                                                                         </td>
                                                                         <td style="width: auto" class="td-one-action">
-                                                                            @Html.TableLinkDetails(cond.PAVI_CD_ID, "EditarVacina", "fa-edit btn-loadingVac", "Editar Vacina")
+                                                                            @Html.TableLinkDetails(cond.PAVI_CD_ID, "EditarVacina", "fa-edit btn-loadingVac show-spinner", "Editar Vacina")
                                                                             @if (cond.PAVI_IN_ATIVO == 1)
                                                                             {
                                                                                 <span style="color: #337ab7; cursor:pointer;" alt="Desativar" class="tbl-link fa-lg fa fa-trash-o btn-loadingVac  show-spinner" onclick="ShowModalExcluirVacina('/Paciente/ExcluirVacina/@cond.PAVI_CD_ID')" title="Excluir Vacina"></span>

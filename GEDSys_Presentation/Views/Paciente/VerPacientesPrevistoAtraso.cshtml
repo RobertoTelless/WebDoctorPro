@@ -74,17 +74,6 @@
                 </div>
             </div>
         </div>
-        <div class="col-lg-2">
-            <div style="display: none; z-index:1000" class="dotContainer">
-                <div class="spiner-example">
-                    <div class="sk-spinner sk-spinner-three-bounce">
-                        <div class="sk-bounce1"></div>
-                        <div class="sk-bounce2"></div>
-                        <div class="sk-bounce3"></div>
-                    </div>
-                </div>
-            </div>
-        </div>
     </div>
 
     <div class="row">
@@ -145,9 +134,9 @@
                         <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
                             <div class="col-lg-12 col-md-12 col-xs-12">
                                 @Html.ButtonActionSubmit(text: "Filtrar")
-                                @Html.ButtonLinkIndex(text: "Retirar Filtro", controller: "Paciente", action: "RetirarFiltroPacienteAtraso")
-                                @Html.ButtonLinkIndex(text: "Gerar Listagem", controller: "Paciente", action: "GerarRelatorioListaAtraso")
-                                @Html.ButtonLinkIndex(text: "Voltar", controller: "Paciente", action: "MontarTelaCentralPaciente")
+                                @Html.ButtonLinkIndex(text: "Retirar Filtro", controller: "Paciente", action: "RetirarFiltroPacienteAtraso", htmlAttributes: new { @class = "show-spinner" })
+                                @Html.ButtonLinkIndex(text: "Gerar Listagem", controller: "Paciente", action: "GerarRelatorioListaAtraso", htmlAttributes: new { @class = "show-spinner" })
+                                @Html.ButtonLinkIndex(text: "Voltar", controller: "Paciente", action: "MontarTelaCentralPaciente", htmlAttributes: new { @class = "show-spinner" })
                             </div>
                         </div>
                     </div>
@@ -197,11 +186,11 @@
                                         <tr>
                                             @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_ALTERAR_PACIENTE == 1)
                                             {
-                                                <td style="width: auto; cursor: pointer; text-decoration: underline;"><a href="@Url.Action("EditarPaciente", "Paciente", new { id = cond.PACI__CD_ID })" />@cond.PACI_NM_NOME</td>
+                                                <td style="width: auto; cursor: pointer; text-decoration: underline;"><a href="@Url.Action("EditarPaciente", "Paciente", new { id = cond.PACI__CD_ID })" class="show-spinner" />@cond.PACI_NM_NOME</td>
                                             }
                                             else
                                             {
-                                                <td style="width: auto; cursor: pointer; text-decoration: underline;"><a href="@Url.Action("ConsultarPaciente", "Paciente", new { id = cond.PACI__CD_ID })" />@cond.PACI_NM_NOME</td>
+                                                <td style="width: auto; cursor: pointer; text-decoration: underline;"><a href="@Url.Action("ConsultarPaciente", "Paciente", new { id = cond.PACI__CD_ID })" class="show-spinner" />@cond.PACI_NM_NOME</td>
                                             }
 
                                             <td style="width: auto">@cond.TIPO_PACIENTE.TIPA_NM_NOME</td>
@@ -211,7 +200,7 @@
                                             {
                                                 if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PAERF_IN_PACIENTE_MENSAGEM == 1)
                                                 {
-                                                    <td style="width: auto; cursor: pointer; text-decoration: underline;"><a href="@Url.Action("EnviarEMailPaciente", "Paciente", new { id = cond.PACI__CD_ID })" />@cond.PACI_NM_EMAIL</td>
+                                                    <td style="width: auto; cursor: pointer; text-decoration: underline;"><a href="@Url.Action("EnviarEMailPaciente", "Paciente", new { id = cond.PACI__CD_ID })" class="show-spinner" />@cond.PACI_NM_EMAIL</td>
                                                 }
                                                 else
                                                 {
@@ -227,7 +216,7 @@
                                             {
                                                 if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PAERF_IN_PACIENTE_MENSAGEM == 1)
                                                 {
-                                                    <td style="width: auto; cursor: pointer; text-decoration: underline;"><a href="@Url.Action("EnviarSMSPaciente", "Paciente", new { id = cond.PACI__CD_ID })" />@cond.PACI_NR_CELULAR</td>
+                                                    <td style="width: auto; cursor: pointer; text-decoration: underline;"><a href="@Url.Action("EnviarSMSPaciente", "Paciente", new { id = cond.PACI__CD_ID })" class="show-spinner" />@cond.PACI_NR_CELULAR</td>
                                                 }
                                                 else
                                                 {
@@ -280,11 +269,11 @@
                                             <td class="td-one-action">
                                                 @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_ALTERAR_PACIENTE == 1)
                                                 {
-                                                    @Html.TableLinkDetails(cond.PACI__CD_ID, "EditarPaciente", "fa-edit", "Editar/Consultar")
+                                                    @Html.TableLinkDetails(cond.PACI__CD_ID, "EditarPaciente", "fa-edit show-spinner", "Editar/Consultar")
                                                 }
                                                 else
                                                 {
-                                                    @Html.TableLinkDetails(cond.PACI__CD_ID, "ConsultarPaciente", "fa-search", "Consultar")
+                                                    @Html.TableLinkDetails(cond.PACI__CD_ID, "ConsultarPaciente", "fa-search show-spinner", "Consultar")
                                                 }
                                             </td>
                                         </tr>

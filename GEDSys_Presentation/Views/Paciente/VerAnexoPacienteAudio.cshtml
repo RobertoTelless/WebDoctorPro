@@ -87,11 +87,11 @@
                         <div class="form-group">
                             @if ((Int32)Session["VoltaAnexo"] == 1)
                             {
-                                @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarAnexoPaciente", controller: "Paciente")
+                                @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarAnexoPaciente", controller: "Paciente", htmlAttributes: new { @class = "show-spinner" })
                             }
                             else
                             {
-                                @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarVerAnexoPaciente", controller: "Paciente")
+                                @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarVerAnexoPaciente", controller: "Paciente", htmlAttributes: new { @class = "show-spinner" })
                             }
                         </div>
                         <div class="form-group">

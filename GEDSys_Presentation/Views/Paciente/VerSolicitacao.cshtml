@@ -125,22 +125,22 @@
                             <br />
                             <div class="form-group" style=" margin-left: 5px; margin-right: 5px;"> 
                                 @Html.ButtonLinkIndex(text: "Imprimir Solicitação", action: "ImprimirSolicitacaoForm", controller: "Paciente")
-                                @Html.ButtonLinkIndex(text: "Enviar Solicitação por E-Mail", action: "EnviarSolicitacaoEMailForm", controller: "Paciente", htmlAttributes: new { @class = "btn-loading" })
+                                @Html.ButtonLinkIndex(text: "Enviar Solicitação por E-Mail", action: "EnviarSolicitacaoEMailForm", controller: "Paciente", htmlAttributes: new { @class = "btn-loading show-spinner" })
                                 @if ((Int32)Session["VoltarPesquisa"] == 1)
                                 {
-                                    @Html.ButtonLinkIndex(text: "Voltar", action: "PesquisarTudo", controller: "BaseAdmin", htmlAttributes: new { @class = "btn-loading" })
+                                    @Html.ButtonLinkIndex(text: "Voltar", action: "PesquisarTudo", controller: "BaseAdmin", htmlAttributes: new { @class = "btn-loading show-spinner" })
                                 }
                                 else if ((Int32)Session["VoltarPesquisa"] == 3)
                                 {
-                                    @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaExames", controller: "Paciente", htmlAttributes: new { @class = "btn-loading" })
+                                    @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaExames", controller: "Paciente", htmlAttributes: new { @class = "btn-loading show-spinner" })
                                 }
                                 else if ((Int32)Session["VoltarPesquisa"] == 4)
                                 {
-                                    @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarAnexoExame", controller: "Paciente", htmlAttributes: new { @class = "btn-loading" })
+                                    @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarAnexoExame", controller: "Paciente", htmlAttributes: new { @class = "btn-loading show-spinner" })
                                 }
                                 else if ((Int32)Session["VoltarPesquisa"] == 9)
                                 {
-                                    @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarAnexoPaciente", controller: "Paciente", htmlAttributes: new { @class = "btn-loading" })
+                                    @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarAnexoPaciente", controller: "Paciente", htmlAttributes: new { @class = "btn-loading show-spinner" })
                                 }
                                 else
                                 {
@@ -148,16 +148,16 @@
                                     {
                                         if ((Int32)Session["ModoConsulta"] == 1)
                                         {
-                                            @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarProcederConsulta", controller: "Paciente", htmlAttributes: new { @class = "btn-loading" })
+                                            @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarProcederConsulta", controller: "Paciente", htmlAttributes: new { @class = "btn-loading show-spinner" })
                                         }
                                         else
                                         {
-                                            @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarAnexoPaciente", controller: "Paciente", htmlAttributes: new { @class = "btn-loading" })
+                                            @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarAnexoPaciente", controller: "Paciente", htmlAttributes: new { @class = "btn-loading show-spinner" })
                                         }
                                     }
                                     else
                                     {
-                                        @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaSolicitacoes", controller: "Paciente", htmlAttributes: new { @class = "btn-loading" })
+                                        @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaSolicitacoes", controller: "Paciente", htmlAttributes: new { @class = "btn-loading show-spinner" })
                                     }
                                 }
                                 <a href="@Url.Action((String)Session["AjudaNivel"])"  class="btn btn-sm btn-danger" target="_blank">Ajuda</a>                

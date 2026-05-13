@@ -78,8 +78,8 @@
                             </div>
                         </div>
                         <div class="form-group">
-                            @Html.ButtonActionSubmit(text: "Confirma Edição de Contato", htmlAttributes: new { id = "basictoast" })
-                            @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarAnexoPaciente", controller: "Paciente")
+                            @Html.ButtonActionSubmit(text: "Confirma Edição de Contato", htmlAttributes: new { id = "basictoast", @class = "show-spinner" })
+                            @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarAnexoPaciente", controller: "Paciente", htmlAttributes: new { @class = "show-spinner" })
                         </div>
                     </div>
                 }

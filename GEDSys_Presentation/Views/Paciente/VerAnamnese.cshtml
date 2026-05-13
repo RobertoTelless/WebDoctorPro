@@ -48,17 +48,17 @@
                             @Html.ButtonLinkIndex(text: "Imprimir Anamnese", action: "GerarAnamnesePDFNova", controller: "Paciente")
                             @if ((Int32)Session["VoltarPesquisa"] == 1)
                             {
-                                @Html.ButtonLinkIndex(text: "Voltar", action: "PesquisarTudo", controller: "BaseAdmin")
+                                @Html.ButtonLinkIndex(text: "Voltar", action: "PesquisarTudo", controller: "BaseAdmin", htmlAttributes: new { @class = "btn-loading show-spinner" })
                             }
                             else
                             {
                                 if ((Int32)Session["EditarVer"] == 1)
                                 {
-                                    @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarVerPaciente", controller: "Paciente")
+                                    @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarVerPaciente", controller: "Paciente", htmlAttributes: new { @class = "btn-loading show-spinner" })
                                 }
                                 else
                                 {
-                                    @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarAnexoPaciente", controller: "Paciente")
+                                    @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarAnexoPaciente", controller: "Paciente", htmlAttributes: new { @class = "btn-loading show-spinner" })
                                 }
                             }
                         </div>
@@ -287,7 +287,7 @@
                             </div>
                         </div>
                     <div class="form-group">
-                        @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarAnexoPaciente", controller: "Paciente")
+                        @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarAnexoPaciente", controller: "Paciente", htmlAttributes: new { @class = "btn-loading show-spinner" })
                     </div>
                 }
             </div>

@@ -156,13 +156,13 @@
                         @Html.ButtonLinkIndex(text: "Imprimir Resultados", action: "GerarResultadoExamePDFNova", controller: "Paciente")
                         @if ((Int32)Session["VoltarPesquisa"] == 1)
                         {
-                            @Html.ButtonLinkIndex(text: "Voltar", action: "PesquisarTudo", controller: "BaseAdmin", htmlAttributes: new { @class = "btn-loading" })
+                            @Html.ButtonLinkIndex(text: "Voltar", action: "PesquisarTudo", controller: "BaseAdmin", htmlAttributes: new { @class = "btn-loading show-spinner" })
                         }
                         else
                         {
                             if (ViewBag.VoltaConsulta == 1)
                             {
-                                @Html.ButtonLinkIndex(text: "Voltar", action: "VerListaExameConsulta", controller: "Paciente", htmlAttributes: new { @class = "btn-loading" })
+                                @Html.ButtonLinkIndex(text: "Voltar", action: "VerListaExameConsulta", controller: "Paciente", htmlAttributes: new { @class = "btn-loading show-spinner" })
                             }
                             else
                             {
@@ -170,16 +170,16 @@
                                 {
                                     if ((Int32)Session["ModoConsulta"] == 1)
                                     {
-                                        @Html.ButtonLinkIndex(text: "Voltar", action: "VerListaExameConsulta", controller: "Paciente", htmlAttributes: new { @class = "btn-loading" })
+                                        @Html.ButtonLinkIndex(text: "Voltar", action: "VerListaExameConsulta", controller: "Paciente", htmlAttributes: new { @class = "btn-loading show-spinner" })
                                     }
                                     else
                                     {
-                                        @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarAnexoPaciente", controller: "Paciente", htmlAttributes: new { @class = "btn-loading" })
+                                        @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarAnexoPaciente", controller: "Paciente", htmlAttributes: new { @class = "btn-loading show-spinner" })
                                     }
                                 }
                                 else
                                 {
-                                    @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaExames", controller: "Paciente", htmlAttributes: new { @class = "btn-loading" })
+                                    @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaExames", controller: "Paciente", htmlAttributes: new { @class = "btn-loading show-spinner" })
                                 }
                             }
 
@@ -257,7 +257,7 @@
                                                     @using (Html.BeginForm("EditarExame", "Paciente", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal", @id = "pwd-container1" }))
                                                     {
                                                         <div class="form-group" style=" margin-left: 5px; margin-right: 5px;">                
-                                                            @Html.ButtonActionSubmit(text: "Confirma alteração de Resultado de Exame", htmlAttributes: new { id = "basictoast", @class = "btn-loading1"})
+                                                            @Html.ButtonActionSubmit(text: "Confirma alteração de Resultado de Exame", htmlAttributes: new { id = "basictoast", @class = "btn-loading1 show-spinner"})
                                                         </div>
                                                         <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
                                                             <div class="col-lg-6 col-md-6 col-xs-12">
@@ -351,16 +351,14 @@
                                                                                 <td style="width: auto">
                                                                                     @if (cond.PAEO_IN_TIPO == 1 || cond.PAEO_IN_TIPO == 2)
                                                                                     {
-                                                                                        <a href="@Url.Action("VerAnexoExamePaciente", "Paciente", new { id = cond.PAEO_CD_ID })">@cond.PAEO_NM_TITULO</a>
+                                                                                        <a href="@Url.Action("VerAnexoExamePaciente", "Paciente", new { id = cond.PAEO_CD_ID })" class="show-spinner">@cond.PAEO_NM_TITULO</a>
                                                                                     }
                                                                                     else if (cond.PAEO_IN_TIPO == 4)
                                                                                     {
-                                                                                        <a href="@Url.Action("VerAnexoExamePacienteAudio", "Paciente", new { id = cond.PAEO_CD_ID })">@cond.PAEO_NM_TITULO</a>
+                                                                                        <a href="@Url.Action("VerAnexoExamePacienteAudio", "Paciente", new { id = cond.PAEO_CD_ID })" class="show-spinner">@cond.PAEO_NM_TITULO</a>
                                                                                     }
                                                                                     else if (cond.PAEO_IN_TIPO == 3)
                                                                                     {
-                                                                                        @*<a href="~/PdfViewer/web/viewer.html?file=@(cond.PAEO_AQ_ARQUIVO.Replace("~", ""))&ReturnUrl=@Request.Url.AbsolutePath" target="_blank">@cond.PAEO_NM_TITULO</a>*@
-
                                                                                         // Monta a URL direta do Azure
                                                                                         var caminhoPdf = cond.PAEO_AQ_ARQUIVO.Replace("~/", "").Replace("~", "");
                                                                                         var urlAzurePdf = "https://rtistoragemain.blob.core.windows.net/rti-datacontainer/" + caminhoPdf;
@@ -394,7 +392,7 @@
                                                                                 <div style="height: 90px; display: flex; align-items: center; justify-content: center; width: 100%;">
                                                                                     @if (cond.PAEO_IN_TIPO == 1) // IMAGEM - Exibe miniatura
                                                                                     {
-                                                                                        <a href="@Url.Action("VerAnexoExamePaciente", "Paciente", new { id = cond.PAEO_CD_ID })" title="Visualizar Imagem">
+                                                                                        <a href="@Url.Action("VerAnexoExamePaciente", "Paciente", new { id = cond.PAEO_CD_ID })" class="show-spinner" title="Visualizar Imagem">
                                                                                             <img src="@("https://rtistoragemain.blob.core.windows.net/rti-datacontainer/" + cond.PAEO_AQ_ARQUIVO.Replace("~/", "").Replace("~", ""))" 
                                                                                                     class="img-thumbnail" 
                                                                                                     style="width: 70px; height: 70px; object-fit: cover; border: 1px solid #eee;"
@@ -403,13 +401,13 @@
                                                                                     }
                                                                                     else if (cond.PAEO_IN_TIPO == 2) // VÍDEO - Ícone de câmera
                                                                                     {
-                                                                                        <a href="@Url.Action("VerAnexoExamePaciente", "Paciente", new { id = cond.PAEO_CD_ID })" title="Visualizar Vídeo">
+                                                                                        <a href="@Url.Action("VerAnexoExamePaciente", "Paciente", new { id = cond.PAEO_CD_ID })"  class="show-spinner"title="Visualizar Vídeo">
                                                                                             <i class="fa fa-video-camera fa-4x text-navy"></i>
                                                                                         </a>
                                                                                     }
                                                                                     else if (cond.PAEO_IN_TIPO == 4) // AUDIO
                                                                                     {
-                                                                                        <a href="@Url.Action("VerAnexoExamePacienteAudio", "Paciente", new { id = cond.PAEO_CD_ID })" title="Audio">
+                                                                                        <a href="@Url.Action("VerAnexoExamePacienteAudio", "Paciente", new { id = cond.PAEO_CD_ID })" class="show-spinner" title="Audio">
                                                                                             <i class="fa fa-microphone fa-4x text-navy"></i>
                                                                                         </a>
                                                                                     }

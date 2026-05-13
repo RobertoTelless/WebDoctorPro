@@ -104,10 +104,10 @@
                             </div>
                         }
                         <div class="form-group" style=" margin-left: -15px; margin-right: -15px;"> 
-                            @Html.ButtonLinkIndex(text: "Imprimir Atestado", action: "ImprimirAtestadoForm", controller: "Paciente")
+                            @Html.ButtonLinkIndex(text: "Imprimir Atestado", action: "ImprimirAtestadoForm", controller: "Paciente", htmlAttributes: new { @class = "btn-loading show-spinner" })
                             @if ((Int32)Session["VoltarPesquisa"] == 1)
                             {
-                                @Html.ButtonLinkIndex(text: "Voltar", action: "PesquisarTudo", controller: "BaseAdmin", htmlAttributes: new { @class = "btn-loading" })
+                                @Html.ButtonLinkIndex(text: "Voltar", action: "PesquisarTudo", controller: "BaseAdmin", htmlAttributes: new { @class = "btn-loading show-spinner" })
                             }
                             else
                             {
@@ -115,20 +115,20 @@
                                 {
                                     if ((Int32)Session["ModoConsulta"] == 1)
                                     {
-                                        @Html.ButtonLinkIndex(text: "Voltar", action: "VerListaAtestadoConsulta", controller: "Paciente", htmlAttributes: new { @class = "btn-loading" })
+                                        @Html.ButtonLinkIndex(text: "Voltar", action: "VerListaAtestadoConsulta", controller: "Paciente", htmlAttributes: new { @class = "btn-loading show-spinner" })
                                     }
                                     else
                                     {
-                                        @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarAnexoPaciente", controller: "Paciente", htmlAttributes: new { @class = "btn-loading" })
+                                        @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarAnexoPaciente", controller: "Paciente", htmlAttributes: new { @class = "btn-loading show-spinner" })
                                     }
                                 }
                                 else if ((Int32)Session["TipoSolicitacao"] == 20)
                                 {
-                                    @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarProcederConsulta", controller: "Paciente", htmlAttributes: new { @class = "btn-loading" })
+                                    @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarProcederConsulta", controller: "Paciente", htmlAttributes: new { @class = "btn-loading show-spinner" })
                                 }
                                 else
                                 {
-                                    @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaAtestados", controller: "Paciente", htmlAttributes: new { @class = "btn-loading" })
+                                    @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaAtestados", controller: "Paciente", htmlAttributes: new { @class = "btn-loading show-spinner" })
                                 }
                             }
                             <span id="loadingIndicator" style="display: none; margin-left: 10px; color: #007bff;">

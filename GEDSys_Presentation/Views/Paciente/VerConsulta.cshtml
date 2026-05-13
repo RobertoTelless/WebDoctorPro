@@ -82,17 +82,17 @@
                             <div class="form-group" style=" margin-left: 5px; margin-right: 5px;">
                                 @if ((Int32)Session["TipoSolicitacao"] == 1)
                                 {
-                                    @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarAnexoPaciente", controller: "Paciente")
+                                    @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarAnexoPaciente", controller: "Paciente", htmlAttributes: new { @class = "show-spinner" })
                                 }
                                 else
                                 {
                                     if ((Int32)Session["VoltaConfirmar"] == 1)
                                     {
-                                        @Html.ButtonLinkIndex(text: "Voltar", action: "ConfirmarCancelarConsulta", controller: "Paciente")
+                                        @Html.ButtonLinkIndex(text: "Voltar", action: "ConfirmarCancelarConsulta", controller: "Paciente", htmlAttributes: new { @class = "show-spinner" })
                                     }
                                     else
                                     {
-                                        @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaConsultas", controller: "Paciente")
+                                        @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaConsultas", controller: "Paciente", htmlAttributes: new { @class = "show-spinner" })
                                     }
                                 }
                                 <a href="@Url.Action((String)Session["AjudaNivel"])" class="btn btn-sm btn-danger" target="_blank">Ajuda</a>

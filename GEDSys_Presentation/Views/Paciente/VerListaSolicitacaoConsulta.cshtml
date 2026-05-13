@@ -63,22 +63,15 @@
                                 @Html.ValidationSummary(false, "Erros Encontrados:", new { @class = "text-danger" })
                             </div>
                         }
-                        @*@if (TempData["TemMensagem"] != null)
-                        {
-                            <div class="alert alert-success">
-                                <button type="button" class="close" data-dismiss="alert">Fechar</button>
-                                <span>@TempData["MensagemAcerto"]</span>
-                            </div>
-                        }*@                    
                         <div class="row">
                             <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
                                 <div class="col-lg-12 col-md-12 col-xs-12">
                                     @if (ViewBag.Classe == 0)
                                     {
-                                        @Html.ButtonLinkIndex(text: "Nova Solicitação de Exame", controller: "Paciente", action: "IncluirSolicitacao", buttonClass: "primary", htmlAttributes: new { @class = "btn-loading" })
+                                        @Html.ButtonLinkIndex(text: "Nova Solicitação de Exame", controller: "Paciente", action: "IncluirSolicitacao", buttonClass: "primary", htmlAttributes: new { @class = "btn-loading show-spinner" })
                                     }
-                                    @Html.ButtonLinkIndex(text: "Ver Todas Solicitações", controller: "Paciente", action: "MontarTelaSolicitacoes", htmlAttributes: new { @class = "btn-loading" })
-                                    @Html.ButtonLinkIndex(text: "Voltar", controller: "Paciente", action: "VoltarProcederConsulta", htmlAttributes: new { @class = "btn-loading" })
+                                    @Html.ButtonLinkIndex(text: "Ver Todas Solicitações", controller: "Paciente", action: "MontarTelaSolicitacoes", htmlAttributes: new { @class = "btn-loading show-spinner" })
+                                    @Html.ButtonLinkIndex(text: "Voltar", controller: "Paciente", action: "VoltarProcederConsulta", htmlAttributes: new { @class = "btn-loading show-spinner" })
                                     <a href="@Url.Action((String)Session["AjudaNivel"])"  class="btn btn-sm btn-danger" target="_blank">Ajuda</a>                
                                     <span id="loadingIndicator" style="display: none; margin-left: 10px; color: #007bff;">
                                         <i class="fa fa-spinner fa-spin"></i> Processando...
@@ -120,36 +113,6 @@
                                 }
                             </div>
                         </div>
-                        @*<br />*@
-                        @*<div class="row">
-                            <h4 style="margin-left: 0px; color: green; background-color: beige; font-weight:bold">Dados da Consulta</h4>
-                            <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">                
-                                <div class="col-lg-2 col-md-2 col-xs-12">
-                                    Tipo de Consulta
-                                    @Html.TextBoxFor(m => m.TipoConsulta, new { @class = "form-control", @readonly = "readonly"})
-                                </div>
-                                <div class="col-lg-2 col-md-2 col-xs-12">
-                                    @Html.HiddenFor(m => m.PACI_CD_ID)
-                                    @Html.HiddenFor(m => m.PACO_IN_ATIVO)
-                                    @Html.HiddenFor(m => m.PACO_IN_ENCERRADA)
-                                    @Html.HiddenFor(m => m.USUA_CD_ID)
-                                    @Html.HiddenFor(m => m.ASSI_CD_ID)
-                                    @Html.HiddenFor(m => m.PACO_CD_ID)
-                                    Data da Consulta
-                                    @Html.TextBoxFor(m => m.PACO_DT_CONSULTA, "{0:dd/MM/yyyy}", new { @class = "form-control", @id = "dn", @readonly = "readonly", @style = "color: darkblue; font-weight: bold" })
-                                </div>
-                                <div class="col-lg-2 col-md-2 col-xs-12">
-                                    Início
-                                    @Html.TextBoxFor(m => m.PACO_HR_INICIO, new { @class = "form-control", @id = "hora", @readonly = "readonly" })
-                                </div>
-                                <div class="col-lg-2 col-md-2 col-xs-12">
-                                    Final
-                                    @Html.TextBoxFor(m => m.PACO_HR_FINAL, new { @class = "form-control", @id = "hora1", @readonly = "readonly" })
-                                </div>
-                            </div>
-                        </div>*@
-                        @*<br />*@
-
                         <div class="row">
                             <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
                                 <div class="col-lg-12 col-md-12 col-xs-12">
@@ -182,16 +145,16 @@
                                                         {
                                                             if (cond.PASO_IN_ENVIADO == 0)
                                                             {
-                                                                <td style="width: auto"><a href="@Url.Action("EditarSolicitacao", "Paciente", new { id = cond.PASO_CD_ID })" class="btn-loading" />@cond.PASO_GU_GUID</td>
+                                                                <td style="width: auto"><a href="@Url.Action("EditarSolicitacao", "Paciente", new { id = cond.PASO_CD_ID })" class="btn-loading show-spinner" />@cond.PASO_GU_GUID</td>
                                                             }
                                                             else
                                                             {
-                                                                <td style="width: auto"><a href="@Url.Action("VerSolicitacao", "Paciente", new { id = cond.PASO_CD_ID })" class="btn-loading" />@cond.PASO_GU_GUID</td>
+                                                                <td style="width: auto"><a href="@Url.Action("VerSolicitacao", "Paciente", new { id = cond.PASO_CD_ID })" class="btn-loading show-spinner" />@cond.PASO_GU_GUID</td>
                                                             }
                                                         }
                                                         else
                                                         {
-                                                            <td style="width: auto"><a href="@Url.Action("VerSolicitacao", "Paciente", new { id = cond.PASO_CD_ID })" class="btn-loading" />@cond.PASO_GU_GUID</td>
+                                                            <td style="width: auto"><a href="@Url.Action("VerSolicitacao", "Paciente", new { id = cond.PASO_CD_ID })" class="btn-loading show-spinner" />@cond.PASO_GU_GUID</td>
                                                         }
                                                         <td style="width: auto">@cond.TIPO_EXAME.TIEX_NM_NOME</td>
                                                         <td style="width: auto">@cond.PASO_NM_TITULO</td>
@@ -229,23 +192,23 @@
                                                             {
                                                                 if (cond.PASO_IN_ENVIADO == 0)
                                                                 {
-                                                                    @Html.TableLinkDetails(cond.PASO_CD_ID, "EditarSolicitacao", "fa-edit btn-loading", "Editar")
+                                                                    @Html.TableLinkDetails(cond.PASO_CD_ID, "EditarSolicitacao", "fa-edit btn-loading show-spinner", "Editar")
                                                                 }
                                                                 else
                                                                 {
-                                                                    @Html.TableLinkDetails(cond.PASO_CD_ID, "VerSolicitacao", "fa-search", "Consultar")
+                                                                    @Html.TableLinkDetails(cond.PASO_CD_ID, "VerSolicitacao", "fa-search show-spinner", "Consultar")
                                                                 }
                                                             }
                                                             else
                                                             {
-                                                                @Html.TableLinkDetails(cond.PASO_CD_ID, "VerSolicitacao", "fa-search btn-loading", "Consultar")
+                                                                @Html.TableLinkDetails(cond.PASO_CD_ID, "VerSolicitacao", "fa-search btn-loading show-spinner", "Consultar")
                                                             }
 
                                                             @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_SOLICITACAO_ENVIAR == 1)
                                                             {
                                                                 if (cond.PASO_IN_ATIVO == 1 )
                                                                 {
-                                                                    @Html.TableLinkDetails(cond.PASO_CD_ID, "EnviarSolicitacaoEMail", "fa-send-o btn-loading", "Enviar Solicitação")
+                                                                    @Html.TableLinkDetails(cond.PASO_CD_ID, "EnviarSolicitacaoEMail", "fa-send-o btn-loading show-spinner", "Enviar Solicitação")
                                                                 }
 	                                                        }
                                                             @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_SOLICITACAO_ENVIAR == 1)
@@ -261,7 +224,7 @@
                                                                 {
                                                                     if (cond.PASO_NR_ENVIOS == 0)
                                                                     {
-                                                                        <span style="color: #337ab7; cursor:pointer;" alt="Desativar" class="tbl-link fa-lg fa fa-trash-o btn-loading" onclick="ShowModalExcluirSolicitacao('/Paciente/ExcluirSolicitacao/@cond.PASO_CD_ID')" title="Excluir"></span>
+                                                                        <span style="color: #337ab7; cursor:pointer;" alt="Desativar" class="tbl-link fa-lg fa fa-trash-o btn-loading show-spinner" onclick="ShowModalExcluirSolicitacao('/Paciente/ExcluirSolicitacao/@cond.PASO_CD_ID')" title="Excluir"></span>
                                                                     }
                                                                 }
 	                                                        }

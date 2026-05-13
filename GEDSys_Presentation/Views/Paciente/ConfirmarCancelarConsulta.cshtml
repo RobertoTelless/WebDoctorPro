@@ -92,28 +92,6 @@
         </div>
     </div>
 
-    @*<div class="modal fade" id="modalCancelar" tabindex="-1" role="dialog" aria-labelledby="modalCancelarLabel" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="modalCancelarLabel">Justificar Cancelamento</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Fechar">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <div class="form-group">
-                        <label for="textoJustificativa">Justificativa do Cancelamento:</label>
-                        <textarea class="form-control" id="textoJustificativa" rows="5" required></textarea>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
-                    <button type="button" class="btn btn-danger" id="btnConfirmarCancelamento">Confirmar Cancelamento</button>
-                </div>
-            </div>
-        </div>
-    </div>*@    
     <div class="modalContainer">
         <div id="modal" class="modal" tabindex="-1" role="dialog">
             <div class="modal-dialog" role="document">
@@ -172,7 +150,7 @@
             <details class="ajuda-contextual">
                 <summary><i class="fa fa-info-circle text-info"></i> Resumo das funcionalidades desta página</summary>
                 <div class="well well-sm">
-                    <p>Essa é a página confirmação e cancelamento de Consultas do <b>WebDoctorPro</b>. Nela você poderá:</p>
+                    <p>Essa é a página de confirmação e cancelamento de Consultas do <b>WebDoctorPro</b>. Nela você poderá:</p>
                     <ol>
                         <li>Ver consultas pendentes ou confirmadas para a data corrente e nos próximos cinco dias.</li>
                         <li>Filtrar para localizar uma consulta.</li>
@@ -228,9 +206,9 @@
                         }
                         <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
                             <div class="col-lg-12 col-md-12 col-xs-12">
-                                @Html.ButtonActionSubmit(text: "Filtrar", htmlAttributes: new { @class = "btn-loading1" })
-                                @Html.ButtonLinkIndex(text: "Retirar Filtro", controller: "Paciente", action: "RetirarFiltroConfirmar", htmlAttributes: new { @class = "btn-loading" })
-                                @Html.ButtonLinkIndex(text: "Voltar", controller: "Paciente", action: "VoltarCentrais", htmlAttributes: new { @class = "btn-loading" })
+                                @Html.ButtonActionSubmit(text: "Filtrar", htmlAttributes: new { @class = "btn-loading1 show-spinner" })
+                                @Html.ButtonLinkIndex(text: "Retirar Filtro", controller: "Paciente", action: "RetirarFiltroConfirmar", htmlAttributes: new { @class = "btn-loading show-spinner" })
+                                @Html.ButtonLinkIndex(text: "Voltar", controller: "Paciente", action: "VoltarCentrais", htmlAttributes: new { @class = "btn-loading show-spinner" })
                                 <a href="@Url.Action((String)Session["AjudaNivel"])" class="btn btn-sm btn-danger" target="_blank">Ajuda</a>
                                 <span id="loadingIndicator" style="display: none; margin-left: 10px; color: #007bff;">
                                     <i class="fa fa-spinner fa-spin"></i> Processando...
@@ -258,13 +236,6 @@
                             @Html.ValidationSummary(false, "", new { @class = "text-danger" })
                         </div>
                     }
-                    @*@if (TempData["TemMensagem"] != null)
-                    {
-                        <div class="alert alert-success">
-                            <button type="button" class="close" data-dismiss="alert">Fechar</button>
-                            <span>@TempData["MensagemAcerto"]</span>
-                        </div>
-                    }*@                    
                     <div class="row">
                         <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Consultas de Hoje</h4>
                         @if (ViewBag.Hoje != null &&(ViewBag.Hoje as List<EntitiesServices.Model.PACIENTE_CONSULTA>).Count > 0)
@@ -313,7 +284,7 @@
                                             {
                                                 if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PAERF_IN_PACIENTE_MENSAGEM == 1)
                                                 {
-                                                    <td style="width: auto; cursor: pointer; text-decoration: underline;"><a href="@Url.Action("EnviarEMailPaciente", "Paciente", new { id = cond.PACIENTE.PACI__CD_ID })" class="btn-loading" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Enviar mensagem de e-mail para o paciente" />@cond.PACIENTE.PACI_NM_EMAIL</td>
+                                                    <td style="width: auto; cursor: pointer; text-decoration: underline;"><a href="@Url.Action("EnviarEMailPaciente", "Paciente", new { id = cond.PACIENTE.PACI__CD_ID })" class="btn-loading show-spinner" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Enviar mensagem de e-mail para o paciente" />@cond.PACIENTE.PACI_NM_EMAIL</td>
                                                 }
                                                 else
                                                 {
@@ -329,7 +300,7 @@
                                             {
                                                 if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PAERF_IN_PACIENTE_MENSAGEM == 1)
                                                 {
-                                                    <td style="width: auto; cursor: pointer; text-decoration: underline;"><a href="@Url.Action("EnviarSMSPaciente", "Paciente", new { id = cond.PACIENTE.PACI__CD_ID })" class="btn-loading" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Enviar mensagem de SMS para o paciente"/>@cond.PACIENTE.PACI_NR_CELULAR</td>
+                                                    <td style="width: auto; cursor: pointer; text-decoration: underline;"><a href="@Url.Action("EnviarSMSPaciente", "Paciente", new { id = cond.PACIENTE.PACI__CD_ID })" class="btn-loading show-spinner" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Enviar mensagem de SMS para o paciente"/>@cond.PACIENTE.PACI_NR_CELULAR</td>
                                                 }
                                                 else
                                                 {
@@ -374,7 +345,7 @@
                                             <td style="width: auto" class="td-one-action">
                                                 @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_PACIENTE_CONSULTA_ACESSO == 1)
                                                 {
-                                                    @Html.TableLinkDetails(cond.PACO_CD_ID, "EditarConsultaCompleta", "fa-edit", "Ver")
+                                                    @Html.TableLinkDetails(cond.PACO_CD_ID, "EditarConsultaCompleta", "fa-edit show-spinner", "Ver")
                                                 }
 
                                                 @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_PACIENTE_CONSULTA_ALTERAR == 1)
@@ -389,8 +360,6 @@
                                                                 style="padding: 3px; color: #337ab7;">
                                                                 <i class="fa fa-check" style="font-size: 17px; margin-left: -5px;"></i>
                                                         </button>
-
-                                                        @*<span style="color: #337ab7; cursor:pointer;" alt="Confirmar" class="tbl-link fa-lg fa fa-check btn-loading" onclick="ShowModalConfirmar('/Paciente/ConfirmarConsulta/@cond.PACO_CD_ID')" title="Confirmar Consulta"></span>*@
                                                     }
                                                     if (cond.PACO_IN_ATIVO == 1 & cond.PACO_IN_CONFIRMADA < 2)
                                                     {
@@ -402,7 +371,6 @@
                                                                 style="padding: 3px; color: #337ab7;">
                                                             <i class="fa fa-times" style="font-size: 17px; margin-left: -5px;"></i>
                                                         </button>
-                                                        @*<span style="color: #337ab7; cursor:pointer;" alt="Mensagem" class="tbl-link fa-lg fa fa-times btn-loading" onclick="ShowModalCancelar('/Paciente2/CancelarConsulta/@cond.PACO_CD_ID')" title="Cancelar Consulta"></span>*@     
                                                         }
                                                 }
 
@@ -431,7 +399,7 @@
                                 </div>
                                 <div style="border: 5px solid #F6A54A; padding: 10px; border-radius: 8px 8px; " class="col-lg-10 col-md-10 col-xs-12">
                                     <h2 style="font-weight: bold">Sua pesquisa não retornou nenhum resultado ou nenhuma consulta cadastrada para hoje</h2>
-                                    @Html.ButtonLinkIndex(text: "Retirar Filtro", controller: "Paciente", action: "RetirarFiltroConfirmarConsulta" , htmlAttributes: new { @class = "btn-loading" })
+                                    @Html.ButtonLinkIndex(text: "Retirar Filtro", controller: "Paciente", action: "RetirarFiltroConfirmarConsulta" , htmlAttributes: new { @class = "btn-loading show-spinner" })
                                 </div>
                                 <div class="col-lg-1 col-md-1 col-xs-2">
                                 </div>
@@ -487,7 +455,7 @@
                                             {
                                                 if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PAERF_IN_PACIENTE_MENSAGEM == 1)
                                                 {
-                                                    <td style="width: auto; cursor: pointer; text-decoration: underline;"><a href="@Url.Action("EnviarEMailPaciente", "Paciente", new { id = cond.PACIENTE.PACI__CD_ID })" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Enviar mensagem de e-mail para o paciente"/>@cond.PACIENTE.PACI_NM_EMAIL</td>
+                                                    <td style="width: auto; cursor: pointer; text-decoration: underline;"><a href="@Url.Action("EnviarEMailPaciente", "Paciente", new { id = cond.PACIENTE.PACI__CD_ID })" class="btn-loading show-spinner" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Enviar mensagem de e-mail para o paciente"/>@cond.PACIENTE.PACI_NM_EMAIL</td>
                                                 }
                                                 else
                                                 {
@@ -503,7 +471,7 @@
                                             {
                                                 if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PAERF_IN_PACIENTE_MENSAGEM == 1)
                                                 {
-                                                    <td style="width: auto; cursor: pointer; text-decoration: underline;"><a href="@Url.Action("EnviarSMSPaciente", "Paciente", new { id = cond.PACIENTE.PACI__CD_ID })" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Enviar mensagem de SMS para o paciente"/>@cond.PACIENTE.PACI_NR_CELULAR</td>
+                                                    <td style="width: auto; cursor: pointer; text-decoration: underline;"><a href="@Url.Action("EnviarSMSPaciente", "Paciente", new { id = cond.PACIENTE.PACI__CD_ID })" class="btn-loading show-spinner" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Enviar mensagem de SMS para o paciente"/>@cond.PACIENTE.PACI_NR_CELULAR</td>
                                                 }
                                                 else
                                                 {
@@ -548,7 +516,7 @@
                                             <td style="width: auto" class="td-one-action">
                                                 @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_PACIENTE_CONSULTA_ACESSO == 1)
                                                 {
-                                                    @Html.TableLinkDetails(cond.PACO_CD_ID, "EditarConsultaCompleta", "fa-edit", "Ver")
+                                                    @Html.TableLinkDetails(cond.PACO_CD_ID, "EditarConsultaCompleta", "fa-edit show-spinner", "Ver")
                                                 }
                                                 @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_PACIENTE_CONSULTA_ALTERAR == 1)
                                                 {
@@ -562,8 +530,6 @@
                                                                 style="padding: 3px; color: #337ab7;">
                                                                 <i class="fa fa-check" style="font-size: 17px; margin-left: -5px;"></i>
                                                         </button>
-
-                                                        @*<span style="color: #337ab7; cursor:pointer;" alt="Confirmar" class="tbl-link fa-lg fa fa-check btn-loading" onclick="ShowModalConfirmar('/Paciente/ConfirmarConsulta/@cond.PACO_CD_ID')" title="Confirmar Consulta"></span>*@
                                                     }
                                                     if (cond.PACO_IN_ATIVO == 1 & cond.PACO_IN_CONFIRMADA < 2)
                                                     {
@@ -575,7 +541,6 @@
                                                                 style="padding: 3px; color: #337ab7;">
                                                             <i class="fa fa-times" style="font-size: 17px; margin-left: -5px;"></i>
                                                         </button>
-                                                        @*<span style="color: #337ab7; cursor:pointer;" alt="Mensagem" class="tbl-link fa-lg fa fa-times btn-loading" onclick="ShowModalCancelar('/Paciente2/CancelarConsulta/@cond.PACO_CD_ID')" title="Cancelar Consulta"></span>*@     
                                                         }
                                                 }
                                                 @if (cond.PACO_IN_ATIVO == 1 & cond.PACO_IN_CONFIRMADA == 0)
@@ -603,7 +568,7 @@
                                 </div>
                                 <div style="border: 5px solid #F6A54A; padding: 10px; border-radius: 8px 8px; " class="col-lg-10 col-md-10 col-xs-12">
                                     <h2 style="font-weight: bold">Sua pesquisa não retornou nenhum resultado ou nenhuma consulta cadastrada para até @ViewBag.NumDias dias</h2>
-                                    @Html.ButtonLinkIndex(text: "Retirar Filtro", controller: "Paciente", action: "RetirarFiltroConfirmarConsulta" , htmlAttributes: new { @class = "btn-loading" })
+                                    @Html.ButtonLinkIndex(text: "Retirar Filtro", controller: "Paciente", action: "RetirarFiltroConfirmarConsulta" , htmlAttributes: new { @class = "btn-loading show-spinner" })
                                 </div>
                                 <div class="col-lg-1 col-md-1 col-xs-2">
                                 </div>
