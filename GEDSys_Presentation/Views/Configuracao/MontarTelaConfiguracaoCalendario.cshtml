@@ -59,19 +59,8 @@
                         }
                         <div class="form-group">
                             <br />
-                            @Html.ButtonActionSubmit(text: "Confirma Alteração da Configuração de Calendário", htmlAttributes: new { id = "basictoast" })
-                            @if ((Int32)Session["VoltaConfCalendario"] == 1)
-                            {
-                                @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaPaciente", controller: "Paciente")
-                            }
-                            else if ((Int32)Session["VoltaConfCalendario"] == 2)
-                            {
-                                @Html.ButtonLinkIndex(text: "Voltar", action: "IncluirConsulta", controller: "Paciente")
-                            }
-                            else
-                            {
-                                @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaPaciente", controller: "Paciente")
-                            }
+                            @Html.ButtonActionSubmit(text: "Confirma Alteração da Configuração de Calendário", htmlAttributes: new { id = "basictoast", @class = "show-spinner" })
+                            @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaPaciente", controller: "Paciente", htmlAttributes: new { @class = "show-spinner" })
                             <a href="@Url.Action((String)Session["AjudaNivel"])" class="btn btn-sm btn-danger" target="_blank">Ajuda</a>
                         </div>
 

@@ -135,7 +135,7 @@
                                             <td style="width: auto">@cond.MEDI_NM_LABORATORIO</td>
                                             <td style="width: auto">@cond.TIPO_CONTROLE.TICO_NM_NOME</td>
                                             <td class="td-one-action">
-                                                @Html.TableLinkDetails(cond.MEDI_CD_ID, "EditarMedicamento", "fa-edit", "Editar Medicamento")
+                                                @Html.TableLinkDetails(cond.MEDI_CD_ID, "EditarMedicamento", "fa-edit show-spinner", "Editar Medicamento")
                                                 @if (cond.MEDI_IN_ATIVO == 1)
                                                 {
                                                     <span style="color: #337ab7; cursor:pointer;" alt="Desativar" class="tbl-link fa-lg fa fa-trash-o show-spinner" onclick="ShowModalExcluir('/Medicamento/ExcluirMedicamento/@cond.MEDI_CD_ID')" title="Excluir Medicamento"></span>

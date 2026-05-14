@@ -85,6 +85,7 @@
                                             <th style="width: auto">Título</th>   
                                             <th style="width: auto">Autor</th>
                                             <th style="width: auto">Acessos</th>
+                                            <th style="width: auto">Comentários</th>
                                             <th class="td-one-action">Ações</th>
                                         </tr>
                                     </thead>
@@ -103,6 +104,7 @@
                                                 <td style="width: auto; cursor: pointer; text-decoration: underline;"><a href="@Url.Action("VerNoticia", "Noticia", new { id = cond.NOTC_CD_ID })" class="btn-loading show-spinner" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Alterar/Consultar notícia"/>@cond.NOTC_NM_TITULO</td>
                                                 <td style="width: auto">@cond.NOTC_NM_AUTOR</td>
                                                 <td style="width: auto">@cond.NOTC_NR_ACESSO</td>
+                                                <td style="width: auto">@cond.NOTICIA_COMENTARIO.Count()</td>
                                                 <td class="td-one-action">
                                                     @Html.TableLinkDetails(cond.NOTC_CD_ID, "VerNoticia","fa-search btn-loading show-spinner", "Ver")
                                                 </td>

@@ -41,19 +41,19 @@
                         <br />
                         @if ((Int32)Session["VoltaInfoConsulta"] == 1)
                         {
-                            @Html.ButtonLinkIndex(text: "Voltar", action: "IncluirConsulta", controller: "Paciente")
+                            @Html.ButtonLinkIndex(text: "Voltar", action: "IncluirConsulta", controller: "Paciente", htmlAttributes: new { @class = "show-spinner" })
                         }
                         else if ((Int32)Session["VoltaInfoConsulta"] == 2)
                         {
-                            @Html.ButtonLinkIndex(text: "Voltar", controller: "Paciente", action: "EditarConsulta", routeValues: new { id = (Int32)Session["IdConsulta"] })
+                            @Html.ButtonLinkIndex(text: "Voltar", controller: "Paciente", action: "EditarConsulta", htmlAttributes: new { @class = "show-spinner" }, routeValues: new { id = (Int32)Session["IdConsulta"] })
                         }
                         else if ((Int32)Session["VoltaInfoConsulta"] == 3)
                         {
-                            @Html.ButtonLinkIndex(text: "Voltar", action: "IncluirConsultaGeral", controller: "Paciente2")
+                            @Html.ButtonLinkIndex(text: "Voltar", action: "IncluirConsultaGeral", controller: "Paciente2", htmlAttributes: new { @class = "show-spinner" })
                         }
                         else if ((Int32)Session["VoltaInfoConsulta"] == 4)
                         {
-                            @Html.ButtonLinkIndex(text: "Voltar", controller: "Paciente2", action: "EditarConsultaCompleta", routeValues: new { id = (Int32)Session["IdConsultaGeral"] })
+                            @Html.ButtonLinkIndex(text: "Voltar", controller: "Paciente2", action: "EditarConsultaCompleta", htmlAttributes: new { @class = "show-spinner" }, routeValues: new { id = (Int32)Session["IdConsultaGeral"] })
                         }
                         else
                         {

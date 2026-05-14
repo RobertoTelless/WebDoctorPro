@@ -107,24 +107,24 @@
 
                         <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
                             <div class="col-lg-12 col-md-12 col-xs-12">
-                                @Html.ButtonActionSubmit(text: "Filtrar")
+                                @Html.ButtonActionSubmit(text: "Filtrar", htmlAttributes: new { @class = "btn-loading show-spinner" })
                                 @if (ViewBag.RectoPode == 1)
                                 {
                                     if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_FINANCEIRO_REC_INCLUIR == 1)
                                     {
-                                        <a href="@Url.Action("IncluirRecebimento", "Financeiro")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Informação de novo recebimento" class="btn btn-sm btn-primary btn-loading" id="emp" OnClick = "Fade()">Novo Recebimento</a>                
+                                        <a href="@Url.Action("IncluirRecebimento", "Financeiro")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Informação de novo recebimento" class="btn btn-sm btn-primary btn-loading show-spinner" id="emp" OnClick = "Fade()">Novo Recebimento</a>                
                                     }
                                 }
-                                <a href="@Url.Action("RetirarFiltroRecebimento", "Financeiro")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Exibe recebimentos na data corrente" class="btn btn-sm btn-warning btn-loading" id="emp" OnClick = "Fade()">Recebimentos de Hoje</a>                
-                                <a href="@Url.Action("VerRecebimentoMes", "Financeiro")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Exibe recebimentos do mês corrente" class="btn btn-sm btn-warning btn-loading" id="emp" OnClick = "Fade()">Recebimentos do Mês Corrente</a>                
-                                <a href="@Url.Action("VerTodosRecebimento", "Financeiro")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Exibe recebimentos do mês corrente" class="btn btn-sm btn-warning btn-loading" id="emp" OnClick = "Fade()">Todos os Recebimentos</a>                
+                                <a href="@Url.Action("RetirarFiltroRecebimento", "Financeiro")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Exibe recebimentos na data corrente" class="btn btn-sm btn-warning btn-loading show-spinner" id="emp" OnClick = "Fade()">Recebimentos de Hoje</a>                
+                                <a href="@Url.Action("VerRecebimentoMes", "Financeiro")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Exibe recebimentos do mês corrente" class="btn btn-sm btn-warning btn-loading show-spinner" id="emp" OnClick = "Fade()">Recebimentos do Mês Corrente</a>                
+                                <a href="@Url.Action("VerTodosRecebimento", "Financeiro")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Exibe recebimentos do mês corrente" class="btn btn-sm btn-warning btn-loading show-spinner" id="emp" OnClick = "Fade()">Todos os Recebimentos</a>                
                                 @if ((Int32)Session["VoltaFinanceiro"] == 0)
                                 {
-                                    @Html.ButtonLinkIndex(text: "Voltar", controller: "Paciente", action: "MontarTelaPaciente", htmlAttributes: new { @class = "btn-loading" })
+                                    @Html.ButtonLinkIndex(text: "Voltar", controller: "Paciente", action: "MontarTelaPaciente", htmlAttributes: new { @class = "btn-loading show-spinner" })
                                 }
                                 else
                                 {
-                                    @Html.ButtonLinkIndex(text: "Voltar", controller: "Financeiro", action: "MontarTelaFinanceiro", htmlAttributes: new { @class = "btn-loading" })
+                                    @Html.ButtonLinkIndex(text: "Voltar", controller: "Financeiro", action: "MontarTelaFinanceiro", htmlAttributes: new { @class = "btn-loading show-spinner" })
                                 }
                                 <a href="@Url.Action((String)Session["AjudaNivel"])"  class="btn btn-sm btn-danger" target="_blank">Ajuda</a>                
                                 <span id="loadingIndicator" style="display: none; margin-left: 10px; color: #007bff;">
@@ -219,11 +219,11 @@
                                             }
                                             @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_FINANCEIRO_REC_ALTERAR == 1)
                                             {
-                                                <td style="width: auto"><a href="@Url.Action("EditarRecebimento", "Financeiro", new { id = cond.CORE_CD_ID })" class="btn-loading" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página de edição do recebimento"/>@cond.CORE_GU_GUID</td>
+                                                <td style="width: auto"><a href="@Url.Action("EditarRecebimento", "Financeiro", new { id = cond.CORE_CD_ID })" class="btn-loading show-spinner" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página de edição do recebimento"/>@cond.CORE_GU_GUID</td>
                                             }
                                             else
                                             {
-                                                <td style="width: auto"><a href="@Url.Action("VerRecebimento", "Financeiro", new { id = cond.CORE_CD_ID })" class="btn-loading" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página de consulta do recebimento"/>@cond.CORE_GU_GUID</td>
+                                                <td style="width: auto"><a href="@Url.Action("VerRecebimento", "Financeiro", new { id = cond.CORE_CD_ID })" class="btn-loading show-spinner" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página de consulta do recebimento"/>@cond.CORE_GU_GUID</td>
                                             }
                                             <td style="width: auto">@cond.PACIENTE.PACI_NM_NOME</td>
                                             <td style="width: auto">@cond.CORE_NM_RECEBIMENTO</td>
@@ -251,17 +251,17 @@
                                             <td style="width: auto" class="td-one-action">
                                                 @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_FINANCEIRO_REC_ALTERAR == 1)
                                                 {
-                                                    @Html.TableLinkDetails(cond.CORE_CD_ID, "EditarRecebimento", "fa-edit btn-loading", "Editar")
+                                                    @Html.TableLinkDetails(cond.CORE_CD_ID, "EditarRecebimento", "fa-edit btn-loading show-spinner", "Editar")
                                                 }
                                                 else
                                                 {
-                                                    @Html.TableLinkDetails(cond.CORE_CD_ID, "VerRecebimento", "fa-search btn-loading", "Ver")
+                                                    @Html.TableLinkDetails(cond.CORE_CD_ID, "VerRecebimento", "fa-search btn-loading show-spinner", "Ver")
                                                 }
                                                 @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_FINANCEIRO_REC_EXCLUIR == 1)
                                                 {
                                                     if (cond.CORE_IN_ATIVO == 1)
                                                     {
-                                                        <span style="color: #337ab7; cursor:pointer;" alt="Desativar" class="tbl-link fa-lg fa fa-trash-o btn-loading" onclick="ShowModalExcluir('/Financeiro/ExcluirRecebimento/@cond.CORE_CD_ID')" title="Excluir Recebimento"></span>
+                                                        <span style="color: #337ab7; cursor:pointer;" alt="Desativar" class="tbl-link fa-lg fa fa-trash-o btn-loading show-spinner" onclick="ShowModalExcluir('/Financeiro/ExcluirRecebimento/@cond.CORE_CD_ID')" title="Excluir Recebimento"></span>
                                                     }
 	                                            }
                                             </td>
@@ -277,7 +277,7 @@
                                 </div>
                                 <div style="border: 5px solid #F6A54A; padding: 10px; border-radius: 8px 8px; " class="col-lg-8 col-md-8 col-xs-8">
                                     <h2 style="font-weight: bold">Sua pesquisa não retornou nenhum resultado ou nenhum recebimento cadastrado</h2>
-                                    @Html.ButtonLinkIndex(text: "Retirar Filtro", controller: "Financeiro", action: "RetirarFiltroRecebimento")
+                                    @Html.ButtonLinkIndex(text: "Retirar Filtro", controller: "Financeiro", action: "RetirarFiltroRecebimento", htmlAttributes: new { @class = "btn-loading show-spinner" })
                                 </div>
                                 <div class="col-lg-2 col-md-2 col-xs-2">
                                 </div>

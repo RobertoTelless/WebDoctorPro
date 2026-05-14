@@ -36,8 +36,8 @@
                 
                 <div class="form-group">
                     <br />
-                    @Html.ButtonLinkIndex(text: "Novo Pagamento", controller: "Financeiro", action: "IncluirPagamento", buttonClass: "primary")
-                    @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaPagamento", controller: "Financeiro")
+                    @Html.ButtonLinkIndex(text: "Novo Pagamento", controller: "Financeiro", action: "IncluirPagamento", buttonClass: "primary", htmlAttributes: new { @class = "show-spinner" })
+                    @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaPagamento", controller: "Financeiro", htmlAttributes: new { @class = "show-spinner" })
                 </div>
                 <div id="calendario"></div>
             </div>

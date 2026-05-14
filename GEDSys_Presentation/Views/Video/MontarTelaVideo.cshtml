@@ -63,20 +63,20 @@
                         </div>
                         <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
                             <div class="col-lg-12 col-md-12 col-xs-12">
-                                @Html.ButtonActionSubmit(text: "Filtrar")
-                                @Html.ButtonLinkIndex(text: "Novo Vídeo", controller: "Video", action: "IncluirVideo", buttonClass: "primary")
-                                @Html.ButtonLinkIndex(text: "Retirar Filtro", controller: "Video", action: "RetirarFiltroVideo")
+                                @Html.ButtonActionSubmit(text: "Filtrar", htmlAttributes: new { @class = "show-spinner" })
+                                @Html.ButtonLinkIndex(text: "Novo Vídeo", controller: "Video", action: "IncluirVideo", buttonClass: "primary", htmlAttributes: new { @class = "show-spinner" })
+                                @Html.ButtonLinkIndex(text: "Retirar Filtro", controller: "Video", action: "RetirarFiltroVideo", htmlAttributes: new { @class = "show-spinner" })
                                 @if ((Int32)Session["VoltarVideo"] == 1)
                                 {
-                                    @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaPaciente", controller: "Paciente")
+                                    @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaPaciente", controller: "Paciente", htmlAttributes: new { @class = "show-spinner" })
                                 }
                                 else if ((Int32)Session["VoltarVideo"] == 2)
                                 {
-                                    @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarAnexoPaciente", controller: "Paciente")
+                                    @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarAnexoPaciente", controller: "Paciente", htmlAttributes: new { @class = "show-spinner" })
                                 }
                                 else
                                 {
-                                    @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarProcederConsulta", controller: "Paciente")
+                                    @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarProcederConsulta", controller: "Paciente", htmlAttributes: new { @class = "show-spinner" })
                                 }
                                 <a href="@Url.Action((String)Session["AjudaNivel"])"  class="btn btn-sm btn-danger" target="_blank">Ajuda</a>                
                             </div>
@@ -123,9 +123,9 @@
                                     @foreach (var cond in (ViewBag.Listas as List<EntitiesServices.Model.VIDEO_BASE>))
                                     {
                                         <tr>
-                                            <td style="width: auto; cursor: pointer; text-decoration: underline;"><a href="@Url.Action("VerVideo", "Video", new { id = cond.VIDE_CD_ID })" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página de visualização do vídeo"/>@cond.VIDE_NM_TITULO</td>
+                                            <td style="width: auto; cursor: pointer; text-decoration: underline;"><a href="@Url.Action("VerVideo", "Video", new { id = cond.VIDE_CD_ID })" class="show-spinner"  data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página de visualização do vídeo"/>@cond.VIDE_NM_TITULO</td>
                                             <td style="width: auto"><div style="white-space: pre-wrap;">@cond.VIDE_DS_DESCRICAO</div></td>                                            <td class="td-one-action">
-                                                @Html.TableLinkDetails(cond.VIDE_CD_ID, "VerVideo", "fa-video", "Exibir o Vídeo")
+                                                @Html.TableLinkDetails(cond.VIDE_CD_ID, "VerVideo", "fa-video show-spinner", "Exibir o Vídeo")
                                                 @if (cond.VIDE_IN_ATIVO == 1)
                                                 {
                                                     <span style="color: #337ab7; cursor:pointer;" alt="Desativar" class="tbl-link fa-lg fa fa-trash-o" onclick="ShowModalExcluir('/Video/ExcluirVideo/@cond.VIDE_CD_ID')" title="Excluir Video"></span>
@@ -144,7 +144,7 @@
                                 </div>
                                 <div style="border: 5px solid #F6A54A; padding: 10px; border-radius: 8px 8px; " class="col-lg-10 col-md-10 col-xs-8">
                                     <h2 style="font-weight: bold">Sua pesquisa não retornou nenhum resultado ou nenhum vídeo está cadastrado</h2>
-                                    @Html.ButtonLinkIndex(text: "Retirar Filtro", controller: "Video", action: "RetirarFiltroVideo")
+                                    @Html.ButtonLinkIndex(text: "Retirar Filtro", controller: "Video", action: "RetirarFiltroVideo", htmlAttributes: new { @class = "show-spinner" })
                                 </div>
                                 <div class="col-lg-1 col-md-1 col-xs-2">
 

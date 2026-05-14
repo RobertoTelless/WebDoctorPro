@@ -144,11 +144,11 @@
                     <div class="form-group" style=" margin-left: 5px; margin-right: 5px;">
                         @if ((Int32)Session["VoltarPesquisa"] == 11)
                         {
-                            @Html.ButtonLinkIndex(text: "Voltar", action: "PesquisarTudo", controller: "BaseAdmin", htmlAttributes: new { @class = "btn-loading" })
+                            @Html.ButtonLinkIndex(text: "Voltar", action: "PesquisarTudo", controller: "BaseAdmin", htmlAttributes: new { @class = "btn-loading show-spinner" })
                         }
                         else
                         {
-                            @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaRecebimento", controller: "Financeiro", htmlAttributes: new { @class = "btn-loading" })
+                            @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaRecebimento", controller: "Financeiro", htmlAttributes: new { @class = "btn-loading show-spinner" })
                         }
                         <a href="@Url.Action((String)Session["AjudaNivel"])" class="btn btn-sm btn-danger" target="_blank">Ajuda</a>
                         <span id="loadingIndicator" style="display: none; margin-left: 10px; color: #007bff;">
@@ -199,7 +199,7 @@
                                             <div class="row" style="width: 100%;">
                                                 <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Recebimento</h4>
                                                 <div class="form-group" style=" margin-left: 5px; margin-right: 5px;">
-                                                    @Html.ButtonActionSubmit(text: "Confirma edição de Recebimento", htmlAttributes: new { id = "basictoast", @class = "btn-loading1" })
+                                                    @Html.ButtonActionSubmit(text: "Confirma edição de Recebimento", htmlAttributes: new { id = "basictoast", @class = "btn-loading1 show-spinner" })
                                                 </div>
                                                 <div class="col-lg-12 col-md-12 col-xs-12">
                                                     <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
@@ -260,7 +260,7 @@
                                             <div class="row" style="width: 100%;">
                                                 <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Recebimento</h4>
                                                 <div class="form-group" style=" margin-left: 5px; margin-right: 5px;">
-                                                    @Html.ButtonActionSubmit(text: "Confirma edição de Recebimento", htmlAttributes: new { id = "basictoast", @class = "btn-loading1" })
+                                                    @Html.ButtonActionSubmit(text: "Confirma edição de Recebimento", htmlAttributes: new { id = "basictoast", @class = "btn-loading1 show-spinner" })
                                                 </div>
                                                 <div class="col-lg-12 col-md-12 col-xs-12">
                                                     <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
@@ -356,11 +356,11 @@
                                                                                 <td style="width: auto">
                                                                                     @if (cond.REAN_IN_TIPO == 1 || cond.REAN_IN_TIPO == 2)
                                                                                     {
-                                                                                        <a href="@Url.Action("VerAnexoRecebimento", "Financeiro", new { id = cond.REAN_CD_ID })">@cond.REAN_NM_TITULO</a>
+                                                                                        <a href="@Url.Action("VerAnexoRecebimento", "Financeiro", new { id = cond.REAN_CD_ID })" class="show-spinner">@cond.REAN_NM_TITULO</a>
                                                                                     }
                                                                                     else if (cond.REAN_IN_TIPO == 4)
                                                                                     {
-                                                                                        <a href="@Url.Action("VerAnexoRecebimentoAudio", "Financeiro", new { id = cond.REAN_CD_ID })">@cond.REAN_NM_TITULO</a>
+                                                                                        <a href="@Url.Action("VerAnexoRecebimentoAudio", "Financeiro", new { id = cond.REAN_CD_ID })" class="show-spinner">@cond.REAN_NM_TITULO</a>
                                                                                     }
                                                                                     else if (cond.REAN_IN_TIPO == 3)
                                                                                     {
@@ -374,7 +374,7 @@
                                                                                 <td>@cond.REAN_DT_ANEXO.Value.ToShortDateString()</td>
                                                                                 <td>@(cond.REAN_IN_TIPO == 1 ? "Imagem" : cond.REAN_IN_TIPO == 2 ? "Vídeo" : cond.REAN_IN_TIPO == 3 ? "PDF" : "Outros")</td>
                                                                                 <td class="td-one-action">
-                                                                                    <span class="fa fa-trash-o" onclick="PrepararExclusaoAnexo('/Financeiro/ExcluirAnexoRecebimento/@cond.REAN_CD_ID')" style="cursor:pointer; color:#337ab7"></span>
+                                                                                    <span class="fa fa-trash-o  show-spinner" onclick="PrepararExclusaoAnexo('/Financeiro/ExcluirAnexoRecebimento/@cond.REAN_CD_ID')" style="cursor:pointer; color:#337ab7"></span>
                                                                                     <a href="@Url.Action("DownloadRecebimento", "Financeiro", new { id = cond.REAN_CD_ID })" 
                                                                                        class="btn btn-default" 
                                                                                        title="Download">
@@ -400,7 +400,7 @@
                                                                                     <div style="height: 90px; display: flex; align-items: center; justify-content: center; width: 100%;">
                                                                                         @if (cond.REAN_IN_TIPO == 1) // IMAGEM - Exibe miniatura
                                                                                         {
-                                                                                            <a href="@Url.Action("VerAnexoRecebimento", "Financeiro", new { id = cond.REAN_CD_ID })" title="Visualizar Imagem">
+                                                                                            <a href="@Url.Action("VerAnexoRecebimento", "Financeiro", new { id = cond.REAN_CD_ID })" class="show-spinner" title="Visualizar Imagem">
                                                                                                 <img src="@("https://rtistoragemain.blob.core.windows.net/rti-datacontainer/" + cond.REAN_AQ_ARQUIVO.Replace("~/", "").Replace("~", ""))" 
                                                                                                      class="img-thumbnail" 
                                                                                                      style="width: 70px; height: 70px; object-fit: cover; border: 1px solid #eee;"
@@ -409,7 +409,7 @@
                                                                                         }
                                                                                         else if (cond.REAN_IN_TIPO == 2) // VÍDEO - Ícone de câmera
                                                                                         {
-                                                                                            <a href="@Url.Action("VerAnexoRecebimento", "Financeiro", new { id = cond.REAN_CD_ID })" title="Visualizar Vídeo">
+                                                                                            <a href="@Url.Action("VerAnexoRecebimento", "Financeiro", new { id = cond.REAN_CD_ID })" class="show-spinner" title="Visualizar Vídeo">
                                                                                                 <i class="fa fa-video-camera fa-4x text-navy"></i>
                                                                                             </a>
                                                                                         }
@@ -436,7 +436,7 @@
                                                                                     @* Botões de Ação (Excluir e Download) *@
                                                                                     <div style="margin-top: 10px; display: flex; gap: 15px; justify-content: center;">
                                                                                         <span style="cursor:pointer;" onclick="PrepararExclusaoAnexo('/Financeiro/ExcluirAnexoRecebimento/@cond.REAN_CD_ID')" title="Excluir">
-                                                                                            <i class="fa fa-trash-o fa-lg text-navy"></i>
+                                                                                            <i class="fa fa-trash-o fa-lg text-navy show-spinner"></i>
                                                                                         </span>
                                                                                         <a href="@Url.Action("DownloadRecebimento", "Financeiro", new { id = cond.REAN_CD_ID })" title="Download">
                                                                                             <i class="fa fa-download fa-lg text-navy"></i>
@@ -507,11 +507,11 @@
                                                                                 <td style="width: auto">
                                                                                     @if (cond.REAN_IN_TIPO == 1 || cond.REAN_IN_TIPO == 2)
                                                                                     {
-                                                                                        <a href="@Url.Action("VerAnexoRecebimento", "Financeiro", new { id = cond.REAN_CD_ID })">@cond.REAN_NM_TITULO</a>
+                                                                                        <a href="@Url.Action("VerAnexoRecebimento", "Financeiro", new { id = cond.REAN_CD_ID })" class="show-spinner">@cond.REAN_NM_TITULO</a>
                                                                                     }
                                                                                     else if (cond.REAN_IN_TIPO == 4)
                                                                                     {
-                                                                                        <a href="@Url.Action("VerAnexoRecebimentoAudio", "Financeiro", new { id = cond.REAN_CD_ID })">@cond.REAN_NM_TITULO</a>
+                                                                                        <a href="@Url.Action("VerAnexoRecebimentoAudio", "Financeiro", new { id = cond.REAN_CD_ID })" class="show-spinner">@cond.REAN_NM_TITULO</a>
                                                                                     }
                                                                                     else if (cond.REAN_IN_TIPO == 3)
                                                                                     {
@@ -525,7 +525,7 @@
                                                                                 <td>@cond.REAN_DT_ANEXO.Value.ToShortDateString()</td>
                                                                                 <td>@(cond.REAN_IN_TIPO == 1 ? "Imagem" : cond.REAN_IN_TIPO == 2 ? "Vídeo" : cond.REAN_IN_TIPO == 3 ? "PDF" : "Outros")</td>
                                                                                 <td class="td-one-action">
-                                                                                    <span class="fa fa-trash-o" onclick="PrepararExclusaoAnexo('/Financeiro/ExcluirAnexoRecebimento/@cond.REAN_CD_ID')" style="cursor:pointer; color:#337ab7"></span>
+                                                                                    <span class="fa fa-trash-o  show-spinner" onclick="PrepararExclusaoAnexo('/Financeiro/ExcluirAnexoRecebimento/@cond.REAN_CD_ID')" style="cursor:pointer; color:#337ab7"></span>
                                                                                     <a href="@Url.Action("DownloadRecebimento", "Financeiro", new { id = cond.REAN_CD_ID })" 
                                                                                        class="btn btn-default" 
                                                                                        title="Download">
@@ -551,7 +551,7 @@
                                                                                     <div style="height: 90px; display: flex; align-items: center; justify-content: center; width: 100%;">
                                                                                         @if (cond.REAN_IN_TIPO == 1) // IMAGEM - Exibe miniatura
                                                                                         {
-                                                                                            <a href="@Url.Action("VerAnexoRecebimento", "Financeiro", new { id = cond.REAN_CD_ID })" title="Visualizar Imagem">
+                                                                                            <a href="@Url.Action("VerAnexoRecebimento", "Financeiro", new { id = cond.REAN_CD_ID })" class="show-spinner" title="Visualizar Imagem">
                                                                                                 <img src="@("https://rtistoragemain.blob.core.windows.net/rti-datacontainer/" + cond.REAN_AQ_ARQUIVO.Replace("~/", "").Replace("~", ""))" 
                                                                                                      class="img-thumbnail" 
                                                                                                      style="width: 70px; height: 70px; object-fit: cover; border: 1px solid #eee;"
@@ -560,7 +560,7 @@
                                                                                         }
                                                                                         else if (cond.REAN_IN_TIPO == 2) // VÍDEO - Ícone de câmera
                                                                                         {
-                                                                                            <a href="@Url.Action("VerAnexoRecebimento", "Financeiro", new { id = cond.REAN_CD_ID })" title="Visualizar Vídeo">
+                                                                                            <a href="@Url.Action("VerAnexoRecebimento", "Financeiro", new { id = cond.REAN_CD_ID })" class="show-spinner" title="Visualizar Vídeo">
                                                                                                 <i class="fa fa-video-camera fa-4x text-navy"></i>
                                                                                             </a>
                                                                                         }
@@ -587,7 +587,7 @@
                                                                                     @* Botões de Ação (Excluir e Download) *@
                                                                                     <div style="margin-top: 10px; display: flex; gap: 15px; justify-content: center;">
                                                                                         <span style="cursor:pointer;" onclick="PrepararExclusaoAnexo('/Financeiro/ExcluirAnexoRecebimento/@cond.REAN_CD_ID')" title="Excluir">
-                                                                                            <i class="fa fa-trash-o fa-lg text-navy"></i>
+                                                                                            <i class="fa fa-trash-o fa-lg text-navy show-spinner"></i>
                                                                                         </span>
                                                                                         <a href="@Url.Action("DownloadRecebimento", "Financeiro", new { id = cond.REAN_CD_ID })" title="Download">
                                                                                             <i class="fa fa-download fa-lg text-navy"></i>
@@ -648,9 +648,9 @@
                                                                          style="width: auto; height: auto; max-height: 110px; max-width: 90px;" 
                                                                          alt="Foto do Usuário">
                                                                 </a>
-                                                                <span style="color: #337ab7; cursor:pointer;" alt="Excluir" class="tbl-link fa-lg fa fa-trash-o btn-loading" onclick="ShowModalExcluirAnotacao('/Financeiro/ExcluirAnotacaoRecebimento/@item.REAT_CD_ID')" title="Excluir Anotação"></span>
+                                                                <span style="color: #337ab7; cursor:pointer;" alt="Excluir" class="tbl-link fa-lg fa fa-trash-o btn-loading show-spinner" onclick="ShowModalExcluirAnotacao('/Financeiro/ExcluirAnotacaoRecebimento/@item.REAT_CD_ID')" title="Excluir Anotação"></span>
                                                                 <div class="media-body">
-                                                                    <a href="@Url.Action("EditarAnotacaoRecebimento", "Financeiro", new { id = item.REAT_CD_ID })" class="btn-loading" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página de edição da anotação">
+                                                                    <a href="@Url.Action("EditarAnotacaoRecebimento", "Financeiro", new { id = item.REAT_CD_ID })" class="btn-loading show-spinner" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página de edição da anotação">
                                                                         @item.USUARIO.USUA_NM_NOME
                                                                     </a>
                                                                     <small class="text-muted">@item.REAT_DT_ANOTACAO.Value.ToString("dd/MM/yyyy HH:mm")</small>
@@ -668,7 +668,7 @@
                                         </div>
                                         <br />
                                         <div class="form-group">
-                                            @Html.ButtonLinkIndex(text: "Incluir Nova Anotação", action: "IncluirAnotacaoRecebimento", controller: "Financeiro", htmlAttributes: new { @class = "btn-loading" })
+                                            @Html.ButtonLinkIndex(text: "Incluir Nova Anotação", action: "IncluirAnotacaoRecebimento", controller: "Financeiro", htmlAttributes: new { @class = "btn-loading show-spinner" })
                                         </div>
                                     </div>
                                 </div>
@@ -704,9 +704,9 @@
                                                                          style="width: auto; height: auto; max-height: 110px; max-width: 90px;" 
                                                                          alt="Foto do Usuário">
                                                                 </a>
-                                                                <span style="color: #337ab7; cursor:pointer;" alt="Excluir" class="tbl-link fa-lg fa fa-trash-o btn-loading" onclick="ShowModalExcluirAnotacao('/Financeiro/ExcluirAnotacaoRecebimento/@item.REAT_CD_ID')" title="Excluir Anotação"></span>
+                                                                <span style="color: #337ab7; cursor:pointer;" alt="Excluir" class="tbl-link fa-lg fa fa-trash-o btn-loading show-spinner" onclick="ShowModalExcluirAnotacao('/Financeiro/ExcluirAnotacaoRecebimento/@item.REAT_CD_ID')" title="Excluir Anotação"></span>
                                                                 <div class="media-body">
-                                                                    <a href="@Url.Action("EditarAnotacaoRecebimento", "Financeiro", new { id = item.REAT_CD_ID })" class="btn-loading" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página de edição da anotação">
+                                                                    <a href="@Url.Action("EditarAnotacaoRecebimento", "Financeiro", new { id = item.REAT_CD_ID })" class="btn-loading show-spinner" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página de edição da anotação">
                                                                         @item.USUARIO.USUA_NM_NOME
                                                                     </a>
                                                                     <small class="text-muted">@item.REAT_DT_ANOTACAO.Value.ToString("dd/MM/yyyy HH:mm")</small>
@@ -724,7 +724,7 @@
                                         </div>
                                         <br />
                                         <div class="form-group">
-                                            @Html.ButtonLinkIndex(text: "Incluir Nova Anotação", action: "IncluirAnotacaoRecebimento", controller: "Financeiro", htmlAttributes: new { @class = "btn-loading" })
+                                            @Html.ButtonLinkIndex(text: "Incluir Nova Anotação", action: "IncluirAnotacaoRecebimento", controller: "Financeiro", htmlAttributes: new { @class = "btn-loading show-spinner" })
                                         </div>
                                     </div>
                                 </div>
@@ -768,7 +768,7 @@
                                                                             <td>@cond.RERC_NR_CPF</td>
                                                                             <td style="width: auto">@CrossCutting.Formatters.DecimalFormatter(cond.RERC_VL_VALOR.Value)</td>
                                                                             <td class="td-one-action">
-                                                                                <span class="fa fa-trash-o" onclick="PrepararExclusaoRecibo('/Financeiro/ExcluirRecibo/@cond.RERC_CD_ID')" style="cursor:pointer; color:#337ab7"></span>
+                                                                                <span class="fa fa-trash-o show-spinner" onclick="PrepararExclusaoRecibo('/Financeiro/ExcluirRecibo/@cond.RERC_CD_ID')" style="cursor:pointer; color:#337ab7"></span>
                                                                                 @Html.TableLinkDetails(cond.RERC_CD_ID, "DownloadRecibo", "fa-download", "Download")
                                                                             </td>
                                                                         </tr>
@@ -829,7 +829,7 @@
                                                                             <td>@cond.RERC_NR_CPF</td>
                                                                             <td style="width: auto">@CrossCutting.Formatters.DecimalFormatter(cond.RERC_VL_VALOR.Value)</td>
                                                                             <td class="td-one-action">
-                                                                                <span class="fa fa-trash-o" onclick="PrepararExclusaoRecibo('/Financeiro/ExcluirRecibo/@cond.RERC_CD_ID')" style="cursor:pointer; color:#337ab7"></span>
+                                                                                <span class="fa fa-trash-o show-spinner" onclick="PrepararExclusaoRecibo('/Financeiro/ExcluirRecibo/@cond.RERC_CD_ID')" style="cursor:pointer; color:#337ab7"></span>
                                                                                 @Html.TableLinkDetails(cond.RERC_CD_ID, "DownloadRecibo", "fa-download", "Download")
                                                                             </td>
                                                                         </tr>

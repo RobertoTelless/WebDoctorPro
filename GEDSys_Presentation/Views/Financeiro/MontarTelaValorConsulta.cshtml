@@ -52,16 +52,16 @@
                     <div class="col-lg-12 col-md-12 col-xs-12">
                         @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_FINANCEIRO_REC_INCLUIR == 1)
                         {
-                            @Html.ButtonLinkIndex(text: "Novo Tipo de Consulta", controller: "Financeiro", action: "IncluirValorConsulta", buttonClass: "primary", htmlAttributes: new { @class = "btn-loading" })
+                            @Html.ButtonLinkIndex(text: "Novo Tipo de Consulta", controller: "Financeiro", action: "IncluirValorConsulta", buttonClass: "primary", htmlAttributes: new { @class = "btn-loading show-spinner" })
                         }
                         @Html.ButtonLinkIndex(text: "Imprimir", controller: "Financeiro", action: "GerarRelatorioValorConsulta")
                         @if ((Int32)Session["VoltaFinanceiro"] == 0)
                         {
-                            @Html.ButtonLinkIndex(text: "Voltar", controller: "Paciente", action: "MontarTelaPaciente", htmlAttributes: new { @class = "btn-loading" })
+                            @Html.ButtonLinkIndex(text: "Voltar", controller: "Paciente", action: "MontarTelaPaciente", htmlAttributes: new { @class = "btn-loading show-spinner" })
                         }
                         else
                         {
-                            @Html.ButtonLinkIndex(text: "Voltar", controller: "Financeiro", action: "MontarTelaFinanceiro", htmlAttributes: new { @class = "btn-loading" })
+                            @Html.ButtonLinkIndex(text: "Voltar", controller: "Financeiro", action: "MontarTelaFinanceiro", htmlAttributes: new { @class = "btn-loading show-spinner" })
                         }
                         <a href="@Url.Action((String)Session["AjudaNivel"])"  class="btn btn-sm btn-danger" target="_blank">Ajuda</a>                
                         <span id="loadingIndicator" style="display: none; margin-left: 10px; color: #007bff;">
@@ -79,13 +79,6 @@
                             @Html.ValidationSummary(false, "", new { @class = "text-danger" })
                         </div>
                     }
-                    @*@if (TempData["TemMensagem"] != null)
-                    {
-                        <div class="alert alert-success">
-                            <button type="button" class="close" data-dismiss="alert">Fechar</button>
-                            <span>@TempData["MensagemAcerto"]</span>
-                        </div>
-                    }*@                    
                     <div class="row">
                         <div class="form-group" style=" margin-left: 0px; margin-right: 0px;">
                             @if (ViewBag.Listas != null &&(ViewBag.Listas as List<EntitiesServices.Model.VALOR_CONSULTA>).Count > 0)
@@ -113,7 +106,7 @@
                                                 </td>
                                                 @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_FINANCEIRO_REC_ALTERAR == 1)
                                                 {
-                                                    <td style="width: auto"><a href="@Url.Action("EditarValorConsulta", "Financeiro", new { id = cond.VACO_CD_ID})" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página de edição de tipos/valores de consultas"/>@cond.VACO_NM_NOME</td>
+                                                    <td style="width: auto"><a href="@Url.Action("EditarValorConsulta", "Financeiro", new { id = cond.VACO_CD_ID})" class="show-spinner"  data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página de edição de tipos/valores de consultas"/>@cond.VACO_NM_NOME</td>
                                                 }
                                                 else
                                                 {
@@ -143,13 +136,13 @@
                                                 <td style="width: auto" class="td-one-action">
                                                     @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_FINANCEIRO_REC_ALTERAR == 1)
                                                     {
-                                                        @Html.TableLinkDetails(cond.VACO_CD_ID, "EditarValorConsulta", "fa-edit btn-loading", "Editar Tipo de Consulta")
+                                                        @Html.TableLinkDetails(cond.VACO_CD_ID, "EditarValorConsulta", "fa-edit btn-loading show-spinner", "Editar Tipo de Consulta")
                                                     }
                                                     @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_FINANCEIRO_REC_EXCLUIR == 1)
                                                     {
                                                         if (cond.VACO_IN_ATIVO == 1)
                                                         {
-                                                            <span style="color: #337ab7; cursor:pointer;" alt="Desativar" class="tbl-link fa-lg fa fa-trash-o btn-loading" onclick="ShowModalExcluir('/Financeiro/ExcluirValorConsulta/@cond.VACO_CD_ID')" title="Excluir Tipo de Consulta"></span>
+                                                            <span style="color: #337ab7; cursor:pointer;" alt="Desativar" class="tbl-link fa-lg fa fa-trash-o btn-loading show-spinner" onclick="ShowModalExcluir('/Financeiro/ExcluirValorConsulta/@cond.VACO_CD_ID')" title="Excluir Tipo de Consulta"></span>
                                                         }
 	                                                }
                                                 </td>

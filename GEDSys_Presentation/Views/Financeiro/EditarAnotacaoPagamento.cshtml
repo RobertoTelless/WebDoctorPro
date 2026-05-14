@@ -47,8 +47,8 @@
                             </div>
                         }
                         <div class="form-group">
-                            @Html.ButtonActionSubmit(text: "Confirma Edição de Anotação", htmlAttributes: new { @class = "btn-loading1" })
-                            @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarAnexoPagamento", controller: "Financeiro", htmlAttributes: new { @class = "btn-loading" })
+                            @Html.ButtonActionSubmit(text: "Confirma Edição de Anotação", htmlAttributes: new { @class = "btn-loading1 show-spinner" })
+                            @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarAnexoPagamento", controller: "Financeiro", htmlAttributes: new { @class = "btn-loading show-spinner" })
                             <a href="@Url.Action((String)Session["AjudaNivel"])" class="btn btn-sm btn-danger" target="_blank">Ajuda</a>
                             <span id="loadingIndicator" style="display: none; margin-left: 10px; color: #007bff;">
                                 <i class="fa fa-spinner fa-spin"></i> Processando...

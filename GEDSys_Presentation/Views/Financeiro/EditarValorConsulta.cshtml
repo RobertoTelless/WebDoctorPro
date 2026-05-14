@@ -68,8 +68,8 @@
                             <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Valor de Consulta</h4>
                             <br />
                             <div class="form-group" style=" margin-left: 5px; margin-right: 5px;">
-                                @Html.ButtonActionSubmit(text: "Confirmar Edição do Tipo/Valor de Consulta", htmlAttributes: new { id = "basictoast", @class = "btn-loading1" })
-                                @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaValorConsulta", controller: "Financeiro", htmlAttributes: new { @class = "btn-loading" })
+                                @Html.ButtonActionSubmit(text: "Confirmar Edição do Tipo/Valor de Consulta", htmlAttributes: new { id = "basictoast", @class = "btn-loading1 show-spinner" })
+                                @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaValorConsulta", controller: "Financeiro", htmlAttributes: new { @class = "btn-loading show-spinner" })
                                 <a href="@Url.Action((String)Session["AjudaNivel"])" class="btn btn-sm btn-danger" target="_blank">Ajuda</a>
                                 <span id="loadingIndicator" style="display: none; margin-left: 10px; color: #007bff;">
                                     <i class="fa fa-spinner fa-spin"></i> Processando...
@@ -120,7 +120,7 @@
                                 <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Consumo de Material</h4>
                                 <div class="form-group">
                                     <div class="col-lg-12 col-md-12 col-xs-12">
-                                        <a href="@Url.Action("IncluirConsumoMaterial", "Financeiro")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Incluir um novo material a ser consumido por essa consulta" class="btn btn-sm btn-primary" id="emp" OnClick = "Fade()">Incluir Novo Material</a>                
+                                        <a href="@Url.Action("IncluirConsumoMaterial", "Financeiro")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Incluir um novo material a ser consumido por essa consulta" class="btn btn-sm btn-primary show-spinner" id="emp" OnClick = "Fade()">Incluir Novo Material</a>                
                                     </div>
                                 </div>
                                 @if (ViewBag.Lista != null &&(ViewBag.Lista as List<EntitiesServices.Model.VALOR_CONSULTA_MATERIAL>).Count > 0)
@@ -137,10 +137,10 @@
                                             @foreach (var cond in (ViewBag.Lista as List<EntitiesServices.Model.VALOR_CONSULTA_MATERIAL>))
                                             {   
                                                 <tr>
-                                                    <td style="width: auto"><a href="@Url.Action("EditarProduto", "Produto", new { id = cond.PROD_CD_ID })" class="btn-loading" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página de edição  do produto"/>@cond.PRODUTO.PROD_NM_NOME</td>
+                                                    <td style="width: auto"><a href="@Url.Action("EditarProduto", "Produto", new { id = cond.PROD_CD_ID })" class="btn-loading show-spinner" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página de edição  do produto"/>@cond.PRODUTO.PROD_NM_NOME</td>
                                                     <td style="width: auto">@CrossCutting.Formatters.DecimalFormatter(cond.VCMA_QN_QUANTIDADE.Value)</td>
                                                     <td class="td-one-action">
-                                                        @Html.TableLinkDetails(cond.VCMA_CD_ID, "EditarConsumoMaterial", "fa-edit btn-loading", "Editar")
+                                                        @Html.TableLinkDetails(cond.VCMA_CD_ID, "EditarConsumoMaterial", "fa-edit btn-loading show-spinner", "Editar")
                                                         <span style="color: #337ab7; cursor:pointer;" alt="Desativar" class="tbl-link fa-lg fa fa-trash-o btn-loading" onclick="ShowModalExcluir('/Financeiro/ExcluirConsumoMaterial/@cond.VCMA_CD_ID')" title="Excluir"></span>
                                                     </td>
                                                 </tr>

@@ -108,7 +108,7 @@
                                                 <td style="width: auto" class="td-one-action">
                                                     @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_LOCACAO_ALTERAR == 1)
                                                     {
-                                                        @Html.TableLinkDetails(cond.COLO_CD_ID, "EditarContratoLocacao", "fa-edit btn-loading", "Editar")
+                                                        @Html.TableLinkDetails(cond.COLO_CD_ID, "EditarContratoLocacao", "fa-edit btn-loading show-spinner", "Editar")
                                                     }
                                                     @if (cond.COLO_IN_ATIVO == 1)
                                                     {

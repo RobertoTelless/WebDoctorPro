@@ -66,8 +66,8 @@
                                 <h4 style="margin-left: -15px; color:green; background-color: beige; font-weight:bold">Pagamento</h4>
                                 <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
                                     @Html.ButtonActionSubmit(text: "BtnSubmit", htmlAttributes: new { id = "submit", style = "display: none;"})
-                                    <button style="margin-left: 15px;" class="btnSubmit btn btn-sm btn-success btn-loading1" id="basictoast" type="button">Confirmar inclusão do Pagamento</button>
-                                    @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaPagamento", controller: "Financeiro", htmlAttributes: new { @class = "btn-loading" })
+                                    <button style="margin-left: 15px;" class="btnSubmit btn btn-sm btn-success btn-loading1 show-spinner" id="basictoast" type="button">Confirmar inclusão do Pagamento</button>
+                                    @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaPagamento", controller: "Financeiro", htmlAttributes: new { @class = "btn-loading show-spinner" })
                                     <a href="@Url.Action((String)Session["AjudaNivel"])" class="btn btn-sm btn-danger" target="_blank">Ajuda</a>
                                     <span id="loadingIndicator" style="display: none; margin-left: 10px; color: #007bff;">
                                         <i class="fa fa-spinner fa-spin"></i> Processando...

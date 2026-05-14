@@ -63,14 +63,14 @@
                         <div class="row">
                             <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Dados do Bloqueio</h4>
                             <div class="form-group" style=" margin-left: 5px; margin-right: 5px;">
-                                @Html.ButtonActionSubmit(text: "Confirma Criação de Bloqueio", htmlAttributes: new { id = "basictoast" })
+                                @Html.ButtonActionSubmit(text: "Confirma Criação de Bloqueio", htmlAttributes: new { id = "basictoast", @class = "show-spinner" })
                                 @if ((Int32)Session["VoltaBloqueio"] == 1)
                                 {
-                                    @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaConfiguracaoCalendario", controller: "Configuracao")
+                                    @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaConfiguracaoCalendario", controller: "Configuracao", htmlAttributes: new { @class = "show-spinner" })
                                 }
                                 else
                                 {
-                                    @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaBloqueio", controller: "Configuracao")
+                                    @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaBloqueio", controller: "Configuracao", htmlAttributes: new { @class = "show-spinner" })
                                 }
                             </div>
                             <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">

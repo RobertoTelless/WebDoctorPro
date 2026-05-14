@@ -190,6 +190,7 @@
                 $('#calendario').fullCalendar({
                     timezone: 'local',
                     events: r
+                    , defaultView: 'agendaWeek'
                     , editable: true // Mantém true globalmente, mas controlaremos por evento
                     , initialView: 'agendaWeek'
                     , header: {
@@ -197,6 +198,7 @@
                         center: 'title',
                         right: 'month,agendaWeek,agendaDay'
                     }
+                    , defaultDate: moment().format('YYYY-MM-DD')
                     , eventClick: function (event, jsEvent, view) {
                         // Só abre detalhes se NÃO for bloqueio
                         if (event.tipoEvento !== 'bloqueio') {

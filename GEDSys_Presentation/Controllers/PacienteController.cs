@@ -14631,11 +14631,11 @@ namespace GEDSys_Presentation.Controllers
                     USUARIO usuarioLogado = (USUARIO)Session["UserCredentials"];
                     if (solic.PASO_IN_ASSINADO_DIGITAL == 0)
                     {
-                        Int32 rel = GerarAtestadoPDFTeste();
+                        Int32 rel = GerarSolicitacaoPDFTeste();
                     }
                     else
                     {
-                        Int32 rel = GerarAtestadoPDFTesteAssina();
+                        Int32 rel = GerarSolicitacaoPDFTesteAssina();
 
                     }
                     Int32 volta = await ProcessaEnvioEMailSolicitacao(vm, usuarioLogado);
@@ -14759,6 +14759,7 @@ namespace GEDSys_Presentation.Controllers
                 data = data.Substring(0, 2) + data.Substring(3, 2) + data.Substring(6, 4);
 
                 // Recupera informações
+                Int32 sol = (Int32)Session["IdSolicitacao"];
                 PACIENTE_SOLICITACAO solic = baseApp.GetSolicitacaoById((Int32)Session["IdSolicitacao"]);
                 PACIENTE paciente = baseApp.GetItemById(solic.PACI_CD_ID.Value);
                 Int32? id = solic.PACI_CD_ID;
@@ -15299,7 +15300,7 @@ namespace GEDSys_Presentation.Controllers
                                     PdfStamper stamper = PdfStamper.CreateSignature(reader, msOutput, '\0');
 
                                     PdfSignatureAppearance appearance = stamper.SignatureAppearance;
-                                    appearance.Reason = "Assinatura de Solicitação";
+                                    appearance.Reason = "Assinatura de Atestado Médico";
                                     appearance.Location = paciente1.PACI_NM_CIDADE + ", " + (paciente1.UF != null ? paciente1.UF.UF_SG_SIGLA : "");
 
                                     // Posição da assinatura
@@ -23437,13 +23438,13 @@ namespace GEDSys_Presentation.Controllers
                 PacienteConsultaViewModel vm = Mapper.Map<PACIENTE_CONSULTA, PacienteConsultaViewModel>(consulta);
                 PACIENTE pac = baseApp.GetItemById(consulta.PACI_CD_ID);
 
-                List<PACIENTE_ATESTADO> atestados = pac.PACIENTE_ATESTADO.ToList();
+                List<PACIENTE_ATESTADO> atestados = pac.PACIENTE_ATESTADO.Where(p => p.PAAT_IN_ATIVO == 1).ToList();
                 ViewBag.Atestados = atestados;
-                List<PACIENTE_SOLICITACAO> solics = pac.PACIENTE_SOLICITACAO.ToList();
+                List<PACIENTE_SOLICITACAO> solics = pac.PACIENTE_SOLICITACAO.Where(p => p.PASO_IN_ATIVO == 1).ToList();
                 ViewBag.Solicitacoes = solics;
-                List<PACIENTE_EXAMES> exames = pac.PACIENTE_EXAMES.ToList();
+                List<PACIENTE_EXAMES> exames = pac.PACIENTE_EXAMES.Where(p => p.PAEX_IN_ATIVO == 1).ToList();
                 ViewBag.Exames = exames;
-                List<PACIENTE_PRESCRICAO> prescricoes = pac.PACIENTE_PRESCRICAO.ToList();
+                List<PACIENTE_PRESCRICAO> prescricoes = pac.PACIENTE_PRESCRICAO.Where(p => p.PAPR_IN_ATIVO == 1).ToList();
                 ViewBag.Prescricoes = prescricoes;
                 ViewBag.NomePaciente = pac.PACI_NM_NOME;
 
@@ -24983,7 +24984,7 @@ namespace GEDSys_Presentation.Controllers
             {
                 return RedirectToAction("Logout", "ControleAcesso");
             }
-            return RedirectToAction("EnviarSolicitacaoEMail", "Paciente2", new { id = id });
+            return RedirectToAction("EnviarSolicitacaoEMail", "Paciente", new { id = id });
         }
 
         public ActionResult ImprimirSolicitacaoBase(Int32 id)

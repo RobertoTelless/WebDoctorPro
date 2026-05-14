@@ -73,7 +73,7 @@
                     </div>
                     <div class="row">
                         <br />
-                        @Html.ButtonLinkIndex(text: "Novo Comentário", action: "IncluirComentario", controller: "Noticia", htmlAttributes: new { @class = "show-spinner" })
+                        @Html.ButtonLinkIndex(text: "Novo Comentário", action: "IncluirComentarioNoticia", controller: "Noticia", htmlAttributes: new { @class = "show-spinner" })
                         <br />
                     </div>
                     <div class="row">
@@ -97,7 +97,7 @@
                                             </div>
                                             <div class="social-body">
                                                 <p>
-                                                    @item.NOCO_DS_COMENTARIO
+                                                    <span style="white-space: pre-wrap;">@item.NOCO_DS_COMENTARIO</span>
                                                 </p>
                                             </div>
                                         </div>

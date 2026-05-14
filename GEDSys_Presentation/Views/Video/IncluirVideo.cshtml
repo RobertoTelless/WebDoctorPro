@@ -45,8 +45,8 @@
                                 <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Dados do Vídeo</h4>
                                 <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
                                     @Html.ButtonActionSubmit(text: "BtnSubmit", htmlAttributes: new { id = "submit", style = "display: none;" })
-                                    <button style="margin-left: 15px;" class="btnSubmit btn btn-sm btn-success" id="basictoast" type="button">Confirmar inclusão do vídeo</button>
-                                    @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaVideo", controller: "Video")
+                                    <button style="margin-left: 15px;" class="btnSubmit btn btn-sm btn-success show-spinner" id="basictoast" type="button">Confirmar inclusão do vídeo</button>
+                                    @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaVideo", controller: "Video", htmlAttributes: new { @class = "show-spinner" })
                                     <a href="@Url.Action((String)Session["AjudaNivel"])" class="btn btn-sm btn-danger" target="_blank">Ajuda</a>
                                 </div>
                                 <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">

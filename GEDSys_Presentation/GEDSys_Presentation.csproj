@@ -5072,6 +5072,10 @@
     <Content Include="Sounds\chimes.wav" />
     <Content Include="TemplateEMail\Modelos\1\beefree-001.html" />
     <Content Include="TemplateEMail\Modelos\1\new-email_2024-04-03T215423.755415.html" />
+    <Content Include="TemplatesHTML\APRCONT\APRCONT.html" />
+    <Content Include="TemplatesHTML\CRALTLAN\CRALTLAN.html" />
+    <Content Include="TemplatesHTML\CRPARREC\CRPARREC.html" />
+    <Content Include="TemplatesHTML\FINPATR1\FINPATR1.html" />
     <Content Include="Views\Mensagem\IncluirMensagemEMail.cshtml" />
     <Content Include="Views\Mensagem\MontarTelaDashboardMensagens.cshtml" />
     <Content Include="Views\Mensagem\MontarTelaMensagemEMail.cshtml" />
@@ -5497,6 +5501,8 @@
     <Content Include="Views\Noticia\VerNoticia.cshtml" />
     <Content Include="Views\Noticia\MontarTelaNoticiaQuadro.cshtml" />
     <Content Include="Views\BaseAdmin\CarregarLandingPageNova.cshtml" />
+    <Content Include="Temp\Placeholder.pdf" />
+    <Content Include="Views\Noticia\IncluirComentarioNoticia.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="BaseAdmin\BaseConhecimento\" />
@@ -6739,8 +6745,6 @@
     <Folder Include="Imagens\Assinante\90\Foto\" />
     <Folder Include="Imagens\Assinante\90\Pagamentos\" />
     <Folder Include="Models\" />
-    <Folder Include="TemplatesHTML\" />
-    <Folder Include="Temp\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff2" />

@@ -69,16 +69,16 @@
                             <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Bloqueios de Horário</h4>
                             <br />
                             <div class="form-group" style=" margin-left: 0px; margin-right: 0px;">
-                                @Html.ButtonLinkIndex(text: "Bloqueios Ativos", action: "VerBloqueioAtivo", controller: "Configuracao")
-                                @Html.ButtonLinkIndex(text: "Bloqueios Anteriores", action: "VerBloqueioAnterior", controller: "Configuracao")
-                                @Html.ButtonLinkIndex(text: "Bloqueios Futuros", action: "VerBloqueioFuturo", controller: "Configuracao")
+                                @Html.ButtonLinkIndex(text: "Bloqueios Ativos", action: "VerBloqueioAtivo", controller: "Configuracao", htmlAttributes: new { @class = "show-spinner" })
+                                @Html.ButtonLinkIndex(text: "Bloqueios Anteriores", action: "VerBloqueioAnterior", controller: "Configuracao", htmlAttributes: new { @class = "show-spinner" })
+                                @Html.ButtonLinkIndex(text: "Bloqueios Futuros", action: "VerBloqueioFuturo", controller: "Configuracao", htmlAttributes: new { @class = "show-spinner" })
                                 @if ((Int32)Session["VoltaInfoConsulta"] == 1)
                                 {
-                                    @Html.ButtonLinkIndex(text: "Voltar", action: "IncluirConsulta", controller: "Paciente")
+                                    @Html.ButtonLinkIndex(text: "Voltar", action: "IncluirConsulta", controller: "Paciente", htmlAttributes: new { @class = "show-spinner" })
                                 }
                                 else if ((Int32)Session["VoltaInfoConsulta"] == 2)
                                 {
-                                    @Html.ButtonLinkIndex(text: "Voltar", controller: "Paciente", action: "EditarConsulta", routeValues: new { id = (Int32)Session["IdConsulta"] })
+                                    @Html.ButtonLinkIndex(text: "Voltar", controller: "Paciente", action: "EditarConsulta", htmlAttributes: new { @class = "show-spinner" }, routeValues: new { id = (Int32)Session["IdConsulta"] })
                                 }
                                 else if ((Int32)Session["VoltaInfoConsulta"] == 3)
                                 {
@@ -86,7 +86,7 @@
                                 }
                                 else if ((Int32)Session["VoltaInfoConsulta"] == 4)
                                 {
-                                    @Html.ButtonLinkIndex(text: "Voltar", controller: "Paciente2", action: "EditarConsultaCompleta", routeValues: new { id = (Int32)Session["IdConsultaGeral"] })
+                                    @Html.ButtonLinkIndex(text: "Voltar", controller: "Paciente2", action: "EditarConsultaCompleta", htmlAttributes: new { @class = "show-spinner" }, routeValues: new { id = (Int32)Session["IdConsultaGeral"] })
                                 }
                                 else
                                 {

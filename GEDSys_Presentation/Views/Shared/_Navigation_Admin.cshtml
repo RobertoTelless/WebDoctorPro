@@ -82,7 +82,7 @@
                 <ul class="nav nav-second-level collapse @Html.IsSelected(controller: "Cadastros", cssClass: "in")">
                     @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_ACESSO_PACIENTE == 1)
                     {
-                        <li class="@Html.IsSelected(action: "MontarTelaCentralPaciente")"><a href="@Url.Action("MontarTelaCentralPaciente", "Paciente") class="show-spinner"">Central de Pacientes</a></li>
+                        <li class="@Html.IsSelected(action: "MontarTelaCentralPaciente")"><a href="@Url.Action("MontarTelaCentralPaciente", "Paciente")" class="show-spinner">Central de Pacientes</a></li>
                     }
                     @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_PACIENTE_CONSULTA_ACESSO == 1)
                     {
@@ -98,7 +98,7 @@
                     }
                     @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_SOLICITACAO_ACESSO == 1)
                     {
-                        <li class="@Html.IsSelected(action: "MontarTelaSolicitacoes")"><a href="@Url.Action("MontarTelaSolicitacoes", "Paciente") class="show-spinner">Central de Solicitações</a></li>
+                        <li class="@Html.IsSelected(action: "MontarTelaSolicitacoes")"><a href="@Url.Action("MontarTelaSolicitacoes", "Paciente")" class="show-spinner">Central de Solicitações</a></li>
 
                     }
                     @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_EXAME_ACESSO == 1)

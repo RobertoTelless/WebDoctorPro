@@ -33,7 +33,7 @@
                 <div class="ibox-content">
                     <div class="form-group">
                         @Html.ButtonLinkIndex(text: "Gerar Listagem", controller: "Produto", action: "GerarRelatorioListaAcima")
-                        @Html.ButtonLinkIndex(text: "Voltar", controller: "Produto", action: "MontarTelaProduto")
+                        @Html.ButtonLinkIndex(text: "Voltar", controller: "Produto", action: "MontarTelaProduto", htmlAttributes: new { @class = "show-spinner" })
                     </div>
                     <div class="ibox-content">
                         <div class="row">
@@ -52,7 +52,6 @@
                                             <th style="width: auto">Marca</th>
                                             <th style="width: auto">Diferença (%)</th>
                                             <th style="width: auto">Tipo</th>
-                                            <th style="width: auto"></th>
                                             <th style="width: auto" class="td-one-action">Ações</th>
                                         </tr>
                                     </thead>
@@ -70,16 +69,8 @@
                                                 <td style="width: auto">@cond.Nome5</td>
                                                 <td>@CrossCutting.Formatters.DecimalFormatter(cond.ValorDec3)</td>
                                                 <td style="width: auto">@cond.Nome8</td>
-                                                @if (!String.IsNullOrEmpty(cond.Nome9))
-                                                {
-                                                    <td><img src="@Url.Content(cond.Nome9)" style="width: auto; height: auto; max-height: 55px; max-width: 45px;" data-toggle="modal" data-target="#fotoModal" onclick="CriaModal('@cond.Nome', '@Url.Content(cond.Nome9)')"></td>
-                                                }
-                                                else
-                                                {
-                                                    <td><img src="~/Images/icone_imagem.jpg" style="width: auto; height: auto; max-height: 55px; max-width: 45px;" data-toggle="modal" data-target="#fotoModal" onclick="CriaModal('@cond.Nome', '/Images/icone_imagem.jpg')"></td>
-                                                }
                                                 <td style="width: auto" class="td-one-action">
-                                                    @Html.TableLinkDetails(cond.Valor1, "EditarProduto", "fa-search", "Ver")
+                                                    @Html.TableLinkDetails(cond.Valor1, "EditarProduto", "fa-search show-spinner", "Ver")
                                                 </td>
                                             </tr>
                                         }

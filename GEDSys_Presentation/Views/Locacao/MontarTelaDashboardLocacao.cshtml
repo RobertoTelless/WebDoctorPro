@@ -116,7 +116,7 @@
         <div class="row">
             <div class="form-group">
                 <div class="col-lg-12 col-md-12 col-xs-12">
-                    <a href="@Url.Action("MontarTelaLocacao", "Locacao")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acesso à Central de Locações" class="btn btn-sm btn-success btn-loading" id="emp" OnClick = "Fade()">Central de Locações</a>                
+                    <a href="@Url.Action("MontarTelaLocacao", "Locacao")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acesso à Central de Locações" class="btn btn-sm btn-success btn-loading show-spinner" id="emp" OnClick = "Fade()">Central de Locações</a>                
                     @Html.ButtonLinkIndex(text: "Voltar", controller: "Locacao", action: "MontarTelaLocacao", htmlAttributes: new { @class = "show-spinner" })
                     <a href="@Url.Action((String)Session["AjudaNivel"])"  class="btn btn-sm btn-danger" target="_blank">Ajuda</a>                
                     <span id="loadingIndicator" style="display: none; margin-left: 10px; color: #007bff;">

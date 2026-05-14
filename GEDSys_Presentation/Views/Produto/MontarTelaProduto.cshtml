@@ -131,15 +131,15 @@
                         </div>
                         <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
                             <div class="col-lg-12 col-md-12 col-xs-12">
-                                @Html.ButtonActionSubmit(text: "Filtrar", htmlAttributes: new { @class = "btn-loading1" })
-                                @Html.ButtonLinkIndex(text: "Retirar Filtro", controller: "Produto", action: "RetirarFiltroProduto", buttonClass: "success", htmlAttributes: new { @class = "btn-loading" })
+                                @Html.ButtonActionSubmit(text: "Filtrar", htmlAttributes: new { @class = "btn-loading1 show-spinner" })
+                                @Html.ButtonLinkIndex(text: "Retirar Filtro", controller: "Produto", action: "RetirarFiltroProduto", buttonClass: "success", htmlAttributes: new { @class = "btn-loading show-spinner" })
                                 @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_INCLUSAO_PROD == 1)
                                 {
-                                    @Html.ButtonLinkIndex(text: "Novo Produto", controller: "Produto", action: "IncluirProduto", buttonClass: "primary", htmlAttributes: new { @class = "btn-loading" })
+                                    @Html.ButtonLinkIndex(text: "Novo Produto", controller: "Produto", action: "IncluirProduto", buttonClass: "primary", htmlAttributes: new { @class = "btn-loading show-spinner" })
                                 }
                                 @Html.ButtonLinkIndex(text: "Imprimir Produtos", controller: "Produto", action: "GerarRelatorioLista")
-                                @Html.ButtonLinkIndex(text: "Dashboard", controller: "Produto", action: "MontarTelaDashboardProduto", htmlAttributes: new { @class = "btn-loading" })
-                                @Html.ButtonLinkIndex(text: "Voltar", controller: "Paciente", action: "MontarTelaPaciente", htmlAttributes: new { @class = "btn-loading" })
+                                @Html.ButtonLinkIndex(text: "Dashboard", controller: "Produto", action: "MontarTelaDashboardProduto", htmlAttributes: new { @class = "btn-loading show-spinner" })
+                                @Html.ButtonLinkIndex(text: "Voltar", controller: "Paciente", action: "MontarTelaPaciente", htmlAttributes: new { @class = "btn-loading show-spinner" })
                                 <a href="@Url.Action((String)Session["AjudaNivel"])"  class="btn btn-sm btn-danger" target="_blank">Ajuda</a>                
                                 <span id="loadingIndicator" style="display: none; margin-left: 10px; color: #007bff;">
                                     <i class="fa fa-spinner fa-spin"></i> Processando...
@@ -221,11 +221,11 @@
 
                                             @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_EDICAO_PROD == 1)
                                             {
-                                                <td><a href="@Url.Action("EditarProduto", "Produto", new { id = cond.PROD_CD_ID })" class="btn-loading" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página de edição de dados do produto" />@cond.PROD_NM_NOME</td>
+                                                <td><a href="@Url.Action("EditarProduto", "Produto", new { id = cond.PROD_CD_ID })" class="btn-loading show-spinner" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página de edição de dados do produto" />@cond.PROD_NM_NOME</td>
                                             }
                                             else
                                             {
-                                                <td><a href="@Url.Action("ConsultarProduto", "Produto", new { id = cond.PROD_CD_ID })" class="btn-loading" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página de consulta de dados do produto" />@cond.PROD_NM_NOME</td>
+                                                <td><a href="@Url.Action("ConsultarProduto", "Produto", new { id = cond.PROD_CD_ID })" class="btn-loading show-spinner" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página de consulta de dados do produto" />@cond.PROD_NM_NOME</td>
                                             }
 
                                             @if (cond.CATEGORIA_PRODUTO != null)
@@ -302,17 +302,17 @@
                                             <td style="width: auto" class="td-one-action">
                                                 @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_EDICAO_PROD == 1)
                                                 {
-                                                    @Html.TableLinkDetails(cond.PROD_CD_ID, "EditarProduto", "fa-edit btn-loading", "Editar")
+                                                    @Html.TableLinkDetails(cond.PROD_CD_ID, "EditarProduto", "fa-edit btn-loading show-spinner", "Editar")
                                                 }
                                                 else
                                                 {
-                                                    @Html.TableLinkDetails(cond.PROD_CD_ID, "ConsultarProduto", "fa-search btn-loading", "Consultar")
+                                                    @Html.TableLinkDetails(cond.PROD_CD_ID, "ConsultarProduto", "fa-search btn-loading show-spinner", "Consultar")
                                                 }
                                                 @if (cond.PROD_IN_ATIVO == 1)
                                                 {
                                                     if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_EXCLUSAO_PROD == 1)
                                                     {
-                                                        <span style="color: #337ab7; cursor:pointer;" alt="Excluir" class="tbl-link fa-lg fa fa-trash-o btn-loading" onclick="ShowModalExcluir('/Produto/ExcluirProduto/@cond.PROD_CD_ID')" title="Excluir"></span>
+                                                        <span style="color: #337ab7; cursor:pointer;" alt="Excluir" class="tbl-link fa-lg fa fa-trash-o btn-loading show-spinner" onclick="ShowModalExcluir('/Produto/ExcluirProduto/@cond.PROD_CD_ID')" title="Excluir"></span>
                                                     }
                                                 }
                                             </td>
@@ -328,7 +328,7 @@
                                 </div>
                                 <div style="border: 5px solid #F6A54A; padding: 10px; border-radius: 8px 8px; " class="col-lg-8 col-md-8 col-xs-8">
                                     <h2 style="font-weight: bold">Nenhum produto cadastrado ou sua pesquisa não retornou nenhum resultado</h2>
-                                    @Html.ButtonLinkIndex(text: "Retirar Filtro", controller: "Produto", action: "RetirarFiltroProduto", htmlAttributes: new { @class = "btn-loading" })
+                                    @Html.ButtonLinkIndex(text: "Retirar Filtro", controller: "Produto", action: "RetirarFiltroProduto", htmlAttributes: new { @class = "btn-loading show-spinner" })
                                 </div>
                                 <div class="col-lg-2 col-md-2 col-xs-2">
                                 </div>

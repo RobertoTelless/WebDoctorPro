@@ -125,10 +125,10 @@
 
                         <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
                             <div class="col-lg-12 col-md-12 col-xs-12">
-                                @Html.ButtonActionSubmit(text: "Filtrar", htmlAttributes: new { @class = "btn-loading1" })
-                                @Html.ButtonLinkIndex(text: "Retirar Filtro", controller: "Financeiro", action: "RetirarFiltroConsultasEncerramento", htmlAttributes: new { @class = "btn-loading" })
+                                @Html.ButtonActionSubmit(text: "Filtrar", htmlAttributes: new { @class = "btn-loading1 show-spinner" })
+                                @Html.ButtonLinkIndex(text: "Retirar Filtro", controller: "Financeiro", action: "RetirarFiltroConsultasEncerramento", htmlAttributes: new { @class = "btn-loading show-spinner" })
                                 @Html.ButtonLinkIndex(text: "Imprimir Consultas", controller: "Financeiro", action: "GerarRelatorioConsultasEncerramento")
-                                @Html.ButtonLinkIndex(text: "Voltar", controller: "Financeiro", action: "VoltarEncerramento", htmlAttributes: new { @class = "btn-loading" })
+                                @Html.ButtonLinkIndex(text: "Voltar", controller: "Financeiro", action: "VoltarEncerramento", htmlAttributes: new { @class = "btn-loading show-spinner" })
                                 <a href="@Url.Action((String)Session["AjudaNivel"])" class="btn btn-sm btn-danger" target="_blank">Ajuda</a>
                                 <span id="loadingIndicator" style="display: none; margin-left: 10px; color: #007bff;">
                                     <i class="fa fa-spinner fa-spin"></i> Processando...
@@ -178,11 +178,11 @@
                                         <tr>
                                             @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_ACESSO_PACIENTE == 1)
                                             {
-                                                <td style="width: auto"><a href="@Url.Action("EditarPacienteEncerra", "Paciente", new { id = cond.PACIENTE.PACI__CD_ID })" class="btn-loading" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página de edição de dados do paciente"/>@cond.PACIENTE.PACI_NM_NOME</td>
+                                                <td style="width: auto"><a href="@Url.Action("EditarPacienteEncerra", "Paciente", new { id = cond.PACIENTE.PACI__CD_ID })" class="btn-loading show-spinner" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página de edição de dados do paciente"/>@cond.PACIENTE.PACI_NM_NOME</td>
                                             }
                                             else
                                             {
-                                                <td style="width: auto"><a href="@Url.Action("VerPacienteEncerra", "Paciente", new { id = cond.PACIENTE.PACI__CD_ID })" class="btn-loading" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página de visualização de dados do paciente" />@cond.PACIENTE.PACI_NM_NOME</td>
+                                                <td style="width: auto"><a href="@Url.Action("VerPacienteEncerra", "Paciente", new { id = cond.PACIENTE.PACI__CD_ID })" class="btn-loading show-spinner" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página de visualização de dados do paciente" />@cond.PACIENTE.PACI_NM_NOME</td>
                                             }
                                             <td style="width: auto">@cond.PACO_DT_CONSULTA.ToShortDateString()</td>
                                             <td style="width: auto">@cond.PACO_HR_INICIO.ToString()</td>
@@ -235,7 +235,7 @@
                                                     if (cond.PACO_IN_ATIVO == 1 & cond.PACO_IN_CONFIRMADA == 1)
                                                     {
                                                         <button type="button" 
-                                                                class="btn btn-xs btn-link btn-disparar-modal-encerra" 
+                                                                class="btn btn-xs btn-link btn-disparar-modal-encerra show-spinner" 
                                                                 data-id="@cond.PACO_CD_ID" 
                                                                 title="Encerrar Consulta"
                                                                 id="btnEncerrarSubmit"
@@ -249,7 +249,7 @@
                                                             target="_blank" 
                                                             style="color: #337ab7; cursor: pointer;" 
                                                             title="Abrir Portal e-CAC (Receita Federal)"
-                                                            class="fa fa-external-link-square fa-lg">
+                                                            class="fa fa-external-link-square fa-lg show-spinner">
                                                         </a>            
                                                     }
                                                 }
@@ -266,7 +266,7 @@
                                 </div>
                                 <div style="border: 5px solid #F6A54A; padding: 10px; border-radius: 8px 8px; " class="col-lg-8 col-md-8 col-xs-12">
                                     <h2 style="font-weight: bold">Sua pesquisa não retornou nenhum resultado ou nenhuma consulta para encerramento</h2>
-                                    @Html.ButtonLinkIndex(text: "Retirar Filtro", controller: "Paciente", action: "VerConsultasHoje", htmlAttributes: new { @class = "btn-loading" })
+                                    @Html.ButtonLinkIndex(text: "Retirar Filtro", controller: "Paciente", action: "VerConsultasHoje", htmlAttributes: new { @class = "btn-loading show-spinner" })
                                 </div>
                                 <div class="col-lg-2 col-md-2 col-xs-2">
                                 </div>

@@ -191,7 +191,7 @@
                                             <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Envios de Informações</h4>
                                             <div class="form-group">
                                                 <div class="col-lg-12 col-md-12 col-xs-12">
-                                                    <a href="@Url.Action("IncluirMovimento", "Medico")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Cria novo envio de informações para este médico" class="btn btn-sm btn-primary btn-loading1" id="emp" OnClick = "Fade()">Criar Novo Envio de Informações</a>                
+                                                    <a href="@Url.Action("IncluirMovimento", "Medico")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Cria novo envio de informações para este médico" class="btn btn-sm btn-primary btn-loading1 show-spinner" id="emp" OnClick = "Fade()">Criar Novo Envio de Informações</a>                
                                                     <span id="loadingIndicator1" style="display: none; margin-left: 10px; color: #007bff;">
                                                         <i class="fa fa-spinner fa-spin"></i> Processando...
                                                     </span>
@@ -219,7 +219,7 @@
                                                                     <span style="display:none; width: auto">@cond.MEEV_DT_ENVIO.Value.ToString("yyyyMMdd")</span>
                                                                     @cond.MEEV_DT_ENVIO.Value.ToString("dd/MM/yyyy")
                                                                 </td>
-                                                                <td style="width: auto; cursor: pointer; text-decoration: underline;"><a href="@Url.Action("EditarEnvio", "Medico", new { id = cond.MEEV_CD_ID })" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página de edição do envio de informações"/>@cond.MEEV_GU_IDENTIFICADOR</td>
+                                                                <td style="width: auto; cursor: pointer; text-decoration: underline;"><a href="@Url.Action("EditarEnvio", "Medico", new { id = cond.MEEV_CD_ID })" class="show-spinner"  data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página de edição do envio de informações"/>@cond.MEEV_GU_IDENTIFICADOR</td>
                                                                 <td style="width: auto">@cond.MEEV_NM_TITULO</td>
                                                                 <td style="width: auto">@cond.PACIENTE.PACI_NM_NOME</td>
                                                                 @if (cond.MEDICOS_ENVIO_ANEXO.Count() > 0)
@@ -241,10 +241,10 @@
 
                                                                 }
                                                                 <td class="td-one-action">
-                                                                    @Html.TableLinkDetails(cond.MEEV_CD_ID, "EditarEnvio", "fa-edit btn-loading1", "Editar/Visualizar Informações de Envio")
+                                                                    @Html.TableLinkDetails(cond.MEEV_CD_ID, "EditarEnvio", "fa-edit btn-loading1 show-spinner", "Editar/Visualizar Informações de Envio")
                                                                     @if (cond.MEDICOS.MEDC_EM_EMAIL != null)
                                                                     {
-                                                                        @Html.TableLinkDetails(cond.MEEV_CD_ID, "ReenviarEnvio", "fa-send btn-loading1", "Enviar/Reenviar as Informações")
+                                                                        @Html.TableLinkDetails(cond.MEEV_CD_ID, "ReenviarEnvio", "fa-send btn-loading1 show-spinner", "Enviar/Reenviar as Informações")
                                                                     }
                                                                 </td>
                                                             </tr>

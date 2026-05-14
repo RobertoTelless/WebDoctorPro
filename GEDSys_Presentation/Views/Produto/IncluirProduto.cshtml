@@ -60,8 +60,8 @@
                             <div class="form-group">
                                 <br />
                                 @Html.ButtonActionSubmit(text: "BtnSubmit", htmlAttributes: new { id = "submit", style = "display: none;" })
-                                <button style="margin-left: 15px;" class="btnSubmit btn btn-sm btn-success btn-loading1" id="basictoast" type="button">Confirma e Prossegue para a Edição do Material/Produto</button>
-                                @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarBaseProduto", controller: "Produto", htmlAttributes: new { @class = "btn-loading" })
+                                <button style="margin-left: 15px;" class="btnSubmit btn btn-sm btn-success btn-loading1 show-spinner" id="basictoast" type="button">Confirma e Prossegue para a Edição do Material/Produto</button>
+                                @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarBaseProduto", controller: "Produto", htmlAttributes: new { @class = "btn-loading show-spinner" })
                                 <a href="@Url.Action((String)Session["AjudaNivel"])"  class="btn btn-sm btn-danger" target="_blank">Ajuda</a>                
                                 <span id="loadingIndicator" style="display: none; margin-left: 10px; color: #007bff;">
                                     <i class="fa fa-spinner fa-spin"></i> Processando...
@@ -298,7 +298,7 @@
                                 <div class="form-group">
                                     <br />
                                     @Html.ButtonActionSubmit(text: "BtnSubmit", htmlAttributes: new { id = "submit", style = "display: none;" })
-                                    <button style="margin-left: 15px;" class="btnSubmit btn btn-sm btn-success btn-loading1" id="basictoast" type="button">Confirma e Prossegue para a Edição do Material/Produto</button>
+                                    <button style="margin-left: 15px;" class="btnSubmit btn btn-sm btn-success btn-loading1 show-spinner" id="basictoast" type="button">Confirma e Prossegue para a Edição do Material/Produto</button>
                                 </div>
                             </div>
                         }

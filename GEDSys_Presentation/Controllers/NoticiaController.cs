@@ -752,7 +752,17 @@ namespace GEDSys_Presentation.Controllers
             Int32 idNot = (Int32)Session["IdVolta"];
             return RedirectToAction("EditarNoticia", new { id = idNot });
         }
-       
+
+        public ActionResult VoltarAnexoVerNoticia()
+        {
+            if ((String)Session["Ativa"] == null)
+            {
+                return RedirectToAction("Logout", "ControleAcesso");
+            }
+            Int32 idNot = (Int32)Session["IdNoticia"];
+            return RedirectToAction("VerNoticia", new { id = idNot });
+        }
+
         public List<NOTICIA> CarregaNoticiaGeral()
         {
             try
@@ -836,6 +846,7 @@ namespace GEDSys_Presentation.Controllers
                 return RedirectToAction("Logout", "ControleAcesso");
             }
             Session["IdVolta"] = id;
+            Session["IdNoticia"] = id;
             NOTICIA item = baseApp.GetItemById(id);
             item.NOTC_NR_ACESSO = ++item.NOTC_NR_ACESSO;
             objetoAntes = item;
@@ -919,6 +930,118 @@ namespace GEDSys_Presentation.Controllers
                 GravaLogExcecao grava = new GravaLogExcecao(usuApp);
                 Int32 voltaX = grava.GravarLogExcecao(ex, "Noticia", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
                 return RedirectToAction("TrataExcecao", "BaseAdmin");
+            }
+        }
+
+        public ActionResult IncluirComentarioNoticia()
+        {
+            try
+            {
+                // Verifica se tem usuario logado
+                USUARIO usuario = new USUARIO();
+                if ((String)Session["Ativa"] == null)
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+                if ((USUARIO)Session["UserCredentials"] != null)
+                {
+                    usuario = (USUARIO)Session["UserCredentials"];
+
+                    // Verfifica permissão
+                    if (usuario.PERFIL.PERF_IN_LOCACAO_ALTERAR == 0)
+                    {
+                        Session["MensPermissao"] = 2;
+                        Session["ModuloPermissao"] = "Locação - Alteração";
+                        return RedirectToAction("VoltarAnexoLocacao");
+                    }
+                }
+                else
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+                Int32 idAss = (Int32)Session["IdAssinante"];
+
+                NOTICIA item = baseApp.GetItemById((Int32)Session["IdNoticia"]);
+                USUARIO usuarioLogado = (USUARIO)Session["UserCredentials"];
+                NOTICIA_COMENTARIO coment = new NOTICIA_COMENTARIO();
+                NoticiaComentarioViewModel vm = Mapper.Map<NOTICIA_COMENTARIO, NoticiaComentarioViewModel>(coment);
+                vm.NOCO_DT_COMENTARIO = DateTime.Now;
+                vm.NOCO_IN_ATIVO = 1;
+                vm.NOTC_CD_ID = item.NOTC_CD_ID;
+                vm.USUARIO = usuarioLogado;
+                vm.USUA_CD_ID = usuarioLogado.USUA_CD_ID;
+
+                // Grava Acesso
+                return View(vm);
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Noticia";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Paciente", "Noticia", 1, (USUARIO)Session["UserCredentials"]);
+                return RedirectToAction("TrataExcecao", "BaseAdmin");
+            }
+        }
+
+        [HttpPost]
+        public ActionResult IncluirComentarioNoticia(NoticiaComentarioViewModel vm)
+        {
+            if ((String)Session["Ativa"] == null)
+            {
+                return RedirectToAction("Logout", "ControleAcesso");
+            }
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    // Sanitização
+                    vm.NOCO_DS_COMENTARIO = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(vm.NOCO_DS_COMENTARIO);
+
+                    // Executa a operação
+                    NOTICIA_COMENTARIO item = Mapper.Map<NoticiaComentarioViewModel, NOTICIA_COMENTARIO>(vm);
+                    USUARIO usuarioLogado = (USUARIO)Session["UserCredentials"];
+                    NOTICIA not = baseApp.GetItemById((Int32)Session["IdNoticia"]);
+                    String json = JsonConvert.SerializeObject(item);
+
+                    item.USUARIO = null;
+                    not.NOTICIA_COMENTARIO.Add(item);
+                    Int32 volta = baseApp.ValidateEdit(not, not, usuarioLogado);
+
+                    // Monta Log
+                    LOG log = new LOG
+                    {
+                        LOG_DT_DATA = DateTime.Now,
+                        ASSI_CD_ID = usuarioLogado.ASSI_CD_ID,
+                        USUA_CD_ID = usuarioLogado.USUA_CD_ID,
+                        LOG_NM_OPERACAO = "Notícia - Comentário - Inclusão",
+                        LOG_IN_ATIVO = 1,
+                        LOG_TX_REGISTRO = json,
+                        LOG_IN_SISTEMA = 6
+                    };
+                    Int32 volta1 = logApp.ValidateCreate(log);
+
+                    // Sucesso
+                    return RedirectToAction("VoltarAnexoVerNoticia");
+                }
+                catch (Exception ex)
+                {
+                    ViewBag.Message = ex.Message;
+                    Session["TipoVolta"] = 2;
+                    Session["VoltaExcecao"] = "Noticia";
+                    Session["Excecao"] = ex;
+                    Session["ExcecaoTipo"] = ex.GetType().ToString();
+                    GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                    Int32 voltaX = grava.GravarLogExcecao(ex, "Noticia", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                    return RedirectToAction("TrataExcecao", "BaseAdmin");
+                }
+            }
+            else
+            {
+                return View(vm);
             }
         }
 
