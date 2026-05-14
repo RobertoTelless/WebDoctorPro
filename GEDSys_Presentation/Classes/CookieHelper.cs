@@ -34,7 +34,12 @@ namespace ERP_Condominios_Solution.Classes
 
             baseCookie.Expires = dataExpiracao;
             baseCookie.HttpOnly = true;
-
+            baseCookie.Secure = true; // Garante que só viaje via HTTPS
+            baseCookie.SameSite = SameSiteMode.Lax; // Necessário para navegadores modernos (Chrome/Edge)
+            if (!HttpContext.Current.Request.IsLocal && !HttpContext.Current.Request.Url.Host.Contains("azurewebsites"))
+            {
+                baseCookie.Domain = "webdoctorpro.net";
+            }
             if (HttpContext.Current != null)
             {
                 HttpContext.Current.Response.Cookies.Add(baseCookie);

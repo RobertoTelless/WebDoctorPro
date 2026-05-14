@@ -98,7 +98,7 @@
                     }
                     @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_SOLICITACAO_ACESSO == 1)
                     {
-                        <li class="@Html.IsSelected(action: "MontarTelaSolicitacoes")"><a href="@Url.Action("MontarTelaSolicitacoes", "Paciente") class="show-spinner"">Central de Solicitações</a></li>
+                        <li class="@Html.IsSelected(action: "MontarTelaSolicitacoes")"><a href="@Url.Action("MontarTelaSolicitacoes", "Paciente") class="show-spinner">Central de Solicitações</a></li>
 
                     }
                     @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_EXAME_ACESSO == 1)
