@@ -2984,6 +2984,9 @@
     <Content Include="PdfViewer\web\viewer.css" />
     <Content Include="PdfViewer\web\viewer.html" />
     <Content Include="PdfViewer\web\viewer.js" />
+    <Content Include="robots.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Scripts\app\inspinia.js" />
     <Content Include="Scripts\app\skin.config.min.js" />
     <Content Include="Scripts\bootstrap-datetimepicker.js" />

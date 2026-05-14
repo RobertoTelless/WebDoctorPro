@@ -1,0 +1,24 @@
+﻿# Robots.txt para WebDoctorPro
+User-agent: *
+
+# Bloquear pastas de sistema e bibliotecas
+Disallow: /bin/
+Disallow: /App_Data/
+Disallow: /App_Start/
+Disallow: /Scripts/
+Disallow: /Content/
+Disallow: /AutoMapper/
+Disallow: /Certificados/
+Disallow: /Imagens/
+Disallow: /Images/
+
+# Bloquear áreas administrativas e privadas
+Disallow: /BaseAdmin/
+
+# Bloquear rotas de busca interna e processamento
+Disallow: /*?id=
+Disallow: /Paciente/GetPaciente
+Disallow: /Paciente/EditarPaciente
+
+# Permitir o restante do conteúdo institucional
+Allow: /
