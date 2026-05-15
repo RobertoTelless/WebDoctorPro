@@ -771,6 +771,8 @@ namespace ERP_Condominios_Solution.Controllers
         {
             try
             {
+
+
                 // Inicialização
                 USUARIO usuario;
                 Session["UserCredentials"] = null;
@@ -780,7 +782,7 @@ namespace ERP_Condominios_Solution.Controllers
                 String senha = vm.USUA_NM_SENHA;
                 vm.USUA_IN_COMPRADOR = 0;
                 Session["AssinantePendente"] = 0;
-                Int32? cookie = vm.USUA_IN_COOKIE;
+                //Boolean cookie = vm.MeuCookie;
 
                 // Verifica humano
                 if (vm.USUA_IN_HUMANO == null || vm.USUA_IN_HUMANO == 0)
@@ -1172,16 +1174,17 @@ namespace ERP_Condominios_Solution.Controllers
                 ControleAcessoMetodo grava = new ControleAcessoMetodo(aceApp);
                 Int32 voltaX = grava.GravaAcesso(usuario.USUA_CD_ID, usuario.ASSI_CD_ID, "LOGIN", "ControleAcesso", "Login", ip);
 
-                // Trata cookie
-                if (cookie == 1)
-                {
-                    Boolean cook = CookieManager.VerificarValidadeCookie();
-                    if (!cook)
-                    {
-                        CookieManager.GravarCookieInicioBase();
-                    }
+                //// Trata cookie
+                //if (cookie)
+                //{
+                //    Boolean cook = CookieManager.VerificarValidadeCookie();
+                //    if (!cook)
+                //    {
+                //        CookieManager.GravarCookieInicioBase();
+                //    }
 
-                }
+                //}
+
 
                 // Verifica pagamentos
                 Session["PagamentoAtraso"] = 0;

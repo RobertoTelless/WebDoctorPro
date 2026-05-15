@@ -50,9 +50,28 @@
                                 @Html.ActionLink("Acesso a Área do Paciente", "LoginAreaPaciente", "AreaPaciente", null, new { @style = "color: red; font-weight: bold; font-size: 18px;" })
                             </div>
                         </div>
+                        if (Session["TemCookie"] != null && (Int32)Session["TemCookie"] == 0)
+                        {
+                            <div class="col-lg-12 col-md-12 col-xs-12 ibox float-e-margins" style="padding-left: 0; padding-right: 0; margin-top: 15px;">
+                                <div class="ibox-title">
+                                    <h5>Utilização de Cookies</h5>
+                                </div>
+                                <div class="ibox-content">
+                                    <div class="row">
+                                        <div class="form-group" style="padding: 0 15px;">
+                                            Nós utilizamos cookies para que você tenha uma melhor experiência de navegação em nosso site
+                                        </div>
+                                        <div class="form-group" style="padding: 0 15px;">
+                                            @Html.CheckBoxFor(m => m.MeuCookie, new { @class = "checkbox i-checks" })&nbsp;&nbsp;
+                                            Aceito a gravação de cookies em meu computador
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
                     }
                 </div> 
-                @if ((Int32)Session["TemCookie"] == 0)
+                @*@if ((Int32)Session["TemCookie"] == 0)
                 {
                     <div class="col-lg-12 col-md-12 col-xs-12 ibox float-e-margins">
                         <div class="ibox-title">
@@ -64,13 +83,13 @@
                                     Nós utilizamos cookies para que você tenha uma melhor experiência de navegação em nosso site
                                 </div>
                                 <div class="form-group" >
-                                    @Html.CheckBoxFor(m => m.Cookie, new { @class = "checkbox i-checks", autofocus = true})&nbsp&nbsp
+                                    @Html.CheckBoxFor(m => m.MeuCookie, new { @class = "checkbox i-checks", autofocus = true})&nbsp&nbsp
                                     Aceito a gravação de cookies em meu computador
                                 </div>
                             </div>
                         </div>
                     </div>
-                }
+                }*@
                 <div class="col-lg-12 col-md-12 col-xs-12 ibox float-e-margins">
                     <div class="ibox-title">
                         <h5>Política de Privacidade e Segurança de Dados</h5>
@@ -80,7 +99,6 @@
                             <div class="form-group">
                                 <div class="col-lg-12">
                                     <p>Ao prosseguir, você concorda com nossas diretrizes de segurança.</p>
-                                    <!-- Hiperlink que dispara o Modal -->
                                     <a href="#" class="text-navy" data-toggle="modal" data-target="#modalPrivacidade">
                                         <i class="fa fa-external-link"></i> Clique aqui para ler a Política de Privacidade e Segurança de Dados
                                     </a>
@@ -90,23 +108,6 @@
                     </div>
                 </div>
 
-                @*<div class="col-lg-12 col-md-12 col-xs-12 ibox float-e-margins">
-                    <div class="ibox-title">
-                        <h5>Contatos e Suporte</h5>
-                    </div>
-                    <div class="ibox-content">
-                        <div class="row">
-                            <div class="col-lg-4 col-md-4 col-xs-12">
-                                <small class="stats-label">Suporte</small>
-                                <h4>suporte@rtiltda.net</h4>
-                            </div>
-                            <div class="col-lg-4 col-md-4 col-xs-12">
-                                <small class="stats-label">WhatsApp</small>
-                                <h4>(21)97302-4096</h4>
-                            </div>
-                        </div>
-                    </div>*@
-                </div>
                 <div class="col-lg-12 col-md-12 col-xs-12 ibox float-e-margins">
                     <div style="display: none; z-index:1000" class="dotContainer">
                         <div class="spiner-example">
@@ -170,9 +171,14 @@
             checkboxClass: 'icheckbox_square-green',
             radioClass: 'iradio_square-green',
         });
-
+        // Forçar a atualização do input oculto quando o iCheck for clicado
+        $('.i-checks').on('ifChanged', function (event) {
+            $(event.target).trigger('change');
+        });
     });
 </script>
+
+
 
 <!-- Estrutura do Modal (Pode ser colocado no final do arquivo .cshtml) -->
 <div class="modal inmodal fade" id="modalPrivacidade" tabindex="-1" role="dialog" aria-hidden="true">

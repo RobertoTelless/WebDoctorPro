@@ -13219,6 +13219,15 @@ namespace GEDSys_Presentation.Controllers
             model.PATH = path;
             model.ATTACHMENT_NAME = fileNamePDF;
             model.CONTENT_TYPE = MediaTypeNames.Application.Pdf;
+            if (System.IO.File.Exists(path))
+            {
+                // Lê o arquivo físico da pasta Temp e preenche a propriedade exigida pelo Azure
+                model.FileBytes = System.IO.File.ReadAllBytes(path);
+            }
+            else
+            {
+                throw new FileNotFoundException("O arquivo PDF da prescrição não foi encontrado na pasta Temp para ser anexado.", path);
+            }
             models.Add(model);
 
             // Decriptografa chaves
@@ -14171,7 +14180,7 @@ namespace GEDSys_Presentation.Controllers
             // Incluir PDF como anexo
             List<AttachmentModel> models = new List<AttachmentModel>();
             //String caminho = "/Imagens/" + idAss.ToString() + "/Pacientes/" + paciente.PACI__CD_ID.ToString() + "/Atestado/";
-            String caminho = "/Temp/";
+            String caminho = "~/Temp/";
             String fileNamePDF = "Atestado_" + paciente.PACI_NM_NOME + "_" + solicitacao.PAAT_GU_GUID + ".pdf";
             String path = Path.Combine(Server.MapPath(caminho), fileNamePDF);
 
@@ -14179,6 +14188,15 @@ namespace GEDSys_Presentation.Controllers
             model.PATH = path;
             model.ATTACHMENT_NAME = fileNamePDF;
             model.CONTENT_TYPE = MediaTypeNames.Application.Pdf;
+            if (System.IO.File.Exists(path))
+            {
+                // Lê o arquivo físico da pasta Temp e preenche a propriedade exigida pelo Azure
+                model.FileBytes = System.IO.File.ReadAllBytes(path);
+            }
+            else
+            {
+                throw new FileNotFoundException("O arquivo PDF do atestado não foi encontrado na pasta Temp para ser anexado.", path);
+            }
             models.Add(model);
 
             // Decriptografa chaves
@@ -14201,6 +14219,7 @@ namespace GEDSys_Presentation.Controllers
             mensagem.SMTP = conf.CONF_NM_HOST_SMTP;
             mensagem.IS_HTML = true;
             mensagem.NETWORK_CREDENTIAL = net;
+            mensagem.Attachments = models;
             mensagem.ConnectionString = conn;
 
             // Envia mensagem
@@ -16491,6 +16510,15 @@ namespace GEDSys_Presentation.Controllers
             model.PATH = path;
             model.ATTACHMENT_NAME = fileNamePDF;
             model.CONTENT_TYPE = MediaTypeNames.Application.Pdf;
+            if (System.IO.File.Exists(path))
+            {
+                // Lê o arquivo físico da pasta Temp e preenche a propriedade exigida pelo Azure
+                model.FileBytes = System.IO.File.ReadAllBytes(path);
+            }
+            else
+            {
+                throw new FileNotFoundException("O arquivo PDF da solicitação não foi encontrado na pasta Temp para ser anexado.", path);
+            }
             models.Add(model);
 
             // Decriptografa chaves
@@ -29451,7 +29479,7 @@ namespace GEDSys_Presentation.Controllers
 
                 // Caminho de saida
                 //String caminho = "/Imagens/" + idAss.ToString() + "/Pacientes/" + paciente.PACI__CD_ID.ToString() + "/Atestado/";
-                String caminho = "/Temp/";
+                String caminho = "~/Temp/";
                 String filePath = Path.Combine(Server.MapPath(caminho), nomeRel);
                 //Directory.CreateDirectory(caminho);
                 //Boolean existe = System.IO.File.Exists(filePath);
@@ -30602,7 +30630,7 @@ namespace GEDSys_Presentation.Controllers
                 Font meuFontBold = FontFactory.GetFont("Arial", 8, iTextSharp.text.Font.BOLD, BaseColor.BLACK);
 
                 // Caminho de saida
-                String caminho = "/Temp/";
+                String caminho = "~/Temp/";
                 String filePath = Path.Combine(Server.MapPath(caminho), nomeRel);
 
                 using (MemoryStream msInput = new MemoryStream())
@@ -30613,6 +30641,7 @@ namespace GEDSys_Presentation.Controllers
                     Image image = null;
                     if (conf.CONF_IN_LOGO_EMPRESA == 1)
                     {
+                        headerTable = new PdfPTable(new float[] { 200f, 750f });
                         PdfPCell cell1 = new PdfPCell();
                         cell1.Border = 0;
                         cell1.Colspan = 1;
@@ -31147,7 +31176,7 @@ namespace GEDSys_Presentation.Controllers
                     }
 
                     // --- SALVAMENTO DO ARQUIVO FINAL NO DISCO ---
-                    String caminhoSai = "/Temp/";
+                    String caminhoSai = "~/Temp/";
                     String filePathSai = Path.Combine(Server.MapPath(caminhoSai), nomeRel);
 
                     System.IO.File.WriteAllBytes(filePathSai, pdfFinal);
@@ -31218,6 +31247,7 @@ namespace GEDSys_Presentation.Controllers
                 Image image = null;
                 if (conf.CONF_IN_LOGO_EMPRESA == 1)
                 {
+                    headerTable = new PdfPTable(new float[] {200f, 750f });
                     PdfPCell cell1 = new PdfPCell();
                     cell1.Border = 0;
                     cell1.Colspan = 1;

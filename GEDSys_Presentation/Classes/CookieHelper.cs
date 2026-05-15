@@ -14,8 +14,8 @@ namespace ERP_Condominios_Solution.Classes
 {
     public class CookieManager
     {
-        private const string CookieName = "WebDoctorProInicioBase";
-        private const string RawValue = "WEBDOCTORPRO";
+        private const string CookieName = "WebDoctorPro2COOK";
+        private const string RawValue = "WEBDOCTORPRO2";
         private const string DateFormat = "yyyy-MM-dd HH:mm:ss";
 
         /// <summary>
@@ -102,7 +102,7 @@ namespace ERP_Condominios_Solution.Classes
         /// <summary>
         /// Verifica se este visitante já teve o seu acesso gravado na sessão atual.
         /// </summary>
-        public static bool JaRegistradoNestaSessao()
+        public static bool  JaRegistradoNestaSessao()
         {
             if (HttpContext.Current.Session == null) return false;
             return HttpContext.Current.Session[SESSION_FLAG] != null;

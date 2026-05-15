@@ -263,11 +263,11 @@
                     }
                     @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_EXAME_ACESSO == 1)
                     {
-                        <a href="@Url.Action("MontarTelaHistoricoGeral", "Paciente")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acesso aos históricos de todos os pacientes" class="btn btn-sm btn-warning btn-loading show-spinner" id="emp" OnClick = "Fade()">Histórico dos Pacientes</a>                
+                        <a href="@Url.Action("MontarTelaHistoricoGeral", "Paciente")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acesso aos históricos de todos os pacientes" class="btn btn-sm btn-warning btn-loading show-spinner" id="emp" OnClick = "Fade()">Histórico</a>                
                     }
                     @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_AREA_PACIENTE == 1)
                     {
-                        <a href="@Url.Action("MontarTelaAreaPacienteVer", "AreaPaciente")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acesso às informações da área do paciente" class="btn btn-sm btn-primary btn-loading show-spinner" id="emp" OnClick = "Fade()">Informações da Área do Paciente</a>                
+                        <a href="@Url.Action("MontarTelaAreaPacienteVer", "AreaPaciente")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acesso às informações da área do paciente" class="btn btn-sm btn-primary btn-loading show-spinner" id="emp" OnClick = "Fade()">Área do Paciente</a>                
                     }
                     @*<a href="@Url.Action("SincronizarArquivosAzure", "BaseAdmin")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Sincronização dos arquivos" class="btn btn-sm btn-primary btn-danger" id="emp" OnClick = "Fade()">Sincronizar Arquivos</a>*@                
                     <a href="@Url.Action((String)Session["AjudaNivel"])"  class="btn btn-sm btn-danger" target="_blank" >Ajuda</a>               
@@ -343,7 +343,7 @@
                                                                         <th style="width: auto">E-Mail</th>
                                                                         <th style="width: auto">Celular</th>
                                                                         <th style="width: auto">Última Consulta</th>
-                                                                        <th style="width: auto">Retorno Previsto</th>
+                                                                        @*<th style="width: auto">Retorno Previsto</th>*@
                                                                         <th style="width: auto"></th>
                                                                     </tr>
                                                                 </thead>
@@ -372,14 +372,14 @@
                                                                                 <td style="width: auto">-</td>
                                                                             }
                                                     
-                                                                            @if (cond.PACI_DT_PREVISAO_RETORNO != null)
+                                                                            @*@if (cond.PACI_DT_PREVISAO_RETORNO != null)
                                                                             {
                                                                                 <td style="width: auto">@cond.PACI_DT_PREVISAO_RETORNO.Value.ToShortDateString()</td>
                                                                             }
                                                                             else
                                                                             {
                                                                                 <td style="width: auto">-</td>
-                                                                            }
+                                                                            }*@
                                                                             @if (!String.IsNullOrEmpty(cond.PACI_AQ_FOTO))
                                                                             {
                                                                                 // Tratamento manual da URL dentro do loop
