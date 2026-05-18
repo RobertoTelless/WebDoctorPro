@@ -65,21 +65,6 @@
                             @Html.ValidationSummary(false, "", new { @class = "text-danger" })
                         </div>
                     }
-                    @*@if (TempData["TemMensagem"] != null)
-                    {
-                        <div class="alert alert-success">
-                            <button type="button" class="close" data-dismiss="alert">Fechar</button>
-                            <span>@TempData["MensagemAcerto"]</span>
-                        </div>
-                    }*@  
-                    @*@if (TempData["TemMensagem1"] != null)
-                    {
-                        <div class="alert alert-success">
-                            <button type="button" class="close" data-dismiss="alert">Fechar</button>
-                            <span>@TempData["MensagemAcerto1"]</span>
-                        </div>
-                    }*@  
-
                     <div class="tabs-container">
                         <ul class="nav nav-tabs">
                             <li class="active"><a data-toggle="tab" href="#tab-1">Área do Paciente - Solicitação de Consulta</a></li>
@@ -93,8 +78,8 @@
                                     {
                                         @Html.AntiForgeryToken()
                                         <div class="form-group" style=" margin-left: -15px; margin-right: 5px;"> 
-                                            @Html.ButtonActionSubmit(text: "Processa Marcação de Consulta", htmlAttributes: new { id = "basictoast", @class = "btn-loading1" })
-                                            @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaAreaPacienteVer", controller: "AreaPaciente", htmlAttributes: new { @class = "btn-loading" })
+                                            @Html.ButtonActionSubmit(text: "Processa Marcação de Consulta", htmlAttributes: new { id = "basictoast", @class = "btn-loading1 show-spinner" })
+                                            @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaAreaPacienteVer", controller: "AreaPaciente", htmlAttributes: new { @class = "btn-loading show-spinner" })
                                             <span id="loadingIndicator" style="display: none; margin-left: 10px; color: #007bff;">
                                                 <i class="fa fa-spinner fa-spin"></i> Processando...
                                             </span>

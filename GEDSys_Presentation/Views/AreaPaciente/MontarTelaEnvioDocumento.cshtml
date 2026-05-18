@@ -39,19 +39,12 @@
                                 @Html.ValidationSummary(false, "", new { @class = "text-danger" })
                             </div>
                         }
-                    @*@if (TempData["TemMensagem"] != null)
-                    {
-                        <div class="alert alert-success">
-                            <button type="button" class="close" data-dismiss="alert">Fechar</button>
-                            <span>@TempData["MensagemAcerto"]</span>
-                        </div>
-                    }*@  
 
                         <div class="row">
                             <div class="form-group">
                                 @Html.ButtonActionSubmit(text: "BtnSubmit", htmlAttributes: new { id = "submit", style = "display: none;" })
-                                <button style="margin-left: 15px;" class="btnSubmit btn btn-sm btn-success btn-loading1" id="basictoast" type="button">Confirmar Envio do Documento</button>
-                                @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaAreaPaciente", controller: "AreaPaciente", htmlAttributes: new { @class = "btn-loading" })
+                                <button style="margin-left: 15px;" class="btnSubmit btn btn-sm btn-success btn-loading1 show-spinner" id="basictoast" type="button">Confirmar Envio do Documento</button>
+                                @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaAreaPaciente", controller: "AreaPaciente", htmlAttributes: new { @class = "btn-loading show-spinner" })
                                 <span id="loadingIndicator" style="display: none; margin-left: 10px; color: #007bff;">
                                     <i class="fa fa-spinner fa-spin"></i> Processando...
                                 </span>
@@ -170,8 +163,8 @@
 
                         <div class="form-group">
                             @Html.ButtonActionSubmit(text: "BtnSubmit", htmlAttributes: new { id = "submit", style = "display: none;" })
-                            <button style="margin-left: 15px;" class="btnSubmit btn btn-sm btn-success btn-loading1" id="basictoast" type="button">Confirmar Envio do Documento</button>
-                            @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaAreaPaciente", controller: "AreaPaciente", htmlAttributes: new { @class = "btn-loading" })
+                            <button style="margin-left: 15px;" class="btnSubmit btn btn-sm btn-success btn-loading1 show-spinner" id="basictoast" type="button">Confirmar Envio do Documento</button>
+                            @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaAreaPaciente", controller: "AreaPaciente", htmlAttributes: new { @class = "btn-loading show-spinner" })
                             <span id="loadingIndicator" style="display: none; margin-left: 10px; color: #007bff;">
                                 <i class="fa fa-spinner fa-spin"></i> Processando...
                             </span>
@@ -231,7 +224,7 @@
     <script src="~/Scripts/uploadAnexo.js"></script>
 
     <script>
-        SendFilesV2('imgCliente', 'AreaPaciente', 'UploadFileToSession');
+        SendFilesV2('myFiles', 'Paciente', 'UploadFileToSessionDoc');
     </script>
 
     <script type="text/javascript">

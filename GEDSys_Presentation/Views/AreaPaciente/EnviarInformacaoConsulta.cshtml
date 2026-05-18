@@ -64,7 +64,7 @@
                                 </div>
                                 <div class="col-lg-6 col-md-6 col-xs-12">
                                     <h4 style="margin-left: -15px; color:green; background-color: beige; font-weight:bold">Anexos</h4>
-                                    <input class="btn btn-sm btn-warning" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="ATENÇÃO - Antes de anexar arquivos certifique-se de que eles estejam livres de vírus e outras ameaças.  " style="margin-left: -15px;" id="inputFile" type="file" multiple />
+                                    <input class="btn btn-sm btn-warning" name="files" style="margin-left: -15px;" id="inputFile" type="file" multiple data-toggle="popover" data-trigger="hover" data-placement="top" data-content="ATENÇÃO - Antes de anexar arquivos certifique-se de que eles estejam livres de vírus e outras ameaças."/>
                                     <br />
                                     <div class="form-group" style="margin-left: -15px;">
                                         <div>
@@ -85,8 +85,8 @@
                         </div>
                         <div class="form-group">
                             @Html.ButtonActionSubmit(text: "BtnSubmit", htmlAttributes: new { id = "submit", style = "display: none;" })
-                            <button style="margin-left: 15px;" class="btnSubmit btn btn-sm btn-success btn-loading1" id="basictoast" type="button">Confirmar Envio das Informações</button>
-                            @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaAreaPaciente", controller: "AreaPaciente", htmlAttributes: new { @class = "btn-loading" })
+                            <button style="margin-left: 15px;" class="btnSubmit btn btn-sm btn-success btn-loading1 show-spinner" id="basictoast" type="button">Confirmar Envio das Informações</button>
+                            @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaAreaPaciente", controller: "AreaPaciente", htmlAttributes: new { @class = "btn-loading show-spinner" })
                             <span id="loadingIndicator" style="display: none; margin-left: 10px; color: #007bff;">
                                 <i class="fa fa-spinner fa-spin"></i> Processando...
                             </span>
@@ -116,10 +116,17 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.maskedinput/1.4.1/jquery.maskedinput.js"></script>    
     <script src="~/Scripts/uploadAnexo.js"></script>
 
-    <script>
-        SendFilesV2('imgCliente', 'AreaPaciente', 'UploadFileToSession');
-    </script>
+    @*<script>
+        SendFilesV2('imgCliente', '/AreaPaciente', 'UploadFileToSession');
+    </script>*@
 
+<script>
+    // Usamos o Helper do Razor para obter a rota exata definida no RouteConfig/AreaRegistration
+    // Se a rota da área exigir o prefixo correto, o MVC resolverá automaticamente.
+    var controllerNome = '@ViewContext.RouteData.Values["controller"]';
+    
+    SendFilesV2('imgCliente', controllerNome, 'UploadFileToSession');
+</script>
     <script type="text/javascript">
         $(document).ready(function () { 
             $('.btn-loading').on('click', function (e) {            
@@ -139,29 +146,26 @@
         });
     </script>
 
-    <script type="text/javascript">
-        $(document).ready(function () {
-            $('.btn-loading1').on('click', function (e) {
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('.btn-loading1').on('click', function (e) {
+            var $this = $(this);
+            var tagName = $this.prop('tagName').toLowerCase();
             
-                var $this = $(this);
-                var tagName = $this.prop('tagName').toLowerCase();
-                $this.addClass('disabled'); 
-                $('#loadingIndicator').show();
+            // Ativa os loaders visuais
+            $this.addClass('disabled'); 
+            $('#loadingIndicator').show();
 
-                if (tagName === 'a') {
-                    e.preventDefault();
-                
-                    var targetUrl = $this.attr('href');
-                    window.location.href = targetUrl;
-                
-                } else if (tagName === 'button' || tagName === 'input') {               
-                    $this.closest('form').submit();
-                    $this.prop('disabled', true);
-                }
-            });
+            if (tagName === 'a') {
+                e.preventDefault();
+                var targetUrl = $this.attr('href');
+                window.location.href = targetUrl;
+            } 
+            // REMOVIDO o else if que dava .submit() forçado no form!
+            // Deixamos o 'uploadAnexo.js' gerenciar o clique e fazer o post do AJAX primeiro.
         });
-    </script>
-
+    });
+</script>
     <script type="text/javascript">
         $(document).ready(function () {
 

@@ -1,35 +1,15 @@
 ﻿@using Presentation.Extensions
 @model ERP_Condominios_Solution.ViewModels.NoticiaViewModel
 @{
-    Layout = "~/Views/Shared/_Layout_Area.cshtml";
+    Layout = "~/Views/Shared/_Layout_Admin.cshtml";
 }
 <div class="wrapper wrapper-content animated fadeInRight">
-    <div class="modalContainer">
-        <div id="modal" class="modal" tabindex="-1" role="dialog">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        @*titulo gerado dinamicamente*@
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div class="modal-body">
-                        @*Gerado dinamicamente*@
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
     <div class="page-title"> 
-        <h3 class="title">Área do Paciente</h3> 
+        <h3 class="title">Notícias</h3> 
         <br />
         <ol class="breadcrumb">
             <li>
-                <a href="@Url.Action("MonterTelaAreaPaciente", "AreaPaciente")">Dashboard</a>
+                <a href="@Url.Action("MontarTelaPaciente", "Paciente")">Dashboard</a>
             </li>
             <li class="active">
                 <strong>Notícia - Visualização</strong>
@@ -42,23 +22,20 @@
         <div class="col-lg-12 col-md-12 col-xs-12">
             <div class="col-lg-12 col-md-12 col-xs-12 ibox float-e-margins">
                 <div class="ibox-title">
-                    <div style="text-align: center;" class="col-lg-12 col-md-12 col-xs-12">
-                        <h5>Notícia - Visualização</h5>
-                        <span style="color:green; font-weight: 500; font-size: 20px;">@ViewBag.NomePaciente</span>
-                    </div>
+                    <h5>Notícia - Visualização</h5>
                 </div>
                 <div class="ibox-content">
                     <div class="form-group">
                         <br />
-                        @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaAreaPaciente", controller: "AreaPaciente", htmlAttributes: new { @class = "btn-loading" })
-                        <span id="loadingIndicator" style="display: none; margin-left: 10px; color: #007bff;">
-                            <i class="fa fa-spinner fa-spin"></i> Processando...
-                        </span>
+                        @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaAreaPaciente", controller: "AreaPaciente", htmlAttributes: new { @class = "show-spinner" })
                     </div>
-                    <div class="form-group text-center">
+                    <div class="form-group text-center" style="display: block; width: 100%;">
                         <br />
-                        <img src="@Url.Content(Model.NOTC_AQ_FOTO)" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Clique Ctrl+Ctrl para ampliar a fotografia" style="width: auto; height: auto; max-height: 500px; max-width: 700px;" allign="middle"  >
+                        <img src="@Model.FotoAzureUrl" 
+                             style="display: inline-block; max-height: 500px; max-width: 700px; height: auto; width: auto;" 
+                             alt="Notícia">
                     </div>
+
                     <div class="text-center article-title">
                         <span class="text-muted"><i class="fa fa-clock-o"></i> @Model.NOTC_DT_DATA_AUTOR.Value.ToLongDateString()</span>
                         <br /><br />
@@ -81,7 +58,7 @@
                         <div class="col-md-6">
                             <div class="small text-right">
                                 <br />
-                                <h5>Resumo:</h5>
+                                <h5>Stats:</h5>
                                 <div> <i class="fa fa-comments-o"> </i> @Model.NOTICIA_COMENTARIO.Count comentários </div>
                                 <i class="fa fa-eye"> </i> @Model.NOTC_NR_ACESSO visualizações
                             </div>
@@ -89,25 +66,26 @@
                     </div>
                     <div class="row">
                         <br />
-                        @Html.ButtonLinkIndex(text: "Novo Comentário", action: "IncluirComentario", controller: "AreaPaciente")
+                        @Html.ButtonLinkIndex(text: "Novo Comentário", action: "IncluirComentarioNoticia", controller: "Noticia", htmlAttributes: new { @class = "show-spinner" })
                         <br />
                     </div>
                     <div class="row">
                         <div class="col-lg-12">
-                            <h2>Comentários</h2>
+                            <h2>Comentários:</h2>
                                 @if (Model.NOTICIA_COMENTARIO.Count > 0)
                                 {
-                                    foreach (var item in (Model.NOTICIA_COMENTARIO.Where(p => p.NOCO_IN_ATIVO == 1)).OrderByDescending(a => a.NOCO_DT_COMENTARIO))
+                                    foreach (var item in (Model.NOTICIA_COMENTARIO).OrderByDescending(a => a.NOCO_DT_COMENTARIO))
                                     {
                                         <div class="social-feed-box">
                                             <div class="social-avatar">
                                                 <a href="" class="pull-left">
-                                                    <img src="@Url.Content(item.PACIENTE.PACI_AQ_FOTO)" style="width: auto; height: auto; max-height: 110px; max-width: 90px;">
+                                                    <img src="@Url.Content(item.USUARIO.USUA_AQ_FOTO)" style = "width: auto; height: auto; max-height: 110px; max-width: 90px;">
                                                 </a>
-                                                <span style="color: #337ab7; cursor:pointer;" alt="Excluir" class="tbl-link fa-lg fa fa-trash-o btn-loading" onclick="ShowModalExcluirAnotacao('/AreaPaciente/ExcluirAnotacaoNoticia/@item.NOCO_CD_ID')" title="Excluir Comentário"></span>
                                                 <div class="media-body">
-                                                    @item.USUARIO.USUA_NM_NOME
-                                                    <small class="text-muted">@item.NOCO_DT_COMENTARIO.Value.ToString("dd/MM/yyyy HH:mm")</small>
+                                                    <a href="#">
+                                                        @item.USUARIO.USUA_NM_NOME
+                                                    </a>
+                                                    <small class="text-muted">@item.NOCO_DT_COMENTARIO.Value.ToLongDateString() as @item.NOCO_DT_COMENTARIO.Value.ToShortTimeString()</small>
                                                 </div>
                                             </div>
                                             <div class="social-body">
@@ -127,60 +105,17 @@
 </div>
 
 @section Styles {
-    <link href="~/Content/themes/base/jquery-ui.min.css" rel="stylesheet" />
-    <link href="~/Content/themes/base/all.css" rel="stylesheet" />
+    <link href="~/Content/themes/base/all.css" rel="stylesheet" />  
     @Styles.Render("~/Content/plugins/dataTables/dataTablesStyles")
     @Styles.Render("~/plugins/jasnyBootstrapStyles")
-    @Styles.Render("~/plugins/toastrStyles")
 }
 @section Scripts {
-    <script type="text/javascript" src="~/Scripts/moment.min.js"></script>
-    <script type="text/javascript" src="~/Scripts/bootstrap.min.js"></script>
-    @Scripts.Render("~/plugins/toastr")
-    <script src="~/Scripts/jquery-ui-1.12.1.min.js"></script>
+   
     @Scripts.Render("~/plugins/dataTables")
     @Scripts.Render("~/bundles/inputmask")
     @Scripts.Render("~/plugins/jasnyBootstrap")
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.maskedinput/1.4.1/jquery.maskedinput.js"></script>    
-    <script src="~/Scripts/uploadAnexo.js"></script>
-
-    <script type="text/javascript">
-        $(document).ready(function () { 
-            $('.btn-loading').on('click', function (e) {            
-                $(this).prop('disabled', true);
-                $(this).addClass('disabled');
-                $('#loadingIndicator').show();
-                var tagName = $(this).prop('tagName').toLowerCase();
-                if (tagName === 'a') {
-                    e.preventDefault(); 
-                    var targetUrl = $(this).attr('href');
-                    window.location.href = targetUrl;
-
-                } else if (tagName === 'button' || tagName === 'input') {
-                    $(this).closest('form').submit();
-                }
-            });
-        });
-    </script>
-
-    <script>
-        $(function () {
-            limpaModal();
-        });
-
-        function limpaModal() {
-            $('#btnModal').remove();
-            $('#modalTitle').remove();
-        }
-
-        function ShowModalExcluirAnotacao(url) {
-            $('#modal').find('.modal-footer').prepend('<a id="btnModal" alt="Desativar" class="btn btn-primary btn-loading" href="' + url + '" target="_self" title="Desativar">Confirmar</a>');
-            $('#modal').find('.modal-body').html('Confirma exclusão do Comentário?');
-            $('#modal').find('.modal-header').prepend('<h5 id="modalTitle" class="modal-title">Confimar Exclusão</h5>');
-            $('#modal').modal('show');
-        }
-    </script>
-
+    @Scripts.Render("~/plugins/sparkline")
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.maskedinput/1.4.1/jquery.maskedinput.js"></script>
     @if (ViewBag.Message != null)
     {
         <script type="text/javascript">

@@ -64,7 +64,7 @@
                         </div>
                     }
                     <div class="form-group" style=" margin-left: 5px; margin-right: 5px;"> 
-                        @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaAreaPacienteVer", controller: "AreaPaciente", htmlAttributes: new { @class = "btn-loading" })
+                        @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaAreaPacienteVer", controller: "AreaPaciente", htmlAttributes: new { @class = "btn-loading show-spinner" })
                         <span id="loadingIndicator" style="display: none; margin-left: 10px; color: #007bff;">
                             <i class="fa fa-spinner fa-spin"></i> Processando...
                         </span>
@@ -118,7 +118,7 @@
                                         <div class="row" style="width: 100%;">
                                             <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold; margin-right: -30px">Resultado de Exame</h4>
                                             <div class="form-group" style=" margin-left: 5px; margin-right: 5px;">                
-                                                @Html.ButtonActionSubmit(text: "Confirma inclusão de Resultado de Exame", htmlAttributes: new { id = "basictoast", @class = "btn-loading1"})
+                                                @Html.ButtonActionSubmit(text: "Confirma inclusão de Resultado de Exame", htmlAttributes: new { id = "basictoast", @class = "btn-loading1 show-spinner"})
                                             </div>
                                             <div class="col-lg-6 col-md-6 col-xs-12">
                                                 <div class="form-group" style=" margin-left: -30px; margin-right: -15px;">
@@ -193,11 +193,11 @@
                                                                                 <tr>
                                                                                     @if (cond.PAEO_IN_TIPO == 1 || cond.PAEO_IN_TIPO == 2)
                                                                                     {
-                                                                                        <td style="width: auto"><a href="@Url.Action("VerAnexoExamePaciente", "AreaPaciente", new { id = cond.PAEO_CD_ID })" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página de visualização do anexo - Imagem/Vídeo "/>@cond.PAEO_NM_TITULO</td>
+                                                                                        <td style="width: auto"><a href="@Url.Action("VerAnexoExamePaciente", "AreaPaciente", new { id = cond.PAEO_CD_ID })"  class=" show-spinner" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página de visualização do anexo - Imagem/Vídeo "/>@cond.PAEO_NM_TITULO</td>
                                                                                     }
                                                                                     else if (cond.PAEO_IN_TIPO == 4)
                                                                                     {
-                                                                                        <td style="width: auto"><a href="@Url.Action("VerAnexoExamePacienteAudio", "AreaPaciente", new { id = cond.PAEO_CD_ID })" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página de visualização do anexo - Audio"/>@cond.PAEO_NM_TITULO</td>
+                                                                                        <td style="width: auto"><a href="@Url.Action("VerAnexoExamePacienteAudio", "AreaPaciente", new { id = cond.PAEO_CD_ID })" class=" show-spinner" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página de visualização do anexo - Audio"/>@cond.PAEO_NM_TITULO</td>
                                                                                     }
                                                                                     else if (cond.PAEO_IN_TIPO == 3)
                                                                                     {
@@ -240,11 +240,11 @@
                                                                                     <td class="td-one-action">
                                                                                         @if (cond.PAEO_IN_TIPO == 1 || cond.PAEO_IN_TIPO == 2)
                                                                                         {
-                                                                                            @Html.TableLinkDetails(cond.PAEO_CD_ID, "VerAnexoExamePaciente", "fa-camera btn-loading", "Visualizar")
+                                                                                            @Html.TableLinkDetails(cond.PAEO_CD_ID, "VerAnexoExamePaciente", "fa-camera btn-loading show-spinner", "Visualizar")
                                                                                         }
                                                                                         @if (cond.PAEO_IN_TIPO == 4)
 	                                                                                    {
-                                                                                            @Html.TableLinkDetails(cond.PAEO_CD_ID, "VerAnexoExamePacienteAudio","fa-volume-up btn-loading", "Visualizar")
+                                                                                            @Html.TableLinkDetails(cond.PAEO_CD_ID, "VerAnexoExamePacienteAudio","fa-volume-up btn-loading show-spinner", "Visualizar")
 	                                                                                    }
                                                                                         @if (cond.PAEO_IN_TIPO == 3)
                                                                                         {

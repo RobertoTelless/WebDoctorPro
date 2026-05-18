@@ -65,14 +65,6 @@
                             @Html.ValidationSummary(false, "", new { @class = "text-danger" })
                         </div>
                     }
-                    @*@if (TempData["TemMensagem"] != null)
-                    {
-                        <div class="alert alert-success">
-                            <button type="button" class="close" data-dismiss="alert">Fechar</button>
-                            <span>@TempData["MensagemAcerto"]</span>
-                        </div>
-                    }*@  
-
                     <div class="row">
                         <div class="col-lg-3">
                             <div class="widget style1 navy-bg">
@@ -160,46 +152,7 @@
                     </div>
 
                     <div class="form-group" style=" margin-left: 5px; margin-right: 5px;"> 
-                        @*@if (Model.AREA_IN_TIPO == 1)
-                        {
-                            if (Model.AREA_IN_PROCESSADA == 0)
-                            {
-                                if (Model.AREA_DT_CONSULTA.Value.Date >= DateTime.Today.Date)
-                                {
-                                    @Html.ButtonLinkIndex(text: "Processar Marcação de Consulta", action: "ProcessarMarcacaoConsultaPlano", controller: "AreaPaciente", htmlAttributes: new { @class = "btn-loading" })
-                                }
-                            }
-                        } 
-                        @if (Model.AREA_IN_TIPO == 2)
-                        {
-                            if (Model.AREA_IN_PROCESSADA == 0)
-                            {
-                                @Html.ButtonLinkIndex(text: "Processar Informações de Consulta", action: "ProcessarInfoConsultaPlano", controller: "AreaPaciente", htmlAttributes: new { @class = "btn-loading" })
-                            }
-                        }
-                        @if (Model.AREA_IN_TIPO == 3)
-                        {
-                            if (Model.AREA_IN_PROCESSADA == 0)
-                            {
-                                if (Model.AREA_IN_TIPO_EXAME == 1)
-                                {
-                                    @Html.ButtonLinkIndex(text: "Processar Contrato de Locação", action: "ProcessarContratoLocacaoPlano", controller: "AreaPaciente", htmlAttributes: new { @class = "btn-loading" })
-                                }
-                                else if (Model.AREA_IN_TIPO_EXAME == 2)
-                                {
-                                    @Html.ButtonLinkIndex(text: "Processar Distrato de Locação", action: "ProcessarDistratoLocacaoPlano", controller: "AreaPaciente", htmlAttributes: new { @class = "btn-loading" })
-                                }
-                                else if (Model.AREA_IN_TIPO_EXAME == 3)
-                                {
-                                    @Html.ButtonLinkIndex(text: "Processar Resultado de Exame", action: "ProcessarResultadoExamePlano", controller: "AreaPaciente", htmlAttributes: new { @class = "btn-loading" })
-                                }
-                                else if (Model.AREA_IN_TIPO_EXAME == 4)
-                                {
-                                    @Html.ButtonLinkIndex(text: "Processar Documento", action: "ProcessarDocumentoPlano", controller: "AreaPaciente", htmlAttributes: new { @class = "btn-loading" })
-                                }
-                            }
-                        }*@
-                        @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarAreaPacienteVer", controller: "AreaPaciente", htmlAttributes: new { @class = "btn-loading" })
+                        @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarAreaPacienteVer", controller: "AreaPaciente", htmlAttributes: new { @class = "btn-loading show-spinner" })
                         <span id="loadingIndicator" style="display: none; margin-left: 10px; color: #007bff;">
                             <i class="fa fa-spinner fa-spin"></i> Processando...
                         </span>
@@ -525,11 +478,11 @@
                                                                                 <td class="td-one-action">
                                                                                     @if (cond.APAN_IN_TIPO == 1 || cond.APAN_IN_TIPO == 2)
                                                                                     {
-                                                                                        @Html.TableLinkDetails(cond.APAN_CD_ID, "VerAnexoArea", "fa-camera", "Visualizar")
+                                                                                        @Html.TableLinkDetails(cond.APAN_CD_ID, "VerAnexoArea", "fa-camera show-spinner", "Visualizar")
                                                                                     }
                                                                                     @if (cond.APAN_IN_TIPO == 4)
 	                                                                                {
-                                                                                        @Html.TableLinkDetails(cond.APAN_CD_ID, "VerAnexoAreaAudio","fa-volume-up", "Visualizar")
+                                                                                        @Html.TableLinkDetails(cond.APAN_CD_ID, "VerAnexoAreaAudio","fa-volume-up show-spinner", "Visualizar")
 	                                                                                }
                                                                                     @if (cond.APAN_IN_TIPO == 3)
                                                                                     {

@@ -34,11 +34,11 @@
                     <div class="form-group">
                         @if (Model.tipoVolta == 1)
                         {
-                            @Html.ButtonLinkIndex(text: "Voltar", action: "Login", controller: "ControleAcesso")
+                            @Html.ButtonLinkIndex(text: "Voltar", action: "Login", controller: "ControleAcesso", htmlAttributes: new { @class = "show-spinner" })
                         }
                         else
                         {
-                            @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaAreaPaciente", controller: "AreaPaciente")
+                            @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaAreaPaciente", controller: "AreaPaciente", htmlAttributes: new { @class = "show-spinner" })
                         }
                         <a href="@Url.Action((String)Session["AjudaNivel"])"  class="btn btn-sm btn-danger" target="_blank">Ajuda</a>                
                     </div>

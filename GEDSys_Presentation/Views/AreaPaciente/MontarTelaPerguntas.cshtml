@@ -30,16 +30,9 @@
                 <div class="ibox-title">
                     <h3>Fale Conosco</h3>
                 </div>
-                    @*@if (TempData["TemMensagem"] != null)
-                    {
-                        <div class="alert alert-success">
-                            <button type="button" class="close" data-dismiss="alert">Fechar</button>
-                            <span>@TempData["MensagemAcerto"]</span>
-                        </div>
-                    }*@  
                 <br />
                 <div class="form-group">
-                    @Html.ButtonLinkIndex(text: "Voltar", controller: "AreaPaciente", action: "MontarTelaAreaPaciente", htmlAttributes: new { @class = "btn-loading" })
+                    @Html.ButtonLinkIndex(text: "Voltar", controller: "AreaPaciente", action: "MontarTelaAreaPaciente", htmlAttributes: new { @class = "btn-loading show-spinner" })
                     <span id="loadingIndicator" style="display: none; margin-left: 10px; color: #007bff;">
                         <i class="fa fa-spinner fa-spin"></i> Processando...
                     </span>
@@ -134,7 +127,7 @@
                                             </div>
                                         </div>
                                         <div class="form-group">
-                                            @Html.ButtonActionSubmit(text: "Confirma Envio de E-Mail", htmlAttributes: new { id = "basictoast" })
+                                            @Html.ButtonActionSubmit(text: "Confirma Envio de E-Mail", htmlAttributes: new { id = "basictoast", @class="show-spinner" })
                                         </div>
                                     }
                                 </div>

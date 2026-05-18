@@ -2247,6 +2247,43 @@ namespace GEDSys_Presentation.Controllers
         }
 
         [HttpPost]
+        public void UploadFileToSessionDoc(IEnumerable<HttpPostedFileBase> files, String profile)
+        {
+            // 1. Tenta recuperar a lista existente ou cria uma nova se for null
+            List<FileQueue> queue = Session["FileQueueAreaPaciente"] as List<FileQueue> ?? new List<FileQueue>();
+
+            if (files != null)
+            {
+                foreach (var file in files)
+                {
+                    if (file == null) continue;
+
+                    FileQueue f = new FileQueue();
+                    f.Name = Path.GetFileName(file.FileName);
+                    f.ContentType = Path.GetExtension(file.FileName);
+
+                    using (MemoryStream ms = new MemoryStream())
+                    {
+                        file.InputStream.CopyTo(ms);
+                        f.Contents = ms.ToArray();
+                    }
+
+                    // Se for foto de perfil, remove sinalização de perfil de qualquer outro arquivo anterior
+                    if (profile != null && file.FileName.Equals(profile))
+                    {
+                        queue.ForEach(x => x.Profile = 0);
+                        f.Profile = 1;
+                    }
+
+                    queue.Add(f);
+                }
+            }
+
+            // 2. Salva a lista atualizada (Contendo foto + anexos)
+            Session["FileQueueAreaPaciente"] = queue;
+        }
+
+        [HttpPost]
         public void UploadFileToSessionMensagem(IEnumerable<HttpPostedFileBase> files, String profile)
         {
             List<FileQueue> queue = new List<FileQueue>();
@@ -13943,6 +13980,15 @@ namespace GEDSys_Presentation.Controllers
                 Int32 idAss = (Int32)Session["IdAssinante"];
                 Session["ModuloAtual"] = "Atestados - Envio E-Mail";
 
+                // Mensagem
+                if (Session["MensPaciente"] != null)
+                {
+                    if ((Int32)Session["MensPaciente"] == 1)
+                    {
+                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0361", CultureInfo.CurrentCulture));
+                    }
+                }
+
                 // Recupera paciente e prescricao
                 PACIENTE_ATESTADO atestado = baseApp.GetAtestadoById(id);
                 PACIENTE paciente = baseApp.GetItemById(atestado.PACI_CD_ID.Value);
@@ -14009,9 +14055,17 @@ namespace GEDSys_Presentation.Controllers
                     // Sanitização
                     vm.MENS_TX_TEXTO = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(vm.MENS_TX_TEXTO);
 
-                    // Executa a operação
+                    // Verifica e-mail
                     PACIENTE_ATESTADO atestado = (PACIENTE_ATESTADO)Session["Atestado"];
                     USUARIO usuarioLogado = (USUARIO)Session["UserCredentials"];
+                    PACIENTE pac = baseApp.GetItemById(atestado.PACI_CD_ID.Value);
+                    if (pac.PACI_NM_EMAIL == null)
+                    {
+                        Session["MensPaciente"] = 1;
+                        return View(vm);
+                    }
+
+                    // Executa a operação
                     if (atestado.PAAT_IN_ASSINADO_DIGITAL == 0)
                     {
                         Int32 rel = GerarAtestadoPDFTeste();
@@ -14057,7 +14111,7 @@ namespace GEDSys_Presentation.Controllers
 
                     // Grava historico
                     PACIENTE_HISTORICO hist = new PACIENTE_HISTORICO();
-                    PACIENTE pac = baseApp.GetItemById(solicitacao.PACI_CD_ID.Value);
+                    pac = baseApp.GetItemById(solicitacao.PACI_CD_ID.Value);
                     hist.ASSI_CD_ID = usuarioLogado.ASSI_CD_ID;
                     hist.USUA_CD_ID = usuarioLogado.USUA_CD_ID;
                     hist.PACI_CD_ID = solicitacao.PACI_CD_ID;
@@ -20330,6 +20384,22 @@ namespace GEDSys_Presentation.Controllers
             PACIENTE paciente = baseApp.GetItemById(consulta.PACI_CD_ID);
             CONFIGURACAO conf = CarregaConfiguracaoGeral();
 
+            // Verifica e-mail
+            if (tipo < 5)
+            {
+                if (paciente.PACI_NM_EMAIL == null)
+                {
+                    return 1;
+                }
+            }
+            else
+            {
+                if (usuario.USUA_NM_EMAIL == null)
+                {
+                    return 1;
+                }
+            }
+
             // Processo
             try
             {
@@ -20458,7 +20528,14 @@ namespace GEDSys_Presentation.Controllers
                 mensagem.ASSUNTO = "Paciente - " + paciente.PACI_NM_NOME + " - Consulta";
                 mensagem.CORPO = emailBody;
                 mensagem.DEFAULT_CREDENTIALS = false;
-                mensagem.EMAIL_TO_DESTINO = paciente.PACI_NM_EMAIL;
+                if (tipo < 5)
+                {
+                    mensagem.EMAIL_TO_DESTINO = paciente.PACI_NM_EMAIL;
+                }
+                else
+                {
+                    mensagem.EMAIL_TO_DESTINO = usuario.USUA_NM_EMAIL;
+                }
                 mensagem.NOME_EMISSOR_AZURE = emissor;
                 mensagem.ENABLE_SSL = true;
                 mensagem.NOME_EMISSOR = usuario.USUA_NM_NOME;
