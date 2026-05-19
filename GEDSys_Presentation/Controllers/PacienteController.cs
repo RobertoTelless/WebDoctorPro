@@ -20383,6 +20383,7 @@ namespace GEDSys_Presentation.Controllers
             USUARIO usuario = (USUARIO)Session["UserCredentials"];
             PACIENTE paciente = baseApp.GetItemById(consulta.PACI_CD_ID);
             CONFIGURACAO conf = CarregaConfiguracaoGeral();
+            EMPRESA empresa = empApp.GetItemById(usuario.EMPR_CD_ID.Value);
 
             // Verifica e-mail
             if (tipo < 5)
@@ -20477,6 +20478,40 @@ namespace GEDSys_Presentation.Controllers
                     assinatura = "Enviado por <b>WebDoctor</b><br />";
                 }
 
+                // Monta endereço
+                String endereco = String.Empty;
+                String enderecoCont = String.Empty;
+                if (empresa.EMPR_NM_ENDERECO != null)
+                {
+                    endereco += empresa.EMPR_NM_ENDERECO;
+                    if (empresa.EMPR_NM_NUMERO != null)
+                    {
+                        endereco += " " + empresa.EMPR_NM_NUMERO;
+                    }
+                    if (empresa.EMPR_NM_COMPLEMENTO != null)
+                    {
+                        endereco += " " + empresa.EMPR_NM_COMPLEMENTO;
+                    }
+                    if (empresa.EMPR_NM_BAIRRO != null)
+                    {
+                        enderecoCont += empresa.EMPR_NM_BAIRRO;
+                    }
+                    if (empresa.EMPR_NM_CIDADE != null)
+                    {
+                        enderecoCont += " - " + empresa.EMPR_NM_CIDADE;
+                    }
+                    if (empresa.UF != null)
+                    {
+                        enderecoCont += " - " + empresa.UF.UF_SG_SIGLA;
+                    }
+                    if (empresa.EMPR_NR_CEP != null)
+                    {
+                        enderecoCont += " - " + empresa.EMPR_NR_CEP;
+                    }
+                }
+                String endInteiro = "-- Local de seu Compromisso -- ";
+                endInteiro += "<br />" + endereco + "<br />" + enderecoCont;
+
                 // Prepara corpo da mensagem
                 String texto = template.TEEM_TX_CORPO;
                 if (texto.Contains("{medico}"))
@@ -20507,7 +20542,7 @@ namespace GEDSys_Presentation.Controllers
                 {
                     texto = texto.Replace("{justificativa}", consulta.PACO_TX_JUSTIFICATIVA_CANCELA);
                 }
-                String emailBody = cab + "<br />" + texto + "<br /><br />" + assinatura;
+                String emailBody = cab + "<br />" + texto + "<br /><br />" + endInteiro + "<br /><br />" + assinatura;
 
                 // Decriptografa chaves
                 String emissor = CrossCutting.Cryptography.Decrypt(conf.CONF_NM_EMISSOR_AZURE_CRIP);
@@ -21457,6 +21492,7 @@ namespace GEDSys_Presentation.Controllers
                 CONFIGURACAO conf = CarregaConfiguracaoGeral();
                 USUARIO usuarioLogado = (USUARIO)Session["UserCredentials"];
                 PACIENTE_CONSULTA item = baseApp.GetConsultaById(id);
+                EMPRESA empresa = empApp.GetItemById(usuario.EMPR_CD_ID.Value);
 
                 // Recupera paciente
                 PACIENTE pac = baseApp.GetItemById(item.PACI_CD_ID);

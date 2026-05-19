@@ -166,34 +166,33 @@
             </div>
         </div>
     </div>*@    
-    <div class="row">
-        <div class="form-group" style=" margin-left: 15px; margin-right: 0px;">
-            @* --- INÍCIO DA AJUDA CONTEXTUAL --- *@
-            <details class="ajuda-contextual">
-                <summary><i class="fa fa-info-circle text-info"></i> Resumo das funcionalidades desta página</summary>
-                <div class="well well-sm">
-                    <p>Essa é a página da central de Atestados do <b>WebDoctorPro</b>. Nela você poderá:</p>
-                    <ol>
-                        <li>Ver atestados emitidos para todos os pacientes.</li>
-                        <li>Acessar a página principal de um paciente.</li>
-                        <li>Acessar a página de emissão de atestados.</li>
-                        <li>Acessar a página de alteração de um atestado.</li>
-                        <li>Acessar a página de envio de atestados por e-mail para um paciente.</li>
-                        <li>Excluir atestados   </li>
-                        <li>Impressão da lista de atestados em formato PDF.</li>
-                        <li>Impressão do atestado em formato PDF.</li>
-                        <li>Permite a assinatura digital dos atestados caso o assinante possua certificado digital válido.</li>
-                    </ol>
-                </div>
-            </details>
-            @* --- FIM DA AJUDA CONTEXTUAL --- *@
-        </div>
-    </div>
+
     <div class="row">
         <div class="col-lg-12 col-md-12 col-sm-12">
             @*Atalhos*@
             <div class="row">
                 <h3 style="color:olivedrab; font-weight:bold">WebDoctorPro - Área do Paciente</h3>
+            </div>
+            <div class="row">
+                <div class="form-group" style=" margin-left: 15px; margin-right: 0px;">
+                    @* --- INÍCIO DA AJUDA CONTEXTUAL --- *@
+                    <details class="ajuda-contextual">
+                        <summary><i class="fa fa-info-circle text-info"></i> Resumo das funcionalidades desta página</summary>
+                        <div class="well well-sm">
+                            <p>Essa é a página principal da Área do Paciente do <b>WebDoctorPro</b>. Nela você poderá:</p>
+                            <ol>
+                                <li>Ver e alterar seus dados cadastrais.</li>
+                                <li>Confirmar ou cancelar consultas marcadas.</li>
+                                <li>Enviar informações prévias para uma consulta.</li>
+                                <li>Encaminhar documentos para seu profissional responsável.</li>
+                                <li>Imprimir atestados, solicitações de exames e prescrições em formato PDF.</li>
+                                <li>Consultar locações ativas</li>
+                                <li>ver e comentar as notícias divulgadas pelo WebDoctorPro.</li>
+                            </ol>
+                        </div>
+                    </details>
+                    @* --- FIM DA AJUDA CONTEXTUAL --- *@
+                </div>
             </div>
 
             @*Widgets*@
@@ -877,36 +876,32 @@
                                                                     @cond.LOCA_DT_FINAL.Value.ToString("dd/MM/yyyy")
                                                                 </td>
                                                                 <td style="width: auto">@cond.LOCA_GU_GUID</td>
-                                                                @if (cond.LOCA_IN_STATUS == 1)
-                                                                {
-                                                                    <td style="width: auto"><span class="badge badge-primary">Ativa</span></td>
-
-                                                                }
-                                                                else if (cond.LOCA_IN_STATUS == 2)
-                                                                {
-                                                                    <td style="width: auto"><span class="badge badge-success">Encerrada</span></td>
-
-                                                                }
-                                                                else if (cond.LOCA_IN_STATUS == 3)
-                                                                {
-                                                                    <td style="width: auto"><span class="badge badge-danger">Vencida</span></td>
-
-                                                                }
-                                                                else if (cond.LOCA_IN_STATUS == 4)
-                                                                {
-                                                                    <td style="width: auto"><span class="badge badge-danger">Cancelada</span></td>
-
-                                                                }
-                                                                else if (cond.LOCA_IN_STATUS == 0)
-                                                                {
-                                                                    <td style="width: auto"><span class="badge badge-warning">Pendente</span></td>
-
-                                                                }
-                                                                else 
-                                                                {
-                                                                    <td style="width: auto"><span class="badge badge-warning">-</span></td>
-
-                                                                }
+                                                                <td style="width: auto">
+                                                                    @if (cond.LOCA_IN_STATUS == 1) // ATIVA
+                                                                    {
+                                                                        <span class="status-badge status-active">Ativa</span>
+                                                                    }
+                                                                    else if (cond.LOCA_IN_STATUS == 2) // ENCERRADA
+                                                                    {
+                                                                        <span class="status-badge status-finish">Encerrada</span>
+                                                                    }
+                                                                    else if (cond.LOCA_IN_STATUS == 3) // VENCIDA
+                                                                    {
+                                                                        <span class="status-badge status-overdue">Vencida</span>
+                                                                    }
+                                                                    else if (cond.LOCA_IN_STATUS == 4) // CANCELADA
+                                                                    {
+                                                                        <span class="status-badge status-cancel">Cancelada</span>
+                                                                    }
+                                                                    else if (cond.LOCA_IN_STATUS == 0) // PENDENTE
+                                                                    {
+                                                                        <span class="status-badge status-pending">Pendente</span>
+                                                                    }
+                                                                    else 
+                                                                    {
+                                                                        <span class="status-badge status-pending">-</span>
+                                                                    }
+                                                                </td>
                                                                 <td style="width: auto" class="td-one-action">
                                                                     @Html.TableLinkDetails(cond.LOCA_CD_ID, "VerLocacao", "fa-search show-spinner", "Ver Locacao")
                                                                 </td>

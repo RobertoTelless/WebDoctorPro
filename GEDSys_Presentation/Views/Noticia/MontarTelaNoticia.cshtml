@@ -1,4 +1,4 @@
-﻿@using Presentation.Extensions
+﻿    @using Presentation.Extensions
 @using CrossCutting;
 @model EntitiesServices.Model.NOTICIA
 @{
@@ -85,7 +85,7 @@
                                     @Html.ButtonActionSubmit(text: "Filtrar", htmlAttributes: new { @class = "btn-loading1 show-spinner" })
                                     @if ((Int32)Session["UsuarioEspecial"] == 1)
                                     {
-                                        <a href="@Url.Action("IncluirNoticia", "Noticia")" class="show-spinner" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Inclusão de uma nova notícia" class="btn btn-sm btn-primary btn-loading" id="emp" OnClick = "Fade()">Nova Notícia</a>                
+                                        <a href="@Url.Action("IncluirNoticia", "Noticia")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Inclusão de uma nova notícia" class="btn btn-sm btn-primary btn-loading show-spinner" id="emp" OnClick = "Fade()">Nova Notícia</a>                
                                     }
                                     @Html.ButtonLinkIndex(text: "Retirar Filtro", controller: "Noticia", action: "RetirarFiltroNoticiaGeral", htmlAttributes: new { @class = "show-spinner" })
                                     @Html.ButtonLinkIndex(text: "Voltar", controller: "Paciente", action: "MontarTelaPaciente", htmlAttributes: new { @class = "show-spinner" })

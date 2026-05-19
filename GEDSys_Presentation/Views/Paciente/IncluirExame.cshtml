@@ -173,8 +173,8 @@
                             <div class="col-lg-8 col-md-8 col-xs-12">
                                 <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Resultado de Exame</h4>
                                 <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
-                                    @Html.ButtonActionSubmit(text: "BtnSubmit", htmlAttributes: new { id = "submit", style = "display: none;", @class = "show-spinner" })
-                                    <button style="margin-left: 15px;" class="btnSubmit btn btn-sm btn-success btn-loading1" id="basictoast" type="button">Confirmar inclusão de Resultado de Exame</button>
+                                    @Html.ButtonActionSubmit(text: "BtnSubmit", htmlAttributes: new { id = "submit", style = "display: none;" })
+                                    <button style="margin-left: 15px;" class="btnSubmit btn btn-sm btn-success btn-loading1 show-spinner" id="basictoast" type="button">Confirmar inclusão de Resultado de Exame</button>
                                     @if ((Int32)Session["TipoSolicitacao"] == 1)
                                     {
                                         if ((Int32)Session["ModoConsulta"] == 1)

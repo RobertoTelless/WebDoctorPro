@@ -2268,7 +2268,15 @@ namespace GEDSys_Presentation.Controllers
                 mensagem.ASSUNTO = "Paciente - " + paciente.PACI_NM_NOME + " - Consulta";
                 mensagem.CORPO = emailBody;
                 mensagem.DEFAULT_CREDENTIALS = false;
-                mensagem.EMAIL_TO_DESTINO = paciente.PACI_NM_EMAIL;
+                if (tipo < 5)
+                {
+                    mensagem.EMAIL_TO_DESTINO = paciente.PACI_NM_EMAIL;
+                }
+                else
+                {
+                    mensagem.EMAIL_TO_DESTINO = usuario.USUA_NM_EMAIL;
+
+                }
                 mensagem.NOME_EMISSOR_AZURE = emissor;
                 mensagem.ENABLE_SSL = true;
                 mensagem.NOME_EMISSOR = usuario.USUA_NM_NOME;
@@ -3380,14 +3388,61 @@ namespace GEDSys_Presentation.Controllers
                 {
                     texto = texto.Replace("{nomeDoc}", area.AREA_NM_EXAME.ToUpper());
                 }
-                texto += "<br />" + "-- INFORMAÇÕES DA CONSULTA --";
-                texto += "<br />" + area.AREA_TX_CONTEUDO;
+                if (tipo == 1)
+                {
+                    texto += "<br />" + "-- INFORMAÇÕES DA CONSULTA --";
+                }
+                if (tipo == 2)
+                {
+                    texto += "<br />" + "-- DESCRIÇÃO DO DOCUMENTO --";
+                }
+                String conteudoFormatado = "";
+                if (!String.IsNullOrEmpty(area.AREA_TX_CONTEUDO))
+                {
+                    conteudoFormatado = area.AREA_TX_CONTEUDO
+                                            .Replace("\r\n", "<br />")
+                                            .Replace("\n", "<br />");
+                }
+                texto += "<br />" + conteudoFormatado;
                 String emailBody = cab + "<br />" + texto + "<br /><br />" + rodape;
 
-                // Decriptografa chaves
-                String emissor = CrossCutting.Cryptography.Decrypt(conf.CONF_NM_EMISSOR_AZURE_CRIP);
-                String conn = CrossCutting.Cryptography.Decrypt(conf.CONF_CS_CONNECTION_STRING_AZURE_CRIP);
+                // Pega anexos
                 List<AttachmentModel> models = new List<AttachmentModel>();
+                String conn = CrossCutting.Cryptography.Decrypt(conf.CONF_CS_CONNECTION_STRING_AZURE_CRIP);
+                String emissor = CrossCutting.Cryptography.Decrypt(conf.CONF_NM_EMISSOR_AZURE_CRIP);
+
+                // Inicializa o cliente do Blob Storage (necessário pacote Azure.Storage.Blobs)
+                conf = CarregaConfiguracaoGeral();
+                string connString = conf.CONF_NM_STORAGE_CONN;
+                string containerName = conf.CONF_NM_STORAGE_CONTAINER;
+
+                var blobServiceClient = new Azure.Storage.Blobs.BlobServiceClient(connString);
+                var containerClient = blobServiceClient.GetBlobContainerClient(containerName);
+
+                List<AREA_PACIENTE_ANEXO> anexos = area.AREA_PACIENTE_ANEXO.ToList();
+                foreach (AREA_PACIENTE_ANEXO item in anexos)
+                {
+                    // O caminho no Storage geralmente não usa "C:/" ou caminhos físicos, apenas a hierarquia de pastas
+                    String blobPath = "Imagens/" + idAss.ToString() + "/AreaPaciente/" + area.AREA_CD_ID.ToString() + "/Anexos/" + item.APAN_NM_TITULO;
+                    var blobClient = containerClient.GetBlobClient(blobPath);
+
+                    // Baixa o conteúdo do Storage para memória
+                    byte[] fileBytes;
+                    using (var ms = new MemoryStream())
+                    {
+                        await blobClient.DownloadToAsync(ms);
+                        fileBytes = ms.ToArray();
+                    }
+
+                    AttachmentModel model = new AttachmentModel();
+                    model.ATTACHMENT_NAME = item.APAN_NM_TITULO;
+                    model.ContentBytes = Convert.ToBase64String(fileBytes); // Mantendo compatibilidade se necessário
+                    model.FileBytes = fileBytes; // Adicione esta propriedade ao seu AttachmentModel se não existir
+
+                    // Mapeamento de Content Type
+                    model.CONTENT_TYPE = CrossCutting.UtilitariosGeral.GetContentType(item.APAN_IN_TIPO.Value);
+                    models.Add(model);
+                }
 
                 // Monta e-mail
                 NetworkCredential net = new NetworkCredential(conf.CONF_NM_SENDGRID_LOGIN, conf.CONF_NM_SENDGRID_PWD);
@@ -3470,6 +3525,10 @@ namespace GEDSys_Presentation.Controllers
             }
         }
 
+        /// <summary>
+        /// Montars the tela envio documento.
+        /// </summary>
+        /// <returns></returns>
         [HttpGet]
         public ActionResult MontarTelaEnvioDocumento()
         {
@@ -3526,6 +3585,14 @@ namespace GEDSys_Presentation.Controllers
                     if ((Int32)Session["MensArea"] == 8)
                     {
                         ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0735", CultureInfo.CurrentCulture));
+                    }
+                    if ((Int32)Session["MensArea"] == 9)
+                    {
+                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0736", CultureInfo.CurrentCulture));
+                    }
+                    if ((Int32)Session["MensArea"] == 10)
+                    {
+                        ModelState.AddModelError("","Data do exame não informada");
                     }
                 }
 
@@ -3628,6 +3695,13 @@ namespace GEDSys_Presentation.Controllers
                             ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0733", CultureInfo.CurrentCulture));
                             return View(vm);
                         }
+                        if (vm.AREA_DT_DATA_EXAME == null)
+                        {
+                            Session["MensArea"] = 10;
+                            ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0736", CultureInfo.CurrentCulture));
+                            return View(vm);
+                        }
+
                         if (vm.AREA_DT_DATA_EXAME.Value.Date > DateTime.Today.Date)
                         {
                             Session["MensArea"] = 9;
@@ -3666,11 +3740,6 @@ namespace GEDSys_Presentation.Controllers
                     item.AREA_IN_PROCESSADA = 0;
                     Int32 volta = areaApp.ValidateCreate(item, usuario);
                     Session["IdArea"] = item.AREA_CD_ID;
-
-                    // Cria pastas
-                    //String caminho = "/Imagens/" + idAss.ToString() + "/AreaPaciente/" + item.AREA_CD_ID.ToString() + "/Anexos/";
-                    //String map = Server.MapPath(caminho);
-                    //Directory.CreateDirectory(Server.MapPath(caminho));
 
                     // Trata anexos
                     if (Session["FileQueueAreaPaciente"] != null)
@@ -4888,7 +4957,6 @@ namespace GEDSys_Presentation.Controllers
             try
             {
                 Int32 idAss = (Int32)Session["IdAssinante"];
-                USUARIO usuario = (USUARIO)Session["UserCredentials"];
 
                 // Prepara geração
                 CONFIGURACAO conf = CarregaConfiguracaoGeral();
@@ -4898,6 +4966,8 @@ namespace GEDSys_Presentation.Controllers
                 // Recupera informações
                 PACIENTE_ATESTADO solic = baseApp.GetAtestadoById((Int32)Session["IdAtestado"]);
                 PACIENTE paciente = baseApp.GetItemById(solic.PACI_CD_ID.Value);
+                USUARIO usuario = usuApp.GetItemById(paciente.USUA_CD_ID.Value);
+
                 String nomeRel = "Atestado_" + paciente.PACI_NM_NOME + "_" + solic.PAAT_GU_GUID + "_" + data + ".pdf";
                 String classe = String.Empty;
                 if (usuario.TIPO_CARTEIRA_CLASSE != null)
@@ -5376,7 +5446,6 @@ namespace GEDSys_Presentation.Controllers
             try
             {
                 Int32 idAss = (Int32)Session["IdAssinante"];
-                USUARIO usuario = (USUARIO)Session["UserCredentials"];
 
                 // Prepara geração
                 CONFIGURACAO conf = CarregaConfiguracaoGeral();
@@ -5386,6 +5455,8 @@ namespace GEDSys_Presentation.Controllers
                 // Recupera informações
                 PACIENTE_ATESTADO solic = baseApp.GetAtestadoById((Int32)Session["IdAtestado"]);
                 PACIENTE paciente = baseApp.GetItemById(solic.PACI_CD_ID.Value);
+                USUARIO usuario = usuApp.GetItemById(paciente.USUA_CD_ID.Value);
+
                 Int32? id = solic.PACI_CD_ID;
                 String nomeRel = "Atestado_" + paciente.PACI_NM_NOME + "_" + solic.PAAT_GU_GUID + "_" + data + ".pdf";
                 String classe = String.Empty;
@@ -6010,7 +6081,6 @@ namespace GEDSys_Presentation.Controllers
             try
             {
                 Int32 idAss = (Int32)Session["IdAssinante"];
-                USUARIO usuario = (USUARIO)Session["UserCredentials"];
 
                 // Prepara geração
                 CONFIGURACAO conf = CarregaConfiguracaoGeral();
@@ -6020,6 +6090,7 @@ namespace GEDSys_Presentation.Controllers
                 // Recupera informações
                 PACIENTE_SOLICITACAO solic = baseApp.GetSolicitacaoById((Int32)Session["IdSolicitacao"]);
                 PACIENTE paciente = baseApp.GetItemById(solic.PACI_CD_ID.Value);
+                USUARIO usuario = usuApp.GetItemById(paciente.USUA_CD_ID.Value);
                 String nomeRel = "Solicitacao_" + paciente.PACI_NM_NOME + "_" + solic.PASO_GU_GUID + "_" + CrossCutting.StringLibrary.RemoveSlashDateString(DateTime.Today.Date.ToShortDateString()) + ".pdf";
                 String classe = String.Empty;
                 if (usuario.TIPO_CARTEIRA_CLASSE != null)
@@ -6471,7 +6542,6 @@ namespace GEDSys_Presentation.Controllers
             try
             {
                 Int32 idAss = (Int32)Session["IdAssinante"];
-                USUARIO usuario = (USUARIO)Session["UserCredentials"];
 
                 // Prepara geração
                 CONFIGURACAO conf = CarregaConfiguracaoGeral();
@@ -6481,6 +6551,7 @@ namespace GEDSys_Presentation.Controllers
                 // Recupera informações
                 PACIENTE_SOLICITACAO solic = baseApp.GetSolicitacaoById((Int32)Session["IdSolicitacao"]);
                 PACIENTE paciente = baseApp.GetItemById(solic.PACI_CD_ID.Value);
+                USUARIO usuario = usuApp.GetItemById(paciente.USUA_CD_ID.Value);
                 Int32? id = solic.PACI_CD_ID;
                 String nomeRel = "Solicitacao_" + paciente.PACI_NM_NOME + "_" + solic.PASO_GU_GUID + "_" + CrossCutting.StringLibrary.RemoveSlashDateString(DateTime.Today.Date.ToShortDateString()) + ".pdf";
                 String classe = String.Empty;
@@ -7076,7 +7147,6 @@ namespace GEDSys_Presentation.Controllers
             try
             {
                 Int32 idAss = (Int32)Session["IdAssinante"];
-                USUARIO usuario = (USUARIO)Session["UserCredentials"];
 
                 // Prepara geração
                 CONFIGURACAO conf = CarregaConfiguracaoGeral();
@@ -7087,6 +7157,7 @@ namespace GEDSys_Presentation.Controllers
                 PACIENTE_PRESCRICAO solic = baseApp.GetPrescricaoById((Int32)Session["IdPrescricao"]);
                 List<PACIENTE_PRESCRICAO_ITEM> itens = solic.PACIENTE_PRESCRICAO_ITEM.Where(p => p.PAPI_IN_ATIVO == 1).ToList();
                 PACIENTE paciente = baseApp.GetItemById(solic.PACI_CD_ID);
+                USUARIO usuario = usuApp.GetItemById(paciente.USUA_CD_ID.Value);
                 String nomeRel = "Prescricao_" + paciente.PACI_NM_NOME + "_" + solic.PAPR_GU_GUID + "_" + data + ".pdf";
                 String classe = String.Empty;
                 if (usuario.TIPO_CARTEIRA_CLASSE != null)
@@ -7559,7 +7630,6 @@ namespace GEDSys_Presentation.Controllers
             try
             {
                 Int32 idAss = (Int32)Session["IdAssinante"];
-                USUARIO usuario = (USUARIO)Session["UserCredentials"];
 
                 // Prepara geração
                 CONFIGURACAO conf = CarregaConfiguracaoGeral();
@@ -7570,6 +7640,7 @@ namespace GEDSys_Presentation.Controllers
                 PACIENTE_PRESCRICAO solic = baseApp.GetPrescricaoById((Int32)Session["IdPrescricao"]);
                 List<PACIENTE_PRESCRICAO_ITEM> itens = solic.PACIENTE_PRESCRICAO_ITEM.Where(p => p.PAPI_IN_ATIVO == 1).ToList();
                 PACIENTE paciente = baseApp.GetItemById(solic.PACI_CD_ID);
+                USUARIO usuario = usuApp.GetItemById(paciente.USUA_CD_ID.Value);
                 Int32? id = solic.PACI_CD_ID;
                 String nomeRel = "Prescricao_" + paciente.PACI_NM_NOME + "_" + solic.PAPR_GU_GUID + "_" + data + ".pdf";
                 String classe = String.Empty;
@@ -8177,7 +8248,6 @@ namespace GEDSys_Presentation.Controllers
             try
             {
                 Int32 idAss = (Int32)Session["IdAssinante"];
-                USUARIO usuario = (USUARIO)Session["UserCredentials"];
 
                 // Prepara geração
                 CONFIGURACAO conf = CarregaConfiguracaoGeral();
@@ -8188,6 +8258,7 @@ namespace GEDSys_Presentation.Controllers
                 PACIENTE_PRESCRICAO solic = baseApp.GetPrescricaoById((Int32)Session["IdPrescricao"]);
                 List<PACIENTE_PRESCRICAO_ITEM> itens = solic.PACIENTE_PRESCRICAO_ITEM.ToList();
                 PACIENTE paciente = baseApp.GetItemById(solic.PACI_CD_ID);
+                USUARIO usuario = usuApp.GetItemById(paciente.USUA_CD_ID.Value);
                 String nomeRel = "Prescricao_" + paciente.PACI_NM_NOME + "_" + solic.PAPR_GU_GUID + "_" + data + ".pdf";
                 String classe = String.Empty;
                 if (usuario.TIPO_CARTEIRA_CLASSE != null)
@@ -9110,7 +9181,6 @@ namespace GEDSys_Presentation.Controllers
             try
             {
                 Int32 idAss = (Int32)Session["IdAssinante"];
-                USUARIO usuario = (USUARIO)Session["UserCredentials"];
 
                 // Prepara geração
                 CONFIGURACAO conf = CarregaConfiguracaoGeral();
@@ -9121,6 +9191,7 @@ namespace GEDSys_Presentation.Controllers
                 PACIENTE_PRESCRICAO solic = baseApp.GetPrescricaoById((Int32)Session["IdPrescricao"]);
                 List<PACIENTE_PRESCRICAO_ITEM> itens = solic.PACIENTE_PRESCRICAO_ITEM.ToList();
                 PACIENTE paciente = baseApp.GetItemById(solic.PACI_CD_ID);
+                USUARIO usuario = usuApp.GetItemById(paciente.USUA_CD_ID.Value);
                 Int32? id = solic.PACI_CD_ID;
                 String nomeRel = "Prescricao_" + paciente.PACI_NM_NOME + "_" + solic.PAPR_GU_GUID + "_" + data + ".pdf";
                 String classe = String.Empty;

@@ -305,8 +305,8 @@ namespace GEDSys_Presentation.Controllers
                     volta = baseApp.ValidateEdit(item, item, usuarioLogado);
 
                     // Cria pastas
-                    String caminho = "/Imagens/" + idAss.ToString() + "/Noticias/" + item.NOTC_CD_ID.ToString() + "/Fotos/";
-                    Directory.CreateDirectory(Server.MapPath(caminho));
+                    //String caminho = "/Imagens/" + idAss.ToString() + "/Noticias/" + item.NOTC_CD_ID.ToString() + "/Fotos/";
+                    //Directory.CreateDirectory(Server.MapPath(caminho));
 
                     if (Session["FileQueueNoticia"] != null)
                     {
@@ -385,6 +385,7 @@ namespace GEDSys_Presentation.Controllers
             Session["FileQueueNoticia"] = queue;
         }
 
+
         [HttpPost]
         public async Task<Int32> UploadFotoQueueNoticia(FileQueue file)
         {
@@ -418,10 +419,22 @@ namespace GEDSys_Presentation.Controllers
                     return 3;
                 }
 
+
                 // 1. DEFINIÇÃO DE CAMINHOS (Removendo a barra inicial para o Azure)
-                String caminhoRelativo = "Imagens/" + item.ASSI_CD_ID.ToString() + "/Noticia/" + item.NOTC_CD_ID.ToString() + "/Fotos/";
+                String caminhoRelativo = "Imagens/" + item.ASSI_CD_ID.ToString() + "/Noticias/" + item.NOTC_CD_ID.ToString() + "/Fotos/";
                 String caminhoLocal = Server.MapPath("~/" + caminhoRelativo);
                 String fullPathLocal = Path.Combine(caminhoLocal, fileName);
+
+                //Recupera tipo de arquivo
+                extensao = Path.GetExtension(fileName);
+                String a = extensao;
+
+                // Gravar registro
+                item = baseApp.GetById(idNot);
+                item.NOTC_AQ_FOTO = "~" + caminhoRelativo + fileName;
+                Int32 volta = baseApp.ValidateEdit(item, item);
+                listaMaster = new List<NOTICIA>();
+                Session["ListaNoticia"] = null;
 
                 //// Garante que a pasta local existe
                 //if (!Directory.Exists(caminhoLocal)) Directory.CreateDirectory(caminhoLocal);
@@ -448,22 +461,12 @@ namespace GEDSys_Presentation.Controllers
                     {
                         await blobClient.UploadAsync(ms, overwrite: true);
                     }
+                    Int32 x = 0;
                 }
                 catch (Exception exAzure)
                 {
                     return 0;
                 }
-
-                //Recupera tipo de arquivo
-                extensao = Path.GetExtension(fileName);
-                String a = extensao;
-
-                // Gravar registro
-                item.NOTC_AQ_FOTO = "~" + caminhoRelativo + fileName;
-                objetoAntes = item;
-                Int32 volta = baseApp.ValidateEdit(item, objetoAntes);
-                listaMaster = new List<NOTICIA>();
-                Session["ListaNoticia"] = null;
                 return 0;
             }
             catch (Exception ex)

@@ -31,6 +31,24 @@
                     <h3>Fale Conosco</h3>
                 </div>
                 <br />
+                <div class="row">
+                    <div class="form-group" style=" margin-left: 15px; margin-right: 0px;">
+                        @* --- INÍCIO DA AJUDA CONTEXTUAL --- *@
+                        <details class="ajuda-contextual">
+                            <summary><i class="fa fa-info-circle text-info"></i> Resumo das funcionalidades desta página</summary>
+                            <div class="well well-sm">
+                                <p>Essa é a página de envio de perguntas da Área do Paciente do <b>WebDoctorPro</b>. Nela você poderá:</p>
+                                <ol>
+                                    <li>.</li>
+                                    <li>Permite ao paciente ter uma área para tirar dúvidas, fazer elogios ou reclamações, etc..</li>
+                                    <li>Todas as mensagens irão diretamente para o suporte do WebDoctorPro e serão respondidas o mais rápido possível.</li>
+                                </ol>
+                            </div>
+                        </details>
+                        @* --- FIM DA AJUDA CONTEXTUAL --- *@
+                    </div>
+                </div>
+                <br />
                 <div class="form-group">
                     @Html.ButtonLinkIndex(text: "Voltar", controller: "AreaPaciente", action: "MontarTelaAreaPaciente", htmlAttributes: new { @class = "btn-loading show-spinner" })
                     <span id="loadingIndicator" style="display: none; margin-left: 10px; color: #007bff;">

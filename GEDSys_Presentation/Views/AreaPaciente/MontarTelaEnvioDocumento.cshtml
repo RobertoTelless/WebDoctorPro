@@ -28,6 +28,25 @@
                         <span style="color:green; font-weight: 500; font-size: 20px;">@ViewBag.NomePaciente</span>
                     </div>
                 </div>
+                <br />
+                <div class="row">
+                    <div class="form-group" style=" margin-left: 15px; margin-right: 0px;">
+                        @* --- INÍCIO DA AJUDA CONTEXTUAL --- *@
+                        <details class="ajuda-contextual">
+                            <summary><i class="fa fa-info-circle text-info"></i> Resumo das funcionalidades desta página</summary>
+                            <div class="well well-sm">
+                                <p>Essa é a página de envio de documentos da Área do Paciente do <b>WebDoctorPro</b>. Nela você poderá:</p>
+                                <ol>
+                                    <li>Enviar documentos para o profissional responsavel.</li>
+                                    <li>Permite a anexação dos tipos de documentos mais comuns.</li>
+                                    <li>O profissional será avisado automaticamente do envio dos documentos.</li>
+                                </ol>
+                            </div>
+                        </details>
+                        @* --- FIM DA AJUDA CONTEXTUAL --- *@
+                    </div>
+                </div>
+
                 @using (Html.BeginForm("MontarTelaEnvioDocumento", "AreaPaciente", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal", @id="pwd-container1" }))
                 {
                     @Html.AntiForgeryToken()
@@ -99,7 +118,7 @@
                                             @Html.ValidationMessageFor(m => m.TIEX_CD_ID, "", new { @style = "color:red" })
                                         </div>
                                         <div class="col-lg-3 col-md-3 col-xs-12">
-                                            Data do Exame
+                                            Data do Exame*
                                             @Html.TextBoxFor(m => m.AREA_DT_DATA_EXAME, "{0:dd/MM/yyyy}", new { @class = "form-control date-picker", autofocus = true, @id = "dn", data_toggle = "popover", data_content = "Informe a data de realização do exame a ser enviado", data_trigger="hover", data_placement="top" })
                                             @Html.ValidationMessageFor(m => m.AREA_DT_DATA_EXAME, "", new { @style = "color:red" })
                                         </div>
@@ -114,7 +133,7 @@
 
                                     <div class="form-group" style=" margin-left: -15px; margin-right: -15px;"  id="dadosLoca">                
                                         <h4 style="margin-left: 15px; color:green; background-color: beige; font-weight:bold; margin-right: 15px;">Informações da Locação</h4>
-                                        <h4 style="margin-left: 15px; color:brown; background-color: beige; font-weight:bold; margin-right: 15px;">ATENÇÃO: Verifique se o contrato/distrato a ser enviado tem nome no format correto</h4>
+                                        <h4 style="margin-left: 15px; color:brown; background-color: beige; font-weight:bold; margin-right: 15px;">ATENÇÃO: Verifique se o contrato/distrato a ser enviado tem nome no formato correto</h4>
                                         <div class="col-lg-8 col-md-8 col-xs-12">
                                             Locação*
                                             @Html.DropDownListFor(m => m.LOCA_CD_ID, (SelectList)ViewBag.Locacoes, "Selecionar", new { @class = "form-control", data_toggle = "popover", data_content = "Selecione a locação referente ao documento a ser enviado", data_trigger="hover", data_placement="top", autofocus = true, @id = "loca", onchange = "GetLocacao($(this).val())"   })
@@ -223,9 +242,9 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.maskedinput/1.4.1/jquery.maskedinput.js"></script>    
     <script src="~/Scripts/uploadAnexo.js"></script>
 
-    <script>
-        SendFilesV2('myFiles', 'Paciente', 'UploadFileToSessionDoc');
-    </script>
+        <script>
+            SendFilesV2('myFiles', 'Paciente', 'UploadFileToSessionDoc');
+        </script>
 
     <script type="text/javascript">
         $(document).ready(function () {

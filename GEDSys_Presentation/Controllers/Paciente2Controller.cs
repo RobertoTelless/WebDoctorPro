@@ -4244,12 +4244,15 @@ namespace GEDSys_Presentation.Controllers
                     }
                     if (velho != null & novo != String.Empty)
                     {
-                        tripa = velho.Substring(velho.Length - 4, 4);
-                        if (tripa == "\r\n")    
+                        if (velho.Length > 5)
                         {
-                            velho = velho.Substring(0, velho.Length - 4);
+                            tripa = velho.Substring(velho.Length - 4, 4);
+                            if (tripa == "\r\n")
+                            {
+                                velho = velho.Substring(0, velho.Length - 4);
+                            }
+                            nova.PAAM_TX_TEXTO_LIVRE = velho + "\r\n\r\n" + dataHoje + "\r\n" + novo;
                         }
-                        nova.PAAM_TX_TEXTO_LIVRE = velho + "\r\n\r\n" + dataHoje + "\r\n" + novo;
                     }
                     nova.PAAM_IN_ALTERADA = 1;
                     Int32 voltaAna = baseApp.ValidateEditAnamnese(nova);
