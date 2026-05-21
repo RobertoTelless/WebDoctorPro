@@ -1392,7 +1392,7 @@ namespace GEDSys_Presentation.Controllers
                     area.AREA_IN_TIPO_CONSULTA = vm.PACO_IN_TIPO;
                     area.AREA_GU_IDENTIFICADOR = Xid.NewXid().ToString();
                     area.AREA_NM_TITULO = "Solicitação de marcação de consulta";
-                    area.AREA_TX_CONTEUDO = "Solicitação de marcação de consulta de " + usuario.PACI_NM_NOME.ToUpper() + " com o profissional " + usuario.USUARIO.USUA_NM_NOME.ToUpper() + " para o dia " + vm.PACO_DT_CONSULTA.ToShortDateString() + " - " + vm.PACO_HR_INICIO.ToString() + " até " + vm.PACO_HR_FINAL.ToString();
+                    area.AREA_TX_CONTEUDO = "Solicitação de marcação de consulta de " + usuario.PACI_NM_NOME.ToUpper() + " com o profissional " + usuario.USUARIO.USUA_NM_NOME.ToUpper() + " para o dia " + vm.PACO_DT_CONSULTA.ToShortDateString() + " às " + vm.PACO_HR_INICIO.ToString();
                     Int32 volta = areaApp.ValidateCreate(area);
 
                     // Cria pastas
@@ -1401,7 +1401,7 @@ namespace GEDSys_Presentation.Controllers
                     //Directory.CreateDirectory(Server.MapPath(caminho));
 
                     // Mensagem
-                    Session["MsgCRUD"] = "A solicitação de marcação de consulta de " + usuario.PACI_NM_NOME.ToUpper() + " com o profissional " + usuario.USUARIO.USUA_NM_NOME.ToUpper() + " para o dia " + vm.PACO_DT_CONSULTA.ToShortDateString() + " - " + vm.PACO_HR_INICIO.ToString() + " até " + vm.PACO_HR_FINAL.ToString() + " foi enviada com sucesso. Você receberá a confirmação de sua consulta em seu e-mail cadastrado no WebDoctorPro";
+                    Session["MsgCRUD"] = "A solicitação de marcação de consulta de " + usuario.PACI_NM_NOME.ToUpper() + " com o profissional " + usuario.USUARIO.USUA_NM_NOME.ToUpper() + " para o dia " + vm.PACO_DT_CONSULTA.ToShortDateString() + " às " + vm.PACO_HR_INICIO.ToString() + " foi enviada com sucesso. Você receberá a confirmação de sua consulta em seu e-mail cadastrado no WebDoctorPro";
                     Session["MensArea"] = 61;
 
                     // Retorno
@@ -10307,7 +10307,8 @@ namespace GEDSys_Presentation.Controllers
                 Session["AjudaNivel"] = "../BaseAdmin/Ajuda/24/Ajuda24.pdf";
 
                 objetoArea = new AREA_PACIENTE();
-                return View(objetoArea);
+                AreaPacienteViewModel vm = Mapper.Map<AREA_PACIENTE, AreaPacienteViewModel>(objetoArea);
+                return View(vm);
             }
             catch (Exception ex)
             {
@@ -10323,7 +10324,7 @@ namespace GEDSys_Presentation.Controllers
         }
 
         [HttpPost]
-        public ActionResult FiltrarAreaPaciente(AREA_PACIENTE item)
+        public ActionResult FiltrarAreaPaciente(AreaPacienteViewModel vm)
         {
             try
             {
@@ -10334,6 +10335,7 @@ namespace GEDSys_Presentation.Controllers
                 Int32 idAss = (Int32)Session["IdAssinante"];
 
                 // Executa a operação
+                AREA_PACIENTE item = Mapper.Map<AreaPacienteViewModel, AREA_PACIENTE>(vm);
                 List<AREA_PACIENTE> listaObj = new List<AREA_PACIENTE>();
                 Tuple<Int32, List<AREA_PACIENTE>, Boolean> volta = areaApp.ExecuteFilter(item.AREA_NM_PACIENTE_DUMMY, item.AREA_DT_ENTRADA, item.AREA_DT_DUMMY, item.AREA_IN_TIPO, idAss);
 
@@ -10550,8 +10552,10 @@ namespace GEDSys_Presentation.Controllers
             }
             try
             {
+                Session["AreaPacienteProcessa"] = 1;
                 Session["AreaPaciente"] = area;
                 Session["IdPaciente"] = area.PACI_CD_ID;
+                Session["IdAreaPaciente"] = area.AREA_CD_ID;
                 Session["TipoSolicitacao"] = 1;
                 Session["IncluirConsultaArea"] = 2;
                 return RedirectToAction("IncluirConsulta", "Paciente");
@@ -10943,6 +10947,14 @@ namespace GEDSys_Presentation.Controllers
                 // Recupera documentos
                 List<AREA_PACIENTE_ANEXO> docs = area.AREA_PACIENTE_ANEXO.Where(p => p.APAN_IN_ATIVO == 1).ToList();
 
+                // Verifica se já tem assinado
+                if (loca.LOCA_IN_CONTRATO_ASSINA == 1)
+                {
+                    Session["MensagemErro"] = "A locação " + loca.LOCA_NM_TITULO.ToUpper() + " de " + pac.PACI_NM_NOME.ToUpper() + " já tem contrato de locação assinado. Documento não processado";
+                    Session["MensArea"] = 80;
+                    return RedirectToAction("MontarTelaAreaPacienteVer");
+                }
+
                 // Percorre documentos
                 foreach (AREA_PACIENTE_ANEXO item in docs)
                 {
@@ -10955,7 +10967,7 @@ namespace GEDSys_Presentation.Controllers
                     }
 
                     // Verifica exatidão do nome
-                    String nome_certo = "Contrato_Locacao" + pac.PACI_NM_NOME + "_" + loca.LOCA_GU_GUID + "_Assinado.pdf";
+                    String nome_certo = "Contrato_Locacao_" + pac.PACI_NM_NOME.ToUpper() + "_" + loca.LOCA_GU_GUID + "_Assinado.pdf";
                     if (item.APAN_NM_TITULO.ToUpper() != nome_certo.ToUpper())
                     {
                         falha = 2;

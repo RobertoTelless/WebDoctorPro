@@ -20126,6 +20126,13 @@ namespace GEDSys_Presentation.Controllers
                         PACIENTE_CONSULTA item = Mapper.Map<PacienteConsultaViewModel, PACIENTE_CONSULTA>(vm);
                         Int32 volta = baseApp.ValidateCreateConsulta(item);
 
+                        // Acerta area do paciente
+                        Int32 idArea = (Int32)Session["IdAreaPaciente"];
+                        AREA_PACIENTE area = areaApp.GetItemById(idArea);
+                        area.AREA_IN_PROCESSADA = 1;
+                        area.AREA_DT_PROCESSO = DateTime.Today.Date;
+                        Int32 voltaA = areaApp.ValidateEdit(area);
+
                         // Recupera paciente
                         PACIENTE pac = baseApp.GetItemById(item.PACI_CD_ID);
 
@@ -20180,7 +20187,7 @@ namespace GEDSys_Presentation.Controllers
                             anamnese.PAAM_IN_CAMPO_5 = ana.COAN_IN_CAMPO_5;
                             anamnese.PAAM_NM_CAMPO_5 = ana.COAN_NM_CAMPO_5;
                             anamnese.PAAM_IN_ALTERADA = 0;
-                            Int32 voltaA = baseApp.ValidateCreateAnamnese(anamnese);
+                            Int32 voltaAn = baseApp.ValidateCreateAnamnese(anamnese);
                         }
 
                         // Cria exame fisico em branco ou copia da ultima consulta

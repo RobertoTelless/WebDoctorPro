@@ -7,6 +7,8 @@ using Azure.Core;
 using Azure.Identity;
 using Azure;
 using System.Net.Mail;
+using Polly;
+using System.IO;
 
 namespace CrossCutting
 {
@@ -144,6 +146,82 @@ namespace CrossCutting
             }
         }
 
+        //public static async Task SendMailAsync(EmailAzure mail, List<AttachmentModel> anexos)
+        //{
+        //    // Conecta serviço
+        //    EmailClient emailClient = ConnectMail(mail.ConnectionString);
+
+        //    try
+        //    {
+        //        // Monta mensagem
+        //        var emailContent = new EmailContent(mail.ASSUNTO)
+        //        {
+        //            PlainText = mail.CORPO,
+        //            Html = mail.CORPO
+        //        };
+
+        //        // Checa destinos
+        //        List<EmailAddress> toRecipients = new List<EmailAddress>();
+        //        EmailAddress add = new EmailAddress(address: mail.EMAIL_TO_DESTINO, displayName: mail.DISPLAY_NAME);
+        //        toRecipients.Add(add);
+
+        //        var emailRecipients = new EmailRecipients(toRecipients);
+
+        //        var emailMessage = new EmailMessage(
+        //            senderAddress: mail.NOME_EMISSOR_AZURE,
+        //            emailRecipients,
+        //            emailContent);
+
+        //        // Checa anexos
+        //        if (anexos != null && anexos.Count > 0)
+        //        {
+        //            foreach (AttachmentModel anexo in anexos)
+        //            {
+        //                // Validação de segurança: ignora se os bytes forem nulos
+        //                if (anexo.FileBytes == null || anexo.FileBytes.Length == 0) continue;
+
+        //                var contentType = anexo.CONTENT_TYPE;
+
+        //                // Use FromBytes em vez do construtor 'new'
+        //                BinaryData content = BinaryData.FromBytes(anexo.FileBytes);
+
+        //                var emailAttachment = new EmailAttachment(anexo.ATTACHMENT_NAME, contentType, content);
+        //                emailMessage.Attachments.Add(emailAttachment);
+        //            }
+        //        }
+
+        //        // --- DEFINIÇÃO DA POLÍTICA DO POLLY ---
+        //        // Se a API do Azure responder 429 (Too Many Requests), a política aguarda e tenta novamente.
+        //        var retryPolicy = Policy
+        //            .Handle<RequestFailedException>(ex => ex.Status == 429)
+        //            .WaitAndRetryAsync(
+        //                retryCount: 3, // Tenta até 3 vezes antes de estourar a exceção para o catch
+        //                sleepDurationProvider: retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)), // Aguarda: 2s, depois 4s, depois 8s
+        //                onRetry: (exception, timeSpan, context) =>
+        //                {
+        //                    // Registro preventivo no console de debug do servidor (IIS)
+        //                    System.Diagnostics.Debug.WriteLine($"[WebDoctorPro - ACS] Erro 429 detectado. Retentando envio em {timeSpan.TotalSeconds} segundos...");
+        //                }
+        //            );
+
+        //        // --- EXECUÇÃO DO ENVIO BLINDADO PELA POLÍTICA ---
+        //        EmailSendOperation emailSendOperation = null;
+
+        //        await retryPolicy.ExecuteAsync(async () =>
+        //        {
+        //            emailSendOperation = await emailClient.SendAsync(
+        //                wait: WaitUntil.Started,
+        //                message: emailMessage);
+        //        });
+
+        //        return;
+        //    }
+        //    catch (RequestFailedException ex)
+        //    {
+        //        // Se falhar mesmo após as 3 tentativas da política (ou se for outro erro que não seja o 429), estoura a exceção normalmente
+        //        throw ex;
+        //    }
+        //}
 
         public static Tuple<EmailSendStatus, String, Boolean> SendMailList(EmailAzure mail, List<AttachmentModel> anexos, List<EmailAddress> nomes)
         {

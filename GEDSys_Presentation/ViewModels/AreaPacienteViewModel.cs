@@ -1,6 +1,7 @@
-using System;
+    using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using EntitiesServices.Attributes;
 using EntitiesServices.Model;
 
@@ -82,6 +83,26 @@ namespace ERP_Condominios_Solution.ViewModels
                     return "Presencial";
                 }
                 return "Remota";
+            }
+        }
+
+        public string DocumentoAzureUrl
+        {
+            get
+            {
+                // 1. Instancia o primeiro anexo da lista se houver
+                var primeiroAnexo = this.AREA_PACIENTE_ANEXO?.FirstOrDefault();
+                if (primeiroAnexo == null) return null;
+
+                // 2. Monta o caminho físico exato das pastas do Storage (Usando o ID do Paciente e da Consulta)
+                // Nota: Certifique-se de que as propriedades de ID correspondentes existam na sua ViewModel
+                string blobOrigemPath = $"Imagens/{this.ASSI_CD_ID}/AreaPaciente/{this.AREA_CD_ID}/Anexos/{primeiroAnexo.APAN_NM_TITULO}";
+
+                // 3. Junta tudo com o endereço do seu container oficial do Azure
+                string urlCompleta = $"https://rtistoragemain.blob.core.windows.net/rti-datacontainer/{blobOrigemPath}";
+
+                // 4. Retorna a URL codificada para ser aceita como parâmetro de QueryString no viewer.html
+                return System.Web.HttpUtility.UrlEncode(urlCompleta);
             }
         }
 

@@ -1,6 +1,6 @@
 ﻿@using Presentation.Extensions
 @using CrossCutting;
-@model EntitiesServices.Model.AREA_PACIENTE
+@model ERP_Condominios_Solution.ViewModels.AreaPacienteViewModel
 @{ Layout = "~/Views/Shared/_Layout_Admin.cshtml"; }
 <div class="wrapper wrapper-content animated fadeInRight">
     <div class="modalContainer">
@@ -167,6 +167,27 @@
         <br />
     </div>
     <div class="row">
+        <div class="form-group" style=" margin-left: 15px; margin-right: 0px;">
+            @* --- INÍCIO DA AJUDA CONTEXTUAL --- *@
+            <details class="ajuda-contextual">
+                <summary><i class="fa fa-info-circle text-info"></i> Resumo das funcionalidades desta página</summary>
+                <div class="well well-sm">
+                    <p>Essa é a página da central da área do paciente do <b>WebDoctorPro</b>. Nela você poderá:</p>
+                    <ol>
+                        <li>Consultar todas as informações e documentos enviadas pelos pacientes.</li>
+                        <li>Localizar (filtrar) um item e acessar suas informações.</li>
+                        <li>Acessar a página de envio de mensagen para pacientes.</li>
+                        <li>Acessar a página principal de um paciente.</li>
+                        <li>Acessar a página de visualização das informações enviadas.</li>
+                        <li>Visualizar os documentos enviados.</li>
+                        <li>Processar as informações enviadas.</li>
+                    </ol>
+                </div>
+            </details>
+            @* --- FIM DA AJUDA CONTEXTUAL --- *@
+        </div>
+    </div>
+    <div class="row">
         <div class="col-lg-2">
             <div class="ibox float-e-margins">
                 <div class="ibox-title"  style="background-color:darkseagreen; color:darkgreen">
@@ -298,11 +319,11 @@
                                                 </td>
                                                 @if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_ALTERAR_PACIENTE == 1)
                                                 {
-                                                    <td style="width: auto; cursor: pointer; text-decoration: underline;"><a href="@Url.Action("EditarPaciente", "Paciente", new { id = cond.PACI_CD_ID })" class="btn-loading" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Editar/Consultar paciente"/>@cond.PACIENTE.PACI_NM_NOME</td>
+                                                    <td style="width: auto; cursor: pointer; text-decoration: underline;"><a href="@Url.Action("EditarPaciente", "Paciente", new { id = cond.PACI_CD_ID })" class="btn-loading show-spinner" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Editar/Consultar paciente"/>@cond.PACIENTE.PACI_NM_NOME</td>
                                                 }
                                                 else
                                                 {
-                                                    <td style="width: auto; cursor: pointer; text-decoration: underline;"><a href="@Url.Action("ConsultarPaciente", "Paciente", new { id = cond.PACI_CD_ID })" class="btn-loading" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Consultar paciente"/>@cond.PACIENTE.PACI_NM_NOME</td>
+                                                    <td style="width: auto; cursor: pointer; text-decoration: underline;"><a href="@Url.Action("ConsultarPaciente", "Paciente", new { id = cond.PACI_CD_ID })" class="btn-loading show-spinner" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Consultar paciente"/>@cond.PACIENTE.PACI_NM_NOME</td>
                                                 }
                                                 <td style="width: auto">
                                                     @if (cond.AREA_IN_TIPO == 1) 
@@ -382,12 +403,12 @@
                                                 }
 
                                                 <td style="width: auto" class="td-one-action">
-                                                    @Html.TableLinkDetails(cond.AREA_CD_ID, "AreaPacienteItemVer", "fa-search", "Ver Item")
+                                                    @Html.TableLinkDetails(cond.AREA_CD_ID, "AreaPacienteItemVer", "fa-search btn-loading show-spinner", "Ver Item")
                                                     @if (cond.AREA_IN_TIPO == 1 & cond.AREA_IN_PROCESSADA == 0)
                                                     {
                                                         if (cond.AREA_DT_CONSULTA.Value.Date >= DateTime.Today.Date)
                                                         {
-                                                            @Html.TableLinkDetails(cond.AREA_CD_ID, "ProcessarMarcacaoConsulta", "fa-gears", "Processar Consulta")
+                                                            @Html.TableLinkDetails(cond.AREA_CD_ID, "ProcessarMarcacaoConsulta", "fa-gears btn-loading show-spinner", "Processar Consulta")
                                                         }
                                                     }
                                                     @if (cond.AREA_IN_TIPO == 2 & cond.AREA_IN_PROCESSADA == 0)
@@ -413,7 +434,7 @@
                                                                         title="Processar Contrato"
                                                                         id="btnAnexarSubmit"
                                                                         style="padding: 3px; color: #337ab7;">
-                                                                        <i class="fa fa-gears" style="font-size: 17px; margin-left: -5px;"></i>
+                                                                        <i class="fa fa-gears btn-loading " style="font-size: 17px; margin-left: -5px;"></i>
                                                                 </button>
                                                             }
                                                             else if (cond.AREA_IN_TIPO_EXAME == 2)
@@ -424,7 +445,7 @@
                                                                         title="Processar Distrato"
                                                                         id="btnDistratoSubmit"
                                                                         style="padding: 3px; color: #337ab7;">
-                                                                        <i class="fa fa-gears" style="font-size: 17px; margin-left: -5px;"></i>
+                                                                        <i class="fa fa-gears btn-loading " style="font-size: 17px; margin-left: -5px;"></i>
                                                                 </button>
                                                             }
                                                             else if (cond.AREA_IN_TIPO_EXAME == 3)
@@ -435,7 +456,7 @@
                                                                         title="Processar Resultado de Exame"
                                                                         id="btnExameSubmit"
                                                                         style="padding: 3px; color: #337ab7;">
-                                                                        <i class="fa fa-gears" style="font-size: 17px; margin-left: -5px;"></i>
+                                                                        <i class="fa fa-gears btn-loading " style="font-size: 17px; margin-left: -5px;"></i>
                                                                 </button>
                                                             }
                                                             else if (cond.AREA_IN_TIPO_EXAME == 4)
@@ -446,21 +467,33 @@
                                                                         title="Processar Documento"
                                                                         id="btnDocumentoSubmit"
                                                                         style="padding: 3px; color: #337ab7;">
-                                                                        <i class="fa fa-gears" style="font-size: 17px; margin-left: -5px;"></i>
+                                                                        <i class="fa fa-gears btn-loading " style="font-size: 17px; margin-left: -5px;"></i>
                                                                 </button>
                                                             }
                                                         }
 
                                                         if (((cond.AREA_IN_TIPO_EXAME == 1 || cond.AREA_IN_TIPO_EXAME == 2) & cond.AREA_PACIENTE_ANEXO != null) && cond.AREA_PACIENTE_ANEXO.Any())
                                                         {
-                                                            var arquivoPath = cond.AREA_PACIENTE_ANEXO.First().APAN_AQ_ARQUIVO.Replace("~", "");    
+                                                            if (!string.IsNullOrEmpty(Model.DocumentoAzureUrl))
+                                                            {
+                                                                <a href="@Url.Content("~/PdfViewer/web/viewer.html?file=" + Model.DocumentoAzureUrl + "&ReturnUrl=" + Request.Url.AbsolutePath)" 
+                                                                   target="_blank" 
+                                                                   class="btn btn-xs btn-link" 
+                                                                   title="Ver Documento"
+                                                                   style="padding: 3px; color: #337ab7; text-decoration: none;">
+                                                                    <i class="fa fa-file-o" style="font-size: 17px; margin-left: -5px;"></i>
+                                                                </a>
+                                                            }
+
+
+                                                            @*var arquivoPath = cond.AREA_PACIENTE_ANEXO.First().APAN_AQ_ARQUIVO.Replace("~", "");    
                                                             <a href="@Url.Content("~/PdfViewer/web/viewer.html?file=" + arquivoPath + "&ReturnUrl=" + Request.Url.AbsolutePath)" 
                                                                target="_blank" 
                                                                class="btn btn-xs btn-link" 
                                                                title="Ver Documento"
                                                                style="padding: 3px; color: #337ab7; text-decoration: none;">
                                                                 <i class="fa fa-file-o" style="font-size: 17px; margin-left: -5px;"></i>
-                                                            </a>
+                                                            </a>*@
                                                         }
                                                     }
                                                 </td>

@@ -5507,6 +5507,7 @@
     <Content Include="Views\Noticia\IncluirComentarioNoticia.cshtml" />
     <Content Include="Views\AreaPaciente\EnviarInformacaoConsulta.cshtml" />
     <Content Include="Views\AreaPaciente\EnviarInformacaoConsulta - Cópia .cshtml" />
+    <Content Include="Views\Shared\_Navigation_Especial.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="BaseAdmin\BaseConhecimento\" />

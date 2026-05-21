@@ -116,6 +116,7 @@ namespace ERP_Condominios_Solution.Controllers
             Session["Medicamentos"] = null;
             Session["Vacina"] = null;
             Session["AssinanteLogado"] = null;
+            Session["AreaPacienteProcessa"] = 0;
 
             // Permissões
             Session["PermProntuario"] = 0;
@@ -1219,11 +1220,19 @@ namespace ERP_Condominios_Solution.Controllers
                     Session["MensSenha"] = 22;
                     return RedirectToAction("TrocarSenhaInicio", "ControleAcesso");
                 }
-                if ((USUARIO)Session["UserCredentials"] != null)
+
+                if (usuario.USUA_IN_ESPECIAL == 1)
                 {
-                    return RedirectToAction("MontarTelaPaciente", "Paciente");
+                    return RedirectToAction("MontarTelaAdministrativa", "Administra");
                 }
-                return RedirectToAction("Login", "ControleAcesso");
+                else
+                {
+                    if ((USUARIO)Session["UserCredentials"] != null)
+                    {
+                        return RedirectToAction("MontarTelaPaciente", "Paciente");
+                    }
+                    return RedirectToAction("Login", "ControleAcesso");
+                }
             }
             catch (Exception ex)
             {
