@@ -149,6 +149,12 @@ namespace EntitiesServices.Model
             this.AREA_PACIENTE = new HashSet<AREA_PACIENTE>();
             this.PACIENTE_VACINA = new HashSet<PACIENTE_VACINA>();
             this.MENSAGEM_FABRICANTE_LIDO = new HashSet<MENSAGEM_FABRICANTE_LIDO>();
+            this.LEAD = new HashSet<LEAD>();
+            this.LEAD_ANOTACAO = new HashSet<LEAD_ANOTACAO>();
+            this.LEAD_CRM = new HashSet<LEAD_CRM>();
+            this.LEAD_CRM_ACAO = new HashSet<LEAD_CRM_ACAO>();
+            this.LEAD_CRM_ACAO1 = new HashSet<LEAD_CRM_ACAO>();
+            this.LEAD_CRM_ANOTACAO = new HashSet<LEAD_CRM_ANOTACAO>();
         }
     
         public int USUA_CD_ID { get; set; }
@@ -491,5 +497,17 @@ namespace EntitiesServices.Model
         public virtual ICollection<PACIENTE_VACINA> PACIENTE_VACINA { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<MENSAGEM_FABRICANTE_LIDO> MENSAGEM_FABRICANTE_LIDO { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<LEAD> LEAD { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<LEAD_ANOTACAO> LEAD_ANOTACAO { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<LEAD_CRM> LEAD_CRM { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<LEAD_CRM_ACAO> LEAD_CRM_ACAO { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<LEAD_CRM_ACAO> LEAD_CRM_ACAO1 { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<LEAD_CRM_ANOTACAO> LEAD_CRM_ANOTACAO { get; set; }
     }
 }

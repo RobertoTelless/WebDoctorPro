@@ -20,6 +20,7 @@ namespace EntitiesServices.Model
             this.ATENDIMENTO_ACAO = new HashSet<ATENDIMENTO_ACAO>();
             this.CRM_ACAO = new HashSet<CRM_ACAO>();
             this.INDICACAO_ACAO = new HashSet<INDICACAO_ACAO>();
+            this.LEAD_CRM_ACAO = new HashSet<LEAD_CRM_ACAO>();
         }
     
         public int TIAC_CD_ID { get; set; }
@@ -35,5 +36,7 @@ namespace EntitiesServices.Model
         public virtual ICollection<CRM_ACAO> CRM_ACAO { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<INDICACAO_ACAO> INDICACAO_ACAO { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<LEAD_CRM_ACAO> LEAD_CRM_ACAO { get; set; }
     }
 }

@@ -35,6 +35,7 @@ namespace EntitiesServices.Model
             this.TELEFONE = new HashSet<TELEFONE>();
             this.TRANSPORTADORA = new HashSet<TRANSPORTADORA>();
             this.MEDICOS = new HashSet<MEDICOS>();
+            this.LEAD = new HashSet<LEAD>();
         }
     
         public int UF_CD_ID { get; set; }
@@ -78,5 +79,7 @@ namespace EntitiesServices.Model
         public virtual ICollection<TRANSPORTADORA> TRANSPORTADORA { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<MEDICOS> MEDICOS { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<LEAD> LEAD { get; set; }
     }
 }

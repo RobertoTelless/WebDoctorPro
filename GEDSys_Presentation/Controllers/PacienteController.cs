@@ -11696,22 +11696,11 @@ namespace GEDSys_Presentation.Controllers
                     return (Int32)Session["VoltaAnexo"] == 1 ? RedirectToAction("VoltarAnexoPaciente") : RedirectToAction("VoltarVerAnexoPaciente", "Paciente");
                 }
 
-                // 1. DEFINIÇÃO DO CAMINHO (Mesmo para Local e Azure)
-                // Removida a barra inicial para o Azure não criar uma pasta raiz vazia
+                // Monta caminhos
                 String caminhoRelativo = "Imagens/" + item.ASSI_CD_ID.ToString() + "/Pacientes/" + item.PACI__CD_ID.ToString() + "/Anexos/";
                 String caminhoLocal = Server.MapPath("~/" + caminhoRelativo);
                 String fullPathLocal = Path.Combine(caminhoLocal, fileName);
 
-                //// Garante que a pasta local existe
-                //if (!Directory.Exists(caminhoLocal)) Directory.CreateDirectory(caminhoLocal);
-
-                //// 2. CÓPIA LOCAL
-                //using (var stream = new FileStream(fullPathLocal, FileMode.Create))
-                //{
-                //    await file.InputStream.CopyToAsync(stream);
-                //}
-
-                // 3. CÓPIA PARA O AZURE BLOB STORAGE
                 try
                 {
                     // Reinicia o ponteiro do stream para o início após a cópia local

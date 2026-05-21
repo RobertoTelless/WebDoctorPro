@@ -22,6 +22,7 @@ namespace EntitiesServices.Model
             this.COMPRA = new HashSet<COMPRA>();
             this.CRM = new HashSet<CRM>();
             this.CRM_PEDIDO_VENDA = new HashSet<CRM_PEDIDO_VENDA>();
+            this.LEAD_CRM = new HashSet<LEAD_CRM>();
         }
     
         public int MOCA_CD_ID { get; set; }
@@ -40,5 +41,7 @@ namespace EntitiesServices.Model
         public virtual ICollection<CRM> CRM { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<CRM_PEDIDO_VENDA> CRM_PEDIDO_VENDA { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<LEAD_CRM> LEAD_CRM { get; set; }
     }
 }

@@ -1176,6 +1176,31 @@
         <EntityTypeShape EntityType="CRMSysDBModel.MENSAGEM_FABRICANTE_LIDO" Width="1.5" PointX="19" PointY="270.5" />
         <AssociationConnector Association="CRMSysDBModel.FK__MENSAGEM___MEFA___785B2326" />
         <AssociationConnector Association="CRMSysDBModel.FK__MENSAGEM___USUA___794F475F" />
+        <EntityTypeShape EntityType="CRMSysDBModel.BASE_CONHECIMENTO" Width="1.5" PointX="17.375" PointY="7.75" />
+        <EntityTypeShape EntityType="CRMSysDBModel.LEAD" Width="1.5" PointX="52" PointY="499.125" />
+        <EntityTypeShape EntityType="CRMSysDBModel.LEAD_ANEXO" Width="1.5" PointX="54.25" PointY="506.875" />
+        <EntityTypeShape EntityType="CRMSysDBModel.LEAD_ANOTACAO" Width="1.5" PointX="58.25" PointY="509.25" />
+        <EntityTypeShape EntityType="CRMSysDBModel.LEAD_CRM" Width="1.5" PointX="55.25" PointY="511.125" />
+        <EntityTypeShape EntityType="CRMSysDBModel.LEAD_CRM_ACAO" Width="1.5" PointX="60.5" PointY="517.5" />
+        <EntityTypeShape EntityType="CRMSysDBModel.LEAD_CRM_ANEXO" Width="1.5" PointX="57.5" PointY="514.125" />
+        <EntityTypeShape EntityType="CRMSysDBModel.LEAD_CRM_ANOTACAO" Width="1.5" PointX="60.5" PointY="513.25" />
+        <AssociationConnector Association="CRMSysDBModel.FK_LEAD_CRM_CRM_ORIGEM" />
+        <AssociationConnector Association="CRMSysDBModel.FK_LEAD_ANEXO_LEAD" />
+        <AssociationConnector Association="CRMSysDBModel.FK_LEAD_ANOTACAO_LEAD" />
+        <AssociationConnector Association="CRMSysDBModel.FK_LEAD_CRM_LEAD" />
+        <AssociationConnector Association="CRMSysDBModel.FK_LEAD_SEXO" />
+        <AssociationConnector Association="CRMSysDBModel.FK_LEAD_UF" />
+        <AssociationConnector Association="CRMSysDBModel.FK_LEAD_USUARIO" />
+        <AssociationConnector Association="CRMSysDBModel.FK_LEAD_ANOTACAO_USUARIO" />
+        <AssociationConnector Association="CRMSysDBModel.FK_LEAD_CRM_ACAO_LEAD_CRM" />
+        <AssociationConnector Association="CRMSysDBModel.FK_LEAD_CRM_ANEXO_LEAD_CRM" />
+        <AssociationConnector Association="CRMSysDBModel.FK_LEAD_CRM_ANOTACAO_LEAD_CRM" />
+        <AssociationConnector Association="CRMSysDBModel.FK_LEAD_CRM_MOTIVO_CANCELAMENTO" />
+        <AssociationConnector Association="CRMSysDBModel.FK_LEAD_CRM_USUARIO" />
+        <AssociationConnector Association="CRMSysDBModel.FK_LEAD_CRM_ACAO_TIPO_ACAO" />
+        <AssociationConnector Association="CRMSysDBModel.FK_LEAD_CRM_ACAO_USUARIO" />
+        <AssociationConnector Association="CRMSysDBModel.FK_LEAD_CRM_ACAO_USUARIO1" />
+        <AssociationConnector Association="CRMSysDBModel.FK_LEAD_CRM_ANOTACAO_USUARIO" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

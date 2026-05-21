@@ -474,26 +474,15 @@
 
                                                         if (((cond.AREA_IN_TIPO_EXAME == 1 || cond.AREA_IN_TIPO_EXAME == 2) & cond.AREA_PACIENTE_ANEXO != null) && cond.AREA_PACIENTE_ANEXO.Any())
                                                         {
-                                                            if (!string.IsNullOrEmpty(Model.DocumentoAzureUrl))
-                                                            {
-                                                                <a href="@Url.Content("~/PdfViewer/web/viewer.html?file=" + Model.DocumentoAzureUrl + "&ReturnUrl=" + Request.Url.AbsolutePath)" 
-                                                                   target="_blank" 
-                                                                   class="btn btn-xs btn-link" 
-                                                                   title="Ver Documento"
-                                                                   style="padding: 3px; color: #337ab7; text-decoration: none;">
-                                                                    <i class="fa fa-file-o" style="font-size: 17px; margin-left: -5px;"></i>
-                                                                </a>
-                                                            }
-
-
-                                                            @*var arquivoPath = cond.AREA_PACIENTE_ANEXO.First().APAN_AQ_ARQUIVO.Replace("~", "");    
-                                                            <a href="@Url.Content("~/PdfViewer/web/viewer.html?file=" + arquivoPath + "&ReturnUrl=" + Request.Url.AbsolutePath)" 
-                                                               target="_blank" 
-                                                               class="btn btn-xs btn-link" 
-                                                               title="Ver Documento"
-                                                               style="padding: 3px; color: #337ab7; text-decoration: none;">
+                                                            var controllerAtual = (GEDSys_Presentation.Controllers.AreaPacienteController)ViewContext.Controller;
+                                                            string caminhoPdf = controllerAtual.ObterDocumentoAnexo(cond.AREA_CD_ID);
+                                                            var urlAzurePdf = "https://rtistoragemain.blob.core.windows.net/rti-datacontainer/" + caminhoPdf;
+                                                            <a href="@urlAzurePdf" target="_blank"
+                                                                class="btn btn-xs btn-link" 
+                                                                title="Ver Documento"
+                                                                style="padding: 3px; color: #337ab7; text-decoration: none;">
                                                                 <i class="fa fa-file-o" style="font-size: 17px; margin-left: -5px;"></i>
-                                                            </a>*@
+                                                            </a>
                                                         }
                                                     }
                                                 </td>
@@ -904,7 +893,7 @@
         });
     });
 
-$('#btnAnexarSubmit').off('click').click(function (e) {
+    $('#btnAnexarSubmit').off('click').click(function (e) {
     e.preventDefault();
     var $btn = $(this);
     var idLocacao = $('#hiddenIdLocacao').val();

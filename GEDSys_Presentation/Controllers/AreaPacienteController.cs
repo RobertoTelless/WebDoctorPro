@@ -10293,6 +10293,10 @@ namespace GEDSys_Presentation.Controllers
                     {
                         ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0351", CultureInfo.CurrentCulture));
                     }
+                    if ((Int32)Session["MensArea"] == 12)
+                    {
+                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0535", CultureInfo.CurrentCulture));
+                    }
                 }
 
                 // Grava Acesso
@@ -10989,36 +10993,45 @@ namespace GEDSys_Presentation.Controllers
                         return RedirectToAction("MontarTelaAreaPacienteVer");
                     }
 
-                    // Copia arquivo
-                    // 1. Recupera as configurações e descriptografa a Connection String do Azure
-                    CONFIGURACAO confGeral = CarregaConfiguracaoGeral();
-                    String connAzure = CrossCutting.Cryptography.Decrypt(confGeral.CONF_CS_CONNECTION_STRING_AZURE_CRIP);
-                    String containerNome = "rti-datacontainer"; // O nome do seu container no Azure
-
-                    // 2. Inicializa os clientes do Azure Blob Storage
-                    var blobServiceClient = new Azure.Storage.Blobs.BlobServiceClient(connAzure);
-                    var containerClient = blobServiceClient.GetBlobContainerClient(containerNome);
-
-                    // 3. Monta as strings dos caminhos virtuais (Blobs) sem a barra "/" inicial
-                    String extensao = Path.GetExtension(item.APAN_NM_TITULO);
-
                     String blobOrigemPath = $"Imagens/{pac.ASSI_CD_ID}/AreaPaciente/{item.AREA_CD_ID}/Anexos/{item.APAN_NM_TITULO}";
                     String blobDestinoPath = $"Imagens/{pac.ASSI_CD_ID}/Locacao/{loca.LOCA_CD_ID}/Assinado/{item.APAN_NM_TITULO}";
 
-                    // 4. Obtém as referências dos Blobs
-                    var blobOrigem = containerClient.GetBlobClient(blobOrigemPath);
-                    var blobDestino = containerClient.GetBlobClient(blobDestinoPath);
+                    try
+                    {
+                        CONFIGURACAO conf = CarregaConfiguracaoGeral();
+                        string connString = conf.CONF_NM_STORAGE_CONN;
+                        string containerName = conf.CONF_NM_STORAGE_CONTAINER;
 
-                    // 5. Executa a cópia diretamente na nuvem da Microsoft
-                    if (blobOrigem.Exists())
-                    {
-                        // Realiza a cópia interna e rápida entre diretórios do Storage
-                        blobDestino.StartCopyFromUri(blobOrigem.Uri);
+                        // 1. Inicializa os clientes do Azure
+                        var blobServiceClient = new Azure.Storage.Blobs.BlobServiceClient(connString);
+                        var containerClient = blobServiceClient.GetBlobContainerClient(containerName);
+
+                        // 2. Cria os clientes específicos para o Blob de Origem e o Blob de Destino
+                        var blobOrigemClient = containerClient.GetBlobClient(blobOrigemPath);
+                        var blobDestinoClient = containerClient.GetBlobClient(blobDestinoPath);
+
+                        // 3. Verifica se o arquivo de origem realmente existe no Storage antes de copiar
+                        if (await blobOrigemClient.ExistsAsync())
+                        {
+                            // Executa a cópia direta de servidor para servidor dentro do Azure de forma assíncrona
+                            var copyOperation = await blobDestinoClient.StartCopyFromUriAsync(blobOrigemClient.Uri);
+
+                            // Aguarda a conclusão da operação de cópia
+                            await copyOperation.WaitForCompletionAsync();
+                        }
+                        else
+                        {
+                            throw new FileNotFoundException("O arquivo de origem não foi localizado no Azure Storage.");
+                        }
                     }
-                    else
+                    catch (Exception exAzure)
                     {
-                        throw new FileNotFoundException($"O arquivo de origem não foi encontrado no Azure Blob Storage: {blobOrigemPath}");
+                        Session["MsgCRUD"] = "Erro na sincronização: " + exAzure.Message;
+                        Session["MensPaciente"] = 61;
+                        return RedirectToAction("VoltarAnexoPaciente");
                     }
+
+
                     // Atualiza locacao
                     loca.LOCA_IN_CONTRATO_ASSINA = 1;
                     Int32 volta1 = locaApp.ValidateEdit(loca, loca, usu);
@@ -11183,7 +11196,7 @@ namespace GEDSys_Presentation.Controllers
                     }
 
                     // Verifica exatidão do nome
-                    String nome_certo = "Distrato_Locacao" + pac.PACI_NM_NOME + "_" + loca.LOCA_GU_GUID + "_Assinado.pdf";
+                    String nome_certo = "Distrato_Locacao_" + pac.PACI_NM_NOME.ToUpper() + "_" + loca.LOCA_GU_GUID + "_Assinado.pdf";
                     if (item.APAN_NM_TITULO.ToUpper() != nome_certo.ToUpper())
                     {
                         falha = 2;
@@ -11205,35 +11218,42 @@ namespace GEDSys_Presentation.Controllers
                         return RedirectToAction("MontarTelaAreaPacienteVer");
                     }
 
-                    // Copia arquivo
-                    // 1. Recupera as configurações e descriptografa a Connection String do Azure
-                    CONFIGURACAO confGeral = CarregaConfiguracaoGeral();
-                    String connAzure = CrossCutting.Cryptography.Decrypt(confGeral.CONF_CS_CONNECTION_STRING_AZURE_CRIP);
-                    String containerNome = "rti-datacontainer"; // O nome do seu container no Azure
-
-                    // 2. Inicializa os clientes do Azure Blob Storage
-                    var blobServiceClient = new Azure.Storage.Blobs.BlobServiceClient(connAzure);
-                    var containerClient = blobServiceClient.GetBlobContainerClient(containerNome);
-
-                    // 3. Monta as strings dos caminhos virtuais (Blobs) removendo a barra "/" inicial
-                    String extensao = Path.GetExtension(item.APAN_NM_TITULO);
-
                     String blobOrigemPath = $"Imagens/{pac.ASSI_CD_ID}/AreaPaciente/{item.AREA_CD_ID}/Anexos/{item.APAN_NM_TITULO}";
                     String blobDestinoPath = $"Imagens/{pac.ASSI_CD_ID}/Locacao/{loca.LOCA_CD_ID}/Assinado/{item.APAN_NM_TITULO}";
 
-                    // 4. Obtém as referências dos Blobs de Origem e Destino
-                    var blobOrigem = containerClient.GetBlobClient(blobOrigemPath);
-                    var blobDestino = containerClient.GetBlobClient(blobDestinoPath);
+                    try
+                    {
+                        CONFIGURACAO conf = CarregaConfiguracaoGeral();
+                        string connString = conf.CONF_NM_STORAGE_CONN;
+                        string containerName = conf.CONF_NM_STORAGE_CONTAINER;
 
-                    // 5. Executa a cópia server-side rápida diretamente na nuvem da Microsoft
-                    if (blobOrigem.Exists())
-                    {
-                        // Realiza a duplicação do arquivo internamente nos servidores do Azure Storage
-                        blobDestino.StartCopyFromUri(blobOrigem.Uri);
+                        // 1. Inicializa os clientes do Azure
+                        var blobServiceClient = new Azure.Storage.Blobs.BlobServiceClient(connString);
+                        var containerClient = blobServiceClient.GetBlobContainerClient(containerName);
+
+                        // 2. Cria os clientes específicos para o Blob de Origem e o Blob de Destino
+                        var blobOrigemClient = containerClient.GetBlobClient(blobOrigemPath);
+                        var blobDestinoClient = containerClient.GetBlobClient(blobDestinoPath);
+
+                        // 3. Verifica se o arquivo de origem realmente existe no Storage antes de copiar
+                        if (await blobOrigemClient.ExistsAsync())
+                        {
+                            // Executa a cópia direta de servidor para servidor dentro do Azure de forma assíncrona
+                            var copyOperation = await blobDestinoClient.StartCopyFromUriAsync(blobOrigemClient.Uri);
+
+                            // Aguarda a conclusão da operação de cópia
+                            await copyOperation.WaitForCompletionAsync();
+                        }
+                        else
+                        {
+                            throw new FileNotFoundException("O arquivo de origem não foi localizado no Azure Storage.");
+                        }
                     }
-                    else
+                    catch (Exception exAzure)
                     {
-                        throw new FileNotFoundException($"O arquivo de origem não foi encontrado no Azure Blob Storage: {blobOrigemPath}");
+                        Session["MsgCRUD"] = "Erro na sincronização: " + exAzure.Message;
+                        Session["MensPaciente"] = 61;
+                        return RedirectToAction("VoltarAnexoPaciente");
                     }
                 }
 
@@ -11282,36 +11302,72 @@ namespace GEDSys_Presentation.Controllers
                 // Percorre documentos
                 foreach (AREA_PACIENTE_ANEXO item in docs)
                 {
-                    // Copia arquivo
-                    // 1. Recupera as configurações e descriptografa a Connection String do Azure
-                    CONFIGURACAO confGeral = CarregaConfiguracaoGeral();
-                    String connAzure = CrossCutting.Cryptography.Decrypt(confGeral.CONF_CS_CONNECTION_STRING_AZURE_CRIP);
-                    String containerNome = "rti-datacontainer"; // O nome do seu container no Azure
-
-                    // 2. Inicializa os clientes do Azure Blob Storage
-                    var blobServiceClient = new Azure.Storage.Blobs.BlobServiceClient(connAzure);
-                    var containerClient = blobServiceClient.GetBlobContainerClient(containerNome);
-
-                    // 3. Monta as strings dos caminhos virtuais (Blobs) sem a barra "/" inicial
                     String extensao = Path.GetExtension(item.APAN_NM_TITULO);
+                    if (!((String)Session["ExtensoesPossiveis"]).Contains(extensao.ToUpper()))
+                    {
+                        Session["MensArea"] = 12;
+                        return RedirectToAction("MontarAreaPacienteVer");
+                    }
 
                     String blobOrigemPath = $"Imagens/{pac.ASSI_CD_ID}/AreaPaciente/{item.AREA_CD_ID}/Anexos/{item.APAN_NM_TITULO}";
                     String blobDestinoPath = $"Imagens/{pac.ASSI_CD_ID}/Pacientes/{pac.PACI__CD_ID}/Anexos/{item.APAN_NM_TITULO}";
 
-                    // 4. Obtém as referências dos Blobs de Origem e Destino
-                    var blobOrigem = containerClient.GetBlobClient(blobOrigemPath);
-                    var blobDestino = containerClient.GetBlobClient(blobDestinoPath);
+                    try
+                    {
+                        CONFIGURACAO conf = CarregaConfiguracaoGeral();
+                        string connString = conf.CONF_NM_STORAGE_CONN;
+                        string containerName = conf.CONF_NM_STORAGE_CONTAINER;
 
-                    // 5. Executa a cópia server-side rápida diretamente na nuvem da Microsoft
-                    if (blobOrigem.Exists())
-                    {
-                        // Realiza a duplicação do arquivo internamente na infraestrutura do Azure Storage
-                        blobDestino.StartCopyFromUri(blobOrigem.Uri);
+                        // 1. Inicializa os clientes do Azure
+                        var blobServiceClient = new Azure.Storage.Blobs.BlobServiceClient(connString);
+                        var containerClient = blobServiceClient.GetBlobContainerClient(containerName);
+
+                        // 2. Cria os clientes específicos para o Blob de Origem e o Blob de Destino
+                        var blobOrigemClient = containerClient.GetBlobClient(blobOrigemPath);
+                        var blobDestinoClient = containerClient.GetBlobClient(blobDestinoPath);
+
+                        // 3. Verifica se o arquivo de origem realmente existe no Storage antes de copiar
+                        if (await blobOrigemClient.ExistsAsync())
+                        {
+                            // Executa a cópia direta de servidor para servidor dentro do Azure de forma assíncrona
+                            var copyOperation = await blobDestinoClient.StartCopyFromUriAsync(blobOrigemClient.Uri);
+
+                            // Aguarda a conclusão da operação de cópia
+                            await copyOperation.WaitForCompletionAsync();
+                        }
+                        else
+                        {
+                            throw new FileNotFoundException("O arquivo de origem não foi localizado no Azure Storage.");
+                        }
                     }
-                    else
+                    catch (Exception exAzure)
                     {
-                        throw new FileNotFoundException($"O arquivo de origem não foi encontrado no Azure Blob Storage: {blobOrigemPath}");
+                        Session["MsgCRUD"] = "Erro na sincronização: " + exAzure.Message;
+                        Session["MensPaciente"] = 61;
+                        return RedirectToAction("VoltarAnexoPaciente");
                     }
+
+                    // 4. GRAVAR REGISTRO NO BANCO
+                    PACIENTE_ANEXO foto = new PACIENTE_ANEXO();
+                    foto.PAAX_AQ_ARQUIVO = "~/" + blobDestinoPath;
+                    foto.PAAX_DT_ANEXO = DateTime.Today;
+                    foto.PAAX_IN_ATIVO = 1;
+
+                    // Determinação do tipo (simplificada)
+                    Int32 tipo = 7;
+                    string extUpper = extensao.ToUpper();
+                    if (extUpper == ".JPG" || extUpper == ".PNG" || extUpper == ".JPEG" || extUpper == ".GIF") tipo = 1;
+                    else if (extUpper == ".MP4" || extUpper == ".AVI" || extUpper == ".MPEG") tipo = 2;
+                    else if (extUpper == ".PDF") tipo = 3;
+                    else if (extUpper == ".MP3") tipo = 4;
+                    else if (extUpper == ".DOCX" || extUpper == ".DOC" || extUpper == ".ODT") tipo = 5;
+                    else if (extUpper == ".XLSX" || extUpper == ".XLS" || extUpper == ".ODS") tipo = 6;
+
+                    foto.PAAX_IN_TIPO = tipo;
+                    foto.PAAX_NM_TITULO = item.APAN_NM_TITULO;
+                    foto.PACI_CD_ID = pac.PACI__CD_ID;
+                    pac.PACIENTE_ANEXO.Add(foto);
+                    Int32 voltaX = baseApp.ValidateEdit(pac, pac);
                 }
 
                 // Atualiza area do paciente
@@ -11953,7 +12009,7 @@ namespace GEDSys_Presentation.Controllers
         }
 
         [HttpGet]
-        public ActionResult ProcessarResultadoExameTela(Int32 id)
+        public async Task<ActionResult> ProcessarResultadoExameTela(Int32 id)
         {
             try
             {
@@ -12022,43 +12078,47 @@ namespace GEDSys_Presentation.Controllers
                     exame.PAEX_DT_DUMMY = area.AREA_DT_ENTRADA;
                     Int32 volta4 = baseApp.ValidateCreateExame(exame);
 
-                    // Cria pastas
-                    String caminho = "/Imagens/" + idAss.ToString() + "/Exames/" + exame.PAEX_CD_ID.ToString() + "/Anexos/";
-                    String map = Server.MapPath(caminho);
-                    Directory.CreateDirectory(Server.MapPath(caminho));
-
                     // Recupera documentos
                     exame1 = baseApp.GetExameById(exame.PAEX_CD_ID);
                     List<AREA_PACIENTE_ANEXO> docs = area.AREA_PACIENTE_ANEXO.Where(p => p.APAN_IN_ATIVO == 1).ToList();
                     foreach (AREA_PACIENTE_ANEXO item in docs)
                     {
-                        // Copia arquivo
-                        // 1. Recupera as configurações e descriptografa a Connection String do Azure
-                        CONFIGURACAO confGeral = CarregaConfiguracaoGeral();
-                        String connAzure = CrossCutting.Cryptography.Decrypt(confGeral.CONF_CS_CONNECTION_STRING_AZURE_CRIP);
-                        String containerNome = "rti-datacontainer"; // O nome do seu container no Azure
-
-                        // 2. Inicializa os clientes do Azure Blob Storage
-                        var blobServiceClient = new Azure.Storage.Blobs.BlobServiceClient(connAzure);
-                        var containerClient = blobServiceClient.GetBlobContainerClient(containerNome);
-
-                        // 3. Monta as strings dos caminhos virtuais (Blobs) sem a barra "/" inicial
                         String blobOrigemPath = $"Imagens/{pac.ASSI_CD_ID}/AreaPaciente/{item.AREA_CD_ID}/Anexos/{item.APAN_NM_TITULO}";
                         String blobDestinoPath = $"Imagens/{pac.ASSI_CD_ID}/Pacientes/{pac.PACI__CD_ID}/Exames/{item.APAN_NM_TITULO}";
 
-                        // 4. Obtém as referências dos Blobs de Origem e Destino
-                        var blobOrigem = containerClient.GetBlobClient(blobOrigemPath);
-                        var blobDestino = containerClient.GetBlobClient(blobDestinoPath);
+                        try
+                        {
+                            CONFIGURACAO conf = CarregaConfiguracaoGeral();
+                            string connString = conf.CONF_NM_STORAGE_CONN;
+                            string containerName = conf.CONF_NM_STORAGE_CONTAINER;
 
-                        // 5. Executa a cópia server-side rápida diretamente na nuvem da Microsoft
-                        if (blobOrigem.Exists())
-                        {
-                            // Realiza a duplicação do arquivo internamente na infraestrutura do Azure Storage
-                            blobDestino.StartCopyFromUri(blobOrigem.Uri);
+                            // 1. Inicializa os clientes do Azure
+                            var blobServiceClient = new Azure.Storage.Blobs.BlobServiceClient(connString);
+                            var containerClient = blobServiceClient.GetBlobContainerClient(containerName);
+
+                            // 2. Cria os clientes específicos para o Blob de Origem e o Blob de Destino
+                            var blobOrigemClient = containerClient.GetBlobClient(blobOrigemPath);
+                            var blobDestinoClient = containerClient.GetBlobClient(blobDestinoPath);
+
+                            // 3. Verifica se o arquivo de origem realmente existe no Storage antes de copiar
+                            if (await blobOrigemClient.ExistsAsync())
+                            {
+                                // Executa a cópia direta de servidor para servidor dentro do Azure de forma assíncrona
+                                var copyOperation = await blobDestinoClient.StartCopyFromUriAsync(blobOrigemClient.Uri);
+
+                                // Aguarda a conclusão da operação de cópia
+                                await copyOperation.WaitForCompletionAsync();
+                            }
+                            else
+                            {
+                                throw new FileNotFoundException("O arquivo de origem não foi localizado no Azure Storage.");
+                            }
                         }
-                        else
+                        catch (Exception exAzure)
                         {
-                            throw new FileNotFoundException($"O arquivo de origem não foi encontrado no Azure Blob Storage: {blobOrigemPath}");
+                            Session["MsgCRUD"] = "Erro na sincronização: " + exAzure.Message;
+                            Session["MensPaciente"] = 61;
+                            return RedirectToAction("VoltarAnexoPaciente");
                         }
 
                         // Gravar registro
@@ -12720,6 +12780,54 @@ namespace GEDSys_Presentation.Controllers
                 String urlRedirecionamento1 = Url.Action("TrataExcecao", "BaseAdmin");
                 return Json(new { success = true, redirectUrl = urlRedirecionamento1 });
             }
+        }
+
+        public string ObterDocumentoAzureUrl(Int32 id)
+        {
+            if (id == 0) return null;
+
+            EntitiesServices.Model.AREA_PACIENTE_ANEXO primeiroAnexo = null;
+
+            // Como o método está na Controller, usamos o próprio contexto ativo da requisição (db)
+            // Isso evita ter que abrir um bloco 'using' novo para cada linha da tabela
+            using (var db = new EntitiesServices.Model.CRMSysDBEntities())
+            {
+                primeiroAnexo = db.AREA_PACIENTE_ANEXO
+                                  .FirstOrDefault(x => x.AREA_CD_ID == id);
+            }
+
+            if (primeiroAnexo == null || string.IsNullOrEmpty(primeiroAnexo.APAN_AQ_ARQUIVO))
+                return null;
+
+            // Limpa os caracteres de caminhos locais do servidor antigo
+            string path = primeiroAnexo.APAN_AQ_ARQUIVO.Replace("~/", "").Replace("~", "");
+
+            // Retorna a URL direta do Storage limpa
+            return $"https://rtistoragemain.blob.core.windows.net/rti-datacontainer/{path}";
+        }
+
+        public string ObterDocumentoAnexo(Int32 id)
+        {
+            if (id == 0) return null;
+
+            EntitiesServices.Model.AREA_PACIENTE_ANEXO primeiroAnexo = null;
+
+            // Como o método está na Controller, usamos o próprio contexto ativo da requisição (db)
+            // Isso evita ter que abrir um bloco 'using' novo para cada linha da tabela
+            using (var db = new EntitiesServices.Model.CRMSysDBEntities())
+            {
+                primeiroAnexo = db.AREA_PACIENTE_ANEXO
+                                  .FirstOrDefault(x => x.AREA_CD_ID == id);
+            }
+
+            if (primeiroAnexo == null || string.IsNullOrEmpty(primeiroAnexo.APAN_AQ_ARQUIVO))
+                return null;
+
+            // Limpa os caracteres de caminhos locais do servidor antigo
+            string path = primeiroAnexo.APAN_AQ_ARQUIVO.Replace("~/", "").Replace("~", "");
+
+            // Retorna a URL direta do Storage limpa
+            return path;
         }
 
     }

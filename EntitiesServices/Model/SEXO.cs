@@ -21,6 +21,7 @@ namespace EntitiesServices.Model
             this.GRUPO = new HashSet<GRUPO>();
             this.GRUPO_PAC = new HashSet<GRUPO_PAC>();
             this.PACIENTE = new HashSet<PACIENTE>();
+            this.LEAD = new HashSet<LEAD>();
         }
     
         public int SEXO_CD_ID { get; set; }
@@ -34,5 +35,7 @@ namespace EntitiesServices.Model
         public virtual ICollection<GRUPO_PAC> GRUPO_PAC { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<PACIENTE> PACIENTE { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<LEAD> LEAD { get; set; }
     }
 }

@@ -18,6 +18,7 @@ namespace EntitiesServices.Model
         public CRM_ORIGEM()
         {
             this.CRM = new HashSet<CRM>();
+            this.LEAD_CRM = new HashSet<LEAD_CRM>();
         }
     
         public int CROR_CD_ID { get; set; }
@@ -27,5 +28,7 @@ namespace EntitiesServices.Model
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<CRM> CRM { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<LEAD_CRM> LEAD_CRM { get; set; }
     }
 }

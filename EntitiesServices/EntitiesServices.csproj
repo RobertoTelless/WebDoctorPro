@@ -521,6 +521,9 @@
     <Compile Include="Model\BANCO.cs">
       <DependentUpon>GED_Model.tt</DependentUpon>
     </Compile>
+    <Compile Include="Model\BASE_CONHECIMENTO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
     <Compile Include="Model\CARGO.cs">
       <DependentUpon>GED_Model.tt</DependentUpon>
     </Compile>
@@ -944,6 +947,27 @@
       <DependentUpon>GED_Model.tt</DependentUpon>
     </Compile>
     <Compile Include="Model\LABORATORIO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\LEAD.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\LEAD_ANEXO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\LEAD_ANOTACAO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\LEAD_CRM.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\LEAD_CRM_ACAO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\LEAD_CRM_ANEXO.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\LEAD_CRM_ANOTACAO.cs">
       <DependentUpon>GED_Model.tt</DependentUpon>
     </Compile>
     <Compile Include="Model\LINGUA.cs">

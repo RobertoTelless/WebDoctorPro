@@ -419,5 +419,13 @@ namespace EntitiesServices.Model
         public virtual DbSet<PACIENTE_VACINA> PACIENTE_VACINA { get; set; }
         public virtual DbSet<VACINA> VACINA { get; set; }
         public virtual DbSet<MENSAGEM_FABRICANTE_LIDO> MENSAGEM_FABRICANTE_LIDO { get; set; }
+        public virtual DbSet<BASE_CONHECIMENTO> BASE_CONHECIMENTO { get; set; }
+        public virtual DbSet<LEAD> LEAD { get; set; }
+        public virtual DbSet<LEAD_ANEXO> LEAD_ANEXO { get; set; }
+        public virtual DbSet<LEAD_ANOTACAO> LEAD_ANOTACAO { get; set; }
+        public virtual DbSet<LEAD_CRM> LEAD_CRM { get; set; }
+        public virtual DbSet<LEAD_CRM_ACAO> LEAD_CRM_ACAO { get; set; }
+        public virtual DbSet<LEAD_CRM_ANEXO> LEAD_CRM_ANEXO { get; set; }
+        public virtual DbSet<LEAD_CRM_ANOTACAO> LEAD_CRM_ANOTACAO { get; set; }
     }
 }

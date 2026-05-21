@@ -106,6 +106,87 @@ namespace ERP_Condominios_Solution.ViewModels
             }
         }
 
+        public string DocumentoAzureUrlNova
+        {
+            get
+            {
+                // Usando o campo dinâmico que guarda o caminho ou nome do arquivo no banco
+                // (Substitua APAN_AQ_ARQUIVO pelo nome real da propriedade string do seu Model/ViewModel)
+                Int32 id = AREA_CD_ID;
+                var primeiroAnexo = this.AREA_PACIENTE_ANEXO.FirstOrDefault();
+                if (primeiroAnexo == null) return null;
+                if (string.IsNullOrEmpty(primeiroAnexo.APAN_AQ_ARQUIVO)) return null;
+
+                // Limpa os caracteres de caminhos locais do servidor antigo
+                string path = primeiroAnexo.APAN_AQ_ARQUIVO.Replace("~/", "").Replace("~", "");
+
+                // Retorna a URL direta do Storage (sem UrlEncode aqui dentro)
+                return $"https://rtistoragemain.blob.core.windows.net/rti-datacontainer/{path}";
+            }
+        }
+
+        public string DocumentoAzureUrlNovissima
+        {
+            get
+            {
+                // Captura o ID da consulta da instância atual
+                Int32 id = this.AREA_CD_ID;
+                if (id == 0) return null;
+
+                // 1. Tenta usar a lista da instância se ela já estiver carregada
+                var primeiroAnexo = this.AREA_PACIENTE_ANEXO?.FirstOrDefault();
+
+                // 2. Se a lista veio nula (falta de Lazy Loading), fazemos a busca explícita no banco
+                if (primeiroAnexo == null)
+                {
+                    // Substitua 'SeuDbContext' pelo nome oficial da classe de contexto do seu projeto (ex: ErpContext)
+                    using (var db = new EntitiesServices.Model.CRMSysDBEntities())
+                    {
+                        primeiroAnexo = db.AREA_PACIENTE_ANEXO
+                                          .FirstOrDefault(x => x.AREA_CD_ID == id);
+                    }
+                }
+
+                // Se mesmo buscando no banco não houver anexo, encerra
+                if (primeiroAnexo == null || string.IsNullOrEmpty(primeiroAnexo.APAN_AQ_ARQUIVO))
+                    return null;
+
+                // Limpa os caracteres de caminhos locais do servidor antigo
+                string path = primeiroAnexo.APAN_AQ_ARQUIVO.Replace("~/", "").Replace("~", "");
+
+                // Retorna a URL direta do Storage limpa
+                return $"https://rtistoragemain.blob.core.windows.net/rti-datacontainer/{path}";
+            }
+        }
+
+        public string ObterDocumentoAzureUrl(Int32 id)
+        {
+            if (id == 0) return null;
+
+            // 1. Tenta usar a lista da instância se ela já estiver carregada na memória
+            var primeiroAnexo = this.AREA_PACIENTE_ANEXO?.FirstOrDefault();
+
+            // 2. Se a lista veio nula (falta de Lazy Loading), faz a busca explícita usando o id recebido
+            if (primeiroAnexo == null)
+            {
+                using (var db = new EntitiesServices.Model.CRMSysDBEntities())
+                {
+                    primeiroAnexo = db.AREA_PACIENTE_ANEXO
+                                      .FirstOrDefault(x => x.AREA_CD_ID == id);
+                }
+            }
+
+            // Se mesmo buscando no banco não houver anexo, encerra
+            if (primeiroAnexo == null || string.IsNullOrEmpty(primeiroAnexo.APAN_AQ_ARQUIVO))
+                return null;
+
+            // Limpa os caracteres de caminhos locais do servidor antigo
+            string path = primeiroAnexo.APAN_AQ_ARQUIVO.Replace("~/", "").Replace("~", "");
+
+            // Retorna a URL direta do Storage limpa
+            return $"https://rtistoragemain.blob.core.windows.net/rti-datacontainer/{path}";
+        }
+
         public virtual PACIENTE PACIENTE { get; set; }
         public virtual USUARIO USUARIO { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]

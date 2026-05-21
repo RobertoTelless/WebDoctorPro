@@ -522,6 +522,20 @@
           <Property Name="BANC_IN_ATIVO" Type="int" />
           <Property Name="BANC_SG_SIGLA" Type="varchar" MaxLength="10" />
         </EntityType>
+        <EntityType Name="BASE_CONHECIMENTO">
+          <Key>
+            <PropertyRef Name="BACO_CD_ID" />
+          </Key>
+          <Property Name="BACO_CD_ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="ASSI_CD_ID" Type="int" Nullable="false" />
+          <Property Name="BACO_IN_SISTEMA" Type="int" />
+          <Property Name="BACO_NM_NOME" Type="varchar" MaxLength="250" />
+          <Property Name="BACO_DT_ENTRADA" Type="date" />
+          <Property Name="BACO_DT_VALIDADE" Type="date" />
+          <Property Name="BACO_AQ_ARQUIVO" Type="varchar" MaxLength="500" />
+          <Property Name="BACO_IN_ATIVO" Type="int" />
+          <Property Name="BACO_IN_TIPO" Type="int" />
+        </EntityType>
         <EntityType Name="CARGO">
           <Key>
             <PropertyRef Name="CARG_CD_ID" />
@@ -3062,6 +3076,119 @@
           <Property Name="LABS_NM_CIDADE" Type="varchar" MaxLength="50" />
           <Property Name="UF_CD_ID" Type="int" />
           <Property Name="LABS_IN_ATIVO" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="LEAD">
+          <Key>
+            <PropertyRef Name="LEAD_CD_ID" />
+          </Key>
+          <Property Name="LEAD_CD_ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="LEAD_DT_ENTRADA" Type="datetime" />
+          <Property Name="LEAD_NM_NOME" Type="varchar" MaxLength="150" />
+          <Property Name="LEAD_EM_EMAIL" Type="varchar" MaxLength="150" />
+          <Property Name="LEAD_NR_CELULAR" Type="varchar" MaxLength="50" />
+          <Property Name="LEAD_IN_STATUS" Type="int" />
+          <Property Name="LEAD_NR_CPF" Type="varchar" MaxLength="50" />
+          <Property Name="LEAD_NR_CNPJ" Type="varchar" MaxLength="50" />
+          <Property Name="LEAD_DT_NASCIMENTO" Type="date" />
+          <Property Name="SEXO_CD_ID" Type="int" />
+          <Property Name="LEAD_IN_SISTEMA" Type="int" />
+          <Property Name="LEAD_NM_ENDERECO" Type="varchar" MaxLength="150" />
+          <Property Name="LEAD_NR_NUMERO" Type="varchar" MaxLength="50" />
+          <Property Name="LEAD_NM_COMPLEMENTO" Type="varchar" MaxLength="50" />
+          <Property Name="LEAD_NM_BAIRRO" Type="varchar" MaxLength="50" />
+          <Property Name="LEAD_NM_CIDADE" Type="varchar" MaxLength="50" />
+          <Property Name="UF_CD_ID" Type="int" />
+          <Property Name="LEAD_NR_CEP" Type="varchar" MaxLength="50" />
+          <Property Name="LEAD_IN_ATIVO" Type="int" />
+          <Property Name="USUA_CD_ID" Type="int" />
+        </EntityType>
+        <EntityType Name="LEAD_ANEXO">
+          <Key>
+            <PropertyRef Name="LEAX_CD_ID" />
+          </Key>
+          <Property Name="LEAX_CD_ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="LEAD_CD_ID" Type="int" Nullable="false" />
+          <Property Name="LEAX_DT_ANEXO" Type="datetime" />
+          <Property Name="LEAX_NM_TITULO" Type="varchar" MaxLength="250" />
+          <Property Name="LEAX_IN_TIPO" Type="int" />
+          <Property Name="LEAX_AQ_ARQUIVO" Type="varchar" MaxLength="250" Nullable="false" />
+          <Property Name="LEAX_IN_ATIVO" Type="int" />
+        </EntityType>
+        <EntityType Name="LEAD_ANOTACAO">
+          <Key>
+            <PropertyRef Name="LEAN_CD_ID" />
+          </Key>
+          <Property Name="LEAN_CD_ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="LEAD_CD_ID" Type="int" Nullable="false" />
+          <Property Name="USUA_CD_ID" Type="int" Nullable="false" />
+          <Property Name="LEAN_DT_ANOTACAO" Type="datetime" />
+          <Property Name="LEAN_TX_ANOTACAO" Type="varchar" MaxLength="5000" />
+          <Property Name="LEAN_IN_ATIVO" Type="int" />
+        </EntityType>
+        <EntityType Name="LEAD_CRM">
+          <Key>
+            <PropertyRef Name="LECR_CD_ID" />
+          </Key>
+          <Property Name="LECR_CD_ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="LEAD_CD_ID" Type="int" Nullable="false" />
+          <Property Name="USUA_CD_ID" Type="int" Nullable="false" />
+          <Property Name="MOCA_CD_ID" Type="int" />
+          <Property Name="CROR_CD_ID" Type="int" />
+          <Property Name="LECR_GU_GUID" Type="varchar" MaxLength="100" />
+          <Property Name="LECR_IN_ATIVO" Type="int" />
+          <Property Name="LECR_DT_CRIACAO" Type="date" />
+          <Property Name="LECR_NM_NOME" Type="varchar" MaxLength="100" />
+          <Property Name="LECR_DS_DESCRICAO" Type="varchar" MaxLength="500" />
+          <Property Name="LECR_IN_STATUS" Type="int" />
+          <Property Name="LECR_DT_CANCELAMENTO" Type="date" />
+          <Property Name="LECR_DS_MOTIVO_CANCELAMENTO" Type="varchar" MaxLength="500" />
+          <Property Name="LECR_DT_ENCERRAMENTO" Type="date" />
+          <Property Name="LECR_DS_INFORMACAO_ENCERRAMENTO" Type="varchar" MaxLength="500" />
+          <Property Name="LECR_IN_ESTRELA" Type="int" />
+          <Property Name="LECR_NR_TEMPERATURA" Type="int" />
+          <Property Name="LECR_NM_CAMPANHA" Type="varchar" MaxLength="150" />
+          <Property Name="LECR_DS_MOVIMENTACAO" Type="text" />
+          <Property Name="LECR_IN_SISTEMA" Type="int" />
+        </EntityType>
+        <EntityType Name="LEAD_CRM_ACAO">
+          <Key>
+            <PropertyRef Name="LCAC_CD_ID" />
+          </Key>
+          <Property Name="LCAC_CD_ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="LECR_CD_ID" Type="int" Nullable="false" />
+          <Property Name="LCAC_DT_CRIACAO" Type="datetime" />
+          <Property Name="USUA_CD_ID1" Type="int" />
+          <Property Name="USUA_CD_ID2" Type="int" />
+          <Property Name="LCAC_NM_TITULO" Type="varchar" MaxLength="150" />
+          <Property Name="LCAC_DS_DESCRICAO" Type="varchar" MaxLength="5000" />
+          <Property Name="LCAC_DT_PREVISTA" Type="datetime" />
+          <Property Name="TIAC_CD_ID" Type="int" />
+          <Property Name="LCAC_IN_STATUS" Type="int" />
+          <Property Name="LCAC_IN_ATIVO" Type="int" />
+          <Property Name="LCAC_NR_ATRASO" Type="int" StoreGeneratedPattern="Computed" />
+        </EntityType>
+        <EntityType Name="LEAD_CRM_ANEXO">
+          <Key>
+            <PropertyRef Name="LCAX_CD_ID" />
+          </Key>
+          <Property Name="LCAX_CD_ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="LECR_CD_ID" Type="int" Nullable="false" />
+          <Property Name="LCAX_NM_TITULO" Type="varchar" MaxLength="250" />
+          <Property Name="LCAX_DT_ANEXO" Type="date" />
+          <Property Name="LCAX_IN_TIPO" Type="int" />
+          <Property Name="LCAX_AQ_ARQUIVO" Type="varchar" MaxLength="250" />
+          <Property Name="LCAX_IN_ATIVO" Type="int" />
+        </EntityType>
+        <EntityType Name="LEAD_CRM_ANOTACAO">
+          <Key>
+            <PropertyRef Name="LCAN_CD_ID" />
+          </Key>
+          <Property Name="LCAN_CD_ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="LECR_CD_ID" Type="int" Nullable="false" />
+          <Property Name="USUA_CD_ID" Type="int" Nullable="false" />
+          <Property Name="LCAN_DT_ANOTACAO" Type="datetime" />
+          <Property Name="LCAN_TX_ANOTACAO" Type="varchar" MaxLength="5000" />
+          <Property Name="LCAN_IN_ATIVO" Type="int" />
         </EntityType>
         <EntityType Name="LINGUA">
           <Key>
@@ -11461,6 +11588,210 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_LEAD_ANEXO_LEAD">
+          <End Role="LEAD" Type="Self.LEAD" Multiplicity="1" />
+          <End Role="LEAD_ANEXO" Type="Self.LEAD_ANEXO" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="LEAD">
+              <PropertyRef Name="LEAD_CD_ID" />
+            </Principal>
+            <Dependent Role="LEAD_ANEXO">
+              <PropertyRef Name="LEAD_CD_ID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_LEAD_ANOTACAO_LEAD">
+          <End Role="LEAD" Type="Self.LEAD" Multiplicity="1" />
+          <End Role="LEAD_ANOTACAO" Type="Self.LEAD_ANOTACAO" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="LEAD">
+              <PropertyRef Name="LEAD_CD_ID" />
+            </Principal>
+            <Dependent Role="LEAD_ANOTACAO">
+              <PropertyRef Name="LEAD_CD_ID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_LEAD_ANOTACAO_USUARIO">
+          <End Role="USUARIO" Type="Self.USUARIO" Multiplicity="1" />
+          <End Role="LEAD_ANOTACAO" Type="Self.LEAD_ANOTACAO" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="USUARIO">
+              <PropertyRef Name="USUA_CD_ID" />
+            </Principal>
+            <Dependent Role="LEAD_ANOTACAO">
+              <PropertyRef Name="USUA_CD_ID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_LEAD_CRM_ACAO_LEAD_CRM">
+          <End Role="LEAD_CRM" Type="Self.LEAD_CRM" Multiplicity="1" />
+          <End Role="LEAD_CRM_ACAO" Type="Self.LEAD_CRM_ACAO" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="LEAD_CRM">
+              <PropertyRef Name="LECR_CD_ID" />
+            </Principal>
+            <Dependent Role="LEAD_CRM_ACAO">
+              <PropertyRef Name="LECR_CD_ID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_LEAD_CRM_ACAO_TIPO_ACAO">
+          <End Role="TIPO_ACAO" Type="Self.TIPO_ACAO" Multiplicity="0..1" />
+          <End Role="LEAD_CRM_ACAO" Type="Self.LEAD_CRM_ACAO" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="TIPO_ACAO">
+              <PropertyRef Name="TIAC_CD_ID" />
+            </Principal>
+            <Dependent Role="LEAD_CRM_ACAO">
+              <PropertyRef Name="TIAC_CD_ID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_LEAD_CRM_ACAO_USUARIO">
+          <End Role="USUARIO" Type="Self.USUARIO" Multiplicity="0..1" />
+          <End Role="LEAD_CRM_ACAO" Type="Self.LEAD_CRM_ACAO" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="USUARIO">
+              <PropertyRef Name="USUA_CD_ID" />
+            </Principal>
+            <Dependent Role="LEAD_CRM_ACAO">
+              <PropertyRef Name="USUA_CD_ID1" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_LEAD_CRM_ACAO_USUARIO1">
+          <End Role="USUARIO" Type="Self.USUARIO" Multiplicity="0..1" />
+          <End Role="LEAD_CRM_ACAO" Type="Self.LEAD_CRM_ACAO" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="USUARIO">
+              <PropertyRef Name="USUA_CD_ID" />
+            </Principal>
+            <Dependent Role="LEAD_CRM_ACAO">
+              <PropertyRef Name="USUA_CD_ID2" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_LEAD_CRM_ANEXO_LEAD_CRM">
+          <End Role="LEAD_CRM" Type="Self.LEAD_CRM" Multiplicity="1" />
+          <End Role="LEAD_CRM_ANEXO" Type="Self.LEAD_CRM_ANEXO" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="LEAD_CRM">
+              <PropertyRef Name="LECR_CD_ID" />
+            </Principal>
+            <Dependent Role="LEAD_CRM_ANEXO">
+              <PropertyRef Name="LECR_CD_ID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_LEAD_CRM_ANOTACAO_LEAD_CRM">
+          <End Role="LEAD_CRM" Type="Self.LEAD_CRM" Multiplicity="1" />
+          <End Role="LEAD_CRM_ANOTACAO" Type="Self.LEAD_CRM_ANOTACAO" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="LEAD_CRM">
+              <PropertyRef Name="LECR_CD_ID" />
+            </Principal>
+            <Dependent Role="LEAD_CRM_ANOTACAO">
+              <PropertyRef Name="LECR_CD_ID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_LEAD_CRM_ANOTACAO_USUARIO">
+          <End Role="USUARIO" Type="Self.USUARIO" Multiplicity="1" />
+          <End Role="LEAD_CRM_ANOTACAO" Type="Self.LEAD_CRM_ANOTACAO" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="USUARIO">
+              <PropertyRef Name="USUA_CD_ID" />
+            </Principal>
+            <Dependent Role="LEAD_CRM_ANOTACAO">
+              <PropertyRef Name="USUA_CD_ID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_LEAD_CRM_CRM_ORIGEM">
+          <End Role="CRM_ORIGEM" Type="Self.CRM_ORIGEM" Multiplicity="0..1" />
+          <End Role="LEAD_CRM" Type="Self.LEAD_CRM" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="CRM_ORIGEM">
+              <PropertyRef Name="CROR_CD_ID" />
+            </Principal>
+            <Dependent Role="LEAD_CRM">
+              <PropertyRef Name="CROR_CD_ID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_LEAD_CRM_LEAD">
+          <End Role="LEAD" Type="Self.LEAD" Multiplicity="1" />
+          <End Role="LEAD_CRM" Type="Self.LEAD_CRM" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="LEAD">
+              <PropertyRef Name="LEAD_CD_ID" />
+            </Principal>
+            <Dependent Role="LEAD_CRM">
+              <PropertyRef Name="LEAD_CD_ID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_LEAD_CRM_MOTIVO_CANCELAMENTO">
+          <End Role="MOTIVO_CANCELAMENTO" Type="Self.MOTIVO_CANCELAMENTO" Multiplicity="0..1" />
+          <End Role="LEAD_CRM" Type="Self.LEAD_CRM" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="MOTIVO_CANCELAMENTO">
+              <PropertyRef Name="MOCA_CD_ID" />
+            </Principal>
+            <Dependent Role="LEAD_CRM">
+              <PropertyRef Name="MOCA_CD_ID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_LEAD_CRM_USUARIO">
+          <End Role="USUARIO" Type="Self.USUARIO" Multiplicity="1" />
+          <End Role="LEAD_CRM" Type="Self.LEAD_CRM" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="USUARIO">
+              <PropertyRef Name="USUA_CD_ID" />
+            </Principal>
+            <Dependent Role="LEAD_CRM">
+              <PropertyRef Name="USUA_CD_ID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_LEAD_SEXO">
+          <End Role="SEXO" Type="Self.SEXO" Multiplicity="0..1" />
+          <End Role="LEAD" Type="Self.LEAD" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="SEXO">
+              <PropertyRef Name="SEXO_CD_ID" />
+            </Principal>
+            <Dependent Role="LEAD">
+              <PropertyRef Name="SEXO_CD_ID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_LEAD_UF">
+          <End Role="UF" Type="Self.UF" Multiplicity="0..1" />
+          <End Role="LEAD" Type="Self.LEAD" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="UF">
+              <PropertyRef Name="UF_CD_ID" />
+            </Principal>
+            <Dependent Role="LEAD">
+              <PropertyRef Name="UF_CD_ID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_LEAD_USUARIO">
+          <End Role="USUARIO" Type="Self.USUARIO" Multiplicity="0..1" />
+          <End Role="LEAD" Type="Self.LEAD" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="USUARIO">
+              <PropertyRef Name="USUA_CD_ID" />
+            </Principal>
+            <Dependent Role="LEAD">
+              <PropertyRef Name="USUA_CD_ID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_LOCACAO_ANEXO_LOCACAO">
           <End Role="LOCACAO" Type="Self.LOCACAO" Multiplicity="1" />
           <End Role="LOCACAO_ANEXO" Type="Self.LOCACAO_ANEXO" Multiplicity="*" />
@@ -16581,6 +16912,7 @@
           <EntitySet Name="ATENDIMENTO_PROPOSTA_SERVICO" EntityType="Self.ATENDIMENTO_PROPOSTA_SERVICO" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="AVISO_LEMBRETE" EntityType="Self.AVISO_LEMBRETE" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="BANCO" EntityType="Self.BANCO" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="BASE_CONHECIMENTO" EntityType="Self.BASE_CONHECIMENTO" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="CARGO" EntityType="Self.CARGO" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="CARGO_TESTE" EntityType="Self.CARGO_TESTE" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="CATEGORIA_AGENDA" EntityType="Self.CATEGORIA_AGENDA" Schema="dbo" store:Type="Tables" />
@@ -16716,6 +17048,13 @@
           <EntitySet Name="INDICACAO_ACAO" EntityType="Self.INDICACAO_ACAO" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="INDICACAO_ANEXO" EntityType="Self.INDICACAO_ANEXO" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="LABORATORIO" EntityType="Self.LABORATORIO" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="LEAD" EntityType="Self.LEAD" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="LEAD_ANEXO" EntityType="Self.LEAD_ANEXO" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="LEAD_ANOTACAO" EntityType="Self.LEAD_ANOTACAO" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="LEAD_CRM" EntityType="Self.LEAD_CRM" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="LEAD_CRM_ACAO" EntityType="Self.LEAD_CRM_ACAO" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="LEAD_CRM_ANEXO" EntityType="Self.LEAD_CRM_ANEXO" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="LEAD_CRM_ANOTACAO" EntityType="Self.LEAD_CRM_ANOTACAO" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="LINGUA" EntityType="Self.LINGUA" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="LOCACAO" EntityType="Self.LOCACAO" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="LOCACAO_ANEXO" EntityType="Self.LOCACAO_ANEXO" Schema="dbo" store:Type="Tables" />
@@ -18355,6 +18694,74 @@
           <AssociationSet Name="FK_LABORATORIO_UF" Association="Self.FK_LABORATORIO_UF">
             <End Role="UF" EntitySet="UF" />
             <End Role="LABORATORIO" EntitySet="LABORATORIO" />
+          </AssociationSet>
+          <AssociationSet Name="FK_LEAD_ANEXO_LEAD" Association="Self.FK_LEAD_ANEXO_LEAD">
+            <End Role="LEAD" EntitySet="LEAD" />
+            <End Role="LEAD_ANEXO" EntitySet="LEAD_ANEXO" />
+          </AssociationSet>
+          <AssociationSet Name="FK_LEAD_ANOTACAO_LEAD" Association="Self.FK_LEAD_ANOTACAO_LEAD">
+            <End Role="LEAD" EntitySet="LEAD" />
+            <End Role="LEAD_ANOTACAO" EntitySet="LEAD_ANOTACAO" />
+          </AssociationSet>
+          <AssociationSet Name="FK_LEAD_ANOTACAO_USUARIO" Association="Self.FK_LEAD_ANOTACAO_USUARIO">
+            <End Role="USUARIO" EntitySet="USUARIO" />
+            <End Role="LEAD_ANOTACAO" EntitySet="LEAD_ANOTACAO" />
+          </AssociationSet>
+          <AssociationSet Name="FK_LEAD_CRM_ACAO_LEAD_CRM" Association="Self.FK_LEAD_CRM_ACAO_LEAD_CRM">
+            <End Role="LEAD_CRM" EntitySet="LEAD_CRM" />
+            <End Role="LEAD_CRM_ACAO" EntitySet="LEAD_CRM_ACAO" />
+          </AssociationSet>
+          <AssociationSet Name="FK_LEAD_CRM_ACAO_TIPO_ACAO" Association="Self.FK_LEAD_CRM_ACAO_TIPO_ACAO">
+            <End Role="TIPO_ACAO" EntitySet="TIPO_ACAO" />
+            <End Role="LEAD_CRM_ACAO" EntitySet="LEAD_CRM_ACAO" />
+          </AssociationSet>
+          <AssociationSet Name="FK_LEAD_CRM_ACAO_USUARIO" Association="Self.FK_LEAD_CRM_ACAO_USUARIO">
+            <End Role="USUARIO" EntitySet="USUARIO" />
+            <End Role="LEAD_CRM_ACAO" EntitySet="LEAD_CRM_ACAO" />
+          </AssociationSet>
+          <AssociationSet Name="FK_LEAD_CRM_ACAO_USUARIO1" Association="Self.FK_LEAD_CRM_ACAO_USUARIO1">
+            <End Role="USUARIO" EntitySet="USUARIO" />
+            <End Role="LEAD_CRM_ACAO" EntitySet="LEAD_CRM_ACAO" />
+          </AssociationSet>
+          <AssociationSet Name="FK_LEAD_CRM_ANEXO_LEAD_CRM" Association="Self.FK_LEAD_CRM_ANEXO_LEAD_CRM">
+            <End Role="LEAD_CRM" EntitySet="LEAD_CRM" />
+            <End Role="LEAD_CRM_ANEXO" EntitySet="LEAD_CRM_ANEXO" />
+          </AssociationSet>
+          <AssociationSet Name="FK_LEAD_CRM_ANOTACAO_LEAD_CRM" Association="Self.FK_LEAD_CRM_ANOTACAO_LEAD_CRM">
+            <End Role="LEAD_CRM" EntitySet="LEAD_CRM" />
+            <End Role="LEAD_CRM_ANOTACAO" EntitySet="LEAD_CRM_ANOTACAO" />
+          </AssociationSet>
+          <AssociationSet Name="FK_LEAD_CRM_ANOTACAO_USUARIO" Association="Self.FK_LEAD_CRM_ANOTACAO_USUARIO">
+            <End Role="USUARIO" EntitySet="USUARIO" />
+            <End Role="LEAD_CRM_ANOTACAO" EntitySet="LEAD_CRM_ANOTACAO" />
+          </AssociationSet>
+          <AssociationSet Name="FK_LEAD_CRM_CRM_ORIGEM" Association="Self.FK_LEAD_CRM_CRM_ORIGEM">
+            <End Role="CRM_ORIGEM" EntitySet="CRM_ORIGEM" />
+            <End Role="LEAD_CRM" EntitySet="LEAD_CRM" />
+          </AssociationSet>
+          <AssociationSet Name="FK_LEAD_CRM_LEAD" Association="Self.FK_LEAD_CRM_LEAD">
+            <End Role="LEAD" EntitySet="LEAD" />
+            <End Role="LEAD_CRM" EntitySet="LEAD_CRM" />
+          </AssociationSet>
+          <AssociationSet Name="FK_LEAD_CRM_MOTIVO_CANCELAMENTO" Association="Self.FK_LEAD_CRM_MOTIVO_CANCELAMENTO">
+            <End Role="MOTIVO_CANCELAMENTO" EntitySet="MOTIVO_CANCELAMENTO" />
+            <End Role="LEAD_CRM" EntitySet="LEAD_CRM" />
+          </AssociationSet>
+          <AssociationSet Name="FK_LEAD_CRM_USUARIO" Association="Self.FK_LEAD_CRM_USUARIO">
+            <End Role="USUARIO" EntitySet="USUARIO" />
+            <End Role="LEAD_CRM" EntitySet="LEAD_CRM" />
+          </AssociationSet>
+          <AssociationSet Name="FK_LEAD_SEXO" Association="Self.FK_LEAD_SEXO">
+            <End Role="SEXO" EntitySet="SEXO" />
+            <End Role="LEAD" EntitySet="LEAD" />
+          </AssociationSet>
+          <AssociationSet Name="FK_LEAD_UF" Association="Self.FK_LEAD_UF">
+            <End Role="UF" EntitySet="UF" />
+            <End Role="LEAD" EntitySet="LEAD" />
+          </AssociationSet>
+          <AssociationSet Name="FK_LEAD_USUARIO" Association="Self.FK_LEAD_USUARIO">
+            <End Role="USUARIO" EntitySet="USUARIO" />
+            <End Role="LEAD" EntitySet="LEAD" />
           </AssociationSet>
           <AssociationSet Name="FK_LOCACAO_ANEXO_LOCACAO" Association="Self.FK_LOCACAO_ANEXO_LOCACAO">
             <End Role="LOCACAO" EntitySet="LOCACAO" />
@@ -22336,6 +22743,7 @@
           <Property Name="CROR_NM_NOME" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
           <Property Name="CROR_IN_ATIVO" Type="Int32" />
           <NavigationProperty Name="CRM" Relationship="Self.FK_CRM_CRM_ORIGEM" FromRole="CRM_ORIGEM" ToRole="CRM" />
+          <NavigationProperty Name="LEAD_CRM" Relationship="CRMSysDBModel.FK_LEAD_CRM_CRM_ORIGEM" FromRole="CRM_ORIGEM" ToRole="LEAD_CRM" />
         </EntityType>
         <EntityType Name="CRM_PEDIDO_ENVIO">
           <Key>
@@ -24073,6 +24481,7 @@
           <NavigationProperty Name="COMPRA" Relationship="Self.FK_COMPRA_MOTIVO_CANCELAMENTO" FromRole="MOTIVO_CANCELAMENTO" ToRole="COMPRA" />
           <NavigationProperty Name="CRM" Relationship="Self.FK_CRM_MOTIVO_CANCELAMENTO" FromRole="MOTIVO_CANCELAMENTO" ToRole="CRM" />
           <NavigationProperty Name="CRM_PEDIDO_VENDA" Relationship="Self.FK_CRM_PEDIDO_VENDA_MOTIVO_CANCELAMENTO" FromRole="MOTIVO_CANCELAMENTO" ToRole="CRM_PEDIDO_VENDA" />
+          <NavigationProperty Name="LEAD_CRM" Relationship="CRMSysDBModel.FK_LEAD_CRM_MOTIVO_CANCELAMENTO" FromRole="MOTIVO_CANCELAMENTO" ToRole="LEAD_CRM" />
         </EntityType>
         <EntityType Name="MOTIVO_ENCERRAMENTO">
           <Key>
@@ -26840,6 +27249,7 @@
           <NavigationProperty Name="GRUPO" Relationship="Self.FK_GRUPO_SEXO" FromRole="SEXO" ToRole="GRUPO" />
           <NavigationProperty Name="GRUPO_PAC" Relationship="Self.FK_GRUPO_PAC_SEXO" FromRole="SEXO" ToRole="GRUPO_PAC" />
           <NavigationProperty Name="PACIENTE" Relationship="Self.FK_PACIENTE_SEXO" FromRole="SEXO" ToRole="PACIENTE" />
+          <NavigationProperty Name="LEAD" Relationship="CRMSysDBModel.FK_LEAD_SEXO" FromRole="SEXO" ToRole="LEAD" />
         </EntityType>
         <EntityType Name="SOLICITACAO">
           <Key>
@@ -27135,6 +27545,7 @@
           <NavigationProperty Name="CRM_ACAO" Relationship="Self.FK_CRM_ACAO_TIPO_ACAO" FromRole="TIPO_ACAO" ToRole="CRM_ACAO" />
           <Property Name="TIAC_IN_SISTEMA" Type="Int32" />
           <NavigationProperty Name="INDICACAO_ACAO" Relationship="CRMSysDBModel.FK_INDICACAO_ACAO_TIPO_ACAO" FromRole="TIPO_ACAO" ToRole="INDICACAO_ACAO" />
+          <NavigationProperty Name="LEAD_CRM_ACAO" Relationship="CRMSysDBModel.FK_LEAD_CRM_ACAO_TIPO_ACAO" FromRole="TIPO_ACAO" ToRole="LEAD_CRM_ACAO" />
         </EntityType>
         <EntityType Name="TIPO_ACESSO">
           <Key>
@@ -27596,6 +28007,7 @@
           <NavigationProperty Name="TELEFONE" Relationship="Self.FK_TELEFONE_UF" FromRole="UF" ToRole="TELEFONE" />
           <NavigationProperty Name="TRANSPORTADORA" Relationship="Self.FK_TRANSPORTADORA_UF" FromRole="UF" ToRole="TRANSPORTADORA" />
           <NavigationProperty Name="MEDICOS" Relationship="CRMSysDBModel.FK_MEDICOS_UF" FromRole="UF" ToRole="MEDICOS" />
+          <NavigationProperty Name="LEAD" Relationship="CRMSysDBModel.FK_LEAD_UF" FromRole="UF" ToRole="LEAD" />
         </EntityType>
         <EntityType Name="UNIDADE">
           <Key>
@@ -27830,6 +28242,12 @@
           <NavigationProperty Name="AREA_PACIENTE" Relationship="CRMSysDBModel.FK_AREA_PACIENTE_USUARIO" FromRole="USUARIO" ToRole="AREA_PACIENTE" />
           <NavigationProperty Name="PACIENTE_VACINA" Relationship="CRMSysDBModel.FK_PACIENTE_VACINA_USUARIO" FromRole="USUARIO" ToRole="PACIENTE_VACINA" />
           <NavigationProperty Name="MENSAGEM_FABRICANTE_LIDO" Relationship="CRMSysDBModel.FK__MENSAGEM___USUA___794F475F" FromRole="USUARIO" ToRole="MENSAGEM_FABRICANTE_LIDO" />
+          <NavigationProperty Name="LEAD" Relationship="CRMSysDBModel.FK_LEAD_USUARIO" FromRole="USUARIO" ToRole="LEAD" />
+          <NavigationProperty Name="LEAD_ANOTACAO" Relationship="CRMSysDBModel.FK_LEAD_ANOTACAO_USUARIO" FromRole="USUARIO" ToRole="LEAD_ANOTACAO" />
+          <NavigationProperty Name="LEAD_CRM" Relationship="CRMSysDBModel.FK_LEAD_CRM_USUARIO" FromRole="USUARIO" ToRole="LEAD_CRM" />
+          <NavigationProperty Name="LEAD_CRM_ACAO" Relationship="CRMSysDBModel.FK_LEAD_CRM_ACAO_USUARIO" FromRole="USUARIO" ToRole="LEAD_CRM_ACAO" />
+          <NavigationProperty Name="LEAD_CRM_ACAO1" Relationship="CRMSysDBModel.FK_LEAD_CRM_ACAO_USUARIO1" FromRole="USUARIO" ToRole="LEAD_CRM_ACAO" />
+          <NavigationProperty Name="LEAD_CRM_ANOTACAO" Relationship="CRMSysDBModel.FK_LEAD_CRM_ANOTACAO_USUARIO" FromRole="USUARIO" ToRole="LEAD_CRM_ANOTACAO" />
         </EntityType>
         <EntityType Name="USUARIO_ANEXO">
           <Key>
@@ -40084,6 +40502,82 @@
             <End Role="USUARIO" EntitySet="USUARIO" />
             <End Role="MENSAGEM_FABRICANTE_LIDO" EntitySet="MENSAGEM_FABRICANTE_LIDO" />
           </AssociationSet>
+          <EntitySet Name="BASE_CONHECIMENTO" EntityType="CRMSysDBModel.BASE_CONHECIMENTO" />
+          <EntitySet Name="LEAD" EntityType="CRMSysDBModel.LEAD" />
+          <EntitySet Name="LEAD_ANEXO" EntityType="CRMSysDBModel.LEAD_ANEXO" />
+          <EntitySet Name="LEAD_ANOTACAO" EntityType="CRMSysDBModel.LEAD_ANOTACAO" />
+          <EntitySet Name="LEAD_CRM" EntityType="CRMSysDBModel.LEAD_CRM" />
+          <EntitySet Name="LEAD_CRM_ACAO" EntityType="CRMSysDBModel.LEAD_CRM_ACAO" />
+          <EntitySet Name="LEAD_CRM_ANEXO" EntityType="CRMSysDBModel.LEAD_CRM_ANEXO" />
+          <EntitySet Name="LEAD_CRM_ANOTACAO" EntityType="CRMSysDBModel.LEAD_CRM_ANOTACAO" />
+          <AssociationSet Name="FK_LEAD_CRM_CRM_ORIGEM" Association="CRMSysDBModel.FK_LEAD_CRM_CRM_ORIGEM">
+            <End Role="CRM_ORIGEM" EntitySet="CRM_ORIGEM" />
+            <End Role="LEAD_CRM" EntitySet="LEAD_CRM" />
+          </AssociationSet>
+          <AssociationSet Name="FK_LEAD_ANEXO_LEAD" Association="CRMSysDBModel.FK_LEAD_ANEXO_LEAD">
+            <End Role="LEAD" EntitySet="LEAD" />
+            <End Role="LEAD_ANEXO" EntitySet="LEAD_ANEXO" />
+          </AssociationSet>
+          <AssociationSet Name="FK_LEAD_ANOTACAO_LEAD" Association="CRMSysDBModel.FK_LEAD_ANOTACAO_LEAD">
+            <End Role="LEAD" EntitySet="LEAD" />
+            <End Role="LEAD_ANOTACAO" EntitySet="LEAD_ANOTACAO" />
+          </AssociationSet>
+          <AssociationSet Name="FK_LEAD_CRM_LEAD" Association="CRMSysDBModel.FK_LEAD_CRM_LEAD">
+            <End Role="LEAD" EntitySet="LEAD" />
+            <End Role="LEAD_CRM" EntitySet="LEAD_CRM" />
+          </AssociationSet>
+          <AssociationSet Name="FK_LEAD_SEXO" Association="CRMSysDBModel.FK_LEAD_SEXO">
+            <End Role="SEXO" EntitySet="SEXO" />
+            <End Role="LEAD" EntitySet="LEAD" />
+          </AssociationSet>
+          <AssociationSet Name="FK_LEAD_UF" Association="CRMSysDBModel.FK_LEAD_UF">
+            <End Role="UF" EntitySet="UF" />
+            <End Role="LEAD" EntitySet="LEAD" />
+          </AssociationSet>
+          <AssociationSet Name="FK_LEAD_USUARIO" Association="CRMSysDBModel.FK_LEAD_USUARIO">
+            <End Role="USUARIO" EntitySet="USUARIO" />
+            <End Role="LEAD" EntitySet="LEAD" />
+          </AssociationSet>
+          <AssociationSet Name="FK_LEAD_ANOTACAO_USUARIO" Association="CRMSysDBModel.FK_LEAD_ANOTACAO_USUARIO">
+            <End Role="USUARIO" EntitySet="USUARIO" />
+            <End Role="LEAD_ANOTACAO" EntitySet="LEAD_ANOTACAO" />
+          </AssociationSet>
+          <AssociationSet Name="FK_LEAD_CRM_ACAO_LEAD_CRM" Association="CRMSysDBModel.FK_LEAD_CRM_ACAO_LEAD_CRM">
+            <End Role="LEAD_CRM" EntitySet="LEAD_CRM" />
+            <End Role="LEAD_CRM_ACAO" EntitySet="LEAD_CRM_ACAO" />
+          </AssociationSet>
+          <AssociationSet Name="FK_LEAD_CRM_ANEXO_LEAD_CRM" Association="CRMSysDBModel.FK_LEAD_CRM_ANEXO_LEAD_CRM">
+            <End Role="LEAD_CRM" EntitySet="LEAD_CRM" />
+            <End Role="LEAD_CRM_ANEXO" EntitySet="LEAD_CRM_ANEXO" />
+          </AssociationSet>
+          <AssociationSet Name="FK_LEAD_CRM_ANOTACAO_LEAD_CRM" Association="CRMSysDBModel.FK_LEAD_CRM_ANOTACAO_LEAD_CRM">
+            <End Role="LEAD_CRM" EntitySet="LEAD_CRM" />
+            <End Role="LEAD_CRM_ANOTACAO" EntitySet="LEAD_CRM_ANOTACAO" />
+          </AssociationSet>
+          <AssociationSet Name="FK_LEAD_CRM_MOTIVO_CANCELAMENTO" Association="CRMSysDBModel.FK_LEAD_CRM_MOTIVO_CANCELAMENTO">
+            <End Role="MOTIVO_CANCELAMENTO" EntitySet="MOTIVO_CANCELAMENTO" />
+            <End Role="LEAD_CRM" EntitySet="LEAD_CRM" />
+          </AssociationSet>
+          <AssociationSet Name="FK_LEAD_CRM_USUARIO" Association="CRMSysDBModel.FK_LEAD_CRM_USUARIO">
+            <End Role="USUARIO" EntitySet="USUARIO" />
+            <End Role="LEAD_CRM" EntitySet="LEAD_CRM" />
+          </AssociationSet>
+          <AssociationSet Name="FK_LEAD_CRM_ACAO_TIPO_ACAO" Association="CRMSysDBModel.FK_LEAD_CRM_ACAO_TIPO_ACAO">
+            <End Role="TIPO_ACAO" EntitySet="TIPO_ACAO" />
+            <End Role="LEAD_CRM_ACAO" EntitySet="LEAD_CRM_ACAO" />
+          </AssociationSet>
+          <AssociationSet Name="FK_LEAD_CRM_ACAO_USUARIO" Association="CRMSysDBModel.FK_LEAD_CRM_ACAO_USUARIO">
+            <End Role="USUARIO" EntitySet="USUARIO" />
+            <End Role="LEAD_CRM_ACAO" EntitySet="LEAD_CRM_ACAO" />
+          </AssociationSet>
+          <AssociationSet Name="FK_LEAD_CRM_ACAO_USUARIO1" Association="CRMSysDBModel.FK_LEAD_CRM_ACAO_USUARIO1">
+            <End Role="USUARIO" EntitySet="USUARIO" />
+            <End Role="LEAD_CRM_ACAO" EntitySet="LEAD_CRM_ACAO" />
+          </AssociationSet>
+          <AssociationSet Name="FK_LEAD_CRM_ANOTACAO_USUARIO" Association="CRMSysDBModel.FK_LEAD_CRM_ANOTACAO_USUARIO">
+            <End Role="USUARIO" EntitySet="USUARIO" />
+            <End Role="LEAD_CRM_ANOTACAO" EntitySet="LEAD_CRM_ANOTACAO" />
+          </AssociationSet>
         </EntityContainer>
         <EntityType Name="PACIENTE_DADOS_EXAME_FISICO">
           <Key>
@@ -41655,6 +42149,360 @@
               <PropertyRef Name="USUA_CD_ID" />
             </Principal>
             <Dependent Role="MENSAGEM_FABRICANTE_LIDO">
+              <PropertyRef Name="USUA_CD_ID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="BASE_CONHECIMENTO">
+          <Key>
+            <PropertyRef Name="BACO_CD_ID" />
+          </Key>
+          <Property Name="BACO_CD_ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="ASSI_CD_ID" Type="Int32" Nullable="false" />
+          <Property Name="BACO_IN_SISTEMA" Type="Int32" />
+          <Property Name="BACO_NM_NOME" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
+          <Property Name="BACO_DT_ENTRADA" Type="DateTime" Precision="0" />
+          <Property Name="BACO_DT_VALIDADE" Type="DateTime" Precision="0" />
+          <Property Name="BACO_AQ_ARQUIVO" Type="String" MaxLength="500" FixedLength="false" Unicode="false" />
+          <Property Name="BACO_IN_ATIVO" Type="Int32" />
+          <Property Name="BACO_IN_TIPO" Type="Int32" />
+        </EntityType>
+        <EntityType Name="LEAD">
+          <Key>
+            <PropertyRef Name="LEAD_CD_ID" />
+          </Key>
+          <Property Name="LEAD_CD_ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="LEAD_DT_ENTRADA" Type="DateTime" Precision="3" />
+          <Property Name="LEAD_NM_NOME" Type="String" MaxLength="150" FixedLength="false" Unicode="false" />
+          <Property Name="LEAD_EM_EMAIL" Type="String" MaxLength="150" FixedLength="false" Unicode="false" />
+          <Property Name="LEAD_NR_CELULAR" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="LEAD_IN_STATUS" Type="Int32" />
+          <Property Name="LEAD_NR_CPF" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="LEAD_NR_CNPJ" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="LEAD_DT_NASCIMENTO" Type="DateTime" Precision="0" />
+          <Property Name="SEXO_CD_ID" Type="Int32" />
+          <Property Name="LEAD_IN_SISTEMA" Type="Int32" />
+          <Property Name="LEAD_NM_ENDERECO" Type="String" MaxLength="150" FixedLength="false" Unicode="false" />
+          <Property Name="LEAD_NR_NUMERO" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="LEAD_NM_COMPLEMENTO" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="LEAD_NM_BAIRRO" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="LEAD_NM_CIDADE" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="UF_CD_ID" Type="Int32" />
+          <Property Name="LEAD_NR_CEP" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="LEAD_IN_ATIVO" Type="Int32" />
+          <Property Name="USUA_CD_ID" Type="Int32" />
+          <NavigationProperty Name="LEAD_ANEXO" Relationship="CRMSysDBModel.FK_LEAD_ANEXO_LEAD" FromRole="LEAD" ToRole="LEAD_ANEXO" />
+          <NavigationProperty Name="LEAD_ANOTACAO" Relationship="CRMSysDBModel.FK_LEAD_ANOTACAO_LEAD" FromRole="LEAD" ToRole="LEAD_ANOTACAO" />
+          <NavigationProperty Name="LEAD_CRM" Relationship="CRMSysDBModel.FK_LEAD_CRM_LEAD" FromRole="LEAD" ToRole="LEAD_CRM" />
+          <NavigationProperty Name="SEXO" Relationship="CRMSysDBModel.FK_LEAD_SEXO" FromRole="LEAD" ToRole="SEXO" />
+          <NavigationProperty Name="UF" Relationship="CRMSysDBModel.FK_LEAD_UF" FromRole="LEAD" ToRole="UF" />
+          <NavigationProperty Name="USUARIO" Relationship="CRMSysDBModel.FK_LEAD_USUARIO" FromRole="LEAD" ToRole="USUARIO" />
+        </EntityType>
+        <EntityType Name="LEAD_ANEXO">
+          <Key>
+            <PropertyRef Name="LEAX_CD_ID" />
+          </Key>
+          <Property Name="LEAX_CD_ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="LEAD_CD_ID" Type="Int32" Nullable="false" />
+          <Property Name="LEAX_DT_ANEXO" Type="DateTime" Precision="3" />
+          <Property Name="LEAX_NM_TITULO" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
+          <Property Name="LEAX_IN_TIPO" Type="Int32" />
+          <Property Name="LEAX_AQ_ARQUIVO" Type="String" Nullable="false" MaxLength="250" FixedLength="false" Unicode="false" />
+          <Property Name="LEAX_IN_ATIVO" Type="Int32" />
+          <NavigationProperty Name="LEAD" Relationship="CRMSysDBModel.FK_LEAD_ANEXO_LEAD" FromRole="LEAD_ANEXO" ToRole="LEAD" />
+        </EntityType>
+        <EntityType Name="LEAD_ANOTACAO">
+          <Key>
+            <PropertyRef Name="LEAN_CD_ID" />
+          </Key>
+          <Property Name="LEAN_CD_ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="LEAD_CD_ID" Type="Int32" Nullable="false" />
+          <Property Name="USUA_CD_ID" Type="Int32" Nullable="false" />
+          <Property Name="LEAN_DT_ANOTACAO" Type="DateTime" Precision="3" />
+          <Property Name="LEAN_TX_ANOTACAO" Type="String" MaxLength="5000" FixedLength="false" Unicode="false" />
+          <Property Name="LEAN_IN_ATIVO" Type="Int32" />
+          <NavigationProperty Name="LEAD" Relationship="CRMSysDBModel.FK_LEAD_ANOTACAO_LEAD" FromRole="LEAD_ANOTACAO" ToRole="LEAD" />
+          <NavigationProperty Name="USUARIO" Relationship="CRMSysDBModel.FK_LEAD_ANOTACAO_USUARIO" FromRole="LEAD_ANOTACAO" ToRole="USUARIO" />
+        </EntityType>
+        <EntityType Name="LEAD_CRM">
+          <Key>
+            <PropertyRef Name="LECR_CD_ID" />
+          </Key>
+          <Property Name="LECR_CD_ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="LEAD_CD_ID" Type="Int32" Nullable="false" />
+          <Property Name="USUA_CD_ID" Type="Int32" Nullable="false" />
+          <Property Name="MOCA_CD_ID" Type="Int32" />
+          <Property Name="CROR_CD_ID" Type="Int32" />
+          <Property Name="LECR_GU_GUID" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="LECR_IN_ATIVO" Type="Int32" />
+          <Property Name="LECR_DT_CRIACAO" Type="DateTime" Precision="0" />
+          <Property Name="LECR_NM_NOME" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="LECR_DS_DESCRICAO" Type="String" MaxLength="500" FixedLength="false" Unicode="false" />
+          <Property Name="LECR_IN_STATUS" Type="Int32" />
+          <Property Name="LECR_DT_CANCELAMENTO" Type="DateTime" Precision="0" />
+          <Property Name="LECR_DS_MOTIVO_CANCELAMENTO" Type="String" MaxLength="500" FixedLength="false" Unicode="false" />
+          <Property Name="LECR_DT_ENCERRAMENTO" Type="DateTime" Precision="0" />
+          <Property Name="LECR_DS_INFORMACAO_ENCERRAMENTO" Type="String" MaxLength="500" FixedLength="false" Unicode="false" />
+          <Property Name="LECR_IN_ESTRELA" Type="Int32" />
+          <Property Name="LECR_NR_TEMPERATURA" Type="Int32" />
+          <Property Name="LECR_NM_CAMPANHA" Type="String" MaxLength="150" FixedLength="false" Unicode="false" />
+          <Property Name="LECR_DS_MOVIMENTACAO" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="LECR_IN_SISTEMA" Type="Int32" />
+          <NavigationProperty Name="CRM_ORIGEM" Relationship="CRMSysDBModel.FK_LEAD_CRM_CRM_ORIGEM" FromRole="LEAD_CRM" ToRole="CRM_ORIGEM" />
+          <NavigationProperty Name="LEAD" Relationship="CRMSysDBModel.FK_LEAD_CRM_LEAD" FromRole="LEAD_CRM" ToRole="LEAD" />
+          <NavigationProperty Name="LEAD_CRM_ACAO" Relationship="CRMSysDBModel.FK_LEAD_CRM_ACAO_LEAD_CRM" FromRole="LEAD_CRM" ToRole="LEAD_CRM_ACAO" />
+          <NavigationProperty Name="LEAD_CRM_ANEXO" Relationship="CRMSysDBModel.FK_LEAD_CRM_ANEXO_LEAD_CRM" FromRole="LEAD_CRM" ToRole="LEAD_CRM_ANEXO" />
+          <NavigationProperty Name="LEAD_CRM_ANOTACAO" Relationship="CRMSysDBModel.FK_LEAD_CRM_ANOTACAO_LEAD_CRM" FromRole="LEAD_CRM" ToRole="LEAD_CRM_ANOTACAO" />
+          <NavigationProperty Name="MOTIVO_CANCELAMENTO" Relationship="CRMSysDBModel.FK_LEAD_CRM_MOTIVO_CANCELAMENTO" FromRole="LEAD_CRM" ToRole="MOTIVO_CANCELAMENTO" />
+          <NavigationProperty Name="USUARIO" Relationship="CRMSysDBModel.FK_LEAD_CRM_USUARIO" FromRole="LEAD_CRM" ToRole="USUARIO" />
+        </EntityType>
+        <EntityType Name="LEAD_CRM_ACAO">
+          <Key>
+            <PropertyRef Name="LCAC_CD_ID" />
+          </Key>
+          <Property Name="LCAC_CD_ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="LECR_CD_ID" Type="Int32" Nullable="false" />
+          <Property Name="LCAC_DT_CRIACAO" Type="DateTime" Precision="3" />
+          <Property Name="USUA_CD_ID1" Type="Int32" />
+          <Property Name="USUA_CD_ID2" Type="Int32" />
+          <Property Name="LCAC_NM_TITULO" Type="String" MaxLength="150" FixedLength="false" Unicode="false" />
+          <Property Name="LCAC_DS_DESCRICAO" Type="String" MaxLength="5000" FixedLength="false" Unicode="false" />
+          <Property Name="LCAC_DT_PREVISTA" Type="DateTime" Precision="3" />
+          <Property Name="TIAC_CD_ID" Type="Int32" />
+          <Property Name="LCAC_IN_STATUS" Type="Int32" />
+          <Property Name="LCAC_IN_ATIVO" Type="Int32" />
+          <Property Name="LCAC_NR_ATRASO" Type="Int32" annotation:StoreGeneratedPattern="Computed" />
+          <NavigationProperty Name="LEAD_CRM" Relationship="CRMSysDBModel.FK_LEAD_CRM_ACAO_LEAD_CRM" FromRole="LEAD_CRM_ACAO" ToRole="LEAD_CRM" />
+          <NavigationProperty Name="TIPO_ACAO" Relationship="CRMSysDBModel.FK_LEAD_CRM_ACAO_TIPO_ACAO" FromRole="LEAD_CRM_ACAO" ToRole="TIPO_ACAO" />
+          <NavigationProperty Name="USUARIO" Relationship="CRMSysDBModel.FK_LEAD_CRM_ACAO_USUARIO" FromRole="LEAD_CRM_ACAO" ToRole="USUARIO" />
+          <NavigationProperty Name="USUARIO1" Relationship="CRMSysDBModel.FK_LEAD_CRM_ACAO_USUARIO1" FromRole="LEAD_CRM_ACAO" ToRole="USUARIO" />
+        </EntityType>
+        <EntityType Name="LEAD_CRM_ANEXO">
+          <Key>
+            <PropertyRef Name="LCAX_CD_ID" />
+          </Key>
+          <Property Name="LCAX_CD_ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="LECR_CD_ID" Type="Int32" Nullable="false" />
+          <Property Name="LCAX_NM_TITULO" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
+          <Property Name="LCAX_DT_ANEXO" Type="DateTime" Precision="0" />
+          <Property Name="LCAX_IN_TIPO" Type="Int32" />
+          <Property Name="LCAX_AQ_ARQUIVO" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
+          <Property Name="LCAX_IN_ATIVO" Type="Int32" />
+          <NavigationProperty Name="LEAD_CRM" Relationship="CRMSysDBModel.FK_LEAD_CRM_ANEXO_LEAD_CRM" FromRole="LEAD_CRM_ANEXO" ToRole="LEAD_CRM" />
+        </EntityType>
+        <EntityType Name="LEAD_CRM_ANOTACAO">
+          <Key>
+            <PropertyRef Name="LCAN_CD_ID" />
+          </Key>
+          <Property Name="LCAN_CD_ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="LECR_CD_ID" Type="Int32" Nullable="false" />
+          <Property Name="USUA_CD_ID" Type="Int32" Nullable="false" />
+          <Property Name="LCAN_DT_ANOTACAO" Type="DateTime" Precision="3" />
+          <Property Name="LCAN_TX_ANOTACAO" Type="String" MaxLength="5000" FixedLength="false" Unicode="false" />
+          <Property Name="LCAN_IN_ATIVO" Type="Int32" />
+          <NavigationProperty Name="LEAD_CRM" Relationship="CRMSysDBModel.FK_LEAD_CRM_ANOTACAO_LEAD_CRM" FromRole="LEAD_CRM_ANOTACAO" ToRole="LEAD_CRM" />
+          <NavigationProperty Name="USUARIO" Relationship="CRMSysDBModel.FK_LEAD_CRM_ANOTACAO_USUARIO" FromRole="LEAD_CRM_ANOTACAO" ToRole="USUARIO" />
+        </EntityType>
+        <Association Name="FK_LEAD_CRM_CRM_ORIGEM">
+          <End Type="CRMSysDBModel.CRM_ORIGEM" Role="CRM_ORIGEM" Multiplicity="0..1" />
+          <End Type="CRMSysDBModel.LEAD_CRM" Role="LEAD_CRM" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="CRM_ORIGEM">
+              <PropertyRef Name="CROR_CD_ID" />
+            </Principal>
+            <Dependent Role="LEAD_CRM">
+              <PropertyRef Name="CROR_CD_ID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_LEAD_ANEXO_LEAD">
+          <End Type="CRMSysDBModel.LEAD" Role="LEAD" Multiplicity="1" />
+          <End Type="CRMSysDBModel.LEAD_ANEXO" Role="LEAD_ANEXO" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="LEAD">
+              <PropertyRef Name="LEAD_CD_ID" />
+            </Principal>
+            <Dependent Role="LEAD_ANEXO">
+              <PropertyRef Name="LEAD_CD_ID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_LEAD_ANOTACAO_LEAD">
+          <End Type="CRMSysDBModel.LEAD" Role="LEAD" Multiplicity="1" />
+          <End Type="CRMSysDBModel.LEAD_ANOTACAO" Role="LEAD_ANOTACAO" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="LEAD">
+              <PropertyRef Name="LEAD_CD_ID" />
+            </Principal>
+            <Dependent Role="LEAD_ANOTACAO">
+              <PropertyRef Name="LEAD_CD_ID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_LEAD_CRM_LEAD">
+          <End Type="CRMSysDBModel.LEAD" Role="LEAD" Multiplicity="1" />
+          <End Type="CRMSysDBModel.LEAD_CRM" Role="LEAD_CRM" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="LEAD">
+              <PropertyRef Name="LEAD_CD_ID" />
+            </Principal>
+            <Dependent Role="LEAD_CRM">
+              <PropertyRef Name="LEAD_CD_ID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_LEAD_SEXO">
+          <End Type="CRMSysDBModel.SEXO" Role="SEXO" Multiplicity="0..1" />
+          <End Type="CRMSysDBModel.LEAD" Role="LEAD" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="SEXO">
+              <PropertyRef Name="SEXO_CD_ID" />
+            </Principal>
+            <Dependent Role="LEAD">
+              <PropertyRef Name="SEXO_CD_ID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_LEAD_UF">
+          <End Type="CRMSysDBModel.UF" Role="UF" Multiplicity="0..1" />
+          <End Type="CRMSysDBModel.LEAD" Role="LEAD" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="UF">
+              <PropertyRef Name="UF_CD_ID" />
+            </Principal>
+            <Dependent Role="LEAD">
+              <PropertyRef Name="UF_CD_ID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_LEAD_USUARIO">
+          <End Type="CRMSysDBModel.USUARIO" Role="USUARIO" Multiplicity="0..1" />
+          <End Type="CRMSysDBModel.LEAD" Role="LEAD" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="USUARIO">
+              <PropertyRef Name="USUA_CD_ID" />
+            </Principal>
+            <Dependent Role="LEAD">
+              <PropertyRef Name="USUA_CD_ID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_LEAD_ANOTACAO_USUARIO">
+          <End Type="CRMSysDBModel.USUARIO" Role="USUARIO" Multiplicity="1" />
+          <End Type="CRMSysDBModel.LEAD_ANOTACAO" Role="LEAD_ANOTACAO" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="USUARIO">
+              <PropertyRef Name="USUA_CD_ID" />
+            </Principal>
+            <Dependent Role="LEAD_ANOTACAO">
+              <PropertyRef Name="USUA_CD_ID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_LEAD_CRM_ACAO_LEAD_CRM">
+          <End Type="CRMSysDBModel.LEAD_CRM" Role="LEAD_CRM" Multiplicity="1" />
+          <End Type="CRMSysDBModel.LEAD_CRM_ACAO" Role="LEAD_CRM_ACAO" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="LEAD_CRM">
+              <PropertyRef Name="LECR_CD_ID" />
+            </Principal>
+            <Dependent Role="LEAD_CRM_ACAO">
+              <PropertyRef Name="LECR_CD_ID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_LEAD_CRM_ANEXO_LEAD_CRM">
+          <End Type="CRMSysDBModel.LEAD_CRM" Role="LEAD_CRM" Multiplicity="1" />
+          <End Type="CRMSysDBModel.LEAD_CRM_ANEXO" Role="LEAD_CRM_ANEXO" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="LEAD_CRM">
+              <PropertyRef Name="LECR_CD_ID" />
+            </Principal>
+            <Dependent Role="LEAD_CRM_ANEXO">
+              <PropertyRef Name="LECR_CD_ID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_LEAD_CRM_ANOTACAO_LEAD_CRM">
+          <End Type="CRMSysDBModel.LEAD_CRM" Role="LEAD_CRM" Multiplicity="1" />
+          <End Type="CRMSysDBModel.LEAD_CRM_ANOTACAO" Role="LEAD_CRM_ANOTACAO" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="LEAD_CRM">
+              <PropertyRef Name="LECR_CD_ID" />
+            </Principal>
+            <Dependent Role="LEAD_CRM_ANOTACAO">
+              <PropertyRef Name="LECR_CD_ID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_LEAD_CRM_MOTIVO_CANCELAMENTO">
+          <End Type="CRMSysDBModel.MOTIVO_CANCELAMENTO" Role="MOTIVO_CANCELAMENTO" Multiplicity="0..1" />
+          <End Type="CRMSysDBModel.LEAD_CRM" Role="LEAD_CRM" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="MOTIVO_CANCELAMENTO">
+              <PropertyRef Name="MOCA_CD_ID" />
+            </Principal>
+            <Dependent Role="LEAD_CRM">
+              <PropertyRef Name="MOCA_CD_ID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_LEAD_CRM_USUARIO">
+          <End Type="CRMSysDBModel.USUARIO" Role="USUARIO" Multiplicity="1" />
+          <End Type="CRMSysDBModel.LEAD_CRM" Role="LEAD_CRM" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="USUARIO">
+              <PropertyRef Name="USUA_CD_ID" />
+            </Principal>
+            <Dependent Role="LEAD_CRM">
+              <PropertyRef Name="USUA_CD_ID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_LEAD_CRM_ACAO_TIPO_ACAO">
+          <End Type="CRMSysDBModel.TIPO_ACAO" Role="TIPO_ACAO" Multiplicity="0..1" />
+          <End Type="CRMSysDBModel.LEAD_CRM_ACAO" Role="LEAD_CRM_ACAO" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="TIPO_ACAO">
+              <PropertyRef Name="TIAC_CD_ID" />
+            </Principal>
+            <Dependent Role="LEAD_CRM_ACAO">
+              <PropertyRef Name="TIAC_CD_ID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_LEAD_CRM_ACAO_USUARIO">
+          <End Type="CRMSysDBModel.USUARIO" Role="USUARIO" Multiplicity="0..1" />
+          <End Type="CRMSysDBModel.LEAD_CRM_ACAO" Role="LEAD_CRM_ACAO" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="USUARIO">
+              <PropertyRef Name="USUA_CD_ID" />
+            </Principal>
+            <Dependent Role="LEAD_CRM_ACAO">
+              <PropertyRef Name="USUA_CD_ID1" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_LEAD_CRM_ACAO_USUARIO1">
+          <End Type="CRMSysDBModel.USUARIO" Role="USUARIO" Multiplicity="0..1" />
+          <End Type="CRMSysDBModel.LEAD_CRM_ACAO" Role="LEAD_CRM_ACAO" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="USUARIO">
+              <PropertyRef Name="USUA_CD_ID" />
+            </Principal>
+            <Dependent Role="LEAD_CRM_ACAO">
+              <PropertyRef Name="USUA_CD_ID2" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_LEAD_CRM_ANOTACAO_USUARIO">
+          <End Type="CRMSysDBModel.USUARIO" Role="USUARIO" Multiplicity="1" />
+          <End Type="CRMSysDBModel.LEAD_CRM_ANOTACAO" Role="LEAD_CRM_ANOTACAO" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="USUARIO">
+              <PropertyRef Name="USUA_CD_ID" />
+            </Principal>
+            <Dependent Role="LEAD_CRM_ANOTACAO">
               <PropertyRef Name="USUA_CD_ID" />
             </Dependent>
           </ReferentialConstraint>
@@ -49276,6 +50124,141 @@
                 <ScalarProperty Name="USUA_CD_ID" ColumnName="USUA_CD_ID" />
                 <ScalarProperty Name="MEFA_CD_ID" ColumnName="MEFA_CD_ID" />
                 <ScalarProperty Name="AVLI_CD_ID" ColumnName="AVLI_CD_ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="BASE_CONHECIMENTO">
+            <EntityTypeMapping TypeName="CRMSysDBModel.BASE_CONHECIMENTO">
+              <MappingFragment StoreEntitySet="BASE_CONHECIMENTO">
+                <ScalarProperty Name="BACO_IN_TIPO" ColumnName="BACO_IN_TIPO" />
+                <ScalarProperty Name="BACO_IN_ATIVO" ColumnName="BACO_IN_ATIVO" />
+                <ScalarProperty Name="BACO_AQ_ARQUIVO" ColumnName="BACO_AQ_ARQUIVO" />
+                <ScalarProperty Name="BACO_DT_VALIDADE" ColumnName="BACO_DT_VALIDADE" />
+                <ScalarProperty Name="BACO_DT_ENTRADA" ColumnName="BACO_DT_ENTRADA" />
+                <ScalarProperty Name="BACO_NM_NOME" ColumnName="BACO_NM_NOME" />
+                <ScalarProperty Name="BACO_IN_SISTEMA" ColumnName="BACO_IN_SISTEMA" />
+                <ScalarProperty Name="ASSI_CD_ID" ColumnName="ASSI_CD_ID" />
+                <ScalarProperty Name="BACO_CD_ID" ColumnName="BACO_CD_ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="LEAD">
+            <EntityTypeMapping TypeName="CRMSysDBModel.LEAD">
+              <MappingFragment StoreEntitySet="LEAD">
+                <ScalarProperty Name="USUA_CD_ID" ColumnName="USUA_CD_ID" />
+                <ScalarProperty Name="LEAD_IN_ATIVO" ColumnName="LEAD_IN_ATIVO" />
+                <ScalarProperty Name="LEAD_NR_CEP" ColumnName="LEAD_NR_CEP" />
+                <ScalarProperty Name="UF_CD_ID" ColumnName="UF_CD_ID" />
+                <ScalarProperty Name="LEAD_NM_CIDADE" ColumnName="LEAD_NM_CIDADE" />
+                <ScalarProperty Name="LEAD_NM_BAIRRO" ColumnName="LEAD_NM_BAIRRO" />
+                <ScalarProperty Name="LEAD_NM_COMPLEMENTO" ColumnName="LEAD_NM_COMPLEMENTO" />
+                <ScalarProperty Name="LEAD_NR_NUMERO" ColumnName="LEAD_NR_NUMERO" />
+                <ScalarProperty Name="LEAD_NM_ENDERECO" ColumnName="LEAD_NM_ENDERECO" />
+                <ScalarProperty Name="LEAD_IN_SISTEMA" ColumnName="LEAD_IN_SISTEMA" />
+                <ScalarProperty Name="SEXO_CD_ID" ColumnName="SEXO_CD_ID" />
+                <ScalarProperty Name="LEAD_DT_NASCIMENTO" ColumnName="LEAD_DT_NASCIMENTO" />
+                <ScalarProperty Name="LEAD_NR_CNPJ" ColumnName="LEAD_NR_CNPJ" />
+                <ScalarProperty Name="LEAD_NR_CPF" ColumnName="LEAD_NR_CPF" />
+                <ScalarProperty Name="LEAD_IN_STATUS" ColumnName="LEAD_IN_STATUS" />
+                <ScalarProperty Name="LEAD_NR_CELULAR" ColumnName="LEAD_NR_CELULAR" />
+                <ScalarProperty Name="LEAD_EM_EMAIL" ColumnName="LEAD_EM_EMAIL" />
+                <ScalarProperty Name="LEAD_NM_NOME" ColumnName="LEAD_NM_NOME" />
+                <ScalarProperty Name="LEAD_DT_ENTRADA" ColumnName="LEAD_DT_ENTRADA" />
+                <ScalarProperty Name="LEAD_CD_ID" ColumnName="LEAD_CD_ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="LEAD_ANEXO">
+            <EntityTypeMapping TypeName="CRMSysDBModel.LEAD_ANEXO">
+              <MappingFragment StoreEntitySet="LEAD_ANEXO">
+                <ScalarProperty Name="LEAX_IN_ATIVO" ColumnName="LEAX_IN_ATIVO" />
+                <ScalarProperty Name="LEAX_AQ_ARQUIVO" ColumnName="LEAX_AQ_ARQUIVO" />
+                <ScalarProperty Name="LEAX_IN_TIPO" ColumnName="LEAX_IN_TIPO" />
+                <ScalarProperty Name="LEAX_NM_TITULO" ColumnName="LEAX_NM_TITULO" />
+                <ScalarProperty Name="LEAX_DT_ANEXO" ColumnName="LEAX_DT_ANEXO" />
+                <ScalarProperty Name="LEAD_CD_ID" ColumnName="LEAD_CD_ID" />
+                <ScalarProperty Name="LEAX_CD_ID" ColumnName="LEAX_CD_ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="LEAD_ANOTACAO">
+            <EntityTypeMapping TypeName="CRMSysDBModel.LEAD_ANOTACAO">
+              <MappingFragment StoreEntitySet="LEAD_ANOTACAO">
+                <ScalarProperty Name="LEAN_IN_ATIVO" ColumnName="LEAN_IN_ATIVO" />
+                <ScalarProperty Name="LEAN_TX_ANOTACAO" ColumnName="LEAN_TX_ANOTACAO" />
+                <ScalarProperty Name="LEAN_DT_ANOTACAO" ColumnName="LEAN_DT_ANOTACAO" />
+                <ScalarProperty Name="USUA_CD_ID" ColumnName="USUA_CD_ID" />
+                <ScalarProperty Name="LEAD_CD_ID" ColumnName="LEAD_CD_ID" />
+                <ScalarProperty Name="LEAN_CD_ID" ColumnName="LEAN_CD_ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="LEAD_CRM">
+            <EntityTypeMapping TypeName="CRMSysDBModel.LEAD_CRM">
+              <MappingFragment StoreEntitySet="LEAD_CRM">
+                <ScalarProperty Name="LECR_IN_SISTEMA" ColumnName="LECR_IN_SISTEMA" />
+                <ScalarProperty Name="LECR_DS_MOVIMENTACAO" ColumnName="LECR_DS_MOVIMENTACAO" />
+                <ScalarProperty Name="LECR_NM_CAMPANHA" ColumnName="LECR_NM_CAMPANHA" />
+                <ScalarProperty Name="LECR_NR_TEMPERATURA" ColumnName="LECR_NR_TEMPERATURA" />
+                <ScalarProperty Name="LECR_IN_ESTRELA" ColumnName="LECR_IN_ESTRELA" />
+                <ScalarProperty Name="LECR_DS_INFORMACAO_ENCERRAMENTO" ColumnName="LECR_DS_INFORMACAO_ENCERRAMENTO" />
+                <ScalarProperty Name="LECR_DT_ENCERRAMENTO" ColumnName="LECR_DT_ENCERRAMENTO" />
+                <ScalarProperty Name="LECR_DS_MOTIVO_CANCELAMENTO" ColumnName="LECR_DS_MOTIVO_CANCELAMENTO" />
+                <ScalarProperty Name="LECR_DT_CANCELAMENTO" ColumnName="LECR_DT_CANCELAMENTO" />
+                <ScalarProperty Name="LECR_IN_STATUS" ColumnName="LECR_IN_STATUS" />
+                <ScalarProperty Name="LECR_DS_DESCRICAO" ColumnName="LECR_DS_DESCRICAO" />
+                <ScalarProperty Name="LECR_NM_NOME" ColumnName="LECR_NM_NOME" />
+                <ScalarProperty Name="LECR_DT_CRIACAO" ColumnName="LECR_DT_CRIACAO" />
+                <ScalarProperty Name="LECR_IN_ATIVO" ColumnName="LECR_IN_ATIVO" />
+                <ScalarProperty Name="LECR_GU_GUID" ColumnName="LECR_GU_GUID" />
+                <ScalarProperty Name="CROR_CD_ID" ColumnName="CROR_CD_ID" />
+                <ScalarProperty Name="MOCA_CD_ID" ColumnName="MOCA_CD_ID" />
+                <ScalarProperty Name="USUA_CD_ID" ColumnName="USUA_CD_ID" />
+                <ScalarProperty Name="LEAD_CD_ID" ColumnName="LEAD_CD_ID" />
+                <ScalarProperty Name="LECR_CD_ID" ColumnName="LECR_CD_ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="LEAD_CRM_ACAO">
+            <EntityTypeMapping TypeName="CRMSysDBModel.LEAD_CRM_ACAO">
+              <MappingFragment StoreEntitySet="LEAD_CRM_ACAO">
+                <ScalarProperty Name="LCAC_NR_ATRASO" ColumnName="LCAC_NR_ATRASO" />
+                <ScalarProperty Name="LCAC_IN_ATIVO" ColumnName="LCAC_IN_ATIVO" />
+                <ScalarProperty Name="LCAC_IN_STATUS" ColumnName="LCAC_IN_STATUS" />
+                <ScalarProperty Name="TIAC_CD_ID" ColumnName="TIAC_CD_ID" />
+                <ScalarProperty Name="LCAC_DT_PREVISTA" ColumnName="LCAC_DT_PREVISTA" />
+                <ScalarProperty Name="LCAC_DS_DESCRICAO" ColumnName="LCAC_DS_DESCRICAO" />
+                <ScalarProperty Name="LCAC_NM_TITULO" ColumnName="LCAC_NM_TITULO" />
+                <ScalarProperty Name="USUA_CD_ID2" ColumnName="USUA_CD_ID2" />
+                <ScalarProperty Name="USUA_CD_ID1" ColumnName="USUA_CD_ID1" />
+                <ScalarProperty Name="LCAC_DT_CRIACAO" ColumnName="LCAC_DT_CRIACAO" />
+                <ScalarProperty Name="LECR_CD_ID" ColumnName="LECR_CD_ID" />
+                <ScalarProperty Name="LCAC_CD_ID" ColumnName="LCAC_CD_ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="LEAD_CRM_ANEXO">
+            <EntityTypeMapping TypeName="CRMSysDBModel.LEAD_CRM_ANEXO">
+              <MappingFragment StoreEntitySet="LEAD_CRM_ANEXO">
+                <ScalarProperty Name="LCAX_IN_ATIVO" ColumnName="LCAX_IN_ATIVO" />
+                <ScalarProperty Name="LCAX_AQ_ARQUIVO" ColumnName="LCAX_AQ_ARQUIVO" />
+                <ScalarProperty Name="LCAX_IN_TIPO" ColumnName="LCAX_IN_TIPO" />
+                <ScalarProperty Name="LCAX_DT_ANEXO" ColumnName="LCAX_DT_ANEXO" />
+                <ScalarProperty Name="LCAX_NM_TITULO" ColumnName="LCAX_NM_TITULO" />
+                <ScalarProperty Name="LECR_CD_ID" ColumnName="LECR_CD_ID" />
+                <ScalarProperty Name="LCAX_CD_ID" ColumnName="LCAX_CD_ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="LEAD_CRM_ANOTACAO">
+            <EntityTypeMapping TypeName="CRMSysDBModel.LEAD_CRM_ANOTACAO">
+              <MappingFragment StoreEntitySet="LEAD_CRM_ANOTACAO">
+                <ScalarProperty Name="LCAN_IN_ATIVO" ColumnName="LCAN_IN_ATIVO" />
+                <ScalarProperty Name="LCAN_TX_ANOTACAO" ColumnName="LCAN_TX_ANOTACAO" />
+                <ScalarProperty Name="LCAN_DT_ANOTACAO" ColumnName="LCAN_DT_ANOTACAO" />
+                <ScalarProperty Name="USUA_CD_ID" ColumnName="USUA_CD_ID" />
+                <ScalarProperty Name="LECR_CD_ID" ColumnName="LECR_CD_ID" />
+                <ScalarProperty Name="LCAN_CD_ID" ColumnName="LCAN_CD_ID" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
