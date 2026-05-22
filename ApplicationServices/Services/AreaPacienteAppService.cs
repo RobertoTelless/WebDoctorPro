@@ -39,7 +39,7 @@ namespace ApplicationServices.Services
             return item;
         }
 
-        public Tuple<Int32, List<AREA_PACIENTE>, Boolean> ExecuteFilter(String paciente, DateTime? inicio, DateTime? final, Int32? tipo, Int32 idAss)
+        public Tuple<Int32, List<AREA_PACIENTE>, Boolean> ExecuteFilter(String paciente, DateTime? inicio, DateTime? final, Int32? tipo, Int32? vista, Int32? processa, Int32 idAss)
         {
             try
             {
@@ -47,7 +47,7 @@ namespace ApplicationServices.Services
                 Int32 volta = 0;
 
                 // Processa filtro
-                objeto = _baseService.ExecuteFilter(paciente, inicio, final, tipo, idAss);
+                objeto = _baseService.ExecuteFilter(paciente, inicio, final, tipo, vista, processa, idAss);
                 if (objeto.Count == 0)
                 {
                     volta = 1;

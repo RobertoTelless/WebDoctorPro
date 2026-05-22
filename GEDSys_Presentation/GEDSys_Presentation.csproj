@@ -519,6 +519,7 @@
     <Compile Include="Classes\EnvioEMailGeral.cs" />
     <Compile Include="Classes\ConvertHTMLtoPDF .cs" />
     <Compile Include="Classes\GravaLogExcecao.cs" />
+    <Compile Include="Controllers\AdministraController.cs" />
     <Compile Include="Controllers\AreaPacienteController.cs" />
     <Compile Include="Controllers\AuditoriaController.cs" />
     <Compile Include="Controllers\AvisoController.cs" />
@@ -6750,6 +6751,7 @@
     <Folder Include="Imagens\Assinante\90\Foto\" />
     <Folder Include="Imagens\Assinante\90\Pagamentos\" />
     <Folder Include="Models\" />
+    <Folder Include="Views\Administra\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff2" />

@@ -31,9 +31,9 @@ namespace ModelServices.EntitiesServices
             return _baseRepository.GetAllItens(idAss);
         }
 
-        public List<AREA_PACIENTE> ExecuteFilter(String paciente, DateTime? inicio, DateTime? final, Int32? tipo, Int32 idAss)
+        public List<AREA_PACIENTE> ExecuteFilter(String paciente, DateTime? inicio, DateTime? final, Int32? tipo, Int32? vista, Int32? processa, Int32 idAss)
         {
-            return _baseRepository.ExecuteFilter(paciente, inicio, final, tipo, idAss);
+            return _baseRepository.ExecuteFilter(paciente, inicio, final, tipo, vista, processa, idAss);
 
         }
 

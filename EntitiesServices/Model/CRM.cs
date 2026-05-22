@@ -75,6 +75,8 @@ namespace EntitiesServices.Model
         public Nullable<int> EMFI_CD_ID { get; set; }
         public string CRM1_ID_IDENTIFICADOR { get; set; }
         public Nullable<int> CRM1_IN_SISTEMA { get; set; }
+        public Nullable<int> LEAD_CD_ID { get; set; }
+        public Nullable<int> PACI_CD_ID { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<AGENDA> AGENDA { get; set; }
@@ -109,5 +111,7 @@ namespace EntitiesServices.Model
         public virtual ICollection<DIARIO_PROCESSO> DIARIO_PROCESSO { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<MENSAGENS_ENVIADAS_SISTEMA> MENSAGENS_ENVIADAS_SISTEMA { get; set; }
+        public virtual LEAD LEAD { get; set; }
+        public virtual PACIENTE PACIENTE { get; set; }
     }
 }

@@ -1891,6 +1891,8 @@
           <Property Name="EMFI_CD_ID" Type="int" />
           <Property Name="CRM1_ID_IDENTIFICADOR" Type="varchar" MaxLength="50" />
           <Property Name="CRM1_IN_SISTEMA" Type="int" />
+          <Property Name="LEAD_CD_ID" Type="int" />
+          <Property Name="PACI_CD_ID" Type="int" />
         </EntityType>
         <EntityType Name="CRM_ACAO">
           <Key>
@@ -3101,6 +3103,8 @@
           <Property Name="LEAD_NR_CEP" Type="varchar" MaxLength="50" />
           <Property Name="LEAD_IN_ATIVO" Type="int" />
           <Property Name="USUA_CD_ID" Type="int" />
+          <Property Name="CRM1_CD_ID" Type="int" />
+          <Property Name="LEAD_DT_DUMMY" Type="datetime" />
         </EntityType>
         <EntityType Name="LEAD_ANEXO">
           <Key>
@@ -9944,6 +9948,18 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_CRM_LEAD">
+          <End Role="LEAD" Type="Self.LEAD" Multiplicity="0..1" />
+          <End Role="CRM" Type="Self.CRM" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="LEAD">
+              <PropertyRef Name="LEAD_CD_ID" />
+            </Principal>
+            <Dependent Role="CRM">
+              <PropertyRef Name="LEAD_CD_ID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_CRM_MENSAGENS">
           <End Role="MENSAGENS" Type="Self.MENSAGENS" Multiplicity="0..1" />
           <End Role="CRM" Type="Self.CRM" Multiplicity="*" />
@@ -9977,6 +9993,18 @@
             </Principal>
             <Dependent Role="CRM">
               <PropertyRef Name="MOEN_CD_ID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_CRM_PACIENTE">
+          <End Role="PACIENTE" Type="Self.PACIENTE" Multiplicity="0..1" />
+          <End Role="CRM" Type="Self.CRM" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="PACIENTE">
+              <PropertyRef Name="PACI__CD_ID" />
+            </Principal>
+            <Dependent Role="CRM">
+              <PropertyRef Name="PACI_CD_ID" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -18147,6 +18175,10 @@
             <End Role="FUNIL" EntitySet="FUNIL" />
             <End Role="CRM" EntitySet="CRM" />
           </AssociationSet>
+          <AssociationSet Name="FK_CRM_LEAD" Association="Self.FK_CRM_LEAD">
+            <End Role="LEAD" EntitySet="LEAD" />
+            <End Role="CRM" EntitySet="CRM" />
+          </AssociationSet>
           <AssociationSet Name="FK_CRM_MENSAGENS" Association="Self.FK_CRM_MENSAGENS">
             <End Role="MENSAGENS" EntitySet="MENSAGENS" />
             <End Role="CRM" EntitySet="CRM" />
@@ -18157,6 +18189,10 @@
           </AssociationSet>
           <AssociationSet Name="FK_CRM_MOTIVO_ENCERRAMENTO" Association="Self.FK_CRM_MOTIVO_ENCERRAMENTO">
             <End Role="MOTIVO_ENCERRAMENTO" EntitySet="MOTIVO_ENCERRAMENTO" />
+            <End Role="CRM" EntitySet="CRM" />
+          </AssociationSet>
+          <AssociationSet Name="FK_CRM_PACIENTE" Association="Self.FK_CRM_PACIENTE">
+            <End Role="PACIENTE" EntitySet="PACIENTE" />
             <End Role="CRM" EntitySet="CRM" />
           </AssociationSet>
           <AssociationSet Name="FK_CRM_PEDIDO_ENVIO_CRM_PEDIDO_VENDA" Association="Self.FK_CRM_PEDIDO_ENVIO_CRM_PEDIDO_VENDA">
@@ -22640,6 +22676,10 @@
           <NavigationProperty Name="USUARIO" Relationship="Self.FK_CRM_USUARIO" FromRole="CRM" ToRole="USUARIO" />
           <NavigationProperty Name="DIARIO_PROCESSO" Relationship="Self.FK_DIARIO_PROCESSO_CRM" FromRole="CRM" ToRole="DIARIO_PROCESSO" />
           <NavigationProperty Name="MENSAGENS_ENVIADAS_SISTEMA" Relationship="Self.FK_MENSAGENS_ENVIADAS_SISTEMA_CRM" FromRole="CRM" ToRole="MENSAGENS_ENVIADAS_SISTEMA" />
+          <Property Name="LEAD_CD_ID" Type="Int32" />
+          <NavigationProperty Name="LEAD" Relationship="CRMSysDBModel.FK_CRM_LEAD" FromRole="CRM" ToRole="LEAD" />
+          <Property Name="PACI_CD_ID" Type="Int32" />
+          <NavigationProperty Name="PACIENTE" Relationship="CRMSysDBModel.FK_CRM_PACIENTE" FromRole="CRM" ToRole="PACIENTE" />
         </EntityType>
         <EntityType Name="CRM_ACAO">
           <Key>
@@ -24963,6 +25003,7 @@
           <NavigationProperty Name="AREA_PACIENTE" Relationship="CRMSysDBModel.FK_AREA_PACIENTE_PACIENTE" FromRole="PACIENTE" ToRole="AREA_PACIENTE" />
           <NavigationProperty Name="NOTICIA_COMENTARIO" Relationship="CRMSysDBModel.FK_NOTICIA_COMENTARIO_PACIENTE" FromRole="PACIENTE" ToRole="NOTICIA_COMENTARIO" />
           <NavigationProperty Name="PACIENTE_VACINA" Relationship="CRMSysDBModel.FK_PACIENTE_VACINA_PACIENTE" FromRole="PACIENTE" ToRole="PACIENTE_VACINA" />
+          <NavigationProperty Name="CRM" Relationship="CRMSysDBModel.FK_CRM_PACIENTE" FromRole="PACIENTE" ToRole="CRM" />
         </EntityType>
         <EntityType Name="PACIENTE_ANAMNESE">
           <Key>
@@ -40578,6 +40619,14 @@
             <End Role="USUARIO" EntitySet="USUARIO" />
             <End Role="LEAD_CRM_ANOTACAO" EntitySet="LEAD_CRM_ANOTACAO" />
           </AssociationSet>
+          <AssociationSet Name="FK_CRM_LEAD" Association="CRMSysDBModel.FK_CRM_LEAD">
+            <End Role="LEAD" EntitySet="LEAD" />
+            <End Role="CRM" EntitySet="CRM" />
+          </AssociationSet>
+          <AssociationSet Name="FK_CRM_PACIENTE" Association="CRMSysDBModel.FK_CRM_PACIENTE">
+            <End Role="PACIENTE" EntitySet="PACIENTE" />
+            <End Role="CRM" EntitySet="CRM" />
+          </AssociationSet>
         </EntityContainer>
         <EntityType Name="PACIENTE_DADOS_EXAME_FISICO">
           <Key>
@@ -42197,6 +42246,9 @@
           <NavigationProperty Name="SEXO" Relationship="CRMSysDBModel.FK_LEAD_SEXO" FromRole="LEAD" ToRole="SEXO" />
           <NavigationProperty Name="UF" Relationship="CRMSysDBModel.FK_LEAD_UF" FromRole="LEAD" ToRole="UF" />
           <NavigationProperty Name="USUARIO" Relationship="CRMSysDBModel.FK_LEAD_USUARIO" FromRole="LEAD" ToRole="USUARIO" />
+          <Property Name="CRM1_CD_ID" Type="Int32" />
+          <NavigationProperty Name="CRM" Relationship="CRMSysDBModel.FK_CRM_LEAD" FromRole="LEAD" ToRole="CRM" />
+          <Property Name="LEAD_DT_DUMMY" Type="DateTime" Precision="3" />
         </EntityType>
         <EntityType Name="LEAD_ANEXO">
           <Key>
@@ -42504,6 +42556,30 @@
             </Principal>
             <Dependent Role="LEAD_CRM_ANOTACAO">
               <PropertyRef Name="USUA_CD_ID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_CRM_LEAD">
+          <End Type="CRMSysDBModel.LEAD" Role="LEAD" Multiplicity="0..1" />
+          <End Type="CRMSysDBModel.CRM" Role="CRM" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="LEAD">
+              <PropertyRef Name="LEAD_CD_ID" />
+            </Principal>
+            <Dependent Role="CRM">
+              <PropertyRef Name="LEAD_CD_ID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_CRM_PACIENTE">
+          <End Type="CRMSysDBModel.PACIENTE" Role="PACIENTE" Multiplicity="0..1" />
+          <End Type="CRMSysDBModel.CRM" Role="CRM" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="PACIENTE">
+              <PropertyRef Name="PACI__CD_ID" />
+            </Principal>
+            <Dependent Role="CRM">
+              <PropertyRef Name="PACI_CD_ID" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -44357,6 +44433,8 @@
           <EntitySetMapping Name="CRM">
             <EntityTypeMapping TypeName="CRMSysDBModel.CRM">
               <MappingFragment StoreEntitySet="CRM">
+                <ScalarProperty Name="PACI_CD_ID" ColumnName="PACI_CD_ID" />
+                <ScalarProperty Name="LEAD_CD_ID" ColumnName="LEAD_CD_ID" />
                 <ScalarProperty Name="CRM1_CD_ID" ColumnName="CRM1_CD_ID" />
                 <ScalarProperty Name="ASSI_CD_ID" ColumnName="ASSI_CD_ID" />
                 <ScalarProperty Name="FUNI_CD_ID" ColumnName="FUNI_CD_ID" />
@@ -50145,6 +50223,8 @@
           <EntitySetMapping Name="LEAD">
             <EntityTypeMapping TypeName="CRMSysDBModel.LEAD">
               <MappingFragment StoreEntitySet="LEAD">
+                <ScalarProperty Name="LEAD_DT_DUMMY" ColumnName="LEAD_DT_DUMMY" />
+                <ScalarProperty Name="CRM1_CD_ID" ColumnName="CRM1_CD_ID" />
                 <ScalarProperty Name="USUA_CD_ID" ColumnName="USUA_CD_ID" />
                 <ScalarProperty Name="LEAD_IN_ATIVO" ColumnName="LEAD_IN_ATIVO" />
                 <ScalarProperty Name="LEAD_NR_CEP" ColumnName="LEAD_NR_CEP" />

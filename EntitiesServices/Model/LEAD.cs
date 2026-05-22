@@ -20,6 +20,7 @@ namespace EntitiesServices.Model
             this.LEAD_ANEXO = new HashSet<LEAD_ANEXO>();
             this.LEAD_ANOTACAO = new HashSet<LEAD_ANOTACAO>();
             this.LEAD_CRM = new HashSet<LEAD_CRM>();
+            this.CRM = new HashSet<CRM>();
         }
     
         public int LEAD_CD_ID { get; set; }
@@ -42,6 +43,8 @@ namespace EntitiesServices.Model
         public string LEAD_NR_CEP { get; set; }
         public Nullable<int> LEAD_IN_ATIVO { get; set; }
         public Nullable<int> USUA_CD_ID { get; set; }
+        public Nullable<int> CRM1_CD_ID { get; set; }
+        public Nullable<System.DateTime> LEAD_DT_DUMMY { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<LEAD_ANEXO> LEAD_ANEXO { get; set; }
@@ -52,5 +55,7 @@ namespace EntitiesServices.Model
         public virtual SEXO SEXO { get; set; }
         public virtual UF UF { get; set; }
         public virtual USUARIO USUARIO { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<CRM> CRM { get; set; }
     }
 }

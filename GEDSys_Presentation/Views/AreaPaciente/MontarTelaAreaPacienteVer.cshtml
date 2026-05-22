@@ -262,6 +262,16 @@
                             </div>
                         </div>
                         <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                            <div class="col-lg-2 col-md-2 col-xs-12">
+                                Vistos
+                                @Html.DropDownListFor(m => m.AREA_IN_VISTA, (SelectList)ViewBag.Vista, "Selecionar", new { @class = "form-control", autofocus = true, data_toggle = "popover", data_content = "Selecione itens já visualizados", data_trigger="hover", data_placement="top" })
+                            </div>
+                            <div class="col-lg-2 col-md-2 col-xs-12">
+                                Processados
+                                @Html.DropDownListFor(m => m.AREA_IN_PROCESSADA, (SelectList)ViewBag.Processa, "Selecionar", new { @class = "form-control", autofocus = true, data_toggle = "popover", data_content = "Selecione itens já processados", data_trigger="hover", data_placement="top" })
+                            </div>
+                        </div>
+                        <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
                             <div class="col-lg-12 col-md-12 col-xs-12">
                                 @Html.ButtonActionSubmit(text: "Filtrar", htmlAttributes: new { @class = "btn-loading1 show-spinner" })
                                 <a href="@Url.Action("RetirarFiltroAreaPaciente", "AreaPaciente")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Retorna a exibição padrão da área do paciente" class="btn btn-sm btn-warning btn-loading show-spinner" id="emp" OnClick = "Fade()">Retirar Filtro</a>                

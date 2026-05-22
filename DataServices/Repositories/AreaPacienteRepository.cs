@@ -24,7 +24,7 @@ namespace DataServices.Repositories
             return query.AsNoTracking().ToList();
         }
 
-        public List<AREA_PACIENTE> ExecuteFilter(String paciente, DateTime? dataInicio, DateTime? dataFim, Int32? tipo, Int32 idAss)
+        public List<AREA_PACIENTE> ExecuteFilter(String paciente, DateTime? dataInicio, DateTime? dataFim, Int32? tipo, Int32? vista, Int32? processa, Int32 idAss)
         {
             List<AREA_PACIENTE> lista = new List<AREA_PACIENTE>();
             IQueryable<AREA_PACIENTE> query = Db.AREA_PACIENTE;
@@ -35,6 +35,14 @@ namespace DataServices.Repositories
             if (tipo != null & tipo > 0)
             {
                 query = query.Where(p => p.AREA_IN_TIPO == tipo);
+            }
+            if (vista != null)
+            {
+                query = query.Where(p => p.AREA_IN_VISTA == vista);
+            }
+            if (processa != null)
+            {
+                query = query.Where(p => p.AREA_IN_PROCESSADA == processa);
             }
             if ((dataInicio != DateTime.MinValue & dataInicio != null) & (dataFim == DateTime.MinValue || dataFim == null))
             {

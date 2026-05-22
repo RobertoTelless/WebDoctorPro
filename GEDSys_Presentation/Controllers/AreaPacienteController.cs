@@ -10258,6 +10258,14 @@ namespace GEDSys_Presentation.Controllers
                 tipo.Add(new SelectListItem() { Text = "Envio de Informações para Consulta", Value = "2" });
                 tipo.Add(new SelectListItem() { Text = "Envio de Documentos", Value = "3" });
                 ViewBag.Tipo = new SelectList(tipo, "Value", "Text");
+                List<SelectListItem> vista = new List<SelectListItem>();
+                vista.Add(new SelectListItem() { Text = "Não", Value = "0" });
+                vista.Add(new SelectListItem() { Text = "Sim", Value = "1" });
+                ViewBag.Vista = new SelectList(vista, "Value", "Text");
+                List<SelectListItem> processa = new List<SelectListItem>();
+                processa.Add(new SelectListItem() { Text = "Não", Value = "0" });
+                processa.Add(new SelectListItem() { Text = "Sim", Value = "1" });
+                ViewBag.Processa = new SelectList(processa, "Value", "Text");
                 Session["AreaPaciente"] = null;
                 ViewBag.Perfil = usuario.PERFIL.PERF_SG_SIGLA;
 
@@ -10341,7 +10349,7 @@ namespace GEDSys_Presentation.Controllers
                 // Executa a operação
                 AREA_PACIENTE item = Mapper.Map<AreaPacienteViewModel, AREA_PACIENTE>(vm);
                 List<AREA_PACIENTE> listaObj = new List<AREA_PACIENTE>();
-                Tuple<Int32, List<AREA_PACIENTE>, Boolean> volta = areaApp.ExecuteFilter(item.AREA_NM_PACIENTE_DUMMY, item.AREA_DT_ENTRADA, item.AREA_DT_DUMMY, item.AREA_IN_TIPO, idAss);
+                Tuple<Int32, List<AREA_PACIENTE>, Boolean> volta = areaApp.ExecuteFilter(item.AREA_NM_PACIENTE_DUMMY, item.AREA_DT_ENTRADA, item.AREA_DT_DUMMY, item.AREA_IN_TIPO, item.AREA_IN_VISTA, item.AREA_IN_PROCESSADA, idAss);
 
                 // Verifica retorno
                 if (volta.Item1 == 1)

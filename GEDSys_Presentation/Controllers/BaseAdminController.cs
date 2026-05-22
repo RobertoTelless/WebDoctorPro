@@ -1529,11 +1529,11 @@ namespace ERP_Condominios_Solution.Controllers
             {
                 ViewBag.Message = ex.Message;
                 Session["TipoVolta"] = 2;
-                Session["VoltaExcecao"] = "Base";
+                Session["VoltaExcecao"] = "Paciente";
                 Session["Excecao"] = ex;
                 Session["ExcecaoTipo"] = ex.GetType().ToString();
                 GravaLogExcecao grava = new GravaLogExcecao(usuApp);
-                Int32 voltaX = grava.GravarLogExcecao(ex, "Base", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Paciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
                 return null;
             }
         }
@@ -3634,7 +3634,7 @@ namespace ERP_Condominios_Solution.Controllers
                     // Cria assinante demo
                     vm.TipoAssinatura = 2;
                     vm.Plano = 24;
-                    Int32 voltaCria = CriarAssinanteNormal(vm);
+                    Int32 voltaCria = await CriarAssinanteNormal(vm);
                     vm.LoginFinal = (String)Session["LoginDemo"];
                     vm.Senha = (String)Session["SenhaDemo"];
                     if (voltaCria == 0)
@@ -3681,9 +3681,10 @@ namespace ERP_Condominios_Solution.Controllers
             }
         }
 
-        public Int32 CriarAssinanteNormal(FaleConoscoViewModel fc)
+        public async Task<Int32> CriarAssinanteNormal(FaleConoscoViewModel fc)
         {
             // Criar assinante
+            Int32 retFlag = 0;
             FaleConoscoViewModel vm = fc;
             ASSINANTE assi = new ASSINANTE();
             assi.TIPE_CD_ID = vm.Tipo;
@@ -3827,19 +3828,199 @@ namespace ERP_Condominios_Solution.Controllers
             empresa.EMPRESA_FILIAL.Add(emfi);
             voltaE = empApp.ValidateEdit(empresa, empresa);
 
+            // Cria configuracao base
+            CONFIGURACAO cf = new CONFIGURACAO();
+            cf.ASSI_CD_ID = idAss;
+            cf.CONF_NR_FALHAS_DIA = 6;
+            cf.CONF_NM_HOST_SMTP = "smtp.sendgrid.net";
+            cf.CONF_NM_PORTA_SMTP = "587";
+            cf.CONF_NM_EMAIL_EMISSOO = "sistema@systembr.net";
+            cf.CONF_NM_SENHA_EMISSOR = "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";
+            cf.CONF_NR_REFRESH_DASH = 3000;
+            cf.CONF_NM_ARQUIVO_ALARME = "chimes.wav";
+            cf.CONF_NR_REFRESH_NOTIFICACAO = 3000;
+            cf.CONF_SG_LOGIN_SMS = "rtiltda";
+            cf.CONF_SG_LOGIN_SMS_CRIP = "BJYLnSQbAbMyw53QzSKIQg==";
+            cf.CONF_SG_SENHA_SMS = "a135701rt";
+            cf.CONF_SG_SENHA_SMS_CRIP = "CmE7auWb/7NDBpN2J3bfjG5y1ctIWBbb1I9QgMGc0do=";
+            cf.CONF_SG_LOGIN_SMS_PRIORITARIO = "rti2023";
+            cf.CONF_SG_LOGIN_SMS_PRIORITARIO_CRIP = "nqLoN2fdhE/ZaVUtOVlxbQ==";
+            cf.CONF_SG_SENHA_SMS_PRIORITARIO = "a135701##";
+            cf.CONF_SG_SENHA_SMS_PRIORITARIO_CRIP = "BByrcwy4/Pfjo5ZPIvordRCWhm8ATYBL3L6wAhVml58=";
+            cf.CONF_NM_SENDGRID_LOGIN = "apikey";
+            cf.CONF_NM_SENDGRID_LOGIN_CRIP = "9EK29rwRkBZeBBVLWxiSFg==";
+            cf.CONF_NM_SENDGRID_PWD = "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";
+            cf.CONF_NM_SENDGRID_PWD_CRIP = "IxJZX9rxQKDKsmU7Ed/KOlk+eZilr9/jiIOJTplnyzyJBNuNWo2Ihukc/jp4MskZE7/yzxiC9afRqyul8WqtIM2zEr3E0J/shhB07Y5IagBB/SfonXB1LHU7zkl0a5y6SaEZDqYbjAaSsoMfAKQXn1cLoKzGGvwPGset6DWGYaholV/IUm1FZyTAUKPJK1HT";
+            cf.CONF_NM_SENDGRID_APIKEY = "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";
+            cf.CONF_NM_SENDGRID_APIKEY_CRIP = "IxJZX9rxQKDKsmU7Ed/KOlk+eZilr9/jiIOJTplnyzyJBNuNWo2Ihukc/jp4MskZE7/yzxiC9afRqyul8WqtIM2zEr3E0J/shhB07Y5IagBB/SfonXB1LHU7zkl0a5y6SaEZDqYbjAaSsoMfAKQXn1cLoKzGGvwPGset6DWGYaholV/IUm1FZyTAUKPJK1HT";
+            cf.CONF_NR_DIAS_ATENDIMENTO = 3;
+            cf.CONF_NR_DIAS_ACAO = 3;
+            cf.CONF_NR_DIAS_PROPOSTA = 3;
+            cf.CONF_NR_MARGEM_ATRASO = 3;
+            cf.CONF_IN_DIAS_RESERVA_ESTOQUE = 0;
+            cf.CONF_IN_NUMERO_INICIAL_PROPOSTA = 1;
+            cf.CONF_IN_NUMERO_INICIAL_PEDIDO = 1;
+            cf.CONF_IN_CNPJ_DUPLICADO = 1;
+            cf.CONF_IN_INCLUIR_SEM_ESTOQUE = 1;
+            cf.CONF_IN_ASSINANTE_FILIAL = 1;
+            cf.CONF_IN_FALHA_IMPORTACAO = 1;
+            cf.CONF_IN_ETAPAS_CRM = 9;
+            cf.CONF_IN_NOTIF_ACAO_ADM = 1;
+            cf.CONF_IN_NOTIF_ACAO_GER = 0;
+            cf.CONF_IN_NOTIF_ACAO_OPR = 0;
+            cf.CONF_IN_NOTIF_ACAO_USU = 0;
+            cf.CONF_IN_NOTIF_ACAO_VEN = 0;
+            cf.CONF_LK_LINK_SISTEMA = "https://webdoctorpro.net";
+            cf.CONF_EM_CRMSYS = "suporte@rtiltda.net";
+            cf.CONF_EM_CRMSYS1 = "clayton@systembr.net";
+            cf.CONF_NR_SUPORTE_ZAP = "(21)97302-4096";
+            cf.CONF_NR_SUPORTE_ZAP1 = "(11)94170-6199";
+            cf.CONF_NR_VALIDADE_SENHA = 360;
+            cf.CONF_NR_TAMANHO_SENHA = 8;
+            cf.CONF_IN_LOGO_EMPRESA = 1;
+            cf.CONF_NR_GRID_CLIENTE = 100;
+            cf.CONF_NR_GRID_MENSAGEM = 100;
+            cf.CONF_CS_CONNECTION_STRING_AZURE = "endpoint=https://rticomunicacao.communication.azure.com/;accesskey=4xywYgHszNMkkjMideSlQ+HcsJzx/+xDcBfi2NA98Dwp9KiM7lgWeCuh455NWsDjTIso9QbMqnq++rIQo4rg1w==";
+            cf.CONF_CS_CONNECTION_STRING_AZURE_CRIP = "ZK369HpFK9EzjM0Iq0tsTbhw7M1jcYfd97ETRRfom1cbdLvzqE6Tbga+c4NwLlyzFY+kXc5xXljrn03xa3xNmzweCRnoEkjRpKWKPccf/2JpdbjMvV9SrPS2m0cVphhb0NgpfVQ6VwJUo9qupvwWNsLq610iGDnuz4c7Oddtn2YXBDUmFVtqlZ6T/XEUCauFVZhASDh8JxNgf7nAQCutJLgRoeNQMfKMlcOnZ4bZorrK8jiGLzvccEI1FfxwBijGfUiqPZTkJKJtG9ySUdGc9S6QM9bselH3YQsj5pmZAGdbpbup2l5Y+lE8ugYcVbwfx3qJkec68k+FdDzAPRZ9XgbQmYSMCeoTTrNhwgNJ13nOYslIb5dMM0QXeZOlQVcak992+Mgw7c9jCFM/wR6Mz8diXATy794Ona57wBIHzAo=";
+            cf.CONF_NM_KEY_AZURE = "4xywYgHszNMkkjMideSlQ+HcsJzx/+xDcBfi2NA98Dwp9KiM7lgWeCuh455NWsDjTIso9QbMqnq++rIQo4rg1w==";
+            cf.CONF_NM_KEY_AZURE_CRIP = "ltHoPUjeS1qehj9uo/E5g4KUIO1C6RPRhhJ/nW1WGJxQGXPeBiy/S6/4wnWrHT8ktFWwJHw7HClESiuRlF/bwJESZaWzDJO/ufseow+S4THlTgqebXI5Ok8KGWv3alvmQkFCAYVXnCQden2yvX9DLnERRtf0YAQCb6oFfRTAGq6KC7dMbKoct6/7Co8jCPHw8g28E/CfQKJFdo9IMQ4MvTp1U1TWzXGgzTuloPTUwnHqGrK0S95V97NvvZCHvIcp";
+            cf.CONF_NM_ENDPOINT_AZURE = "https://rticomunicacao.communication.azure.com/";
+            cf.CONF_NM_ENDPOINT_AZURE_CRIP = "ec9uiUGjpFZMX+yw+QuxTAsQMclPkmopWKO7mja8ZJwqfPOcxnHpThrdZFLJuUZiSYsBHS9oKMx7ximskM1DTywQm/gkZPIfEJkjwFhDI0Oi2B2KffxH+YcNSp3h/cUm";
+            cf.CONF_NM_EMISSOR_AZURE = "donotreply@15157d38-0d81-4693-8f1b-912e476da78b.azurecomm.net";
+            cf.CONF_NM_EMISSOR_AZURE_CRIP = "z5xnxrI/7aDMiUIegW3ZrRu2u4FFqBbD3hRtsYEfJ/TWBCIBLglyUWB29BRxEOuJLPboRBlWyp/yQgyO1KaZbxii6pXqU+uxlgk65IMBckdgFH3MEvis/XmBFRXd0e68eahbOO+ycs121YSbPWyfX35uANG+paFhV6qmNzild4k=";
+            cf.CONF_IN_VALIDADE_CODIGO = 10;
+            cf.CONF_NR_GRID_DOCUMENTO = 30;
+            cf.CONF_NR_DIAS_LOG = 50;
+            cf.CONF_NR_DIAS_FIM_LOG = 5;
+            cf.CONF_EM_CONTATO = "suporte@rtiltda.net";
+            cf.CONF_NR_AVISO_CONTAS = 5;
+            cf.CONF_IN_MENSAGENS_CP = 1;
+            cf.CONF_IN_MENSAGENS_CR = 1;
+            cf.CONF_IN_ROBOT = 1;
+            cf.CONF_IN_CLIENTE_SISTEMA = 1;
+            cf.CONF_IN_MODELO_MAIL_SISTEMA = 1;
+            cf.CONF_IN_PAGAR_SISTEMA = 1;
+            cf.CONF_IN_RECEBER_SISTEMA = 1;
+            cf.CONF_IN_USUARIO_SISTEMA = 1;
+            cf.CONF_NM_SUFIXO_RECORRENCIA = "Ocorrência - ";
+            cf.CONF_NM_SUFIXO_NUMERO = "0";
+            cf.CONF_IN_SUFIXO_NUMERO = 1;
+            cf.CONF_IN_DASH_INICIAL = 0;
+            cf.CONF_IN_MENSAGEM_FABRICANTE = 1;
+            cf.CONF_IN_EMAIL_ROBOT = 1;
+            cf.CONF_IN_SMS_ROBOT = 1;
+            cf.CONF_IN_DIAS_ESTADO = 1;
+            cf.CONF_IN_PACIENTE_ATRASO = 2;
+            cf.CONF_IN_PACIENTE_AUSENCIA = 2;
+            cf.CONF_IN_MENSAGEM_CONSULTA = 1;
+            cf.CONF_LK_LINK_VALIDACAO = "https://crmsys.azurewebsites.net/Consulta/";
+            cf.CONF_IN_EXIBE_LOGO = 1;
+            cf.CONF_IN_EMAIL_AUTOMATICO = 1;
+            cf.CONF_LK_LINK_VALIDACAO = "https://validaqrcode..azurewebsites.net/";
+            cf.CONF_NR_DIAS_CONFIRMACAO = 5;
+            cf.CONF_NR_MESES_RETORNO = 2;
+            cf.CONF_IN_INCLUIR_REMEDIO = 1;
+            cf.CONF_IN_INCLUIR_SOLICITACAO = 1;
+            cf.CONF_IN_GERA_RECEBIMENTO = 1;
+            cf.CONF_IN_INCLUIR_PACIENTE_SEGUE = 1;
+            cf.CONF_IN_PACIENTE_FOTO_CAMERA = 1;
+            cf.CONF_IN_PADRAO_ANAMNESE = 1;
+            cf.CON_TK_TOKEN_API_PAGTO = "68635879-5c7c-4121-8dc7-9dbdc01fa0c8a6b915db4bc4b0f86a6fdf81cf0e2ba207a6-b3bf-46b4-a85f-8489e680a29d";
+            cf.CONF_IN_CALCULA_PROXIMA_CONSULTA = 1;
+            cf.CONF_IN_DIAS_PROXIMA_CONSULTA = 60;
+            cf.CONF_LK_LINK_VALIDACAO = "https://webdoctorpro.net/";
+            cf.CONF_NR_DIAS_CONFIRMACAO = 5;
+            cf.CONF_NR_MESES_RETORNO = 6;
+            cf.CONF_IN_INCLUIR_REMEDIO = 1;
+            cf.CONF_IN_INCLUIR_SOLICITACAO = 1;
+            cf.CONF_IN_ASSINA_DIGITAL_SOLICITACAO = 1;
+            cf.CONF_IN_INCLUIR_PACIENTE_SEGUE = 0;
+            cf.CONF_IN_PACIENTE_FOTO_CAMERA = 1;
+            cf.CONF_IN_PADRAO_ANAMNESE = 1;
+            cf.CONF_FD_FICHAS = @"c:\Fichas";
+            cf.CON_TK_TOKEN_API_PAGTO = "68635879-5c7c-4121-8dc7-9dbdc01fa0c8a6b915db4bc4b0f86a6fdf81cf0e2ba207a6-b3bf-46b4-a85f-8489e680a29d";
+            cf.CONF_IN_CALCULA_PROXIMA_CONSULTA = 1;
+            cf.CONF_IN_DIAS_PROXIMA_CONSULTA = null;
+            cf.CONF_LK_FORM_URL_BASE = null;
+            cf.CONF_IN_PISCA = 1;
+            cf.CONF_IN_ENVIA_ANIVERSARIO = 1;
+            cf.CONF_IN_ENVIA_CONFIRMACAO = 1;
+            cf.CONF_NR_WHAPSAPP = "(21)97302-4096";
+            cf.CONF_IN_VALIDADE_FAIXA = 180;
+            cf.CONF_IN_ENVIA_PACIENTE_CADASTRO = 1;
+            cf.CONF_IN_ENVIA_ATRASO = 1;
+            cf.CONF_IN_MAXIMO_ENVIO = 5;
+            cf.CONF_IN_INTERVALO_ENVIO = 3;
+            cf.CONF_IN_HORA_LIMITE = null;
+            cf.CONF_IN_MENSAGEM_MARCACAO = null;
+            cf.CONF_IN_MARCA_CONSULTA_HORA = 1;
+            cf.CONF_NR_MARCA_CONSULTA_HORA = null;
+            cf.CONF_IN_ASSINA_DIGITAL_ATESTADO = 1;
+            cf.CONF_IN_ASSINA_DIGITAL_SOLICITACAO = 1;
+            cf.CONF_IN_ASSINA_DIGITAL_PRESCRICAO = 1;
+            cf.CONF_IN_ASSINA_DIGITAL_LOCAL_PFX = null;
+            cf.CONF_IN_MODELO_ANAMNESE = 1;
+            cf.CONF_IN_AVISO_ESTOQUE = 1;
+            cf.CONF_IN_ASSINA_DIGITAL_LOCACAO = 1;
+            cf.CONF_VL_ACRESCIMO_ATRASO_PARCELA = 10;
+            cf.CONF_NM_SENHA_PACIENTE = "a123456A@";
+            cf.CONF_IN_RECIBO_SRF = 1;
+            cf.CONF_IN_DOC_PRONTUARIO = 1;
+            cf.CONF_IN_ABA_VACINA = 1;
+            cf.CONF_IN_ABA_EXAME = 1;
+            cf.CONF_IN_ABA_ATESTADO = 1;
+            cf.CONF_IN_ABA_LOCACAO = 1;
+            cf.CONF_IN_ABA_PRESCRICAO = 1;
+            cf.CONF_IN_ABA_SOLICITACAO = 1;
+            cf.CONF_NM_STORAGE_CONN = "DefaultEndpointsProtocol=https;AccountName=rtistoragemain;AccountKey=VowoS1r1iQ7OeHYB8COjfTPicHc1GxV1LvpPyKlKw0+GAb7MXIyWqX1uAGGNMOAHh7CsxabKbMaC+AStfHmdXQ==;EndpointSuffix=core.windows.net";
+            cf.CONF_NM_STORAGE_KEY = "VowoS1r1iQ7OeHYB8COjfTPicHc1GxV1LvpPyKlKw0+GAb7MXIyWqX1uAGGNMOAHh7CsxabKbMaC+AStfHmdXQ==";
+            cf.CONF_NM_STORAGE_CONTAINER = "rti-datacontainer";
+            cf.CONF_NM_LOCAL_CERTIFICADO = null;
+            cf.CONF_NM_SENHA_CERTIFICADO = null;
+            Int32 voltaCF = confApp.ValidateCreate(cf);
+            CONFIGURACAO conf = confApp.GetAllItems(idAss).FirstOrDefault();
+
             // Recupera empresa
             empresa = empApp.GetItemById(emp.EMPR_CD_ID);
 
+            // Grava logo
+            String caminhoRelativo = "Imagens/" + idAss.ToString() + "/Empresa/" + empresa.EMPR_CD_ID.ToString() + "/Logo/";
+            String caminhoLocal = Server.MapPath("~/Imagens/Base/");
+            String fullPathLocal = Path.Combine(caminhoLocal, "prontuario_icon_3.png");
+
+            try
+            {
+                // Verifica se o arquivo base local realmente existe antes de tentar ler
+                if (!System.IO.File.Exists(fullPathLocal))
+                {
+                    throw new FileNotFoundException("Arquivo ícone base não encontrado localmente.", fullPathLocal);
+                }
+
+                string connString = conf.CONF_NM_STORAGE_CONN;
+                string containerName = conf.CONF_NM_STORAGE_CONTAINER;
+
+                // 1. Inicializa os clientes do Azure Blob Storage
+                var blobServiceClient = new Azure.Storage.Blobs.BlobServiceClient(connString);
+                var containerClient = blobServiceClient.GetBlobContainerClient(containerName);
+
+                // 2. Define o nome final do Blob combinando o caminho relativo e o nome do arquivo padrão
+                string blobName = caminhoRelativo + "prontuario_icon_3.png";
+                var blobClient = containerClient.GetBlobClient(blobName);
+
+                // 3. Abre o arquivo físico local em modo de leitura e faz o upload direto para o Azure
+                using (FileStream fileStream = System.IO.File.OpenRead(fullPathLocal))
+                {
+                    // Upload para o Azure (Se já existir a pasta/logo da empresa, sobrescreve)
+                    await blobClient.UploadAsync(fileStream, overwrite: true);
+                }
+            }
+            catch (Exception exAzure)
+            {
+                retFlag = 1;
+            }
+
             // Login
             Session["LoginDemo"] = vm.LoginBase;
-
-            // Cria pasta empresa
-            caminho = "/Imagens/" + idAss.ToString() + "/Empresa/" + empresa.EMPR_CD_ID.ToString() + "/Anexos/";
-            map = Server.MapPath(caminho);
-            Directory.CreateDirectory(Server.MapPath(caminho));
-            caminho = "/Imagens/" + idAss.ToString() + "/Empresa/" + empresa.EMPR_CD_ID.ToString() + "/Logo/";
-            map = Server.MapPath(caminho);
-            Directory.CreateDirectory(Server.MapPath(caminho));
 
             // Senha
             String senha = vm.SenhaBase;
@@ -4022,55 +4203,43 @@ namespace ERP_Condominios_Solution.Controllers
             usu.USUA_NM_SALT = salt;
             usu.USUA_NM_SENHA_CONFIRMA = vm.SenhaBase;
             Int32 voltaUsu = usuApp.ValidateCreate(usu);
-            USUARIO usuario = usuApp.GetItemById(usu.USUA_CD_ID);       
+            USUARIO usuario = usuApp.GetItemById(usu.USUA_CD_ID);
 
-            // Cria pasta usuario
-            caminho = "/Imagens/" + idAss.ToString() + "/Usuario/" + usuario.USUA_CD_ID.ToString() + "/Anexos/";
-            map = Server.MapPath(caminho);
-            Directory.CreateDirectory(Server.MapPath(caminho));
-            caminho = "/Imagens/" + idAss.ToString() + "/Usuario/" + usuario.USUA_CD_ID.ToString() + "/Fotos/";
-            map = Server.MapPath(caminho);
+            // Grava foto
+            caminhoRelativo = "Imagens/" + idAss.ToString() + "/Usuario/" + usuario.USUA_CD_ID.ToString() + "/Fotos/";
+            caminhoLocal = Server.MapPath("~/Imagens/Base/");
+            fullPathLocal = Path.Combine(caminhoLocal, "icone_morador.png");
 
-            // Cria demais pastas
-            caminho = "/Imagens/" + idAss.ToString() + "/Envio/";
-            map = Server.MapPath(caminho);
-            Directory.CreateDirectory(Server.MapPath(caminho));
-            caminho = "/Imagens/" + idAss.ToString() + "/Exames/";
-            map = Server.MapPath(caminho);
-            Directory.CreateDirectory(Server.MapPath(caminho));
-            caminho = "/Imagens/" + idAss.ToString() + "/Locacao/";
-            map = Server.MapPath(caminho);
-            Directory.CreateDirectory(Server.MapPath(caminho));
-            caminho = "/Imagens/" + idAss.ToString() + "/Medico/";
-            map = Server.MapPath(caminho);
-            Directory.CreateDirectory(Server.MapPath(caminho));
-            caminho = "/Imagens/" + idAss.ToString() + "/Mensagem/";
-            map = Server.MapPath(caminho);
-            Directory.CreateDirectory(Server.MapPath(caminho));
-            caminho = "/Imagens/" + idAss.ToString() + "/Pacientes/";
-            map = Server.MapPath(caminho);
-            Directory.CreateDirectory(Server.MapPath(caminho));
-            caminho = "/Imagens/" + idAss.ToString() + "/Pagamento/";
-            map = Server.MapPath(caminho);
-            Directory.CreateDirectory(Server.MapPath(caminho));
-            caminho = "/Imagens/" + idAss.ToString() + "/Produto/";
-            map = Server.MapPath(caminho);
-            Directory.CreateDirectory(Server.MapPath(caminho));
-            caminho = "/Imagens/" + idAss.ToString() + "/Recebimento/";
-            map = Server.MapPath(caminho);
-            Directory.CreateDirectory(Server.MapPath(caminho));
-            caminho = "/Imagens/" + idAss.ToString() + "/TemplatesHTML/";
-            map = Server.MapPath(caminho);
-            Directory.CreateDirectory(Server.MapPath(caminho));
-            caminho = "/Imagens/" + idAss.ToString() + "/Videos/";
-            map = Server.MapPath(caminho);
-            Directory.CreateDirectory(Server.MapPath(caminho));
-            caminho = "/Imagens/" + idAss.ToString() + "/AreaPaciente/";
-            map = Server.MapPath(caminho);
-            Directory.CreateDirectory(Server.MapPath(caminho));
-            caminho = "/Imagens/" + idAss.ToString() + "/Noticias/";
-            map = Server.MapPath(caminho);
-            Directory.CreateDirectory(Server.MapPath(caminho));
+            try
+            {
+                // Verifica se o arquivo base local realmente existe antes de tentar ler
+                if (!System.IO.File.Exists(fullPathLocal))
+                {
+                    throw new FileNotFoundException("Arquivo foto base não encontrado localmente.", fullPathLocal);
+                }
+
+                string connString = conf.CONF_NM_STORAGE_CONN;
+                string containerName = conf.CONF_NM_STORAGE_CONTAINER;
+
+                // 1. Inicializa os clientes do Azure Blob Storage
+                var blobServiceClient = new Azure.Storage.Blobs.BlobServiceClient(connString);
+                var containerClient = blobServiceClient.GetBlobContainerClient(containerName);
+
+                // 2. Define o nome final do Blob combinando o caminho relativo e o nome do arquivo padrão
+                string blobName = caminhoRelativo + "icone_morador.png";
+                var blobClient = containerClient.GetBlobClient(blobName);
+
+                // 3. Abre o arquivo físico local em modo de leitura e faz o upload direto para o Azure
+                using (FileStream fileStream = System.IO.File.OpenRead(fullPathLocal))
+                {
+                    // Upload para o Azure (Se já existir a pasta/logo da empresa, sobrescreve)
+                    await blobClient.UploadAsync(fileStream, overwrite: true);
+                }
+            }
+            catch (Exception exAzure)
+            {
+                retFlag = 1;
+            }
 
             // Cria primeiro aviso
             AVISO_LEMBRETE av = new AVISO_LEMBRETE();
@@ -4203,7 +4372,6 @@ namespace ERP_Condominios_Solution.Controllers
                 novo.UF_CD_ID = item.UF_CD_ID;
                 Int32 voltaLab = labApp.ValidateCreate(novo, usuario);
             }
-
 
             // Cria tipo de Pagamento
             List<TIPO_PAGAMENTO> tps = tpgApp.GetAllItens(1);
@@ -4385,157 +4553,6 @@ namespace ERP_Condominios_Solution.Controllers
             cc.COCA_HR_INTERVALO_TER_INICIO = TimeSpan.Parse("12:00:00");
             Int32 voltaCC = ccApp.ValidateCreate(cc);
 
-            // Cria configuracao base
-            CONFIGURACAO cf = new CONFIGURACAO();
-            cf.ASSI_CD_ID = idAss;
-            cf.CONF_NR_FALHAS_DIA = 6;
-            cf.CONF_NM_HOST_SMTP = "smtp.sendgrid.net";
-            cf.CONF_NM_PORTA_SMTP = "587";
-            cf.CONF_NM_EMAIL_EMISSOO = "sistema@systembr.net";
-            cf.CONF_NM_SENHA_EMISSOR = "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";
-            cf.CONF_NR_REFRESH_DASH = 3000;
-            cf.CONF_NM_ARQUIVO_ALARME = "chimes.wav";
-            cf.CONF_NR_REFRESH_NOTIFICACAO = 3000;
-            cf.CONF_SG_LOGIN_SMS = "rtiltda";
-            cf.CONF_SG_LOGIN_SMS_CRIP = "BJYLnSQbAbMyw53QzSKIQg==";
-            cf.CONF_SG_SENHA_SMS = "a135701rt";
-            cf.CONF_SG_SENHA_SMS_CRIP = "CmE7auWb/7NDBpN2J3bfjG5y1ctIWBbb1I9QgMGc0do=";
-            cf.CONF_SG_LOGIN_SMS_PRIORITARIO = "rti2023";
-            cf.CONF_SG_LOGIN_SMS_PRIORITARIO_CRIP = "nqLoN2fdhE/ZaVUtOVlxbQ==";
-            cf.CONF_SG_SENHA_SMS_PRIORITARIO = "a135701##";
-            cf.CONF_SG_SENHA_SMS_PRIORITARIO_CRIP = "BByrcwy4/Pfjo5ZPIvordRCWhm8ATYBL3L6wAhVml58=";
-            cf.CONF_NM_SENDGRID_LOGIN = "apikey";
-            cf.CONF_NM_SENDGRID_LOGIN_CRIP = "9EK29rwRkBZeBBVLWxiSFg==";
-            cf.CONF_NM_SENDGRID_PWD = "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";
-            cf.CONF_NM_SENDGRID_PWD_CRIP = "IxJZX9rxQKDKsmU7Ed/KOlk+eZilr9/jiIOJTplnyzyJBNuNWo2Ihukc/jp4MskZE7/yzxiC9afRqyul8WqtIM2zEr3E0J/shhB07Y5IagBB/SfonXB1LHU7zkl0a5y6SaEZDqYbjAaSsoMfAKQXn1cLoKzGGvwPGset6DWGYaholV/IUm1FZyTAUKPJK1HT";
-            cf.CONF_NM_SENDGRID_APIKEY = "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";
-            cf.CONF_NM_SENDGRID_APIKEY_CRIP = "IxJZX9rxQKDKsmU7Ed/KOlk+eZilr9/jiIOJTplnyzyJBNuNWo2Ihukc/jp4MskZE7/yzxiC9afRqyul8WqtIM2zEr3E0J/shhB07Y5IagBB/SfonXB1LHU7zkl0a5y6SaEZDqYbjAaSsoMfAKQXn1cLoKzGGvwPGset6DWGYaholV/IUm1FZyTAUKPJK1HT";
-            cf.CONF_NR_DIAS_ATENDIMENTO = 3;
-            cf.CONF_NR_DIAS_ACAO = 3;
-            cf.CONF_NR_DIAS_PROPOSTA = 3;
-            cf.CONF_NR_MARGEM_ATRASO = 3;
-            cf.CONF_IN_DIAS_RESERVA_ESTOQUE = 0;
-            cf.CONF_IN_NUMERO_INICIAL_PROPOSTA = 1;
-            cf.CONF_IN_NUMERO_INICIAL_PEDIDO = 1;
-            cf.CONF_IN_CNPJ_DUPLICADO = 1;
-            cf.CONF_IN_INCLUIR_SEM_ESTOQUE = 1;
-            cf.CONF_IN_ASSINANTE_FILIAL = 1;
-            cf.CONF_IN_FALHA_IMPORTACAO = 1;
-            cf.CONF_IN_ETAPAS_CRM = 9;
-            cf.CONF_IN_NOTIF_ACAO_ADM = 1;
-            cf.CONF_IN_NOTIF_ACAO_GER = 0;
-            cf.CONF_IN_NOTIF_ACAO_OPR = 0;
-            cf.CONF_IN_NOTIF_ACAO_USU = 0;
-            cf.CONF_IN_NOTIF_ACAO_VEN = 0;
-            cf.CONF_LK_LINK_SISTEMA = "https://webdoctorpro.net";
-            cf.CONF_EM_CRMSYS = "suporte@rtiltda.net";
-            cf.CONF_EM_CRMSYS1 = "clayton@systembr.net";
-            cf.CONF_NR_SUPORTE_ZAP = "(21)97302-4096";
-            cf.CONF_NR_SUPORTE_ZAP1 = "(11)94170-6199";
-            cf.CONF_NR_VALIDADE_SENHA = 360;
-            cf.CONF_NR_TAMANHO_SENHA = 8;
-            cf.CONF_IN_LOGO_EMPRESA = 1;
-            cf.CONF_NR_GRID_CLIENTE = 100;
-            cf.CONF_NR_GRID_MENSAGEM = 100;
-            cf.CONF_CS_CONNECTION_STRING_AZURE = "endpoint=https://rticomunicacao.communication.azure.com/;accesskey=4xywYgHszNMkkjMideSlQ+HcsJzx/+xDcBfi2NA98Dwp9KiM7lgWeCuh455NWsDjTIso9QbMqnq++rIQo4rg1w==";
-            cf.CONF_CS_CONNECTION_STRING_AZURE_CRIP = "ZK369HpFK9EzjM0Iq0tsTbhw7M1jcYfd97ETRRfom1cbdLvzqE6Tbga+c4NwLlyzFY+kXc5xXljrn03xa3xNmzweCRnoEkjRpKWKPccf/2JpdbjMvV9SrPS2m0cVphhb0NgpfVQ6VwJUo9qupvwWNsLq610iGDnuz4c7Oddtn2YXBDUmFVtqlZ6T/XEUCauFVZhASDh8JxNgf7nAQCutJLgRoeNQMfKMlcOnZ4bZorrK8jiGLzvccEI1FfxwBijGfUiqPZTkJKJtG9ySUdGc9S6QM9bselH3YQsj5pmZAGdbpbup2l5Y+lE8ugYcVbwfx3qJkec68k+FdDzAPRZ9XgbQmYSMCeoTTrNhwgNJ13nOYslIb5dMM0QXeZOlQVcak992+Mgw7c9jCFM/wR6Mz8diXATy794Ona57wBIHzAo=";
-            cf.CONF_NM_KEY_AZURE = "4xywYgHszNMkkjMideSlQ+HcsJzx/+xDcBfi2NA98Dwp9KiM7lgWeCuh455NWsDjTIso9QbMqnq++rIQo4rg1w==";
-            cf.CONF_NM_KEY_AZURE_CRIP = "ltHoPUjeS1qehj9uo/E5g4KUIO1C6RPRhhJ/nW1WGJxQGXPeBiy/S6/4wnWrHT8ktFWwJHw7HClESiuRlF/bwJESZaWzDJO/ufseow+S4THlTgqebXI5Ok8KGWv3alvmQkFCAYVXnCQden2yvX9DLnERRtf0YAQCb6oFfRTAGq6KC7dMbKoct6/7Co8jCPHw8g28E/CfQKJFdo9IMQ4MvTp1U1TWzXGgzTuloPTUwnHqGrK0S95V97NvvZCHvIcp";
-            cf.CONF_NM_ENDPOINT_AZURE = "https://rticomunicacao.communication.azure.com/";
-            cf.CONF_NM_ENDPOINT_AZURE_CRIP = "ec9uiUGjpFZMX+yw+QuxTAsQMclPkmopWKO7mja8ZJwqfPOcxnHpThrdZFLJuUZiSYsBHS9oKMx7ximskM1DTywQm/gkZPIfEJkjwFhDI0Oi2B2KffxH+YcNSp3h/cUm";
-            cf.CONF_NM_EMISSOR_AZURE = "donotreply@15157d38-0d81-4693-8f1b-912e476da78b.azurecomm.net";
-            cf.CONF_NM_EMISSOR_AZURE_CRIP = "z5xnxrI/7aDMiUIegW3ZrRu2u4FFqBbD3hRtsYEfJ/TWBCIBLglyUWB29BRxEOuJLPboRBlWyp/yQgyO1KaZbxii6pXqU+uxlgk65IMBckdgFH3MEvis/XmBFRXd0e68eahbOO+ycs121YSbPWyfX35uANG+paFhV6qmNzild4k=";
-            cf.CONF_IN_VALIDADE_CODIGO = 10;
-            cf.CONF_NR_GRID_DOCUMENTO = 30;
-            cf.CONF_NR_DIAS_LOG = 50;
-            cf.CONF_NR_DIAS_FIM_LOG = 5;
-            cf.CONF_EM_CONTATO = "suporte@rtiltda.net";
-            cf.CONF_NR_AVISO_CONTAS = 5;
-            cf.CONF_IN_MENSAGENS_CP = 1;
-            cf.CONF_IN_MENSAGENS_CR = 1;
-            cf.CONF_IN_ROBOT = 1;
-            cf.CONF_IN_CLIENTE_SISTEMA = 1;
-            cf.CONF_IN_MODELO_MAIL_SISTEMA = 1;
-            cf.CONF_IN_PAGAR_SISTEMA = 1;
-            cf.CONF_IN_RECEBER_SISTEMA = 1;
-            cf.CONF_IN_USUARIO_SISTEMA = 1;
-            cf.CONF_NM_SUFIXO_RECORRENCIA = "Ocorrência - ";
-            cf.CONF_NM_SUFIXO_NUMERO = "0";
-            cf.CONF_IN_SUFIXO_NUMERO = 1;
-            cf.CONF_IN_DASH_INICIAL = 0;
-            cf.CONF_IN_MENSAGEM_FABRICANTE = 1;
-            cf.CONF_IN_EMAIL_ROBOT = 1;
-            cf.CONF_IN_SMS_ROBOT = 1;
-            cf.CONF_IN_DIAS_ESTADO = 1;
-            cf.CONF_IN_PACIENTE_ATRASO = 2;
-            cf.CONF_IN_PACIENTE_AUSENCIA = 2;
-            cf.CONF_IN_MENSAGEM_CONSULTA = 1;
-            cf.CONF_LK_LINK_VALIDACAO = "https://crmsys.azurewebsites.net/Consulta/";
-            cf.CONF_IN_EXIBE_LOGO = 1;
-            cf.CONF_IN_EMAIL_AUTOMATICO = 1;
-            cf.CONF_LK_LINK_VALIDACAO = "https://validaqrcode..azurewebsites.net/";
-            cf.CONF_NR_DIAS_CONFIRMACAO = 5;
-            cf.CONF_NR_MESES_RETORNO = 2;
-            cf.CONF_IN_INCLUIR_REMEDIO = 1;
-            cf.CONF_IN_INCLUIR_SOLICITACAO = 1;
-            cf.CONF_IN_GERA_RECEBIMENTO = 1;
-            cf.CONF_IN_INCLUIR_PACIENTE_SEGUE = 1;
-            cf.CONF_IN_PACIENTE_FOTO_CAMERA = 1;
-            cf.CONF_IN_PADRAO_ANAMNESE = 1;
-            cf.CON_TK_TOKEN_API_PAGTO = "68635879-5c7c-4121-8dc7-9dbdc01fa0c8a6b915db4bc4b0f86a6fdf81cf0e2ba207a6-b3bf-46b4-a85f-8489e680a29d";
-            cf.CONF_IN_CALCULA_PROXIMA_CONSULTA = 1;
-            cf.CONF_IN_DIAS_PROXIMA_CONSULTA = 60;
-            cf.CONF_LK_LINK_VALIDACAO = "https://webdoctorpro.net/";
-            cf.CONF_NR_DIAS_CONFIRMACAO = 5;
-            cf.CONF_NR_MESES_RETORNO = 6;
-            cf.CONF_IN_INCLUIR_REMEDIO = 1;
-            cf.CONF_IN_INCLUIR_SOLICITACAO = 1;
-            cf.CONF_IN_ASSINA_DIGITAL_SOLICITACAO = 1;
-            cf.CONF_IN_INCLUIR_PACIENTE_SEGUE = 0;
-            cf.CONF_IN_PACIENTE_FOTO_CAMERA = 1;
-            cf.CONF_IN_PADRAO_ANAMNESE = 1;
-            cf.CONF_FD_FICHAS = @"c:\Fichas";
-            cf.CON_TK_TOKEN_API_PAGTO = "68635879-5c7c-4121-8dc7-9dbdc01fa0c8a6b915db4bc4b0f86a6fdf81cf0e2ba207a6-b3bf-46b4-a85f-8489e680a29d";
-            cf.CONF_IN_CALCULA_PROXIMA_CONSULTA = 1;
-            cf.CONF_IN_DIAS_PROXIMA_CONSULTA = null;
-            cf.CONF_LK_FORM_URL_BASE = null;
-            cf.CONF_IN_PISCA = 1;
-            cf.CONF_IN_ENVIA_ANIVERSARIO = 1;
-            cf.CONF_IN_ENVIA_CONFIRMACAO = 1;
-            cf.CONF_NR_WHAPSAPP = "(21)97302-4096";
-            cf.CONF_IN_VALIDADE_FAIXA = 180;
-            cf.CONF_IN_ENVIA_PACIENTE_CADASTRO = 1;
-            cf.CONF_IN_ENVIA_ATRASO = 1;
-            cf.CONF_IN_MAXIMO_ENVIO = 5;
-            cf.CONF_IN_INTERVALO_ENVIO = 3;
-            cf.CONF_IN_HORA_LIMITE = null;
-            cf.CONF_IN_MENSAGEM_MARCACAO = null;
-            cf.CONF_IN_MARCA_CONSULTA_HORA = 1;
-            cf.CONF_NR_MARCA_CONSULTA_HORA = null;
-            cf.CONF_IN_ASSINA_DIGITAL_ATESTADO = 1;
-            cf.CONF_IN_ASSINA_DIGITAL_SOLICITACAO = 1;
-            cf.CONF_IN_ASSINA_DIGITAL_PRESCRICAO = 1;
-            cf.CONF_IN_ASSINA_DIGITAL_LOCAL_PFX = null;
-            cf.CONF_IN_MODELO_ANAMNESE = 1;
-            cf.CONF_IN_AVISO_ESTOQUE = 1;
-            cf.CONF_IN_ASSINA_DIGITAL_LOCACAO = 1;
-            cf.CONF_VL_ACRESCIMO_ATRASO_PARCELA = 10;
-            cf.CONF_NM_SENHA_PACIENTE = "a123456A@";
-            cf.CONF_IN_RECIBO_SRF = 1;
-            cf.CONF_IN_DOC_PRONTUARIO = 1;
-            cf.CONF_IN_ABA_VACINA = 1;
-            cf.CONF_IN_ABA_EXAME = 1;
-            cf.CONF_IN_ABA_ATESTADO = 1;
-            cf.CONF_IN_ABA_LOCACAO = 1;
-            cf.CONF_IN_ABA_PRESCRICAO = 1;
-            cf.CONF_IN_ABA_SOLICITACAO = 1;
-            cf.CONF_NM_STORAGE_CONN = "DefaultEndpointsProtocol=https;AccountName=rtistoragemain;AccountKey=VowoS1r1iQ7OeHYB8COjfTPicHc1GxV1LvpPyKlKw0+GAb7MXIyWqX1uAGGNMOAHh7CsxabKbMaC+AStfHmdXQ==;EndpointSuffix=core.windows.net";
-            cf.CONF_NM_STORAGE_KEY = "VowoS1r1iQ7OeHYB8COjfTPicHc1GxV1LvpPyKlKw0+GAb7MXIyWqX1uAGGNMOAHh7CsxabKbMaC+AStfHmdXQ==";
-            cf.CONF_NM_STORAGE_CONTAINER = "rti-datacontainer";
-            cf.CONF_NM_LOCAL_CERTIFICADO = null;
-            cf.CONF_NM_SENHA_CERTIFICADO = null;
-            Int32 voltaCF = confApp.ValidateCreate(cf);
-
             // Encerra
             return idAss;
         }
@@ -4705,10 +4722,10 @@ namespace ERP_Condominios_Solution.Controllers
 
             // Prepara texto
             String texto = String.Empty;
-            texto = "<br />Seguem abaixo as credenciais para você acessar a demonstração do <b>WebDoctor</b>.<br />";
-            texto += "Trata-se de uma assinatura REAL com todas as funcionalidades do plano mais completo do <b>WebDoctor</b>.<br />";
+            texto = "<br />Seguem abaixo as credenciais para você acessar a demonstração do <b>WebDoctorPro</b>.<br />";
+            texto += "Trata-se de uma assinatura REAL com todas as funcionalidades do plano mais completo do <b>WebDoctorPro</b>.<br />";
             texto += "Essa assinatura já vem com alguns dados fictícios para facilitar a visualização das funcionalidades.<br />";
-            texto += "Você poderá incluir, alterar ou excluir novas informações em qualquer das funcionalidades do <b>WebDoctor</b>.<br />";
+            texto += "Você poderá incluir, alterar ou excluir novas informações em qualquer das funcionalidades do <b>WebDoctorPro</b>.<br />";
             texto += "Para melhor visualização das mensagens enviadas, crie inicialmente um paciente e informe os seus dados de contato (e-mail e celular). Assim você poderá receber e visualizar as mensagens enviadas.<br />";
 
             // Prepara informações
@@ -4720,7 +4737,7 @@ namespace ERP_Condominios_Solution.Controllers
 
             // Prepara rodape
             String rodape = String.Empty;
-            rodape = "<br />Enviado por <b>Suporte WebDoctor</b><br />";
+            rodape = "<br />Enviado por <b>Suporte WebDoctorPro</b><br />";
             rodape += "<b>E-Mail:</b> " + vm.MODELO + "<br />";
             rodape += "<b>WhatsApp:</b> " + vm.CELULAR + "<br />";
 
@@ -6140,7 +6157,7 @@ namespace ERP_Condominios_Solution.Controllers
                     {
                         // Cria assinante
                         vm.TipoAssinatura = 1;
-                        Int32 voltaCria = CriarAssinanteNormal(vm);
+                        Int32 voltaCria = await CriarAssinanteNormal(vm);
                         vm.LoginFinal = (String)Session["LoginDemo"];
                         vm.Senha = (String)Session["SenhaDemo"];
                         if (voltaCria == 0)
@@ -6752,7 +6769,7 @@ namespace ERP_Condominios_Solution.Controllers
                     vm.TipoAssinatura = 1;
                     if ((Int32)Session["TestaUsuario"] == 1)
                     {
-                        Int32 voltaCria = CriarAssinanteNormal(vm);
+                        Int32 voltaCria = await CriarAssinanteNormal(vm);
 
                         // Prepara mensagem
                         MensagemViewModel mens = new MensagemViewModel();
@@ -6915,7 +6932,7 @@ namespace ERP_Condominios_Solution.Controllers
                 {
                     // Cria assinante
                     vm.TipoAssinatura = 1;
-                    Int32 voltaCria = CriarAssinanteNormal(vm);
+                    Int32 voltaCria = await CriarAssinanteNormal(vm);
                     vm.LoginFinal = (String)Session["LoginDemo"];
                     vm.Senha = (String)Session["SenhaDemo"];
                     if (voltaCria == 0)
@@ -7299,7 +7316,7 @@ namespace ERP_Condominios_Solution.Controllers
         {
             try
             {
-                Int32 voltaCria = CriarAssinanteNormal(vm);
+                Int32 voltaCria = await CriarAssinanteNormal(vm);
                 vm.LoginFinal = (String)Session["LoginDemo"];
                 vm.Senha = (String)Session["SenhaDemo"];
                 if (voltaCria == 0)

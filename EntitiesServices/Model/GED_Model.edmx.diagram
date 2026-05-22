@@ -1201,6 +1201,8 @@
         <AssociationConnector Association="CRMSysDBModel.FK_LEAD_CRM_ACAO_USUARIO" />
         <AssociationConnector Association="CRMSysDBModel.FK_LEAD_CRM_ACAO_USUARIO1" />
         <AssociationConnector Association="CRMSysDBModel.FK_LEAD_CRM_ANOTACAO_USUARIO" />
+        <AssociationConnector Association="CRMSysDBModel.FK_CRM_LEAD" />
+        <AssociationConnector Association="CRMSysDBModel.FK_CRM_PACIENTE" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

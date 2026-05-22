@@ -11,6 +11,6 @@ namespace ModelServices.Interfaces.Repositories
     {
         List<AREA_PACIENTE> GetAllItens(Int32 idAss);
         AREA_PACIENTE GetItemById(Int32 id);
-        List<AREA_PACIENTE> ExecuteFilter(String paciente, DateTime? inicio, DateTime? final, Int32? tipo, Int32 idAss);
+        List<AREA_PACIENTE> ExecuteFilter(String paciente, DateTime? inicio, DateTime? final, Int32? tipo, Int32? vista, Int32? processa, Int32 idAss);
     }
 }
