@@ -36,6 +36,7 @@ namespace DataServices.Repositories
         public List<ASSINANTE> GetAllItens()
         {
             IQueryable<ASSINANTE> query = Db.ASSINANTE.Where(p => p.ASSI_IN_ATIVO == 1);
+            query = query.Where(p => p.ASSI_IN_SISTEMA == 6);
             query = query.Include(p => p.USUARIO);
             query = query.Include(p => p.ASSINANTE_PLANO);
             query = query.Include(p => p.ASSINANTE_PLANO_ASSINATURA);
@@ -45,6 +46,10 @@ namespace DataServices.Repositories
         public List<ASSINANTE> GetAllItensAdm()
         {
             IQueryable<ASSINANTE> query = Db.ASSINANTE;
+            query = query.Where(p => p.ASSI_IN_SISTEMA == 6);
+            query = query.Include(p => p.USUARIO);
+            query = query.Include(p => p.ASSINANTE_PLANO);
+            query = query.Include(p => p.ASSINANTE_PLANO_ASSINATURA);
             return query.ToList();
         }
 
@@ -82,6 +87,8 @@ namespace DataServices.Repositories
             }
             if (query != null)
             {
+                query = query.Where(p => p.ASSI_IN_ATIVO == 1);
+                query = query.Where(p => p.ASSI_IN_SISTEMA == 6);
                 query = query.OrderBy(a => a.ASSI_NM_NOME);
                 lista = query.ToList<ASSINANTE>();
             }

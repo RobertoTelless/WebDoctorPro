@@ -23,6 +23,30 @@ namespace ApplicationServices.Services
             return lista;
         }
 
+        public List<ACESSO_METODO> GetAllItens()
+        {
+            List<ACESSO_METODO> lista = _baseService.GetAllItens();
+            return lista;
+        }
+
+        public List<ACESSO_METODO> GetAllItensDia()
+        {
+            List<ACESSO_METODO> lista = _baseService.GetAllItensDia();
+            return lista;
+        }
+
+        public List<ACESSO_METODO> GetAllItensMes()
+        {
+            List<ACESSO_METODO> lista = _baseService.GetAllItensMes();
+            return lista;
+        }
+
+        public List<ACESSO_METODO> GetAllItensMesAnterior()
+        {
+            List<ACESSO_METODO> lista = _baseService.GetAllItensMesAnterior();
+            return lista;
+        }
+
         public ACESSO_METODO GetItemById(Int32 id)
         {
             ACESSO_METODO item = _baseService.GetItemById(id);

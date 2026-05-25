@@ -25,6 +25,48 @@ namespace DataServices.Repositories
             return query.AsNoTracking().ToList();
         }
 
+        public List<ACESSO_METODO> GetAllItens()
+        {
+            IQueryable<ACESSO_METODO> query = Db.ACESSO_METODO.Where(p => p.ACES_IN_ATIVO == 1);
+            query = query.Where(p => p.ACES_IN_SISTEMA == 6);
+            return query.AsNoTracking().ToList();
+        }
+
+        public List<ACESSO_METODO> GetAllItensDia()
+        {
+            DateTime hoje = DateTime.Today.Date;
+            IQueryable<ACESSO_METODO> query = Db.ACESSO_METODO.Where(p => p.ACES_IN_ATIVO == 1);
+            query = query.Where(p => p.ACES_IN_SISTEMA == 6);
+            query = query.Where(p => DbFunctions.TruncateTime(p.ACES_DT_ACESSO).Value == DbFunctions.TruncateTime(hoje).Value);
+            return query.AsNoTracking().ToList();
+        }
+
+        public List<ACESSO_METODO> GetAllItensMes()
+        {
+            DateTime hoje = DateTime.Today.Date;
+            IQueryable<ACESSO_METODO> query = Db.ACESSO_METODO.Where(p => p.ACES_IN_ATIVO == 1);
+            query = query.Where(p => p.ACES_IN_SISTEMA == 6);
+            query = query.Where(p => DbFunctions.TruncateTime(p.ACES_DT_ACESSO).Value.Month == DbFunctions.TruncateTime(DateTime.Today.Date).Value.Month & DbFunctions.TruncateTime(p.ACES_DT_ACESSO).Value.Year == DbFunctions.TruncateTime(DateTime.Today.Date).Value.Year);
+            return query.AsNoTracking().ToList();
+        }
+
+        public List<ACESSO_METODO> GetAllItensMesAnterior()
+        {
+            var currentMonth = DateTime.Today.Month;
+            var previousMonth = DateTime.Today.AddMonths(-1).Month;
+            var year = DateTime.Today.Year;
+            IQueryable<ACESSO_METODO> query = Db.ACESSO_METODO.Where(p => p.ACES_IN_ATIVO == 1);
+            query = query.Where(p => p.ACES_IN_SISTEMA == 6);
+            if (currentMonth == 1)
+            {
+                previousMonth = 12;
+                year -= year;
+            }
+            query = query.Where(p => DbFunctions.TruncateTime(p.ACES_DT_ACESSO).Value.Month == previousMonth & DbFunctions.TruncateTime(p.ACES_DT_ACESSO).Value.Year == year);
+            query = query.OrderByDescending(a => a.ACES_DT_ACESSO);
+            return query.AsNoTracking().ToList();
+        }
+
         public List<ACESSO_METODO> ExecuteFilter(Int32? assi, Int32? usuario, DateTime? dataInicio, DateTime? dataFim, String sigla, String entidade, String metodo, Int32 idAss)
         {
             List<ACESSO_METODO> lista = new List<ACESSO_METODO>();

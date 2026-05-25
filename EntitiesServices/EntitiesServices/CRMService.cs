@@ -86,6 +86,11 @@ namespace ModelServices.EntitiesServices
             return _acaRepository.GetAllItens(idAss);
         }
 
+        public List<CRM_ACAO> GetAllAcoes()
+        {
+            return _acaRepository.GetAllItens();
+        }
+
         public List<CRM_FOLLOW> GetAllFollow(Int32 idAss)
         {
             return _folRepository.GetAllItens(idAss);

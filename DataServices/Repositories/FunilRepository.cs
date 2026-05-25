@@ -19,6 +19,7 @@ namespace DataServices.Repositories
             query = query.Where(p => p.FUNI_NM_NOME == conta.FUNI_NM_NOME);
             query = query.Where(p => p.ASSI_CD_ID == idAss);
             query = query.Where(p => p.FUNI_IN_TIPO == 1);
+            query = query.Where(p => p.FUNI_IN_SISTEMA == 6);
             return query.FirstOrDefault();
         }
 
@@ -35,6 +36,7 @@ namespace DataServices.Repositories
             query = query.Where(p => p.FUNI_SG_SIGLA == sigla);
             query = query.Where(p => p.ASSI_CD_ID == idAss);
             query = query.Where(p => p.FUNI_IN_TIPO == 1);
+            query = query.Where(p => p.FUNI_IN_SISTEMA == 6);
             return query.FirstOrDefault();
         }
 
@@ -43,6 +45,7 @@ namespace DataServices.Repositories
             IQueryable<FUNIL> query = Db.FUNIL.Where(p => p.FUNI_IN_ATIVO == 1);
             query = query.Where(p => p.ASSI_CD_ID == idAss);
             query = query.Where(p => p.FUNI_IN_TIPO == 1);
+            query = query.Where(p => p.FUNI_IN_SISTEMA == 6);
             return query.ToList();
         }
 
@@ -51,6 +54,7 @@ namespace DataServices.Repositories
             IQueryable<FUNIL> query = Db.FUNIL;
             query = query.Where(p => p.ASSI_CD_ID == idAss);
             query = query.Where(p => p.FUNI_IN_TIPO == 1);
+            query = query.Where(p => p.FUNI_IN_SISTEMA == 6);
             return query.ToList();
         }
     }

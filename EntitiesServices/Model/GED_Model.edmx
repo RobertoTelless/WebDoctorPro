@@ -200,6 +200,7 @@
           <Property Name="ASSI_NR_CELULAR" Type="varchar" MaxLength="50" />
           <Property Name="ASSI_IN_BLOQUEADO" Type="int" />
           <Property Name="ASSI_IN_VENCIDO" Type="int" />
+          <Property Name="ASSI_IN_SISTEMA" Type="int" />
         </EntityType>
         <EntityType Name="ASSINANTE_ANEXO">
           <Key>
@@ -2897,6 +2898,7 @@
           <Property Name="FUNI_IN_RESPONSAVEL" Type="int" />
           <Property Name="FUNI_IN_ATIVO" Type="int" Nullable="false" />
           <Property Name="FUNI_IN_SISTEMA" Type="int" />
+          <Property Name="FUNI_IN_LEAD" Type="int" />
         </EntityType>
         <EntityType Name="FUNIL_ETAPA">
           <Key>
@@ -3105,6 +3107,10 @@
           <Property Name="USUA_CD_ID" Type="int" />
           <Property Name="CRM1_CD_ID" Type="int" />
           <Property Name="LEAD_DT_DUMMY" Type="datetime" />
+          <Property Name="LEAD_DT_FECHAMENTO" Type="date" />
+          <Property Name="LEAD_TX_OBSERVACOES" Type="text" />
+          <Property Name="LEAD_DT_MOVIMENTO" Type="date" />
+          <Property Name="LEAD_DS_DESCRICAO" Type="varchar" MaxLength="500" />
         </EntityType>
         <EntityType Name="LEAD_ANEXO">
           <Key>
@@ -11352,6 +11358,18 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_FUNIL_LEAD">
+          <End Role="LEAD" Type="Self.LEAD" Multiplicity="0..1" />
+          <End Role="FUNIL" Type="Self.FUNIL" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="LEAD">
+              <PropertyRef Name="LEAD_CD_ID" />
+            </Principal>
+            <Dependent Role="FUNIL">
+              <PropertyRef Name="FUNI_IN_LEAD" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_GRUPO_CATEGORIA_CLIENTE">
           <End Role="CATEGORIA_CLIENTE" Type="Self.CATEGORIA_CLIENTE" Multiplicity="0..1" />
           <End Role="GRUPO" Type="Self.GRUPO" Multiplicity="*" />
@@ -18643,6 +18661,10 @@
             <End Role="FUNIL" EntitySet="FUNIL" />
             <End Role="FUNIL_ETAPA" EntitySet="FUNIL_ETAPA" />
           </AssociationSet>
+          <AssociationSet Name="FK_FUNIL_LEAD" Association="Self.FK_FUNIL_LEAD">
+            <End Role="LEAD" EntitySet="LEAD" />
+            <End Role="FUNIL" EntitySet="FUNIL" />
+          </AssociationSet>
           <AssociationSet Name="FK_GRUPO_CATEGORIA_CLIENTE" Association="Self.FK_GRUPO_CATEGORIA_CLIENTE">
             <End Role="CATEGORIA_CLIENTE" EntitySet="CATEGORIA_CLIENTE" />
             <End Role="GRUPO" EntitySet="GRUPO" />
@@ -20718,6 +20740,7 @@
           <NavigationProperty Name="MAQUINA" Relationship="Self.FKMAQUINA36030" FromRole="ASSINANTE" ToRole="MAQUINA" />
           <NavigationProperty Name="OUTRO_CUSTO_VARIAVEL" Relationship="Self.FKOUTRO_CUST578807" FromRole="ASSINANTE" ToRole="OUTRO_CUSTO_VARIAVEL" />
           <NavigationProperty Name="PLATAFORMA_ENTREGA" Relationship="Self.FKPLATAFORMA785659" FromRole="ASSINANTE" ToRole="PLATAFORMA_ENTREGA" />
+          <Property Name="ASSI_IN_SISTEMA" Type="Int32" />
         </EntityType>
         <EntityType Name="ASSINANTE_ANEXO">
           <Key>
@@ -23938,6 +23961,8 @@
           <Property Name="FUNI_IN_SISTEMA" Type="Int32" />
           <NavigationProperty Name="CRM" Relationship="Self.FK_CRM_FUNIL" FromRole="FUNIL" ToRole="CRM" />
           <NavigationProperty Name="FUNIL_ETAPA" Relationship="Self.FK_FUNIL_ETAPA_FUNIL" FromRole="FUNIL" ToRole="FUNIL_ETAPA" />
+          <Property Name="FUNI_IN_LEAD" Type="Int32" />
+          <NavigationProperty Name="LEAD" Relationship="CRMSysDBModel.FK_FUNIL_LEAD" FromRole="FUNIL" ToRole="LEAD" />
         </EntityType>
         <EntityType Name="FUNIL_ETAPA">
           <Key>
@@ -40627,6 +40652,10 @@
             <End Role="PACIENTE" EntitySet="PACIENTE" />
             <End Role="CRM" EntitySet="CRM" />
           </AssociationSet>
+          <AssociationSet Name="FK_FUNIL_LEAD" Association="CRMSysDBModel.FK_FUNIL_LEAD">
+            <End Role="LEAD" EntitySet="LEAD" />
+            <End Role="FUNIL" EntitySet="FUNIL" />
+          </AssociationSet>
         </EntityContainer>
         <EntityType Name="PACIENTE_DADOS_EXAME_FISICO">
           <Key>
@@ -42249,6 +42278,11 @@
           <Property Name="CRM1_CD_ID" Type="Int32" />
           <NavigationProperty Name="CRM" Relationship="CRMSysDBModel.FK_CRM_LEAD" FromRole="LEAD" ToRole="CRM" />
           <Property Name="LEAD_DT_DUMMY" Type="DateTime" Precision="3" />
+          <NavigationProperty Name="FUNIL" Relationship="CRMSysDBModel.FK_FUNIL_LEAD" FromRole="LEAD" ToRole="FUNIL" />
+          <Property Name="LEAD_DT_FECHAMENTO" Type="DateTime" Precision="0" />
+          <Property Name="LEAD_TX_OBSERVACOES" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="LEAD_DT_MOVIMENTO" Type="DateTime" Precision="0" />
+          <Property Name="LEAD_DS_DESCRICAO" Type="String" MaxLength="500" FixedLength="false" Unicode="false" />
         </EntityType>
         <EntityType Name="LEAD_ANEXO">
           <Key>
@@ -42583,6 +42617,18 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_FUNIL_LEAD">
+          <End Type="CRMSysDBModel.LEAD" Role="LEAD" Multiplicity="0..1" />
+          <End Type="CRMSysDBModel.FUNIL" Role="FUNIL" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="LEAD">
+              <PropertyRef Name="LEAD_CD_ID" />
+            </Principal>
+            <Dependent Role="FUNIL">
+              <PropertyRef Name="FUNI_IN_LEAD" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -42705,6 +42751,7 @@
           <EntitySetMapping Name="ASSINANTE">
             <EntityTypeMapping TypeName="CRMSysDBModel.ASSINANTE">
               <MappingFragment StoreEntitySet="ASSINANTE">
+                <ScalarProperty Name="ASSI_IN_SISTEMA" ColumnName="ASSI_IN_SISTEMA" />
                 <ScalarProperty Name="ASSI_CD_ID" ColumnName="ASSI_CD_ID" />
                 <ScalarProperty Name="TIPE_CD_ID" ColumnName="TIPE_CD_ID" />
                 <ScalarProperty Name="PLAN_CD_ID" ColumnName="PLAN_CD_ID" />
@@ -45526,6 +45573,7 @@
           <EntitySetMapping Name="FUNIL">
             <EntityTypeMapping TypeName="CRMSysDBModel.FUNIL">
               <MappingFragment StoreEntitySet="FUNIL">
+                <ScalarProperty Name="FUNI_IN_LEAD" ColumnName="FUNI_IN_LEAD" />
                 <ScalarProperty Name="FUNI_CD_ID" ColumnName="FUNI_CD_ID" />
                 <ScalarProperty Name="ASSI_CD_ID" ColumnName="ASSI_CD_ID" />
                 <ScalarProperty Name="FUNI_IN_TIPO" ColumnName="FUNI_IN_TIPO" />
@@ -50223,6 +50271,10 @@
           <EntitySetMapping Name="LEAD">
             <EntityTypeMapping TypeName="CRMSysDBModel.LEAD">
               <MappingFragment StoreEntitySet="LEAD">
+                <ScalarProperty Name="LEAD_DS_DESCRICAO" ColumnName="LEAD_DS_DESCRICAO" />
+                <ScalarProperty Name="LEAD_DT_MOVIMENTO" ColumnName="LEAD_DT_MOVIMENTO" />
+                <ScalarProperty Name="LEAD_TX_OBSERVACOES" ColumnName="LEAD_TX_OBSERVACOES" />
+                <ScalarProperty Name="LEAD_DT_FECHAMENTO" ColumnName="LEAD_DT_FECHAMENTO" />
                 <ScalarProperty Name="LEAD_DT_DUMMY" ColumnName="LEAD_DT_DUMMY" />
                 <ScalarProperty Name="CRM1_CD_ID" ColumnName="CRM1_CD_ID" />
                 <ScalarProperty Name="USUA_CD_ID" ColumnName="USUA_CD_ID" />

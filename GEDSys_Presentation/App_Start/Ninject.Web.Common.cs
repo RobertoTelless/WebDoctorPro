@@ -124,6 +124,11 @@ namespace Presentation.Start
             kernel.Bind<IAreaPacienteAppService>().To<AreaPacienteAppService>();
             kernel.Bind<INoticiaAppService>().To<NoticiaAppService>();
             kernel.Bind<IVacinaAppService>().To<VacinaAppService>();
+            kernel.Bind<ICRMAppService>().To<CRMAppService>();
+            kernel.Bind<ICRMDiarioAppService>().To<CRMDiarioAppService>();
+            kernel.Bind<ICRMOrigemAppService>().To<CRMOrigemAppService>();
+            kernel.Bind<IFunilAppService>().To<FunilAppService>();
+            kernel.Bind<ILeadAppService>().To<LeadAppService>();
 
             kernel.Bind(typeof(IServiceBase<>)).To(typeof(ServiceBase<>));
             kernel.Bind<IUsuarioService>().To<UsuarioService>();
@@ -182,6 +187,11 @@ namespace Presentation.Start
             kernel.Bind<IAreaPacienteService>().To<AreaPacienteService>();
             kernel.Bind<INoticiaService>().To<NoticiaService>();
             kernel.Bind<IVacinaService>().To<VacinaService>();
+            kernel.Bind<ICRMDiarioService>().To<CRMDiarioService>();
+            kernel.Bind<ICRMOrigemService>().To<CRMOrigemService>();
+            kernel.Bind<ICRMService>().To<CRMService>();
+            kernel.Bind<IFunilService>().To<FunilService>();
+            kernel.Bind<ILeadService>().To<LeadService>();
 
             kernel.Bind(typeof(IRepositoryBase<>)).To(typeof(RepositoryBase<>));
             kernel.Bind<IConfiguracaoRepository>().To<ConfiguracaoRepository>();
@@ -341,6 +351,24 @@ namespace Presentation.Start
             kernel.Bind<IPacienteVacinaRepository>().To<PacienteVacinaRepository>();
             kernel.Bind<IVacinaRepository>().To<VacinaRepository>();
             kernel.Bind<IPacienteExameAnexoImagemRepository>().To<PacienteExameAnexoImagemRepository>();
+
+            kernel.Bind<ICRMAcaoRepository>().To<CRMAcaoRepository>();
+            kernel.Bind<ICRMAnexoRepository>().To<CRMAnexoRepository>();
+            kernel.Bind<ICRMComentarioRepository>().To<CRMComentarioRepository>();
+            kernel.Bind<ICRMContatoRepository>().To<CRMContatoRepository>();
+            kernel.Bind<ICRMDiarioRepository>().To<CRMDiarioRepository>();
+            kernel.Bind<ICRMFollowRepository>().To<CRMFollowRepository>();
+            kernel.Bind<ICRMOrigemRepository>().To<CRMOrigemRepository>();
+            kernel.Bind<ICRMRepository>().To<CRMRepository>();
+            kernel.Bind<IFunilEtapaRepository>().To<FunilEtapaRepository>();
+            kernel.Bind<IFunilRepository>().To<FunilRepository>();
+            kernel.Bind<ILeadAnexoRepository>().To<LeadAnexoRepository>();
+            kernel.Bind<ILeadAnotacaoRepository>().To<LeadAnotacaoRepository>();
+            kernel.Bind<ILeadRepository>().To<LeadRepository>();
+            kernel.Bind<IMotivoCancelamentoRepository>().To<MotivoCancelamentoRepository>();
+            kernel.Bind<IMotivoEncerramentoRepository>().To<MotivoEncerramentoRepository>();
+            kernel.Bind<ITipoAcaoRepository>().To<TipoAcaoRepository>();
+            kernel.Bind<ITipoFollowRepository>().To<TipoFollowRepository>();
 
 
         }

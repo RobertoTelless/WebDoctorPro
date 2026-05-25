@@ -25,9 +25,19 @@ namespace ApplicationServices.Services
             return _baseService.GetAllItens(idAss);
         }
 
+        public List<LOG> GetAllItens()
+        {
+            return _baseService.GetAllItens();
+        }
+
         public List<LOG> GetAllItensDataCorrente(Int32 idAss)
         {
             return _baseService.GetAllItensDataCorrente(idAss);
+        }
+
+        public List<LOG> GetAllItensDataCorrente()
+        {
+            return _baseService.GetAllItensDataCorrente();
         }
 
         public List<LOG> GetAllItensUsuario(Int32 id, Int32 idAss)
@@ -48,6 +58,15 @@ namespace ApplicationServices.Services
         public List<LOG> GetAllItensMesAnterior(Int32 idAss)
         {
             return _baseService.GetAllItensMesAnterior(idAss);
+        }
+
+        public List<LOG> GetAllItensMesCorrente()
+        {
+            return _baseService.GetAllItensMesCorrente();
+        }
+        public List<LOG> GetAllItensMesAnterior()
+        {
+            return _baseService.GetAllItensMesAnterior();
         }
 
         public Int32 ValidateCreate(LOG item)
@@ -90,5 +109,30 @@ namespace ApplicationServices.Services
                 throw;
             }
         }
+
+        public Tuple<Int32, List<LOG>, Boolean> ExecuteFilterTuple(Int32? usuId, DateTime? data, DateTime? dataFim, String operacao)
+        {
+            try
+            {
+                List<LOG> objeto = new List<LOG>();
+                Int32 volta = 0;
+
+                // Processa filtro
+                objeto = _baseService.ExecuteFilter(usuId, data, dataFim, operacao);
+                if (objeto.Count == 0)
+                {
+                    volta = 1;
+                }
+
+                // Monta tupla
+                var tupla = Tuple.Create(volta, objeto, true);
+                return tupla;
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
     }
 }

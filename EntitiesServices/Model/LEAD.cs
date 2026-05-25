@@ -21,6 +21,7 @@ namespace EntitiesServices.Model
             this.LEAD_ANOTACAO = new HashSet<LEAD_ANOTACAO>();
             this.LEAD_CRM = new HashSet<LEAD_CRM>();
             this.CRM = new HashSet<CRM>();
+            this.FUNIL = new HashSet<FUNIL>();
         }
     
         public int LEAD_CD_ID { get; set; }
@@ -45,6 +46,10 @@ namespace EntitiesServices.Model
         public Nullable<int> USUA_CD_ID { get; set; }
         public Nullable<int> CRM1_CD_ID { get; set; }
         public Nullable<System.DateTime> LEAD_DT_DUMMY { get; set; }
+        public Nullable<System.DateTime> LEAD_DT_FECHAMENTO { get; set; }
+        public string LEAD_TX_OBSERVACOES { get; set; }
+        public Nullable<System.DateTime> LEAD_DT_MOVIMENTO { get; set; }
+        public string LEAD_DS_DESCRICAO { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<LEAD_ANEXO> LEAD_ANEXO { get; set; }
@@ -57,5 +62,7 @@ namespace EntitiesServices.Model
         public virtual USUARIO USUARIO { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<CRM> CRM { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<FUNIL> FUNIL { get; set; }
     }
 }

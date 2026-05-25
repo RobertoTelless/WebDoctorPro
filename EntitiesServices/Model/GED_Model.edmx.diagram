@@ -1203,6 +1203,7 @@
         <AssociationConnector Association="CRMSysDBModel.FK_LEAD_CRM_ANOTACAO_USUARIO" />
         <AssociationConnector Association="CRMSysDBModel.FK_CRM_LEAD" />
         <AssociationConnector Association="CRMSysDBModel.FK_CRM_PACIENTE" />
+        <AssociationConnector Association="CRMSysDBModel.FK_FUNIL_LEAD" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

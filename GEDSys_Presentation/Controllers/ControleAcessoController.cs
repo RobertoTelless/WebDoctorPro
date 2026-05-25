@@ -117,6 +117,23 @@ namespace ERP_Condominios_Solution.Controllers
             Session["Vacina"] = null;
             Session["AssinanteLogado"] = null;
             Session["AreaPacienteProcessa"] = 0;
+            Session["IdAreaPaciente"] = null;
+            Session["LeadAlterada"] = 0;
+            Session["Leads"] = null;
+            Session["CRMAlterada"] = 0;
+            Session["CRMs"] = null;
+            Session["Assis"] = null;
+            Session["Acessos"] = null;
+            Session["Logs"] = null;
+            Session["ListaLeadStatus"] = null;
+            Session["ListaCRMStatus"] = null;
+            Session["LeadsProcesso"] = null;
+            Session["CRMsProcesso"] = null;
+            Session["ListaAssinanteData"] = null;
+            Session["ListaAcessoData"] = null;
+            Session["ListaLogData"] = null;
+            Session["ListaLeadData"] = null;
+            Session["ListaCRMData"] = null;
 
             // Permissões
             Session["PermProntuario"] = 0;
@@ -1223,7 +1240,7 @@ namespace ERP_Condominios_Solution.Controllers
 
                 if (usuario.USUA_IN_ESPECIAL == 1)
                 {
-                    return RedirectToAction("MontarTelaAdministrativa", "Administra");
+                    return RedirectToAction("MontarTelaAdministra", "Administra");
                 }
                 else
                 {

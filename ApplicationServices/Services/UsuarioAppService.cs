@@ -72,6 +72,11 @@ namespace ApplicationServices.Services
             return _usuarioService.GetAllItens(idAss);
         }
 
+        public List<USUARIO> GetAllItens()
+        {
+            return _usuarioService.GetAllItens();
+        }
+
         public USUARIO GetAdministrador(Int32 idAss)
         {
             return _usuarioService.GetAdministrador(idAss);

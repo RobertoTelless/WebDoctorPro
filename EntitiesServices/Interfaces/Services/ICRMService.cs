@@ -38,6 +38,7 @@ namespace ModelServices.Interfaces.EntitiesServices
         List<CRM_FOLLOW> GetAllFollow(Int32 idAss);
         List<CRM_COMENTARIO> GetAllAnotacao(Int32 idAss);
         List<CRM_ACAO> GetAllAcoes(Int32 idAss);
+        List<CRM_ACAO> GetAllAcoes();
         CRM_CONTATO GetContatoById(Int32 id);
         CRM_ACAO GetAcaoById(Int32 id);
         Int32 EditContato(CRM_CONTATO item);

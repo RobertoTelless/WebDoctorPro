@@ -12,13 +12,18 @@ namespace ModelServices.Interfaces.EntitiesServices
     {
         LOG GetById(Int32 id);
         List<LOG> GetAllItens(Int32 idAss);
+        List<LOG> GetAllItens();
         List<LOG> ExecuteFilter(Int32? usuId, DateTime? data, DateTime? dataFim, String operacao, Int32 idAss);
+        List<LOG> ExecuteFilter(Int32? usuId, DateTime? data, DateTime? dataFim, String operacao);
         Int32 Create(LOG log);
 
         List<LOG> GetAllItensDataCorrente(Int32 idAss);
         List<LOG> GetAllItensMesCorrente(Int32 idAss);
         List<LOG> GetAllItensMesAnterior(Int32 idAss);
         List<LOG> GetAllItensUsuario(Int32 id, Int32 idAss);
+        List<LOG> GetAllItensMesCorrente();
+        List<LOG> GetAllItensMesAnterior();
+        List<LOG> GetAllItensDataCorrente();
         Int32 Delete(LOG item);
         List<LOG> GetLogByFaixa(DateTime inicio, DateTime final, Int32 idAss);
 

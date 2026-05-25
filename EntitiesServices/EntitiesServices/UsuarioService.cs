@@ -132,6 +132,11 @@ namespace ModelServices.EntitiesServices
             return _usuarioRepository.GetAllItens(idAss);
         }
 
+        public List<USUARIO> GetAllItens()
+        {
+            return _usuarioRepository.GetAllItens();
+        }
+
         //public List<CARGO> GetAllCargos(Int32 idAss)
         //{
         //    return _carRepository.GetAllItens(idAss);

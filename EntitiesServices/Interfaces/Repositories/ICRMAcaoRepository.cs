@@ -10,6 +10,7 @@ namespace ModelServices.Interfaces.Repositories
     public interface ICRMAcaoRepository : IRepositoryBase<CRM_ACAO>
     {
         List<CRM_ACAO> GetAllItens(Int32 idAss);
+        List<CRM_ACAO> GetAllItens();
         CRM_ACAO GetItemById(Int32 id);
     }
 }

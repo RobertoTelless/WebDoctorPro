@@ -99,6 +99,7 @@ namespace EntitiesServices.Model
         public string ASSI_NR_CELULAR { get; set; }
         public Nullable<int> ASSI_IN_BLOQUEADO { get; set; }
         public Nullable<int> ASSI_IN_VENCIDO { get; set; }
+        public Nullable<int> ASSI_IN_SISTEMA { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<ACESSO_METODO> ACESSO_METODO { get; set; }

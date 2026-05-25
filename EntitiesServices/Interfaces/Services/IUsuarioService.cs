@@ -29,6 +29,7 @@ namespace ModelServices.Interfaces.EntitiesServices
         List<USUARIO> GetAllUsuarios(Int32 idAss);
         List<PERFIL> GetAllPerfis();
         List<USUARIO> GetAllItens(Int32 idAss);
+        List<USUARIO> GetAllItens();
         List<USUARIO> GetAllItensBloqueados(Int32 idAss);
         List<USUARIO> GetAllItensAcessoHoje(Int32 idAss);
         List<USUARIO> ExecuteFilter(Int32? perfilId, Int32? catId, String nome, String apelido, String cpf, Int32 idAss);

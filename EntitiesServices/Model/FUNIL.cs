@@ -37,10 +37,12 @@ namespace EntitiesServices.Model
         public Nullable<int> FUNI_IN_RESPONSAVEL { get; set; }
         public int FUNI_IN_ATIVO { get; set; }
         public Nullable<int> FUNI_IN_SISTEMA { get; set; }
+        public Nullable<int> FUNI_IN_LEAD { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<CRM> CRM { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<FUNIL_ETAPA> FUNIL_ETAPA { get; set; }
+        public virtual LEAD LEAD { get; set; }
     }
 }

@@ -29,6 +29,11 @@ namespace ModelServices.EntitiesServices
             return _logRepository.GetAllItens(idAss);
         }
 
+        public List<LOG> GetAllItens()
+        {
+            return _logRepository.GetAllItens();
+        }
+
         public List<LOG> GetAllItensDataCorrente(Int32 idAss)
         {
             return _logRepository.GetAllItensDataCorrente(idAss);
@@ -44,6 +49,21 @@ namespace ModelServices.EntitiesServices
             return _logRepository.GetAllItensMesAnterior(idAss);
         }
 
+        public List<LOG> GetAllItensMesCorrente()
+        {
+            return _logRepository.GetAllItensMesCorrente();
+        }
+
+        public List<LOG> GetAllItensDataCorrente()
+        {
+            return _logRepository.GetAllItensDataCorrente();
+        }
+
+        public List<LOG> GetAllItensMesAnterior()
+        {
+            return _logRepository.GetAllItensMesAnterior();
+        }
+
         public List<LOG> GetLogByFaixa(DateTime inicio, DateTime final, Int32 idAss)
         {
             return _logRepository.GetLogByFaixa(inicio, final, idAss);
@@ -57,6 +77,11 @@ namespace ModelServices.EntitiesServices
         public List<LOG> ExecuteFilter(Int32? usuId, DateTime? data, DateTime? dataFim, String operacao, Int32 idAss)
         {
             List<LOG> lista = _logRepository.ExecuteFilter(usuId, data, dataFim, operacao, idAss);
+            return lista;
+        }
+        public List<LOG> ExecuteFilter(Int32? usuId, DateTime? data, DateTime? dataFim, String operacao)
+        {
+            List<LOG> lista = _logRepository.ExecuteFilter(usuId, data, dataFim, operacao);
             return lista;
         }
 

@@ -1687,6 +1687,8 @@
     <Compile Include="WorkClasses\CEP.cs" />
     <Compile Include="WorkClasses\DTO_Area_Paciente_Anexo.cs" />
     <Compile Include="WorkClasses\DTO_GrupoPaciente.cs" />
+    <Compile Include="WorkClasses\DTO_CRM.cs" />
+    <Compile Include="WorkClasses\DTO_Lead .cs" />
     <Compile Include="WorkClasses\DTO_Paciente_Vacina.cs" />
     <Compile Include="WorkClasses\DTO_ModeloEMailHTML.cs" />
     <Compile Include="WorkClasses\DTO_ModeloEMail.cs" />

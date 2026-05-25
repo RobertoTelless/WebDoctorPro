@@ -1,0 +1,640 @@
+﻿@using Presentation.Extensions
+@using CrossCutting
+@model EntitiesServices.Model.LEAD
+@{
+    Layout = "~/Views/Shared/_Layout_Adm.cshtml";
+    ViewBag.Title = "WebDoctor - Administração";
+    ViewBag.MetaDescription = "WebDoctor - Administracao - Dashhboard";
+    ViewBag.MetaKeywords = "WebDoctor, Administracao, dashboard";
+}
+<div id="content" class="wraper container-fluid">
+    <div class="col-lg-12 col-md-12 col-sm-12">
+        @*Atalhos*@
+        <div class="row">
+            <h3 style="color:olivedrab; font-weight:bold">Administração - Dashboard</h3>
+        </div>
+
+        @*Widgets*@
+        <br />
+        <div class="row">
+            <div class="col-lg-2">
+                <div class="ibox float-e-margins">
+                    <div class="ibox-title" style="background-color: darkseagreen; color: darkgreen">
+                        <span class="label label-primary pull-right">Hoje</span>
+                        <h5>Assinantes</h5>
+                    </div>
+                    <div class="ibox-content">
+                        <h1 class="no-margins">@ViewBag.Assinantes</h1>
+                        <small>Assinantes Ativos</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-2">
+                <div class="ibox float-e-margins">
+                    <div class="ibox-title" style="background-color: darkseagreen; color: darkgreen">
+                        <span class="label label-primary pull-right">Hoje</span>
+                        <h5>Acessos</h5>
+                    </div>
+                    <div class="ibox-content">
+                        <h1 class="no-margins">@ViewBag.Acessos</h1>
+                        <small>Acessos no Dia</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-2">
+                <div class="ibox float-e-margins">
+                    <div class="ibox-title" style="background-color: darkseagreen; color: darkgreen">
+                        <span class="label label-primary pull-right">Hoje</span>
+                        <h5>Logs</h5>
+                    </div>
+                    <div class="ibox-content">
+                        <h1 class="no-margins">@ViewBag.Logs</h1>
+                        <small>Logs do Dia</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-2">
+                <div class="ibox float-e-margins">
+                    <div class="ibox-title" style="background-color: darkseagreen; color: darkgreen">
+                        <span class="label label-primary pull-right">Hoje</span>
+                        <h5>Leads</h5>
+                    </div>
+                    <div class="ibox-content">
+                        <h1 class="no-margins">@ViewBag.Leads</h1>
+                        <small>Leads Ativos</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-2">
+                <div class="ibox float-e-margins">
+                    <div class="ibox-title" style="background-color: darkseagreen; color: darkgreen">
+                        <span class="label label-primary pull-right">Hoje</span>
+                        <h5>Processos</h5>
+                    </div>
+                    <div class="ibox-content">
+                        <h1 class="no-margins">@ViewBag.CRMs</h1>
+                        <small>Processos Ativos</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-2">
+                <div class="ibox float-e-margins">
+                    <div class="ibox-title" style="background-color: darkseagreen; color: darkgreen">
+                        <span class="label label-primary pull-right">Hoje</span>
+                        <h5>Ações</h5>
+                    </div>
+                    <div class="ibox-content">
+                        <h1 class="no-margins">@ViewBag.Acoes</h1>
+                        <small>Ações Ativas</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        @*Atalhos*@
+        <div class="row">
+            <div class="form-group">
+                <div class="col-lg-12 col-md-12 col-xs-12">
+                    @Html.ButtonLinkIndex(text: "Assinantes", controller: "Administra", action: "MontarTelaAssinante", htmlAttributes: new { @class = "btn-loading show-spinner" })
+                    @Html.ButtonLinkIndex(text: "Log", controller: "Administra", action: "MontarTelaLog", htmlAttributes: new { @class = "btn-loading show-spinner" })
+                    @Html.ButtonLinkIndex(text: "Acessos", controller: "Administra", action: "MontarTelaAcesso", htmlAttributes: new { @class = "btn-loading show-spinner" })
+                    @Html.ButtonLinkIndex(text: "Leads", controller: "Administra", action: "MontarTelaLead", htmlAttributes: new { @class = "btn-loading show-spinner" })
+                    @Html.ButtonLinkIndex(text: "Processos", controller: "Administra", action: "MontarTelaCRM", htmlAttributes: new { @class = "btn-loading show-spinner" })
+                    @Html.ButtonLinkIndex(text: "Avisos", controller: "Administra", action: "MontarTelaAviso", htmlAttributes: new { @class = "btn-loading show-spinner" })
+                    <span id="loadingIndicator" style="display: none; margin-left: 10px; color: #007bff;">
+                        <i class="fa fa-spinner fa-spin"></i> Processando...
+                    </span>
+                </div>
+                <br /><br />
+            </div>
+        </div>  
+
+        @*Corpo*@
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="ibox float-e-margins">
+                    <div class="ibox-title">
+                        <h5>Administração - Dashboard</h5>
+                    </div>
+                    <div class="ibox-content" style="height: 2300px">
+
+                        @*Graficos*@
+                        <div class="col-lg-7 col-md-7 col-xs-12">
+                            <div class="row">   
+                                <div class="col-lg-6 col-md-6 col-xs-12">
+                                    <div class="col-lg-12 col-md-12 col-xs-12 ibox float-e-margins" style="border-bottom: solid; border-bottom-color: darkblue; border-bottom-width: 2px; border-left: solid; border-left-color: darkblue; border-left-width: 1px; border-right: solid; border-right-color: darkblue; border-right-width: 1px; border-top: solid; border-top-color: darkblue; border-top-width: 1px">
+                                        <div class="ibox-title">
+                                            <h4>Assinantes x Ano<h4>
+                                        </div>
+                                        <div class="ibox-content">
+                                            <div class="row">
+                                                <canvas id="barChartAssinanteAno" height="150"></canvas>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-6 col-md-6 col-xs-12">
+                                    <div class="col-lg-12 col-md-12 col-xs-12 ibox float-e-margins" style="border-bottom: solid; border-bottom-color: darkblue; border-bottom-width: 2px; border-left: solid; border-left-color: darkblue; border-left-width: 1px; border-right: solid; border-right-color: darkblue; border-right-width: 1px; border-top: solid; border-top-color: darkblue; border-top-width: 1px">
+                                        <div class="ibox-title">
+                                            <h4>Acessos x Dia - Mês Corrente</h4>
+                                        </div>
+                                        <div class="ibox-content">
+                                            <div class="row">
+                                                <canvas id="barChartAcessosMes" height="150"></canvas>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">                           
+                                <div class="col-lg-6 col-md-6 col-xs-12">
+                                    <div class="col-lg-12 col-md-12 col-xs-12 ibox float-e-margins" style="border-bottom: solid; border-bottom-color: darkblue; border-bottom-width: 2px; border-left: solid; border-left-color: darkblue; border-left-width: 1px; border-right: solid; border-right-color: darkblue; border-right-width: 1px; border-top: solid; border-top-color: darkblue; border-top-width: 1px">
+                                        <div class="ibox-title">
+                                            <h4>Log x Dia - Mês Corrente</h4>
+                                        </div>
+                                        <div class="ibox-content">
+                                            <div class="row">
+                                                <canvas id="barChartLogDia" height="150"></canvas>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-6 col-md-6 col-xs-12">
+                                    <div class="col-lg-12 col-md-12 col-xs-12 ibox float-e-margins" style="border-bottom: solid; border-bottom-color: darkblue; border-bottom-width: 2px; border-left: solid; border-left-color: darkblue; border-left-width: 1px; border-right: solid; border-right-color: darkblue; border-right-width: 1px; border-top: solid; border-top-color: darkblue; border-top-width: 1px">
+                                        <div class="ibox-title">
+                                            <h4>Leads x Dia - Mês Corrente</h4>
+                                        </div>
+                                        <div class="ibox-content">
+                                            <div class="row">
+                                                <canvas id="barChartLeadsMes" height="150"></canvas>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">                           
+                                <div class="col-lg-6 col-md-6 col-xs-12">
+                                    <div class="col-lg-12 col-md-12 col-xs-12 ibox float-e-margins" style="border-bottom: solid; border-bottom-color: darkblue; border-bottom-width: 2px; border-left: solid; border-left-color: darkblue; border-left-width: 1px; border-right: solid; border-right-color: darkblue; border-right-width: 1px; border-top: solid; border-top-color: darkblue; border-top-width: 1px">
+                                        <div class="ibox-title">
+                                            <h4>Leads x Status</h4>
+                                        </div>
+                                        <div class="ibox-content">
+                                            <div class="row">
+                                                <canvas id="doughnutChartLeadStatus" height="150"></canvas>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-6 col-md-6 col-xs-12">
+                                    <div class="col-lg-12 col-md-12 col-xs-12 ibox float-e-margins" style="border-bottom: solid; border-bottom-color: darkblue; border-bottom-width: 2px; border-left: solid; border-left-color: darkblue; border-left-width: 1px; border-right: solid; border-right-color: darkblue; border-right-width: 1px; border-top: solid; border-top-color: darkblue; border-top-width: 1px">
+                                        <div class="ibox-title">
+                                            <h4>Processos x Dia - Mês Corrente</h4>
+                                        </div>
+                                        <div class="ibox-content">
+                                            <div class="row">
+                                                <canvas id="barChartCRMMes" height="150"></canvas>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">                           
+                                <div class="col-lg-6 col-md-6 col-xs-12">
+                                    <div class="col-lg-12 col-md-12 col-xs-12 ibox float-e-margins" style="border-bottom: solid; border-bottom-color: darkblue; border-bottom-width: 2px; border-left: solid; border-left-color: darkblue; border-left-width: 1px; border-right: solid; border-right-color: darkblue; border-right-width: 1px; border-top: solid; border-top-color: darkblue; border-top-width: 1px">
+                                        <div class="ibox-title">
+                                            <h4>Processos x Status</h4>
+                                        </div>
+                                        <div class="ibox-content">
+                                            <div class="row">
+                                                <canvas id="doughnutChartCRMStatus" height="150"></canvas>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        @*Listas*@
+                        <div class="col-lg-5 col-md-5 col-xs-12">
+                            <div class="col-lg-12 col-md-12 col-xs-12">
+                                <div class="col-lg-12 col-md-12 col-xs-12 ibox float-e-margins" style="border-bottom: solid; border-bottom-color: darkblue; border-bottom-width: 2px; border-left: solid; border-left-color: darkblue; border-left-width: 1px; border-right: solid; border-right-color: darkblue; border-right-width: 1px; border-top: solid; border-top-color: darkblue; border-top-width: 1px">
+                                    <div class="ibox-title">
+                                        <h4>Leads - Processamento (5 primeiros)</h4>
+                                    </div>
+                                    <div class="ibox-content">
+                                        <div class="row">
+                                            @if (ViewBag.LeadsProcesso != null && (ViewBag.LeadsProcesso as List<EntitiesServices.Model.LEAD>).Count > 0)
+                                            {
+                                                <table class="table table-striped table-bordered table-hover">
+                                                    <thead style="background-color:lightsteelblue">
+                                                        <tr>
+                                                            <th>Nome</th>
+                                                            <th>Data</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        @foreach (var cond in (ViewBag.LeadsProcesso as List<EntitiesServices.Model.LEAD>).OrderBy(p => p.LEAD_DT_ENTRADA).Take(5))
+                                                        {
+                                                            <tr>
+                                                                <td style="width: auto; cursor: pointer; text-decoration: underline;"><a href="@Url.Action("EditarLead", "Administra", new { id = cond.LEAD_CD_ID})" class="btn-loading3 show-spinner"  data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Editar Lead" />@cond.LEAD_NM_NOME</td>
+                                                                <td>@cond.LEAD_DT_ENTRADA.Value.ToShortDateString()</td>
+                                                            </tr>
+                                                        }
+                                                    </tbody>
+                                                </table>
+                                            }
+                                            else
+                                            {
+                                                <div class="row">
+                                                    <div class="col-lg-1 col-md-1 col-xs-12">
+                                                    </div>
+                                                    <div style="border: 5px solid #F6A54A; padding: 10px; border-radius: 8px 8px; " class="col-lg-10 col-md-10 col-xs-8">
+                                                        <h4 style="font-weight: bold">Nenhum lead em processamento</h4>
+                                                    </div>
+                                                    <div class="col-lg-1 col-md-1 col-xs-12">
+                                                    </div>
+                                                </div>
+                                            }
+                                            <span id="loadingIndicator3" style="display: none; margin-left: 10px; color: #007bff;">
+                                                <i class="fa fa-spinner fa-spin"></i> Processando...
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div> 
+
+                            <div class="col-lg-12 col-md-12 col-xs-12">
+                                <div class="col-lg-12 col-md-12 col-xs-12 ibox float-e-margins" style="border-bottom: solid; border-bottom-color: darkblue; border-bottom-width: 2px; border-left: solid; border-left-color: darkblue; border-left-width: 1px; border-right: solid; border-right-color: darkblue; border-right-width: 1px; border-top: solid; border-top-color: darkblue; border-top-width: 1px">
+                                    <div class="ibox-title">
+                                        <h4>Processos - Processamento (5 primeiros)</h4>
+                                    </div>
+                                    <div class="ibox-content">
+                                        <div class="row">
+                                            @if (ViewBag.CRMsProcesso != null && (ViewBag.CRMsProcesso as List<EntitiesServices.Model.CRM>).Count > 0)
+                                            {
+                                                <table class="table table-striped table-bordered table-hover">
+                                                    <thead style="background-color:lightsteelblue">
+                                                        <tr>
+                                                            <th>Processo</th>
+                                                            <th>Data</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        @foreach (var cond in (ViewBag.CRMsProcesso as List<EntitiesServices.Model.CRM>).OrderBy(p => p.CRM1_DT_CRIACAO).Take(5))
+                                                        {
+                                                            <tr>
+                                                                <td style="width: auto; cursor: pointer; text-decoration: underline;"><a href="@Url.Action("EditarCRM", "Administra", new { id = cond.CRM1_CD_ID})" class="btn-loading4 show-spinner"  data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Editar Lead" />@cond.CRM1_GU_GUID</td>
+                                                                <td>@cond.CRM1_DT_CRIACAO.Value.ToShortDateString()</td>
+                                                            </tr>
+                                                        }
+                                                    </tbody>
+                                                </table>
+                                            }
+                                            else
+                                            {
+                                                <div class="row">
+                                                    <div class="col-lg-1 col-md-1 col-xs-12">
+                                                    </div>
+                                                    <div style="border: 5px solid #F6A54A; padding: 10px; border-radius: 8px 8px; " class="col-lg-10 col-md-10 col-xs-8">
+                                                        <h4 style="font-weight: bold">Nenhum processo ativo</h4>
+                                                    </div>
+                                                    <div class="col-lg-1 col-md-1 col-xs-12">
+                                                    </div>
+                                                </div>
+                                            }
+                                            <span id="loadingIndicator4" style="display: none; margin-left: 10px; color: #007bff;">
+                                                <i class="fa fa-spinner fa-spin"></i> Processando...
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section Styles {
+    <link href="~/Content/themes/base/jquery-ui.min.css" rel="stylesheet" />
+    <link href="~/Content/themes/base/all.css" rel="stylesheet" />
+    @Styles.Render("~/Content/plugins/dataTables/dataTablesStyles")
+    @Styles.Render("~/plugins/jasnyBootstrapStyles")
+    @Styles.Render("~/plugins/toastrStyles")
+    @Scripts.Render("~/plugins/wow")
+    @Scripts.Render("~/bundles/inspinia")
+    @Styles.Render("~/Content/css")
+    @Styles.Render("~/font-awesome/css")
+}
+
+@section Scripts {
+
+    <script type="text/javascript" src="~/Scripts/moment.min.js"></script>
+    <script type="text/javascript" src="~/Scripts/bootstrap.min.js"></script>
+    @Scripts.Render("~/plugins/toastr")
+    <script src="~/Scripts/jquery-ui-1.12.1.min.js"></script>
+    @Scripts.Render("~/plugins/dataTables")
+    @Scripts.Render("~/bundles/inputmask")
+    @Scripts.Render("~/plugins/jasnyBootstrap")
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.maskedinput/1.4.1/jquery.maskedinput.js"></script>
+    <script src="~/Scripts/uploadAnexo.js"></script>
+    @Scripts.Render("~/plugins/chartjs")
+        <script>
+        function Fade() {
+            $('.dotContainer').fadeIn("fast");
+            $('#login').css("filter", "blur(4px)");
+        }
+    </script>
+    <script>
+        $(window).on("load", function () {
+            $('.dotContainer').fadeOut("slow");
+            $('#title').css("filter", "blur(0)");
+            $('#content').css("filter", "blur(0)");
+        });
+    </script>
+
+    <!-- Handler de fechamento do browser -->
+    <script type="text/javascript">
+        window.onbeforeunload = function ()
+        {
+            navigator.sendBeacon('../ControleAcesso/LogSessionTime');
+        }; 
+    </script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('[data-toggle="popover"]').popover();
+        });
+    </script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-toggle="popover"]'));
+            var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
+                return new bootstrap.Popover(popoverTriggerEl);
+            });
+        });
+    </script>
+
+    <script type="text/javascript">
+        $(document).ready(function () { 
+            $('.btn-loading').on('click', function (e) {            
+                $(this).prop('disabled', true);
+                $(this).addClass('disabled');
+                $('#loadingIndicator').show();
+                var tagName = $(this).prop('tagName').toLowerCase();
+                if (tagName === 'a') {
+                    e.preventDefault(); 
+                    var targetUrl = $(this).attr('href');
+                    window.location.href = targetUrl;
+
+                } else if (tagName === 'button' || tagName === 'input') {
+                    $(this).closest('form').submit();
+                }
+            });
+        });
+    </script>
+    <script type="text/javascript">
+        $(document).ready(function () { 
+            $('.btn-loading3').on('click', function (e) {            
+                $(this).prop('disabled', true);
+                $(this).addClass('disabled');
+                $('#loadingIndicator').show();
+                var tagName = $(this).prop('tagName').toLowerCase();
+                if (tagName === 'a') {
+                    e.preventDefault(); 
+                    var targetUrl = $(this).attr('href');
+                    window.location.href = targetUrl;
+
+                } else if (tagName === 'button' || tagName === 'input') {
+                    $(this).closest('form').submit();
+                }
+            });
+        });
+    </script>
+    <script type="text/javascript">
+        $(document).ready(function () { 
+            $('.btn-loading4').on('click', function (e) {            
+                $(this).prop('disabled', true);
+                $(this).addClass('disabled');
+                $('#loadingIndicator').show();
+                var tagName = $(this).prop('tagName').toLowerCase();
+                if (tagName === 'a') {
+                    e.preventDefault(); 
+                    var targetUrl = $(this).attr('href');
+                    window.location.href = targetUrl;
+
+                } else if (tagName === 'button' || tagName === 'input') {
+                    $(this).closest('form').submit();
+                }
+            });
+        });
+    </script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            $.ajax({
+                url: '../Administra/GetDadosAssinanteAno'
+                , type: 'POST'
+                , success: function (result) {
+                    var barData = {
+                        labels: result.dias,
+                        datasets: [
+                            {
+                                label: "Assinantes por Ano",
+                                backgroundColor: 'rgba(26,179,148,0.5)',
+                                pointBorderColor: "#fff",
+                                data: result.valores
+                            }
+                        ]
+                    };
+
+                    var barOptions = {
+                        responsive: true
+                    };
+
+                    var ctx2 = document.getElementById("barChartAssinanteAno").getContext("2d");
+                    new Chart(ctx2, { type: 'bar', data: barData, options: barOptions });
+                }
+            });
+        });
+    </script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            $.ajax({
+                url: '../Administra/GetDadosAcessoMes'
+                , type: 'POST'
+                , success: function (result) {
+                    var barData = {
+                        labels: result.dias,
+                        datasets: [
+                            {
+                                label: "Acessos por Dia",
+                                backgroundColor: 'rgba(26,179,148,0.5)',
+                                pointBorderColor: "#fff",
+                                data: result.valores
+                            }
+                        ]
+                    };
+
+                    var barOptions = {
+                        responsive: true
+                    };
+
+                    var ctx2 = document.getElementById("barChartAcessosMes").getContext("2d");
+                    new Chart(ctx2, { type: 'bar', data: barData, options: barOptions });
+                }
+            });
+        });
+    </script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            $.ajax({
+                url: '../Administra/GetDadosLogMes'
+                , type: 'POST'
+                , success: function (result) {
+                    var barData = {
+                        labels: result.dias,
+                        datasets: [
+                            {
+                                label: "Log por Dia",
+                                backgroundColor: 'rgba(26,179,148,0.5)',
+                                pointBorderColor: "#fff",
+                                data: result.valores
+                            }
+                        ]
+                    };
+
+                    var barOptions = {
+                        responsive: true
+                    };
+
+                    var ctx2 = document.getElementById("barChartLogDia").getContext("2d");
+                    new Chart(ctx2, { type: 'bar', data: barData, options: barOptions });
+                }
+            });
+        });
+    </script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            $.ajax({
+                url: '../Administra/GetDadosLeadMes'
+                , type: 'POST'
+                , success: function (result) {
+                    var barData = {
+                        labels: result.dias,
+                        datasets: [
+                            {
+                                label: "Leads por Dia",
+                                backgroundColor: 'rgba(26,179,148,0.5)',
+                                pointBorderColor: "#fff",
+                                data: result.valores
+                            }
+                        ]
+                    };
+
+                    var barOptions = {
+                        responsive: true
+                    };
+
+                    var ctx2 = document.getElementById("barChartLeadsMes").getContext("2d");
+                    new Chart(ctx2, { type: 'bar', data: barData, options: barOptions });
+                }
+            });
+        });
+    </script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            $.ajax({
+                url: '../Administra/GetDadosCRMMes'
+                , type: 'POST'
+                , success: function (result) {
+                    var barData = {
+                        labels: result.dias,
+                        datasets: [
+                            {
+                                label: "Processos por Dia",
+                                backgroundColor: 'rgba(26,179,148,0.5)',
+                                pointBorderColor: "#fff",
+                                data: result.valores
+                            }
+                        ]
+                    };
+
+                    var barOptions = {
+                        responsive: true
+                    };
+
+                    var ctx2 = document.getElementById("barChartCRMMes").getContext("2d");
+                    new Chart(ctx2, { type: 'bar', data: barData, options: barOptions });
+                }
+            });
+        });
+    </script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            $.ajax({
+                url: '../Administra/GetDadosLeadStatus'
+                , type: 'POST'
+                , success: function (result) {
+                var doughnutData = {
+                   labels: result.labels,
+                   datasets: [{
+                     data: result.valores,
+                     backgroundColor: result.cores
+                   }]
+                };
+                var doughnutOptions = {
+                   responsive: true
+                };
+                var ctx4 = document.getElementById("doughnutChartLeadStatus").getContext("2d");
+                new Chart(ctx4, { type: 'doughnut', data: doughnutData, options: doughnutOptions });
+              }
+            });
+        });
+    </script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            $.ajax({
+                url: '../Administra/GetDadosCRMStatus'
+                , type: 'POST'
+                , success: function (result) {
+                var doughnutData = {
+                   labels: result.labels,
+                   datasets: [{
+                     data: result.valores,
+                     backgroundColor: result.cores
+                   }]
+                };
+                var doughnutOptions = {
+                   responsive: true
+                };
+                var ctx4 = document.getElementById("doughnutChartCRMStatus").getContext("2d");
+                new Chart(ctx4, { type: 'doughnut', data: doughnutData, options: doughnutOptions });
+              }
+            });
+        });
+    </script>
+
+    @if (ViewBag.Message != null)
+    {
+        <script type="text/javascript">
+            window.onload = function () {
+                  alert("@ViewBag.Message");
+            };
+        </script>
+    }
+}
+

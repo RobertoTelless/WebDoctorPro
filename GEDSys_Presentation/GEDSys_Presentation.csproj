@@ -529,6 +529,7 @@
     <Compile Include="Controllers\EmpresaController.cs" />
     <Compile Include="Controllers\EstoqueController.cs" />
     <Compile Include="Controllers\FinanceiroController.cs" />
+    <Compile Include="Controllers\FumilController.cs" />
     <Compile Include="Controllers\GrupoController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\LocacaoController.cs" />
@@ -564,7 +565,19 @@
     <Compile Include="ViewModels\AvisoLembreteViewModel.cs" />
     <Compile Include="ViewModels\CategoriaProdutoViewModel.cs" />
     <Compile Include="ViewModels\AreaPacienteViewModel.cs" />
+    <Compile Include="ViewModels\CRMAcaoViewModel.cs" />
+    <Compile Include="ViewModels\CRMComentarioViewModel.cs" />
+    <Compile Include="ViewModels\CRMContatoViewModel.cs" />
+    <Compile Include="ViewModels\CRMDTOViewModel.cs" />
+    <Compile Include="ViewModels\CRMFollowViewModel.cs" />
+    <Compile Include="ViewModels\CRMOrigemViewModel.cs" />
+    <Compile Include="ViewModels\CRMViewModel.cs" />
     <Compile Include="ViewModels\FaixaHoraViewModel.cs" />
+    <Compile Include="ViewModels\FunilEtapaViewModel.cs" />
+    <Compile Include="ViewModels\FunilViewModel.cs" />
+    <Compile Include="ViewModels\LeadViewModel.cs" />
+    <Compile Include="ViewModels\LeadAnexoViewModel.cs" />
+    <Compile Include="ViewModels\LeadAnotacaoViewModel.cs" />
     <Compile Include="ViewModels\VacinaViewModel.cs" />
     <Compile Include="ViewModels\LocacaoAnexoViewModel.cs" />
     <Compile Include="ViewModels\ContratoLocacaoViewModel.cs" />
@@ -5508,7 +5521,17 @@
     <Content Include="Views\Noticia\IncluirComentarioNoticia.cshtml" />
     <Content Include="Views\AreaPaciente\EnviarInformacaoConsulta.cshtml" />
     <Content Include="Views\AreaPaciente\EnviarInformacaoConsulta - Cópia .cshtml" />
-    <Content Include="Views\Shared\_Navigation_Especial.cshtml" />
+    <Content Include="Views\Shared\_Navigation_Adm.cshtml" />
+    <Content Include="Views\Funil\MontarTelaFunil.cshtml" />
+    <Content Include="Views\Funil\IncluirFunil.cshtml" />
+    <Content Include="Views\Funil\EditarFunil.cshtml" />
+    <Content Include="Views\Funil\EditarEtapa.cshtml" />
+    <Content Include="Views\Funil\IncluirEtapa.cshtml" />
+    <Content Include="Views\Shared\_Layout_Adm.cshtml" />
+    <Content Include="Views\Shared\_TopNavbar_Adm.cshtml" />
+    <Content Include="Views\Administra\MontarTelaAdministra.cshtml" />
+    <Content Include="Views\Administra\MontarTelaLog.cshtml" />
+    <Content Include="Views\Administra\VerLog.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="BaseAdmin\BaseConhecimento\" />
@@ -6751,7 +6774,7 @@
     <Folder Include="Imagens\Assinante\90\Foto\" />
     <Folder Include="Imagens\Assinante\90\Pagamentos\" />
     <Folder Include="Models\" />
-    <Folder Include="Views\Administra\" />
+    <Folder Include="Views\Fumil\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff2" />

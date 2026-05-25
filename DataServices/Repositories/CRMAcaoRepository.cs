@@ -18,6 +18,15 @@ namespace DataServices.Repositories
             IQueryable<CRM_ACAO> query = Db.CRM_ACAO.Where(p => p.CRAC_IN_ATIVO == 1);
             query = query.Where(p => p.ASSI_CD_ID == idUsu);
             query = query.Where(p => p.CRAC_IN_ATIVO == 1);
+            query = query.Where(p => p.CRM.CRM1_IN_SISTEMA == 6);
+            return query.ToList();
+        }
+
+        public List<CRM_ACAO> GetAllItens()
+        {
+            IQueryable<CRM_ACAO> query = Db.CRM_ACAO.Where(p => p.CRAC_IN_ATIVO == 1);
+            query = query.Where(p => p.CRAC_IN_ATIVO == 1);
+            query = query.Where(p => p.CRM.CRM1_IN_SISTEMA == 6);
             return query.ToList();
         }
 

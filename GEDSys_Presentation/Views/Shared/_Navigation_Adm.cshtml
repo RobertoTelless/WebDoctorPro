@@ -1,0 +1,110 @@
+@using Inspinia_MVC5;
+<nav class="navbar-default navbar-static-side" role="navigation">
+    <div class="sidebar-collapse">
+        <ul class="nav" id="side-menu">
+            <li class="nav-header">
+                <div class="dropdown profile-element">
+                    <span>
+                        <img alt="image" class="img-circle" src="@Url.Content((String)Session["Foto"])" style="width: auto; height: auto; max-height: 70px; max-width: 70px;" />
+                    </span>
+                    <a data-toggle="dropdown" class="dropdown-toggle" href="#">
+                        <span class="clear">
+                            <span class="block m-t-xs">
+                                <strong class="font-bold" style="text-align: center">@((String)Session["Nome"])</strong>
+                            </span>
+                        </span>
+                    </a>
+                </div>
+                <div class="logo-element">
+                    WebDoctor
+                </div>
+            </li>
+
+            @*Dashboard*@
+            <li>
+                <a href="@Url.Action("MontarTelaAdministra", "Administra")"><i class="fa fa-th-large"></i> <span class="nav-label" data-i18n="nav.dashboard">Início</span> <span class="fa arrow"></span></a>
+                <ul class="nav nav-second-level collapse @Html.IsSelected(controller: "Cadastros", cssClass: "in")">
+                    <li class="@Html.IsSelected(action: "MontarTelaAdministra")"><a href="@Url.Action("MontarTelaAdministra", "Administra")" class="show-spinner">Página Inicial</a></li>
+                </ul>
+            </li>
+
+            @*Assinantes*@
+            <li>
+                <a href="@Url.Action("MontarTelaAdministra", "Administra")"><i class="fa fa-th-large"></i> <span class="nav-label" data-i18n="nav.dashboard">Assinantes</span> <span class="fa arrow"></span></a>
+                <ul class="nav nav-second-level collapse @Html.IsSelected(controller: "Cadastros", cssClass: "in")">
+                    <li class="@Html.IsSelected(action: "MontarTelaAssinante")"><a href="@Url.Action("MontarTelaAssinante", "Administra")" class="show-spinner">Assinantes</a></li>
+                    <li class="@Html.IsSelected(action: "IncluirAssinante")"><a href="@Url.Action("IncluirAssinante", "Administra")" class="show-spinner">Novo Assinante</a></li>
+                </ul>
+            </li>
+
+            @*Leads*@
+            <li>
+                <a href="@Url.Action("MontarTelaAdministra", "Administra")"><i class="fa fa-th-large"></i> <span class="nav-label" data-i18n="nav.dashboard">Leads</span> <span class="fa arrow"></span></a>
+                <ul class="nav nav-second-level collapse @Html.IsSelected(controller: "Cadastros", cssClass: "in")">
+                    <li class="@Html.IsSelected(action: "MontarTelaLead")"><a href="@Url.Action("MontarTelaLead", "Administra")" class="show-spinner">Assinantes</a></li>
+                </ul>
+            </li>
+
+            @*Processos*@
+            <li>
+                <a href="@Url.Action("MontarTelaAdministra", "Administra")"><i class="fa fa-th-large"></i> <span class="nav-label" data-i18n="nav.dashboard">Processos - CRM</span> <span class="fa arrow"></span></a>
+                <ul class="nav nav-second-level collapse @Html.IsSelected(controller: "Cadastros", cssClass: "in")">
+                    <li class="@Html.IsSelected(action: "MontarTelaCRM")"><a href="@Url.Action("MontarTelaCRM", "CRM")">Central de CRM</a></li>
+                    <li class="@Html.IsSelected(action: "VerAcoesUsuarioCRMPrevia")"><a href="@Url.Action("VerAcoesUsuarioCRMPrevia", "CRM")">Ações</a></li>
+                    <li class="@Html.IsSelected(action: "MontarTelaFunil")"><a href="@Url.Action("MontarTelaFunil", "Funil")">Funis de Processo</a></li>
+                </ul>
+            </li>
+
+            @*Versões*@
+            <li>
+                <a href="@Url.Action("MontarTelaAdministra", "Administra")"><i class="fa fa-th-large"></i> <span class="nav-label" data-i18n="nav.dashboard">Versões</span> <span class="fa arrow"></span></a>
+                <ul class="nav nav-second-level collapse @Html.IsSelected(controller: "Cadastros", cssClass: "in")">
+                    <li class="@Html.IsSelected(action: "MontarTelaVersoes")"><a href="@Url.Action("MontarTelaVersoes", "Administra")" class="show-spinner">Versões</a></li>
+                </ul>
+            </li>
+
+            @*Log Auditoria*@
+            <li>
+                <a href="@Url.Action("MontarTelaAdministra", "Administra")"><i class="fa fa-th-large"></i> <span class="nav-label" data-i18n="nav.dashboard">Auditoria</span> <span class="fa arrow"></span></a>
+                <ul class="nav nav-second-level collapse @Html.IsSelected(controller: "Cadastros", cssClass: "in")">
+                    <li class="@Html.IsSelected(action: "MontarTelaLog")"><a href="@Url.Action("MontarTelaLog", "Administra")" class="show-spinner">Registros</a></li>
+                    <li class="@Html.IsSelected(action: "MontarTelaAuditoriaManutencao")"><a href="@Url.Action("MontarTelaAuditoriaManutencao", "Administra")" class="show-spinner">Manutenção</a></li>
+                </ul>
+            </li>
+
+            @*Acessos*@
+            <li>
+                <a href="@Url.Action("MontarTelaAdministra", "Administra")"><i class="fa fa-th-large"></i> <span class="nav-label" data-i18n="nav.dashboard">Acessos</span> <span class="fa arrow"></span></a>
+                <ul class="nav nav-second-level collapse @Html.IsSelected(controller: "Cadastros", cssClass: "in")">
+                    <li class="@Html.IsSelected(action: "MontarTelaAcesso")"><a href="@Url.Action("MontarTelaAcesso", "Administra")" class="show-spinner">Registros</a></li>
+                    <li class="@Html.IsSelected(action: "MontarTelaAcessosManutencao")"><a href="@Url.Action("MontarTelaAcessosManutencao", "Administra")" class="show-spinner">Manutenção</a></li>
+                </ul>
+            </li>
+
+            @*Notícias*@
+            <li>
+                <a href="@Url.Action("MontarTelaAdministra", "Administra")"><i class="fa fa-th-large"></i> <span class="nav-label" data-i18n="nav.dashboard">Notícias</span> <span class="fa arrow"></span></a>
+                <ul class="nav nav-second-level collapse @Html.IsSelected(controller: "Cadastros", cssClass: "in")">
+                    <li class="@Html.IsSelected(action: "MontarTelaGeralNoticias")"><a href="@Url.Action("MontarTelaGeralNoticias", "Administra")" class="show-spinner">Central de Notícias</a></li>
+                </ul>
+            </li>
+
+            @*Base de Conhecimento*@
+            <li>
+                <a href="@Url.Action("MontarTelaAdministra", "Administra")"><i class="fa fa-th-large"></i> <span class="nav-label" data-i18n="nav.dashboard">Base de Conhecimento</span> <span class="fa arrow"></span></a>
+                <ul class="nav nav-second-level collapse @Html.IsSelected(controller: "Cadastros", cssClass: "in")">
+                    <li class="@Html.IsSelected(action: "MontarTelaBaseConhecimento")"><a href="@Url.Action("MontarTelaBaseConhecimento", "Administra")" class="show-spinner">Manutenção</a></li>
+                </ul>
+            </li>
+
+            @*Avisos*@
+            <li>
+                <a href="@Url.Action("MontarTelaAdministra", "Administra")"><i class="fa fa-th-large"></i> <span class="nav-label" data-i18n="nav.dashboard">Avisos</span> <span class="fa arrow"></span></a>
+                <ul class="nav nav-second-level collapse @Html.IsSelected(controller: "Cadastros", cssClass: "in")">
+                    <li class="@Html.IsSelected(action: "MontarTelaAviso")"><a href="@Url.Action("MontarTelaGeralAvisos", "Administra")" class="show-spinner">Avisos Gerais</a></li>
+                    <li class="@Html.IsSelected(action: "MontarTelaAvisosIndividuais")"><a href="@Url.Action("MontarTelaGeralAvisosIndividuais", "Administra")" class="show-spinner">Avisos Individuais</a></li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+</nav>

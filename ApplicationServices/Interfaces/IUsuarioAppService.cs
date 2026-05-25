@@ -19,6 +19,7 @@ namespace ApplicationServices.Interfaces
         USUARIO CheckExist(USUARIO item, Int32 idAss);
         List<TIPO_CARTEIRA_CLASSE> GetAllClasse();
         List<ESPECIALIDADE> GetAllEspecialidade(Int32 idAss);
+        List<USUARIO> GetAllItens();
 
         Int32 ValidateCreate(USUARIO usuario, USUARIO usuarioLogado);
         Int32 ValidateCreate(USUARIO usuario);

@@ -31,6 +31,26 @@ namespace ModelServices.EntitiesServices
             return _baseRepository.GetAllItens(idAss);
         }
 
+        public List<ACESSO_METODO> GetAllItens()
+        {
+            return _baseRepository.GetAllItens();
+        }
+
+        public List<ACESSO_METODO> GetAllItensDia()
+        {
+            return _baseRepository.GetAllItensDia();
+        }
+
+        public List<ACESSO_METODO> GetAllItensMes()
+        {
+            return _baseRepository.GetAllItensMes();
+        }
+
+        public List<ACESSO_METODO> GetAllItensMesAnterior()
+        {
+            return _baseRepository.GetAllItensMesAnterior();
+        }
+
         public List<ACESSO_METODO> ExecuteFilter(Int32? assi, Int32? usuario, DateTime? inicio, DateTime? final, String sigla, String entidade, String metodo, Int32 idAss)
         {
             return _baseRepository.ExecuteFilter(assi, usuario, inicio, final, sigla, entidade, metodo, idAss);

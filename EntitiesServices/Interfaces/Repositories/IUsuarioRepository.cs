@@ -15,6 +15,7 @@ namespace ModelServices.Interfaces.Repositories
         USUARIO GetItemById(Int32 id);
         List<USUARIO> GetAllUsuarios(Int32 idAss);
         List<USUARIO> GetAllItens(Int32 idAss);
+        List<USUARIO> GetAllItens();
         List<USUARIO> GetAllItensBloqueados(Int32 idAss);
         List<USUARIO> GetAllItensAcessoHoje(Int32 idAss);
         List<USUARIO> GetAllUsuariosAdm(Int32 idAss);

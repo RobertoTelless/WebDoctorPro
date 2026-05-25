@@ -20116,11 +20116,14 @@ namespace GEDSys_Presentation.Controllers
                         Int32 volta = baseApp.ValidateCreateConsulta(item);
 
                         // Acerta area do paciente
-                        Int32 idArea = (Int32)Session["IdAreaPaciente"];
-                        AREA_PACIENTE area = areaApp.GetItemById(idArea);
-                        area.AREA_IN_PROCESSADA = 1;
-                        area.AREA_DT_PROCESSO = DateTime.Today.Date;
-                        Int32 voltaA = areaApp.ValidateEdit(area);
+                        if (Session["IdAreaPaciente"] != null)
+                        {
+                            Int32 idArea = (Int32)Session["IdAreaPaciente"];
+                            AREA_PACIENTE area = areaApp.GetItemById(idArea);
+                            area.AREA_IN_PROCESSADA = 1;
+                            area.AREA_DT_PROCESSO = DateTime.Today.Date;
+                            Int32 voltaA = areaApp.ValidateEdit(area);
+                        }
 
                         // Recupera paciente
                         PACIENTE pac = baseApp.GetItemById(item.PACI_CD_ID);

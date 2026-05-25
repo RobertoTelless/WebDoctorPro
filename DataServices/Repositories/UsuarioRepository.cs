@@ -15,6 +15,7 @@ namespace DataServices.Repositories
             query = query.Where(p => p.USUA_NR_CPF == conta.USUA_NR_CPF);
             query = query.Where(p => p.ASSI_CD_ID == idAss);
             query = query.Where(p => p.USUA_IN_ATIVO == 1);
+            query = query.Where(p => p.USUA_IN_SISTEMA == 6);
             return query.AsNoTracking().FirstOrDefault();
         }
 
@@ -23,6 +24,7 @@ namespace DataServices.Repositories
             IQueryable<USUARIO> query = Db.USUARIO.Where(p => p.USUA_IN_ATIVO == 1);
             query = query.Where(p => p.USUA_NM_EMAIL == email);
             query = query.Where(p => p.ASSI_CD_ID == idAss);
+            query = query.Where(p => p.USUA_IN_SISTEMA == 6);
             return query.FirstOrDefault();
         }
 
@@ -30,6 +32,7 @@ namespace DataServices.Repositories
         {
             IQueryable<USUARIO> query = Db.USUARIO.Where(p => p.USUA_IN_ATIVO == 1);
             query = query.Where(p => p.USUA_NM_EMAIL == email);
+            query = query.Where(p => p.USUA_IN_SISTEMA == 6);
             return query.FirstOrDefault();
         }
 
@@ -37,6 +40,7 @@ namespace DataServices.Repositories
         {
             IQueryable<USUARIO> query = Db.USUARIO.Where(p => p.USUA_IN_ATIVO == 1);
             query = query.Where(p => p.USUA_NM_LOGIN == login);
+            query = query.Where(p => p.USUA_IN_SISTEMA == 6);
             return query.FirstOrDefault();
         }
 
@@ -55,6 +59,7 @@ namespace DataServices.Repositories
             query = query.Include(p => p.ASSINANTE);
             query = query.Include(p => p.PERFIL);
             query = query.Where(p => p.ASSI_CD_ID == idAss);
+            query = query.Where(p => p.USUA_IN_SISTEMA == 6);
             return query.FirstOrDefault();
         }
 
@@ -62,6 +67,14 @@ namespace DataServices.Repositories
         {
             IQueryable<USUARIO> query = Db.USUARIO.Where(p => p.USUA_IN_ATIVO == 1);
             query = query.Where(p => p.ASSI_CD_ID == idAss);
+            query = query.Where(p => p.USUA_IN_SISTEMA == 6);
+            return query.AsNoTracking().ToList();
+        }
+
+        public List<USUARIO> GetAllItens()
+        {
+            IQueryable<USUARIO> query = Db.USUARIO.Where(p => p.USUA_IN_ATIVO == 1);
+            query = query.Where(p => p.USUA_IN_SISTEMA == 6);
             return query.AsNoTracking().ToList();
         }
 
@@ -70,12 +83,14 @@ namespace DataServices.Repositories
             IQueryable<USUARIO> query = Db.USUARIO.Where(p => p.USUA_IN_ATIVO == 1);
             query = query.Where(p => p.USUA_IN_BLOQUEADO == 1);
             query = query.Where(p => p.ASSI_CD_ID == idAss);
+            query = query.Where(p => p.USUA_IN_SISTEMA == 6);
             return query.AsNoTracking().ToList();
         }
 
         public List<USUARIO> GetAllItensAcessoHoje(Int32 idAss)
         {
             IQueryable<USUARIO> query = Db.USUARIO.Where(p => p.USUA_IN_ATIVO == 1);
+            query = query.Where(p => p.USUA_IN_SISTEMA == 6);
             query = query.Where(p => p.USUA_IN_BLOQUEADO == 0);
             query = query.Where(p => DbFunctions.TruncateTime(p.USUA_DT_ACESSO) == DbFunctions.TruncateTime(DateTime.Today.Date));
             query = query.Where(p => p.ASSI_CD_ID == idAss);
@@ -85,6 +100,7 @@ namespace DataServices.Repositories
         public List<USUARIO> GetAllUsuariosAdm(Int32 idAss)
         {
             IQueryable<USUARIO> query = Db.USUARIO;
+            query = query.Where(p => p.USUA_IN_SISTEMA == 6);
             query = query.Where(p => p.ASSI_CD_ID == idAss);
             query = query.Where(p => p.USUA_IN_LOGIN_PROVISORIO == 0);
             query = query.Where(p => p.USUA_IN_PENDENTE_CODIGO == 0);
@@ -94,6 +110,7 @@ namespace DataServices.Repositories
         public List<USUARIO> GetAllUsuarios(Int32 idAss)
         {
             IQueryable<USUARIO> query = Db.USUARIO;
+            query = query.Where(p => p.USUA_IN_SISTEMA == 6);
             query = query.Where(p => p.ASSI_CD_ID == idAss);
             return query.AsNoTracking().ToList();
         }
@@ -127,6 +144,7 @@ namespace DataServices.Repositories
                 query = query.Where(p => p.ASSI_CD_ID == idAss);
                 query = query.Where(p => p.USUA_IN_ATIVO == 1);
                 query = query.OrderBy(a => a.USUA_NM_NOME);
+                query = query.Where(p => p.USUA_IN_SISTEMA == 6);
                 lista = query.AsNoTracking().ToList<USUARIO>();
             }
             return lista;

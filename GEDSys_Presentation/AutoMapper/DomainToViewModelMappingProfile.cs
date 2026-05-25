@@ -107,6 +107,19 @@ namespace MvcMapping.Mappers
             CreateMap<PACIENTE_VACINA, PacienteVacinaViewModel>();
             CreateMap<VACINA, VacinaViewModel>();
 
+            CreateMap<LEAD, LeadViewModel>();
+            CreateMap<LEAD_ANEXO, LeadAnexoViewModel>();
+            CreateMap<LEAD_ANOTACAO, LeadAnotacaoViewModel>();
+
+            CreateMap<FUNIL, FunilViewModel>();
+            CreateMap<FUNIL_ETAPA, FunilEtapaViewModel>();
+            CreateMap<CRM_ACAO, CRMAcaoViewModel>();
+            CreateMap<CRM_COMENTARIO, CRMComentarioViewModel>();
+            CreateMap<CRM_CONTATO, CRMContatoViewModel>();
+            CreateMap<CRM_FOLLOW, CRMFollowViewModel>();
+            CreateMap<CRM_ORIGEM, CRMOrigemViewModel>();
+            CreateMap<CRM, CRMViewModel>();
+
         }
     }
 }
