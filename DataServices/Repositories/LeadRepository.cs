@@ -30,12 +30,14 @@ namespace DataServices.Repositories
         {
             IQueryable<LEAD> query = Db.LEAD;
             query = query.Where(p => p.LEAD_IN_ATIVO == 1);
+            query = query.Where(p => p.LEAD_IN_SISTEMA == 6);
             return query.AsNoTracking().ToList();
         }
 
         public List<LEAD> GetAllItensAdm(Int32 idAss)
         {
             IQueryable<LEAD> query = Db.LEAD;
+            query = query.Where(p => p.LEAD_IN_SISTEMA == 6);
             return query.AsNoTracking().ToList();
         }
 

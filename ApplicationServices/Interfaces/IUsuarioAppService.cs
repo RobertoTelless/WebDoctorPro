@@ -47,6 +47,9 @@ namespace ApplicationServices.Interfaces
         LOG_EXCECAO_NOVO GetLogExcecaoById(Int32 id);
         List<LOG_EXCECAO_NOVO> GetAllLogExcecao(Int32 idAss);
         Int32 ValidateCreateLogExcecao(LOG_EXCECAO_NOVO log);
+        List<LOG_EXCECAO_NOVO> GetAllLogExcecao();
+        List<LOG_EXCECAO_NOVO> GetAllLogExcecaoMes();
+        List<LOG_EXCECAO_NOVO> GetAllLogExcecaoAno();
 
         List<MENSAGEM_FABRICANTE> GetAllMensFab(Int32 idAss);
         MENSAGEM_FABRICANTE GetMensFabById(Int32 id);

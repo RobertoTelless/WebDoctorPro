@@ -35,6 +35,12 @@ namespace ApplicationServices.Services
             return lista;
         }
 
+        public List<ACESSO_METODO> GetAllItensAno()
+        {
+            List<ACESSO_METODO> lista = _baseService.GetAllItensAno();
+            return lista;
+        }
+
         public List<ACESSO_METODO> GetAllItensMes()
         {
             List<ACESSO_METODO> lista = _baseService.GetAllItensMes();
@@ -62,6 +68,30 @@ namespace ApplicationServices.Services
 
                 // Processa filtro
                 objeto = _baseService.ExecuteFilter(assi, usuario, inicio, final, sigla, entidade, metodo, idAss);
+                if (objeto.Count == 0)
+                {
+                    volta = 1;
+                }
+
+                // Monta tupla
+                var tupla = Tuple.Create(volta, objeto, true);
+                return tupla;
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
+        public Tuple<Int32, List<ACESSO_METODO>, Boolean> ExecuteFilter(Int32? assi, Int32? usuario, DateTime? inicio, DateTime? final, String sigla, String entidade, String metodo)
+        {
+            try
+            {
+                List<ACESSO_METODO> objeto = new List<ACESSO_METODO>();
+                Int32 volta = 0;
+
+                // Processa filtro
+                objeto = _baseService.ExecuteFilter(assi, usuario, inicio, final, sigla, entidade, metodo);
                 if (objeto.Count == 0)
                 {
                     volta = 1;

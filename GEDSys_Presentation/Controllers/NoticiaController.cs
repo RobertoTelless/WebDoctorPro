@@ -76,14 +76,6 @@ namespace GEDSys_Presentation.Controllers
                 if ((USUARIO)Session["UserCredentials"] != null)
                 {
                     usuario = (USUARIO)Session["UserCredentials"];
-
-                    // Verfifica permissão
-                    if (usuario.PERFIL.PERF_SG_SIGLA != "ADM")
-                    {
-                        Session["MensPermissao"] = 2;
-                        Session["ModuloPermissao"] = "Noticia";
-                        return RedirectToAction("MontarTelaPaciente", "Paciente");
-                    }
                 }
                 else
                 {
@@ -264,7 +256,7 @@ namespace GEDSys_Presentation.Controllers
             // Prepara view
             NOTICIA item = new NOTICIA();
             NoticiaViewModel vm = Mapper.Map<NOTICIA, NoticiaViewModel>(item);
-            vm.ASSI_CD_ID = (Int32)Session["IdAssinante"];
+            vm.ASSI_CD_ID = 1;
             vm.NOTC_DT_EMISSAO = DateTime.Today.Date;
             vm.NOTC_IN_ATIVO = 1;
             vm.NOTC_DT_VALIDADE = DateTime.Today.Date.AddDays(30);
@@ -303,10 +295,6 @@ namespace GEDSys_Presentation.Controllers
                     // Carrega foto e processa alteracao
                     item.NOTC_AQ_FOTO = "~/Images/p_big2.jpg";
                     volta = baseApp.ValidateEdit(item, item, usuarioLogado);
-
-                    // Cria pastas
-                    //String caminho = "/Imagens/" + idAss.ToString() + "/Noticias/" + item.NOTC_CD_ID.ToString() + "/Fotos/";
-                    //Directory.CreateDirectory(Server.MapPath(caminho));
 
                     if (Session["FileQueueNoticia"] != null)
                     {
@@ -494,8 +482,6 @@ namespace GEDSys_Presentation.Controllers
             if ((USUARIO)Session["UserCredentials"] != null)
             {
                 usuario = (USUARIO)Session["UserCredentials"];
-
-                // Verfifica permissão
             }
             else
             {
@@ -610,8 +596,6 @@ namespace GEDSys_Presentation.Controllers
                 if ((USUARIO)Session["UserCredentials"] != null)
                 {
                     usuario = (USUARIO)Session["UserCredentials"];
-
-                    // Verfifica permissão
                 }
                 else
                 {
@@ -859,6 +843,23 @@ namespace GEDSys_Presentation.Controllers
             return View(vm);
         }
 
+        public ActionResult VerNoticiaEspecial(Int32 id)
+        {
+            if ((String)Session["Ativa"] == null)
+            {
+                return RedirectToAction("Logout", "ControleAcesso");
+            }
+            Session["IdVolta"] = id;
+            Session["IdNoticia"] = id;
+            NOTICIA item = baseApp.GetItemById(id);
+            item.NOTC_NR_ACESSO = ++item.NOTC_NR_ACESSO;
+            objetoAntes = item;
+            Int32 volta = baseApp.ValidateEdit(item, objetoAntes);
+
+            NoticiaViewModel vm = Mapper.Map<NOTICIA, NoticiaViewModel>(item);
+            return View(vm);
+        }
+
         [HttpGet]
         public ActionResult MontarTelaNoticiaQuadro()
         {
@@ -873,14 +874,6 @@ namespace GEDSys_Presentation.Controllers
                 if ((USUARIO)Session["UserCredentials"] != null)
                 {
                     usuario = (USUARIO)Session["UserCredentials"];
-
-                    // Verfifica permissão
-                    if (usuario.PERFIL.PERF_SG_SIGLA != "ADM")
-                    {
-                        Session["MensPermissao"] = 2;
-                        Session["ModuloPermissao"] = "Noticia";
-                        return RedirectToAction("MontarTelaPaciente", "Paciente");
-                    }
                 }
                 else
                 {

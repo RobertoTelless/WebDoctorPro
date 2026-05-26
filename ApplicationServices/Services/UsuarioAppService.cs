@@ -1483,6 +1483,21 @@ namespace ApplicationServices.Services
             return _usuarioService.GetAllLogExcecao(idAss);
         }
 
+        public List<LOG_EXCECAO_NOVO> GetAllLogExcecao()
+        {
+            return _usuarioService.GetAllLogExcecao();
+        }
+
+        public List<LOG_EXCECAO_NOVO> GetAllLogExcecaoMes()
+        {
+            return _usuarioService.GetAllLogExcecaoMes();
+        }
+
+        public List<LOG_EXCECAO_NOVO> GetAllLogExcecaoAno()
+        {
+            return _usuarioService.GetAllLogExcecaoAno();
+        }
+
         public Int32 ValidateCreateLogExcecao(LOG_EXCECAO_NOVO log)
         {
             // Persiste

@@ -29,9 +29,14 @@ namespace ERP_Condominios_Solution.ViewModels
         public Nullable<int> USUA_CD_ID { get; set; }
         public Nullable<int> CRM1_CD_ID { get; set; }
         public Nullable<System.DateTime> LEAD_DT_DUMMY { get; set; }
-        public Nullable<int> LEAD_IN_HUMANO { get; set; }
-        public string LEAD_NM_SENHA { get; set; }
-        public string LEAD_NM_LOGIN { get; set; }
+        public Nullable<System.DateTime> LEAD_DT_FECHAMENTO { get; set; }
+        public string LEAD_TX_OBSERVACOES { get; set; }
+        public Nullable<System.DateTime> LEAD_DT_MOVIMENTO { get; set; }
+        public string LEAD_DS_DESCRICAO { get; set; }
+        public Nullable<int> LEAD_IN_ENVIOS { get; set; }
+        public Nullable<System.DateTime> LEAD_DT_EXCLUSAO { get; set; }
+        public string LEAD_GU_IDENTIFICADOR { get; set; }
+
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<LEAD_ANEXO> LEAD_ANEXO { get; set; }

@@ -39,23 +39,24 @@ namespace CRMPresentation.Controllers
             Session["AreasAbertos"] = 0;
 
             // Registra acesso
-            //if (!CookieManager.JaRegistradoNestaSessao())
-            //{
-            //    AcessoVisitanteDTO dto = CookieManager.CapturarDadosAcesso();
-            //    ControleSiteMetodo grava = new ControleSiteMetodo(sitApp);
-            //    Int32 voltaX = grava.GravaAcesso(dto);
-            //    CookieManager.MarcarComoRegistrado();
-            //}
+            if (!CookieManager.JaRegistradoNestaSessao())
+            {
+                CookieManager.GravarCookieInicioBase();
+                AcessoVisitanteDTO dto = CookieManager.CapturarDadosAcesso();
+                ControleSiteMetodo grava = new ControleSiteMetodo(sitApp);
+                Int32 voltaX = grava.GravaAcesso(dto);
+                CookieManager.MarcarComoRegistrado();
+            }
 
             // Trata cookie
-            //Boolean cook = CookieManager.VerificarValidadeCookie();
-            //if (cook)
-            //{
-            //    Session["TemCookie"] = 1;
-            //    return RedirectToAction("Login", "ControleAcesso");
-            //}
-            return RedirectToAction("Login", "ControleAcesso");
-            //return RedirectToAction("CarregarLandingPage", "BaseAdmin");
+            Boolean cook = CookieManager.VerificarValidadeCookie();
+            if (cook)
+            {
+                Session["TemCookie"] = 1;
+                return RedirectToAction("Login", "ControleAcesso");
+            }
+            //return RedirectToAction("Login", "ControleAcesso");
+            return RedirectToAction("CarregarLandingPage", "BaseAdmin");
         }
 
         public ActionResult About()

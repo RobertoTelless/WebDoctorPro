@@ -22,6 +22,30 @@ namespace DataServices.Repositories
             query = query.Where(p => p.LOEX_IN_SISTEMA == 6);
             return query.AsNoTracking().ToList();
         }
+        public List<LOG_EXCECAO_NOVO> GetAllItens()
+        {
+            IQueryable<LOG_EXCECAO_NOVO> query = Db.LOG_EXCECAO_NOVO;
+            query = query.Where(p => p.LOEX_IN_SISTEMA == 6);
+            return query.AsNoTracking().ToList();
+        }
+
+        public List<LOG_EXCECAO_NOVO> GetAllItensMes()
+        {
+            IQueryable<LOG_EXCECAO_NOVO> query = Db.LOG_EXCECAO_NOVO;
+            query = query.Where(p => p.LOEX_IN_SISTEMA == 6);
+            query = query.Where(p => DbFunctions.TruncateTime(p.LOEX_DT_DATA).Value.Month == DbFunctions.TruncateTime(DateTime.Today.Date).Value.Month & DbFunctions.TruncateTime(p.LOEX_DT_DATA).Value.Year == DbFunctions.TruncateTime(DateTime.Today.Date).Value.Year);
+            return query.AsNoTracking().ToList();
+        }
+
+        public List<LOG_EXCECAO_NOVO> GetAllItensAno()
+        {
+            DateTime ano = DateTime.Today.Date.AddDays(-365);
+            DateTime hoje = DateTime.Today.Date;
+            IQueryable<LOG_EXCECAO_NOVO> query = Db.LOG_EXCECAO_NOVO;
+            query = query.Where(p => p.LOEX_IN_SISTEMA == 6);
+            query = query.Where(p => DbFunctions.TruncateTime(p.LOEX_DT_DATA).Value >= ano & DbFunctions.TruncateTime(p.LOEX_DT_DATA).Value <= hoje);
+            return query.AsNoTracking().ToList();
+        }
 
         public List<LOG_EXCECAO_NOVO> ExecuteFilter(Int32? usuId, DateTime? data, String gerador, Int32 idAss)
         {

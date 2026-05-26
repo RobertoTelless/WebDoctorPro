@@ -5532,6 +5532,14 @@
     <Content Include="Views\Administra\MontarTelaAdministra.cshtml" />
     <Content Include="Views\Administra\MontarTelaLog.cshtml" />
     <Content Include="Views\Administra\VerLog.cshtml" />
+    <Content Include="Views\Administra\MontarTelaAcesso.cshtml" />
+    <Content Include="Views\Administra\MontarTelaTodosAcessosUsuarios.cshtml" />
+    <Content Include="Views\Administra\MontarTelaTodosAcessosFuncoes.cshtml" />
+    <Content Include="Views\Administra\MontarTelaTodosAcessosFaixas.cshtml" />
+    <Content Include="Views\Administra\MontarTelaTodosAcessos.cshtml" />
+    <Content Include="Views\Noticia\VerNoticiaEspecial.cshtml" />
+    <Content Include="Views\Administra\MontarTelaLead.cshtml" />
+    <Content Include="Views\Administra\IncluirLead.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="BaseAdmin\BaseConhecimento\" />

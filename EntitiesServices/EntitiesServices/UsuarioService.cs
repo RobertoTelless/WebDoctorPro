@@ -298,6 +298,21 @@ namespace ModelServices.EntitiesServices
             return _excRepository.GetAllItens(idAss);
         }
 
+        public List<LOG_EXCECAO_NOVO> GetAllLogExcecao()
+        {
+            return _excRepository.GetAllItens();
+        }
+
+        public List<LOG_EXCECAO_NOVO> GetAllLogExcecaoMes()
+        {
+            return _excRepository.GetAllItensMes();
+        }
+
+        public List<LOG_EXCECAO_NOVO> GetAllLogExcecaoAno()
+        {
+            return _excRepository.GetAllItensAno();
+        }
+
         public Int32 CreateLogExcecao(LOG_EXCECAO_NOVO log)
         {
             using (DbContextTransaction transaction = Db.Database.BeginTransaction(IsolationLevel.ReadCommitted))

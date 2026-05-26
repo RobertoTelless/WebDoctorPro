@@ -3111,6 +3111,9 @@
           <Property Name="LEAD_TX_OBSERVACOES" Type="text" />
           <Property Name="LEAD_DT_MOVIMENTO" Type="date" />
           <Property Name="LEAD_DS_DESCRICAO" Type="varchar" MaxLength="500" />
+          <Property Name="LEAD_IN_ENVIOS" Type="int" />
+          <Property Name="LEAD_DT_EXCLUSAO" Type="date" />
+          <Property Name="LEAD_GU_IDENTIFICADOR" Type="varchar" MaxLength="50" />
         </EntityType>
         <EntityType Name="LEAD_ANEXO">
           <Key>
@@ -42283,6 +42286,9 @@
           <Property Name="LEAD_TX_OBSERVACOES" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
           <Property Name="LEAD_DT_MOVIMENTO" Type="DateTime" Precision="0" />
           <Property Name="LEAD_DS_DESCRICAO" Type="String" MaxLength="500" FixedLength="false" Unicode="false" />
+          <Property Name="LEAD_IN_ENVIOS" Type="Int32" />
+          <Property Name="LEAD_DT_EXCLUSAO" Type="DateTime" Precision="0" />
+          <Property Name="LEAD_GU_IDENTIFICADOR" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
         </EntityType>
         <EntityType Name="LEAD_ANEXO">
           <Key>
@@ -50271,6 +50277,9 @@
           <EntitySetMapping Name="LEAD">
             <EntityTypeMapping TypeName="CRMSysDBModel.LEAD">
               <MappingFragment StoreEntitySet="LEAD">
+                <ScalarProperty Name="LEAD_GU_IDENTIFICADOR" ColumnName="LEAD_GU_IDENTIFICADOR" />
+                <ScalarProperty Name="LEAD_DT_EXCLUSAO" ColumnName="LEAD_DT_EXCLUSAO" />
+                <ScalarProperty Name="LEAD_IN_ENVIOS" ColumnName="LEAD_IN_ENVIOS" />
                 <ScalarProperty Name="LEAD_DS_DESCRICAO" ColumnName="LEAD_DS_DESCRICAO" />
                 <ScalarProperty Name="LEAD_DT_MOVIMENTO" ColumnName="LEAD_DT_MOVIMENTO" />
                 <ScalarProperty Name="LEAD_TX_OBSERVACOES" ColumnName="LEAD_TX_OBSERVACOES" />
