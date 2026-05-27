@@ -52,6 +52,8 @@ namespace ModelServices.Interfaces.EntitiesServices
 
         List<MENSAGEM_FABRICANTE> GetAllMensFab(Int32 idAss);
         MENSAGEM_FABRICANTE GetMensFabById(Int32 id);
+        Int32 CreateMensFab(MENSAGEM_FABRICANTE fab);
+        Int32 EditMensFab(MENSAGEM_FABRICANTE fab);
 
         List<USUARIO_LOGIN> GetAllLogin(Int32 idAss);
         USUARIO_LOGIN GetLoginById(Int32 id);

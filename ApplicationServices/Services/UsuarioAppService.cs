@@ -2031,6 +2031,21 @@ namespace ApplicationServices.Services
             return _usuarioService.GetMensFabById(id);
         }
 
+        public Int32 ValidateCreateMensFab(MENSAGEM_FABRICANTE log)
+        {
+            // Persiste
+            Int32 volta = _usuarioService.CreateMensFab(log);
+            return volta;
+        }
+
+        public Int32 ValidateEditMensFab(MENSAGEM_FABRICANTE log)
+        {
+            // Persiste
+            Int32 volta = _usuarioService.EditMensFab(log);
+            return volta;
+        }
+
+
         public USUARIO_LOGIN GetLoginById(Int32 id)
         {
             return _usuarioService.GetLoginById(id);

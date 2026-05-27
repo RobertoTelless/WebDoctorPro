@@ -1,0 +1,1760 @@
+﻿@using Presentation.Extensions
+@using EntitiesServices.Model
+@model ERP_Condominios_Solution.ViewModels.LeadViewModel
+@{
+    Layout = "~/Views/Shared/_Layout_Admin.cshtml";
+    ViewBag.Title = "WebDoctor - Laed - Edição";
+    ViewBag.MetaDescription = "WebDoctor - Lead - Edição de Lead";
+    ViewBag.MetaKeywords = "WebDoctor, Lead, Edicao";
+}
+
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="modal inmodal fade" id="modalConfirmacaoExclusaoAnexo" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content animated bounceInRight">
+                <div class="modal-header" style="position: relative; padding: 30px 15px;">
+                    <img src="@Url.Content("~/Images/Prontuario/prontuario_icon_3.png?v=1.1")" 
+                         style="position: absolute; left: 15px; top: 15px; width: 40px; height: auto;" 
+                         alt="Ícone" />
+
+                    <i class="fa fa-trash-o modal-icon text-danger" style="display: block;"></i>
+                    <h4 class="modal-title">Confirmação de Exclusão de Anexo</h4>
+                    <small class="font-bold">WebDoctorPro - Gestão de Anexos</small>
+                </div>
+            
+                <div class="modal-body text-center">
+                    <h3>Deseja realmente excluir este anexo?</h3>
+                    <p>Esta ação removerá o arquivo permanentemente do lead.</p>
+                    <input type="hidden" id="urlExclusaoTemp="" />
+                </div>
+            
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-white" data-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-danger" id="btnConfirmarExclusaoAnexo">Confirmar Exclusão</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modalContainer">
+        <div id="modal" class="modal" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        @*titulo gerado dinamicamente*@
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        @*Gerado dinamicamente*@
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="page-title">
+        <ol class="breadcrumb">
+            <li>
+                <a href="@Url.Action("MontarTelaAdministra", "Administra")">Dashboard</a>
+            </li>
+            <li>
+                <a href="@Url.Action("MontarTelaLead", "Administra")">Leads</a>
+            </li>
+            <li class="active">
+                <strong>Leads - Alteração</strong>
+            </li>
+        </ol>
+        <br />
+    </div>
+    <div class="row">
+        <div class="col-lg-12 col-md-12 col-xs-12">
+            <div class="col-lg-12 col-md-12 col-xs-12 ibox float-e-margins">
+                <div class="ibox-title">
+                    <div class="row">
+                        <div style="text-align: center;" class="col-lg-12 col-md-12 col-xs-12">
+                            <h5>Lead - Alteração</h5>
+                            <span style="color:green; font-weight: 500; font-size: 20px;">@Model.LEAD_NM_NOME</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="ibox-content">
+                    @Html.AntiForgeryToken()
+                    @if (!ViewData.ModelState.IsValid)
+                    {
+                        <div class="alert alert-danger">
+                            <button type="button" class="close" data-dismiss="alert">Fechar</button>
+                            @Html.ValidationSummary(false, "", new { @class = "text-danger" })
+                        </div>
+                    }
+                    <div class="form-group" style=" margin-left: 5px; margin-right: 5px;">
+                        @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaLead", controller: "Administra", htmlAttributes: new { @class = "btn-loading show-spinner" })
+                        <span id="loadingIndicator" style="display: none; margin-left: 10px; color: #007bff;">
+                            <i class="fa fa-spinner fa-spin"></i> Processando...
+                        </span>
+                    </div>
+
+                    <div class="tabs-container">
+                        <ul class="nav nav-tabs">
+                            @if ((Int32)Session["NivelLead"] == 1)
+                            {
+                                <li class="active"><a data-toggle="tab" href="#tab-1">Pagamento</a></li>
+                                <li class=""><a data-toggle="tab" href="#tab-2">Anexos</a></li>
+                                <li class=""><a data-toggle="tab" href="#tab-3">Anotações</a></li>
+                                <li class=""><a data-toggle="tab" href="#tab-4">Processo</a></li>
+                            }
+                            @if ((Int32)Session["NivelLead"] == 2)
+                            {
+                                <li class=""><a data-toggle="tab" href="#tab-1">Pagamento</a></li>
+                                <li class="active"><a data-toggle="tab" href="#tab-2">Anexos</a></li>
+                                <li class=""><a data-toggle="tab" href="#tab-3">Anotações</a></li>
+                                <li class=""><a data-toggle="tab" href="#tab-4">Processo</a></li>
+                            }
+                            @if ((Int32)Session["NivelLead"] == 3)
+                            {
+                                <li class=""><a data-toggle="tab" href="#tab-1">Pagamento</a></li>
+                                <li class=""><a data-toggle="tab" href="#tab-2">Anexos</a></li>
+                                <li class="active"><a data-toggle="tab" href="#tab-3">Anotações</a></li>
+                                <li class=""><a data-toggle="tab" href="#tab-4">Processo</a></li>
+                            }
+                            @if ((Int32)Session["NivelLead"] == 4)
+                            {
+                                <li class=""><a data-toggle="tab" href="#tab-1">Pagamento</a></li>
+                                <li class=""><a data-toggle="tab" href="#tab-2">Anexos</a></li>
+                                <li class=""><a data-toggle="tab" href="#tab-3">Anotações</a></li>
+                                <li class="active"><a data-toggle="tab" href="#tab-4">Processo</a></li>
+                            }
+                        </ul>
+
+                        <div class="tab-content">
+                            @*Dados Gerais*@
+                            @if ((Int32)Session["NivelLead"] == 1)
+                            {
+                                <div id="tab-1" class="tab-pane active">
+                                    <div class="panel-body">
+                                        @using (Html.BeginForm("EditarLead", "Administra", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal", @id = "pwd-container1" }))
+                                        {
+                                            @Html.AntiForgeryToken()
+                                            <div class="row" style="width: 100%;">
+                                                <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Identificação</h4>
+                                                <div class="form-group" style=" margin-left: 5px; margin-right: 5px;">
+                                                    @Html.ButtonActionSubmit(text: "Confirma alteração de lead", htmlAttributes: new { id = "basictoast", @class = "btn-loading1 show-spinner" })
+                                                </div>
+                                                <div class="col-lg-12 col-md-12 col-xs-12">
+                                                    <div class="form-group" style=" margin-left: -15px; margin-right: -15px;"> 
+                                                        <div class="col-lg-2 col-md-2 col-xs-12">
+                                                            Data de Criação
+                                                            @Html.TextBoxFor(m => m.LEAD_DT_ENTRADA, "{0:dd/MM/yyyy}", new { @class = "form-control", @tabindex = "-1", @readonly = "readonly", @style = "color: green; font-weight: bold" })
+                                                        </div>
+                                                        <div class="col-lg-3 col-md-3 col-xs-12">
+                                                            Identificador
+                                                            @Html.TextBoxFor(m => m.LEAD_GU_IDENTIFICADOR, new { @class = "form-control", @tabindex = "-1", @readonly = "readonly", @style = "color: green; font-weight: bold" })
+                                                        </div>
+                                                        <div class="col-lg-2 col-md-2 col-xs-12">
+                                                            Status
+                                                            @Html.TextBoxFor(m => m.Status, new { @class = "form-control", @tabindex = "-1", @readonly = "readonly", @style = "color: brown; font-weight: bold" })
+                                                        </div>
+                                                    </div>               
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Identificação</h4>
+                                                <div class="form-group" style=" margin-left: -15px; margin-right: -15px;"> 
+                                                    <div class="col-lg-4 col-md-4 col-xs-12">
+                                                        @Html.HiddenFor(m => m.LEAD_IN_ATIVO)
+                                                        @Html.HiddenFor(m => m.LEAD_IN_STATUS)
+                                                        @Html.HiddenFor(m => m.LEAD_GU_IDENTIFICADOR)
+                                                        @Html.HiddenFor(m => m.LEAD_DT_ENTRADA)
+                                                        @Html.HiddenFor(m => m.LEAD_IN_SISTEMA)
+                                                        @Html.HiddenFor(m => m.LEAD_IN_ENVIOS)
+                                                        Nome*
+                                                        @Html.TextBoxFor(m => m.LEAD_NM_NOME, new { @class = "form-control", autofocus = true, data_toggle = "popover", data_content = "Informe o nome completo associado ao lead", data_trigger="hover", data_placement="top" })
+                                                        @Html.ValidationMessageFor(m => m.LEAD_NM_NOME, "", new { @style = "color:red" })
+                                                    </div>
+                                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                                        CPF
+                                                        @Html.TextBoxFor(m => m.LEAD_NR_CPF, new { @class = "form-control", autofocus = true, @id = "cpf" , data_toggle = "popover", data_content = "Informe o CPF associado ao lead", data_trigger="hover", data_placement="top" })
+                                                        @Html.ValidationMessageFor(m => m.LEAD_NR_CPF, "", new { @style = "color:red" })
+                                                    </div>
+                                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                                        CNPJ
+                                                        @Html.TextBoxFor(m => m.LEAD_NR_CNPJ, new { @class = "form-control", autofocus = true, @id = "cnpj" , data_toggle = "popover", data_content = "Informe o CNPJ associado ao lead", data_trigger="hover", data_placement="top" })
+                                                        @Html.ValidationMessageFor(m => m.LEAD_NR_CNPJ, "", new { @style = "color:red" })
+                                                    </div>
+                                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                                        Data de Nascimento
+                                                        @Html.TextBoxFor(m => m.LEAD_DT_NASCIMENTO, "{0:dd/MM/yyyy}", new { @class = "form-control date-picker", autofocus = true, @id = "dn" })
+                                                        @Html.ValidationMessageFor(m => m.LEAD_DT_NASCIMENTO, "", new { @style = "color:red" })
+                                                    </div>
+                                                </div>               
+                                            </div>                                    
+                                            <div class="row">
+                                                <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Informações de Contato</h4>
+                                                <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">                
+                                                    <div class="col-lg-4 col-md-4 col-xs-12">
+                                                        E-Mail*
+                                                        @Html.TextBoxFor(m => m.LEAD_EM_EMAIL, new { @class = "form-control", autofocus = true, data_toggle = "popover", data_content = "Informe o e-mail associado ao lead", data_trigger="hover", data_placement="top" })
+                                                        @Html.ValidationMessageFor(m => m.LEAD_EM_EMAIL, "", new { @style = "color:red" })
+                                                    </div>
+                                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                                        Celular
+                                                        @Html.TextBoxFor(m => m.LEAD_NR_CELULAR, new { @class = "form-control", autofocus = true, @id= "cel", data_toggle = "popover", data_content = "Informe o celular associado ao lead", data_trigger="hover", data_placement="top" })
+                                                        @Html.ValidationMessageFor(m => m.LEAD_NR_CELULAR, "", new { @style = "color:red" })
+                                                    </div>
+                                                </div>
+                                                <div class="form-group" style=" margin-left: -30px; margin-right: -15px;">
+                                                    <div class="col-lg-12 col-md-12 col-xs-12">
+                                                        Descrição (O WebDoctor vai preencher automaticamente esse campo)
+                                                        @Html.TextAreaFor(m => m.LEAD_DS_DESCRICAO, new { @class = "form-control", style = "width: 100%; height: 100px; overflow:auto;", autofocus = true, @id="desc", data_toggle = "popover", data_content = "Informe um texto que será acrescentado à descrição gerada automaticamente", data_trigger="hover", data_placement="top" })
+                                                        @Html.ValidationMessageFor(m => m.LEAD_DS_DESCRICAO, "", new { @style = "color:red" })
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Endereço</h4>
+                                                <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                                        CEP
+                                                        <div class="input-group">
+                                                            @Html.TextBoxFor(m => m.LEAD_NR_CEP, new { @class = "form-control", @id = "cep", autofocus = true, @onblur = "PesquisaCep($('#cep').val(), $(this), 1)" })
+                                                            @Html.ValidationMessageFor(m => m.LEAD_NR_CEP, "", new { @style = "color:red" })
+                                                            <span class="input-group-btn">
+                                                                <span class="btn btn-warning btn-sm" id="btnBuscaCep" data_toggle = "popover" data_content = "Pesquisar o CEP informado" data_trigger="hover" data_placement="top" onclick="PesquisaCep($('#cep').val(), $(this), 1)">Buscar CEP</span>
+                                                            </span>
+                                                        </div>
+                                                        <div class="col-lg-12 col-md-12 col-xs-12" style="display:none" id="cepval">
+                                                            <h5>CEP inválido</h5>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                                    <div class="col-lg-4 col-md-4 col-xs-12">
+                                                        Endereço
+                                                        @Html.TextBoxFor(m => m.LEAD_NM_ENDERECO, new { @class = "form-control", @id = "endereco", autofocus = true })
+                                                        @Html.ValidationMessageFor(m => m.LEAD_NM_ENDERECO, "", new { @style = "color:red" })
+                                                    </div>
+                                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                                        Número
+                                                        @Html.TextBoxFor(m => m.LEAD_NR_NUMERO, new { @class = "form-control", @id = "nmr", autofocus = true })
+                                                        @Html.ValidationMessageFor(m => m.LEAD_NR_NUMERO, "", new { @style = "color:red" })
+                                                    </div>
+                                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                                        Complemento
+                                                        @Html.TextBoxFor(m => m.LEAD_NM_COMPLEMENTO, new { @class = "form-control", autofocus = true, @id = "complemento" })
+                                                        @Html.ValidationMessageFor(m => m.LEAD_NM_COMPLEMENTO, "", new { @style = "color:red" })
+                                                    </div>
+                                                </div>
+                                                <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                                    <div class="col-lg-3 col-md-3 col-xs-12">
+                                                        Bairro
+                                                        @Html.TextBoxFor(m => m.LEAD_NM_BAIRRO, new { @class = "form-control", @id = "bairro", autofocus = true })
+                                                        @Html.ValidationMessageFor(m => m.LEAD_NM_BAIRRO, "", new { @style = "color:red" })
+                                                    </div>
+                                                    <div class="col-lg-3 col-md-3 col-xs-12">
+                                                        Cidade
+                                                        @Html.TextBoxFor(m => m.LEAD_NM_CIDADE, new { @class = "form-control", @id = "cidade", autofocus = true })
+                                                        @Html.ValidationMessageFor(m => m.LEAD_NM_CIDADE, "", new { @style = "color:red" })
+                                                    </div>
+                                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                                        UF
+                                                        @Html.DropDownListFor(m => m.UF_CD_ID, (SelectList)ViewBag.UF, "UF", new { @class = "form-control", @id = "uf", autofocus = true })
+                                                        @Html.ValidationMessageFor(m => m.UF_CD_ID, "", new { @style = "color:red" })
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
+                            }
+                            else
+                            {
+                                <div id="tab-1" class="tab-pane">
+                                    <div class="panel-body">
+                                        @using (Html.BeginForm("EditarLead", "Administra", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal", @id = "pwd-container1" }))
+                                        {
+                                            @Html.AntiForgeryToken()
+                                            <div class="row" style="width: 100%;">
+                                                <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Identificação</h4>
+                                                <div class="form-group" style=" margin-left: 5px; margin-right: 5px;">
+                                                    @Html.ButtonActionSubmit(text: "Confirma alteração de lead", htmlAttributes: new { id = "basictoast", @class = "btn-loading1 show-spinner" })
+                                                </div>
+                                                <div class="col-lg-12 col-md-12 col-xs-12">
+                                                    <div class="form-group" style=" margin-left: -15px; margin-right: -15px;"> 
+                                                        <div class="col-lg-2 col-md-2 col-xs-12">
+                                                            Data de Criação
+                                                            @Html.TextBoxFor(m => m.LEAD_DT_ENTRADA, "{0:dd/MM/yyyy}", new { @class = "form-control", @tabindex = "-1", @readonly = "readonly", @style = "color: green; font-weight: bold" })
+                                                        </div>
+                                                        <div class="col-lg-3 col-md-3 col-xs-12">
+                                                            Identificador
+                                                            @Html.TextBoxFor(m => m.LEAD_GU_IDENTIFICADOR, new { @class = "form-control", @tabindex = "-1", @readonly = "readonly", @style = "color: green; font-weight: bold" })
+                                                        </div>
+                                                        <div class="col-lg-2 col-md-2 col-xs-12">
+                                                            Status
+                                                            @Html.TextBoxFor(m => m.Status, new { @class = "form-control", @tabindex = "-1", @readonly = "readonly", @style = "color: brown; font-weight: bold" })
+                                                        </div>
+                                                    </div>               
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Identificação</h4>
+                                                <div class="form-group" style=" margin-left: -15px; margin-right: -15px;"> 
+                                                    <div class="col-lg-4 col-md-4 col-xs-12">
+                                                        @Html.HiddenFor(m => m.LEAD_IN_ATIVO)
+                                                        @Html.HiddenFor(m => m.LEAD_IN_STATUS)
+                                                        @Html.HiddenFor(m => m.LEAD_GU_IDENTIFICADOR)
+                                                        @Html.HiddenFor(m => m.LEAD_DT_ENTRADA)
+                                                        @Html.HiddenFor(m => m.LEAD_IN_SISTEMA)
+                                                        @Html.HiddenFor(m => m.LEAD_IN_ENVIOS)
+                                                        Nome*
+                                                        @Html.TextBoxFor(m => m.LEAD_NM_NOME, new { @class = "form-control", autofocus = true, data_toggle = "popover", data_content = "Informe o nome completo associado ao lead", data_trigger="hover", data_placement="top" })
+                                                        @Html.ValidationMessageFor(m => m.LEAD_NM_NOME, "", new { @style = "color:red" })
+                                                    </div>
+                                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                                        CPF
+                                                        @Html.TextBoxFor(m => m.LEAD_NR_CPF, new { @class = "form-control", autofocus = true, @id = "cpf" , data_toggle = "popover", data_content = "Informe o CPF associado ao lead", data_trigger="hover", data_placement="top" })
+                                                        @Html.ValidationMessageFor(m => m.LEAD_NR_CPF, "", new { @style = "color:red" })
+                                                    </div>
+                                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                                        CNPJ
+                                                        @Html.TextBoxFor(m => m.LEAD_NR_CNPJ, new { @class = "form-control", autofocus = true, @id = "cnpj" , data_toggle = "popover", data_content = "Informe o CNPJ associado ao lead", data_trigger="hover", data_placement="top" })
+                                                        @Html.ValidationMessageFor(m => m.LEAD_NR_CNPJ, "", new { @style = "color:red" })
+                                                    </div>
+                                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                                        Data de Nascimento
+                                                        @Html.TextBoxFor(m => m.LEAD_DT_NASCIMENTO, "{0:dd/MM/yyyy}", new { @class = "form-control date-picker", autofocus = true, @id = "dn" })
+                                                        @Html.ValidationMessageFor(m => m.LEAD_DT_NASCIMENTO, "", new { @style = "color:red" })
+                                                    </div>
+                                                </div>               
+                                            </div>                                    
+                                            <div class="row">
+                                                <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Informações de Contato</h4>
+                                                <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">                
+                                                    <div class="col-lg-4 col-md-4 col-xs-12">
+                                                        E-Mail*
+                                                        @Html.TextBoxFor(m => m.LEAD_EM_EMAIL, new { @class = "form-control", autofocus = true, data_toggle = "popover", data_content = "Informe o e-mail associado ao lead", data_trigger="hover", data_placement="top" })
+                                                        @Html.ValidationMessageFor(m => m.LEAD_EM_EMAIL, "", new { @style = "color:red" })
+                                                    </div>
+                                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                                        Celular
+                                                        @Html.TextBoxFor(m => m.LEAD_NR_CELULAR, new { @class = "form-control", autofocus = true, @id= "cel", data_toggle = "popover", data_content = "Informe o celular associado ao lead", data_trigger="hover", data_placement="top" })
+                                                        @Html.ValidationMessageFor(m => m.LEAD_NR_CELULAR, "", new { @style = "color:red" })
+                                                    </div>
+                                                </div>
+                                                <div class="form-group" style=" margin-left: -30px; margin-right: -15px;">
+                                                    <div class="col-lg-12 col-md-12 col-xs-12">
+                                                        Descrição (O WebDoctor vai preencher automaticamente esse campo)
+                                                        @Html.TextAreaFor(m => m.LEAD_DS_DESCRICAO, new { @class = "form-control", style = "width: 100%; height: 100px; overflow:auto;", autofocus = true, @id="desc", data_toggle = "popover", data_content = "Informe um texto que será acrescentado à descrição gerada automaticamente", data_trigger="hover", data_placement="top" })
+                                                        @Html.ValidationMessageFor(m => m.LEAD_DS_DESCRICAO, "", new { @style = "color:red" })
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Endereço</h4>
+                                                <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                                        CEP
+                                                        <div class="input-group">
+                                                            @Html.TextBoxFor(m => m.LEAD_NR_CEP, new { @class = "form-control", @id = "cep", autofocus = true, @onblur = "PesquisaCep($('#cep').val(), $(this), 1)" })
+                                                            @Html.ValidationMessageFor(m => m.LEAD_NR_CEP, "", new { @style = "color:red" })
+                                                            <span class="input-group-btn">
+                                                                <span class="btn btn-warning btn-sm" id="btnBuscaCep" data_toggle = "popover" data_content = "Pesquisar o CEP informado" data_trigger="hover" data_placement="top" onclick="PesquisaCep($('#cep').val(), $(this), 1)">Buscar CEP</span>
+                                                            </span>
+                                                        </div>
+                                                        <div class="col-lg-12 col-md-12 col-xs-12" style="display:none" id="cepval">
+                                                            <h5>CEP inválido</h5>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                                    <div class="col-lg-4 col-md-4 col-xs-12">
+                                                        Endereço
+                                                        @Html.TextBoxFor(m => m.LEAD_NM_ENDERECO, new { @class = "form-control", @id = "endereco", autofocus = true })
+                                                        @Html.ValidationMessageFor(m => m.LEAD_NM_ENDERECO, "", new { @style = "color:red" })
+                                                    </div>
+                                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                                        Número
+                                                        @Html.TextBoxFor(m => m.LEAD_NR_NUMERO, new { @class = "form-control", @id = "nmr", autofocus = true })
+                                                        @Html.ValidationMessageFor(m => m.LEAD_NR_NUMERO, "", new { @style = "color:red" })
+                                                    </div>
+                                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                                        Complemento
+                                                        @Html.TextBoxFor(m => m.LEAD_NM_COMPLEMENTO, new { @class = "form-control", autofocus = true, @id = "complemento" })
+                                                        @Html.ValidationMessageFor(m => m.LEAD_NM_COMPLEMENTO, "", new { @style = "color:red" })
+                                                    </div>
+                                                </div>
+                                                <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                                    <div class="col-lg-3 col-md-3 col-xs-12">
+                                                        Bairro
+                                                        @Html.TextBoxFor(m => m.LEAD_NM_BAIRRO, new { @class = "form-control", @id = "bairro", autofocus = true })
+                                                        @Html.ValidationMessageFor(m => m.LEAD_NM_BAIRRO, "", new { @style = "color:red" })
+                                                    </div>
+                                                    <div class="col-lg-3 col-md-3 col-xs-12">
+                                                        Cidade
+                                                        @Html.TextBoxFor(m => m.LEAD_NM_CIDADE, new { @class = "form-control", @id = "cidade", autofocus = true })
+                                                        @Html.ValidationMessageFor(m => m.LEAD_NM_CIDADE, "", new { @style = "color:red" })
+                                                    </div>
+                                                    <div class="col-lg-2 col-md-2 col-xs-12">
+                                                        UF
+                                                        @Html.DropDownListFor(m => m.UF_CD_ID, (SelectList)ViewBag.UF, "UF", new { @class = "form-control", @id = "uf", autofocus = true })
+                                                        @Html.ValidationMessageFor(m => m.UF_CD_ID, "", new { @style = "color:red" })
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
+                            }
+
+                            @*Anexos*@
+                            @if ((Int32)Session["NivelLead"] == 2)
+                            {
+                                <div id="tab-2" class="tab-pane active">
+                                    <div class="panel-body">
+                                        <div class="row">
+                                            <div class="col-lg-12 col-md-12 col-xs-12">
+                                                <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Anexos</h4>
+                                                <br />
+                                                <div class="form-group">
+                                                    @using (Html.BeginForm("UploadFileLeadBlob", "Administra", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { enctype = "multipart/form-data", @id = "pwd-container2" }))
+                                                    {
+                                                        var listaAnexos = Model.LEAD_ANEXO.Where(p => p.LEAX_IN_ATIVO == 1).ToList();
+
+                                                        <div class="text-center" style="margin-top: 15px;">
+                                                            <div class="toggle-container" id="viewToggle">
+                                                                <div class="toggle-option active" data-target="sectionList">
+                                                                    <i class="fa fa-list"></i> Ver lista
+                                                                </div>
+                                                                <div class="toggle-option" data-target="sectionIcons">
+                                                                    <i class="fa fa-th"></i> Ver ícones
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        if (listaAnexos.Count > 0)
+                                                        {
+                                                            <div id="sectionList" class="view-section active">
+                                                                <table class="table table-striped table-bordered table-hover dataTables-example">
+                                                                    <thead style="background-color:lightsteelblue">
+                                                                        <tr>
+                                                                            <th>Título</th>
+                                                                            <th>Data</th>
+                                                                            <th>Tipo</th>
+                                                                            <th class="td-one-action">Ações</th>
+                                                                        </tr>
+                                                                    </thead>
+                                                                    <tbody>
+                                                                        @foreach (var cond in listaAnexos)
+                                                                        {
+                                                                            <tr>
+                                                                                <td style="width: auto">
+                                                                                    @if (cond.LEAX_IN_TIPO == 1 || cond.LEAX_IN_TIPO == 2)
+                                                                                    {
+                                                                                        <a href="@Url.Action("VerAnexoLead", "Administra", new { id = cond.LEAX_CD_ID })"  class="show-spinner" >@cond.LEAX_NM_TITULO</a>
+                                                                                    }
+                                                                                    else if (cond.LEAX_IN_TIPO == 4)
+                                                                                    {
+                                                                                        <a href="@Url.Action("VerAnexoLeadAudio", "Administra", new { id = cond.LEAX_CD_ID })" class="show-spinner">@cond.LEAX_NM_TITULO</a>
+                                                                                    }
+                                                                                    else if (cond.LEAX_IN_TIPO == 3)
+                                                                                    {
+                                                                                        // Monta a URL direta do Azure
+                                                                                        var caminhoPdf = cond.LEAX_AQ_ARQUIVO.Replace("~/", "").Replace("~", "");
+                                                                                        var urlAzurePdf = "https://rtistoragemain.blob.core.windows.net/rti-datacontainer/" + caminhoPdf;
+                                                                                        <a href="@urlAzurePdf" target="_blank">@cond.LEAX_NM_TITULO</a>
+                                                                                    }
+                                                                                    else { @cond.LEAX_NM_TITULO }
+                                                                                </td>
+                                                                                <td>@cond.LEAX_DT_ANEXO.Value.ToShortDateString()</td>
+                                                                                <td>@(cond.LEAX_IN_TIPO == 1 ? "Imagem" : cond.LEAX_IN_TIPO == 2 ? "Vídeo" : cond.LEAX_IN_TIPO == 3 ? "PDF" : "Outros")</td>
+                                                                                <td class="td-one-action">
+                                                                                    <span class="fa fa-trash-o show-spinner" onclick="PrepararExclusaoAnexo('/Administra/ExcluirAnexoLead/@cond.LEAX_CD_ID')" style="cursor:pointer; color:#337ab7"></span>
+                                                                                    <a href="@Url.Action("DownloadLead", "Administra", new { id = cond.LEAX_CD_ID })" 
+                                                                                       class="btn btn-default" 
+                                                                                       title="Download">
+                                                                                        <i class="fa fa-download"></i>
+                                                                                    </a>
+                                                                                </td>
+                                                                            </tr>
+                                                                        }
+                                                                    </tbody>
+                                                                </table>
+                                                            </div>
+
+                                                            <div id="sectionIcons" class="view-section">
+                                                                <div class="row" style="display: flex; flex-wrap: wrap; justify-content: flex-start; margin-bottom: 20px;">
+                                                                    @foreach (var cond in listaAnexos)
+                                                                    {
+                                                                            <div class="col-lg-2 col-md-2 col-sm-3 col-xs-4 text-center" style="margin-bottom: 30px; min-width: 140px;">
+    
+                                                                                @* 2. Div interna (Card): É aqui que colocamos a borda, cantos arredondados, fundo e sombra leve *@
+                                                                                <div style="border: 1px solid #ddd; border-radius: 8px; padding: 15px; background-color: #fff; box-shadow: 0 2px 4px rgba(0,0,0,0.05); display: flex; flex-direction: column; align-items: center; justify-content: space-between; height: 180px;">
+        
+                                                                                    @* Container de Mídia (Altura fixa para alinhamento centralizado) *@
+                                                                                    <div style="height: 90px; display: flex; align-items: center; justify-content: center; width: 100%;">
+                                                                                        @if (cond.LEAX_IN_TIPO == 1) 
+                                                                                        {
+                                                                                            <a href="@Url.Action("VerAnexoLead", "Administra", new { id = cond.LEAX_CD_ID })" title="Visualizar Imagem">
+                                                                                                <img src="@("https://rtistoragemain.blob.core.windows.net/rti-datacontainer/" + cond.LEAX_AQ_ARQUIVO.Replace("~/", "").Replace("~", ""))" 
+                                                                                                     class="img-thumbnail" 
+                                                                                                     style="width: 70px; height: 70px; object-fit: cover; border: 1px solid #eee;"
+                                                                                                     onerror="this.onerror=null;this.src='@Url.Content("~/Images/icone_imagem.jpg")';" />
+                                                                                            </a>
+                                                                                        }
+                                                                                        else if (cond.LEAX_IN_TIPO == 2) 
+                                                                                        {
+                                                                                            <a href="@Url.Action("VerAnexoLead", "Administra", new { id = cond.LEAX_CD_ID })" class="show-spinner" title="Visualizar Vídeo">
+                                                                                                <i class="fa fa-video-camera fa-4x text-navy"></i>
+                                                                                            </a>
+                                                                                        }
+                                                                                        else if (cond.LEAX_IN_TIPO == 4)
+                                                                                        {
+                                                                                            <a href="@Url.Action("VerAnexoLeadAudio", "Administra", new { id = cond.LEAX_CD_ID })" class="show-spinner" title="Visualizar Audio">
+                                                                                                <i class="fa fa-microphone fa-4x text-navy"></i>
+                                                                                            </a>
+                                                                                        }
+                                                                                        else if (cond.LEAX_IN_TIPO == 3) 
+                                                                                        {
+                                                                                            var blobPath = cond.LEAX_AQ_ARQUIVO.Replace("~/", "").Replace("~", "");
+                                                                                            var urlAzurePdf = "https://rtistoragemain.blob.core.windows.net/rti-datacontainer/" + blobPath;
+
+                                                                                            <a href="@urlAzurePdf" target="_blank" title="Visualizar PDF">
+                                                                                                <i class="fa fa-file-pdf-o fa-4x text-danger"></i>
+                                                                                            </a>
+                                                                                        }
+                                                                                        else // PADRÃO - Ícone de arquivo genérico
+                                                                                        {
+                                                                                            <i class="fa fa-file-o fa-4x text-muted"></i>
+                                                                                        }
+                                                                                    </div>
+
+                                                                                    @* Nome do Arquivo - Com ellipsis para nomes longos *@
+                                                                                    <div style="font-size: 11px; margin-top: 10px; font-weight: bold; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; width: 100%; color: #333;" title="@cond.LEAX_NM_TITULO">
+                                                                                        @cond.LEAX_NM_TITULO
+                                                                                    </div>
+
+                                                                                    @* Botões de Ação (Excluir e Download) *@
+                                                                                    <div style="margin-top: 10px; display: flex; gap: 15px; justify-content: center;">
+                                                                                        <span style="cursor:pointer;" onclick="PrepararExclusaoAnexo('/Administra/ExcluirAnexoLead/@cond.LEAX_CD_ID')" title="Excluir">
+                                                                                            <i class="fa fa-trash-o fa-lg text-navy"></i>
+                                                                                        </span>
+                                                                                        <a href="@Url.Action("DownloadLead", "Administra", new { id = cond.LEAX_CD_ID })" title="Download">
+                                                                                            <i class="fa fa-download fa-lg text-navy"></i>
+                                                                                        </a>
+                                                                                    </div>
+
+                                                                                </div>
+                                                                            </div>
+                                                                    }
+                                                                </div>
+                                                            </div>
+
+                                                        }
+
+                                                        <div class="form-group" style="margin-top: 20px;">
+                                                            <div class="col-lg-12">
+                                                                <input type="file" name="file" id="file" class="btn btn-sm btn-warning" style="float: left; margin-right: 5px;" />
+                                                                <input type="submit" value="Incluir Anexo" class="btn btn-sm btn-success" />
+                                                            </div>
+                                                        </div>
+                                                    }
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                            else
+                            {
+                                <div id="tab-2" class="tab-pane">
+                                    <div class="panel-body">
+                                        <div class="row">
+                                            <div class="col-lg-12 col-md-12 col-xs-12">
+                                                <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Anexos</h4>
+                                                <br />
+                                                <div class="form-group">
+                                                    @using (Html.BeginForm("UploadFileLeadBlob", "Administra", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { enctype = "multipart/form-data", @id = "pwd-container2" }))
+                                                    {
+                                                        var listaAnexos = Model.LEAD_ANEXO.Where(p => p.LEAX_IN_ATIVO == 1).ToList();
+
+                                                        <div class="text-center" style="margin-top: 15px;">
+                                                            <div class="toggle-container" id="viewToggle">
+                                                                <div class="toggle-option active" data-target="sectionList">
+                                                                    <i class="fa fa-list"></i> Ver lista
+                                                                </div>
+                                                                <div class="toggle-option" data-target="sectionIcons">
+                                                                    <i class="fa fa-th"></i> Ver ícones
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        if (listaAnexos.Count > 0)
+                                                        {
+                                                            <div id="sectionList" class="view-section active">
+                                                                <table class="table table-striped table-bordered table-hover dataTables-example">
+                                                                    <thead style="background-color:lightsteelblue">
+                                                                        <tr>
+                                                                            <th>Título</th>
+                                                                            <th>Data</th>
+                                                                            <th>Tipo</th>
+                                                                            <th class="td-one-action">Ações</th>
+                                                                        </tr>
+                                                                    </thead>
+                                                                    <tbody>
+                                                                        @foreach (var cond in listaAnexos)
+                                                                        {
+                                                                            <tr>
+                                                                                <td style="width: auto">
+                                                                                    @if (cond.LEAX_IN_TIPO == 1 || cond.LEAX_IN_TIPO == 2)
+                                                                                    {
+                                                                                        <a href="@Url.Action("VerAnexoLead", "Administra", new { id = cond.LEAX_CD_ID })"  class="show-spinner" >@cond.LEAX_NM_TITULO</a>
+                                                                                    }
+                                                                                    else if (cond.LEAX_IN_TIPO == 4)
+                                                                                    {
+                                                                                        <a href="@Url.Action("VerAnexoLeadAudio", "Administra", new { id = cond.LEAX_CD_ID })" class="show-spinner">@cond.LEAX_NM_TITULO</a>
+                                                                                    }
+                                                                                    else if (cond.LEAX_IN_TIPO == 3)
+                                                                                    {
+                                                                                        // Monta a URL direta do Azure
+                                                                                        var caminhoPdf = cond.LEAX_AQ_ARQUIVO.Replace("~/", "").Replace("~", "");
+                                                                                        var urlAzurePdf = "https://rtistoragemain.blob.core.windows.net/rti-datacontainer/" + caminhoPdf;
+                                                                                        <a href="@urlAzurePdf" target="_blank">@cond.LEAX_NM_TITULO</a>
+                                                                                    }
+                                                                                    else { @cond.LEAX_NM_TITULO }
+                                                                                </td>
+                                                                                <td>@cond.LEAX_DT_ANEXO.Value.ToShortDateString()</td>
+                                                                                <td>@(cond.LEAX_IN_TIPO == 1 ? "Imagem" : cond.LEAX_IN_TIPO == 2 ? "Vídeo" : cond.LEAX_IN_TIPO == 3 ? "PDF" : "Outros")</td>
+                                                                                <td class="td-one-action">
+                                                                                    <span class="fa fa-trash-o show-spinner" onclick="PrepararExclusaoAnexo('/Administra/ExcluirAnexoLead/@cond.LEAX_CD_ID')" style="cursor:pointer; color:#337ab7"></span>
+                                                                                    <a href="@Url.Action("DownloadLead", "Administra", new { id = cond.LEAX_CD_ID })" 
+                                                                                       class="btn btn-default" 
+                                                                                       title="Download">
+                                                                                        <i class="fa fa-download"></i>
+                                                                                    </a>
+                                                                                </td>
+                                                                            </tr>
+                                                                        }
+                                                                    </tbody>
+                                                                </table>
+                                                            </div>
+
+                                                            <div id="sectionIcons" class="view-section">
+                                                                <div class="row" style="display: flex; flex-wrap: wrap; justify-content: flex-start; margin-bottom: 20px;">
+                                                                    @foreach (var cond in listaAnexos)
+                                                                    {
+                                                                            <div class="col-lg-2 col-md-2 col-sm-3 col-xs-4 text-center" style="margin-bottom: 30px; min-width: 140px;">
+    
+                                                                                @* 2. Div interna (Card): É aqui que colocamos a borda, cantos arredondados, fundo e sombra leve *@
+                                                                                <div style="border: 1px solid #ddd; border-radius: 8px; padding: 15px; background-color: #fff; box-shadow: 0 2px 4px rgba(0,0,0,0.05); display: flex; flex-direction: column; align-items: center; justify-content: space-between; height: 180px;">
+        
+                                                                                    @* Container de Mídia (Altura fixa para alinhamento centralizado) *@
+                                                                                    <div style="height: 90px; display: flex; align-items: center; justify-content: center; width: 100%;">
+                                                                                        @if (cond.LEAX_IN_TIPO == 1) 
+                                                                                        {
+                                                                                            <a href="@Url.Action("VerAnexoLead", "Administra", new { id = cond.LEAX_CD_ID })" title="Visualizar Imagem">
+                                                                                                <img src="@("https://rtistoragemain.blob.core.windows.net/rti-datacontainer/" + cond.LEAX_AQ_ARQUIVO.Replace("~/", "").Replace("~", ""))" 
+                                                                                                     class="img-thumbnail" 
+                                                                                                     style="width: 70px; height: 70px; object-fit: cover; border: 1px solid #eee;"
+                                                                                                     onerror="this.onerror=null;this.src='@Url.Content("~/Images/icone_imagem.jpg")';" />
+                                                                                            </a>
+                                                                                        }
+                                                                                        else if (cond.LEAX_IN_TIPO == 2) 
+                                                                                        {
+                                                                                            <a href="@Url.Action("VerAnexoLead", "Administra", new { id = cond.LEAX_CD_ID })" class="show-spinner" title="Visualizar Vídeo">
+                                                                                                <i class="fa fa-video-camera fa-4x text-navy"></i>
+                                                                                            </a>
+                                                                                        }
+                                                                                        else if (cond.LEAX_IN_TIPO == 4)
+                                                                                        {
+                                                                                            <a href="@Url.Action("VerAnexoLeadAudio", "Administra", new { id = cond.LEAX_CD_ID })" class="show-spinner" title="Visualizar Audio">
+                                                                                                <i class="fa fa-microphone fa-4x text-navy"></i>
+                                                                                            </a>
+                                                                                        }
+                                                                                        else if (cond.LEAX_IN_TIPO == 3) 
+                                                                                        {
+                                                                                            var blobPath = cond.LEAX_AQ_ARQUIVO.Replace("~/", "").Replace("~", "");
+                                                                                            var urlAzurePdf = "https://rtistoragemain.blob.core.windows.net/rti-datacontainer/" + blobPath;
+
+                                                                                            <a href="@urlAzurePdf" target="_blank" title="Visualizar PDF">
+                                                                                                <i class="fa fa-file-pdf-o fa-4x text-danger"></i>
+                                                                                            </a>
+                                                                                        }
+                                                                                        else // PADRÃO - Ícone de arquivo genérico
+                                                                                        {
+                                                                                            <i class="fa fa-file-o fa-4x text-muted"></i>
+                                                                                        }
+                                                                                    </div>
+
+                                                                                    @* Nome do Arquivo - Com ellipsis para nomes longos *@
+                                                                                    <div style="font-size: 11px; margin-top: 10px; font-weight: bold; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; width: 100%; color: #333;" title="@cond.LEAX_NM_TITULO">
+                                                                                        @cond.LEAX_NM_TITULO
+                                                                                    </div>
+
+                                                                                    @* Botões de Ação (Excluir e Download) *@
+                                                                                    <div style="margin-top: 10px; display: flex; gap: 15px; justify-content: center;">
+                                                                                        <span style="cursor:pointer;" onclick="PrepararExclusaoAnexo('/Administra/ExcluirAnexoLead/@cond.LEAX_CD_ID')" title="Excluir">
+                                                                                            <i class="fa fa-trash-o fa-lg text-navy"></i>
+                                                                                        </span>
+                                                                                        <a href="@Url.Action("DownloadLead", "Administra", new { id = cond.LEAX_CD_ID })" title="Download">
+                                                                                            <i class="fa fa-download fa-lg text-navy"></i>
+                                                                                        </a>
+                                                                                    </div>
+
+                                                                                </div>
+                                                                            </div>
+                                                                    }
+                                                                </div>
+                                                            </div>
+
+                                                        }
+
+                                                        <div class="form-group" style="margin-top: 20px;">
+                                                            <div class="col-lg-12">
+                                                                <input type="file" name="file" id="file" class="btn btn-sm btn-warning" style="float: left; margin-right: 5px;" />
+                                                                <input type="submit" value="Incluir Anexo" class="btn btn-sm btn-success" />
+                                                            </div>
+                                                        </div>
+                                                    }
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+
+                            @*Anotações*@
+                            @if ((Int32)Session["NivelLead"] == 3)
+                            {
+                                <div id="tab-3" class="tab-pane active">
+                                    <div class="panel-body">
+                                        <div class="row">
+                                            <div class="col-lg-12">
+                                                <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Anotações</h4>
+                                                @if (Model.LEAD_ANOTACAO.Where(p => p.LEAN_IN_ATIVO == 1).ToList().Count > 0)
+                                                {
+                                                    foreach (var item in (Model.LEAD_ANOTACAO.Where(p => p.LEAN_IN_ATIVO == 1)).OrderByDescending(a => a.LEAN_DT_ANOTACAO))
+                                                    {
+                                                        <div class="social-feed-box">
+                                                            <div class="social-avatar">
+                                                                <a href="#" class="pull-left">
+                                                                    @{
+                                                                        // Definimos a URL base do seu storage
+                                                                        string storageUrl = "https://rtistoragemain.blob.core.windows.net/rti-datacontainer/";
+        
+                                                                        // Pegamos o caminho que está no banco e removemos o "~"
+                                                                        string fotoPath = item.USUARIO.USUA_AQ_FOTO != null 
+                                                                                          ? item.USUARIO.USUA_AQ_FOTO.Replace("~", "") 
+                                                                                          : "Imagens/Base/foto_padrao.png"; // Fallback caso não tenha foto
+
+                                                                        // Montamos a URL completa
+                                                                        string fullImageUrl = storageUrl + fotoPath.TrimStart('/');
+                                                                    }
+    
+                                                                    <img src="@fullImageUrl" 
+                                                                         style="width: auto; height: auto; max-height: 110px; max-width: 90px;" 
+                                                                         alt="Foto do Usuário">
+                                                                </a>
+                                                                <span style="color: #337ab7; cursor:pointer;" alt="Excluir" class="tbl-link fa-lg fa fa-trash-o btn-loading show-spinner" onclick="ShowModalExcluirAnotacao('/Administra/ExcluirAnotacaoLead/@item.LEAN_CD_ID')" title="Excluir Anotação"></span>
+                                                                <div class="media-body">
+                                                                    <a href="@Url.Action("EditarAnotacaoLead", "Administra", new { id = item.LEAN_CD_ID })" class="btn-loading show-spinner" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página de edição da anotação">
+                                                                        @item.USUARIO.USUA_NM_NOME
+                                                                    </a>
+                                                                    <small class="text-muted">@item.LEAN_DT_ANOTACAO.Value.ToString("dd/MM/yyyy HH:mm")</small>
+                                                                </div>
+                                                            </div>
+                                                            <div class="social-body">
+                                                                <p>
+                                                                    <span style="white-space: pre-wrap;">@item.LEAN_TX_ANOTACAO</span>
+                                                                </p>
+                                                            </div>
+                                                        </div>
+                                                    }
+                                                }
+                                            </div>
+                                        </div>
+                                        <br />
+                                        <div class="form-group">
+                                            @Html.ButtonLinkIndex(text: "Incluir Nova Anotação", action: "IncluirAnotacaoLead", controller: "Administra", htmlAttributes: new { @class = "btn-loading show-spinner" })
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                            else
+                            {
+                                <div id="tab-3" class="tab-pane">
+                                    <div class="panel-body">
+                                        <div class="row">
+                                            <div class="col-lg-12">
+                                                <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Anotações</h4>
+                                                @if (Model.LEAD_ANOTACAO.Where(p => p.LEAN_IN_ATIVO == 1).ToList().Count > 0)
+                                                {
+                                                    foreach (var item in (Model.LEAD_ANOTACAO.Where(p => p.LEAN_IN_ATIVO == 1)).OrderByDescending(a => a.LEAN_DT_ANOTACAO))
+                                                    {
+                                                        <div class="social-feed-box">
+                                                            <div class="social-avatar">
+                                                                <a href="#" class="pull-left">
+                                                                    @{
+                                                                        // Definimos a URL base do seu storage
+                                                                        string storageUrl = "https://rtistoragemain.blob.core.windows.net/rti-datacontainer/";
+        
+                                                                        // Pegamos o caminho que está no banco e removemos o "~"
+                                                                        string fotoPath = item.USUARIO.USUA_AQ_FOTO != null 
+                                                                                          ? item.USUARIO.USUA_AQ_FOTO.Replace("~", "") 
+                                                                                          : "Imagens/Base/foto_padrao.png"; // Fallback caso não tenha foto
+
+                                                                        // Montamos a URL completa
+                                                                        string fullImageUrl = storageUrl + fotoPath.TrimStart('/');
+                                                                    }
+    
+                                                                    <img src="@fullImageUrl" 
+                                                                         style="width: auto; height: auto; max-height: 110px; max-width: 90px;" 
+                                                                         alt="Foto do Usuário">
+                                                                </a>
+                                                                <span style="color: #337ab7; cursor:pointer;" alt="Excluir" class="tbl-link fa-lg fa fa-trash-o btn-loading show-spinner" onclick="ShowModalExcluirAnotacao('/Administra/ExcluirAnotacaoLead/@item.LEAN_CD_ID')" title="Excluir Anotação"></span>
+                                                                <div class="media-body">
+                                                                    <a href="@Url.Action("EditarAnotacaoLead", "Administra", new { id = item.LEAN_CD_ID })" class="btn-loading show-spinner" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página de edição da anotação">
+                                                                        @item.USUARIO.USUA_NM_NOME
+                                                                    </a>
+                                                                    <small class="text-muted">@item.LEAN_DT_ANOTACAO.Value.ToString("dd/MM/yyyy HH:mm")</small>
+                                                                </div>
+                                                            </div>
+                                                            <div class="social-body">
+                                                                <p>
+                                                                    <span style="white-space: pre-wrap;">@item.LEAN_TX_ANOTACAO</span>
+                                                                </p>
+                                                            </div>
+                                                        </div>
+                                                    }
+                                                }
+                                            </div>
+                                        </div>
+                                        <br />
+                                        <div class="form-group">
+                                            @Html.ButtonLinkIndex(text: "Incluir Nova Anotação", action: "IncluirAnotacaoLead", controller: "Administra", htmlAttributes: new { @class = "btn-loading show-spinner" })
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+
+                            @*Notas Fiscais*@
+                            @if ((Int32)Session["NivelLead"] == 4)
+                            {
+                                <div id="tab-4" class="tab-pane active">
+                                    <div class="panel-body">
+                                        <div class="row">
+                                            <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                                <div class="col-lg-12 col-md-12 col-xs-12">
+                                                    <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Processos CRM</h4>
+                                                    <br />
+                                                    @if (Model.CRM.Where(p => p.CRM1_IN_ATIVO == 1).ToList().Count > 0)
+                                                    {
+                                                        <table class="table table-striped table-bordered table-hover dataTables-crm">
+                                                            <thead style="background-color:lightsteelblue">
+                                                                <tr>
+                                                                    <th style="width: auto">Processo</th>
+                                                                    <th style="width: auto">Funil</th>
+                                                                    <th style="width: auto">Etapa</th>
+                                                                    <th style="width: auto">Nome</th>
+                                                                    <th style="width: auto">Próxima Ação</th>
+                                                                    <th style="width: auto">Data Prevista</th>
+                                                                    <th style="width: auto">Situação</th>
+                                                                    <th class="td-one-action">Ações</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                @foreach (var cond in (Model.CRM.Where(p => p.CRM1_IN_ATIVO == 1).OrderBy(p => p.CRM1_DT_CRIACAO)))
+                                                                {
+                                                                    <tr>                                            
+                                                                        @if (cond.CRM1_IN_ATIVO == 3 || cond.CRM1_IN_ATIVO == 4 || cond.CRM1_IN_ATIVO == 8)
+                                                                        {
+                                                                            <td><a href="@Url.Action("VisualizarProcessoCRM", "CRM", new { id = cond.CRM1_CD_ID })" class="show-spinner" />@cond.CRM1_NM_NOME</td>
+                                                                        }
+                                                                        else if (cond.CRM1_IN_ATIVO == 2)
+                                                                        {
+                                                                            <td><a href="@Url.Action("VisualizarProcessoCRM", "CRM", new { id = cond.CRM1_CD_ID })" class="show-spinner" />@cond.CRM1_NM_NOME</td>
+                                                                        }                                             
+                                                                        else
+                                                                        {
+                                                                            if (cond.CRM1_DT_ENCERRAMENTO == null)
+                                                                            {
+                                                                                <td><a href="@Url.Action("AcompanhamentoProcessoCRM", "CRM", new { id = cond.CRM1_CD_ID })" class="show-spinner" />@cond.CRM1_NM_NOME</td>
+                                                                            }
+                                                                            else
+                                                                            {
+                                                                                <td><a href="@Url.Action("VisualizarProcessoCRM", "CRM", new { id = cond.CRM1_CD_ID })" class="show-spinner" />@cond.CRM1_NM_NOME</td>
+                                                                            }
+                                                                        }
+
+                                                                        <td>@cond.FUNIL.FUNI_NM_NOME</td>
+                                                                        <td style="width: auto; color: green; font-weight:bold">@cond.FUNIL.FUNIL_ETAPA.Where(p => p.FUET_CD_ID == cond.CRM1_IN_STATUS).First().FUET_NM_NOME</td>
+
+                                                                        <td>@cond.LEAD.LEAD_NM_NOME</td>
+
+                                                                        @if (cond.CRM_ACAO.Where(p => p.CRAC_IN_STATUS == 1).ToList().Count > 0)
+                                                                        {
+                                                                            <td style="width: auto">@cond.CRM_ACAO.Where(p => p.CRAC_IN_STATUS == 1).OrderByDescending(m => m.CRAC_DT_PREVISTA).FirstOrDefault().CRAC_NM_TITULO</td>
+                                                                            if (cond.CRM_ACAO.Where(p => p.CRAC_IN_STATUS == 1).OrderByDescending(m => m.CRAC_DT_PREVISTA).FirstOrDefault().CRAC_DT_PREVISTA.Value.Date >= DateTime.Today.Date)
+                                                                            {
+                                                                                <td style="width: auto; color: green; font-weight:bold">@cond.CRM_ACAO.Where(p => p.CRAC_IN_STATUS == 1).OrderByDescending(m => m.CRAC_DT_PREVISTA).FirstOrDefault().CRAC_DT_PREVISTA.Value.ToShortDateString()</td>
+                                                                            }
+                                                                            else
+                                                                            {
+                                                                                <td style="width: auto; color: red; font-weight:bold">@cond.CRM_ACAO.Where(p => p.CRAC_IN_STATUS == 1).OrderByDescending(m => m.CRAC_DT_PREVISTA).FirstOrDefault().CRAC_DT_PREVISTA.Value.ToShortDateString()</td>
+                                                                            }
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            <td>-</td>
+                                                                            <td>-</td>
+                                                                        }
+                                                                        <td style="width: auto">
+                                                                            @if (cond.CRM1_IN_ATIVO == 1)
+	                                                                        {
+                                                                                <span class="status-badge status-active">Ativo</span>
+                                                                            }
+                                                                            else if (cond.CRM1_IN_ATIVO == 2)
+                                                                            {
+                                                                                <span class="status-badge status-pending">Arquivado</span>
+                                                                            }
+                                                                            else if (cond.CRM1_IN_ATIVO == 3)
+                                                                            {
+                                                                                <span class="status-badge status-cancel">Cancelado</span>
+                                                                            }   
+                                                                            else if (cond.CRM1_IN_ATIVO == 4)
+                                                                            {
+                                                                                <span class="status-badge status-cancel">Falhado</span>
+                                                                            }
+                                                                            else if (cond.CRM1_IN_ATIVO == 5)
+                                                                            {
+                                                                                <span class="status-badge status-finish">Sucesso</span>
+                                                                            }
+                                                                        </td>
+                                                                        <td class="td-one-action">
+                                                                            @if (cond.CRM1_IN_ATIVO == 3 || cond.CRM1_IN_ATIVO == 4 || cond.CRM1_IN_ATIVO == 8)
+                                                                            {
+                                                                                @Html.TableLinkDetails(cond.CRM1_CD_ID, "VisualizarProcessoCRM", "fa-search show-spinner", "Consultar")
+                                                                            }
+                                                                            else if (cond.CRM1_IN_ATIVO == 2)
+                                                                            {
+                                                                                @Html.TableLinkDetails(cond.CRM1_CD_ID, "VisualizarProcessoCRM", "fa-search show-spinner", "Consultar")
+                                                                            }                                             
+                                                                            else
+                                                                            {
+                                                                                if (cond.CRM1_DT_ENCERRAMENTO == null)
+                                                                                {
+                                                                                    @Html.TableLinkDetails(cond.CRM1_CD_ID, "AcompanhamentoProcessoCRM", "fa-cubes show-spinner", "Acompanhar")
+                                                                                    if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_CANCELA_CRM == 1)
+                                                                                    {
+                                                                                        <span style="color: #337ab7; cursor:pointer;" alt="Desativar" class="tbl-link fa-lg fa fa-trash-o show-spinner" onclick="ShowModalExcluir('/CRM/ExcluirProcesso/@cond.CRM1_CD_ID')" title="Arquivar"></span>
+                                                                                        @Html.TableLinkDetails(cond.CRM1_CD_ID, "CancelarProcessoCRM", "fa-times show-spinner", "Cancelar")
+                                                                                    }
+                                                                                }
+                                                                                else
+                                                                                {
+                                                                                    @Html.TableLinkDetails(cond.CRM1_CD_ID, "VisualizarProcessoCRM", "fa-search show-spinner", "Consultar")
+                                                                                }
+
+                                                                            }
+                                                                        </td>
+                                                                    </tr>
+                                                                }
+                                                            </tbody>
+                                                        </table>
+                                                    }
+                                                    else
+                                                    {
+                                                        <div class="row">
+                                                            <div class="col-lg-3 col-md-3 col-xs-2">
+
+                                                            </div>
+                                                            <div style="border: 5px solid #F6A54A; padding: 10px; border-radius: 8px 8px; " class="col-lg-6 col-md-6 col-xs-8">
+                                                                <h2 style="font-weight: bold">Nenhuma processo cadastrado para esse lead</h2>
+                                                            </div>
+                                                            <div class="col-lg-3 col-md-3 col-xs-2">
+
+                                                            </div>
+                                                        </div>
+                                                    }
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <br />
+                                    </div>
+                                </div>
+                            }
+                            else
+                            {
+                                <div id="tab-4" class="tab-pane">
+                                    <div class="panel-body">
+                                        <div class="row">
+                                            <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                                <div class="col-lg-12 col-md-12 col-xs-12">
+                                                    <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Processos CRM</h4>
+                                                    <br />
+                                                    @if (Model.CRM.Where(p => p.CRM1_IN_ATIVO == 1).ToList().Count > 0)
+                                                    {
+                                                        <table class="table table-striped table-bordered table-hover dataTables-crm">
+                                                            <thead style="background-color:lightsteelblue">
+                                                                <tr>
+                                                                    <th style="width: auto">Processo</th>
+                                                                    <th style="width: auto">Funil</th>
+                                                                    <th style="width: auto">Etapa</th>
+                                                                    <th style="width: auto">Nome</th>
+                                                                    <th style="width: auto">Próxima Ação</th>
+                                                                    <th style="width: auto">Data Prevista</th>
+                                                                    <th style="width: auto">Situação</th>
+                                                                    <th class="td-one-action">Ações</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                @foreach (var cond in (Model.CRM.Where(p => p.CRM1_IN_ATIVO == 1).OrderBy(p => p.CRM1_DT_CRIACAO)))
+                                                                {
+                                                                    <tr>                                            
+                                                                        @if (cond.CRM1_IN_ATIVO == 3 || cond.CRM1_IN_ATIVO == 4 || cond.CRM1_IN_ATIVO == 8)
+                                                                        {
+                                                                            <td><a href="@Url.Action("VisualizarProcessoCRM", "CRM", new { id = cond.CRM1_CD_ID })" class="show-spinner" />@cond.CRM1_NM_NOME</td>
+                                                                        }
+                                                                        else if (cond.CRM1_IN_ATIVO == 2)
+                                                                        {
+                                                                            <td><a href="@Url.Action("VisualizarProcessoCRM", "CRM", new { id = cond.CRM1_CD_ID })" class="show-spinner" />@cond.CRM1_NM_NOME</td>
+                                                                        }                                             
+                                                                        else
+                                                                        {
+                                                                            if (cond.CRM1_DT_ENCERRAMENTO == null)
+                                                                            {
+                                                                                <td><a href="@Url.Action("AcompanhamentoProcessoCRM", "CRM", new { id = cond.CRM1_CD_ID })" class="show-spinner" />@cond.CRM1_NM_NOME</td>
+                                                                            }
+                                                                            else
+                                                                            {
+                                                                                <td><a href="@Url.Action("VisualizarProcessoCRM", "CRM", new { id = cond.CRM1_CD_ID })" class="show-spinner" />@cond.CRM1_NM_NOME</td>
+                                                                            }
+                                                                        }
+
+                                                                        <td>@cond.FUNIL.FUNI_NM_NOME</td>
+                                                                        <td style="width: auto; color: green; font-weight:bold">@cond.FUNIL.FUNIL_ETAPA.Where(p => p.FUET_CD_ID == cond.CRM1_IN_STATUS).First().FUET_NM_NOME</td>
+
+                                                                        <td>@cond.LEAD.LEAD_NM_NOME</td>
+
+                                                                        @if (cond.CRM_ACAO.Where(p => p.CRAC_IN_STATUS == 1).ToList().Count > 0)
+                                                                        {
+                                                                            <td style="width: auto">@cond.CRM_ACAO.Where(p => p.CRAC_IN_STATUS == 1).OrderByDescending(m => m.CRAC_DT_PREVISTA).FirstOrDefault().CRAC_NM_TITULO</td>
+                                                                            if (cond.CRM_ACAO.Where(p => p.CRAC_IN_STATUS == 1).OrderByDescending(m => m.CRAC_DT_PREVISTA).FirstOrDefault().CRAC_DT_PREVISTA.Value.Date >= DateTime.Today.Date)
+                                                                            {
+                                                                                <td style="width: auto; color: green; font-weight:bold">@cond.CRM_ACAO.Where(p => p.CRAC_IN_STATUS == 1).OrderByDescending(m => m.CRAC_DT_PREVISTA).FirstOrDefault().CRAC_DT_PREVISTA.Value.ToShortDateString()</td>
+                                                                            }
+                                                                            else
+                                                                            {
+                                                                                <td style="width: auto; color: red; font-weight:bold">@cond.CRM_ACAO.Where(p => p.CRAC_IN_STATUS == 1).OrderByDescending(m => m.CRAC_DT_PREVISTA).FirstOrDefault().CRAC_DT_PREVISTA.Value.ToShortDateString()</td>
+                                                                            }
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            <td>-</td>
+                                                                            <td>-</td>
+                                                                        }
+                                                                        <td style="width: auto">
+                                                                            @if (cond.CRM1_IN_ATIVO == 1)
+	                                                                        {
+                                                                                <span class="status-badge status-active">Ativo</span>
+                                                                            }
+                                                                            else if (cond.CRM1_IN_ATIVO == 2)
+                                                                            {
+                                                                                <span class="status-badge status-pending">Arquivado</span>
+                                                                            }
+                                                                            else if (cond.CRM1_IN_ATIVO == 3)
+                                                                            {
+                                                                                <span class="status-badge status-cancel">Cancelado</span>
+                                                                            }   
+                                                                            else if (cond.CRM1_IN_ATIVO == 4)
+                                                                            {
+                                                                                <span class="status-badge status-cancel">Falhado</span>
+                                                                            }
+                                                                            else if (cond.CRM1_IN_ATIVO == 5)
+                                                                            {
+                                                                                <span class="status-badge status-finish">Sucesso</span>
+                                                                            }
+                                                                        </td>
+                                                                        <td class="td-one-action">
+                                                                            @if (cond.CRM1_IN_ATIVO == 3 || cond.CRM1_IN_ATIVO == 4 || cond.CRM1_IN_ATIVO == 8)
+                                                                            {
+                                                                                @Html.TableLinkDetails(cond.CRM1_CD_ID, "VisualizarProcessoCRM", "fa-search show-spinner", "Consultar")
+                                                                            }
+                                                                            else if (cond.CRM1_IN_ATIVO == 2)
+                                                                            {
+                                                                                @Html.TableLinkDetails(cond.CRM1_CD_ID, "VisualizarProcessoCRM", "fa-search show-spinner", "Consultar")
+                                                                            }                                             
+                                                                            else
+                                                                            {
+                                                                                if (cond.CRM1_DT_ENCERRAMENTO == null)
+                                                                                {
+                                                                                    @Html.TableLinkDetails(cond.CRM1_CD_ID, "AcompanhamentoProcessoCRM", "fa-cubes show-spinner", "Acompanhar")
+                                                                                    if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_CANCELA_CRM == 1)
+                                                                                    {
+                                                                                        <span style="color: #337ab7; cursor:pointer;" alt="Desativar" class="tbl-link fa-lg fa fa-trash-o show-spinner" onclick="ShowModalExcluir('/CRM/ExcluirProcesso/@cond.CRM1_CD_ID')" title="Arquivar"></span>
+                                                                                        @Html.TableLinkDetails(cond.CRM1_CD_ID, "CancelarProcessoCRM", "fa-times show-spinner", "Cancelar")
+                                                                                    }
+                                                                                }
+                                                                                else
+                                                                                {
+                                                                                    @Html.TableLinkDetails(cond.CRM1_CD_ID, "VisualizarProcessoCRM", "fa-search show-spinner", "Consultar")
+                                                                                }
+
+                                                                            }
+                                                                        </td>
+                                                                    </tr>
+                                                                }
+                                                            </tbody>
+                                                        </table>
+                                                    }
+                                                    else
+                                                    {
+                                                        <div class="row">
+                                                            <div class="col-lg-3 col-md-3 col-xs-2">
+
+                                                            </div>
+                                                            <div style="border: 5px solid #F6A54A; padding: 10px; border-radius: 8px 8px; " class="col-lg-6 col-md-6 col-xs-8">
+                                                                <h2 style="font-weight: bold">Nenhuma processo cadastrado para esse lead</h2>
+                                                            </div>
+                                                            <div class="col-lg-3 col-md-3 col-xs-2">
+
+                                                            </div>
+                                                        </div>
+                                                    }
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <br />
+                                    </div>
+                                </div>
+                            }
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <link href="~/Content/themes/base/jquery-ui.min.css" rel="stylesheet" />
+    <link href="~/Content/themes/base/all.css" rel="stylesheet" />
+    @Styles.Render("~/Content/plugins/dataTables/dataTablesStyles")
+    @Styles.Render("~/plugins/jasnyBootstrapStyles")
+    @Styles.Render("~/plugins/toastrStyles")
+
+    <style>
+        /* 1. Aumenta a largura e garante o espaço interno */
+        #toast-container > .toast {
+            width: 500px !important; 
+            max-width: 500px !important;
+            opacity: 0.95 !important;
+        }
+
+        /* 2. Remove o ícone nativo do Toastr (Background Image) */
+        #toast-container > .toast-success {
+            background-image: none !important;
+        }
+
+        /* 3. Remove ícones do FontAwesome/Inspinia injetados via ::before no Título */
+        .toast-success .toast-title::before, 
+        .toast-success .toast-title::after,
+        .toast-success::before {
+            content: none !important;
+            display: none !important;
+        }
+
+        /* 4. Ajusta o recuo do texto já que removemos o ícone */
+        .toast-success .toast-title, 
+        .toast-success .toast-message {
+            padding-left: 10px !important;
+        }
+
+        html { scroll-behavior: smooth; }
+
+        .back-to-top {
+            position: fixed !important;
+            bottom: 30px !important;
+            left: 260px !important; 
+            z-index: 999999 !important;
+            width: 50px !important;
+            height: 50px !important;
+            background-color: #1ab394 !important;
+            color: white !important;
+            border-radius: 50% !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            text-decoration: none !important;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3) !important;
+            transition: all 0.3s ease;
+        
+            /* Estado inicial: Invisível e deslocado para baixo */
+            opacity: 0 !important;
+            visibility: hidden !important;
+            transform: translateY(20px) !important;
+        }
+
+        /* Classe que o JavaScript vai adicionar ao rolar a tela */
+        .back-to-top.visible {
+            opacity: 1 !important;
+            visibility: visible !important;
+            transform: translateY(0px) !important;
+        }
+
+        .back-to-top:hover {
+            background-color: #18a689 !important;
+            color: white !important;
+            transform: scale(1.1) !important;
+        }
+
+        .toggle-container {
+                background-color: #ebf9eb; /* Verde bem claro */
+                border-radius: 20px;
+                display: inline-flex;
+                padding: 4px;
+                margin-bottom: 20px;
+                border: 1px solid #d0e9d0;
+            }
+
+            .toggle-option {
+                padding: 6px 20px;
+                border-radius: 18px;
+                cursor: pointer;
+                font-weight: bold;
+                color: #5cb85c; /* Letra Verde */
+                transition: all 0.3s ease;
+                user-select: none;
+            }
+
+            .toggle-option.active {
+                background-color: #ffffff; /* Fundo branco da opção ativa */
+                color: #28a745; 
+                box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            }
+
+            /* Controle de visibilidade das seções */
+            .view-section {
+                display: none !important;
+            }
+
+            .view-section.active {
+                display: block !important;
+            }
+    </style>
+    <style>
+        /* Estilo Base */
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .status-badge::before {
+            content: "";
+            display: inline-block;
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            margin-right: 6px;
+        }
+
+        /* PENDING (Gold) - Status 0 */
+        .status-pending { background-color: #fef9c3; color: #a16207; }
+        .status-pending::before { background-color: #ca8a04; }
+
+        /* ACTIVE (Green) - Status 1 */
+        .status-active { background-color: #dcfce7; color: #15803d; }
+        .status-active::before { background-color: #16a34a; }
+
+        /* CANCEL (Red) - Status 4 */
+        .status-cancel { background-color: #fee2e2; color: #b91c1c; }
+        .status-cancel::before { background-color: #dc2626; }
+
+        /* FINISH (Dark Blue) - Status 2 */
+        .status-finish { background-color: #dbeafe; color: #1e40af; }
+        .status-finish::before { background-color: #2563eb; }
+
+        /* OVERDUE (Gray) - Status 3 */
+        .status-overdue { background-color: #f3f4f6; color: #4b5563; }
+        .status-overdue::before { background-color: #6b7280; }
+    </style>
+}
+
+@section Scripts {
+    @Scripts.Render("~/plugins/toastr")
+    <script src="~/Scripts/jquery-ui-1.12.1.min.js"></script>
+    @Scripts.Render("~/plugins/dataTables")
+    @Scripts.Render("~/bundles/inputmask")
+    @Scripts.Render("~/plugins/jasnyBootstrap")
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.maskedinput/1.4.1/jquery.maskedinput.js"></script>
+    <script src="~/Scripts/uploadAnexo.js"></script>    
+    
+    <script type="text/javascript" src="~/Scripts/moment.min.js"></script>
+    <script type="text/javascript" src="~/Scripts/bootstrap.min.js"></script>
+   
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('[data-toggle="popover"]').popover();
+        });
+    </script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-toggle="popover"]'));
+            var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
+                return new bootstrap.Popover(popoverTriggerEl);
+            });
+        });
+    </script>
+
+    <!-- Handler de fechamento do browser -->
+    <script type="text/javascript">
+        window.onbeforeunload = function ()
+        {
+            navigator.sendBeacon('../ControleAcesso/LogSessionTime');
+        }; 
+    </script>
+
+    <script type="text/javascript">
+        $(document).ready(function () { 
+            $('.btn-loading').on('click', function (e) {            
+                $(this).prop('disabled', true);
+                $(this).addClass('disabled');
+                $('#loadingIndicator').show();
+                var tagName = $(this).prop('tagName').toLowerCase();
+                if (tagName === 'a') {
+                    e.preventDefault(); 
+                    var targetUrl = $(this).attr('href');
+                    window.location.href = targetUrl;
+
+                } else if (tagName === 'button' || tagName === 'input') {
+                    $(this).closest('form').submit();
+                }
+            });
+        });
+    </script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('.btn-loading1').on('click', function (e) {
+            
+                var $this = $(this);
+                var tagName = $this.prop('tagName').toLowerCase();
+                $this.addClass('disabled'); 
+                $('#loadingIndicator').show();
+
+                if (tagName === 'a') {
+                    e.preventDefault();
+                
+                    var targetUrl = $this.attr('href');
+                    window.location.href = targetUrl;
+                
+                } else if (tagName === 'button' || tagName === 'input') {               
+                    $this.closest('form').submit();
+                    $this.prop('disabled', true);
+                }
+            });
+        });
+    </script>
+
+    <script>
+        $(function () {
+            limpaModal();
+        });
+
+        function limpaModal() {
+            $('#btnModal').remove();
+            $('#modalTitle').remove();
+        }
+
+        function ShowModalExcluirAnotacao(url) {
+            $('#modal').find('.modal-footer').prepend('<a id="btnModal" alt="Desativar" class="btn btn-primary btn-loading" href="' + url + '" target="_self" title="Desativar">Confirmar</a>');
+            $('#modal').find('.modal-body').html('Confirma exclusão da Anotação?');
+            $('#modal').find('.modal-header').prepend('<h5 id="modalTitle" class="modal-title">Confimar Exclusão</h5>');
+            $('#modal').modal('show');
+        }
+        function ShowModalExcluirAnexo(url) {
+            $('#modal').find('.modal-footer').prepend('<a id="btnModal" alt="Desativar" class="btn btn-primary btn-loading" href="' + url + '" target="_self" title="Desativar">Confirmar</a>');
+            $('#modal').find('.modal-body').html('Confirma exclusão de Anexo?');
+            $('#modal').find('.modal-header').prepend('<h5 id="modalTitle" class="modal-title">Confimar Exclusão</h5>');
+            $('#modal').modal('show');
+        }
+        function ShowModalExcluirNota(url) {
+            $('#modal').find('.modal-footer').prepend('<a id="btnModal" alt="Desativar" class="btn btn-primary btn-loading" href="' + url + '" target="_self" title="Desativar">Confirmar</a>');
+            $('#modal').find('.modal-body').html('Confirma exclusão de Nota Fiscal?');
+            $('#modal').find('.modal-header').prepend('<h5 id="modalTitle" class="modal-title">Confimar Exclusão</h5>');
+            $('#modal').modal('show');
+        }
+    </script>
+
+
+<script type="text/javascript">
+    $(function () {
+        $('.date-picker').datepicker({
+            dateFormat: 'dd/mm/yy',
+            dayNames: ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'],
+            dayNamesMin: ['D', 'S', 'T', 'Q', 'Q', 'S', 'S', 'D'],
+            dayNamesShort: ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'],
+            monthNames: ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'],
+            monthNamesShort: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'],
+            nextText: 'Proximo',
+            prevText: 'Anterior',
+            showOn: "focus",
+            onClose: function () {
+                // Mantém o foco no próprio campo após fechar
+                var self = this;
+                setTimeout(function () {
+                    $(self).focus();
+                }, 1);
+            }
+        });
+        
+        // Interceptar Tab para ir para o próximo campo
+        $('#dn').on('keydown', function (e) {
+            if (e.keyCode === 9) {
+                // Fecha o datepicker se estiver aberto
+                if ($(this).datepicker("widget").is(":visible")) {
+                    e.preventDefault();
+                    $(this).datepicker("hide");
+                    // Após fechar, vai para o próximo campo
+                    setTimeout(function () {
+                        $('#desc').focus().select();
+                    }, 50);
+                }
+                // Se não estiver aberto, deixa o Tab funcionar normalmente
+            }
+        });
+        
+        // CSS e Botão
+        $('.date-picker').css("display", "inline-block")
+            .next("button").button({
+                icons: { primary: "ui-icon-calendar" },
+                label: "Selecione uma data",
+                text: false
+            });
+    });
+</script>
+
+    <script type="text/javascript">
+        $(function () {
+            $("#dn").mask("99/99/9999");
+            $("#cel").mask("(99)99999-9999");
+            $("#cep").mask("99999-999");
+            $("#cpf").mask("999.999.999-99");
+            $("#cnpj").mask("99.999.999/9999-99");
+    });
+    </script>
+    <script>
+        function PesquisaCep(cep, btn, tipoEnd) {
+            data = {
+                cep: cep
+                , tipoEnd: tipoEnd
+            }
+
+            //$(btn).attr("disabled", "disabled");
+
+            $.ajax({
+                url: '/Administra/PesquisaCEP_JavascriptNova'
+                , type: 'POST'
+                , data: data
+                , success: function (r) {
+                    if (r.Sucesso == 0) {
+                        if (tipoEnd == 1) {
+                            $("#cepval").show();
+                        //    $('#btnBuscaCep').removeAttr("disabled");
+                        }
+
+                    }
+                    else {
+                        $("#cepval").hide();
+                        $("#cepval1").hide();
+                        if (tipoEnd == 1) {
+                            $('#endereco').val(r.LEAD_NM_ENDERECO);
+                            $('#nmr').val(r.LEAD_NR_NUMERO);
+                            $('#bairro').val(r.LEAD_NM_BAIRRO);
+                            $('#cidade').val(r.LEAD_NM_CIDADE);
+                            $('#cepBase').val(r.LEAD_NR_CEP);
+                            $('#uf option[value="' + r.UF_CD_ID + '"]').attr("selected", "selected");
+                            $('#btnBuscaCep').removeAttr("disabled");
+                        }
+                    }
+                }
+            });
+        }
+    </script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            var i = -1;
+            var toastCount = 0;
+            var $toastlast;
+            var getMessage = function () {
+                var msg = 'Hi, welcome to Inspinia. This is example of Toastr notification box.';
+                return msg;
+            };
+
+            $('#basictoast').click(function () {
+                // Display a success toast, with a title
+                toastr.success('Alteração am andamento!')
+            });
+            $('#showtoast').click(function () {
+                var shortCutFunction = $("#toastTypeGroup input:radio:checked").val();
+                var msg = $('#message').val();
+                var title = $('#title').val() || '';
+                var $showDuration = $('#showDuration');
+                var $hideDuration = $('#hideDuration');
+                var $timeOut = $('#timeOut');
+                var $extendedTimeOut = $('#extendedTimeOut');
+                var $showEasing = $('#showEasing');
+                var $hideEasing = $('#hideEasing');
+                var $showMethod = $('#showMethod');
+                var $hideMethod = $('#hideMethod');
+                var toastIndex = toastCount++;
+                toastr.options = {
+                    closeButton: $('#closeButton').prop('checked'),
+                    debug: $('#debugInfo').prop('checked'),
+                    progressBar: $('#progressBar').prop('checked'),
+                    positionClass: $('#positionGroup input:radio:checked').val() || 'toast-top-right',
+                    onclick: null
+                };
+                if ($('#addBehaviorOnToastClick').prop('checked')) {
+                    toastr.options.onclick = function () {
+                        alert('You can perform some custom action after a toast goes away');
+                    };
+                }
+                if ($showDuration.val().length) {
+                    toastr.options.showDuration = $showDuration.val();
+                }
+                if ($hideDuration.val().length) {
+                    toastr.options.hideDuration = $hideDuration.val();
+                }
+                if ($timeOut.val().length) {
+                    toastr.options.timeOut = $timeOut.val();
+                }
+                if ($extendedTimeOut.val().length) {
+                    toastr.options.extendedTimeOut = $extendedTimeOut.val();
+                }
+                if ($showEasing.val().length) {
+                    toastr.options.showEasing = $showEasing.val();
+                }
+                if ($hideEasing.val().length) {
+                    toastr.options.hideEasing = $hideEasing.val();
+                }
+                if ($showMethod.val().length) {
+                    toastr.options.showMethod = $showMethod.val();
+                }
+                if ($hideMethod.val().length) {
+                    toastr.options.hideMethod = $hideMethod.val();
+                }
+                if (!msg) {
+                    msg = getMessage();
+                }
+                $("#toastrOptions").text("Command: toastr["
+                    + shortCutFunction
+                    + "](\""
+                    + msg
+                    + (title ? "\", \"" + title : '')
+                    + "\")\n\ntoastr.options = "
+                    + JSON.stringify(toastr.options, null, 2)
+                );
+                var $toast = toastr[shortCutFunction](msg, title); // Wire up an event handler to a button in the toast, if it exists
+                $toastlast = $toast;
+                if ($toast.find('#okBtn').length) {
+                    $toast.delegate('#okBtn', 'click', function () {
+                        alert('you clicked me. i was toast #' + toastIndex + '. goodbye!');
+                        $toast.remove();
+                    });
+                }
+                if ($toast.find('#surpriseBtn').length) {
+                    $toast.delegate('#surpriseBtn', 'click', function () {
+                        alert('Surprise! you clicked me. i was toast #' + toastIndex + '. You could perform an action here.');
+                    });
+                }
+            });
+            function getLastToast() {
+                return $toastlast;
+            }
+            $('#clearlasttoast').click(function () {
+                toastr.clear(getLastToast());
+            });
+            $('#cleartoasts').click(function () {
+                toastr.clear();
+            });
+
+        });
+    </script>
+
+    <script type="text/javascript">
+        // 1. FUNÇÃO GLOBAL (Define O QUE o alerta faz)
+        function ExibirMensagem(tipo, mensagem, titulo) {
+            titulo = titulo || 'WebDoctor';
+            
+            // Mapeamento de tipos (aceita nomes ou números do C#)
+            if (tipo === 'sucesso' || tipo === 1) {
+                toastr.success(mensagem, titulo);
+            } else if (tipo === 'erro' || tipo === 2) {
+                toastr.error(mensagem, titulo);
+            } else if (tipo === 'aviso' || tipo === 3) {
+                toastr.warning(mensagem, titulo);
+            } else {
+                toastr.info(mensagem, titulo);
+            }
+        }
+
+        $(document).ready(function () {
+            // 2. CONFIGURAÇÕES GLOBAIS DO TOASTR (Define COMO o alerta aparece)
+            toastr.options = {
+                "closeButton": true,
+                "progressBar": true,
+                "preventDuplicates": false,
+                "positionClass": "toast-top-right",
+                "showDuration": "400",
+                "hideDuration": "1000",
+                "timeOut": "15000",
+                "extendedTimeOut": "5000",
+                "showEasing": "swing",
+                "hideEasing": "linear",
+                "showMethod": "fadeIn",
+                "hideMethod": "fadeOut"
+            };
+
+            // 3. CAPTURA MENSAGENS DO SERVIDOR (TempData do C#)
+            var msgSucesso = '@TempData["MensagemAcerto"]';
+            if (msgSucesso != '') ExibirMensagem('sucesso', msgSucesso, 'Sucesso!');
+
+            var msgErro = '@TempData["MensagemErro"]';
+            if (msgErro != '') ExibirMensagem('erro', msgErro, 'Erro!');
+
+            // 4. VALIDAÇÃO DO ARQUIVO (Evento disparado pelo input id="file")
+            $('#file').on('change', function () {
+                var arquivo = this.files[0];
+                var limiteTamanho = 50 * 1024 * 1024; // 50MB (Conforme seu código)
+                var extensoesPermitidas = ['pdf', 'jpg', 'png'];
+
+                if (arquivo) {
+                    var nomeArquivo = arquivo.name;
+                    var extensao = nomeArquivo.split('.').pop().toLowerCase();
+
+                    // Validação de Extensão
+                    if ($.inArray(extensao, extensoesPermitidas) == -1) {
+                        ExibirMensagem('erro', 'A extensão .' + extensao + ' não é permitida.', 'Arquivo Inválido');
+                        $(this).val(''); 
+                        return false;
+                    }
+
+                    // Validação de Tamanho
+                    if (arquivo.size > limiteTamanho) {
+                        ExibirMensagem('aviso', 'O arquivo excede o limite de 50MB.', 'Arquivo muito pesado');
+                        $(this).val(''); 
+                        return false;
+                    }
+
+                    // Sucesso na validação local
+                    ExibirMensagem('sucesso', 'Arquivo "' + nomeArquivo + '" pronto para upload.', 'Validado');
+                }
+            });
+        });
+    </script>
+
+    <script>
+        $(document).ready(function () {
+            $('.toggle-option').click(function () {
+                // Remove 'active' de todos os botões e adiciona no clicado
+                $('.toggle-option').removeClass('active');
+                $(this).addClass('active');
+
+                // Esconde todas as seções e mostra a selecionada
+                var targetSection = $(this).data('target');
+                $('.view-section').removeClass('active');
+                $('#' + targetSection).addClass('active');
+            });
+        });
+    </script>
+
+    <script type="text/javascript">
+        // 1. Prepara a URL e abre a modal
+        function PrepararExclusaoAnexo(url) {
+            $('#urlExclusaoTemp').val(url); // Armazena a URL no campo hidden da modal
+            $('#modalConfirmacaoExclusaoAnexo').modal('show');
+        }
+
+        $(document).ready(function () {
+            // 2. Ação do botão Confirmar dentro da modal
+            $('#btnConfirmarExclusaoAnexo').click(function () {
+                var urlFinal = $('#urlExclusaoTemp').val();
+                var $btn = $(this);
+
+                if (urlFinal !== "") {
+                    // Feedback visual
+                    $btn.prop('disabled', true).addClass('disabled');
+                    $btn.html('<i class="fa fa-spinner fa-spin"></i> Excluindo...');
+
+                    // Fecha a modal e redireciona
+                    $('#modalConfirmacaoExclusaoAnexo').modal('hide');
+                
+                    setTimeout(function () {
+                        $('.modal-backdrop').remove();
+                        $('#loadingIndicator').show();
+                        window.location.href = urlFinal;
+                    }, 400);
+                }
+            });
+
+            // Limpeza de segurança ao fechar
+            $('#modalConfirmacaoExclusaoAnexo').on('hidden.bs.modal', function () {
+                $('#urlExclusaoTemp').val("");
+                $('#btnConfirmarExclusaoAnexo').prop('disabled', false).removeClass('disabled').html('Confirmar Exclusão');
+            });
+        });
+    </script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('.dataTables-crm').DataTable({
+                "pageLength": 5,          // Define o padrão de 5 linhas
+                "lengthChange": false,    // Remove o seletoc de "Mostrar X registros"
+                "searching": false,       // Remove a caixa de pesquisa
+                "dom": 'rtp',             // 'r' (processing), 't' (table), 'p' (pagination)
+                                          // Note que removemos o 'B' (buttons), 'f' (filter) e 'l' (length)
+                "columnDefs": [
+                    {
+                        "type": "date-eu", 
+                        "targets": 5
+                    }
+                ],
+                // Os botões podem permanecer definidos, mas como removemos o 'B' do 'dom', 
+                // eles não serão renderizados na tela.
+                "buttons": [
+                    { extend: 'excel', title: 'Processo_Planilha' },
+                    {
+                        extend: 'print',
+                        customize: function (win) {
+                            $(win.document.body).addClass('white-bg');
+                            $(win.document.body).css('font-size', '10px');
+                            $(win.document.body).find('table')
+                                .addClass('compact')
+                                .css('font-size', 'inherit');
+                        }
+                    }
+                ]
+            });          
+        });   
+     </script>
+    @if (ViewBag.Message != null)
+    {
+        <script type="text/javascript">
+            window.onload = function () {
+                  alert("@ViewBag.Message");
+            };
+        </script>
+    }
+}
+

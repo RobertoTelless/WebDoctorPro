@@ -119,6 +119,7 @@ namespace MvcMapping.Mappers
             CreateMap<CRM_FOLLOW, CRMFollowViewModel>();
             CreateMap<CRM_ORIGEM, CRMOrigemViewModel>();
             CreateMap<CRM, CRMViewModel>();
+            CreateMap<MENSAGEM_FABRICANTE, MensagemFabricanteViewModel>();
 
         }
     }

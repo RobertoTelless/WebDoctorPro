@@ -44,6 +44,7 @@ using System.Security.Cryptography.X509Certificates;
 using System.Configuration;
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
+using System.Net.Http;
 
 namespace GEDSys_Presentation.Controllers
 {
@@ -1447,6 +1448,7 @@ namespace GEDSys_Presentation.Controllers
 
                 // Abre view
                 Session["MensLead"] = null;
+                Session["NivelLead"] = 1;
                 Session["VoltaLead"] = 1;
                 Session["ListaLog"] = null;
                 objeto = new LEAD();
@@ -1648,7 +1650,7 @@ namespace GEDSys_Presentation.Controllers
 
         [HttpPost]
         [ValidateInput(false)]
-        public ActionResult IncluirMedico(LeadViewModel vm)
+        public ActionResult IncluirLead(LeadViewModel vm)
         {
             if ((String)Session["Ativa"] == null)
             {
@@ -1668,6 +1670,10 @@ namespace GEDSys_Presentation.Controllers
                     vm.LEAD_NM_BAIRRO = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(vm.LEAD_NM_BAIRRO);
                     vm.LEAD_NM_CIDADE = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(vm.LEAD_NM_CIDADE);
                     vm.LEAD_NR_NUMERO = CrossCutting.UtilitariosGeral.CleanStringDocto(vm.LEAD_NR_NUMERO);
+
+                    // Monta descrição
+                    String desc = "Lead de " + vm.LEAD_NM_NOME.ToUpper() + " criado em " + vm.LEAD_DT_ENTRADA.Value.ToLongDateString();
+                    vm.LEAD_DS_DESCRICAO = desc;
 
                     // Preparação
                     LEAD item = Mapper.Map<LeadViewModel, LEAD>(vm);
@@ -1736,13 +1742,1409 @@ namespace GEDSys_Presentation.Controllers
             }
         }
 
+        [HttpGet]
+        public ActionResult EditarLead(Int32 id)
+        {
+            try
+            {
+                // Verifica se tem usuario logado
+                USUARIO usuario = new USUARIO();
+                if ((String)Session["Ativa"] == null)
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+                if ((USUARIO)Session["UserCredentials"] != null)
+                {
+                    usuario = (USUARIO)Session["UserCredentials"];
+                }
+                else
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+                Int32 idAss = (Int32)Session["IdAssinante"];
+                Session["ModuloAtual"] = "Lead - Edição";
+
+                LEAD item = baseApp.GetItemById(id);
+                Session["Lead"] = item;
+                ViewBag.UF = new SelectList(CarregaUF(), "UF_CD_ID", "UF_SG_SIGLA");
+
+                // Mensagens
+                if (Session["MensLead"] != null)
+                {
+                    if ((Int32)Session["MensLead"] == 61)
+                    {
+                        TempData["MensagemAcerto"] = (String)Session["MsgCRUD"];
+                        TempData["TemMensagem"] = 1;
+                    }
+                    if ((Int32)Session["MensLead"] == 5)
+                    {
+                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0744", CultureInfo.CurrentCulture));
+                    }
+                    if ((Int32)Session["MensLead"] == 6)
+                    {
+                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0745", CultureInfo.CurrentCulture));
+                    }
+                    if ((Int32)Session["MensLead"] == 15)
+                    {
+                        String frase = CRMSys_Base.ResourceManager.GetString("M0601", CultureInfo.CurrentCulture);
+                        ModelState.AddModelError("", frase);
+                    }
+
+                }
+
+                // Grava Acesso
+                ControleAcessoMetodo grava = new ControleAcessoMetodo(aceApp);
+                Int32 voltaX = grava.GravaAcesso(usuario.USUA_CD_ID, usuario.ASSI_CD_ID, "LEAD_EDITAR", "Administra", "EditarLead");
+
+                // Procesa view
+                Session["MensLead"] = null;
+                Session["TipoMedicoEnvio"] = 1;
+                objetoAntes = item;
+                Session["IdLead"] = id;
+
+                LeadViewModel vm = Mapper.Map<LEAD, LeadViewModel>(item);
+                return View(vm);
+
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Lead";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Administra", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return RedirectToAction("TrataExcecao", "BaseAdmin");
+            }
+        }
+
+        [HttpPost]
+        [ValidateInput(false)]
+        public ActionResult EditarLead(LeadViewModel vm)
+        {
+            Int32 idAss = (Int32)Session["IdAssinante"];
+            ViewBag.UF = new SelectList(CarregaUF(), "UF_CD_ID", "UF_SG_SIGLA");
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    // Sanitização
+                    vm.LEAD_NM_NOME = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(vm.LEAD_NM_NOME);
+                    vm.LEAD_NM_ENDERECO = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(vm.LEAD_NM_ENDERECO);
+                    vm.LEAD_NM_COMPLEMENTO = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(vm.LEAD_NM_COMPLEMENTO);
+                    vm.LEAD_NM_BAIRRO = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(vm.LEAD_NM_BAIRRO);
+                    vm.LEAD_NM_CIDADE = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(vm.LEAD_NM_CIDADE);
+                    vm.LEAD_NR_NUMERO = CrossCutting.UtilitariosGeral.CleanStringDocto(vm.LEAD_NR_NUMERO);
+
+                    // Preparação
+                    USUARIO usuario = (USUARIO)Session["UserCredentials"];
+                    LEAD item = Mapper.Map<LeadViewModel, LEAD>(vm);
+
+                    // Processa
+                    Int32 volta = baseApp.ValidateEdit(item, objetoAntes, usuario);
+
+                    // Sucesso
+                    listaMaster = new List<LEAD>();
+                    Session["ListaLead"] = null;
+                    Session["LeadAlterada"] = 1;
+
+                    // Mensagem do CRUD
+                    Session["MsgCRUD"] = "O lead " + item.LEAD_NM_NOME.ToUpper() + " foi alterado com sucesso";
+                    Session["MensMedico"] = 61;
+
+                    return RedirectToAction("EditarLead", new { id = (Int32)Session["IdLead"] });
+                }
+                catch (Exception ex)
+                {
+                    ViewBag.Message = ex.Message;
+                    Session["TipoVolta"] = 2;
+                    Session["VoltaExcecao"] = "Lead";
+                    Session["Excecao"] = ex;
+                    Session["ExcecaoTipo"] = ex.GetType().ToString();
+                    GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                    Int32 voltaX = grava.GravarLogExcecao(ex, "Administra", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                    return RedirectToAction("TrataExcecao", "BaseAdmin");
+                }
+            }
+            else
+            {
+                return View(vm);
+            }
+        }
+
+        public async Task<ActionResult> UploadFileLeadBlob(HttpPostedFileBase file)
+        {
+            try
+            {
+                // Inicializa
+                if ((String)Session["Ativa"] == null)
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+                Int32 idNot = (Int32)Session["IdLead"];
+                Int32 idAss = (Int32)Session["IdAssinante"];
+
+                // Recupera lead
+                LEAD item = baseApp.GetItemById(idNot);
+                USUARIO usu = (USUARIO)Session["UserCredentials"];
+
+                // Criticas
+                if (file == null)
+                {
+                    Session["MensLead"] = 15;
+                    return RedirectToAction("VoltarAnexoLead");
+                }
+
+                // Critica tamanho nome
+                var fileName = Path.GetFileName(file.FileName);
+                if (fileName.Length > 250)
+                {
+                    Session["MensLead"] = 16;
+                    return RedirectToAction("VoltarAnexoLead");
+                }
+
+                // Critica tamanho arquivo
+                var fileSize = file.ContentLength;
+                if (fileSize > 50000000)
+                {
+                    Session["MensLead"] = 17;
+                    return RedirectToAction("VoltarAnexoLead");
+                }
+
+                //Recupera tipo de arquivo
+                extensao = Path.GetExtension(fileName);
+                String a = extensao;
+                if (!((String)Session["ExtensoesPossiveis"]).Contains(extensao.ToUpper()))
+                {
+                    Session["MensLead"] = 18;
+                    return RedirectToAction("VoltarAnexoLead");
+                }
+
+                // 1. DEFINIÇÃO DO CAMINHO (Mesmo para Local e Azure)
+                // Removida a barra inicial para o Azure não criar uma pasta raiz vazia
+                String caminhoRelativo = "Base/Lead/" + item.LEAD_CD_ID.ToString() + "/Anexos/";
+                String caminhoLocal = Server.MapPath("~/" + caminhoRelativo);
+                String fullPathLocal = Path.Combine(caminhoLocal, fileName);
+
+                // 3. CÓPIA PARA O AZURE BLOB STORAGE
+                try
+                {
+                    // Reinicia o ponteiro do stream para o início após a cópia local
+                    file.InputStream.Position = 0;
+
+                    CONFIGURACAO conf = CarregaConfiguracaoGeral();
+                    string connString = conf.CONF_NM_STORAGE_CONN;
+                    string containerName = conf.CONF_NM_STORAGE_CONTAINER;
+
+                    var blobServiceClient = new Azure.Storage.Blobs.BlobServiceClient(connString);
+                    var containerClient = blobServiceClient.GetBlobContainerClient(containerName);
+
+                    // O nome do blob no Azure incluirá toda a estrutura de pastas
+                    string blobName = caminhoRelativo + fileName;
+                    var blobClient = containerClient.GetBlobClient(blobName);
+
+                    // Upload para o Azure (Idempotente: Se já existe, sobrescreve com true)
+                    await blobClient.UploadAsync(file.InputStream, overwrite: true);
+                }
+                catch (Exception exAzure)
+                {
+                    Session["MsgCRUD"] = "Erro na sincronização: " + exAzure.Message;
+                    Session["MensPaciente"] = 61;
+                    return RedirectToAction("VoltarAnexoLead");
+                }
+
+                // Gravar registro
+                LEAD_ANEXO foto = new LEAD_ANEXO();
+                foto.LEAX_AQ_ARQUIVO = "~" + caminhoRelativo + fileName;
+                foto.LEAX_DT_ANEXO = DateTime.Today.Date;
+                foto.LEAX_IN_ATIVO = 1;
+                Int32 tipo = 3;
+                if (extensao.ToUpper() == ".JPG" || extensao.ToUpper() == ".GIF" || extensao.ToUpper() == ".PNG" || extensao.ToUpper() == ".JPEG")
+                {
+                    tipo = 1;
+                }
+                else if (extensao.ToUpper() == ".MP4" || extensao.ToUpper() == ".AVI" || extensao.ToUpper() == ".MPEG")
+                {
+                    tipo = 2;
+                }
+                else if (extensao.ToUpper() == ".PDF")
+                {
+                    tipo = 3;
+                }
+                else if (extensao.ToUpper() == ".MP3" || extensao.ToUpper() == ".MPEG")
+                {
+                    tipo = 4;
+                }
+                else if (extensao.ToUpper() == ".DOCX" || extensao.ToUpper() == ".DOC" || extensao.ToUpper() == ".ODT")
+                {
+                    tipo = 5;
+                }
+                else if (extensao.ToUpper() == ".XLSX" || extensao.ToUpper() == ".XLS" || extensao.ToUpper() == ".ODS")
+                {
+                    tipo = 6;
+                }
+                else
+                {
+                    tipo = 7;
+                }
+                foto.LEAX_IN_TIPO = tipo;
+                foto.LEAX_NM_TITULO = fileName;
+                foto.LEAD_CD_ID = item.LEAD_CD_ID;
+                item.LEAD_ANEXO.Add(foto);
+                Int32 volta = baseApp.ValidateEdit(item, item, usu);
+
+                // Monta Log
+                LOG log = new LOG
+                {
+                    LOG_DT_DATA = DateTime.Now,
+                    ASSI_CD_ID = usu.ASSI_CD_ID,
+                    USUA_CD_ID = usu.USUA_CD_ID,
+                    LOG_NM_OPERACAO = "Lead - Anexo - Inclusão",
+                    LOG_IN_ATIVO = 1,
+                    LOG_TX_REGISTRO = "Lead: " + item.LEAD_NM_NOME.ToUpper() + " | Anexo: " + fileName + " | Data: " + DateTime.Today.Date,
+                    LOG_IN_SISTEMA = 6
+                };
+                Int32 volta1 = logApp.ValidateCreate(log);
+
+                Session["NivelLead"] = 2;
+                Session["LeadAlterada"] = 1;
+                return RedirectToAction("VoltarAnexoLead");
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;   
+                Session["VoltaExcecao"] = "Lead";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Administra", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return RedirectToAction("TrataExcecao", "BaseAdmin");
+            }
+        }
+
+        public ActionResult VoltarAnexoLead()
+        {
+            if ((String)Session["Ativa"] == null)
+            {
+                return RedirectToAction("Logout", "ControleAcesso");
+            }
+            Session["VoltaTela"] = 1;
+            return RedirectToAction("EditarLead", new { id = (Int32)Session["IdLead"] });
+        }
+
+        [HttpGet]
+        public ActionResult VerAnexoLead(Int32 id)
+        {
+            try
+            {
+                if ((String)Session["Ativa"] == null)
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+                // Prepara view
+                USUARIO usuario = (USUARIO)Session["UserCredentials"];
+                LEAD_ANEXO item = baseApp.GetLeadAnexoById(id);
+                Session["NivelLead"] = 2;
+                Session["ModuloAtual"] = "Administra - Lead - Anexos";
+
+                // Grava Acesso
+                ControleAcessoMetodo grava = new ControleAcessoMetodo(aceApp);
+                Int32 voltaX = grava.GravaAcesso(usuario.USUA_CD_ID, usuario.ASSI_CD_ID, "LEAD_ANEXO", "Administra", "VerAnexoLead");
+                return View(item);
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Lead";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Administra", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return RedirectToAction("TrataExcecao", "BaseAdmin");
+            }
+        }
+
+        [HttpGet]
+        public ActionResult VerAnexoLeadAudio(Int32 id)
+        {
+            try
+            {
+                if ((String)Session["Ativa"] == null)
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+                // Prepara view
+                USUARIO usuario = (USUARIO)Session["UserCredentials"];
+                LEAD_ANEXO item = baseApp.GetLeadAnexoById(id);
+                Session["NivelLead"] = 2;
+
+                // Grava Acesso
+                ControleAcessoMetodo grava = new ControleAcessoMetodo(aceApp);
+                Int32 voltaX = grava.GravaAcesso(usuario.USUA_CD_ID, usuario.ASSI_CD_ID, "LEAD_ANEXO", "Administra", "VerAnexoLead");
+                return View(item);
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Lead";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Administra", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return RedirectToAction("TrataExcecao", "BaseAdmin");
+            }
+        }
+
+        [HttpGet]
+        public ActionResult ExcluirAnexoLead(Int32 id)
+        {
+            if ((String)Session["Ativa"] == null)
+            {
+                return RedirectToAction("Logout", "ControleAcesso");
+            }
+
+            try
+            {
+                USUARIO usuarioLogado = (USUARIO)Session["UserCredentials"];
+                LEAD_ANEXO item = baseApp.GetLeadAnexoById(id);
+                LEAD pac = baseApp.GetItemById(item.LEAD_CD_ID);
+
+                item.LEAX_IN_ATIVO = 0;
+                Int32 volta = baseApp.ValidateEditLeadAnexo(item);
+
+                // Monta Log
+                LOG log = new LOG
+                {
+                    LOG_DT_DATA = DateTime.Now,
+                    ASSI_CD_ID = usuarioLogado.ASSI_CD_ID,
+                    USUA_CD_ID = usuarioLogado.USUA_CD_ID,
+                    LOG_NM_OPERACAO = "Lead - Anexo - Exclusão",
+                    LOG_IN_ATIVO = 1,
+                    LOG_TX_REGISTRO = "Lead: " + item.LEAX_NM_TITULO.ToUpper() + " | Anexo: " + item.LEAX_NM_TITULO.ToUpper() + " | Data: " + item.LEAX_DT_ANEXO.Value.ToShortDateString(),
+                    LOG_IN_SISTEMA = 6
+                };
+                Int32 volta1 = logApp.ValidateCreate(log);
+
+                Session["NivelLead"] = 2;
+                Session["LeadAlterada"] = 1;
+                return RedirectToAction("VoltarAnexoLead");
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Lead";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Administra", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return RedirectToAction("TrataExcecao", "BaseAdmin");
+            }
+        }
+
+        [HttpGet]
+        public ActionResult DownloadLead(Int32 id)
+        {
+            // Força o uso de TLS 1.2 (Obrigatório para Azure Storage no .NET 4.8)
+            System.Net.ServicePointManager.SecurityProtocol = System.Net.SecurityProtocolType.Tls12;
+
+            try
+            {
+                // 1. Carrega as configurações de Storage da sua tabela CONFIGURACAO
+                CONFIGURACAO conf = CarregaConfiguracaoGeral();
+                if (conf == null) return Content("Erro: Configurações de Storage não encontradas.");
+
+                string connString = conf.CONF_NM_STORAGE_CONN;
+                string containerName = conf.CONF_NM_STORAGE_CONTAINER;
+
+                if (string.IsNullOrEmpty(connString)) return Content("Erro: String de conexão do Azure está vazia.");
+
+                // 2. Busca o registro do anexo no banco
+                LEAD_ANEXO item = baseApp.GetLeadAnexoById(id);
+                if (item == null || string.IsNullOrEmpty(item.LEAX_AQ_ARQUIVO))
+                {
+                    return Content("Erro: Registro do anexo não encontrado no banco de dados.");
+                }
+
+                // 3. LIMPEZA DO CAMINHO (Tratamento para o Azure)
+                // Remove o '~', remove barras do início e padroniza as barras invertidas
+                string caminhoFormatado = item.LEAX_AQ_ARQUIVO.Replace("~", "");
+                caminhoFormatado = caminhoFormatado.TrimStart('/');
+                caminhoFormatado = caminhoFormatado.Replace("\\", "/");
+
+                // 4. Conexão com o Azure Blob Storage
+                var blobServiceClient = new Azure.Storage.Blobs.BlobServiceClient(connString);
+                var containerClient = blobServiceClient.GetBlobContainerClient(containerName);
+                var blobClient = containerClient.GetBlobClient(caminhoFormatado);
+
+                // 5. Verifica se o arquivo realmente existe no container
+                if (!blobClient.Exists())
+                {
+                    return Content("Erro: Arquivo não localizado no Azure. Caminho tentado: [" + caminhoFormatado + "]");
+                }
+
+                // 6. Download do conteúdo para a memória do servidor
+                var download = blobClient.DownloadContent();
+                byte[] dados = download.Value.Content.ToArray();
+
+                // 7. Define nome e tipo do arquivo
+                string nomeDownload = Path.GetFileName(caminhoFormatado);
+                string contentType = MimeMapping.GetMimeMapping(nomeDownload);
+
+                // 8. Entrega o arquivo forçando o download no navegador
+                Response.Clear();
+                Response.ClearContent();
+                Response.ClearHeaders();
+                Response.Buffer = true;
+
+                Response.ContentType = contentType;
+                // Aspas duplas no nome do arquivo tratam nomes com espaços
+                Response.AddHeader("Content-Disposition", "attachment; filename=\"" + nomeDownload + "\"");
+
+                Response.BinaryWrite(dados);
+                Response.Flush();
+                Response.End();
+
+                return null;
+            }
+            catch (Exception ex)
+            {
+                // Gravação de Log de Exceção padrão WebDoctor/RTI
+                try
+                {
+                    var user = Session["UserCredentials"] as USUARIO;
+                    GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                    grava.GravarLogExcecao(ex, "Paciente", "WebDoctor", 1, user);
+                }
+                catch { /* Evita erro no catch se a sessão estiver expirada */ }
+
+                return Content("Erro técnico ao realizar download: " + ex.Message);
+            }
+        }
+
+        public ActionResult IncluirAnotacaoLead()
+        {
+            try
+            {
+                // Verifica se tem usuario logado
+                USUARIO usuario = new USUARIO();
+                if ((String)Session["Ativa"] == null)
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+                if ((USUARIO)Session["UserCredentials"] != null)
+                {
+                    usuario = (USUARIO)Session["UserCredentials"];
+                }
+                else
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+                Int32 idAss = (Int32)Session["IdAssinante"];
+                Session["NivelLead"] = 3;
+
+                LEAD item = baseApp.GetItemById((Int32)Session["IdLead"]);
+                USUARIO usuarioLogado = (USUARIO)Session["UserCredentials"];
+                LEAD_ANOTACAO coment = new LEAD_ANOTACAO();
+                LeadAnotacaoViewModel vm = Mapper.Map<LEAD_ANOTACAO, LeadAnotacaoViewModel>(coment);
+                vm.LEAN_DT_ANOTACAO = DateTime.Now;
+                vm.LEAN_IN_ATIVO = 1;
+                vm.LEAD_CD_ID = item.LEAD_CD_ID;
+                vm.USUARIO = usuarioLogado;
+                vm.USUA_CD_ID = usuarioLogado.USUA_CD_ID;
+
+                // Grava Acesso
+                ControleAcessoMetodo grava = new ControleAcessoMetodo(aceApp);
+                Int32 voltaX = grava.GravaAcesso(usuario.USUA_CD_ID, usuario.ASSI_CD_ID, "LEAD_ANOTACAO_INCLUIR", "Administra", "IncluirAnotacaoLead");
+                return View(vm);
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Lead";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Administra", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return RedirectToAction("TrataExcecao", "BaseAdmin");
+            }
+        }
+
+        [HttpPost]
+        public ActionResult IncluirAnotacaoLead(LeadAnotacaoViewModel vm)
+        {
+            if ((String)Session["Ativa"] == null)
+            {
+                return RedirectToAction("Logout", "ControleAcesso");
+            }
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    // Sanitização
+                    vm.LEAN_TX_ANOTACAO = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(vm.LEAN_TX_ANOTACAO);
+
+                    // Executa a operação
+                    LEAD_ANOTACAO item = Mapper.Map<LeadAnotacaoViewModel, LEAD_ANOTACAO>(vm);
+                    USUARIO usuarioLogado = (USUARIO)Session["UserCredentials"];
+                    LEAD not = baseApp.GetItemById((Int32)Session["IdLead"]);
+
+                    item.USUARIO = null;
+                    not.LEAD_ANOTACAO.Add(item);
+                    Int32 volta = baseApp.ValidateEdit(not, not, usuarioLogado);
+
+                    // Sucesso
+                    Session["NivelLead"] = 3;
+                    return RedirectToAction("VoltarAnexoLead");
+                }
+                catch (Exception ex)
+                {
+                    ViewBag.Message = ex.Message;
+                    Session["TipoVolta"] = 2;
+                    Session["VoltaExcecao"] = "Lead";
+                    Session["Excecao"] = ex;
+                    Session["ExcecaoTipo"] = ex.GetType().ToString();
+                    GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                    Int32 voltaX = grava.GravarLogExcecao(ex, "Administra", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                    return RedirectToAction("TrataExcecao", "BaseAdmin");
+                }
+            }
+            else
+            {
+                return View(vm);
+            }
+        }
+
+        [HttpGet]
+        public ActionResult ExcluirAnotacaoLead(Int32 id)
+        {
+            try
+            {
+                // Verifica se tem usuario logado
+                USUARIO usuario = new USUARIO();
+                if ((String)Session["Ativa"] == null)
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+                if ((USUARIO)Session["UserCredentials"] != null)
+                {
+                    usuario = (USUARIO)Session["UserCredentials"];
+                }
+                else
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+                Int32 idAss = (Int32)Session["IdAssinante"];
+
+                USUARIO usuarioLogado = (USUARIO)Session["UserCredentials"];
+                LEAD_ANOTACAO item = baseApp.GetAnotacaoById(id);
+                item.LEAN_IN_ATIVO = 0;
+                Int32 volta = baseApp.ValidateEditAnotacao(item);
+                Session["LeadAlterada"] = 1;
+                Session["NivelLead"] = 3;
+
+                return RedirectToAction("VoltarAnexoLead");
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Lead";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Administra", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return RedirectToAction("TrataExcecao", "BaseAdmin");
+            }
+        }
+
+        [HttpGet]
+        public ActionResult EditarAnotacaoLead(Int32 id)
+        {
+            try
+            {
+                // Verifica se tem usuario logado
+                USUARIO usuario = new USUARIO();
+                if ((String)Session["Ativa"] == null)
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+                if ((USUARIO)Session["UserCredentials"] != null)
+                {
+                    usuario = (USUARIO)Session["UserCredentials"];
+                }
+                else
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+                Int32 idAss = (Int32)Session["IdAssinante"];
+
+                // Prepara view
+                Session["NivelLead"] = 3;
+                LEAD_ANOTACAO item = baseApp.GetAnotacaoById(id);
+                LeadAnotacaoViewModel vm = Mapper.Map<LEAD_ANOTACAO, LeadAnotacaoViewModel>(item);
+
+                // Grava Acesso
+                ControleAcessoMetodo grava = new ControleAcessoMetodo(aceApp);
+                Int32 voltaX = grava.GravaAcesso(usuario.USUA_CD_ID, usuario.ASSI_CD_ID, "LEAD_ANOTACAO_EDITAR", "Administra", "EditarAnotacaoLead");
+                return View(vm);
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Lead";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Administra", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return RedirectToAction("TrataExcecao", "BaseAdmin");
+            }
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult EditarAnotacaoLead(LeadAnotacaoViewModel vm)
+        {
+            if ((String)Session["Ativa"] == null)
+            {
+                return RedirectToAction("Logout", "ControleAcesso");
+            }
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    // Sanitização
+                    vm.LEAN_TX_ANOTACAO = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(vm.LEAN_TX_ANOTACAO);
+
+                    // Executa a operação
+                    USUARIO usuarioLogado = (USUARIO)Session["UserCredentials"];
+                    LEAD_ANOTACAO item = Mapper.Map<LeadAnotacaoViewModel, LEAD_ANOTACAO>(vm);
+                    LEAD copa = baseApp.GetItemById(item.LEAD_CD_ID);
+                    Int32 volta = baseApp.ValidateEditAnotacao(item);
+
+                    // Verifica retorno
+                    Session["LeadAlterada"] = 1;
+                    Session["NivelLead"] = 3;
+                    return RedirectToAction("VoltarAnexoLead");
+                }
+                catch (Exception ex)
+                {
+                    ViewBag.Message = ex.Message;
+                    Session["TipoVolta"] = 2;
+                    Session["VoltaExcecao"] = "Lead";
+                    Session["Excecao"] = ex;
+                    Session["ExcecaoTipo"] = ex.GetType().ToString();
+                    GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                    Int32 voltaX = grava.GravarLogExcecao(ex, "Administra", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                    return RedirectToAction("TrataExcecao", "BaseAdmin");
+                }
+            }
+            else
+            {
+                return View(vm);
+            }
+        }
+
+        public ActionResult GerarRelatorioLead()
+        {
+            try
+            {
+                if ((String)Session["Ativa"] == null)
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+
+                // Prepara geração
+                CONFIGURACAO conf = CarregaConfiguracaoGeral();
+                Int32 idAss = (Int32)Session["IdAssinante"];
+                String data = DateTime.Today.Date.ToShortDateString();
+                data = data.Substring(0, 2) + data.Substring(3, 2) + data.Substring(6, 4);
+
+                String nomeRel = "LeadLista" + "_" + data + ".pdf";
+                List<LEAD> lista = new List<LEAD>();
+                if (Session["ListaLead"] != null)
+                {
+                    lista = (List<LEAD>)Session["ListaLead"];
+                }
+                else
+                {
+                    lista = CarregarLead().ToList();
+                }
+                lista = lista.OrderBy(p => p.LEAD_DT_ENTRADA).ToList();
+
+                Font meuFont = FontFactory.GetFont("Arial", 8, iTextSharp.text.Font.NORMAL, BaseColor.BLACK);
+                Font meuFont1 = FontFactory.GetFont("Arial", 9, iTextSharp.text.Font.NORMAL, BaseColor.BLACK);
+                Font meuFont2 = FontFactory.GetFont("Arial", 14, iTextSharp.text.Font.NORMAL, BaseColor.BLACK);
+
+                // Cabeçalho
+                PdfPTable headerTable = new PdfPTable(new float[] { 20f, 700f });
+                headerTable.WidthPercentage = 100;
+                headerTable.HorizontalAlignment = 1;
+                headerTable.SpacingBefore = 1f;
+                headerTable.SpacingAfter = 1f;
+
+                if (conf.CONF_IN_LOGO_EMPRESA == 1)
+                {
+                    PdfPCell cell1 = new PdfPCell();
+                    cell1.Border = 0;
+                    cell1.Colspan = 1;
+                    Image image = null;
+                    EMPRESA empresa = empApp.GetItemByAssinante(idAss);
+
+                    // Verificamos se o caminho do logo existe
+                    if (!string.IsNullOrEmpty(empresa.EMPR_AQ_LOGO))
+                    {
+                        // 1. Removemos o "~" para obter o caminho interno (ex: Imagens/1/Logos/logo.png)
+                        string blobPath = empresa.EMPR_AQ_LOGO.Replace("~", "");
+
+                        // 2. Montamos a URL usando as configurações de Storage que você já tem
+                        // Recomendo usar as variáveis do seu objeto 'conf' para ficar dinâmico
+                        string storageUrl = "https://rtistoragemain.blob.core.windows.net/rti-datacontainer/";
+
+                        // Garante que a URL termine com barra antes de concatenar
+                        if (!storageUrl.EndsWith("/")) storageUrl += "/";
+
+                        string fullUrl = storageUrl + blobPath;
+
+                        // 3. iTextSharp busca a imagem diretamente da URL do Azure
+                        image = Image.GetInstance(fullUrl);
+                    }
+                    else
+                    {
+                        // Caso não tenha logo, você pode carregar um placeholder local ou ignorar
+                        image = Image.GetInstance(Server.MapPath("~/Imagens/Base/logo_padrao.png"));
+                    }
+
+                    image.ScaleAbsolute(50, 50);
+                    cell1.AddElement(image);
+                    cell1.Border = PdfPCell.BOTTOM_BORDER;
+                    headerTable.AddCell(cell1);
+
+                    cell1 = new PdfPCell(new Paragraph("Leads", meuFont2))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_CENTER
+                    };
+                    cell1.Border = 0;
+                    cell1.Colspan = 1;
+                    cell1.Border = PdfPCell.BOTTOM_BORDER;
+                    headerTable.AddCell(cell1);
+                }
+                else
+                {
+                    PdfPCell cell2 = new PdfPCell(new Paragraph("Leads", meuFont2))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_CENTER
+                    };
+                    cell2.Border = 0;
+                    cell2.Colspan = 2;
+                    headerTable.AddCell(cell2);
+
+                    cell2 = new PdfPCell(new Paragraph(" ", meuFont))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    cell2.Colspan = 2;
+                    cell2.Border = PdfPCell.BOTTOM_BORDER;
+                    headerTable.AddCell(cell2);
+                }
+
+                // Rodape
+                PdfPTable footerTable = new PdfPTable(1);
+                footerTable.WidthPercentage = 100;
+                footerTable.HorizontalAlignment = 1;
+                footerTable.SpacingBefore = 1f;
+                footerTable.SpacingAfter = 1f;
+
+                PdfPCell cell = new PdfPCell();
+                cell.Border = PdfPCell.TOP_BORDER;
+                cell = new PdfPCell(new Paragraph("Gerado por WebDoctor 1.0 em " + DateTime.Today.Date.ToLongDateString(), meuFont));
+                footerTable.AddCell(cell);
+
+                // Cria documento
+                Document pdfDoc = new Document(PageSize.A4.Rotate(), 10, 10, 60, 40);
+                PdfWriter pdfWriter = PdfWriter.GetInstance(pdfDoc, Response.OutputStream);
+                pdfWriter.PageEvent = new CustomPageEventHelper(headerTable, footerTable);
+                pdfDoc.Open();
+
+                Paragraph line1 = new Paragraph("  ");
+                pdfDoc.Add(line1);
+
+                // Grid
+                PdfPTable table = new PdfPTable(new float[] { 60f, 160f, 80f, 60f, 60f, 110f, 60f, 80f });
+                table.WidthPercentage = 100;
+                table.HorizontalAlignment = 0;
+                table.SpacingBefore = 1f;
+                table.SpacingAfter = 1f;
+                table.HeaderRows = 1;
+
+                cell = new PdfPCell(new Paragraph("Data", meuFont))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph("Nome", meuFont))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph("E-Mail", meuFont))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph("Celular", meuFont))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph("Status", meuFont))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph("Cidade", meuFont))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_LEFT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph("UF", meuFont))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_RIGHT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                table.AddCell(cell);
+                cell = new PdfPCell(new Paragraph("Identificador", meuFont))
+                {
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    HorizontalAlignment = Element.ALIGN_RIGHT
+                };
+                cell.Colspan = 1;
+                cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+
+                foreach (LEAD item in lista)
+                {
+                    if (item.LEAD_DT_ENTRADA != null)
+                    {
+                        cell = new PdfPCell(new Paragraph(item.LEAD_DT_ENTRADA.Value.ToShortDateString(), meuFont))
+                        {
+                            VerticalAlignment = Element.ALIGN_MIDDLE,
+                            HorizontalAlignment = Element.ALIGN_LEFT
+                        };
+                        table.AddCell(cell);
+                    }
+                    else
+                    {
+                        cell = new PdfPCell(new Paragraph("-", meuFont))
+                        {
+                            VerticalAlignment = Element.ALIGN_MIDDLE,
+                            HorizontalAlignment = Element.ALIGN_LEFT
+                        };
+                        table.AddCell(cell);
+                    }
+
+                    cell = new PdfPCell(new Paragraph(item.LEAD_NM_NOME, meuFont))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    table.AddCell(cell);
+
+                    cell = new PdfPCell(new Paragraph(item.LEAD_EM_EMAIL, meuFont))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    table.AddCell(cell);
+
+                    cell = new PdfPCell(new Paragraph(item.LEAD_NR_CELULAR, meuFont))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    table.AddCell(cell);
+
+                    if (item.LEAD_IN_STATUS == 1)
+                    {
+                        cell = new PdfPCell(new Paragraph("Processamento", meuFont))
+                        {
+                            VerticalAlignment = Element.ALIGN_MIDDLE,
+                            HorizontalAlignment = Element.ALIGN_LEFT
+                        };
+                        table.AddCell(cell);
+                    }
+                    else if (item.LEAD_IN_STATUS == 2)
+                    {
+                        cell = new PdfPCell(new Paragraph("Encerrado", meuFont))
+                        {
+                            VerticalAlignment = Element.ALIGN_MIDDLE,
+                            HorizontalAlignment = Element.ALIGN_LEFT
+                        };
+                        table.AddCell(cell);
+                    }
+                    else if (item.LEAD_IN_STATUS == 3)
+                    {
+                        cell = new PdfPCell(new Paragraph("Pendente", meuFont))
+                        {
+                            VerticalAlignment = Element.ALIGN_MIDDLE,
+                            HorizontalAlignment = Element.ALIGN_LEFT
+                        };
+                        table.AddCell(cell);
+                    }
+                    else if (item.LEAD_IN_STATUS == 4)
+                    {
+                        cell = new PdfPCell(new Paragraph("Cancelado", meuFont))
+                        {
+                            VerticalAlignment = Element.ALIGN_MIDDLE,
+                            HorizontalAlignment = Element.ALIGN_LEFT
+                        };
+                        table.AddCell(cell);
+                    }
+                    else if (item.LEAD_IN_STATUS == 0)
+                    {
+                        cell = new PdfPCell(new Paragraph("Aguardando", meuFont))
+                        {
+                            VerticalAlignment = Element.ALIGN_MIDDLE,
+                            HorizontalAlignment = Element.ALIGN_LEFT
+                        };
+                        table.AddCell(cell);
+                    }
+
+                    cell = new PdfPCell(new Paragraph(item.LEAD_NM_CIDADE, meuFont))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    table.AddCell(cell);
+
+                    cell = new PdfPCell(new Paragraph(item.UF.UF_SG_SIGLA, meuFont))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    table.AddCell(cell);
+
+                    cell = new PdfPCell(new Paragraph(item.LEAD_GU_IDENTIFICADOR, meuFont))
+                    {
+                        VerticalAlignment = Element.ALIGN_MIDDLE,
+                        HorizontalAlignment = Element.ALIGN_LEFT
+                    };
+                    table.AddCell(cell);
+                }
+                pdfDoc.Add(table);
+
+                // Finaliza
+                pdfWriter.CloseStream = false;
+                pdfDoc.Close();
+                Response.Buffer = true;
+                Response.ContentType = "application/pdf";
+                Response.AddHeader("content-disposition", "attachment;filename=" + nomeRel);
+                Response.Cache.SetCacheability(HttpCacheability.NoCache);
+                Response.Write(pdfDoc);
+                Response.End();
+
+                Session["NivelLead"] = 1;
+                return RedirectToAction("MontarTelaLead");
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Lead";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Administra", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return RedirectToAction("TrataExcecao", "BaseAdmin");
+            }
+        }
+
+        [HttpGet]
+        public ActionResult MontarTelaAviso()
+        {
+            try
+            {
+                // Verifica se tem usuario logado
+                USUARIO usuario = new USUARIO();
+                if ((String)Session["Ativa"] == null)
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+                if ((USUARIO)Session["UserCredentials"] != null)
+                {
+                    usuario = (USUARIO)Session["UserCredentials"];
+                }
+                else
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+                Int32 idAss = (Int32)Session["IdAssinante"];
+                Session["ModuloAtual"] = "Avisos";
+
+                // Carrega listas
+                if ((List<MENSAGEM_FABRICANTE>)Session["ListaMensFab"] == null)
+                {
+                    List<MENSAGEM_FABRICANTE> listaMF = usuApp.GetAllMensFab(idAss).Where(p => p.MEFA_IN_ATIVO == 1 & p.MEFA_DT_VALIDADE.Date > DateTime.Today.Date).OrderBy(p => p.MEFA_NM_TITULO).ToList();
+                    Session["ListaMensFab"] = listaMF;
+                }
+                ViewBag.Listas = (List<MENSAGEM_FABRICANTE>)Session["ListaMensFab"];
+                List<SelectListItem> tipo = new List<SelectListItem>();
+                tipo.Add(new SelectListItem() { Text = "Informação", Value = "1" });
+                tipo.Add(new SelectListItem() { Text = "Aviso", Value = "2" });
+                ViewBag.Tipo = new SelectList(tipo, "Value", "Text");
+                Session["Aviso"] = null;
+
+                // Indicadores
+                ViewBag.Perfil = usuario.PERFIL.PERF_SG_SIGLA;
+
+                if (Session["MensAviso"] != null)
+                {
+                    if ((Int32)Session["MensAviso"] == 1)
+                    {
+                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0016", CultureInfo.CurrentCulture));
+                    }
+                    if ((Int32)Session["MensAviso"] == 61)
+                    {
+                        TempData["MensagemAcerto"] = (String)Session["MsgCRUD"];
+                        TempData["TemMensagem"] = 1;
+                    }
+                }
+                // Grava Acesso
+                ControleAcessoMetodo grava = new ControleAcessoMetodo(aceApp);
+                Int32 voltaX = grava.GravaAcesso(usuario.USUA_CD_ID, usuario.ASSI_CD_ID, "AVISO_FABRICANTE", "Administra", "MontarTelaAviso");
+
+                // Abre view
+                Session["MensAviso"] = null;
+                Session["VoltaAviso"] = 1;
+                MENSAGEM_FABRICANTE objeto = new MENSAGEM_FABRICANTE();
+                return View(objeto);
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Aviso";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Administra", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return RedirectToAction("TrataExcecao", "BaseAdmin");
+            }
+        }
+
+        [HttpGet]
+        public ActionResult IncluirAviso()
+        {
+            try
+            {
+                // Verifica se tem usuario logado
+                USUARIO usuario = new USUARIO();
+                if ((String)Session["Ativa"] == null)
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+                if ((USUARIO)Session["UserCredentials"] != null)
+                {
+                    usuario = (USUARIO)Session["UserCredentials"];
+                }
+                else
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+                Int32 idAss = (Int32)Session["IdAssinante"];
+                Session["ModuloAtual"] = "Avisos - Inclusão";
+
+                // Prepara listas
+                List<SelectListItem> tipo = new List<SelectListItem>();
+                tipo.Add(new SelectListItem() { Text = "Informação", Value = "1" });
+                tipo.Add(new SelectListItem() { Text = "Aviso", Value = "2" });
+                ViewBag.Tipo = new SelectList(tipo, "Value", "Text");
+
+                // Grava Acesso
+                ControleAcessoMetodo grava = new ControleAcessoMetodo(aceApp);
+                Int32 voltaX = grava.GravaAcesso(usuario.USUA_CD_ID, usuario.ASSI_CD_ID, "AVISO_INCLUIR", "Administra", "IncluirAviso");
+
+                // Prepara view
+                Session["MensAviso"] = null;
+                MENSAGEM_FABRICANTE item = new MENSAGEM_FABRICANTE();
+                MensagemFabricanteViewModel vm = Mapper.Map<MENSAGEM_FABRICANTE, MensagemFabricanteViewModel>(item);
+                vm.MEFA_IN_ATIVO = 1;
+                vm.MEFA_DT_CADASTRO = DateTime.Today.Date;
+                vm.MEFA_DT_VALIDADE = DateTime.Today.Date.AddDays(30);
+                vm.MEFA_IN_SISTEMA = 6;
+                return View(vm);
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Aviso";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Administra", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return RedirectToAction("TrataExcecao", "BaseAdmin");
+            }
+        }
+
+        [HttpPost]
+        [ValidateInput(false)]
+        public ActionResult IncluirAviso(MensagemFabricanteViewModel vm)
+        {
+            if ((String)Session["Ativa"] == null)
+            {
+                return RedirectToAction("Logout", "ControleAcesso");
+            }
+            Int32 idAss = (Int32)Session["IdAssinante"];
+            List<SelectListItem> tipo = new List<SelectListItem>();
+            tipo.Add(new SelectListItem() { Text = "Informação", Value = "1" });
+            tipo.Add(new SelectListItem() { Text = "Aviso", Value = "2" });
+            ViewBag.Tipo = new SelectList(tipo, "Value", "Text");
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    // Sanitização
+                    vm.MEFA_NM_TITULO = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(vm.MEFA_NM_TITULO);
+                    vm.MEFA_TX_TEXTO = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(vm.MEFA_TX_TEXTO);
+                    vm.MEFA_LK_LINK = vm.MEFA_NM_TITULO;
+
+                    // Critica
+                    if (vm.MEFA_DT_VALIDADE <= vm.MEFA_DT_CADASTRO)
+                    {
+                        Session["MensAviso"] = 15;
+                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0237", CultureInfo.CurrentCulture));
+                        return View(vm);
+                    }
+
+                    // Preparação
+                    MENSAGEM_FABRICANTE item = Mapper.Map<MensagemFabricanteViewModel, MENSAGEM_FABRICANTE>(vm);
+                    USUARIO usuario = (USUARIO)Session["UserCredentials"];
+
+                    // Processa
+                    Int32 volta = usuApp.ValidateCreateMensFab(item);
+
+                    // Sucesso
+                    Session["ListaAviso"] = null;
+                    Session["IdAviso"] = item.MEFA_CD_ID;
+
+                    // Mensagem do CRUD
+                    Session["MsgCRUD"] = "O aviso " + item.MEFA_NM_TITULO.ToUpper() + " foi incluído com sucesso";
+                    Session["MensAviso"] = 61;
+                    return RedirectToAction("MontarTelaAviso");
+                }
+                catch (Exception ex)
+                {
+                    ViewBag.Message = ex.Message;
+                    Session["TipoVolta"] = 2;
+                    Session["VoltaExcecao"] = "Aviso";
+                    Session["Excecao"] = ex;
+                    Session["ExcecaoTipo"] = ex.GetType().ToString();
+                    GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                    Int32 voltaX = grava.GravarLogExcecao(ex, "Administra", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                    return RedirectToAction("TrataExcecao", "BaseAdmin");
+                }
+            }
+            else
+            {
+                return View(vm);
+            }
+        }
+
+        [HttpGet]
+        public ActionResult EditarAviso(Int32 id)
+        {
+            try
+            {
+                // Verifica se tem usuario logado
+                USUARIO usuario = new USUARIO();
+                if ((String)Session["Ativa"] == null)
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+                if ((USUARIO)Session["UserCredentials"] != null)
+                {
+                    usuario = (USUARIO)Session["UserCredentials"];
+                }
+                else
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+                Int32 idAss = (Int32)Session["IdAssinante"];
+                Session["ModuloAtual"] = "Aviso - Edição";
+
+                MENSAGEM_FABRICANTE item = usuApp.GetMensFabById(id);
+                Session["Aviso"] = item;
+                List<SelectListItem> tipo = new List<SelectListItem>();
+                tipo.Add(new SelectListItem() { Text = "Informação", Value = "1" });
+                tipo.Add(new SelectListItem() { Text = "Aviso", Value = "2" });
+                ViewBag.Tipo = new SelectList(tipo, "Value", "Text");
+
+                // Mensagens
+                if (Session["MensAviso"] != null)
+                {
+                    if ((Int32)Session["MensAviso"] == 61)
+                    {
+                        TempData["MensagemAcerto"] = (String)Session["MsgCRUD"];
+                        TempData["TemMensagem"] = 1;
+                    }
+                }
+
+                // Grava Acesso
+                ControleAcessoMetodo grava = new ControleAcessoMetodo(aceApp);
+                Int32 voltaX = grava.GravaAcesso(usuario.USUA_CD_ID, usuario.ASSI_CD_ID, "AVISO_EDITAR", "Administra", "EditarAviso");
+
+                Session["MensAviso"] = null;
+                Session["IdAviso"] = id;
+                MensagemFabricanteViewModel vm = Mapper.Map<MENSAGEM_FABRICANTE, MensagemFabricanteViewModel>(item);
+                return View(vm);
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Aviso";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Administra", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return RedirectToAction("TrataExcecao", "BaseAdmin");
+            }
+        }
+
+        [HttpPost]
+        [ValidateInput(false)]
+        public ActionResult EditarAviso(MensagemFabricanteViewModel vm)
+        {
+            Int32 idAss = (Int32)Session["IdAssinante"];
+            List<SelectListItem> tipo = new List<SelectListItem>();
+            tipo.Add(new SelectListItem() { Text = "Informação", Value = "1" });
+            tipo.Add(new SelectListItem() { Text = "Aviso", Value = "2" });
+            ViewBag.Tipo = new SelectList(tipo, "Value", "Text");
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    // Sanitização
+                    vm.MEFA_NM_TITULO = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(vm.MEFA_NM_TITULO);
+                    vm.MEFA_TX_TEXTO = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(vm.MEFA_TX_TEXTO);
+
+                    // Critica
+                    if (vm.MEFA_DT_VALIDADE <= vm.MEFA_DT_CADASTRO)
+                    {
+                        Session["MensAviso"] = 15;
+                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0237", CultureInfo.CurrentCulture));
+                        return View(vm);
+                    }
+
+                    // Preparação
+                    USUARIO usuario = (USUARIO)Session["UserCredentials"];
+                    MENSAGEM_FABRICANTE item = Mapper.Map<MensagemFabricanteViewModel, MENSAGEM_FABRICANTE>(vm);
 
 
+                    // Processa
+                    Int32 volta = usuApp.ValidateEditMensFab(item);
 
+                    // Sucesso
+                    Session["ListaAviso"] = null;
 
+                    // Mensagem do CRUD
+                    Session["MsgCRUD"] = "O aviso " + item.MEFA_NM_TITULO.ToUpper() + " foi alterado com sucesso";
+                    Session["MensAviso"] = 61;
 
+                    return RedirectToAction("MontarTelaAviso");
+                }
+                catch (Exception ex)
+                {
+                    ViewBag.Message = ex.Message;
+                    Session["TipoVolta"] = 2;
+                    Session["VoltaExcecao"] = "Aviso";
+                    Session["Excecao"] = ex;
+                    Session["ExcecaoTipo"] = ex.GetType().ToString();
+                    GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                    Int32 voltaX = grava.GravarLogExcecao(ex, "Administra", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                    return RedirectToAction("TrataExcecao", "BaseAdmin");
+                }
+            }
+            else
+            {
+                return View(vm);
+            }
+        }
 
+        [HttpGet]
+        public ActionResult ExcluirAviso(Int32 id)
+        {
+            try
+            {
+                // Verifica se tem usuario logado
+                USUARIO usuario = new USUARIO();
+                if ((String)Session["Ativa"] == null)
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+                if ((USUARIO)Session["UserCredentials"] != null)
+                {
+                    usuario = (USUARIO)Session["UserCredentials"];
+                }
+                else
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+                Int32 idAss = (Int32)Session["IdAssinante"];
 
+                // Processa
+                MENSAGEM_FABRICANTE item = usuApp.GetMensFabById(id);
+                item.MEFA_IN_ATIVO = 0;
+                Int32 volta = usuApp.ValidateEditMensFab(item);
+                Session["ListaAviso"] = null;
+
+                // Mensagem do CRUD
+                Session["MsgCRUD"] = "O aviso " + item.MEFA_NM_TITULO.ToUpper() + " foi excluído com sucesso";
+                Session["MensAviso"] = 61;
+
+                return RedirectToAction("MontarTelaAviso");
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Aviso";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Administra", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return RedirectToAction("TrataExcecao", "BaseAdmin");
+            }
+        }
 
 
 
@@ -2448,6 +3850,60 @@ namespace GEDSys_Presentation.Controllers
             return Json(resultados, JsonRequestBehavior.AllowGet);
         }
 
+        [HttpPost]
+        public async Task<JsonResult> PesquisaCEP_JavascriptNova(String cep, int tipoEnd)
+        {
+            // 1. Garante TLS 1.2
+            System.Net.ServicePointManager.SecurityProtocol = System.Net.SecurityProtocolType.Tls12 | System.Net.SecurityProtocolType.Tls11 | System.Net.SecurityProtocolType.Tls;
+
+            cep = CrossCutting.ValidarNumerosDocumentos.RemoveNaoNumericos(cep);
+            var url = $"https://viacep.com.br/ws/{cep}/json/";
+            var hash = new Hashtable();
+
+            try
+            {
+                using (var client = new HttpClient())
+                {
+                    // 2. Faz a requisição e obtém o JSON
+                    var response = await client.GetStringAsync(url);
+
+                    // 3. Deserializa o JSON para o objeto
+                    var end = JsonConvert.DeserializeObject<CepData>(response);
+
+                    if (end.erro || string.IsNullOrEmpty(end.logradouro))
+                    {
+                        hash.Add("Sucesso", 0); // CEP não encontrado
+                    }
+                    else
+                    {
+                        // 4. Mapeia o resultado (sua lógica original)
+                        if (tipoEnd == 1)
+                        {
+                            hash.Add("Sucesso", 1);
+                            hash.Add("LEAD_NM_ENDERECO", end.logradouro);
+                            hash.Add("LEAD_NR_NUMERO", end.complemento);
+                            hash.Add("LEAD_NM_BAIRRO", end.bairro);
+                            hash.Add("LEAD_NM_CIDADE", end.localidade);
+                            hash.Add("UF_CD_ID", pacApp.GetUFbySigla(end.uf).UF_CD_ID);
+
+                            // Retorna o CEP formatado
+                            // cep já está limpo, o ViaCEP retorna no formato XXXXX-XXX
+                            hash.Add("LEAD_NR_CEP", end.cep.Replace("-", ""));
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                // Logar o erro (ex: falha de rede ou JSON inválido)
+                hash.Clear();
+                hash.Add("Sucesso", 0);
+                // Opcionalmente: logar ex.Message
+            }
+
+            Session["VoltaCEP"] = 2;
+            return Json(hash);
+        }
 
 
 

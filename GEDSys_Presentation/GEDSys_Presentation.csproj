@@ -578,6 +578,7 @@
     <Compile Include="ViewModels\LeadViewModel.cs" />
     <Compile Include="ViewModels\LeadAnexoViewModel.cs" />
     <Compile Include="ViewModels\LeadAnotacaoViewModel.cs" />
+    <Compile Include="ViewModels\MensagemFabricanteViewModel.cs" />
     <Compile Include="ViewModels\VacinaViewModel.cs" />
     <Compile Include="ViewModels\LocacaoAnexoViewModel.cs" />
     <Compile Include="ViewModels\ContratoLocacaoViewModel.cs" />
@@ -5540,6 +5541,14 @@
     <Content Include="Views\Noticia\VerNoticiaEspecial.cshtml" />
     <Content Include="Views\Administra\MontarTelaLead.cshtml" />
     <Content Include="Views\Administra\IncluirLead.cshtml" />
+    <Content Include="Views\Administra\EditarLead.cshtml" />
+    <Content Include="Views\Administra\VerAnexoLead.cshtml" />
+    <Content Include="Views\Administra\VerAnexoLeadAudio.cshtml" />
+    <Content Include="Views\Administra\IncluirAnotacaoLead.cshtml" />
+    <Content Include="Views\Administra\EditarAnotacaoLead.cshtml" />
+    <Content Include="Views\Administra\MontarTelaAviso.cshtml" />
+    <Content Include="Views\Administra\IncluirAviso.cshtml" />
+    <Content Include="Views\Administra\EditarAviso.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="BaseAdmin\BaseConhecimento\" />
@@ -6782,7 +6791,6 @@
     <Folder Include="Imagens\Assinante\90\Foto\" />
     <Folder Include="Imagens\Assinante\90\Pagamentos\" />
     <Folder Include="Models\" />
-    <Folder Include="Views\Fumil\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff2" />

@@ -53,6 +53,8 @@ namespace ApplicationServices.Interfaces
 
         List<MENSAGEM_FABRICANTE> GetAllMensFab(Int32 idAss);
         MENSAGEM_FABRICANTE GetMensFabById(Int32 id);
+        Int32 ValidateCreateMensFab(MENSAGEM_FABRICANTE fab);
+        Int32 ValidateEditMensFab(MENSAGEM_FABRICANTE fab);
 
         List<USUARIO_LOGIN> GetAllLogin(Int32 idAss);
         USUARIO_LOGIN GetLoginById(Int32 id);

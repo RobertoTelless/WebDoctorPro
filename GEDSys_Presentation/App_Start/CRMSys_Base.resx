@@ -763,7 +763,7 @@
     <value>Já existe uma categoria de ckiente com este número de ordem</value>
   </data>
   <data name="M0237" xml:space="preserve">
-    <value>A data de validade não pode ser anterior à data de criação da pesquisa</value>
+    <value>A data de validade não pode ser anterior à data de cadastro</value>
   </data>
   <data name="M0238" xml:space="preserve">
     <value>Impossível excluir esta pergunta. Já existem respostas associadas a ela.</value>

@@ -1,7 +1,465 @@
-﻿
+﻿@using Presentation.Extensions
+@model ERP_Condominios_Solution.ViewModels.LeadViewModel
 @{
-    ViewBag.Title = "IncluirLead";
+    Layout = "~/Views/Shared/_Layout_Admin.cshtml";
+    ViewBag.Title = "WebDoctor - Lead - Inclusão";
+    ViewBag.MetaDescription = "WebDoctor - Lead - Inclusão de Lead";
+    ViewBag.MetaKeywords = "WebDoctor, Lead";
 }
 
-<h2>IncluirLead</h2>
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="page-title">
+        <h3 class="title">Médicos</h3>
+        <br />
+        <ol class="breadcrumb">
+            <li>
+                <a href="@Url.Action("MontarTelaAdministra", "Administra")">Dashboard</a>
+            </li>
+            <li>
+                <a href="@Url.Action("MontarTelaLead", "Administra")">Leads</a>
+            </li>
+            <li class="active">
+                <strong>Lead - Inclusão</strong>
+            </li>
+        </ol>
+        <br />
+    </div>
 
+    <div class="row">
+        <div class="col-lg-12 col-md-12 col-xs-12">
+            <div class="col-lg-12 col-md-12 col-xs-12 ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>Lead - Inclusão</h5>
+                </div>
+                <div class="ibox-content">
+                    @Html.AntiForgeryToken()
+                    @if (!ViewData.ModelState.IsValid)
+                    {
+                        <div class="alert alert-danger">
+                            <button type="button" class="close" data-dismiss="alert">Fechar</button>
+                            @Html.ValidationSummary(false, "", new { @class = "text-danger" })
+                        </div>
+                    }
+                    <div class="tabs-container">
+                        @using (Html.BeginForm("IncluirLead", "Administra", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal", @id = "pwd-container1" }))
+                        {
+                            <div class="form-group">
+                                <br />
+                                <div class="col-lg-12 col-md-12 col-xs-12">
+                                    @Html.ButtonActionSubmit(text: "Confirmar Inclusão do Lead", htmlAttributes: new { id = "basictoast", @class = "btn-loading show-spinner" })
+                                    @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaLead", controller: "Administra", htmlAttributes: new { @class = "show-spinner" })  
+                                    <span id="loadingIndicator" style="display: none; margin-left: 10px; color: #007bff;">
+                                        <i class="fa fa-spinner fa-spin"></i> Processando...
+                                    </span>
+                                </div>
+                            </div>
+                            
+                            <ul class="nav nav-tabs">
+                                <li class="active"><a data-toggle="tab" href="#tab-1">Dados do Lead</a></li>
+                            </ul>   
+                            <div class="tab-content">
+                                @*Dados Gerais*@
+                                <div id="tab-1" class="tab-pane active">
+                                    <div class="panel-body">
+                                        <div class="row">
+                                            <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Lead</h4>
+                                            <div class="form-group" style=" margin-left: -15px; margin-right: -15px;"> 
+                                                <div class="col-lg-2 col-md-2 col-xs-12">
+                                                    Data de Criação
+                                                    @Html.TextBoxFor(m => m.LEAD_DT_ENTRADA, "{0:dd/MM/yyyy}", new { @class = "form-control", @tabindex = "-1", @readonly = "readonly", @style = "color: green; font-weight: bold" })
+                                                </div>
+                                                <div class="col-lg-3 col-md-3 col-xs-12">
+                                                    Identificador
+                                                    @Html.TextBoxFor(m => m.LEAD_GU_IDENTIFICADOR, new { @class = "form-control", @tabindex = "-1", @readonly = "readonly", @style = "color: green; font-weight: bold" })
+                                                </div>
+                                            </div>               
+                                        </div>
+                                        <div class="row">
+                                            <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Identificação</h4>
+                                            <div class="form-group" style=" margin-left: -15px; margin-right: -15px;"> 
+                                                <div class="col-lg-4 col-md-4 col-xs-12">
+                                                    @Html.HiddenFor(m => m.LEAD_IN_ATIVO)
+                                                    @Html.HiddenFor(m => m.LEAD_IN_STATUS)
+                                                    @Html.HiddenFor(m => m.LEAD_GU_IDENTIFICADOR)
+                                                    @Html.HiddenFor(m => m.LEAD_DT_ENTRADA)
+                                                    @Html.HiddenFor(m => m.LEAD_IN_SISTEMA)
+                                                    @Html.HiddenFor(m => m.LEAD_IN_ENVIOS)
+                                                    Nome*
+                                                    @Html.TextBoxFor(m => m.LEAD_NM_NOME, new { @class = "form-control", autofocus = true, data_toggle = "popover", data_content = "Informe o nome completo associado ao lead", data_trigger="hover", data_placement="top" })
+                                                    @Html.ValidationMessageFor(m => m.LEAD_NM_NOME, "", new { @style = "color:red" })
+                                                </div>
+                                                <div class="col-lg-2 col-md-2 col-xs-12">
+                                                    CPF
+                                                    @Html.TextBoxFor(m => m.LEAD_NR_CPF, new { @class = "form-control", autofocus = true, @id = "cpf" , data_toggle = "popover", data_content = "Informe o CPF associado ao lead", data_trigger="hover", data_placement="top" })
+                                                    @Html.ValidationMessageFor(m => m.LEAD_NR_CPF, "", new { @style = "color:red" })
+                                                </div>
+                                                <div class="col-lg-2 col-md-2 col-xs-12">
+                                                    CNPJ
+                                                    @Html.TextBoxFor(m => m.LEAD_NR_CNPJ, new { @class = "form-control", autofocus = true, @id = "cnpj" , data_toggle = "popover", data_content = "Informe o CNPJ associado ao lead", data_trigger="hover", data_placement="top" })
+                                                    @Html.ValidationMessageFor(m => m.LEAD_NR_CNPJ, "", new { @style = "color:red" })
+                                                </div>
+                                                <div class="col-lg-2 col-md-2 col-xs-12">
+                                                    Data de Nascimento
+                                                    @Html.TextBoxFor(m => m.LEAD_DT_NASCIMENTO, "{0:dd/MM/yyyy}", new { @class = "form-control date-picker", autofocus = true, @id = "dn" })
+                                                    @Html.ValidationMessageFor(m => m.LEAD_DT_NASCIMENTO, "", new { @style = "color:red" })
+                                                </div>
+                                            </div>               
+                                        </div>                                    
+                                        <div class="row">
+                                            <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Informações de Contato</h4>
+                                            <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">                
+                                                <div class="col-lg-4 col-md-4 col-xs-12">
+                                                    E-Mail*
+                                                    @Html.TextBoxFor(m => m.LEAD_EM_EMAIL, new { @class = "form-control", autofocus = true, data_toggle = "popover", data_content = "Informe o e-mail associado ao lead", data_trigger="hover", data_placement="top" })
+                                                    @Html.ValidationMessageFor(m => m.LEAD_EM_EMAIL, "", new { @style = "color:red" })
+                                                </div>
+                                                <div class="col-lg-2 col-md-2 col-xs-12">
+                                                    Celular
+                                                    @Html.TextBoxFor(m => m.LEAD_NR_CELULAR, new { @class = "form-control", autofocus = true, @id= "cel", data_toggle = "popover", data_content = "Informe o celular associado ao lead", data_trigger="hover", data_placement="top" })
+                                                    @Html.ValidationMessageFor(m => m.LEAD_NR_CELULAR, "", new { @style = "color:red" })
+                                                </div>
+                                            </div>
+                                            <div class="form-group" style=" margin-left: -30px; margin-right: -15px;">
+                                                <div class="col-lg-12 col-md-12 col-xs-12">
+                                                    Descrição (O WebDoctor vai preencher automaticamente esse campo)
+                                                    @Html.TextAreaFor(m => m.LEAD_DS_DESCRICAO, new { @class = "form-control", style = "width: 100%; height: 100px; overflow:auto;", autofocus = true, @id="desc", data_toggle = "popover", data_content = "Informe um texto que será acrescentado à descrição gerada automaticamente", data_trigger="hover", data_placement="top" })
+                                                    @Html.ValidationMessageFor(m => m.LEAD_DS_DESCRICAO, "", new { @style = "color:red" })
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Endereço</h4>
+                                            <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                                <div class="col-lg-2 col-md-2 col-xs-12">
+                                                    CEP
+                                                    <div class="input-group">
+                                                        @Html.TextBoxFor(m => m.LEAD_NR_CEP, new { @class = "form-control", @id = "cep", autofocus = true, @onblur = "PesquisaCep($('#cep').val(), $(this), 1)" })
+                                                        @Html.ValidationMessageFor(m => m.LEAD_NR_CEP, "", new { @style = "color:red" })
+                                                        <span class="input-group-btn">
+                                                            <span class="btn btn-warning btn-sm" id="btnBuscaCep" data_toggle = "popover" data_content = "Pesquisar o CEP informado" data_trigger="hover" data_placement="top" onclick="PesquisaCep($('#cep').val(), $(this), 1)">Buscar CEP</span>
+                                                        </span>
+                                                    </div>
+                                                    <div class="col-lg-12 col-md-12 col-xs-12" style="display:none" id="cepval">
+                                                        <h5>CEP inválido</h5>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                                <div class="col-lg-4 col-md-4 col-xs-12">
+                                                    Endereço
+                                                    @Html.TextBoxFor(m => m.LEAD_NM_ENDERECO, new { @class = "form-control", @id = "endereco", autofocus = true })
+                                                    @Html.ValidationMessageFor(m => m.LEAD_NM_ENDERECO, "", new { @style = "color:red" })
+                                                </div>
+                                                <div class="col-lg-2 col-md-2 col-xs-12">
+                                                    Número
+                                                    @Html.TextBoxFor(m => m.LEAD_NR_NUMERO, new { @class = "form-control", @id = "nmr", autofocus = true })
+                                                    @Html.ValidationMessageFor(m => m.LEAD_NR_NUMERO, "", new { @style = "color:red" })
+                                                </div>
+                                                <div class="col-lg-2 col-md-2 col-xs-12">
+                                                    Complemento
+                                                    @Html.TextBoxFor(m => m.LEAD_NM_COMPLEMENTO, new { @class = "form-control", autofocus = true, @id = "complemento" })
+                                                    @Html.ValidationMessageFor(m => m.LEAD_NM_COMPLEMENTO, "", new { @style = "color:red" })
+                                                </div>
+                                            </div>
+                                            <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                                                <div class="col-lg-3 col-md-3 col-xs-12">
+                                                    Bairro
+                                                    @Html.TextBoxFor(m => m.LEAD_NM_BAIRRO, new { @class = "form-control", @id = "bairro", autofocus = true })
+                                                    @Html.ValidationMessageFor(m => m.LEAD_NM_BAIRRO, "", new { @style = "color:red" })
+                                                </div>
+                                                <div class="col-lg-3 col-md-3 col-xs-12">
+                                                    Cidade
+                                                    @Html.TextBoxFor(m => m.LEAD_NM_CIDADE, new { @class = "form-control", @id = "cidade", autofocus = true })
+                                                    @Html.ValidationMessageFor(m => m.LEAD_NM_CIDADE, "", new { @style = "color:red" })
+                                                </div>
+                                                <div class="col-lg-2 col-md-2 col-xs-12">
+                                                    UF
+                                                    @Html.DropDownListFor(m => m.UF_CD_ID, (SelectList)ViewBag.UF, "UF", new { @class = "form-control", @id = "uf", autofocus = true })
+                                                    @Html.ValidationMessageFor(m => m.UF_CD_ID, "", new { @style = "color:red" })
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <link href="~/Content/themes/base/jquery-ui.min.css" rel="stylesheet" />
+    <link href="~/Content/themes/base/all.css" rel="stylesheet" />
+    @Styles.Render("~/Content/plugins/dataTables/dataTablesStyles")
+    @Styles.Render("~/plugins/jasnyBootstrapStyles")
+    @Styles.Render("~/plugins/toastrStyles")
+
+        <style>
+        /* 1. Aumenta a largura e garante o espaço interno */
+        #toast-container > .toast {
+            width: 500px !important; 
+            max-width: 500px !important;
+            opacity: 0.95 !important;
+        }
+
+        /* 2. Remove o ícone nativo do Toastr (Background Image) */
+        #toast-container > .toast-success {
+            background-image: none !important;
+        }
+
+        /* 3. Remove ícones do FontAwesome/Inspinia injetados via ::before no Título */
+        .toast-success .toast-title::before, 
+        .toast-success .toast-title::after,
+        .toast-success::before {
+            content: none !important;
+            display: none !important;
+        }
+
+        /* 4. Ajusta o recuo do texto já que removemos o ícone */
+        .toast-success .toast-title, 
+        .toast-success .toast-message {
+            padding-left: 10px !important;
+        }
+    </style>
+
+}
+@section Scripts {
+    @Scripts.Render("~/plugins/toastr")
+    <script src="~/Scripts/jquery-ui-1.12.1.min.js"></script>
+    @Scripts.Render("~/plugins/dataTables")
+    @Scripts.Render("~/bundles/inputmask")
+    @Scripts.Render("~/plugins/jasnyBootstrap")
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.maskedinput/1.4.1/jquery.maskedinput.js"></script>
+    <script src="~/Scripts/uploadAnexo.js"></script>
+
+    <script type="text/javascript" src="~/Scripts/moment.min.js"></script>
+    <script type="text/javascript" src="~/Scripts/bootstrap.min.js"></script>
+   
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('[data-toggle="popover"]').popover();
+        });
+    </script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-toggle="popover"]'));
+            var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
+                return new bootstrap.Popover(popoverTriggerEl);
+            });
+        });
+    </script>
+
+    <!-- Handler de fechamento do browser -->
+    <script type="text/javascript">
+        window.onbeforeunload = function ()
+        {
+            navigator.sendBeacon('../ControleAcesso/LogSessionTime');
+        }; 
+    </script>
+
+    <script type="text/javascript">
+        $(document).ready(function () { 
+            $('.btn-loading').on('click', function (e) {            
+                $(this).prop('disabled', true);
+                $(this).addClass('disabled');
+                $('#loadingIndicator').show();
+                var tagName = $(this).prop('tagName').toLowerCase();
+                if (tagName === 'a') {
+                    e.preventDefault(); 
+                    var targetUrl = $(this).attr('href');
+                    window.location.href = targetUrl;
+
+                } else if (tagName === 'button' || tagName === 'input') {
+                    $(this).closest('form').submit();
+                }
+            });
+        });
+    </script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('.btn-loading1').on('click', function (e) {
+            
+                var $this = $(this);
+                var tagName = $this.prop('tagName').toLowerCase();
+                $this.addClass('disabled'); 
+                $('#loadingIndicator').show();
+
+                if (tagName === 'a') {
+                    e.preventDefault();
+                
+                    var targetUrl = $this.attr('href');
+                    window.location.href = targetUrl;
+                
+                } else if (tagName === 'button' || tagName === 'input') {               
+                    $this.closest('form').submit();
+                    $this.prop('disabled', true);
+                }
+            });
+        });
+    </script>
+
+    <script type="text/javascript">
+        $(function () {
+            $("#dn").mask("99/99/9999");
+            $("#cel").mask("(99)99999-9999");
+            $("#cep").mask("99999-999");
+            $("#cpf").mask("999.999.999-99");
+            $("#cnpj").mask("99.999.999/9999-99");
+    });
+    </script>
+    <script>
+        function PesquisaCep(cep, btn, tipoEnd) {
+            data = {
+                cep: cep
+                , tipoEnd: tipoEnd
+            }
+
+            //$(btn).attr("disabled", "disabled");
+
+            $.ajax({
+                url: '/Administra/PesquisaCEP_JavascriptNova'
+                , type: 'POST'
+                , data: data
+                , success: function (r) {
+                    if (r.Sucesso == 0) {
+                        if (tipoEnd == 1) {
+                            $("#cepval").show();
+                        //    $('#btnBuscaCep').removeAttr("disabled");
+                        }
+
+                    }
+                    else {
+                        $("#cepval").hide();
+                        $("#cepval1").hide();
+                        if (tipoEnd == 1) {
+                            $('#endereco').val(r.LEAD_NM_ENDERECO);
+                            $('#nmr').val(r.LEAD_NR_NUMERO);
+                            $('#bairro').val(r.LEAD_NM_BAIRRO);
+                            $('#cidade').val(r.LEAD_NM_CIDADE);
+                            $('#cepBase').val(r.LEAD_NR_CEP);
+                            $('#uf option[value="' + r.UF_CD_ID + '"]').attr("selected", "selected");
+                            $('#btnBuscaCep').removeAttr("disabled");
+                        }
+                    }
+                }
+            });
+        }
+    </script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            var i = -1;
+            var toastCount = 0;
+            var $toastlast;
+            var getMessage = function () {
+                var msg = 'Hi, welcome to Inspinia. This is example of Toastr notification box.';
+                return msg;
+            };
+
+            $('#basictoast').click(function () {
+                // Display a success toast, with a title
+                toastr.success('Inclusão em andamento!')
+            });
+            $('#showtoast').click(function () {
+                var shortCutFunction = $("#toastTypeGroup input:radio:checked").val();
+                var msg = $('#message').val();
+                var title = $('#title').val() || '';
+                var $showDuration = $('#showDuration');
+                var $hideDuration = $('#hideDuration');
+                var $timeOut = $('#timeOut');
+                var $extendedTimeOut = $('#extendedTimeOut');
+                var $showEasing = $('#showEasing');
+                var $hideEasing = $('#hideEasing');
+                var $showMethod = $('#showMethod');
+                var $hideMethod = $('#hideMethod');
+                var toastIndex = toastCount++;
+                toastr.options = {
+                    closeButton: $('#closeButton').prop('checked'),
+                    debug: $('#debugInfo').prop('checked'),
+                    progressBar: $('#progressBar').prop('checked'),
+                    positionClass: $('#positionGroup input:radio:checked').val() || 'toast-top-right',
+                    onclick: null
+                };
+                if ($('#addBehaviorOnToastClick').prop('checked')) {
+                    toastr.options.onclick = function () {
+                        alert('You can perform some custom action after a toast goes away');
+                    };
+                }
+                if ($showDuration.val().length) {
+                    toastr.options.showDuration = $showDuration.val();
+                }
+                if ($hideDuration.val().length) {
+                    toastr.options.hideDuration = $hideDuration.val();
+                }
+                if ($timeOut.val().length) {
+                    toastr.options.timeOut = $timeOut.val();
+                }
+                if ($extendedTimeOut.val().length) {
+                    toastr.options.extendedTimeOut = $extendedTimeOut.val();
+                }
+                if ($showEasing.val().length) {
+                    toastr.options.showEasing = $showEasing.val();
+                }
+                if ($hideEasing.val().length) {
+                    toastr.options.hideEasing = $hideEasing.val();
+                }
+                if ($showMethod.val().length) {
+                    toastr.options.showMethod = $showMethod.val();
+                }
+                if ($hideMethod.val().length) {
+                    toastr.options.hideMethod = $hideMethod.val();
+                }
+                if (!msg) {
+                    msg = getMessage();
+                }
+                $("#toastrOptions").text("Command: toastr["
+                    + shortCutFunction
+                    + "](\""
+                    + msg
+                    + (title ? "\", \"" + title : '')
+                    + "\")\n\ntoastr.options = "
+                    + JSON.stringify(toastr.options, null, 2)
+                );
+                var $toast = toastr[shortCutFunction](msg, title); // Wire up an event handler to a button in the toast, if it exists
+                $toastlast = $toast;
+                if ($toast.find('#okBtn').length) {
+                    $toast.delegate('#okBtn', 'click', function () {
+                        alert('you clicked me. i was toast #' + toastIndex + '. goodbye!');
+                        $toast.remove();
+                    });
+                }
+                if ($toast.find('#surpriseBtn').length) {
+                    $toast.delegate('#surpriseBtn', 'click', function () {
+                        alert('Surprise! you clicked me. i was toast #' + toastIndex + '. You could perform an action here.');
+                    });
+                }
+            });
+            function getLastToast() {
+                return $toastlast;
+            }
+            $('#clearlasttoast').click(function () {
+                toastr.clear(getLastToast());
+            });
+            $('#cleartoasts').click(function () {
+                toastr.clear();
+            });
+
+        });
+    </script>
+
+
+
+    @if (ViewBag.Message != null)
+    {
+        <script type="text/javascript">
+            window.onload = function () {
+                  alert("@ViewBag.Message");
+            };
+        </script>
+    }
+}

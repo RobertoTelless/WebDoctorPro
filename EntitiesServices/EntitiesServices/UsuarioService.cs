@@ -361,6 +361,39 @@ namespace ModelServices.EntitiesServices
             return _mfRepository.GetItemById(id);
         }
 
+        public Int32 CreateMensFab(MENSAGEM_FABRICANTE fab)
+        {
+            using (DbContextTransaction transaction = Db.Database.BeginTransaction(IsolationLevel.ReadCommitted))
+            {
+                try
+                {
+                    _mfRepository.Add(fab);
+                    transaction.Commit();
+                    return 0;
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    throw ex;
+                }
+            }
+        }
+
+        public Int32 EditMensFab(MENSAGEM_FABRICANTE fab)
+        {
+            try
+            {
+                MENSAGEM_FABRICANTE obj = _mfRepository.GetById(fab.MEFA_CD_ID);
+                _mfRepository.Detach(obj);
+                _mfRepository.Update(fab);
+                return 0;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
         public USUARIO_LOGIN GetLoginById(Int32 id)
         {
             return _loginRepository.GetItemById(id);
