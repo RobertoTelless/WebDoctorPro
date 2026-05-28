@@ -22,6 +22,7 @@ namespace EntitiesServices.Model
             this.LEAD_CRM = new HashSet<LEAD_CRM>();
             this.CRM = new HashSet<CRM>();
             this.FUNIL = new HashSet<FUNIL>();
+            this.PROSPECTA_MAIL = new HashSet<PROSPECTA_MAIL>();
         }
     
         public int LEAD_CD_ID { get; set; }
@@ -67,5 +68,7 @@ namespace EntitiesServices.Model
         public virtual ICollection<CRM> CRM { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<FUNIL> FUNIL { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<PROSPECTA_MAIL> PROSPECTA_MAIL { get; set; }
     }
 }

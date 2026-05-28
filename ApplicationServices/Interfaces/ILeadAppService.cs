@@ -23,5 +23,10 @@ namespace ApplicationServices.Interfaces
         Int32 ValidateEditAnotacao(LEAD_ANOTACAO item);
         LEAD_ANOTACAO GetAnotacaoById(Int32 id);
 
+        Int32 ValidateCreateProspecta(PROSPECTA_MAIL perfil);
+        List<PROSPECTA_MAIL> GetAllProspecta();
+        PROSPECTA_MAIL GetProspectaById(Int32 id);
+        Tuple<Int32, List<PROSPECTA_MAIL>, Boolean> ExecuteFilterProspecta(DateTime? entrada, String cidade, String uf, Int32? enviado);
+
     }
 }

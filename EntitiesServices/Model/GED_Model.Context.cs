@@ -427,5 +427,6 @@ namespace EntitiesServices.Model
         public virtual DbSet<LEAD_CRM_ACAO> LEAD_CRM_ACAO { get; set; }
         public virtual DbSet<LEAD_CRM_ANEXO> LEAD_CRM_ANEXO { get; set; }
         public virtual DbSet<LEAD_CRM_ANOTACAO> LEAD_CRM_ANOTACAO { get; set; }
+        public virtual DbSet<PROSPECTA_MAIL> PROSPECTA_MAIL { get; set; }
     }
 }

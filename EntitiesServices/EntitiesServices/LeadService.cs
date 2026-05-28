@@ -14,14 +14,16 @@ namespace ModelServices.EntitiesServices
         private readonly ILogRepository _logRepository;
         private readonly ILeadAnexoRepository _aneRepository;
         private readonly ILeadAnotacaoRepository _anoRepository;
+        private readonly IProspectaRepository _proRepository;
         protected CRMSysDBEntities Db = new CRMSysDBEntities();
 
-        public LeadService(ILeadRepository baseRepository, ILogRepository logRepository, ILeadAnexoRepository aneRepository, ILeadAnotacaoRepository anoRepository) : base(baseRepository)
+        public LeadService(ILeadRepository baseRepository, ILogRepository logRepository, ILeadAnexoRepository aneRepository, ILeadAnotacaoRepository anoRepository, IProspectaRepository proRepository) : base(baseRepository)
         {
             _baseRepository = baseRepository;
             _logRepository = logRepository;
             _aneRepository = aneRepository;
             _anoRepository = anoRepository;
+            _proRepository = proRepository;
         }
 
         public LEAD GetItemById(Int32 id)
@@ -200,5 +202,43 @@ namespace ModelServices.EntitiesServices
                 }
             }
         }
+
+        public List<PROSPECTA_MAIL> GetAllProspecta()
+        {
+            return _proRepository.GetAllItens();
+        }
+
+        public PROSPECTA_MAIL GetProspectaById(Int32 id)
+        {
+            return _proRepository.GetItemById(id);
+        }
+
+        public List<PROSPECTA_MAIL> ExecuteFilterProspecta(DateTime? entrada, String cidade, String uf, Int32? enviado)
+        {
+            return _proRepository.ExecuteFilter(entrada, cidade, uf, enviado);
+
+        }
+
+        public Int32 CreateProspecta(PROSPECTA_MAIL item)
+        {
+            using (DbContextTransaction transaction = Db.Database.BeginTransaction(IsolationLevel.ReadCommitted))
+            {
+                try
+                {
+                    _proRepository.Add(item);
+                    transaction.Commit();
+                    return 0;
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    throw ex;
+                }
+            }
+        }
+
+
+
+
     }
 }

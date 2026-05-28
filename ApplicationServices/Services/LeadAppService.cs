@@ -306,5 +306,55 @@ namespace ApplicationServices.Services
             }
         }
 
+        public List<PROSPECTA_MAIL> GetAllProspecta()
+        {
+            List<PROSPECTA_MAIL> lista = _baseService.GetAllProspecta();
+            return lista;
+        }
+
+        public PROSPECTA_MAIL GetProspectaById(Int32 id)
+        {
+            PROSPECTA_MAIL item = _baseService.GetProspectaById(id);
+            return item;
+        }
+
+        public Tuple<Int32, List<PROSPECTA_MAIL>, Boolean> ExecuteFilterProspecta(DateTime? entrada, String cidade, String uf, Int32? enviado)
+        {
+            try
+            {
+                List<PROSPECTA_MAIL> objeto = new List<PROSPECTA_MAIL>();
+                Int32 volta = 0;
+
+                // Processa filtro
+                objeto = _baseService.ExecuteFilterProspecta(entrada, cidade, uf, enviado);
+                if (objeto.Count == 0)
+                {
+                    volta = 1;
+                }
+
+                // Monta tupla
+                var tupla = Tuple.Create(volta, objeto, true);
+                return tupla;
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
+        public Int32 ValidateCreateProspecta(PROSPECTA_MAIL item)
+        {
+            try
+            {
+                // Persiste
+                Int32 volta = _baseService.CreateProspecta(item);
+                return 1;
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
     }
 }

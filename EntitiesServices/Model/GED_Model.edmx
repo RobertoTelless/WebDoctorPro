@@ -5822,6 +5822,27 @@
           <Property Name="PRPV_IN_ATIVO" Type="int" Nullable="false" />
           <Property Name="PRPV_IN_SISTEMA" Type="int" />
         </EntityType>
+        <EntityType Name="PROSPECTA_MAIL">
+          <Key>
+            <PropertyRef Name="MAIL_CD_ID" />
+          </Key>
+          <Property Name="MAIL_CD_ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="MAIL_DT_ENTRADA" Type="date" />
+          <Property Name="MAIL_NM_NOME" Type="varchar" MaxLength="100" />
+          <Property Name="MAIL_NR_TELEFONE" Type="varchar" MaxLength="50" />
+          <Property Name="MAIL_NM_ENDERECO" Type="varchar" MaxLength="150" />
+          <Property Name="MAIL_NM_CIDADE" Type="varchar" MaxLength="50" />
+          <Property Name="MAIL_NM_BAIRRO" Type="varchar" MaxLength="50" />
+          <Property Name="MAIL_NM_UF" Type="varchar" MaxLength="50" />
+          <Property Name="MAIL_NR_CEP" Type="varchar" MaxLength="50" />
+          <Property Name="MAIL_EM_EMAIL" Type="varchar" MaxLength="150" />
+          <Property Name="MAIL_IN_RESPOSTA" Type="int" />
+          <Property Name="LEAD_CD_ID" Type="int" />
+          <Property Name="MAIL_IN_ENVIOS" Type="int" />
+          <Property Name="MAIL_DT_ULTIMO_ENVIO" Type="datetime" />
+          <Property Name="MAIL_IN_SELECIONADO" Type="int" />
+          <Property Name="MAIL_IN_ATIVO" Type="int" />
+        </EntityType>
         <EntityType Name="QUESTIONARIO_BERLIM">
           <Key>
             <PropertyRef Name="QUBE_CD_ID" />
@@ -15081,6 +15102,18 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_PROSPECTA_MAIL_LEAD">
+          <End Role="LEAD" Type="Self.LEAD" Multiplicity="0..1" />
+          <End Role="PROSPECTA_MAIL" Type="Self.PROSPECTA_MAIL" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="LEAD">
+              <PropertyRef Name="LEAD_CD_ID" />
+            </Principal>
+            <Dependent Role="PROSPECTA_MAIL">
+              <PropertyRef Name="LEAD_CD_ID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_QUESTIONARIO_BERLIM_PACIENTE">
           <End Role="PACIENTE" Type="Self.PACIENTE" Multiplicity="1" />
           <End Role="QUESTIONARIO_BERLIM" Type="Self.QUESTIONARIO_BERLIM" Multiplicity="*" />
@@ -17221,6 +17254,7 @@
           <EntitySet Name="PRODUTO_LOG" EntityType="Self.PRODUTO_LOG" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="PRODUTO_ORIGEM" EntityType="Self.PRODUTO_ORIGEM" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="PRODUTO_PRECO_VENDA" EntityType="Self.PRODUTO_PRECO_VENDA" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="PROSPECTA_MAIL" EntityType="Self.PROSPECTA_MAIL" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="QUESTIONARIO_BERLIM" EntityType="Self.QUESTIONARIO_BERLIM" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="QUESTIONARIO_EPWORTH" EntityType="Self.QUESTIONARIO_EPWORTH" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="QUESTIONARIO_STOPBANG" EntityType="Self.QUESTIONARIO_STOPBANG" Schema="dbo" store:Type="Tables" />
@@ -19903,6 +19937,10 @@
           <AssociationSet Name="FK_PRODUTO_USUARIO" Association="Self.FK_PRODUTO_USUARIO">
             <End Role="USUARIO" EntitySet="USUARIO" />
             <End Role="PRODUTO" EntitySet="PRODUTO" />
+          </AssociationSet>
+          <AssociationSet Name="FK_PROSPECTA_MAIL_LEAD" Association="Self.FK_PROSPECTA_MAIL_LEAD">
+            <End Role="LEAD" EntitySet="LEAD" />
+            <End Role="PROSPECTA_MAIL" EntitySet="PROSPECTA_MAIL" />
           </AssociationSet>
           <AssociationSet Name="FK_QUESTIONARIO_BERLIM_PACIENTE" Association="Self.FK_QUESTIONARIO_BERLIM_PACIENTE">
             <End Role="PACIENTE" EntitySet="PACIENTE" />
@@ -40659,6 +40697,11 @@
             <End Role="LEAD" EntitySet="LEAD" />
             <End Role="FUNIL" EntitySet="FUNIL" />
           </AssociationSet>
+          <EntitySet Name="PROSPECTA_MAIL" EntityType="CRMSysDBModel.PROSPECTA_MAIL" />
+          <AssociationSet Name="FK_PROSPECTA_MAIL_LEAD" Association="CRMSysDBModel.FK_PROSPECTA_MAIL_LEAD">
+            <End Role="LEAD" EntitySet="LEAD" />
+            <End Role="PROSPECTA_MAIL" EntitySet="PROSPECTA_MAIL" />
+          </AssociationSet>
         </EntityContainer>
         <EntityType Name="PACIENTE_DADOS_EXAME_FISICO">
           <Key>
@@ -42289,6 +42332,7 @@
           <Property Name="LEAD_IN_ENVIOS" Type="Int32" />
           <Property Name="LEAD_DT_EXCLUSAO" Type="DateTime" Precision="0" />
           <Property Name="LEAD_GU_IDENTIFICADOR" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="PROSPECTA_MAIL" Relationship="CRMSysDBModel.FK_PROSPECTA_MAIL_LEAD" FromRole="LEAD" ToRole="PROSPECTA_MAIL" />
         </EntityType>
         <EntityType Name="LEAD_ANEXO">
           <Key>
@@ -42632,6 +42676,40 @@
             </Principal>
             <Dependent Role="FUNIL">
               <PropertyRef Name="FUNI_IN_LEAD" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="PROSPECTA_MAIL">
+          <Key>
+            <PropertyRef Name="MAIL_CD_ID" />
+          </Key>
+          <Property Name="MAIL_CD_ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="MAIL_DT_ENTRADA" Type="DateTime" Precision="0" />
+          <Property Name="MAIL_NM_NOME" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="MAIL_NR_TELEFONE" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="MAIL_NM_ENDERECO" Type="String" MaxLength="150" FixedLength="false" Unicode="false" />
+          <Property Name="MAIL_NM_CIDADE" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="MAIL_NM_BAIRRO" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="MAIL_NM_UF" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="MAIL_NR_CEP" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="MAIL_EM_EMAIL" Type="String" MaxLength="150" FixedLength="false" Unicode="false" />
+          <Property Name="MAIL_IN_RESPOSTA" Type="Int32" />
+          <Property Name="LEAD_CD_ID" Type="Int32" />
+          <Property Name="MAIL_IN_ENVIOS" Type="Int32" />
+          <Property Name="MAIL_DT_ULTIMO_ENVIO" Type="DateTime" Precision="3" />
+          <Property Name="MAIL_IN_SELECIONADO" Type="Int32" />
+          <Property Name="MAIL_IN_ATIVO" Type="Int32" />
+          <NavigationProperty Name="LEAD" Relationship="CRMSysDBModel.FK_PROSPECTA_MAIL_LEAD" FromRole="PROSPECTA_MAIL" ToRole="LEAD" />
+        </EntityType>
+        <Association Name="FK_PROSPECTA_MAIL_LEAD">
+          <End Type="CRMSysDBModel.LEAD" Role="LEAD" Multiplicity="0..1" />
+          <End Type="CRMSysDBModel.PROSPECTA_MAIL" Role="PROSPECTA_MAIL" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="LEAD">
+              <PropertyRef Name="LEAD_CD_ID" />
+            </Principal>
+            <Dependent Role="PROSPECTA_MAIL">
+              <PropertyRef Name="LEAD_CD_ID" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -50400,6 +50478,28 @@
                 <ScalarProperty Name="USUA_CD_ID" ColumnName="USUA_CD_ID" />
                 <ScalarProperty Name="LECR_CD_ID" ColumnName="LECR_CD_ID" />
                 <ScalarProperty Name="LCAN_CD_ID" ColumnName="LCAN_CD_ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="PROSPECTA_MAIL">
+            <EntityTypeMapping TypeName="CRMSysDBModel.PROSPECTA_MAIL">
+              <MappingFragment StoreEntitySet="PROSPECTA_MAIL">
+                <ScalarProperty Name="MAIL_IN_ATIVO" ColumnName="MAIL_IN_ATIVO" />
+                <ScalarProperty Name="MAIL_IN_SELECIONADO" ColumnName="MAIL_IN_SELECIONADO" />
+                <ScalarProperty Name="MAIL_DT_ULTIMO_ENVIO" ColumnName="MAIL_DT_ULTIMO_ENVIO" />
+                <ScalarProperty Name="MAIL_IN_ENVIOS" ColumnName="MAIL_IN_ENVIOS" />
+                <ScalarProperty Name="LEAD_CD_ID" ColumnName="LEAD_CD_ID" />
+                <ScalarProperty Name="MAIL_IN_RESPOSTA" ColumnName="MAIL_IN_RESPOSTA" />
+                <ScalarProperty Name="MAIL_EM_EMAIL" ColumnName="MAIL_EM_EMAIL" />
+                <ScalarProperty Name="MAIL_NR_CEP" ColumnName="MAIL_NR_CEP" />
+                <ScalarProperty Name="MAIL_NM_UF" ColumnName="MAIL_NM_UF" />
+                <ScalarProperty Name="MAIL_NM_BAIRRO" ColumnName="MAIL_NM_BAIRRO" />
+                <ScalarProperty Name="MAIL_NM_CIDADE" ColumnName="MAIL_NM_CIDADE" />
+                <ScalarProperty Name="MAIL_NM_ENDERECO" ColumnName="MAIL_NM_ENDERECO" />
+                <ScalarProperty Name="MAIL_NR_TELEFONE" ColumnName="MAIL_NR_TELEFONE" />
+                <ScalarProperty Name="MAIL_NM_NOME" ColumnName="MAIL_NM_NOME" />
+                <ScalarProperty Name="MAIL_DT_ENTRADA" ColumnName="MAIL_DT_ENTRADA" />
+                <ScalarProperty Name="MAIL_CD_ID" ColumnName="MAIL_CD_ID" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

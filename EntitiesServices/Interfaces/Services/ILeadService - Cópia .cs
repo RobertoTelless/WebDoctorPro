@@ -28,10 +28,5 @@ namespace ModelServices.Interfaces.EntitiesServices
         LEAD_ANOTACAO GetAnotacaoById(Int32 id);
         Int32 EditAnotacao(LEAD_ANOTACAO item);
 
-        Int32 CreateProspecta(PROSPECTA_MAIL perfil);
-        List<PROSPECTA_MAIL> GetAllProspecta();
-        PROSPECTA_MAIL GetProspectaById(Int32 id);
-        List<PROSPECTA_MAIL> ExecuteFilterProspecta(DateTime? entrada, String cidade, String uf, Int32? enviado);
-
     }
 }

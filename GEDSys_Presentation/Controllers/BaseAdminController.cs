@@ -40,6 +40,8 @@ using System.Net.Mail;
 using System.Net.Mime;
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
+using OfficeOpenXml;
+using System.IdentityModel.Tokens;
 
 namespace ERP_Condominios_Solution.Controllers
 {
@@ -82,9 +84,11 @@ namespace ERP_Condominios_Solution.Controllers
         private readonly ITipoValorConsultaAppService ticoApp;
         private readonly IUnidadeAppService uniApp;
         private readonly ILaboratorioAppService labApp;
+        private readonly ILeadAppService leaApp;
 
         private readonly string _connectionString = "DefaultEndpointsProtocol=https;AccountName=rtistoragemain;AccountKey=VowoS1r1iQ7OeHYB8COjfTPicHc1GxV1LvpPyKlKw0+GAb7MXIyWqX1uAGGNMOAHh7CsxabKbMaC+AStfHmdXQ==;EndpointSuffix=core.windows.net";
         private readonly string _containerName = "rti-datacontainer";
+        private CRMSysDBEntities Db = new CRMSysDBEntities();
 
 #pragma warning disable CS0169 // O campo "BaseAdminController.msg" nunca é usado
         private String msg;
@@ -99,7 +103,7 @@ namespace ERP_Condominios_Solution.Controllers
         MENSAGENS_ENVIADAS_SISTEMA objetEnviadaoAntes = new MENSAGENS_ENVIADAS_SISTEMA();
         List<MENSAGENS_ENVIADAS_SISTEMA> listaMasterEnviada = new List<MENSAGENS_ENVIADAS_SISTEMA>();
 
-        public BaseAdminController(IUsuarioAppService baseApps, ILogAppService logApps, IUsuarioAppService usuApps, IConfiguracaoAppService confApps, IAssinanteAppService assiApps, IPlanoAppService planApps, ITemplateAppService temApps, IMensagemEnviadaSistemaAppService envApps, ITemplateEMailAppService mailApps, IEmpresaAppService empApps, IPerfilAppService perfApps, IMensagemAppService mensApps, IRecursividadeAppService recApps, IPacienteAppService pacApps, IGrupoAppService gruApps, IAcessoMetodoAppService aceApps, IConvenioAppService convApps, IEspecialidadeAppService espApps, IAvisoLembreteAppService avApps, ITemplateEMailAppService teApps, ITipoExameAppService tiApps, ITipoPacienteAppService tpApps, ITipoPagamentoAppService tgApps, ITipoValorConsultaAppService tcApps, ITipoAtestadoAppService taApps, IValorConsultaAppService vcApps, IPeriodicidadeAppService peApps, IConfiguracaoAnamneseAppService caApps, IConfiguracaoCalendarioAppService ccApps, ITemplateSMSAppService smsApps, ILocacaoAppService locApps, ITipoPagamentoAppService tpgApps, ITipoValorConsultaAppService ticoApps, IUnidadeAppService uniApps, ILaboratorioAppService labApps)
+        public BaseAdminController(IUsuarioAppService baseApps, ILogAppService logApps, IUsuarioAppService usuApps, IConfiguracaoAppService confApps, IAssinanteAppService assiApps, IPlanoAppService planApps, ITemplateAppService temApps, IMensagemEnviadaSistemaAppService envApps, ITemplateEMailAppService mailApps, IEmpresaAppService empApps, IPerfilAppService perfApps, IMensagemAppService mensApps, IRecursividadeAppService recApps, IPacienteAppService pacApps, IGrupoAppService gruApps, IAcessoMetodoAppService aceApps, IConvenioAppService convApps, IEspecialidadeAppService espApps, IAvisoLembreteAppService avApps, ITemplateEMailAppService teApps, ITipoExameAppService tiApps, ITipoPacienteAppService tpApps, ITipoPagamentoAppService tgApps, ITipoValorConsultaAppService tcApps, ITipoAtestadoAppService taApps, IValorConsultaAppService vcApps, IPeriodicidadeAppService peApps, IConfiguracaoAnamneseAppService caApps, IConfiguracaoCalendarioAppService ccApps, ITemplateSMSAppService smsApps, ILocacaoAppService locApps, ITipoPagamentoAppService tpgApps, ITipoValorConsultaAppService ticoApps, IUnidadeAppService uniApps, ILaboratorioAppService labApps, ILeadAppService leaApps)
         {
             baseApp = baseApps;
             logApp = logApps;
@@ -135,6 +139,7 @@ namespace ERP_Condominios_Solution.Controllers
             ticoApp = ticoApps;
             uniApp = uniApps;
             labApp = labApps;
+            leaApp = leaApps;
         }
 
         public ActionResult CarregarAdmin()
@@ -7445,6 +7450,192 @@ namespace ERP_Condominios_Solution.Controllers
             Session["MensagemLogin"] = null;
             return View();
         }
+
+        [HttpGet]
+        public ActionResult ImportarPlanilhaProspecta()
+        {
+            // Verifica se tem usuario logado
+            USUARIO usuario = new USUARIO();
+            if ((String)Session["Ativa"] == null)
+            {
+                return RedirectToAction("Login", "ControleAcesso");
+            }
+            if ((USUARIO)Session["UserCredentials"] != null)
+            {
+                usuario = (USUARIO)Session["UserCredentials"];
+            }
+            else
+            {
+                return RedirectToAction("Login", "ControleAcesso");
+            }
+            return View();
+        }
+
+        public async Task<Int32> ProcessaOperacaoPlanilha(HttpPostedFileBase file)
+        {
+            Int32 idAss = (Int32)Session["IdAssinante"];
+            USUARIO user = (USUARIO)Session["UserCredentials"];
+            Int32 conta = 0;
+            Int32 falha = 0;
+
+            // Recupera configuracao
+            CONFIGURACAO conf = confApp.GetItemById(idAss);
+            USUARIO usuario = (USUARIO)Session["UserCredentials"];
+
+            // Processa planilha
+            using (var pkg = new ExcelPackage(file.InputStream))
+            {
+                // Inicialização
+                ExcelWorksheet wsGeral = pkg.Workbook.Worksheets[0];
+                var wsFinalRow = wsGeral.Dimension.End;
+
+                // Processa Planilha
+                for (int row = 1; row < wsFinalRow.Row; row++)
+                {
+                    try
+                    {
+                        // Inicialização
+                        Int32 volta = 0;
+                        Int32 flagEdita = 0;
+
+                        // Recupera colunas
+                        String nome = null;
+                        if (wsGeral.Cells[row, 1].Value != null)
+                        {
+                            nome = wsGeral.Cells[row, 1].Value.ToString();
+                            nome = CrossCutting.UtilitariosGeral.CleanStringGeral(nome);
+                        }
+                        String cel = null;
+                        if (wsGeral.Cells[row, 2].Value != null)
+                        {
+                            cel = wsGeral.Cells[row, 2].Value.ToString();
+                            cel = CrossCutting.UtilitariosGeral.CleanStringPhone(cel);
+                        }
+                        String end = null;
+                        if (wsGeral.Cells[row, 3].Value != null)
+                        {
+                            end = wsGeral.Cells[row, 3].Value.ToString();
+                            end = CrossCutting.UtilitariosGeral.CleanStringGeral(end);
+                        }
+                        String cid = null;
+                        if (wsGeral.Cells[row, 4].Value != null)
+                        {
+                            cid = wsGeral.Cells[row, 4].Value.ToString();
+                            cid = CrossCutting.UtilitariosGeral.CleanStringGeral(cid);
+                        }
+                        String bai = null;
+                        if (wsGeral.Cells[row, 5].Value != null)
+                        {
+                            bai = wsGeral.Cells[row, 5].Value.ToString();
+                            bai = CrossCutting.UtilitariosGeral.CleanStringGeral(bai);
+                        }
+                        String UF = null;
+                        if (wsGeral.Cells[row, 6].Value != null)
+                        {
+                            bai = wsGeral.Cells[row, 6].Value.ToString();
+                            bai = CrossCutting.UtilitariosGeral.CleanStringGeral(bai);
+                        }
+                        String cep = null;
+                        if (wsGeral.Cells[row, 7].Value != null)
+                        {
+                            cep = wsGeral.Cells[row, 7].Value.ToString();
+                            cep = CrossCutting.UtilitariosGeral.CleanStringDocto(cep);
+                        }
+                        String email = null;
+                        if (wsGeral.Cells[row, 8].Value != null)
+                        {
+                            email = wsGeral.Cells[row, 8].Value.ToString();
+                            email = CrossCutting.UtilitariosGeral.CleanStringMail(email);
+                        }
+
+                        // Verifica saida
+                        if (nome == null)
+                        {
+                            Session["Conta"] = conta;
+                            Session["Falha"] = falha;
+                            break;
+                        }
+
+                        // Monta objeto
+                        PROSPECTA_MAIL cliente = new PROSPECTA_MAIL();
+                        cliente.MAIL_DT_ENTRADA = DateTime.Today.Date;
+                        cliente.MAIL_EM_EMAIL = email;
+                        cliente.MAIL_IN_RESPOSTA = 0;
+                        cliente.MAIL_NM_BAIRRO = bai;
+                        cliente.MAIL_NM_CIDADE = cid;
+                        cliente.MAIL_NM_ENDERECO = end;
+                        cliente.MAIL_NM_NOME = nome;
+                        cliente.MAIL_NM_UF = UF;
+                        cliente.MAIL_NR_CEP = cep;
+                        cliente.MAIL_NR_TELEFONE = cel;
+                        cliente.MAIL_IN_ENVIOS = 0;
+                        cliente.MAIL_IN_SELECIONADO = 0;
+                        cliente.MAIL_IN_RESPOSTA = 0;
+
+                        // Grava objeto
+                        Int32 volta5 = leaApp.ValidateCreateProspecta(cliente);
+                        conta++;
+
+                        Session["Conta"] = conta;
+                        Session["Falha"] = falha;
+                    }
+                    catch (Exception ex)
+                    {
+                        ViewBag.Message = ex.Message;
+                        Session["TipoVolta"] = 2;
+                        Session["VoltaExcecao"] = "Mail";
+                        Session["Excecao"] = ex;
+                        Session["ExcecaoTipo"] = ex.GetType().ToString();
+                        GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                        Int32 voltaX = grava.GravarLogExcecao(ex, "BaseAdmin", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                    }
+                }
+                return 1;
+            }
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> ImportarPlanilhaProspecta(HttpPostedFileBase file)
+        {
+            try
+            {
+                if ((String)Session["Ativa"] == null)
+                {
+                    return RedirectToAction("Login", "ControleAcesso");
+                }
+
+                //using (var pkg = new ExcelPackage(file.InputStream))
+                //{
+                //    // Inicialização
+                //    Session["CPPlanWrong"] = 0;
+                //    ExcelWorksheet wsGeral = pkg.Workbook.Worksheets[1];
+                //    var wsFinalRow = wsGeral.Dimension.End;
+                //}
+
+                await ProcessaOperacaoPlanilha(file);
+
+                // Finaliza
+                Session["MsgCRUD"] = $"Importação concluída! " + (String)Session["Conta"] + " novos contatos criados.";
+                Session["MensPaciente"] = 61;
+                return RedirectToAction("MontarTelaPaciente", "Paciente"); // Ajuste para sua rota de retorno
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Mail";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "BaseAdmin", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return RedirectToAction("TrataExcecao", "BaseAdmin");
+            }
+        }
+
+
+
+
+
 
     }
 }

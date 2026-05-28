@@ -1204,6 +1204,8 @@
         <AssociationConnector Association="CRMSysDBModel.FK_CRM_LEAD" />
         <AssociationConnector Association="CRMSysDBModel.FK_CRM_PACIENTE" />
         <AssociationConnector Association="CRMSysDBModel.FK_FUNIL_LEAD" />
+        <EntityTypeShape EntityType="CRMSysDBModel.PROSPECTA_MAIL" Width="1.5" PointX="7.375" PointY="17.75" />
+        <AssociationConnector Association="CRMSysDBModel.FK_PROSPECTA_MAIL_LEAD" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

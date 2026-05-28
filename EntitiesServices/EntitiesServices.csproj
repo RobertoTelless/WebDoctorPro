@@ -248,6 +248,7 @@
     <Compile Include="Interfaces\Repositories\IFunilRepository.cs" />
     <Compile Include="Interfaces\Repositories\ILeadAnexoRepository.cs" />
     <Compile Include="Interfaces\Repositories\ILeadAnotacaoRepository.cs" />
+    <Compile Include="Interfaces\Repositories\IProspectaRepository.cs" />
     <Compile Include="Interfaces\Repositories\IMedicoMensagemRepository.cs" />
     <Compile Include="Interfaces\Repositories\IControleMensagemRepository.cs" />
     <Compile Include="Interfaces\Repositories\IControleVersaoRepository.cs" />
@@ -1346,6 +1347,9 @@
       <DependentUpon>GED_Model.tt</DependentUpon>
     </Compile>
     <Compile Include="Model\PRODUTO_PRECO_VENDA.cs">
+      <DependentUpon>GED_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\PROSPECTA_MAIL.cs">
       <DependentUpon>GED_Model.tt</DependentUpon>
     </Compile>
     <Compile Include="Model\QUESTIONARIO_BERLIM.cs">

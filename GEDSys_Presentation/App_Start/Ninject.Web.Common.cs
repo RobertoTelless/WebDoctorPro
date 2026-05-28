@@ -369,6 +369,7 @@ namespace Presentation.Start
             kernel.Bind<IMotivoEncerramentoRepository>().To<MotivoEncerramentoRepository>();
             kernel.Bind<ITipoAcaoRepository>().To<TipoAcaoRepository>();
             kernel.Bind<ITipoFollowRepository>().To<TipoFollowRepository>();
+            kernel.Bind<IProspectaRepository>().To<ProspectaRepository>();
 
 
         }

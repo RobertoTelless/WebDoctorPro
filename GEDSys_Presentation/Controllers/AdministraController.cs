@@ -143,18 +143,20 @@ namespace GEDSys_Presentation.Controllers
 
                 // Carrega listas
                 CONFIGURACAO conf = CarregaConfiguracaoGeral();
+
                 List<LEAD> leads = new List<LEAD>();
                 leads = CarregarLead().Where(p => p.LEAD_IN_ATIVO == 1).ToList();
                 String mes = CrossCutting.UtilitariosGeral.NomeMes(DateTime.Today.Date.Month);          
                 ViewBag.MesCorrente = mes + " de " + DateTime.Today.Date.Year.ToString();
                 DateTime limite = DateTime.Today.Date.AddMonths(-12);
+              
                 List<CRM> crms = new List<CRM>();
                 crms = CarregarCRM().ToList();
                 List<CRM_ACAO> acoes = new List<CRM_ACAO>();
                 acoes = CarregarAcoes().ToList();
                 List<ASSINANTE> assis = CarregarAssinante();
                 List<ACESSO_METODO> acessos = CarregarAcessos();
-                List<LOG> logs = logApp.GetAllItensDataCorrente().ToList();
+                List<LOG> logs = logApp.GetAllItensMesCorrente().ToList();
 
                 // Carrega widgets
                 ViewBag.Assinantes = assis.Count();
@@ -174,7 +176,7 @@ namespace GEDSys_Presentation.Controllers
                     {
                         Int32 conta = assis.Where(p => p.ASSI_DT_INICIO.Value.Date == item.Date).Count();
                         ModeloViewModel mod = new ModeloViewModel();
-                        mod.Nome = item.ToShortDateString();
+                        mod.Nome = item.Year.ToString();
                         mod.Valor = conta;
                         lista.Add(mod);
                     }
@@ -252,6 +254,41 @@ namespace GEDSys_Presentation.Controllers
                     ViewBag.ListaLeadData = (List<ModeloViewModel>)Session["ListaLeadData"];
                 }
 
+                // Resumo Mensal Lead
+                datas = leads.Where(p => p.LEAD_DT_ENTRADA != null).Select(p => p.LEAD_DT_ENTRADA.Value.Date).Distinct().ToList();
+                datas.Sort((i, j) => i.Date.CompareTo(j.Date));
+                if (Session["ListaLeadMes"] == null)
+                {
+                    List<ModeloViewModel> listaMes = new List<ModeloViewModel>();
+                    String mes2 = null;
+                    String mesFeito2 = null;
+                    foreach (DateTime item in datas)
+                    {
+                        if (item.Date > limite)
+                        {
+                            mes2 = item.Month.ToString() + "/" + item.Year.ToString();
+                            if (mes2 != mesFeito2)
+                            {
+                                Int32 conta = leads.Where(p => p.LEAD_DT_ENTRADA.Value.Date.Month == item.Month & p.LEAD_DT_ENTRADA.Value.Date.Year == item.Year & p.LEAD_DT_ENTRADA > limite & p.LEAD_IN_ATIVO == 1).Count();
+                                ModeloViewModel mod = new ModeloViewModel();
+                                mod.Nome = mes2;
+                                mod.Valor = conta;
+                                listaMes.Add(mod);
+                                mesFeito2 = item.Month.ToString() + "/" + item.Year.ToString();
+                            }
+                        }
+                    }
+
+                    mes2 = null;
+                    mesFeito2 = null;
+                    ViewBag.ListaLeadMes = listaMes;
+                    Session["ListaLeadMes"] = listaMes;
+                }
+                else
+                {
+                    ViewBag.ListaLeadMes = (List<ModeloViewModel>)Session["ListaLeadMes"];
+                }
+
                 // Recupera Leads por Status
                 if (Session["ListaLeadStatus"] == null)
                 {
@@ -319,6 +356,41 @@ namespace GEDSys_Presentation.Controllers
                     ViewBag.ListaCRMData = (List<ModeloViewModel>)Session["ListaCRMData"];
                 }
 
+                // Resumo Mensal CRM
+                datas = crms.Where(p => p.CRM1_DT_CRIACAO != null).Select(p => p.CRM1_DT_CRIACAO.Value.Date).Distinct().ToList();
+                datas.Sort((i, j) => i.Date.CompareTo(j.Date));
+                if (Session["ListaCRMMes"] == null)
+                {
+                    List<ModeloViewModel> listaMes = new List<ModeloViewModel>();
+                    String mes2 = null;
+                    String mesFeito2 = null;
+                    foreach (DateTime item in datas)
+                    {
+                        if (item.Date > limite)
+                        {
+                            mes2 = item.Month.ToString() + "/" + item.Year.ToString();
+                            if (mes2 != mesFeito2)
+                            {
+                                Int32 conta = crms.Where(p => p.CRM1_DT_CRIACAO.Value.Date.Month == item.Month & p.CRM1_DT_CRIACAO.Value.Date.Year == item.Year & p.CRM1_DT_CRIACAO > limite & p.CRM1_IN_ATIVO > 0).Count();
+                                ModeloViewModel mod = new ModeloViewModel();
+                                mod.Nome = mes2;
+                                mod.Valor = conta;
+                                listaMes.Add(mod);
+                                mesFeito2 = item.Month.ToString() + "/" + item.Year.ToString();
+                            }
+                        }
+                    }
+
+                    mes2 = null;
+                    mesFeito2 = null;
+                    ViewBag.ListaCRMMes = listaMes;
+                    Session["ListaCRMMes"] = listaMes;
+                }
+                else
+                {
+                    ViewBag.ListaCRMMes = (List<ModeloViewModel>)Session["ListaCRMMes"];
+                }
+
                 // Recupera CRM por Status
                 if (Session["ListaCRMStatus"] == null)
                 {
@@ -373,7 +445,7 @@ namespace GEDSys_Presentation.Controllers
                 }
                 else
                 {
-                    ViewBag.LeadsProcesso = (List<ModeloViewModel>)Session["LeadsProcesso"];
+                    ViewBag.LeadsProcesso = (List<LEAD>)Session["LeadsProcesso"];
                 }
 
                 // CRM em Processo
@@ -385,7 +457,7 @@ namespace GEDSys_Presentation.Controllers
                 }
                 else
                 {
-                    ViewBag.CRMsProcesso = (List<ModeloViewModel>)Session["CRMsProcesso"];
+                    ViewBag.CRMsProcesso = (List<CRM>)Session["CRMsProcesso"];
                 }
 
                 // Acerta estado    
@@ -437,7 +509,7 @@ namespace GEDSys_Presentation.Controllers
                 ViewBag.Usuarios = new SelectList(usuApp.GetAllItens().OrderBy(p => p.USUA_NM_NOME), "USUA_CD_ID", "USUA_NM_NOME");
                 if ((List<LOG>)Session["ListaLog"] == null)
                 {
-                    listaMasterLog = logApp.GetAllItensMesCorrente().OrderByDescending(p => p.LOG_DT_DATA).ToList();
+                    listaMasterLog = logApp.GetAllItensDataCorrente().OrderByDescending(p => p.LOG_DT_DATA).ToList();
                     Session["ListaLog"] = listaMasterLog;
                     Session["FiltroLog"] = null;
                     Session["MensagemLonga"] = 0;
@@ -445,7 +517,7 @@ namespace GEDSys_Presentation.Controllers
                 ViewBag.Listas = (List<LOG>)Session["ListaLog"];
                 ViewBag.Logs = ((List<LOG>)Session["ListaLog"]).Count;
                 ViewBag.LogsDataCorrente = logApp.GetAllItensDataCorrente().Count;
-                ViewBag.LogsMesCorrente = ((List<LOG>)Session["ListaLog"]).Count;
+                ViewBag.LogsMesCorrente = logApp.GetAllItensMesCorrente().Count;
                 List<LOG> listAnt = logApp.GetAllItensMesAnterior().OrderByDescending(p => p.LOG_DT_DATA).ToList();
                 ViewBag.LogsMesAnterior = listAnt.Count;
 
@@ -494,7 +566,7 @@ namespace GEDSys_Presentation.Controllers
             }
             Session["ListaLog"] = null;
             Session["FiltroLog"] = null;
-            return RedirectToAction("MontarTelaLog");
+            return RedirectToAction("MontarTelaLog", "Administra");
         }
 
         public ActionResult VerTodosLog()
@@ -511,7 +583,7 @@ namespace GEDSys_Presentation.Controllers
                 listaMasterLog = logApp.GetAllItens().Where(p => p.LOG_DT_DATA >= data).OrderByDescending(p => p.LOG_DT_DATA).ToList();
                 Session["ListaLog"] = listaMasterLog;
                 Session["MensagemLonga"] = 1;
-                return RedirectToAction("MontarTelaLog");
+                return RedirectToAction("MontarTelaLog", "Administra");
             }
             catch (Exception ex)
             {
@@ -539,7 +611,35 @@ namespace GEDSys_Presentation.Controllers
                 listaMasterLog = logApp.GetAllItensMesAnterior().OrderByDescending(p => p.LOG_DT_DATA).ToList();
                 Session["ListaLog"] = listaMasterLog;
                 Session["MensagemLonga"] = 0;
-                return RedirectToAction("MontarTelaLog");
+                return RedirectToAction("MontarTelaLog", "Administra");
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Auditoria";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Administra", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return RedirectToAction("TrataExcecao", "BaseAdmin");
+            }
+        }
+
+        public ActionResult VerMesCorrente()
+        {
+            try
+            {
+                if ((String)Session["Ativa"] == null)
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+
+                USUARIO usuario = (USUARIO)Session["UserCredentials"];
+                listaMasterLog = logApp.GetAllItensMesCorrente().OrderByDescending(p => p.LOG_DT_DATA).ToList();
+                Session["ListaLog"] = listaMasterLog;
+                Session["MensagemLonga"] = 0;
+                return RedirectToAction("MontarTelaLog", "Administra");
             }
             catch (Exception ex)
             {
@@ -824,7 +924,7 @@ namespace GEDSys_Presentation.Controllers
                 List<ModeloViewModel> listaAcessoMes = new List<ModeloViewModel>();
 
                 // Carrega listas de filtros
-                List<USUARIO> usus = usuApp.GetAllItens(idAss);
+                List<USUARIO> usus = usuApp.GetAllItens();
                 ViewBag.Usuarios = new SelectList(usus.OrderBy(p => p.USUA_NM_NOME), "USUA_CD_ID", "USUA_NM_NOME");
 
                 // Carrega widgets e grid
@@ -901,7 +1001,7 @@ namespace GEDSys_Presentation.Controllers
                 Session["ListaAcessoMes"] = listaMes;
 
                 // Acessos por usuario - Mais acessos
-                List<Int32> usuarios = acessosMes.Where(p => p.ACES_DT_ACESSO.Value.Month == DateTime.Today.Month & p.ACES_DT_ACESSO.Value.Year == DateTime.Today.Year).Select(p => p.USUA_CD_ID).Distinct().ToList();
+                List<Int32> usuarios = acessosMes.Where(p => p.ACES_DT_ACESSO.Value.Month == DateTime.Today.Month & p.ACES_DT_ACESSO.Value.Year == DateTime.Today.Year & p.USUARIO.USUA_IN_ATIVO == 1 & p.ACES_IN_SISTEMA == 6).Select(p => p.USUA_CD_ID).Distinct().ToList();
                 usuarios.Sort((i, j) => i.CompareTo(j));
                 List<ModeloViewModel> listaUsu = new List<ModeloViewModel>();
                 foreach (Int32 item in usuarios)
@@ -3339,7 +3439,7 @@ namespace GEDSys_Presentation.Controllers
             try
             {
                 List<ACESSO_METODO> conf = new List<ACESSO_METODO>();
-                conf = aceApp.GetAllItensDia();
+                conf = aceApp.GetAllItensMes();
                 Session["Acessos"] = conf;
                 return conf;
             }
@@ -3905,7 +4005,73 @@ namespace GEDSys_Presentation.Controllers
             return Json(hash);
         }
 
+        public JsonResult GetDadosLeadTotMes()
+        {
+            try
+            {
+                List<ModeloViewModel> listaCP1 = (List<ModeloViewModel>)Session["ListaLeadMes"];
+                List<String> dias = new List<String>();
+                List<Int32> valor1 = new List<Int32>();
+                dias.Add(" ");
+                valor1.Add(0);
 
+                foreach (ModeloViewModel item in listaCP1)
+                {
+                    dias.Add(item.Nome);
+                    valor1.Add(item.Valor);
+                }
+
+                Hashtable result = new Hashtable();
+                result.Add("dias", dias);
+                result.Add("valores", valor1);
+                return Json(result);
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Lead";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Administra", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return null;
+            }
+        }
+
+        public JsonResult GetDadosCRMTotMes()
+        {
+            try
+            {
+                List<ModeloViewModel> listaCP1 = (List<ModeloViewModel>)Session["ListaCRMMes"];
+                List<String> dias = new List<String>();
+                List<Int32> valor1 = new List<Int32>();
+                dias.Add(" ");
+                valor1.Add(0);
+
+                foreach (ModeloViewModel item in listaCP1)
+                {
+                    dias.Add(item.Nome);
+                    valor1.Add(item.Valor);
+                }
+
+                Hashtable result = new Hashtable();
+                result.Add("dias", dias);
+                result.Add("valores", valor1);
+                return Json(result);
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Lead";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Administra", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return null;
+            }
+        }
 
 
 
