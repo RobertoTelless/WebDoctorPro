@@ -2,7 +2,7 @@
 @using CrossCutting
 @model EntitiesServices.Model.ACESSO_METODO
 @{
-    Layout = "~/Views/Shared/_Layout_Admin.cshtml";
+    Layout = "~/Views/Shared/_Layout_Adm.cshtml";
     ViewBag.Title = "WebDoctor - Acessos";
     ViewBag.MetaDescription = "WebDoctor - Acessos - Lista de acessos";
     ViewBag.MetaKeywords = "WebDoctor, acesso, ip";
@@ -57,7 +57,7 @@
                     </div>
                     <div class="ibox-content">
                         <h1 class="no-margins">@CrossCutting.Formatters.IntegerFormatter(ViewBag.AcessosDiaConta)</h1>
-                        <small>@Html.ActionLink("Acessos - Data Corrente", "VerTotalAcessosData", "BaseAdmin")</small>
+                        <small>Acessos - Data Corrente</small>
                     </div>
                 </div>
             </div>
@@ -69,7 +69,7 @@
                     </div>
                     <div class="ibox-content">
                         <h1 class="no-margins">@CrossCutting.Formatters.IntegerFormatter(ViewBag.AcessosMesConta)</h1>
-                        <small>@Html.ActionLink("Acessos - Mês Corrente", "VerTotalAcessosMes", "Administra")</small>
+                        <small>Acessos - Mês Corrente</small>
                     </div>
                 </div>
             </div>
@@ -81,7 +81,7 @@
                     </div>
                     <div class="ibox-content">
                         <h1 class="no-margins">@CrossCutting.Formatters.IntegerFormatter(ViewBag.AcessosAnoConta)</h1>
-                        <small>@Html.ActionLink("Acessos - Último Ano", "VerTotalAcessosAno", "Administra")</small>
+                        <small>Acessos - Mês Anterior</small>
                     </div>
                 </div>
             </div>
@@ -115,31 +115,33 @@
                         @*Graficos*@
                         <div class="col-lg-7 col-md-7 col-xs-12">
                             <div class="row">                           
-                                <div class="col-lg-6 col-md-6 col-xs-12">
+                                <div class="col-lg-12 col-md-12 col-xs-12">
                                     <div class="col-lg-12 col-md-12 col-xs-12 ibox float-e-margins" style="border-bottom: solid; border-bottom-color: darkblue; border-bottom-width: 2px; border-left: solid; border-left-color: darkblue; border-left-width: 1px; border-right: solid; border-right-color: darkblue; border-right-width: 1px; border-top: solid; border-top-color: darkblue; border-top-width: 1px">
                                         <div class="ibox-title">
                                             <h4>@Html.ActionLink("Acessos por Data - Mês Corrente", "VerTotalAcessosMes", "Administra")</h4>
                                         </div>
                                         <div class="ibox-content">
                                             <div class="row">
-                                                <canvas id="lineChartAcessoData" height="150"></canvas>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-lg-6 col-md-6 col-xs-12">
-                                    <div class="col-lg-12 col-md-12 col-xs-12 ibox float-e-margins" style="border-bottom: solid; border-bottom-color: darkblue; border-bottom-width: 2px; border-left: solid; border-left-color: darkblue; border-left-width: 1px; border-right: solid; border-right-color: darkblue; border-right-width: 1px; border-top: solid; border-top-color: darkblue; border-top-width: 1px">
-                                        <div class="ibox-title">
-                                            <h4>@Html.ActionLink("Acessos por Mês - Últimos 12 meses", "VerTotalAcessosAno", "Administra")</h4>
-                                        </div>
-                                        <div class="ibox-content">
-                                            <div class="row">
-                                                <canvas id="lineChartAcessoMes" height="150"></canvas>
+                                                <canvas id="lineChartAcessoData" height="300"></canvas>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
+                            @*<div class="row">                           
+                                <div class="col-lg-12 col-md-12 col-xs-12">
+                                    <div class="col-lg-12 col-md-12 col-xs-12 ibox float-e-margins" style="border-bottom: solid; border-bottom-color: darkblue; border-bottom-width: 2px; border-left: solid; border-left-color: darkblue; border-left-width: 1px; border-right: solid; border-right-color: darkblue; border-right-width: 1px; border-top: solid; border-top-color: darkblue; border-top-width: 1px">
+                                        <div class="ibox-title">
+                                            <h4>@Html.ActionLink("Acessos por Data - Mês Anterior", "VerTotalAcessosAno", "Administra")</h4>
+                                        </div>
+                                        <div class="ibox-content">
+                                            <div class="row">
+                                                <canvas id="lineChartAcessoMes" height="300"></canvas>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>*@
                         </div>
 
                         @*Listas*@
@@ -544,7 +546,7 @@
             });
         });
     </script>
-    <script type="text/javascript">
+    @*<script type="text/javascript">
         $(document).ready(function () {
 
             $.ajax({
@@ -574,7 +576,7 @@
               }
             });
         });
-    </script>
+    </script>*@
     @if (ViewBag.Message != null)
     {
         <script type="text/javascript">

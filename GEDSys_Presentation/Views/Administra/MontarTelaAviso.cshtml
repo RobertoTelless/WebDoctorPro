@@ -4,7 +4,7 @@
 @using EntitiesServices.Work_Classes;
 @model EntitiesServices.Model.MENSAGEM_FABRICANTE
 @{
-    Layout = "~/Views/Shared/_Layout_Admin.cshtml";
+    Layout = "~/Views/Shared/_Layout_Adm.cshtml";
     ViewBag.Title = "WebDoctor - Avisos";
     ViewBag.MetaDescription = "WebDoctor - Avisos";
     ViewBag.MetaKeywords = "WebDoctor, Avisos";
@@ -69,67 +69,73 @@
                                 </span>
                             </div>
                         </div>
-
+                    <br /><br />
                     <div class="row">
-                        @if (ViewBag.Listas != null && (ViewBag.Listas as List<EntitiesServices.Model.MENSAGEM_FABRICANTE>).Count > 0)
-                        {
-                            <table class="table table-striped table-bordered table-hover dataTables-example">
-                                <thead style="background-color:lightsteelblue">
-                                    <tr>
-                                        <th style="width: auto">Data de Inclusão</th>
-                                        <th style="width: auto">Validade</th>
-                                        <th style="width: auto">Título</th>
-                                        <th style="width: auto">Tipo</th>
-                                        <th class="td-one-action">Ações</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach (var cond in (ViewBag.Listas as List<EntitiesServices.Model.MENSAGEM_FABRICANTE>))
-                                    {
+                        <div class="form-group" style=" margin-left: 15px; margin-right: 15px;">
+                            @if (ViewBag.Listas != null && (ViewBag.Listas as List<EntitiesServices.Model.MENSAGEM_FABRICANTE>).Count > 0)
+                            {
+                                <table class="table table-striped table-bordered table-hover dataTables-example">
+                                    <thead style="background-color:lightsteelblue">
                                         <tr>
-                                            <td>
-                                                <span style="display:none; width: auto">@cond.MEFA_DT_CADASTRO.ToString("yyyyMMdd")</span>
-                                                @cond.MEFA_DT_CADASTRO.ToString("dd/MM/yyyy")
-                                            </td>
-                                            <td>
-                                                <span style="display:none; width: auto">@cond.MEFA_DT_VALIDADE.ToString("yyyyMMdd")</span>
-                                                @cond.MEFA_DT_VALIDADE.ToString("dd/MM/yyyy")
-                                            </td>
-                                            <td style="width: auto; cursor: pointer; text-decoration: underline;"><a href="@Url.Action("EditarAviso", "Administra", new { id = cond.MEFA_CD_ID })" class="show-spinner" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página de alteração de avisos"/>@cond.MEFA_NM_TITULO</td>
-                                            @if (cond.MEFA_IN_TIPO == 1)
-                                            {
-                                                <span class="status-badge status-active">Informação</span>
-                                            }
-                                            else
-                                            {
-                                                <span class="status-badge status-finish">Aviso</span>
-                                            }
-                                            <td class="td-one-action">
-                                                @Html.TableLinkDetails(cond.MEFA_CD_ID, "EditarAviso", "fa-edit show-spinner", "Editar Aviso")
-                                                @if (cond.MEFA_IN_ATIVO == 1)
-                                                {
-                                                    <span style="color: #337ab7; cursor:pointer;" alt="Desativar" class="tbl-link fa-lg fa fa-trash-o show-spinner" onclick="ShowModalExcluir('/Administra/ExcluirAviso/@cond.MEFA_CD_ID')" title="Excluir Aviso"></span>
-                                                }
-                                            </td>
+                                            <th style="width: auto">Data de Inclusão</th>
+                                            <th style="width: auto">Validade</th>
+                                            <th style="width: auto">Título</th>
+                                            <th style="width: auto">Resumo</th>
+                                            <th style="width: auto">Tipo</th>
+                                            <th class="td-one-action">Ações</th>
                                         </tr>
-                                    }
-                                </tbody>
-                            </table>
-                        }
-                        else
-                        {
-                            <div class="row">
-                                <div class="col-lg-3 col-md-3 col-xs-2">
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var cond in (ViewBag.Listas as List<EntitiesServices.Model.MENSAGEM_FABRICANTE>))
+                                        {
+                                            <tr>
+                                                <td>
+                                                    <span style="display:none; width: auto">@cond.MEFA_DT_CADASTRO.ToString("yyyyMMdd")</span>
+                                                    @cond.MEFA_DT_CADASTRO.ToString("dd/MM/yyyy")
+                                                </td>
+                                                <td>
+                                                    <span style="display:none; width: auto">@cond.MEFA_DT_VALIDADE.ToString("yyyyMMdd")</span>
+                                                    @cond.MEFA_DT_VALIDADE.ToString("dd/MM/yyyy")
+                                                </td>
+                                                <td style="width: auto">@cond.MEFA_NM_TITULO</td>
+                                                <td style="width: auto; cursor: pointer; text-decoration: underline;"><a href="@Url.Action("EditarAviso", "Administra", new { id = cond.MEFA_CD_ID })" class="show-spinner" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página de alteração de avisos"/>@cond.MEFA_LK_LINK</td>
+                                                <td style="width: auto">
+                                                    @if (cond.MEFA_IN_TIPO == 1)
+                                                    {
+                                                        <span class="status-badge status-active">Informação</span>
+                                                    }
+                                                    else
+                                                    {
+                                                        <span class="status-badge status-finish">Aviso</span>
+                                                    }
+                                                </td>
+                                                <td class="td-one-action">
+                                                    @Html.TableLinkDetails(cond.MEFA_CD_ID, "EditarAviso", "fa-edit show-spinner", "Editar Aviso")
+                                                    @if (cond.MEFA_IN_ATIVO == 1)
+                                                    {
+                                                        <span style="color: #337ab7; cursor:pointer;" alt="Desativar" class="tbl-link fa-lg fa fa-trash-o show-spinner" onclick="ShowModalExcluir('/Administra/ExcluirAviso/@cond.MEFA_CD_ID')" title="Excluir Aviso"></span>
+                                                    }
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            }
+                            else
+                            {
+                                <div class="row">
+                                    <div class="col-lg-3 col-md-3 col-xs-2">
 
-                                </div>
-                                <div style="border: 5px solid #F6A54A; padding: 10px; border-radius: 8px 8px; " class="col-lg-6 col-md-6 col-xs-8">
-                                    <h2 style="font-weight: bold">Nenhum aviso está cadastrado</h2>
-                                </div>
-                                <div class="col-lg-3 col-md-3 col-xs-2">
+                                    </div>
+                                    <div style="border: 5px solid #F6A54A; padding: 10px; border-radius: 8px 8px; " class="col-lg-6 col-md-6 col-xs-8">
+                                        <h2 style="font-weight: bold">Nenhum aviso está cadastrado</h2>
+                                    </div>
+                                    <div class="col-lg-3 col-md-3 col-xs-2">
 
+                                    </div>
                                 </div>
-                            </div>
-                        }
+                            }
+                        </div>
                     </div>
                 </div>
             </div>

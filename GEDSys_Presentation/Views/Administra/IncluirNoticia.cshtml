@@ -1,35 +1,30 @@
 ﻿@using Presentation.Extensions
-@model ERP_Condominios_Solution.ViewModels.MensagemFabricanteViewModel
+@model ERP_Condominios_Solution.ViewModels.NoticiaViewModel
 @{
     Layout = "~/Views/Shared/_Layout_Adm.cshtml";
-    ViewBag.Title = "WebDoctor - Aviso - Inclusão";
-    ViewBag.MetaDescription = "WebDoctor - Aviso - Inclusão de Aviso";
-    ViewBag.MetaKeywords = "WebDoctor, Aviso";
 }
-
 <div class="wrapper wrapper-content animated fadeInRight">
-    <div class="page-title">
-        <h3 class="title">Avisos</h3>
+    <div class="page-title"> 
+        <h3 class="title">Notícias</h3> 
         <br />
         <ol class="breadcrumb">
             <li>
                 <a href="@Url.Action("MontarTelaAdministra", "Administra")">Dashboard</a>
             </li>
             <li>
-                <a href="@Url.Action("MontarTelaAviso", "Administra")">Leads</a>
+                <a href="@Url.Action("MontarTelaNoticia", "Administra")">Notícias</a>
             </li>
             <li class="active">
-                <strong>Aviso - Inclusão</strong>
+                <strong>Notícias - Inclusão</strong>
             </li>
         </ol>
         <br />
     </div>
-
     <div class="row">
         <div class="col-lg-12 col-md-12 col-xs-12">
             <div class="col-lg-12 col-md-12 col-xs-12 ibox float-e-margins">
                 <div class="ibox-title">
-                    <h5>Aviso - Inclusão</h5>
+                    <h5>Notícia - Inclusão</h5>
                 </div>
                 <div class="ibox-content">
                     @Html.AntiForgeryToken()
@@ -41,79 +36,105 @@
                         </div>
                     }
                     <div class="tabs-container">
-                        @using (Html.BeginForm("IncluirAviso", "Administra", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal", @id = "pwd-container1" }))
+                        @using (Html.BeginForm("IncluirNoticia", "Administra", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal", @id = "pwd-container1" }))
                         {
-                            <div class="form-group">
-                                <br />
-                                <div class="col-lg-12 col-md-12 col-xs-12">
-                                    @Html.ButtonActionSubmit(text: "Confirmar Inclusão do Aviso", htmlAttributes: new { id = "basictoast", @class = "btn-loading show-spinner" })
-                                    @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaAviso", controller: "Administra", htmlAttributes: new { @class = "show-spinner" })  
-                                    <span id="loadingIndicator" style="display: none; margin-left: 10px; color: #007bff;">
-                                        <i class="fa fa-spinner fa-spin"></i> Processando...
-                                    </span>
-                                </div>
-                            </div>
-                            
                             <ul class="nav nav-tabs">
-                                <li class="active"><a data-toggle="tab" href="#tab-1">Dados do Aviso</a></li>
-                            </ul>   
+                                <li class="active"><a data-toggle="tab" href="#tab-1">Informações da Notícia</a></li>
+                                <li><a data-toggle="tab" href="#tab-2">Imagem da Notícia</a></li>
+                            </ul>
+
                             <div class="tab-content">
+                                <div class="form-group">
+                                    <br />
+                                    <div class="col-lg-12 col-md-12 col-xs-12">
+                                        <div class="form-group">
+                                            @Html.ButtonActionSubmit(text: "BtnSubmit", htmlAttributes: new { id = "submit", style = "display: none;" })
+                                            <button style="margin-left: 15px;" class="btnSubmit btn btn-sm btn-success btn-loading1   show-spinner" id="basictoast" type="button">Confirmar inclusão da notícia</button>
+                                            @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaNoticia", controller: "Administra", htmlAttributes: new { @class = "btn-loading show-spinner" })
+                                            <span id="loadingIndicator" style="display: none; margin-left: 10px; color: #007bff;">
+                                                <i class="fa fa-spinner fa-spin"></i> Processando...
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+
                                 @*Dados Gerais*@
                                 <div id="tab-1" class="tab-pane active">
                                     <div class="panel-body">
                                         <div class="row">
-                                            <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Prazos e Tipo de Aviso</h4>
-                                            <div class="form-group" style=" margin-left: -15px; margin-right: -15px;"> 
+                                            <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">                
+                                                <div class="col-lg-8 col-md-8 col-xs-12">
+                                                    @Html.HiddenFor(m => m.ASSI_CD_ID)
+                                                    @Html.HiddenFor(m => m.NOTC_IN_ATIVO)
+                                                    @Html.HiddenFor(m => m.NOTC_NR_ACESSO)
+                                                    @Html.HiddenFor(m => m.NOTC_IN_SISTEMA)
+                                                    Título*
+                                                    @Html.TextBoxFor(m => m.NOTC_NM_TITULO, new { @class = "form-control", autofocus = true, data_toggle = "popover", data_content = "Informe o título da notícia", data_trigger="hover", data_placement="top" })
+                                                    @Html.ValidationMessageFor(m => m.NOTC_NM_TITULO, "",new { @style="color:red" })
+                                                </div>
+                                                <div class="col-lg-4 col-md-4 col-xs-12">
+                                                    Autor*
+                                                    @Html.TextBoxFor(m => m.NOTC_NM_AUTOR, new { @class = "form-control", autofocus = true, data_toggle = "popover", data_content = "Informe o autor da nptícia", data_trigger="hover", data_placement="top" })
+                                                    @Html.ValidationMessageFor(m => m.NOTC_NM_AUTOR, "",new { @style="color:red" })
+                                                </div>
+                                            </div>
+                                            <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">                
                                                 <div class="col-lg-2 col-md-2 col-xs-12">
-                                                    Data de Criação
-                                                    @Html.TextBoxFor(m => m.MEFA_DT_CADASTRO, "{0:dd/MM/yyyy}", new { @class = "form-control", @tabindex = "-1", @readonly = "readonly", @style = "color: green; font-weight: bold" })
+                                                    Data de Criação*
+                                                    @Html.TextBoxFor(m => m.NOTC_DT_EMISSAO, "{0:dd/MM/yyyy}", new { @class = "form-control date-picker", @id = "dn", autofocus = true, data_toggle = "popover", data_content = "Informe a data de publicação da notícia", data_trigger="hover", data_placement="top" })
+                                                    @Html.ValidationMessageFor(m => m.NOTC_DT_EMISSAO, "",new { @style="color:red" })
                                                 </div>
                                                 <div class="col-lg-2 col-md-2 col-xs-12">
                                                     Data de Validade*
-                                                    @Html.TextBoxFor(m => m.MEFA_DT_VALIDADE, "{0:dd/MM/yyyy}", new { @class = "form-control date-picker", autofocus = true, @id = "dn" })
-                                                    @Html.ValidationMessageFor(m => m.MEFA_DT_VALIDADE, "", new { @style = "color:red" })
+                                                    @Html.TextBoxFor(m => m.NOTC_DT_VALIDADE, "{0:dd/MM/yyyy}", new { @class = "form-control date-picker", @id = "dn1", autofocus = true, data_toggle = "popover", data_content = "Informe a data limite de validade da notícia", data_trigger="hover", data_placement="top" })
+                                                    @Html.ValidationMessageFor(m => m.NOTC_DT_VALIDADE, "",new { @style="color:red" })
                                                 </div>
-                                                <div class="col-lg-4 col-md-4 col-xs-12">
-                                                    Tipo de Aviso*
-                                                    @Html.DropDownListFor(m => m.MEFA_IN_TIPO, (SelectList)ViewBag.Tipo, "Selecionar", new { @class = "form-control", data_toggle = "popover", data_content = "Tipo de Aviso", data_trigger="hover", data_placement="top", autofocus = true, @id = "tipo" })
-                                                    @Html.ValidationMessageFor(m => m.MEFA_IN_TIPO, "", new { @style = "color:red" })
+                                                <div class="col-lg-2 col-md-2 col-xs-12">
+                                                    Data de Autoria
+                                                    @Html.TextBoxFor(m => m.NOTC_DT_DATA_AUTOR, "{0:dd/MM/yyyy}", new { @class = "form-control date-picker", @id = "dn2", autofocus = true, data_toggle = "popover", data_content = "Informe a data da autoria da notícia", data_trigger="hover", data_placement="top" })
+                                                    @Html.ValidationMessageFor(m => m.NOTC_DT_DATA_AUTOR, "",new { @style="color:red" })
                                                 </div>
-                                            </div>               
-                                        </div>
-                                        <div class="row">
-                                            <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Dados do Aviso</h4>
-                                            <div class="form-group" style=" margin-left: -15px; margin-right: -15px;"> 
-                                                <div class="col-lg-12 col-md-12 col-xs-12">
-                                                    @Html.HiddenFor(m => m.MEFA_IN_ATIVO)
-                                                    @Html.HiddenFor(m => m.MEFA_DT_CADASTRO)
-                                                    @Html.HiddenFor(m => m.MEFA_IN_SISTEMA)
-                                                    Título*
-                                                    @Html.TextBoxFor(m => m.MEFA_NM_TITULO, new { @class = "form-control", autofocus = true, data_toggle = "popover", data_content = "Informe o título do aviso", data_trigger="hover", data_placement="top" })
-                                                    @Html.ValidationMessageFor(m => m.MEFA_NM_TITULO, "", new { @style = "color:red" })
+                                                <div class="col-lg-6 col-md-6 col-xs-12">
+                                                    Origem
+                                                    @Html.TextBoxFor(m => m.NOTC_NM_ORIGEM, new { @class = "form-control", autofocus = true, data_toggle = "popover", data_content = "Informe a origem da notícia, caso seja externa", data_trigger="hover", data_placement="top" })
+                                                    @Html.ValidationMessageFor(m => m.NOTC_NM_ORIGEM, "",new { @style="color:red" })
                                                 </div>
                                             </div>
-                                            <div class="form-group" style=" margin-left: -30px; margin-right: -15px;">
-                                                <div class="col-lg-12 col-md-12 col-xs-12">
-                                                    Resumo*
-                                                    @Html.TextAreaFor(m => m.MEFA_LK_LINK, new { @class = "form-control", style = "width: 100%; height: 100px; overflow:auto;", autofocus = true, @id="desc", data_toggle = "popover", data_content = "Informe um resumo do texto do aviso", data_trigger="hover", data_placement="top" })
-                                                    @Html.ValidationMessageFor(m => m.MEFA_LK_LINK, "", new { @style = "color:red" })
+                                            <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">                
+                                                <div class="col-lg-6 col-md-6 col-xs-12">
+                                                    Link Externo
+                                                    @Html.TextBoxFor(m => m.NOTC_LK_LINK, new { @class = "form-control", autofocus = true, data_toggle = "popover", data_content = "Informe o link (URL) para o site original da notícia", data_trigger="hover", data_placement="top" })
+                                                    @Html.ValidationMessageFor(m => m.NOTC_LK_LINK, "",new { @style="color:red" })
                                                 </div>
                                             </div>
-                                            <div class="form-group" style=" margin-left: -30px; margin-right: -15px;">
+                                            <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">                
                                                 <div class="col-lg-12 col-md-12 col-xs-12">
-                                                    Texto do Aviso*
-                                                    @Html.TextAreaFor(m => m.MEFA_TX_TEXTO, new { @class = "form-control", style = "width: 100%; height: 400px; overflow:auto;", autofocus = true, @id="desc", data_toggle = "popover", data_content = "Informe um texto que será acrescentado à descrição gerada automaticamente", data_trigger="hover", data_placement="top" })
-                                                    @Html.ValidationMessageFor(m => m.MEFA_TX_TEXTO, "", new { @style = "color:red" })
+                                                    Conteúdo da Notícia
+                                                    @Html.TextAreaFor(m => m.NOTC_TX_TEXTO, new { @class = "form-control", style = "width: 100%; height: 500px; overflow:auto;", autofocus = true, data_toggle = "popover", data_content = "Informe o conteúdo da notícia", data_trigger="hover", data_placement="top"})
+                                                    @Html.ValidationMessageFor(m => m.NOTC_TX_TEXTO, "",new { @style="color:red" })
                                                 </div>
                                             </div>
                                         </div>
+                                    </div>
+                                </div>
+
+                                @*Imagens*@
+                                <div id="tab-2" class="tab-pane">
+                                    <div class="panel-body">
                                         <div class="row">
-                                            <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Documemto Anexo (Se houver)</h4>
-                                            <div class="form-group">
-                                                <input class="btn btn-sm btn-warning" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="ATENÇÃO - Antes de anexar arquivos certifique-se de que eles estejam livres de vírus e outras ameaças.  " style="margin-left: -15px;" id="inputFile" type="file" multiple />
-                                                <br />
-                                                <div class="form-group" style="margin-left: -15px;">
+                                            <div style="margin-left: 15px;" class="col-lg-12 col-md-12 col-xs-12">
+                                                <div class="form-group">
+                                                    <h4>Imagem Associada à Notícia</h4><input type="file" accept=".webp, .jpg, .png, .jpeg, .gif|images/*" name="file" id="imgNoticia" class="btn btn-sm btn-warning" multiple />
+                                                    <br />
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <hr />
+                                            <div class="col-lg-12 col-md-12 col-xs-12">
+                                                <div class="form-group">
                                                     <div>
+                                                        <hr />
                                                         <table style="width: 100%;" class="table table-striped table-bordered table-hover dataTables-example" id="myFiles">
                                                             <thead style="background-color:lightsteelblue">
                                                                 <tr>
@@ -130,6 +151,7 @@
                                         </div>
                                     </div>
                                 </div>
+
                             </div>
                         }
                     </div>
@@ -140,48 +162,18 @@
 </div>
 
 @section Styles {
-    <link href="~/Content/themes/base/jquery-ui.min.css" rel="stylesheet" />
-    <link href="~/Content/themes/base/all.css" rel="stylesheet" />
+    <link href="~/Content/themes/base/all.css" rel="stylesheet" />  
     @Styles.Render("~/Content/plugins/dataTables/dataTablesStyles")
     @Styles.Render("~/plugins/jasnyBootstrapStyles")
     @Styles.Render("~/plugins/toastrStyles")
-
-        <style>
-        /* 1. Aumenta a largura e garante o espaço interno */
-        #toast-container > .toast {
-            width: 500px !important; 
-            max-width: 500px !important;
-            opacity: 0.95 !important;
-        }
-
-        /* 2. Remove o ícone nativo do Toastr (Background Image) */
-        #toast-container > .toast-success {
-            background-image: none !important;
-        }
-
-        /* 3. Remove ícones do FontAwesome/Inspinia injetados via ::before no Título */
-        .toast-success .toast-title::before, 
-        .toast-success .toast-title::after,
-        .toast-success::before {
-            content: none !important;
-            display: none !important;
-        }
-
-        /* 4. Ajusta o recuo do texto já que removemos o ícone */
-        .toast-success .toast-title, 
-        .toast-success .toast-message {
-            padding-left: 10px !important;
-        }
-    </style>
-
+    <link href="~/Content/themes/base/jquery-ui.min.css" rel="stylesheet" />
 }
 @section Scripts {
     @Scripts.Render("~/plugins/toastr")
-    <script src="~/Scripts/jquery-ui-1.12.1.min.js"></script>
     @Scripts.Render("~/plugins/dataTables")
     @Scripts.Render("~/bundles/inputmask")
-    @Scripts.Render("~/plugins/jasnyBootstrap")
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.maskedinput/1.4.1/jquery.maskedinput.js"></script>
+    <script src="~/Scripts/jquery-ui-1.12.1.min.js"></script>
     <script src="~/Scripts/uploadAnexo.js"></script>
 
     <script type="text/javascript" src="~/Scripts/moment.min.js"></script>
@@ -251,14 +243,40 @@
         });
     </script>
 
+    <script type="text/javascript" language="javascript">
+        $(function () {
+            $('.date-picker').datepicker(
+                {
+                    dateFormat: 'dd/mm/yy',
+                    dayNames: ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'],
+                    dayNamesMin: ['D', 'S', 'T', 'Q', 'Q', 'S', 'S', 'D'],
+                    dayNamesShort: ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'],
+                    monthNames: ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'],
+                    monthNamesShort: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'],
+                    nextText: 'Proximo',
+                    prevText: 'Anterior',
+                    showOn: "focus"
+                }
+            )
+                .css("display", "normal")
+                .next("button").button({
+                    icons: { primary: "ui-icon-calendar" },
+                    label: "Selecione uma data",
+                    text: false
+                });
+        });
+    </script>
+
     <script type="text/javascript">
         $(function () {
             $("#dn").mask("99/99/9999");
-            $("#cel").mask("(99)99999-9999");
-            $("#cep").mask("99999-999");
-            $("#cpf").mask("999.999.999-99");
-            $("#cnpj").mask("99.999.999/9999-99");
-    });
+            $("#dn1").mask("99/99/9999");
+            $("#dn2").mask("99/99/9999");
+        });
+    </script>
+
+    <script>
+        SendFilesV2('imgNoticia', 'Administra', 'UploadFileToSession');
     </script>
 
     <script type="text/javascript">
@@ -329,12 +347,12 @@
                     msg = getMessage();
                 }
                 $("#toastrOptions").text("Command: toastr["
-                    + shortCutFunction
-                    + "](\""
-                    + msg
-                    + (title ? "\", \"" + title : '')
-                    + "\")\n\ntoastr.options = "
-                    + JSON.stringify(toastr.options, null, 2)
+                        + shortCutFunction
+                        + "](\""
+                        + msg
+                        + (title ? "\", \"" + title : '')
+                        + "\")\n\ntoastr.options = "
+                        + JSON.stringify(toastr.options, null, 2)
                 );
                 var $toast = toastr[shortCutFunction](msg, title); // Wire up an event handler to a button in the toast, if it exists
                 $toastlast = $toast;
@@ -362,11 +380,6 @@
 
         });
     </script>
-
-    <script>
-        SendFilesV2('imgCliente', 'Administra', 'UploadFileToSessionAviso');
-    </script>
-
     @if (ViewBag.Message != null)
     {
         <script type="text/javascript">
@@ -376,3 +389,4 @@
         </script>
     }
 }
+

@@ -59,6 +59,7 @@ namespace GEDSys_Presentation.Controllers
         private readonly ICRMAppService crmApp;
         private readonly IAssinanteAppService assApp;
         private readonly IPacienteAppService pacApp;
+        private readonly INoticiaAppService notApp;
 
 #pragma warning disable CS0169 // O campo "PacienteController.msg" nunca é usado
         private String msg;
@@ -78,8 +79,11 @@ namespace GEDSys_Presentation.Controllers
         private LOG objetoLog = new LOG();
         private LOG objetoLogAntes = new LOG();
         private List<LOG> listaMasterLog = new List<LOG>();
+        private NOTICIA objetoNot = new NOTICIA();
+        private NOTICIA objetoNotAntes = new NOTICIA();
+        private List<NOTICIA> listaMasterNot = new List<NOTICIA>();
 
-        public AdministraController(ILeadAppService baseApps, ILogAppService logApps, IUsuarioAppService usuApps, IConfiguracaoAppService confApps, IEmpresaAppService empApps, IAcessoMetodoAppService aceApps, ICRMAppService crmApps, IAssinanteAppService assApps, IPacienteAppService pacApps)
+        public AdministraController(ILeadAppService baseApps, ILogAppService logApps, IUsuarioAppService usuApps, IConfiguracaoAppService confApps, IEmpresaAppService empApps, IAcessoMetodoAppService aceApps, ICRMAppService crmApps, IAssinanteAppService assApps, IPacienteAppService pacApps, INoticiaAppService notApps)
         {
             baseApp = baseApps;
             logApp = logApps;
@@ -90,6 +94,7 @@ namespace GEDSys_Presentation.Controllers
             crmApp = crmApps;
             assApp = assApps;
             pacApp = pacApps;
+            notApp = notApps;
         }
 
         [HttpGet]
@@ -909,13 +914,8 @@ namespace GEDSys_Presentation.Controllers
                 CONFIGURACAO conf = CarregaConfiguracaoGeral();
                 List<ACESSO_METODO> acessos = aceApp.GetAllItensMes();
                 Session["Acessos"] = acessos;
-                List<ACESSO_METODO> acessosYear = aceApp.GetAllItensAno();
+                List<ACESSO_METODO> acessosYear = aceApp.GetAllItensMesAnterior();
                 Session["AcessosAno"] = acessosYear;
-
-                List<LOG_EXCECAO_NOVO> falhas = usuApp.GetAllLogExcecaoMes();
-                Session["Falhas"] = falhas;
-                List<LOG_EXCECAO_NOVO> falhasYear = usuApp.GetAllLogExcecaoAno();
-                Session["FalhasAno"] = falhasYear;
 
                 String mes = CrossCutting.UtilitariosGeral.NomeMes(DateTime.Today.Date.Month);
                 ViewBag.MesCorrente = mes + " de " + DateTime.Today.Date.Year.ToString();
@@ -931,32 +931,35 @@ namespace GEDSys_Presentation.Controllers
                 List<ACESSO_METODO> acessosMes = acessos;
                 List<ACESSO_METODO> acessosAno = acessosYear;
                 List<ACESSO_METODO> acessosDia = acessos.Where(p => p.ACES_DT_ACESSO.Value.Date == DateTime.Today.Date).ToList();
+                
                 Session["AcessosMes"] = acessosMes;
                 Session["AcessosDia"] = acessosDia;
                 Session["AcessosAno"] = acessosAno;
+                
                 ViewBag.Acessos = acessos;
                 ViewBag.AcessosMes = acessosMes;
                 ViewBag.AcessosDia = acessosDia;
                 ViewBag.AcessosAno = acessosAno;
+
                 ViewBag.AcessosConta = acessos.Count();
                 ViewBag.AcessosMesConta = acessosMes.Count();
                 ViewBag.AcessosDiaConta = acessosDia.Count();
                 ViewBag.AcessosAnoConta = acessosAno.Count();
 
-                List<LOG_EXCECAO_NOVO> falhasMes = falhas;
-                List<LOG_EXCECAO_NOVO> falhasAno = falhasYear;
-                List<LOG_EXCECAO_NOVO> falhasDia = falhas.Where(p => p.LOEX_DT_DATA.Date == DateTime.Today.Date).ToList();
-                Session["FalhasMes"] = falhasMes;
-                Session["FalhasDia"] = falhasDia;
-                Session["FalhasAno"] = falhasAno;
-                ViewBag.Falhas = falhas;
-                ViewBag.FalhasMes = falhasMes;
-                ViewBag.FalhasAno = falhasAno;
-                ViewBag.FalhasDia = falhasDia;
-                ViewBag.FalhasConta = falhas.Count();
-                ViewBag.FalhasMesConta = falhasMes.Count();
-                ViewBag.FalhasAnoConta = falhasAno.Count();
-                ViewBag.FalhasDiaConta = falhasDia.Count();
+                //List<LOG_EXCECAO_NOVO> falhasMes = falhas;
+                //List<LOG_EXCECAO_NOVO> falhasAno = falhasYear;
+                //List<LOG_EXCECAO_NOVO> falhasDia = falhas.Where(p => p.LOEX_DT_DATA.Date == DateTime.Today.Date).ToList();
+                //Session["FalhasMes"] = falhasMes;
+                //Session["FalhasDia"] = falhasDia;
+                //Session["FalhasAno"] = falhasAno;
+                //ViewBag.Falhas = falhas;
+                //ViewBag.FalhasMes = falhasMes;
+                //ViewBag.FalhasAno = falhasAno;
+                //ViewBag.FalhasDia = falhasDia;
+                //ViewBag.FalhasConta = falhas.Count();
+                //ViewBag.FalhasMesConta = falhasMes.Count();
+                //ViewBag.FalhasAnoConta = falhasAno.Count();
+                //ViewBag.FalhasDiaConta = falhasDia.Count();
 
                 // Acessos por dia - Mes corrente
                 List<DateTime> datas = acessosMes.Where(p => p.ACES_DT_ACESSO.Value.Month == DateTime.Today.Month & p.ACES_DT_ACESSO.Value.Year == DateTime.Today.Year).Select(p => p.ACES_DT_ACESSO.Value.Date).Distinct().ToList();
@@ -973,59 +976,82 @@ namespace GEDSys_Presentation.Controllers
                 ViewBag.ListaAcessoDia = lista;
                 Session["ListaAcessoDia"] = lista;
 
-                // Resumo Mensal Acessos
-                datas = acessosAno.Where(p => p.ACES_DT_ACESSO.Value > limite).Select(p => p.ACES_DT_ACESSO.Value.Date).Distinct().ToList();
+                // Acessos por dia - Mes Anterior
+                var currentMonth = DateTime.Today.Month;
+                var previousMonth = DateTime.Today.AddMonths(-1).Month;
+                var year = DateTime.Today.Year;
+                if (currentMonth == 1)
+                {
+                    previousMonth = 12;
+                    year -= year;
+                }
+                datas = acessosAno.Where(p => p.ACES_DT_ACESSO.Value.Month == previousMonth & p.ACES_DT_ACESSO.Value.Year == year).Select(p => p.ACES_DT_ACESSO.Value.Date).Distinct().ToList();
                 datas.Sort((i, j) => i.Date.CompareTo(j.Date));
-                List<ModeloViewModel> listaMes = new List<ModeloViewModel>();
-                String mes2 = null;
-                String mesFeito2 = null;
+                List<ModeloViewModel> lista1 = new List<ModeloViewModel>();
                 foreach (DateTime item in datas)
                 {
-                    if (item.Date > limite)
-                    {
-                        mes2 = item.Month.ToString() + "/" + item.Year.ToString();
-                        if (mes2 != mesFeito2)
-                        {
-                            Int32 conta = acessos.Where(p => p.ACES_DT_ACESSO.Value.Date.Month == item.Month & p.ACES_DT_ACESSO.Value.Date.Year == item.Year & p.ACES_DT_ACESSO > limite).Count();
-                            ModeloViewModel mod = new ModeloViewModel();
-                            mod.Nome = mes2;
-                            mod.Valor = conta;
-                            listaMes.Add(mod);
-                            mesFeito2 = item.Month.ToString() + "/" + item.Year.ToString();
-                        }
-                    }
+                    Int32 conta = acessos.Where(p => p.ACES_DT_ACESSO.Value.Date == item.Date).Count();
+                    ModeloViewModel mod = new ModeloViewModel();
+                    mod.DataEmissao = item;
+                    mod.Valor = conta;
+                    lista1.Add(mod);
                 }
-                mes2 = null;
-                mesFeito2 = null;
-                ViewBag.ListaAcessoMes = listaMes;
-                Session["ListaAcessoMes"] = listaMes;
+                ViewBag.ListaAcessoAnterior = lista1;
+                Session["ListaAcessoAnterior"] = lista1;
+
+                //// Resumo Mensal Acessos
+                //datas = acessosAno.Where(p => p.ACES_DT_ACESSO.Value > limite).Select(p => p.ACES_DT_ACESSO.Value.Date).Distinct().ToList();
+                //datas.Sort((i, j) => i.Date.CompareTo(j.Date));
+                //List<ModeloViewModel> listaMes = new List<ModeloViewModel>();
+                //String mes2 = null;
+                //String mesFeito2 = null;
+                //foreach (DateTime item in datas)
+                //{
+                //    if (item.Date > limite)
+                //    {
+                //        mes2 = item.Month.ToString() + "/" + item.Year.ToString();
+                //        if (mes2 != mesFeito2)
+                //        {
+                //            Int32 conta = acessos.Where(p => p.ACES_DT_ACESSO.Value.Date.Month == item.Month & p.ACES_DT_ACESSO.Value.Date.Year == item.Year & p.ACES_DT_ACESSO > limite).Count();
+                //            ModeloViewModel mod = new ModeloViewModel();
+                //            mod.Nome = mes2;
+                //            mod.Valor = conta;
+                //            listaMes.Add(mod);
+                //            mesFeito2 = item.Month.ToString() + "/" + item.Year.ToString();
+                //        }
+                //    }
+                //}
+                //mes2 = null;
+                //mesFeito2 = null;
+                //ViewBag.ListaAcessoMes = listaMes;
+                //Session["ListaAcessoMes"] = listaMes;
 
                 // Acessos por usuario - Mais acessos
-                List<Int32> usuarios = acessosMes.Where(p => p.ACES_DT_ACESSO.Value.Month == DateTime.Today.Month & p.ACES_DT_ACESSO.Value.Year == DateTime.Today.Year & p.USUARIO.USUA_IN_ATIVO == 1 & p.ACES_IN_SISTEMA == 6).Select(p => p.USUA_CD_ID).Distinct().ToList();
-                usuarios.Sort((i, j) => i.CompareTo(j));
+                //List<Int32> usuarios = acessosMes.Where(p => p.ACES_DT_ACESSO.Value.Month == DateTime.Today.Month & p.ACES_DT_ACESSO.Value.Year == DateTime.Today.Year & p.USUARIO.USUA_IN_ATIVO == 1 & p.ACES_IN_SISTEMA == 6).Select(p => p.USUA_CD_ID).Distinct().ToList();
+                List<USUARIO> usuarios = usus;
+                //usuarios.Sort((i, j) => i.CompareTo(j));
                 List<ModeloViewModel> listaUsu = new List<ModeloViewModel>();
-                foreach (Int32 item in usuarios)
+                foreach (USUARIO item in usuarios)
                 {
-                    Int32 conta = acessosMes.Where(p => p.USUA_CD_ID == item).Count();
-                    USUARIO usu = usuApp.GetItemById(item);
+                    Int32 conta = acessosMes.Where(p => p.USUA_CD_ID == item.USUA_CD_ID).Count();
                     ModeloViewModel mod = new ModeloViewModel();
-                    mod.Nome = usu.USUA_NM_NOME;
+                    mod.Nome = item.USUA_NM_NOME;
                     mod.Valor = conta;
-                    mod.Nome1 = usu.USUA_NM_EMAIL;
-                    mod.Nome2 = usu.USUA_NM_LOGIN;
-                    mod.Nome3 = usu.USUA_NR_CELULAR;
-                    mod.Nome4 = usu.USUA_NR_CPF;
-                    if (usu.ESPECIALIDADE != null)
+                    mod.Nome1 = item.USUA_NM_EMAIL;
+                    mod.Nome2 = item.USUA_NM_LOGIN;
+                    mod.Nome3 = item.USUA_NR_CELULAR;
+                    mod.Nome4 = item.USUA_NR_CPF;
+                    if (item.ESPECIALIDADE != null)
                     {
-                        mod.Nome5 = usu.ESPECIALIDADE.ESPE_NM_NOME;
+                        mod.Nome5 = item.ESPECIALIDADE.ESPE_NM_NOME;
                     }
                     else
                     {
                         mod.Nome5 = "-";
                     }
-                    if (usu.TIPO_CARTEIRA_CLASSE != null)
+                    if (item.TIPO_CARTEIRA_CLASSE != null)
                     {
-                        mod.Nome6 = usu.TIPO_CARTEIRA_CLASSE.TICL_NM_NOME + " / " + usu.USUA_NR_CLASSE;
+                        mod.Nome6 = item.TIPO_CARTEIRA_CLASSE.TICL_NM_NOME + " / " + item.USUA_NR_CLASSE;
                     }
                     else
                     {
@@ -3035,7 +3061,7 @@ namespace GEDSys_Presentation.Controllers
                     // Sanitização
                     vm.MEFA_NM_TITULO = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(vm.MEFA_NM_TITULO);
                     vm.MEFA_TX_TEXTO = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(vm.MEFA_TX_TEXTO);
-                    vm.MEFA_LK_LINK = vm.MEFA_NM_TITULO;
+                    vm.MEFA_LK_LINK = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(vm.MEFA_LK_LINK);
 
                     // Critica
                     if (vm.MEFA_DT_VALIDADE <= vm.MEFA_DT_CADASTRO)
@@ -3765,7 +3791,7 @@ namespace GEDSys_Presentation.Controllers
 
         public JsonResult GetAcessosMes()
         {
-            List<ModeloViewModel> listaCP1 = (List<ModeloViewModel>)Session["ListaAcessoMes"];
+            List<ModeloViewModel> listaCP1 = (List<ModeloViewModel>)Session["ListaAcessoAnterior"];
             List<String> dias = new List<String>();
             List<Decimal> valor = new List<Decimal>();
             dias.Add(" ");
@@ -3773,7 +3799,7 @@ namespace GEDSys_Presentation.Controllers
 
             foreach (ModeloViewModel item in listaCP1)
             {
-                dias.Add(item.Nome);
+                dias.Add(item.DataEmissao.ToShortDateString());
                 valor.Add(item.Valor);
             }
 
@@ -4073,7 +4099,906 @@ namespace GEDSys_Presentation.Controllers
             }
         }
 
+        [HttpGet]
+        public ActionResult MontarTelaNoticia()
+        {
+            try
+            {
+                // Verifica se tem usuario logado
+                USUARIO usuario = new USUARIO();
+                if ((String)Session["Ativa"] == null)
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+                if ((USUARIO)Session["UserCredentials"] != null)
+                {
+                    usuario = (USUARIO)Session["UserCredentials"];
+                }
+                else
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+                Int32 idAss = (Int32)Session["IdAssinante"];
+                Session["ModuloAtual"] = "Noticia";
 
+                // Carrega listas
+                if ((List<NOTICIA>)Session["ListaNoticia"] == null)
+                {
+                    listaMasterNot = CarregaNoticiaGeral();
+                    Session["ListaNoticia"] = listaMasterNot;
+                }
+                ViewBag.Listas = (List<NOTICIA>)Session["ListaNoticia"];
+                ViewBag.Title = "Notícias";
+
+                // Indicadores
+                ViewBag.Noticias = ((List<NOTICIA>)Session["ListaNoticia"]).Count;
+                ViewBag.Perfil = usuario.PERFIL.PERF_SG_SIGLA;
+
+                // Mensagem
+                if (Session["MensNoticia"] != null)
+                {
+                    if ((Int32)Session["MensNoticia"] == 1)
+                    {
+                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0016", CultureInfo.CurrentCulture));
+                    }
+                    if ((Int32)Session["MensNoticia"] == 61)
+                    {
+                        TempData["MensagemAcerto"] = (String)Session["MsgCRUD"];
+                        TempData["TemMensagem"] = 1;
+                    }
+                }
+
+                // Abre view
+                objetoNot = new NOTICIA();
+                Session["VoltaNoticia"] = 1;
+                Session["MensNoticia"] = 0;
+                Session["UsuarioEspecial"] = usuario.USUA_IN_ESPECIAL;
+                return View(objetoNot);
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Noticia";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Administra", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return RedirectToAction("TrataExcecao", "BaseAdmin");
+            }
+        }
+
+        public ActionResult RetirarFiltroNoticiaGeral()
+        {
+            try
+            {
+                if ((String)Session["Ativa"] == null)
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+                Session["ListaNoticia"] = null;
+                return RedirectToAction("MontarTelaNoticia");
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Notícia";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Administra", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return RedirectToAction("TrataExcecao", "BaseAdmin");
+            }
+        }
+
+        public ActionResult MostrarTudoNoticiaGeral()
+        {
+            try
+            {
+                if ((String)Session["Ativa"] == null)
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+                Int32 idAss = (Int32)Session["IdAssinante"];
+                listaMasterNot = notApp.GetAllItensAdm(idAss);
+                Session["ListaNoticia"] = listaMasterNot;
+                return RedirectToAction("MontarTelaNoticia");
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Notícia";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Administra", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return RedirectToAction("TrataExcecao", "BaseAdmin");
+            }
+        }
+
+        [HttpPost]
+        public ActionResult FiltrarNoticiaGeral(NOTICIA item)
+        {
+            try
+            {
+                // Executa a operação
+                if ((String)Session["Ativa"] == null)
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+                Int32 idAss = (Int32)Session["IdAssinante"];
+                List<NOTICIA> listaObj = new List<NOTICIA>();
+                Tuple<Int32, List<NOTICIA>, Boolean> volta = notApp.ExecuteFilter(item.NOTC_NM_TITULO, item.NOTC_NM_AUTOR, item.NOTC_DT_DATA_AUTOR, item.NOTC_TX_TEXTO, item.NOTC_LK_LINK, idAss);
+
+                // Verifica retorno
+                if (volta.Item1 == 1)
+                {
+                    Session["MensNoticia"] = 1;
+                    return RedirectToAction("MontarTelaNoticia");
+                }
+
+                // Sucesso
+                Session["MensNoticia"] = 0;
+                listaMasterNot = volta.Item2;
+                Session["ListaNoticia"] = volta.Item2;
+                return RedirectToAction("MontarTelaNoticia");
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Notícia";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Administra", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return RedirectToAction("TrataExcecao", "BaseAdmin");
+            }
+        }
+
+        public ActionResult VoltarBaseNoticia()
+        {
+            if ((String)Session["Ativa"] == null)
+            {
+                return RedirectToAction("Logout", "ControleAcesso");
+            }
+            return RedirectToAction("MontarTelaNoticia");
+        }
+
+        [HttpGet]
+        public ActionResult IncluirNoticia()
+        {
+            // Verifica se tem usuario logado
+            USUARIO usuario = new USUARIO();
+            if ((String)Session["Ativa"] == null)
+            {
+                return RedirectToAction("Logout", "ControleAcesso");
+            }
+            if ((USUARIO)Session["UserCredentials"] != null)
+            {
+                usuario = (USUARIO)Session["UserCredentials"];
+            }
+            else
+            {
+                return RedirectToAction("Logout", "ControleAcesso");
+            }
+            Int32 idAss = (Int32)Session["IdAssinante"];
+            Session["ModuloAtual"] = "Noticia - Inclusão";
+            CONFIGURACAO conf = CarregaConfiguracaoGeral();
+
+            // Prepara view
+            NOTICIA item = new NOTICIA();
+            NoticiaViewModel vm = Mapper.Map<NOTICIA, NoticiaViewModel>(item);
+            vm.ASSI_CD_ID = 1;
+            vm.NOTC_DT_EMISSAO = DateTime.Today.Date;
+            vm.NOTC_IN_ATIVO = 1;
+            vm.NOTC_DT_VALIDADE = DateTime.Today.Date.AddDays(30);
+            vm.NOTC_NR_ACESSO = 0;
+            vm.NOTC_IN_SISTEMA = 6;           
+            return View(vm);
+        }
+
+        [HttpPost]
+        public ActionResult IncluirNoticia(NoticiaViewModel vm)
+        {
+            if ((String)Session["Ativa"] == null)
+            {
+                return RedirectToAction("Logout", "ControleAcesso");
+            }
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    // Sanitização
+                    vm.NOTC_NM_AUTOR = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(vm.NOTC_NM_AUTOR);
+                    vm.NOTC_NM_ORIGEM = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(vm.NOTC_NM_ORIGEM);
+                    vm.NOTC_NM_TITULO = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(vm.NOTC_NM_TITULO);
+                    vm.NOTC_TX_TEXTO = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(vm.NOTC_TX_TEXTO);
+                    vm.NOTC_AQ_ARQUIVO = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(vm.NOTC_AQ_ARQUIVO);
+
+                    // Executa a operação
+                    Int32 idAss = (Int32)Session["IdAssinante"];
+                    NOTICIA item = Mapper.Map<NoticiaViewModel, NOTICIA>(vm);
+                    USUARIO usuarioLogado = (USUARIO)Session["UserCredentials"];
+                    Int32 volta = notApp.ValidateCreate(item, usuarioLogado);
+
+                    // Verifica retorno
+                    Session["IdNoticia"] = item.NOTC_CD_ID;
+
+                    // Carrega foto e processa alteracao
+                    item.NOTC_AQ_FOTO = "~/Images/p_big2.jpg";
+                    volta = notApp.ValidateEdit(item, item, usuarioLogado);
+
+                    if (Session["FileQueueNoticia"] != null)
+                    {
+                        List<FileQueue> fq = (List<FileQueue>)Session["FileQueueNoticia"];
+                        foreach (var file in fq)
+                        {
+                            if (file.Profile == null)
+                            {
+                            }
+                            else
+                            {
+                                UploadFotoQueueNoticia(file);
+                            }
+                        }
+
+                        Session["FileQueueNoticia"] = null;
+                    }
+
+                    // Mensagem do CRUD
+                    Session["MsgCRUD"] = "A notícia " + item.NOTC_NM_TITULO.ToUpper() + " foi incluída com sucesso";
+                    Session["MensNoticia"] = 61;
+
+                    // Sucesso
+                    listaMasterNot = new List<NOTICIA>();
+                    Session["ListaNoticia"] = null;
+                    Session["VoltaNoticia"] = 1;
+                    Session["IdNoticiaVolta"] = item.NOTC_CD_ID;
+                    Session["Noticia"] = item;
+                    Session["IdVolta"] = item.NOTC_CD_ID;
+                    Session["MensNoticia"] = 0;
+                    Session["NoticiaAlterada"] = 1;
+                    return RedirectToAction("MontarTelaNoticia");
+                }
+                catch (Exception ex)
+                {
+                    ViewBag.Message = ex.Message;
+                    Session["TipoVolta"] = 2;
+                    Session["VoltaExcecao"] = "Notícia";
+                    Session["Excecao"] = ex;
+                    Session["ExcecaoTipo"] = ex.GetType().ToString();
+                    GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                    Int32 voltaX = grava.GravarLogExcecao(ex, "Administra", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                    return RedirectToAction("TrataExcecao", "BaseAdmin");
+                }
+            }
+            else
+            {
+                return View(vm);
+            }
+        }
+
+        [HttpPost]
+        public void UploadFileToSession(IEnumerable<HttpPostedFileBase> files, String profile)
+        {
+            List<FileQueue> queue = new List<FileQueue>();
+            foreach (var file in files)
+            {
+                FileQueue f = new FileQueue();
+                f.Name = Path.GetFileName(file.FileName);
+                f.ContentType = Path.GetExtension(file.FileName);
+
+                MemoryStream ms = new MemoryStream();
+                file.InputStream.CopyTo(ms);
+                f.Contents = ms.ToArray();
+
+                if (profile != null)
+                {
+                    if (file.FileName.Equals(profile))
+                    {
+                        f.Profile = 1;
+                    }
+                }
+
+                queue.Add(f);
+            }
+            Session["FileQueueNoticia"] = queue;
+        }
+
+        [HttpPost]
+        public void UploadFileToSessionAviso(IEnumerable<HttpPostedFileBase> files, String profile)
+        {
+            List<FileQueue> queue = new List<FileQueue>();
+            foreach (var file in files)
+            {
+                FileQueue f = new FileQueue();
+                f.Name = Path.GetFileName(file.FileName);
+                f.ContentType = Path.GetExtension(file.FileName);
+
+                MemoryStream ms = new MemoryStream();
+                file.InputStream.CopyTo(ms);
+                f.Contents = ms.ToArray();
+
+                if (profile != null)
+                {
+                    if (file.FileName.Equals(profile))
+                    {
+                        f.Profile = 1;
+                    }
+                }
+
+                queue.Add(f);
+            }
+            Session["FileQueueAviso"] = queue;
+        }
+
+        [HttpPost]
+        public async Task<Int32> UploadFotoQueueNoticia(FileQueue file)
+        {
+            try
+            {
+                // Inicializa
+                Int32 idNot = (Int32)Session["IdNoticia"];
+                Int32 idAss = (Int32)Session["IdAssinante"];
+
+                if (file == null)
+                {
+                    Session["MensPaciente"] = 5;
+                    return 1;
+                }
+
+                // Recupera noticia
+                NOTICIA item = notApp.GetById(idNot);
+                USUARIO usu = (USUARIO)Session["UserCredentials"];
+                var fileName = file.Name;
+                if (fileName.Length > 250)
+                {
+                    Session["MensNoticia"] = 6;
+                    return 2;
+                }
+
+                // Critica tamanho arquivo
+                var fileSize = file.Contents.Length;
+                if (fileSize > 50000000)
+                {
+                    Session["MensNoticia"] = 7;
+                    return 3;
+                }
+
+
+                // 1. DEFINIÇÃO DE CAMINHOS (Removendo a barra inicial para o Azure)
+                String caminhoRelativo = "Imagens/Base/Noticias/" + item.NOTC_CD_ID.ToString() + "/Fotos/";
+                String caminhoLocal = Server.MapPath("~/" + caminhoRelativo);
+                String fullPathLocal = Path.Combine(caminhoLocal, fileName);
+
+                //Recupera tipo de arquivo
+                extensao = Path.GetExtension(fileName);
+                String a = extensao;
+
+                // Gravar registro
+                item = notApp.GetById(idNot);
+                item.NOTC_AQ_FOTO = "~" + caminhoRelativo + fileName;
+                Int32 volta = notApp.ValidateEdit(item, item);
+                listaMasterNot = new List<NOTICIA>();
+                Session["ListaNoticia"] = null;
+
+                //// Garante que a pasta local existe
+                //if (!Directory.Exists(caminhoLocal)) Directory.CreateDirectory(caminhoLocal);
+
+                //// 2. CÓPIA LOCAL
+                //System.IO.File.WriteAllBytes(fullPathLocal, file.Contents);
+
+                // 3. CÓPIA PARA O AZURE BLOB STORAGE
+                try
+                {
+                    CONFIGURACAO conf = CarregaConfiguracaoGeral();
+                    string connString = conf.CONF_NM_STORAGE_CONN;
+                    string containerName = conf.CONF_NM_STORAGE_CONTAINER;
+
+                    var blobServiceClient = new Azure.Storage.Blobs.BlobServiceClient(connString);
+                    var containerClient = blobServiceClient.GetBlobContainerClient(containerName);
+
+                    // Nome do blob incluindo as "pastas" virtuais
+                    string blobName = caminhoRelativo + fileName;
+                    var blobClient = containerClient.GetBlobClient(blobName);
+
+                    // Upload idempotente usando MemoryStream
+                    using (var ms = new MemoryStream(file.Contents))
+                    {
+                        await blobClient.UploadAsync(ms, overwrite: true);
+                    }
+                    Int32 x = 0;
+                }
+                catch (Exception exAzure)
+                {
+                    return 0;
+                }
+                return 0;
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Noticia";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Administra", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return 0;
+            }
+        }
+
+        [HttpGet]
+        public ActionResult EditarNoticia(Int32 id)
+        {
+            // Verifica se tem usuario logado
+            USUARIO usuario = new USUARIO();
+            if ((String)Session["Ativa"] == null)
+            {
+                return RedirectToAction("Logout", "ControleAcesso");
+            }
+            if ((USUARIO)Session["UserCredentials"] != null)
+            {
+                usuario = (USUARIO)Session["UserCredentials"];
+            }
+            else
+            {
+                return RedirectToAction("Logout", "ControleAcesso");
+            }
+            Int32 idAss = (Int32)Session["IdAssinante"];
+            Session["ModuloAtual"] = "Locacao - Inclusão";
+            CONFIGURACAO conf = CarregaConfiguracaoGeral();
+
+            // Mensagens
+            if (Session["MensNoticia"] !=  null)
+            {
+                if ((Int32)Session["MensNoticia"] == 10)
+                {
+                    ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0019", CultureInfo.CurrentCulture));
+                }
+                if ((Int32)Session["MensNoticia"] == 11)
+                {
+                    ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0024", CultureInfo.CurrentCulture));
+                }
+                if ((Int32)Session["MensNoticia"] == 5)
+                {
+                    ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0019", CultureInfo.CurrentCulture));
+                }
+                if ((Int32)Session["MensNoticia"] == 6)
+                {
+                    ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0024", CultureInfo.CurrentCulture));
+                }
+                if ((Int32)Session["MensNoticia"] == 7)
+                {
+                    ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0431", CultureInfo.CurrentCulture));
+                }
+            }
+
+            // Prepara view
+            NOTICIA item = notApp.GetItemById(id);
+            NoticiaViewModel vm = Mapper.Map<NOTICIA, NoticiaViewModel>(item);
+            Session["Noticia"] = item;
+            Session["IdNoticia"] = id;
+            Session["MensNoticia"] = null;
+            return View(vm);
+        }
+
+        [HttpPost]
+        public ActionResult EditarNoticia(NoticiaViewModel vm)
+        {
+            if ((String)Session["Ativa"] == null)
+            {
+                return RedirectToAction("Logout", "ControleAcesso");
+            }
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    // Sanitização
+                    vm.NOTC_NM_AUTOR = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(vm.NOTC_NM_AUTOR);
+                    vm.NOTC_NM_ORIGEM = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(vm.NOTC_NM_ORIGEM);
+                    vm.NOTC_NM_TITULO = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(vm.NOTC_NM_TITULO);
+                    vm.NOTC_TX_TEXTO = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(vm.NOTC_TX_TEXTO);
+                    vm.NOTC_AQ_ARQUIVO = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(vm.NOTC_AQ_ARQUIVO);
+
+                    // Executa a operação
+                    Int32 idAss = (Int32)Session["IdAssinante"];
+                    NOTICIA item = Mapper.Map<NoticiaViewModel, NOTICIA>(vm);
+                    USUARIO usuarioLogado = (USUARIO)Session["UserCredentials"];
+                    Int32 volta = notApp.ValidateEdit(item, (NOTICIA)Session["Noticia"], usuarioLogado);
+
+                    // Mensagem do CRUD
+                    Session["MsgCRUD"] = "A notícia " + item.NOTC_NM_TITULO.ToUpper() + " foi alterada com sucesso";
+                    Session["MensNoticia"] = 61;
+
+                    // Sucesso
+                    listaMasterNot = new List<NOTICIA>();
+                    Session["ListaNoticia"] = null;
+                    Session["VoltaNoticia"] = 1;
+                    Session["IdNoticiaVolta"] = item.NOTC_CD_ID;
+                    Session["Noticia"] = item;
+                    Session["IdVolta"] = item.NOTC_CD_ID;
+                    Session["MensNoticia"] = 0;
+                    Session["NoticiaAlterada"] = 1;
+                    return RedirectToAction("MontarTelaNoticia");
+                }
+                catch (Exception ex)
+                {
+                    ViewBag.Message = ex.Message;
+                    Session["TipoVolta"] = 2;
+                    Session["VoltaExcecao"] = "Notícia";
+                    Session["Excecao"] = ex;
+                    Session["ExcecaoTipo"] = ex.GetType().ToString();
+                    GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                    Int32 voltaX = grava.GravarLogExcecao(ex, "Administra", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                    return RedirectToAction("TrataExcecao", "BaseAdmin");
+                }
+            }
+            else
+            {
+                return View(vm);
+            }
+        }
+
+        [HttpGet]
+        public ActionResult ExcluirNoticia(Int32 id)
+        {
+            try
+            {
+                // Verifica se tem usuario logado
+                USUARIO usuario = new USUARIO();
+                if ((String)Session["Ativa"] == null)
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+                if ((USUARIO)Session["UserCredentials"] != null)
+                {
+                    usuario = (USUARIO)Session["UserCredentials"];
+                }
+                else
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+                Int32 idAss = (Int32)Session["IdAssinante"];
+
+                USUARIO usuarioLogado = (USUARIO)Session["UserCredentials"];
+                NOTICIA item = notApp.GetItemById(id);
+                item.NOTC_IN_ATIVO = 0;
+                Int32 volta = notApp.ValidateDelete(item, usuarioLogado);
+
+                Session["NoticiaAlterada"] = 1;
+                Session["ListaNoticia"] = null;
+
+                // Mensagem do CRUD
+                Session["MsgCRUD"] = "A notícia " + item.NOTC_NM_TITULO.ToUpper() + " foi excluída com sucesso";
+                Session["MensNoticia"] = 61;
+
+                // Retorno
+                return RedirectToAction("MontarTelaNoticia");
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Noticia";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Administra", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return RedirectToAction("TrataExcecao", "BaseAdmin");
+            }
+        }
+
+        public ActionResult UploadFotoNoticia(HttpPostedFileBase file)
+        {
+            try
+            {
+                // Inicializa
+                if ((String)Session["Ativa"] == null)
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+                Int32 idNot = (Int32)Session["IdNoticia"];
+                Int32 idAss = (Int32)Session["IdAssinante"];
+
+                if (file == null)
+                {
+                    Session["MensNoticia"] = 5;
+                    return RedirectToAction("VoltarAnexoNoticia");
+                }
+
+                // Recupera noticia
+                NOTICIA item = notApp.GetById(idNot);
+                USUARIO usu = (USUARIO)Session["UserCredentials"];
+                var fileName = Path.GetFileName(file.FileName);
+                if (fileName.Length > 250)
+                {
+                    Session["MensNoticia"] = 6;
+                    return RedirectToAction("VoltarAnexoNoticia");
+                }
+
+                // Critica tamanho arquivo
+                var fileSize = file.ContentLength;
+                if (fileSize > 50000000)
+                {
+                    Session["MensNoticia"] = 7;
+                    return RedirectToAction("VoltarAnexoNoticia");
+                }
+
+                // 1. DEFINIÇÃO DE CAMINHOS
+                String caminhoRelativo = "Imagens/Base/Noticias/" + item.NOTC_CD_ID.ToString() + "/Fotos/";
+                String caminhoLocal = Server.MapPath("~/" + caminhoRelativo);
+                String fullPathLocal = Path.Combine(caminhoLocal, fileName);
+
+                //if (!Directory.Exists(caminhoLocal)) Directory.CreateDirectory(caminhoLocal);
+
+                //// 2. CÓPIA LOCAL
+                //file.SaveAs(fullPathLocal);
+
+                // 3. CÓPIA PARA O AZURE BLOB STORAGE (Síncrono)
+                try
+                {
+                    file.InputStream.Position = 0;
+
+                    CONFIGURACAO conf = CarregaConfiguracaoGeral();
+                    string connString = conf.CONF_NM_STORAGE_CONN;
+                    string containerName = conf.CONF_NM_STORAGE_CONTAINER;
+
+                    var blobServiceClient = new Azure.Storage.Blobs.BlobServiceClient(connString);
+                    var containerClient = blobServiceClient.GetBlobContainerClient(containerName);
+
+                    string blobName = caminhoRelativo + fileName;
+                    var blobClient = containerClient.GetBlobClient(blobName);
+
+                    // Chamada Síncrona usando .GetRawResponse() ou apenas omitindo await e usando Upload
+                    // No SDK novo, usamos Upload(stream, overwrite) para modo síncrono
+                    blobClient.Upload(file.InputStream, overwrite: true);
+                }
+                catch (Exception exAzure)
+                {
+                    Session["MsgCRUD"] = "Erro na sincronização Azure: " + exAzure.Message;
+                    Session["MensPaciente"] = 61;
+                    return RedirectToAction("VoltarAnexoPaciente");
+                }
+
+                //Recupera tipo de arquivo
+                extensao = Path.GetExtension(fileName);
+                String a = extensao;
+
+                // Gravar registro
+                item.NOTC_AQ_FOTO = "~" + caminhoRelativo + fileName;
+                Int32 volta = notApp.ValidateEdit(item, item);
+                listaMasterNot = new List<NOTICIA>();
+                Session["ListaNoticia"] = null;
+                Session["NoticiaAlterada"] = 1;
+
+                return RedirectToAction("VoltarAnexoNoticia");
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Noticia";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Administra", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return RedirectToAction("TrataExcecao", "BaseAdmin");
+            }
+        }
+
+        public ActionResult VoltarAnexoNoticia()
+        {
+            if ((String)Session["Ativa"] == null)
+            {
+                return RedirectToAction("Logout", "ControleAcesso");
+            }
+            Int32 idNot = (Int32)Session["IdVolta"];
+            return RedirectToAction("EditarNoticia", new { id = idNot });
+        }
+
+        public ActionResult VoltarAnexoVerNoticia()
+        {
+            if ((String)Session["Ativa"] == null)
+            {
+                return RedirectToAction("Logout", "ControleAcesso");
+            }
+            Int32 idNot = (Int32)Session["IdNoticia"];
+            return RedirectToAction("VerNoticia", new { id = idNot });
+        }
+
+        public List<NOTICIA> CarregaNoticiaGeral()
+        {
+            try
+            {
+                Int32 idAss = (Int32)Session["IdAssinante"];
+                List<NOTICIA> conf = new List<NOTICIA>();
+                if (Session["NoticiaGeral"] == null)
+                {
+                    conf = notApp.GetAllItens(idAss);
+                }
+                else
+                {
+                    if ((Int32)Session["NoticiaAlterada"] == 1)
+                    {
+                        conf = notApp.GetAllItens(idAss);
+                    }
+                    else
+                    {
+                        conf = (List<NOTICIA>)Session["NoticiaGeral"];
+                    }
+                }
+                Session["NoticiaGeral"] = conf;
+                Session["NoticiaAlterada"] = 0;
+                return conf;
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Noticia";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Administra", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return null;
+            }
+        }
+
+        public ActionResult VerNoticia(Int32 id)
+        {
+            if ((String)Session["Ativa"] == null)
+            {
+                return RedirectToAction("Logout", "ControleAcesso");
+            }
+            Session["IdVolta"] = id;
+            Session["IdNoticia"] = id;
+            NOTICIA item = notApp.GetItemById(id);
+            item.NOTC_NR_ACESSO = ++item.NOTC_NR_ACESSO;
+            Int32 volta = notApp.ValidateEdit(item, item);
+
+            NoticiaViewModel vm = Mapper.Map<NOTICIA, NoticiaViewModel>(item);
+            return View(vm);
+        }
+
+        public ActionResult VerNoticiaEspecial(Int32 id)
+        {
+            if ((String)Session["Ativa"] == null)
+            {
+                return RedirectToAction("Logout", "ControleAcesso");
+            }
+            Session["IdVolta"] = id;
+            Session["IdNoticia"] = id;
+            NOTICIA item = notApp.GetItemById(id);
+            item.NOTC_NR_ACESSO = ++item.NOTC_NR_ACESSO;
+            Int32 volta = notApp.ValidateEdit(item, item);
+
+            NoticiaViewModel vm = Mapper.Map<NOTICIA, NoticiaViewModel>(item);
+            return View(vm);
+        }
+
+        //        [HttpPost]
+        //public async Task<ActionResult> UploadFileDocumentoBlob(HttpPostedFileBase file)
+        //{
+        //    try
+        //    {
+        //        // Inicializa
+        //        if ((String)Session["Ativa"] == null)
+        //        {
+        //            return RedirectToAction("Logout", "ControleAcesso");
+        //        }
+        //        Int32 idNot = (Int32)Session["IdAviso"];
+        //        Int32 idAss = (Int32)Session["IdAssinante"];
+
+        //        // Recupera dados
+        //        MENSAGEM_FABRICANTE item = usuApp.GetMensFabById(idNot);
+        //        USUARIO usuario = (USUARIO)Session["UserCredentials"];
+
+        //        // Criticas
+        //        if (file == null)
+        //        {
+        //            Session["MensLocacao"] = 5;
+        //            return RedirectToAction("CarregarContrato");
+        //        }
+
+        //        // Critica tamanho nome
+        //        var fileName = Path.GetFileName(file.FileName);
+        //        if (fileName.Length > 250)
+        //        {
+        //            Session["MensLocacao"] = 6;
+        //            return RedirectToAction("CarregarContrato");
+        //        }
+
+        //        // Critica tamanho arquivo
+        //        var fileSize = file.ContentLength;
+        //        if (fileSize > 50000000)
+        //        {
+        //            Session["MensLocacao"] = 7;
+        //            return RedirectToAction("CarregarContrato");
+        //        }
+
+        //        //Recupera tipo de arquivo
+        //        extensao = Path.GetExtension(fileName).ToUpper();
+        //        if (extensao != ".PDF")
+        //        {
+        //            Session["MensLocacao"] = 8;
+        //            return RedirectToAction("CarregarContrato");
+        //        }
+
+        //        // Verifica exatidão do nome
+        //        String nome = "Contrato_Locacao_" + pac.PACI_NM_NOME + "_" + item.LOCA_GU_GUID + "_Assinado.pdf";
+        //        if (fileName.ToUpper() != nome.ToUpper())
+        //        {
+        //            Session["MensLocacao"] = 9;
+        //            return RedirectToAction("CarregarContrato");
+        //        }
+
+        //        // 1. DEFINIÇÃO DO CAMINHO (Mesmo para Local e Azure)
+        //        // Removida a barra inicial para o Azure não criar uma pasta raiz vazia
+        //        String caminhoRelativo = "Imagens/" + idAss.ToString() + "/Locacao/" + item.LOCA_CD_ID.ToString() + "/Assinado/";
+        //        String caminhoLocal = Server.MapPath("~/" + caminhoRelativo);
+        //        String fullPathLocal = Path.Combine(caminhoLocal, fileName);
+
+        //        // 3. CÓPIA PARA O AZURE BLOB STORAGE
+        //        try
+        //        {
+        //            // Reinicia o ponteiro do stream para o início após a cópia local
+        //            file.InputStream.Position = 0;
+
+        //            CONFIGURACAO conf = CarregaConfiguracaoGeral();
+        //            string connString = conf.CONF_NM_STORAGE_CONN;
+        //            string containerName = conf.CONF_NM_STORAGE_CONTAINER;
+
+        //            var blobServiceClient = new Azure.Storage.Blobs.BlobServiceClient(connString);
+        //            var containerClient = blobServiceClient.GetBlobContainerClient(containerName);
+
+        //            // O nome do blob no Azure incluirá toda a estrutura de pastas
+        //            string blobName = caminhoRelativo + fileName;
+        //            var blobClient = containerClient.GetBlobClient(blobName);
+
+        //            // Upload para o Azure (Idempotente: Se já existe, sobrescreve com true)
+        //            await blobClient.UploadAsync(file.InputStream, overwrite: true);
+        //        }
+        //        catch (Exception exAzure)
+        //        {
+        //            Session["MsgCRUD"] = "Erro na sincronização: " + exAzure.Message;
+        //            Session["MensPaciente"] = 61;
+        //            return RedirectToAction("VoltarAnexoPagamento");
+        //        }
+
+        //        // Atualiza locacao
+        //        item.LOCA_IN_CONTRATO_ASSINA = 1;
+        //        Int32 volta = baseApp.ValidateEdit(item, item, usu);
+
+        //        // Mensagem do CRUD
+        //        Session["MsgCRUD"] = "O contrato de locação assinado de " + pac.PACI_NM_NOME.ToUpper() + " foi anexado com sucesso";
+        //        Session["MensLocacao"] = 91;
+        //        Session["MensArea"] = 61;
+
+        //        // Finaliza
+        //        Session["NivelLocacao"] = 1;
+        //        Session["LocacaoAlterada"] = 1;
+        //        if ((Int32)Session["VoltaContrato"] == 2)
+        //        {
+        //            return RedirectToAction("VoltarVerLocacao", "AreaPaciente");
+        //        }
+        //        return RedirectToAction("VoltarEditarLocacao");
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        ViewBag.Message = ex.Message;
+        //        Session["TipoVolta"] = 2;
+        //        Session["VoltaExcecao"] = "Locacao";
+        //        Session["Excecao"] = ex;
+        //        Session["ExcecaoTipo"] = ex.GetType().ToString();
+        //        GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+        //        Int32 voltaX = grava.GravarLogExcecao(ex, "Locacao", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+        //        return RedirectToAction("TrataExcecao", "BaseAdmin");
+        //    }
+        //}
 
 
 

@@ -5550,6 +5550,11 @@
     <Content Include="Views\Administra\IncluirAviso.cshtml" />
     <Content Include="Views\Administra\EditarAviso.cshtml" />
     <Content Include="Views\BaseAdmin\ImportarPlanilhaProspecta.cshtml" />
+    <Content Include="Views\Administra\MontarTelaNoticia.cshtml" />
+    <Content Include="Views\Administra\IncluirNoticia.cshtml" />
+    <Content Include="Views\Administra\EditarNoticia.cshtml" />
+    <Content Include="Views\Administra\VerNoticia.cshtml" />
+    <Content Include="Views\Administra\VerNoticiaEspecial.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="BaseAdmin\BaseConhecimento\" />

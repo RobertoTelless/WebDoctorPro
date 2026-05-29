@@ -5,7 +5,11 @@
             <li class="nav-header">
                 <div class="dropdown profile-element">
                     <span>
-                        <img alt="image" class="img-circle" src="@Url.Content((String)Session["Foto"])" style="width: auto; height: auto; max-height: 70px; max-width: 70px;" />
+                        @*<img alt="image" class="img-circle" src="@Url.Content((String)Session["Foto"])" style="width: auto; height: auto; max-height: 70px; max-width: 70px;" />*@
+                        <img alt="image" class="img-circle" 
+                             src="https://rtistoragemain.blob.core.windows.net/rti-datacontainer/@(((String)Session["Foto"]).Replace("~/", ""))" 
+                             style="width: auto; height: auto; max-height: 70px; max-width: 70px;" />
+
                     </span>
                     <a data-toggle="dropdown" class="dropdown-toggle" href="#">
                         <span class="clear">

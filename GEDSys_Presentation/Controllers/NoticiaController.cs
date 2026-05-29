@@ -409,7 +409,7 @@ namespace GEDSys_Presentation.Controllers
 
 
                 // 1. DEFINIÇÃO DE CAMINHOS (Removendo a barra inicial para o Azure)
-                String caminhoRelativo = "Imagens/" + item.ASSI_CD_ID.ToString() + "/Noticias/" + item.NOTC_CD_ID.ToString() + "/Fotos/";
+                String caminhoRelativo = "Imagens/Base/Noticias/" + item.NOTC_CD_ID.ToString() + "/Fotos/";
                 String caminhoLocal = Server.MapPath("~/" + caminhoRelativo);
                 String fullPathLocal = Path.Combine(caminhoLocal, fileName);
 
@@ -668,7 +668,7 @@ namespace GEDSys_Presentation.Controllers
                 }
 
                 // 1. DEFINIÇÃO DE CAMINHOS
-                String caminhoRelativo = "Imagens/" + item.ASSI_CD_ID.ToString() + "/Noticias/" + item.NOTC_CD_ID.ToString() + "/Fotos/";
+                String caminhoRelativo = "Imagens/Base/Noticias/" + item.NOTC_CD_ID.ToString() + "/Fotos/";
                 String caminhoLocal = Server.MapPath("~/" + caminhoRelativo);
                 String fullPathLocal = Path.Combine(caminhoLocal, fileName);
 
