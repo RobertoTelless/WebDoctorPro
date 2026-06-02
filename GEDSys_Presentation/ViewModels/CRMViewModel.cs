@@ -79,6 +79,7 @@ namespace ERP_Condominios_Solution.ViewModels
         public string CRM1_ID_IDENTIFICADOR { get; set; }
         public Nullable<int> LEAD_CD_ID { get; set; }
         public Nullable<int> PACI_CD_ID { get; set; }
+        public Nullable<System.DateTime> CRM1_DT_EXCLUSAO { get; set; }
 
         public string NumeroProposta { get; set; }
         public string NomeProposta { get; set; }

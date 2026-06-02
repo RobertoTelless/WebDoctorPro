@@ -1894,6 +1894,7 @@
           <Property Name="CRM1_IN_SISTEMA" Type="int" />
           <Property Name="LEAD_CD_ID" Type="int" />
           <Property Name="PACI_CD_ID" Type="int" />
+          <Property Name="CRM1_DT_EXCLUSAO" Type="date" />
         </EntityType>
         <EntityType Name="CRM_ACAO">
           <Key>
@@ -3114,6 +3115,8 @@
           <Property Name="LEAD_IN_ENVIOS" Type="int" />
           <Property Name="LEAD_DT_EXCLUSAO" Type="date" />
           <Property Name="LEAD_GU_IDENTIFICADOR" Type="varchar" MaxLength="50" />
+          <Property Name="LEAD_DS_RESUMO_MOVIMENTO" Type="varchar" MaxLength="5000" />
+          <Property Name="LEAD_DS_MOTIVO_EXCLUSAO" Type="varchar" MaxLength="500" />
         </EntityType>
         <EntityType Name="LEAD_ANEXO">
           <Key>
@@ -22744,6 +22747,7 @@
           <NavigationProperty Name="LEAD" Relationship="CRMSysDBModel.FK_CRM_LEAD" FromRole="CRM" ToRole="LEAD" />
           <Property Name="PACI_CD_ID" Type="Int32" />
           <NavigationProperty Name="PACIENTE" Relationship="CRMSysDBModel.FK_CRM_PACIENTE" FromRole="CRM" ToRole="PACIENTE" />
+          <Property Name="CRM1_DT_EXCLUSAO" Type="DateTime" Precision="0" />
         </EntityType>
         <EntityType Name="CRM_ACAO">
           <Key>
@@ -42333,6 +42337,8 @@
           <Property Name="LEAD_DT_EXCLUSAO" Type="DateTime" Precision="0" />
           <Property Name="LEAD_GU_IDENTIFICADOR" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
           <NavigationProperty Name="PROSPECTA_MAIL" Relationship="CRMSysDBModel.FK_PROSPECTA_MAIL_LEAD" FromRole="LEAD" ToRole="PROSPECTA_MAIL" />
+          <Property Name="LEAD_DS_RESUMO_MOVIMENTO" Type="String" MaxLength="5000" FixedLength="false" Unicode="false" />
+          <Property Name="LEAD_DS_MOTIVO_EXCLUSAO" Type="String" MaxLength="500" FixedLength="false" Unicode="false" />
         </EntityType>
         <EntityType Name="LEAD_ANEXO">
           <Key>
@@ -44564,6 +44570,7 @@
           <EntitySetMapping Name="CRM">
             <EntityTypeMapping TypeName="CRMSysDBModel.CRM">
               <MappingFragment StoreEntitySet="CRM">
+                <ScalarProperty Name="CRM1_DT_EXCLUSAO" ColumnName="CRM1_DT_EXCLUSAO" />
                 <ScalarProperty Name="PACI_CD_ID" ColumnName="PACI_CD_ID" />
                 <ScalarProperty Name="LEAD_CD_ID" ColumnName="LEAD_CD_ID" />
                 <ScalarProperty Name="CRM1_CD_ID" ColumnName="CRM1_CD_ID" />
@@ -50355,6 +50362,8 @@
           <EntitySetMapping Name="LEAD">
             <EntityTypeMapping TypeName="CRMSysDBModel.LEAD">
               <MappingFragment StoreEntitySet="LEAD">
+                <ScalarProperty Name="LEAD_DS_MOTIVO_EXCLUSAO" ColumnName="LEAD_DS_MOTIVO_EXCLUSAO" />
+                <ScalarProperty Name="LEAD_DS_RESUMO_MOVIMENTO" ColumnName="LEAD_DS_RESUMO_MOVIMENTO" />
                 <ScalarProperty Name="LEAD_GU_IDENTIFICADOR" ColumnName="LEAD_GU_IDENTIFICADOR" />
                 <ScalarProperty Name="LEAD_DT_EXCLUSAO" ColumnName="LEAD_DT_EXCLUSAO" />
                 <ScalarProperty Name="LEAD_IN_ENVIOS" ColumnName="LEAD_IN_ENVIOS" />

@@ -226,7 +226,7 @@ namespace ApplicationServices.Services
                 dia.DIPR_DS_DESCRICAO = "Criação do Processo " + item.CRM1_NM_NOME + ". Lead: " + cli.LEAD_NM_NOME;
                 dia.EMPR_CD_ID = usuario.EMPR_CD_ID;
                 Int32 volta1 = _baseService.CreateDiario(dia);
-                return log.LOG_CD_ID;
+                return 0;
             }
             catch (Exception ex)
             {
@@ -324,7 +324,7 @@ namespace ApplicationServices.Services
                 dia.DIPR_DT_DATA = DateTime.Today.Date;
                 dia.CRM1_CD_ID = item.CRM1_CD_ID;
                 dia.DIPR_NM_OPERACAO = "Alteração de Processo";
-                dia.DIPR_DS_DESCRICAO = "Alteração do Processo " + item.CRM1_NM_NOME + ". Lead: " + cli.LEAD_NM_NOME;
+                dia.DIPR_DS_DESCRICAO = "Alteração do Processo " + item.CRM1_NM_NOME.ToUpper() + ". Lead: " + cli.LEAD_NM_NOME.ToUpper();
                 Int32 volta3 = _baseService.CreateDiario(dia);
 
                 return log.LOG_CD_ID;
@@ -434,6 +434,7 @@ namespace ApplicationServices.Services
 
                 // Acerta campos
                 item.CRM1_IN_ATIVO = 2;
+                item.CRM1_DT_EXCLUSAO = DateTime.Today.Date;
 
                 // Serializa registro
                 LEAD cli = _cliService.GetItemById(item.LEAD_CD_ID.Value);
@@ -462,7 +463,7 @@ namespace ApplicationServices.Services
                 dia.DIPR_DT_DATA = DateTime.Today.Date;
                 dia.CRM1_CD_ID = item.CRM1_CD_ID;
                 dia.DIPR_NM_OPERACAO = "Exclusão de Processo";
-                dia.DIPR_DS_DESCRICAO = "Exclusão do Processo " + item.CRM1_NM_NOME + ". Lead: " + cli.LEAD_NM_NOME;
+                dia.DIPR_DS_DESCRICAO = "Exclusão do Processo " + item.CRM1_NM_NOME.ToUpper() + ". Lead: " + cli.LEAD_NM_NOME.ToUpper();
                 Int32 volta3 = _baseService.CreateDiario(dia);
 
                 return log.LOG_CD_ID;

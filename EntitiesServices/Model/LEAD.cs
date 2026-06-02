@@ -54,6 +54,8 @@ namespace EntitiesServices.Model
         public Nullable<int> LEAD_IN_ENVIOS { get; set; }
         public Nullable<System.DateTime> LEAD_DT_EXCLUSAO { get; set; }
         public string LEAD_GU_IDENTIFICADOR { get; set; }
+        public string LEAD_DS_RESUMO_MOVIMENTO { get; set; }
+        public string LEAD_DS_MOTIVO_EXCLUSAO { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<LEAD_ANEXO> LEAD_ANEXO { get; set; }

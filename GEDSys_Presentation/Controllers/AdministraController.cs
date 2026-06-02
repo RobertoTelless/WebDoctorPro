@@ -1544,7 +1544,7 @@ namespace GEDSys_Presentation.Controllers
                 status.Add(new SelectListItem() { Text = "Qualificado", Value = "1" });
                 status.Add(new SelectListItem() { Text = "Convertido", Value = "2" });
                 status.Add(new SelectListItem() { Text = "Pedido", Value = "3" });
-                status.Add(new SelectListItem() { Text = "Não Qualificado", Value = "4" });
+                status.Add(new SelectListItem() { Text = "Excluido", Value = "4" });
                 ViewBag.Status = new SelectList(status, "Value", "Text");
                 Session["Lead"] = null;
 
@@ -1662,8 +1662,126 @@ namespace GEDSys_Presentation.Controllers
             }
         }
 
-        [HttpGet]
-        public ActionResult ExcluirLead(Int32 id)
+        public ActionResult VerExcluidoLead()
+        {
+            try
+            {
+                if ((String)Session["Ativa"] == null)
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+                Int32 idAss = (Int32)Session["IdAssinante"];
+                listaMaster = baseApp.GetAllItensAdm(idAss);
+                Session["ListaLead"] = listaMaster;
+                return RedirectToAction("MontarTelaLead");
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Lead";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Administra", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return RedirectToAction("TrataExcecao", "BaseAdmin");
+            }
+        }
+
+        //[HttpGet]
+        //public ActionResult ExcluirLead(Int32 id)
+        //{
+        //    try
+        //    {
+        //        // Verifica se tem usuario logado
+        //        USUARIO usuario = new USUARIO();
+        //        if ((String)Session["Ativa"] == null)
+        //        {
+        //            return RedirectToAction("Logout", "ControleAcesso");
+        //        }
+        //        if ((USUARIO)Session["UserCredentials"] != null)
+        //        {
+        //            usuario = (USUARIO)Session["UserCredentials"];
+        //        }
+        //        else
+        //        {
+        //            return RedirectToAction("Logout", "ControleAcesso");
+        //        }
+        //        Int32 idAss = (Int32)Session["IdAssinante"];
+
+        //        USUARIO usuarioLogado = (USUARIO)Session["UserCredentials"];
+
+        //        // Recupera lead
+        //        LEAD item = baseApp.GetItemById(id);
+        //        Int32? crmX = item.CRM1_CD_ID;
+
+        //        // Exclui lead
+        //        item.LEAD_IN_ATIVO = 0;
+        //        item.LEAD_DT_EXCLUSAO = DateTime.Today.Date;
+        //        item.LEAD_IN_STATUS = 4;
+        //        Int32 volta = baseApp.ValidateDelete(item, usuarioLogado);
+        //        if (volta > 0)
+        //        {
+        //            Session["MensLead"] = 3;
+        //            return RedirectToAction("MontarTelaLead");
+        //        }
+
+        //        // Atualiza resumo
+        //        LEAD lead = baseApp.GetItemById(item.LEAD_CD_ID);
+        //        String velho = lead.LEAD_DS_RESUMO_MOVIMENTO;
+        //        String novo = "Exclusão de Lead - " + lead.LEAD_DT_ENTRADA.Value.ToLongDateString();
+        //        String dataHoje = DateTime.Today.Date.ToLongDateString();
+        //        dataHoje = "*** Movimentação em [" + dataHoje + "] ***";
+        //        if (lead.LEAD_DS_RESUMO_MOVIMENTO != null)
+        //        {
+        //            String anot = dataHoje + "\r\n" + novo;
+        //            if (velho == null & novo != String.Empty)
+        //            {
+        //                lead.LEAD_DS_RESUMO_MOVIMENTO = dataHoje + "\r\n" + novo;
+        //            }
+        //            if (velho != null & novo != String.Empty)
+        //            {
+        //                String tripa = velho.Substring(velho.Length - 4, 4);
+        //                if (tripa == "\r\n")
+        //                {
+        //                    velho = velho.Substring(0, velho.Length - 4);
+        //                }
+        //                lead.LEAD_DS_RESUMO_MOVIMENTO = velho + "\r\n\r\n" + dataHoje + "\r\n" + novo;
+        //            }
+        //        }
+        //        else
+        //        {
+        //            velho = lead.LEAD_DS_RESUMO_MOVIMENTO;
+        //            lead.LEAD_DS_RESUMO_MOVIMENTO = velho;
+        //        }
+
+        //        // Grava movimentação
+        //        Int32 voltaW = baseApp.ValidateEdit(lead, lead, usuario);
+
+        //        // Mensagem do CRUD
+        //        Session["MsgCRUD"] = "O lead de " + item.LEAD_NM_NOME.ToUpper() + " foi excluído com sucesso";
+        //        Session["MensLead"] = 61;
+
+        //        // Retorno
+        //        Session["LeadAlterada"] = 1;
+        //        Session["ListaLead"] = null;
+        //        return RedirectToAction("MontarTelaLead");
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        ViewBag.Message = ex.Message;
+        //        Session["TipoVolta"] = 2;
+        //        Session["VoltaExcecao"] = "Lead";
+        //        Session["Excecao"] = ex;
+        //        Session["ExcecaoTipo"] = ex.GetType().ToString();
+        //        GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+        //        Int32 voltaX = grava.GravarLogExcecao(ex, "Administra", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+        //        return RedirectToAction("TrataExcecao", "BaseAdmin");
+        //    }
+        //}
+
+        [HttpPost] // Alterado para Post para suportar textos longos de forma segura
+        public ActionResult ExcluirLead(Int32 id, string motivo)
         {
             try
             {
@@ -1682,23 +1800,70 @@ namespace GEDSys_Presentation.Controllers
                     return RedirectToAction("Logout", "ControleAcesso");
                 }
                 Int32 idAss = (Int32)Session["IdAssinante"];
-
                 USUARIO usuarioLogado = (USUARIO)Session["UserCredentials"];
 
                 // Recupera lead
                 LEAD item = baseApp.GetItemById(id);
                 Int32? crmX = item.CRM1_CD_ID;
 
-                // Exclui lead
+                // Exclui lead (Soft Delete)
                 item.LEAD_IN_ATIVO = 0;
                 item.LEAD_DT_EXCLUSAO = DateTime.Today.Date;
                 item.LEAD_IN_STATUS = 4;
-                Int32 volta = baseApp.ValidateDelete(item, usuarioLogado);
-                if (volta > 0)
+
+                // Se o motivo veio vazio por alguma falha física, define um texto padrão
+                if (String.IsNullOrEmpty(motivo))
                 {
-                    Session["MensLead"] = 3;
-                    return RedirectToAction("MontarTelaLead");
+                    item.LEAD_DS_MOTIVO_EXCLUSAO = "Motivo não informado.";
                 }
+                else
+                {
+                    item.LEAD_DS_MOTIVO_EXCLUSAO = motivo;
+                }
+                Int32 volta = baseApp.ValidateDelete(item, usuarioLogado);
+
+                // Atualiza resumo agregando o Motivo digitado na Modal
+                LEAD lead = baseApp.GetItemById(item.LEAD_CD_ID);
+                String velho = lead.LEAD_DS_RESUMO_MOVIMENTO;
+
+                // Injeta o motivo na string que vai para a transação
+                String novo = "Exclusão de Lead - " + lead.LEAD_NM_NOME.ToUpper() +
+                              "\r\nMotivo da Exclusão: " + motivo.Trim();
+
+                String dataHoje = DateTime.Today.Date.ToLongDateString();
+                dataHoje = "*** Movimentação em [" + dataHoje + "] ***";
+
+                if (lead.LEAD_DS_RESUMO_MOVIMENTO != null)
+                {
+                    String anot = dataHoje + "\r\n" + novo;
+                    if (velho == null && novo != String.Empty)
+                    {
+                        lead.LEAD_DS_RESUMO_MOVIMENTO = dataHoje + "\r\n" + novo;
+                    }
+                    if (velho != null && novo != String.Empty)
+                    {
+                        String tripa = velho.Substring(velho.Length - 4, 4);
+                        if (tripa == "\r\n")
+                        {
+                            velho = velho.Substring(0, velho.Length - 4);
+                        }
+                        lead.LEAD_DS_RESUMO_MOVIMENTO = velho + "\r\n\r\n" + dataHoje + "\r\n" + novo;
+                    }
+                }
+                else
+                {
+                    // Tratamento caso o resumo antigo esteja nulo no banco
+                    lead.LEAD_DS_RESUMO_MOVIMENTO = dataHoje + "\r\n" + novo;
+                }
+
+                // Grava a movimentação com o histórico atualizado
+                Int32 voltaW = baseApp.ValidateEdit(lead, lead, usuario);
+
+                // Acerta processo CRM
+                CRM crm = crmApp.GetItemById(lead.CRM1_CD_ID.Value);
+                crm.CRM1_IN_ATIVO = 2;
+                crm.CRM1_DT_EXCLUSAO = DateTime.Today.Date;
+                Int32 voltaC = crmApp.ValidateDelete(crm, usuario);
 
                 // Mensagem do CRUD
                 Session["MsgCRUD"] = "O lead de " + item.LEAD_NM_NOME.ToUpper() + " foi excluído com sucesso";
@@ -1856,6 +2021,38 @@ namespace GEDSys_Presentation.Controllers
                     lead.CRM1_CD_ID = crm.CRM1_CD_ID;
                     Int32 voltaL = baseApp.ValidateEdit(lead, lead, usuario);
 
+                    // Atualiza resumo
+                    lead = baseApp.GetItemById(lead.LEAD_CD_ID);
+                    String velho = lead.LEAD_DS_RESUMO_MOVIMENTO;
+                    String novo = "Criação de Lead - " + lead.LEAD_NM_NOME.ToUpper();
+                    String dataHoje = DateTime.Today.Date.ToLongDateString();
+                    dataHoje = "*** Movimentação em [" + dataHoje + "] ***";
+                    if (lead.LEAD_DS_RESUMO_MOVIMENTO != null)
+                    {
+                        String anot = dataHoje + "\r\n" + novo;
+                        if (velho == null & novo != String.Empty)
+                        {
+                            lead.LEAD_DS_RESUMO_MOVIMENTO = dataHoje + "\r\n" + novo;
+                        }
+                        if (velho != null & novo != String.Empty)
+                        {
+                            String tripa = velho.Substring(velho.Length - 4, 4);
+                            if (tripa == "\r\n")
+                            {
+                                velho = velho.Substring(0, velho.Length - 4);
+                            }
+                            lead.LEAD_DS_RESUMO_MOVIMENTO = velho + "\r\n\r\n" + dataHoje + "\r\n" + novo;
+                        }
+                    }
+                    else
+                    {
+                        velho = lead.LEAD_DS_RESUMO_MOVIMENTO;
+                        lead.LEAD_DS_RESUMO_MOVIMENTO = dataHoje + "\r\n" + novo;
+                    }
+
+                    // Grava movimentação
+                    Int32 voltaW = baseApp.ValidateEdit(lead, lead, usuario);
+
                     // Sucesso
                     listaMaster = new List<LEAD>();
                     Session["ListaLead"] = null;
@@ -1911,7 +2108,17 @@ namespace GEDSys_Presentation.Controllers
 
                 LEAD item = baseApp.GetItemById(id);
                 Session["Lead"] = item;
+                Session["IdLead"] = id;
+                Session["StatusLead"] = item.LEAD_IN_STATUS;
+
                 ViewBag.UF = new SelectList(CarregaUF(), "UF_CD_ID", "UF_NM_NOME");
+                List<SelectListItem> status = new List<SelectListItem>();
+                status.Add(new SelectListItem() { Text = "Qualificado", Value = "1" });
+                ViewBag.Status0 = new SelectList(status, "Value", "Text");
+                List<SelectListItem> status1 = new List<SelectListItem>();
+                status1.Add(new SelectListItem() { Text = "Convertido", Value = "2" });
+                status1.Add(new SelectListItem() { Text = "Pedido", Value = "3" });
+                ViewBag.Status1 = new SelectList(status, "Value", "Text");
 
                 // Mensagens
                 if (Session["MensLead"] != null)
@@ -1945,11 +2152,8 @@ namespace GEDSys_Presentation.Controllers
                 Session["MensLead"] = null;
                 Session["TipoMedicoEnvio"] = 1;
                 objetoAntes = item;
-                Session["IdLead"] = id;
-
                 LeadViewModel vm = Mapper.Map<LEAD, LeadViewModel>(item);
                 return View(vm);
-
             }
             catch (Exception ex)
             {
@@ -1970,6 +2174,13 @@ namespace GEDSys_Presentation.Controllers
         {
             Int32 idAss = (Int32)Session["IdAssinante"];
             ViewBag.UF = new SelectList(CarregaUF(), "UF_CD_ID", "UF_SG_SIGLA");
+            List<SelectListItem> status = new List<SelectListItem>();
+            status.Add(new SelectListItem() { Text = "Qualificado", Value = "1" });
+            ViewBag.Status0 = new SelectList(status, "Value", "Text");
+            List<SelectListItem> status1 = new List<SelectListItem>();
+            status1.Add(new SelectListItem() { Text = "Convertido", Value = "2" });
+            status1.Add(new SelectListItem() { Text = "Pedido", Value = "3" });
+            ViewBag.Status1 = new SelectList(status, "Value", "Text");
             if (ModelState.IsValid)
             {
                 try
@@ -1981,6 +2192,32 @@ namespace GEDSys_Presentation.Controllers
                     vm.LEAD_NM_BAIRRO = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(vm.LEAD_NM_BAIRRO);
                     vm.LEAD_NM_CIDADE = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(vm.LEAD_NM_CIDADE);
                     vm.LEAD_NR_NUMERO = CrossCutting.UtilitariosGeral.CleanStringDocto(vm.LEAD_NR_NUMERO);
+                    vm.LEAD_IN_STATUS = (Int32)Session["StatusLead"];
+
+                    // Critica
+                    if (vm.LEAD_DS_DESCRICAO == null)
+                    {
+                        String desc = "Lead de " + vm.LEAD_NM_NOME.ToUpper() + " criado em " + vm.LEAD_DT_ENTRADA.Value.ToLongDateString();
+                        vm.LEAD_DS_DESCRICAO = desc;
+                    }
+                    if (vm.LEAD_NR_CPF != null)
+                    {
+                        if (!CrossCutting.ValidarNumerosDocumentos.IsCFPValid(vm.LEAD_NR_CPF))
+                        {
+                            Session["MensLead"] = 3;
+                            ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0608", CultureInfo.CurrentCulture));
+                            return View(vm);
+                        }
+                    }
+                    if (vm.LEAD_NR_CNPJ != null)
+                    {
+                        if (!CrossCutting.ValidarNumerosDocumentos.IsCnpjValid(vm.LEAD_NR_CNPJ))
+                        {
+                            Session["MensLead"] = 3;
+                            ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0609", CultureInfo.CurrentCulture));
+                            return View(vm);
+                        }
+                    }
 
                     // Preparação
                     USUARIO usuario = (USUARIO)Session["UserCredentials"];
@@ -1989,6 +2226,38 @@ namespace GEDSys_Presentation.Controllers
                     // Processa
                     Int32 volta = baseApp.ValidateEdit(item, objetoAntes, usuario);
 
+                    // Atualiza resumo
+                    LEAD lead = baseApp.GetItemById(item.LEAD_CD_ID);
+                    String velho = lead.LEAD_DS_RESUMO_MOVIMENTO;
+                    String novo = "Alteração de Lead - " + lead.LEAD_NM_NOME.ToUpper();
+                    String dataHoje = DateTime.Today.Date.ToLongDateString();
+                    dataHoje = "*** Movimentação em [" + dataHoje + "] ***";
+                    if (lead.LEAD_DS_RESUMO_MOVIMENTO != null)
+                    {
+                        String anot = dataHoje + "\r\n" + novo;
+                        if (velho == null & novo != String.Empty)
+                        {
+                            lead.LEAD_DS_RESUMO_MOVIMENTO = dataHoje + "\r\n" + novo;
+                        }
+                        if (velho != null & novo != String.Empty)
+                        {
+                            String tripa = velho.Substring(velho.Length - 4, 4);
+                            if (tripa == "\r\n")
+                            {
+                                velho = velho.Substring(0, velho.Length - 4);
+                            }
+                            lead.LEAD_DS_RESUMO_MOVIMENTO = velho + "\r\n\r\n" + dataHoje + "\r\n" + novo;
+                        }
+                    }
+                    else
+                    {
+                        velho = lead.LEAD_DS_RESUMO_MOVIMENTO;
+                        lead.LEAD_DS_RESUMO_MOVIMENTO = dataHoje + "\r\n" + novo;
+                    }
+
+                    // Grava movimentação
+                    Int32 voltaW = baseApp.ValidateEdit(lead, lead, usuario);
+
                     // Sucesso
                     listaMaster = new List<LEAD>();
                     Session["ListaLead"] = null;
@@ -1996,7 +2265,7 @@ namespace GEDSys_Presentation.Controllers
 
                     // Mensagem do CRUD
                     Session["MsgCRUD"] = "O lead " + item.LEAD_NM_NOME.ToUpper() + " foi alterado com sucesso";
-                    Session["MensMedico"] = 61;
+                    Session["MensLead"] = 61;
 
                     return RedirectToAction("EditarLead", new { id = (Int32)Session["IdLead"] });
                 }
@@ -2862,7 +3131,7 @@ namespace GEDSys_Presentation.Controllers
                     }
                     else if (item.LEAD_IN_STATUS == 4)
                     {
-                        cell = new PdfPCell(new Paragraph("Não Qualificado", meuFont))
+                        cell = new PdfPCell(new Paragraph("Excluido", meuFont))
                         {
                             VerticalAlignment = Element.ALIGN_MIDDLE,
                             HorizontalAlignment = Element.ALIGN_LEFT
@@ -5085,6 +5354,199 @@ namespace GEDSys_Presentation.Controllers
             }
             return RedirectToAction("MonterTelaLead");
         }
+
+        public ActionResult VerProcessoCRM(Int32 id)
+        {
+            if ((String)Session["Ativa"] == null)
+            {
+                return RedirectToAction("Logout", "ControleAcesso");
+            }
+            return RedirectToAction("EditarCRM", new { id = (Int32)Session["IdLead"] });
+        }
+
+        public Int32 GerarResumo()
+        {
+            USUARIO usuario = (USUARIO)Session["UserCredentials"];
+            List<LEAD> leads = CarregarLead();
+            foreach (LEAD lead in leads)
+            {
+                String velho = lead.LEAD_DS_RESUMO_MOVIMENTO;
+                String novo = "Criação de Lead - " + lead.LEAD_NM_NOME.ToUpper();
+                String dataHoje = DateTime.Today.Date.ToLongDateString();
+                dataHoje = "*** Movimentação em [" + dataHoje + "] ***";
+                if (lead.LEAD_DS_RESUMO_MOVIMENTO != null)
+                {
+                    String anot = dataHoje + "\r\n" + novo;
+                    if (velho == null & novo != String.Empty)
+                    {
+                        lead.LEAD_DS_RESUMO_MOVIMENTO = dataHoje + "\r\n" + novo;
+                    }
+                    if (velho != null & novo != String.Empty)
+                    {
+                        String tripa = velho.Substring(velho.Length - 4, 4);
+                        if (tripa == "\r\n")
+                        {
+                            velho = velho.Substring(0, velho.Length - 4);
+                        }
+                        lead.LEAD_DS_RESUMO_MOVIMENTO = velho + "\r\n\r\n" + dataHoje + "\r\n" + novo;
+                    }
+                }
+                else
+                {
+                    velho = lead.LEAD_DS_RESUMO_MOVIMENTO;
+                    lead.LEAD_DS_RESUMO_MOVIMENTO = dataHoje + "\r\n" + novo;
+                }
+                Int32 voltaW = baseApp.ValidateEdit(lead, lead, usuario);
+
+            }
+            return 0;
+        }
+
+        [HttpGet]
+        public ActionResult QualificarLead(Int32 id)
+        {
+            try
+            {
+                if ((String)Session["Ativa"] == null)
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+
+                USUARIO usuarioLogado = (USUARIO)Session["UserCredentials"];
+
+                // 1. Recupera o lead do banco através do ID passado pelo JS
+                LEAD lead = baseApp.GetItemById(id);
+
+                if (lead != null)
+                {
+                    // 2. Altera o status para qualificado e registra histórico
+                    lead.LEAD_IN_STATUS = 1; // 1 = Qualificado
+                    lead.LEAD_DT_MOVIMENTO = DateTime.Now;
+
+                    // 3. Persiste no banco de dados
+                    baseApp.ValidateEdit(lead, lead, usuarioLogado);
+
+                    // Atualiza resumo
+                    lead = baseApp.GetItemById(lead.LEAD_CD_ID);
+                    String velho = lead.LEAD_DS_RESUMO_MOVIMENTO;
+                    String novo = "Qualificação de Lead - " + lead.LEAD_NM_NOME.ToUpper();
+                    String dataHoje = DateTime.Today.Date.ToLongDateString();
+                    dataHoje = "*** Movimentação em [" + dataHoje + "] ***";
+                    if (lead.LEAD_DS_RESUMO_MOVIMENTO != null)
+                    {
+                        String anot = dataHoje + "\r\n" + novo;
+                        if (velho == null & novo != String.Empty)
+                        {
+                            lead.LEAD_DS_RESUMO_MOVIMENTO = dataHoje + "\r\n" + novo;
+                        }
+                        if (velho != null & novo != String.Empty)
+                        {
+                            String tripa = velho.Substring(velho.Length - 4, 4);
+                            if (tripa == "\r\n")
+                            {
+                                velho = velho.Substring(0, velho.Length - 4);
+                            }
+                            lead.LEAD_DS_RESUMO_MOVIMENTO = velho + "\r\n\r\n" + dataHoje + "\r\n" + novo;
+                        }
+                    }
+                    else
+                    {
+                        velho = lead.LEAD_DS_RESUMO_MOVIMENTO;
+                        lead.LEAD_DS_RESUMO_MOVIMENTO = dataHoje + "\r\n" + novo;
+                    }
+
+                    Session["MsgCRUD"] = "O lead de " + lead.LEAD_NM_NOME.ToUpper() + " foi qualificado com sucesso!";
+                    Session["MensLead"] = 61;
+                }
+
+                // Retorna para a grid geral de Leads atualizada
+                Session["ListaLead"] = null;
+                return RedirectToAction("VoltarAnexoLead");
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Notícia";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Administra", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return RedirectToAction("TrataExcecao", "BaseAdmin");
+            }
+        }
+
+        [HttpPost]
+        public ActionResult MudarStatusLead(Int32 id, Int32 novoStatus, String justificativa)
+        {
+            try
+            {
+                if ((String)Session["Ativa"] == null)
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+
+                USUARIO usuarioLogado = (USUARIO)Session["UserCredentials"];
+
+                // Recupera registro do Lead
+                LEAD lead = baseApp.GetItemById(id);
+
+                if (lead != null)
+                {
+                    // Salva o status anterior para possíveis checagens das validações de negócio
+                    LEAD leadAntes = baseApp.GetItemById(id);
+
+                    // Atualiza propriedades
+                    lead.LEAD_IN_STATUS = novoStatus;
+                    lead.LEAD_DT_MOVIMENTO = DateTime.Now;
+                    lead.LEAD_DS_MOTIVO_EXCLUSAO = justificativa;
+
+                    string tipoMovimentacao = (novoStatus == 1) ? "CONVERSÃO DE LEAD" : "LEAD MARCADO COMO PERDIDO";
+
+                    // Monta o novo bloco de histórico para a transação
+                    string dataHoje = DateTime.Today.Date.ToLongDateString();
+                    string blocoMovimento = $"*** Movimentação em [{dataHoje}] ***\r\n" +
+                                            $"{tipoMovimentacao}\r\n" +
+                                            $"Justificativa: {justificativa.Trim()}";
+
+                    // Concatena de forma limpa com o histórico antigo
+                    if (string.IsNullOrEmpty(lead.LEAD_DS_RESUMO_MOVIMENTO))
+                    {
+                        lead.LEAD_DS_RESUMO_MOVIMENTO = blocoMovimento;
+                    }
+                    else
+                    {
+                        string velho = lead.LEAD_DS_RESUMO_MOVIMENTO.TrimEnd();
+                        lead.LEAD_DS_RESUMO_MOVIMENTO = velho + "\r\n\r\n" + blocoMovimento;
+                    }
+
+                    // Persiste a edição no banco através do seu AppService
+                    Int32 voltaW = baseApp.ValidateEdit(lead, leadAntes, usuarioLogado);
+
+                    // Define feedbacks na Session
+                    Session["MsgCRUD"] = $"O status do lead de {lead.LEAD_NM_NOME.ToUpper()} foi atualizado com sucesso.";
+                    Session["MensLead"] = 61;
+                }
+
+                Session["ListaLead"] = null; // Reseta cache da lista para forçar re-load
+                return RedirectToAction("VoltarAnexoLead");
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Lead";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                grava.GravarLogExcecao(ex, "Administra", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return RedirectToAction("TrataExcecao", "BaseAdmin");
+            }
+        }
+
+
+
+
 
     }
 }

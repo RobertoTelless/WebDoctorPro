@@ -60,6 +60,8 @@ namespace ERP_Condominios_Solution.ViewModels
         [DataType(DataType.Date, ErrorMessage = "Deve ser uma data válida")]
         public Nullable<System.DateTime> LEAD_DT_EXCLUSAO { get; set; }
         public string LEAD_GU_IDENTIFICADOR { get; set; }
+        public string LEAD_DS_RESUMO_MOVIMENTO { get; set; }
+        public string LEAD_DS_MOTIVO_EXCLUSAO { get; set; }
 
         public String Status
         {
@@ -81,7 +83,7 @@ namespace ERP_Condominios_Solution.ViewModels
                 {
                     return "Perdido";
                 }
-                return "Não Qualificado";
+                return "Excluido";
             }
         }
 
@@ -99,6 +101,8 @@ namespace ERP_Condominios_Solution.ViewModels
         public virtual ICollection<CRM> CRM { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<FUNIL> FUNIL { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<PROSPECTA_MAIL> PROSPECTA_MAIL { get; set; }
 
     }
 }

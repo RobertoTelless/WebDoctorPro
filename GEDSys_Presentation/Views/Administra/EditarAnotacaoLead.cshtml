@@ -46,7 +46,9 @@
                         <div class="form-group">
                             @Html.ButtonActionSubmit(text: "Confirma Edição de Anotação", htmlAttributes: new { @class = "btn-loading1 show-spinner" })
                             @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarAnexoLead", controller: "Administra", htmlAttributes: new { @class = "btn-loading show-spinner" })
-                            <a href="@Url.Action((String)Session["AjudaNivel"])" class="btn btn-sm btn-danger" target="_blank">Ajuda</a>
+                            @*<a href="@Url.Action("VoltarAnexoLead", "Administra")" class="btn btn-default btn-loading show-spinner">
+                                <i class="fa fa-arrow-left"></i> Voltar
+                            </a>*@
                             <span id="loadingIndicator" style="display: none; margin-left: 10px; color: #007bff;">
                                 <i class="fa fa-spinner fa-spin"></i> Processando...
                             </span>

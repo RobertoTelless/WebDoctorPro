@@ -77,6 +77,7 @@ namespace EntitiesServices.Model
         public Nullable<int> CRM1_IN_SISTEMA { get; set; }
         public Nullable<int> LEAD_CD_ID { get; set; }
         public Nullable<int> PACI_CD_ID { get; set; }
+        public Nullable<System.DateTime> CRM1_DT_EXCLUSAO { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<AGENDA> AGENDA { get; set; }

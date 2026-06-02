@@ -141,7 +141,7 @@ namespace ApplicationServices.Services
 
                 // Persiste
                 Int32 volta = _baseService.Edit(item, log);
-                return log.LOG_CD_ID;
+                return 0;
             }
             catch (Exception ex)
             {
@@ -162,10 +162,10 @@ namespace ApplicationServices.Services
                 };
 
                 // Checa integridade
-                if (item.CRM.Where(p => p.CRM1_IN_ATIVO != 2).Count() > 0)
-                {
-                    return 1;
-                }
+                //if (item.CRM.Where(p => p.CRM1_IN_ATIVO != 2).Count() > 0)
+                //{
+                //    return 1;
+                //}
 
                 // Acerta campos
                 item.LEAD_IN_ATIVO = 0;
@@ -187,7 +187,7 @@ namespace ApplicationServices.Services
 
                 // Persiste
                 Int32 volta = _baseService.Edit(item, log);
-                return log.LOG_CD_ID;
+                return 0;
             }
             catch (Exception ex)
             {

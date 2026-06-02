@@ -38,6 +38,8 @@ namespace DataServices.Repositories
         {
             IQueryable<LEAD> query = Db.LEAD;
             query = query.Where(p => p.LEAD_IN_SISTEMA == 6);
+            query = query.Where(p => p.LEAD_IN_STATUS == 4);
+            query = query.Where(p => p.LEAD_IN_ATIVO == 0);
             return query.AsNoTracking().ToList();
         }
 

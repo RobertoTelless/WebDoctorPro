@@ -35,6 +35,101 @@
             </div>
         </div>
     </div>
+    <div class="modal inmodal fade" id="modalConfirmacaoQuali" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header" style="position: relative; padding: 30px 15px;">
+                    <img src="@Url.Content("~/Images/Prontuario/prontuario_icon_3.png?v=1.1")" 
+                         style="position: absolute; left: 15px; top: 15px; width: 40px; height: auto;" 
+                         alt="Ícone" />
+
+                    <i class="fa fa-check-circle modal-icon text-primary" style="display: block;"></i>
+                    <h4 class="modal-title">Confirmação de Qualificação</h4>
+                    <small class="font-bold">WebDoctorPro - Gestão de Leads</small>
+                </div>
+            
+                <div class="modal-body text-center">
+                    <h3>Tem certeza que deseja qualificar esse lead?</h3>
+                    <p>Esta ação não poderá ser desfeita e os registros serão atualizados no sistema.</p>
+                </div>
+            
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-white" data-dismiss="modal">Voltar</button>
+                    <button type="button" class="btn btn-primary" id="btnConfirmarQualiSubmit">Confirmar Qualificação</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal inmodal fade" id="modalStatusTransicao" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header" style="position: relative; padding: 30px 15px;">
+                    <img src="@Url.Content("~/Images/Prontuario/prontuario_icon_3.png?v=1.1")" 
+                         style="position: absolute; left: 15px; top: 15px; width: 40px; height: auto;" 
+                         alt="Ícone" />
+
+                    <i id="iconModalTransicao" class="fa modal-icon" style="display: block;"></i>
+                    <h4 class="modal-title" id="lblTituloModalTransicao">Alteração de Status</h4>
+                    <small class="font-bold">WebDoctorPro - Gestão de Leads</small>
+                </div>
+    
+                <div class="modal-body">
+                    <div class="text-center">
+                        <h3 id="lblSubTituloTransicao">Deseja alterar o status deste lead?</h3>
+                        <p id="lblDescricaoTransicao">Esta ação atualizará o registro no banco de dados.</p>
+                    </div>
+                    <br />
+                    <div class="form-group text-left">
+                        <label class="font-bold" id="lblJustificativaTransicao">Justificativa / Observações *</label>
+                        <textarea class="form-control" id="txtJustificativaTransicao" rows="3" maxlength="500" placeholder="Digite aqui os detalhes desta movimentação..."></textarea>
+                        <span id="validaJustificativaTransicao" style="color:red; display:none;">A justificativa é obrigatória para esta alteração.</span>
+                    </div>
+                </div>
+    
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-white" data-dismiss="modal">Voltar</button>
+                    <button type="button" class="btn" id="btnConfirmarTransicaoSubmit">Confirmar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal inmodal fade" id="modalConfirmacaoExclusao" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header" style="position: relative; padding: 30px 15px;">
+                    <img src="@Url.Content("~/Images/Prontuario/prontuario_icon_3.png?v=1.1")" 
+                         style="position: absolute; left: 15px; top: 15px; width: 40px; height: auto;" 
+                         alt="Ícone" />
+
+                    <i class="fa fa-trash-o modal-icon text-danger" style="display: block;"></i>
+                    <h4 class="modal-title">Confirmação de Exclusão</h4>
+                    <small class="font-bold">WebDoctorPro - Gestão de Leads</small>
+                </div>
+    
+                <div class="modal-body">
+                    <div class="text-center">
+                        <h3>Confirma a exclusão deste Lead?</h3>
+                        <p>Esta ação alterará o status do lead selecionado para inativo.</p>
+                    </div>
+                    <br />
+                    <div class="form-group text-left">
+                        <label class="font-bold">Motivo da Exclusão *</label>
+                        <textarea class="form-control" id="txtMotivoExclusao" rows="3" maxlength="500" placeholder="Informe detalhadamente o motivo pelo qual este lead está sendo excluído..."></textarea>
+                        <span id="validaMotivoExclusao" style="color:red; display:none;">O motivo da exclusão é obrigatório.</span>
+                    </div>
+                </div>
+    
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-white" data-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-danger" id="btnConfirmarExclusaoSubmit">Confirmar Exclusão</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <input type="hidden" id="targetStatusValue" value="" />
+    <input type="hidden" id="urlExclusaoTemp" value="" />
+
     <div class="modalContainer">
         <div id="modal" class="modal" tabindex="-1" role="dialog">
             <div class="modal-dialog" role="document">
@@ -91,6 +186,11 @@
                         </div>
                     }
                     <div class="form-group" style=" margin-left: 5px; margin-right: 5px;">
+                        @if (Model.LEAD_IN_STATUS == 0)
+                        {
+                            @Html.ButtonLinkIndex(text: "Excluir Lead", action: "ExcluirLead", controller: "Administra", htmlAttributes: new { id = "btnExcluirLeadForm", @class = "btn btn-danger btn-trigger-exclusao" })
+                        }
+                        @Html.ButtonLinkIndex(text: "Enviar Mensagem", action: "EnviarMensagemLead", controller: "Administra", htmlAttributes: new { @class = "btn-loading show-spinner" })
                         @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaLead", controller: "Administra", htmlAttributes: new { @class = "btn-loading show-spinner" })
                         <span id="loadingIndicator" style="display: none; margin-left: 10px; color: #007bff;">
                             <i class="fa fa-spinner fa-spin"></i> Processando...
@@ -101,28 +201,28 @@
                         <ul class="nav nav-tabs">
                             @if ((Int32)Session["NivelLead"] == 1)
                             {
-                                <li class="active"><a data-toggle="tab" href="#tab-1">Pagamento</a></li>
+                                <li class="active"><a data-toggle="tab" href="#tab-1">Lead</a></li>
                                 <li class=""><a data-toggle="tab" href="#tab-2">Anexos</a></li>
                                 <li class=""><a data-toggle="tab" href="#tab-3">Anotações</a></li>
                                 <li class=""><a data-toggle="tab" href="#tab-4">Processo</a></li>
                             }
                             @if ((Int32)Session["NivelLead"] == 2)
                             {
-                                <li class=""><a data-toggle="tab" href="#tab-1">Pagamento</a></li>
+                                <li class=""><a data-toggle="tab" href="#tab-1">Lead</a></li>
                                 <li class="active"><a data-toggle="tab" href="#tab-2">Anexos</a></li>
                                 <li class=""><a data-toggle="tab" href="#tab-3">Anotações</a></li>
                                 <li class=""><a data-toggle="tab" href="#tab-4">Processo</a></li>
                             }
                             @if ((Int32)Session["NivelLead"] == 3)
                             {
-                                <li class=""><a data-toggle="tab" href="#tab-1">Pagamento</a></li>
+                                <li class=""><a data-toggle="tab" href="#tab-1">Lead</a></li>
                                 <li class=""><a data-toggle="tab" href="#tab-2">Anexos</a></li>
                                 <li class="active"><a data-toggle="tab" href="#tab-3">Anotações</a></li>
                                 <li class=""><a data-toggle="tab" href="#tab-4">Processo</a></li>
                             }
                             @if ((Int32)Session["NivelLead"] == 4)
                             {
-                                <li class=""><a data-toggle="tab" href="#tab-1">Pagamento</a></li>
+                                <li class=""><a data-toggle="tab" href="#tab-1">Lead</a></li>
                                 <li class=""><a data-toggle="tab" href="#tab-2">Anexos</a></li>
                                 <li class=""><a data-toggle="tab" href="#tab-3">Anotações</a></li>
                                 <li class="active"><a data-toggle="tab" href="#tab-4">Processo</a></li>
@@ -138,130 +238,226 @@
                                         @using (Html.BeginForm("EditarLead", "Administra", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal", @id = "pwd-container1" }))
                                         {
                                             @Html.AntiForgeryToken()
-                                            <div class="row" style="width: 100%;">
-                                                <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Identificação</h4>
-                                                <div class="form-group" style=" margin-left: 5px; margin-right: 5px;">
-                                                    @Html.ButtonActionSubmit(text: "Confirma alteração de lead", htmlAttributes: new { id = "basictoast", @class = "btn-loading1 show-spinner" })
+                                            <div class="col-lg-8 col-md-8 col-xs-12">
+                                                <div class="row" style="width: 100%;">
+                                                    <h4 style="margin-left: -15px; color:green; background-color: beige; font-weight:bold">Criação</h4>
+                                                    <div class="form-group" style=" margin-left: -15px; margin-right: 5px;">
+                                                        @Html.ButtonActionSubmit(text: "Confirma alteração de lead", htmlAttributes: new { id = "basictoast", @class = "btn-loading1 show-spinner" })
+                                                    </div>
+                                                    <div class="col-lg-12 col-md-12 col-xs-12">
+                                                        <div class="form-group" style=" margin-left: -45px; margin-right: -15px;"> 
+                                                            <div class="col-lg-2 col-md-2 col-xs-12">
+                                                                Data de Criação
+                                                                @Html.TextBoxFor(m => m.LEAD_DT_ENTRADA, "{0:dd/MM/yyyy}", new { @class = "form-control", @tabindex = "-1", @readonly = "readonly", @style = "color: green; font-weight: bold" })
+                                                            </div>
+                                                            <div class="col-lg-4 col-md-4 col-xs-12">
+                                                                Identificador
+                                                                @Html.TextBoxFor(m => m.LEAD_GU_IDENTIFICADOR, new { @class = "form-control", @tabindex = "-1", @readonly = "readonly", @style = "color: green; font-weight: bold" })
+                                                            </div>
+                                                            <div class="col-lg-2 col-md-2 col-xs-12">
+                                                                Num.Mensagens
+                                                                @Html.TextBoxFor(m => m.LEAD_IN_ENVIOS, new { @class = "form-control", @tabindex = "-1", @readonly = "readonly", @style = "color: green; font-weight: bold" })
+                                                            </div>
+                                                            <div class="col-lg-3 col-md-3 col-xs-12">
+                                                                Status
+                                                                @Html.TextBoxFor(m => m.Status, new { @class = "form-control", @tabindex = "-1", @readonly = "readonly", @style = "color: darkblue; font-weight: bold" })
+                                                            </div>
+                                                        </div>               
+                                                    </div>
                                                 </div>
-                                                <div class="col-lg-12 col-md-12 col-xs-12">
-                                                    <div class="form-group" style=" margin-left: -15px; margin-right: -15px;"> 
-                                                        <div class="col-lg-2 col-md-2 col-xs-12">
-                                                            Data de Criação
-                                                            @Html.TextBoxFor(m => m.LEAD_DT_ENTRADA, "{0:dd/MM/yyyy}", new { @class = "form-control", @tabindex = "-1", @readonly = "readonly", @style = "color: green; font-weight: bold" })
+
+                                                <div class="row" style="width: 100%;">
+                                                    <h4 style="margin-left: -15px; color:green; background-color: beige; font-weight:bold">Situação</h4>
+                                                    <div class="col-lg-12 col-md-12 col-xs-12">
+                                                        @if (Model.LEAD_IN_STATUS == 0 || Model.LEAD_IN_STATUS == 1)
+                                                        {
+                                                            <div class="form-group" style=" margin-left: -45px; margin-right: -15px;"> 
+                                                                @if (Model.LEAD_IN_STATUS == 0)
+                                                                {
+                                                                    <div class="col-lg-3 col-md-3 col-xs-12">
+                                                                        Status*
+                                                                        @Html.DropDownListFor(m => m.LEAD_IN_STATUS, (SelectList)ViewBag.Status0, "Selecionar", new { @id = "ddlStatus", @class = "form-control", @style = "color: darkblue; font-weight: bold" })
+                                                                        @Html.ValidationMessageFor(m => m.LEAD_IN_STATUS, "", new { @style = "color:red" })
+                                                                    </div>
+                                                                }
+                                                                else if (Model.LEAD_IN_STATUS == 1)
+                                                                {
+                                                                    <div class="col-lg-3 col-md-3 col-xs-12">
+                                                                        Status*
+                                                                        @Html.DropDownListFor(m => m.LEAD_IN_STATUS, (SelectList)ViewBag.Status1, "Selecionar", new { @id = "ddlStatusTransicao", @class = "form-control", @style = "color: darkblue; font-weight: bold" })
+                                                                        @Html.ValidationMessageFor(m => m.LEAD_IN_STATUS, "", new { @style = "color:red" })
+                                                                    </div>
+                                                                    <div class="col-lg-3 col-md-3 col-xs-12">
+                                                                        Data da Qualificação
+                                                                        @Html.TextBoxFor(m => m.LEAD_DT_MOVIMENTO, "{0:dd/MM/yyyy}", new { @class = "form-control", @tabindex = "-1", @readonly = "readonly" })
+                                                                    </div>
+                                                                }
+                                                            </div>
+                                                        }
+
+                                                        @if (Model.LEAD_IN_STATUS == 4 || Model.LEAD_IN_STATUS == 3 || Model.LEAD_IN_STATUS == 2)
+                                                        {
+                                                            <div class="form-group" style=" margin-left: -45px; margin-right: -15px;">
+                                                                @if (Model.LEAD_IN_STATUS == 4)
+                                                                {
+                                                                    <div class="col-lg-3 col-md-3 col-xs-12">
+                                                                        Data da Exclusão
+                                                                        @Html.TextBoxFor(m => m.LEAD_DT_EXCLUSAO, "{0:dd/MM/yyyy}", new { @class = "form-control", @tabindex = "-1", @readonly = "readonly" })
+                                                                    </div>
+                                                                    <div class="col-lg-9 col-md-9 col-xs-12">
+                                                                        Justificativa da Exclusão
+                                                                        @Html.TextAreaFor(m => m.LEAD_DS_MOTIVO_EXCLUSAO, new { @class = "form-control", style = "width: 100%; height: 100px; overflow:auto;", @tabindex = "-1", @readonly = "readonly" })
+                                                                    </div>
+                                                                }
+                                                                @if (Model.LEAD_IN_STATUS == 3)
+                                                                {
+                                                                    <div class="col-lg-3 col-md-3 col-xs-12">
+                                                                        Data de Fechamento
+                                                                        @Html.TextBoxFor(m => m.LEAD_DT_MOVIMENTO, "{0:dd/MM/yyyy}", new { @class = "form-control", @tabindex = "-1", @readonly = "readonly" })
+                                                                    </div>
+                                                                    <div class="col-lg-9 col-md-9 col-xs-12">
+                                                                        Justificativa da Perda
+                                                                        @Html.TextAreaFor(m => m.LEAD_DS_MOTIVO_EXCLUSAO, new { @class = "form-control", style = "width: 100%; height: 100px; overflow:auto;", @tabindex = "-1", @readonly = "readonly" })
+                                                                    </div>
+                                                                }
+                                                                @if (Model.LEAD_IN_STATUS == 2)
+                                                                {
+                                                                    <div class="col-lg-3 col-md-3 col-xs-12">
+                                                                        Data de Conversão
+                                                                        @Html.TextBoxFor(m => m.LEAD_DT_MOVIMENTO, "{0:dd/MM/yyyy}", new { @class = "form-control", @tabindex = "-1", @readonly = "readonly" })
+                                                                    </div>
+                                                                    <div class="col-lg-9 col-md-9 col-xs-12">
+                                                                        Observações da Conversão
+                                                                        @Html.TextAreaFor(m => m.LEAD_DS_MOTIVO_EXCLUSAO, new { @class = "form-control", style = "width: 100%; height: 100px; overflow:auto;", @tabindex = "-1", @readonly = "readonly" })
+                                                                    </div>
+                                                                }
+                                                            </div>               
+                                                        }
+                                                    </div>
+                                                </div>
+
+                                                <div class="row" style="width: 100%;">
+                                                    <h4 style="margin-left: -15px; color:green; background-color: beige; font-weight:bold">Identificação</h4>
+                                                    <div class="form-group" style=" margin-left: -30px; margin-right: -15px;"> 
+                                                        <div class="col-lg-6 col-md-6 col-xs-12">
+                                                            @Html.HiddenFor(m => m.LEAD_IN_ATIVO)
+                                                            @Html.HiddenFor(m => m.LEAD_IN_STATUS)
+                                                            @Html.HiddenFor(m => m.LEAD_GU_IDENTIFICADOR)
+                                                            @Html.HiddenFor(m => m.LEAD_DT_ENTRADA)
+                                                            @Html.HiddenFor(m => m.LEAD_IN_SISTEMA)
+                                                            @Html.HiddenFor(m => m.LEAD_IN_ENVIOS)
+                                                            @Html.HiddenFor(m => m.USUA_CD_ID)
+                                                            @Html.HiddenFor(m => m.LEAD_DT_EXCLUSAO)
+                                                            @Html.HiddenFor(m => m.LEAD_DT_FECHAMENTO)
+                                                            @Html.HiddenFor(m => m.LEAD_DT_MOVIMENTO)
+                                                            @Html.HiddenFor(m => m.CRM1_CD_ID)
+                                                            @Html.HiddenFor(m => m.LEAD_CD_ID)
+                                                            @Html.HiddenFor(m => m.LEAD_IN_STATUS)
+                                                            Nome*
+                                                            @Html.TextBoxFor(m => m.LEAD_NM_NOME, new { @class = "form-control", autofocus = true, data_toggle = "popover", data_content = "Informe o nome completo associado ao lead", data_trigger="hover", data_placement="top", @style = "color: green; font-weight: bold"  })
+                                                            @Html.ValidationMessageFor(m => m.LEAD_NM_NOME, "", new { @style = "color:red" })
                                                         </div>
                                                         <div class="col-lg-3 col-md-3 col-xs-12">
-                                                            Identificador
-                                                            @Html.TextBoxFor(m => m.LEAD_GU_IDENTIFICADOR, new { @class = "form-control", @tabindex = "-1", @readonly = "readonly", @style = "color: green; font-weight: bold" })
+                                                            CPF
+                                                            @Html.TextBoxFor(m => m.LEAD_NR_CPF, new { @class = "form-control", autofocus = true, @id = "cpf" , data_toggle = "popover", data_content = "Informe o CPF associado ao lead", data_trigger="hover", data_placement="top" })
+                                                            @Html.ValidationMessageFor(m => m.LEAD_NR_CPF, "", new { @style = "color:red" })
+                                                        </div>
+                                                        <div class="col-lg-3 col-md-3 col-xs-12">
+                                                            CNPJ
+                                                            @Html.TextBoxFor(m => m.LEAD_NR_CNPJ, new { @class = "form-control", autofocus = true, @id = "cnpj" , data_toggle = "popover", data_content = "Informe o CNPJ associado ao lead", data_trigger="hover", data_placement="top" })
+                                                            @Html.ValidationMessageFor(m => m.LEAD_NR_CNPJ, "", new { @style = "color:red" })
+                                                        </div>
+                                                        @*<div class="col-lg-2 col-md-2 col-xs-12">
+                                                            Data de Nascimento
+                                                            @Html.TextBoxFor(m => m.LEAD_DT_NASCIMENTO, "{0:dd/MM/yyyy}", new { @class = "form-control date-picker", autofocus = true, @id = "dn" })
+                                                            @Html.ValidationMessageFor(m => m.LEAD_DT_NASCIMENTO, "", new { @style = "color:red" })
+                                                        </div>*@
+                                                    </div>               
+                                                </div>                                    
+                                                <div class="row" style="width: 100%;">
+                                                    <h4 style="margin-left: -15px; color:green; background-color: beige; font-weight:bold">Informações de Contato</h4>
+                                                    <div class="form-group" style=" margin-left: -30px; margin-right: -15px;">                
+                                                        <div class="col-lg-5 col-md-5 col-xs-12">
+                                                            E-Mail*
+                                                            @Html.TextBoxFor(m => m.LEAD_EM_EMAIL, new { @class = "form-control", autofocus = true, data_toggle = "popover", data_content = "Informe o e-mail associado ao lead", data_trigger="hover", data_placement="top" })
+                                                            @Html.ValidationMessageFor(m => m.LEAD_EM_EMAIL, "", new { @style = "color:red" })
+                                                        </div>
+                                                        <div class="col-lg-3 col-md-3 col-xs-12">
+                                                            Celular
+                                                            @Html.TextBoxFor(m => m.LEAD_NR_CELULAR, new { @class = "form-control", autofocus = true, @id= "cel", data_toggle = "popover", data_content = "Informe o celular associado ao lead", data_trigger="hover", data_placement="top" })
+                                                            @Html.ValidationMessageFor(m => m.LEAD_NR_CELULAR, "", new { @style = "color:red" })
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group" style=" margin-left: -30px; margin-right: -15px;">
+                                                        <div class="col-lg-12 col-md-12 col-xs-12">
+                                                            Descrição (O WebDoctor preenche automaticamente esse campo)
+                                                            @Html.TextAreaFor(m => m.LEAD_DS_DESCRICAO, new { @class = "form-control", style = "width: 100%; height: 100px; overflow:auto;", autofocus = true, @id="desc", data_toggle = "popover", data_content = "Informe um texto que será acrescentado à descrição gerada automaticamente", data_trigger="hover", data_placement="top" })
+                                                            @Html.ValidationMessageFor(m => m.LEAD_DS_DESCRICAO, "", new { @style = "color:red" })
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row" style="width: 100%;">
+                                                    <h4 style="margin-left: -15px; color:green; background-color: beige; font-weight:bold">Endereço</h4>
+                                                    <div class="form-group" style=" margin-left: -30px; margin-right: -15px;">
+                                                        <div class="col-lg-3 col-md-3 col-xs-12">
+                                                            CEP
+                                                            <div class="input-group">
+                                                                @Html.TextBoxFor(m => m.LEAD_NR_CEP, new { @class = "form-control", @id = "cep", autofocus = true, @onblur = "PesquisaCep($('#cep').val(), $(this), 1)" })
+                                                                @Html.ValidationMessageFor(m => m.LEAD_NR_CEP, "", new { @style = "color:red" })
+                                                                <span class="input-group-btn">
+                                                                    <span class="btn btn-warning btn-sm" id="btnBuscaCep" data_toggle = "popover" data_content = "Pesquisar o CEP informado" data_trigger="hover" data_placement="top" onclick="PesquisaCep($('#cep').val(), $(this), 1)">Buscar CEP</span>
+                                                                </span>
+                                                            </div>
+                                                            <div class="col-lg-12 col-md-12 col-xs-12" style="display:none" id="cepval">
+                                                                <h5>CEP inválido</h5>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group" style=" margin-left: -30px; margin-right: -15px;">
+                                                        <div class="col-lg-8 col-md-8 col-xs-12">
+                                                            Endereço
+                                                            @Html.TextBoxFor(m => m.LEAD_NM_ENDERECO, new { @class = "form-control", @id = "endereco", autofocus = true })
+                                                            @Html.ValidationMessageFor(m => m.LEAD_NM_ENDERECO, "", new { @style = "color:red" })
                                                         </div>
                                                         <div class="col-lg-2 col-md-2 col-xs-12">
-                                                            Status
-                                                            @Html.TextBoxFor(m => m.Status, new { @class = "form-control", @tabindex = "-1", @readonly = "readonly", @style = "color: brown; font-weight: bold" })
+                                                            Número
+                                                            @Html.TextBoxFor(m => m.LEAD_NR_NUMERO, new { @class = "form-control", @id = "nmr", autofocus = true })
+                                                            @Html.ValidationMessageFor(m => m.LEAD_NR_NUMERO, "", new { @style = "color:red" })
                                                         </div>
-                                                    </div>               
-                                                </div>
-                                            </div>
-                                            <div class="row">
-                                                <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Identificação</h4>
-                                                <div class="form-group" style=" margin-left: -15px; margin-right: -15px;"> 
-                                                    <div class="col-lg-4 col-md-4 col-xs-12">
-                                                        @Html.HiddenFor(m => m.LEAD_IN_ATIVO)
-                                                        @Html.HiddenFor(m => m.LEAD_IN_STATUS)
-                                                        @Html.HiddenFor(m => m.LEAD_GU_IDENTIFICADOR)
-                                                        @Html.HiddenFor(m => m.LEAD_DT_ENTRADA)
-                                                        @Html.HiddenFor(m => m.LEAD_IN_SISTEMA)
-                                                        @Html.HiddenFor(m => m.LEAD_IN_ENVIOS)
-                                                        Nome*
-                                                        @Html.TextBoxFor(m => m.LEAD_NM_NOME, new { @class = "form-control", autofocus = true, data_toggle = "popover", data_content = "Informe o nome completo associado ao lead", data_trigger="hover", data_placement="top" })
-                                                        @Html.ValidationMessageFor(m => m.LEAD_NM_NOME, "", new { @style = "color:red" })
+                                                        <div class="col-lg-2 col-md-2 col-xs-12">
+                                                            Complemento
+                                                            @Html.TextBoxFor(m => m.LEAD_NM_COMPLEMENTO, new { @class = "form-control", autofocus = true, @id = "complemento" })
+                                                            @Html.ValidationMessageFor(m => m.LEAD_NM_COMPLEMENTO, "", new { @style = "color:red" })
+                                                        </div>
                                                     </div>
-                                                    <div class="col-lg-2 col-md-2 col-xs-12">
-                                                        CPF
-                                                        @Html.TextBoxFor(m => m.LEAD_NR_CPF, new { @class = "form-control", autofocus = true, @id = "cpf" , data_toggle = "popover", data_content = "Informe o CPF associado ao lead", data_trigger="hover", data_placement="top" })
-                                                        @Html.ValidationMessageFor(m => m.LEAD_NR_CPF, "", new { @style = "color:red" })
-                                                    </div>
-                                                    <div class="col-lg-2 col-md-2 col-xs-12">
-                                                        CNPJ
-                                                        @Html.TextBoxFor(m => m.LEAD_NR_CNPJ, new { @class = "form-control", autofocus = true, @id = "cnpj" , data_toggle = "popover", data_content = "Informe o CNPJ associado ao lead", data_trigger="hover", data_placement="top" })
-                                                        @Html.ValidationMessageFor(m => m.LEAD_NR_CNPJ, "", new { @style = "color:red" })
-                                                    </div>
-                                                    <div class="col-lg-2 col-md-2 col-xs-12">
-                                                        Data de Nascimento
-                                                        @Html.TextBoxFor(m => m.LEAD_DT_NASCIMENTO, "{0:dd/MM/yyyy}", new { @class = "form-control date-picker", autofocus = true, @id = "dn" })
-                                                        @Html.ValidationMessageFor(m => m.LEAD_DT_NASCIMENTO, "", new { @style = "color:red" })
-                                                    </div>
-                                                </div>               
-                                            </div>                                    
-                                            <div class="row">
-                                                <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Informações de Contato</h4>
-                                                <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">                
-                                                    <div class="col-lg-4 col-md-4 col-xs-12">
-                                                        E-Mail*
-                                                        @Html.TextBoxFor(m => m.LEAD_EM_EMAIL, new { @class = "form-control", autofocus = true, data_toggle = "popover", data_content = "Informe o e-mail associado ao lead", data_trigger="hover", data_placement="top" })
-                                                        @Html.ValidationMessageFor(m => m.LEAD_EM_EMAIL, "", new { @style = "color:red" })
-                                                    </div>
-                                                    <div class="col-lg-2 col-md-2 col-xs-12">
-                                                        Celular
-                                                        @Html.TextBoxFor(m => m.LEAD_NR_CELULAR, new { @class = "form-control", autofocus = true, @id= "cel", data_toggle = "popover", data_content = "Informe o celular associado ao lead", data_trigger="hover", data_placement="top" })
-                                                        @Html.ValidationMessageFor(m => m.LEAD_NR_CELULAR, "", new { @style = "color:red" })
-                                                    </div>
-                                                </div>
-                                                <div class="form-group" style=" margin-left: -30px; margin-right: -15px;">
-                                                    <div class="col-lg-12 col-md-12 col-xs-12">
-                                                        Descrição (O WebDoctor vai preencher automaticamente esse campo)
-                                                        @Html.TextAreaFor(m => m.LEAD_DS_DESCRICAO, new { @class = "form-control", style = "width: 100%; height: 100px; overflow:auto;", autofocus = true, @id="desc", data_toggle = "popover", data_content = "Informe um texto que será acrescentado à descrição gerada automaticamente", data_trigger="hover", data_placement="top" })
-                                                        @Html.ValidationMessageFor(m => m.LEAD_DS_DESCRICAO, "", new { @style = "color:red" })
+                                                    <div class="form-group" style=" margin-left: -30px; margin-right: -15px;">
+                                                        <div class="col-lg-4 col-md-4 col-xs-12">
+                                                            Bairro
+                                                            @Html.TextBoxFor(m => m.LEAD_NM_BAIRRO, new { @class = "form-control", @id = "bairro", autofocus = true })
+                                                            @Html.ValidationMessageFor(m => m.LEAD_NM_BAIRRO, "", new { @style = "color:red" })
+                                                        </div>
+                                                        <div class="col-lg-5 col-md-5 col-xs-12">
+                                                            Cidade
+                                                            @Html.TextBoxFor(m => m.LEAD_NM_CIDADE, new { @class = "form-control", @id = "cidade", autofocus = true })
+                                                            @Html.ValidationMessageFor(m => m.LEAD_NM_CIDADE, "", new { @style = "color:red" })
+                                                        </div>
+                                                        <div class="col-lg-3 col-md-3 col-xs-12">
+                                                            UF
+                                                            @Html.DropDownListFor(m => m.UF_CD_ID, (SelectList)ViewBag.UF, "UF", new { @class = "form-control", @id = "uf", autofocus = true })
+                                                            @Html.ValidationMessageFor(m => m.UF_CD_ID, "", new { @style = "color:red" })
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div class="row">
-                                                <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Endereço</h4>
-                                                <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
-                                                    <div class="col-lg-2 col-md-2 col-xs-12">
-                                                        CEP
-                                                        <div class="input-group">
-                                                            @Html.TextBoxFor(m => m.LEAD_NR_CEP, new { @class = "form-control", @id = "cep", autofocus = true, @onblur = "PesquisaCep($('#cep').val(), $(this), 1)" })
-                                                            @Html.ValidationMessageFor(m => m.LEAD_NR_CEP, "", new { @style = "color:red" })
-                                                            <span class="input-group-btn">
-                                                                <span class="btn btn-warning btn-sm" id="btnBuscaCep" data_toggle = "popover" data_content = "Pesquisar o CEP informado" data_trigger="hover" data_placement="top" onclick="PesquisaCep($('#cep').val(), $(this), 1)">Buscar CEP</span>
-                                                            </span>
+
+                                            <div class="col-lg-4 col-md-4 col-xs-12">
+                                                <div class="row">
+                                                    <h4 style="margin-left: -15px; color:green; background-color: beige; font-weight:bold">Resumo do Lead</h4>
+                                                    <div class="form-group" style=" margin-left: -30px; margin-right: -15px;">
+                                                        <div class="col-lg-12 col-md-12 col-xs-12">
+                                                            Movimentações do Lead
+                                                            @Html.TextAreaFor(m => m.LEAD_DS_RESUMO_MOVIMENTO, new { @class = "form-control", style = "width: 100%; height: 800px; overflow:auto;", @tabindex = "-1", @readonly = "readonly" })
                                                         </div>
-                                                        <div class="col-lg-12 col-md-12 col-xs-12" style="display:none" id="cepval">
-                                                            <h5>CEP inválido</h5>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
-                                                    <div class="col-lg-4 col-md-4 col-xs-12">
-                                                        Endereço
-                                                        @Html.TextBoxFor(m => m.LEAD_NM_ENDERECO, new { @class = "form-control", @id = "endereco", autofocus = true })
-                                                        @Html.ValidationMessageFor(m => m.LEAD_NM_ENDERECO, "", new { @style = "color:red" })
-                                                    </div>
-                                                    <div class="col-lg-2 col-md-2 col-xs-12">
-                                                        Número
-                                                        @Html.TextBoxFor(m => m.LEAD_NR_NUMERO, new { @class = "form-control", @id = "nmr", autofocus = true })
-                                                        @Html.ValidationMessageFor(m => m.LEAD_NR_NUMERO, "", new { @style = "color:red" })
-                                                    </div>
-                                                    <div class="col-lg-2 col-md-2 col-xs-12">
-                                                        Complemento
-                                                        @Html.TextBoxFor(m => m.LEAD_NM_COMPLEMENTO, new { @class = "form-control", autofocus = true, @id = "complemento" })
-                                                        @Html.ValidationMessageFor(m => m.LEAD_NM_COMPLEMENTO, "", new { @style = "color:red" })
-                                                    </div>
-                                                </div>
-                                                <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
-                                                    <div class="col-lg-3 col-md-3 col-xs-12">
-                                                        Bairro
-                                                        @Html.TextBoxFor(m => m.LEAD_NM_BAIRRO, new { @class = "form-control", @id = "bairro", autofocus = true })
-                                                        @Html.ValidationMessageFor(m => m.LEAD_NM_BAIRRO, "", new { @style = "color:red" })
-                                                    </div>
-                                                    <div class="col-lg-3 col-md-3 col-xs-12">
-                                                        Cidade
-                                                        @Html.TextBoxFor(m => m.LEAD_NM_CIDADE, new { @class = "form-control", @id = "cidade", autofocus = true })
-                                                        @Html.ValidationMessageFor(m => m.LEAD_NM_CIDADE, "", new { @style = "color:red" })
-                                                    </div>
-                                                    <div class="col-lg-2 col-md-2 col-xs-12">
-                                                        UF
-                                                        @Html.DropDownListFor(m => m.UF_CD_ID, (SelectList)ViewBag.UF, "UF", new { @class = "form-control", @id = "uf", autofocus = true })
-                                                        @Html.ValidationMessageFor(m => m.UF_CD_ID, "", new { @style = "color:red" })
                                                     </div>
                                                 </div>
                                             </div>
@@ -276,130 +472,226 @@
                                         @using (Html.BeginForm("EditarLead", "Administra", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal", @id = "pwd-container1" }))
                                         {
                                             @Html.AntiForgeryToken()
-                                            <div class="row" style="width: 100%;">
-                                                <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Identificação</h4>
-                                                <div class="form-group" style=" margin-left: 5px; margin-right: 5px;">
-                                                    @Html.ButtonActionSubmit(text: "Confirma alteração de lead", htmlAttributes: new { id = "basictoast", @class = "btn-loading1 show-spinner" })
+                                            <div class="col-lg-8 col-md-8 col-xs-12">
+                                                <div class="row" style="width: 100%;">
+                                                    <h4 style="margin-left: -15px; color:green; background-color: beige; font-weight:bold">Criação</h4>
+                                                    <div class="form-group" style=" margin-left: -15px; margin-right: 5px;">
+                                                        @Html.ButtonActionSubmit(text: "Confirma alteração de lead", htmlAttributes: new { id = "basictoast", @class = "btn-loading1 show-spinner" })
+                                                    </div>
+                                                    <div class="col-lg-12 col-md-12 col-xs-12">
+                                                        <div class="form-group" style=" margin-left: -45px; margin-right: -15px;"> 
+                                                            <div class="col-lg-2 col-md-2 col-xs-12">
+                                                                Data de Criação
+                                                                @Html.TextBoxFor(m => m.LEAD_DT_ENTRADA, "{0:dd/MM/yyyy}", new { @class = "form-control", @tabindex = "-1", @readonly = "readonly", @style = "color: green; font-weight: bold" })
+                                                            </div>
+                                                            <div class="col-lg-4 col-md-4 col-xs-12">
+                                                                Identificador
+                                                                @Html.TextBoxFor(m => m.LEAD_GU_IDENTIFICADOR, new { @class = "form-control", @tabindex = "-1", @readonly = "readonly", @style = "color: green; font-weight: bold" })
+                                                            </div>
+                                                            <div class="col-lg-2 col-md-2 col-xs-12">
+                                                                Num.Mensagens
+                                                                @Html.TextBoxFor(m => m.LEAD_IN_ENVIOS, new { @class = "form-control", @tabindex = "-1", @readonly = "readonly", @style = "color: green; font-weight: bold" })
+                                                            </div>
+                                                            <div class="col-lg-3 col-md-3 col-xs-12">
+                                                                Status
+                                                                @Html.TextBoxFor(m => m.Status, new { @class = "form-control", @tabindex = "-1", @readonly = "readonly", @style = "color: darkblue; font-weight: bold" })
+                                                            </div>
+                                                        </div>               
+                                                    </div>
                                                 </div>
-                                                <div class="col-lg-12 col-md-12 col-xs-12">
-                                                    <div class="form-group" style=" margin-left: -15px; margin-right: -15px;"> 
-                                                        <div class="col-lg-2 col-md-2 col-xs-12">
-                                                            Data de Criação
-                                                            @Html.TextBoxFor(m => m.LEAD_DT_ENTRADA, "{0:dd/MM/yyyy}", new { @class = "form-control", @tabindex = "-1", @readonly = "readonly", @style = "color: green; font-weight: bold" })
+
+                                                <div class="row" style="width: 100%;">
+                                                    <h4 style="margin-left: -15px; color:green; background-color: beige; font-weight:bold">Situação</h4>
+                                                    <div class="col-lg-12 col-md-12 col-xs-12">
+                                                        @if (Model.LEAD_IN_STATUS == 0 || Model.LEAD_IN_STATUS == 1)
+                                                        {
+                                                            <div class="form-group" style=" margin-left: -45px; margin-right: -15px;"> 
+                                                                @if (Model.LEAD_IN_STATUS == 0)
+                                                                {
+                                                                    <div class="col-lg-3 col-md-3 col-xs-12">
+                                                                        Status*
+                                                                        @Html.DropDownListFor(m => m.LEAD_IN_STATUS, (SelectList)ViewBag.Status0, "Selecionar", new { @id = "ddlStatus", @class = "form-control", @style = "color: darkblue; font-weight: bold" })
+                                                                        @Html.ValidationMessageFor(m => m.LEAD_IN_STATUS, "", new { @style = "color:red" })
+                                                                    </div>
+                                                                }
+                                                                else if (Model.LEAD_IN_STATUS == 1)
+                                                                {
+                                                                    <div class="col-lg-3 col-md-3 col-xs-12">
+                                                                        Status*
+                                                                        @Html.DropDownListFor(m => m.LEAD_IN_STATUS, (SelectList)ViewBag.Status1, "Selecionar", new { @id = "ddlStatusTransicao", @class = "form-control", @style = "color: darkblue; font-weight: bold" })
+                                                                        @Html.ValidationMessageFor(m => m.LEAD_IN_STATUS, "", new { @style = "color:red" })
+                                                                    </div>
+                                                                    <div class="col-lg-3 col-md-3 col-xs-12">
+                                                                        Data da Qualificação
+                                                                        @Html.TextBoxFor(m => m.LEAD_DT_MOVIMENTO, "{0:dd/MM/yyyy}", new { @class = "form-control", @tabindex = "-1", @readonly = "readonly" })
+                                                                    </div>
+                                                                }
+                                                            </div>
+                                                        }
+
+                                                        @if (Model.LEAD_IN_STATUS == 4 || Model.LEAD_IN_STATUS == 3 || Model.LEAD_IN_STATUS == 2)
+                                                        {
+                                                            <div class="form-group" style=" margin-left: -45px; margin-right: -15px;">
+                                                                @if (Model.LEAD_IN_STATUS == 4)
+                                                                {
+                                                                    <div class="col-lg-3 col-md-3 col-xs-12">
+                                                                        Data da Exclusão
+                                                                        @Html.TextBoxFor(m => m.LEAD_DT_EXCLUSAO, "{0:dd/MM/yyyy}", new { @class = "form-control", @tabindex = "-1", @readonly = "readonly" })
+                                                                    </div>
+                                                                    <div class="col-lg-9 col-md-9 col-xs-12">
+                                                                        Justificativa da Exclusão
+                                                                        @Html.TextAreaFor(m => m.LEAD_DS_MOTIVO_EXCLUSAO, new { @class = "form-control", style = "width: 100%; height: 100px; overflow:auto;", @tabindex = "-1", @readonly = "readonly" })
+                                                                    </div>
+                                                                }
+                                                                @if (Model.LEAD_IN_STATUS == 3)
+                                                                {
+                                                                    <div class="col-lg-3 col-md-3 col-xs-12">
+                                                                        Data de Fechamento
+                                                                        @Html.TextBoxFor(m => m.LEAD_DT_MOVIMENTO, "{0:dd/MM/yyyy}", new { @class = "form-control", @tabindex = "-1", @readonly = "readonly" })
+                                                                    </div>
+                                                                    <div class="col-lg-9 col-md-9 col-xs-12">
+                                                                        Justificativa da Perda
+                                                                        @Html.TextAreaFor(m => m.LEAD_DS_MOTIVO_EXCLUSAO, new { @class = "form-control", style = "width: 100%; height: 100px; overflow:auto;", @tabindex = "-1", @readonly = "readonly" })
+                                                                    </div>
+                                                                }
+                                                                @if (Model.LEAD_IN_STATUS == 2)
+                                                                {
+                                                                    <div class="col-lg-3 col-md-3 col-xs-12">
+                                                                        Data de Conversão
+                                                                        @Html.TextBoxFor(m => m.LEAD_DT_MOVIMENTO, "{0:dd/MM/yyyy}", new { @class = "form-control", @tabindex = "-1", @readonly = "readonly" })
+                                                                    </div>
+                                                                    <div class="col-lg-9 col-md-9 col-xs-12">
+                                                                        Observações da Conversão
+                                                                        @Html.TextAreaFor(m => m.LEAD_DS_MOTIVO_EXCLUSAO, new { @class = "form-control", style = "width: 100%; height: 100px; overflow:auto;", @tabindex = "-1", @readonly = "readonly" })
+                                                                    </div>
+                                                                }
+                                                            </div>               
+                                                        }
+                                                    </div>
+                                                </div>
+
+                                                <div class="row" style="width: 100%;">
+                                                    <h4 style="margin-left: -15px; color:green; background-color: beige; font-weight:bold">Identificação</h4>
+                                                    <div class="form-group" style=" margin-left: -30px; margin-right: -15px;"> 
+                                                        <div class="col-lg-6 col-md-6 col-xs-12">
+                                                            @Html.HiddenFor(m => m.LEAD_IN_ATIVO)
+                                                            @Html.HiddenFor(m => m.LEAD_IN_STATUS)
+                                                            @Html.HiddenFor(m => m.LEAD_GU_IDENTIFICADOR)
+                                                            @Html.HiddenFor(m => m.LEAD_DT_ENTRADA)
+                                                            @Html.HiddenFor(m => m.LEAD_IN_SISTEMA)
+                                                            @Html.HiddenFor(m => m.LEAD_IN_ENVIOS)
+                                                            @Html.HiddenFor(m => m.USUA_CD_ID)
+                                                            @Html.HiddenFor(m => m.LEAD_DT_EXCLUSAO)
+                                                            @Html.HiddenFor(m => m.LEAD_DT_FECHAMENTO)
+                                                            @Html.HiddenFor(m => m.LEAD_DT_MOVIMENTO)
+                                                            @Html.HiddenFor(m => m.CRM1_CD_ID)
+                                                            @Html.HiddenFor(m => m.LEAD_CD_ID)
+                                                            @Html.HiddenFor(m => m.LEAD_IN_STATUS)
+                                                            Nome*
+                                                            @Html.TextBoxFor(m => m.LEAD_NM_NOME, new { @class = "form-control", autofocus = true, data_toggle = "popover", data_content = "Informe o nome completo associado ao lead", data_trigger="hover", data_placement="top", @style = "color: green; font-weight: bold"  })
+                                                            @Html.ValidationMessageFor(m => m.LEAD_NM_NOME, "", new { @style = "color:red" })
                                                         </div>
                                                         <div class="col-lg-3 col-md-3 col-xs-12">
-                                                            Identificador
-                                                            @Html.TextBoxFor(m => m.LEAD_GU_IDENTIFICADOR, new { @class = "form-control", @tabindex = "-1", @readonly = "readonly", @style = "color: green; font-weight: bold" })
+                                                            CPF
+                                                            @Html.TextBoxFor(m => m.LEAD_NR_CPF, new { @class = "form-control", autofocus = true, @id = "cpf" , data_toggle = "popover", data_content = "Informe o CPF associado ao lead", data_trigger="hover", data_placement="top" })
+                                                            @Html.ValidationMessageFor(m => m.LEAD_NR_CPF, "", new { @style = "color:red" })
+                                                        </div>
+                                                        <div class="col-lg-3 col-md-3 col-xs-12">
+                                                            CNPJ
+                                                            @Html.TextBoxFor(m => m.LEAD_NR_CNPJ, new { @class = "form-control", autofocus = true, @id = "cnpj" , data_toggle = "popover", data_content = "Informe o CNPJ associado ao lead", data_trigger="hover", data_placement="top" })
+                                                            @Html.ValidationMessageFor(m => m.LEAD_NR_CNPJ, "", new { @style = "color:red" })
+                                                        </div>
+                                                        @*<div class="col-lg-2 col-md-2 col-xs-12">
+                                                            Data de Nascimento
+                                                            @Html.TextBoxFor(m => m.LEAD_DT_NASCIMENTO, "{0:dd/MM/yyyy}", new { @class = "form-control date-picker", autofocus = true, @id = "dn" })
+                                                            @Html.ValidationMessageFor(m => m.LEAD_DT_NASCIMENTO, "", new { @style = "color:red" })
+                                                        </div>*@
+                                                    </div>               
+                                                </div>                                    
+                                                <div class="row" style="width: 100%;">
+                                                    <h4 style="margin-left: -15px; color:green; background-color: beige; font-weight:bold">Informações de Contato</h4>
+                                                    <div class="form-group" style=" margin-left: -30px; margin-right: -15px;">                
+                                                        <div class="col-lg-5 col-md-5 col-xs-12">
+                                                            E-Mail*
+                                                            @Html.TextBoxFor(m => m.LEAD_EM_EMAIL, new { @class = "form-control", autofocus = true, data_toggle = "popover", data_content = "Informe o e-mail associado ao lead", data_trigger="hover", data_placement="top" })
+                                                            @Html.ValidationMessageFor(m => m.LEAD_EM_EMAIL, "", new { @style = "color:red" })
+                                                        </div>
+                                                        <div class="col-lg-3 col-md-3 col-xs-12">
+                                                            Celular
+                                                            @Html.TextBoxFor(m => m.LEAD_NR_CELULAR, new { @class = "form-control", autofocus = true, @id= "cel", data_toggle = "popover", data_content = "Informe o celular associado ao lead", data_trigger="hover", data_placement="top" })
+                                                            @Html.ValidationMessageFor(m => m.LEAD_NR_CELULAR, "", new { @style = "color:red" })
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group" style=" margin-left: -30px; margin-right: -15px;">
+                                                        <div class="col-lg-12 col-md-12 col-xs-12">
+                                                            Descrição (O WebDoctor preenche automaticamente esse campo)
+                                                            @Html.TextAreaFor(m => m.LEAD_DS_DESCRICAO, new { @class = "form-control", style = "width: 100%; height: 100px; overflow:auto;", autofocus = true, @id="desc", data_toggle = "popover", data_content = "Informe um texto que será acrescentado à descrição gerada automaticamente", data_trigger="hover", data_placement="top" })
+                                                            @Html.ValidationMessageFor(m => m.LEAD_DS_DESCRICAO, "", new { @style = "color:red" })
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row" style="width: 100%;">
+                                                    <h4 style="margin-left: -15px; color:green; background-color: beige; font-weight:bold">Endereço</h4>
+                                                    <div class="form-group" style=" margin-left: -30px; margin-right: -15px;">
+                                                        <div class="col-lg-3 col-md-3 col-xs-12">
+                                                            CEP
+                                                            <div class="input-group">
+                                                                @Html.TextBoxFor(m => m.LEAD_NR_CEP, new { @class = "form-control", @id = "cep", autofocus = true, @onblur = "PesquisaCep($('#cep').val(), $(this), 1)" })
+                                                                @Html.ValidationMessageFor(m => m.LEAD_NR_CEP, "", new { @style = "color:red" })
+                                                                <span class="input-group-btn">
+                                                                    <span class="btn btn-warning btn-sm" id="btnBuscaCep" data_toggle = "popover" data_content = "Pesquisar o CEP informado" data_trigger="hover" data_placement="top" onclick="PesquisaCep($('#cep').val(), $(this), 1)">Buscar CEP</span>
+                                                                </span>
+                                                            </div>
+                                                            <div class="col-lg-12 col-md-12 col-xs-12" style="display:none" id="cepval">
+                                                                <h5>CEP inválido</h5>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group" style=" margin-left: -30px; margin-right: -15px;">
+                                                        <div class="col-lg-8 col-md-8 col-xs-12">
+                                                            Endereço
+                                                            @Html.TextBoxFor(m => m.LEAD_NM_ENDERECO, new { @class = "form-control", @id = "endereco", autofocus = true })
+                                                            @Html.ValidationMessageFor(m => m.LEAD_NM_ENDERECO, "", new { @style = "color:red" })
                                                         </div>
                                                         <div class="col-lg-2 col-md-2 col-xs-12">
-                                                            Status
-                                                            @Html.TextBoxFor(m => m.Status, new { @class = "form-control", @tabindex = "-1", @readonly = "readonly", @style = "color: brown; font-weight: bold" })
+                                                            Número
+                                                            @Html.TextBoxFor(m => m.LEAD_NR_NUMERO, new { @class = "form-control", @id = "nmr", autofocus = true })
+                                                            @Html.ValidationMessageFor(m => m.LEAD_NR_NUMERO, "", new { @style = "color:red" })
                                                         </div>
-                                                    </div>               
-                                                </div>
-                                            </div>
-                                            <div class="row">
-                                                <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Identificação</h4>
-                                                <div class="form-group" style=" margin-left: -15px; margin-right: -15px;"> 
-                                                    <div class="col-lg-4 col-md-4 col-xs-12">
-                                                        @Html.HiddenFor(m => m.LEAD_IN_ATIVO)
-                                                        @Html.HiddenFor(m => m.LEAD_IN_STATUS)
-                                                        @Html.HiddenFor(m => m.LEAD_GU_IDENTIFICADOR)
-                                                        @Html.HiddenFor(m => m.LEAD_DT_ENTRADA)
-                                                        @Html.HiddenFor(m => m.LEAD_IN_SISTEMA)
-                                                        @Html.HiddenFor(m => m.LEAD_IN_ENVIOS)
-                                                        Nome*
-                                                        @Html.TextBoxFor(m => m.LEAD_NM_NOME, new { @class = "form-control", autofocus = true, data_toggle = "popover", data_content = "Informe o nome completo associado ao lead", data_trigger="hover", data_placement="top" })
-                                                        @Html.ValidationMessageFor(m => m.LEAD_NM_NOME, "", new { @style = "color:red" })
+                                                        <div class="col-lg-2 col-md-2 col-xs-12">
+                                                            Complemento
+                                                            @Html.TextBoxFor(m => m.LEAD_NM_COMPLEMENTO, new { @class = "form-control", autofocus = true, @id = "complemento" })
+                                                            @Html.ValidationMessageFor(m => m.LEAD_NM_COMPLEMENTO, "", new { @style = "color:red" })
+                                                        </div>
                                                     </div>
-                                                    <div class="col-lg-2 col-md-2 col-xs-12">
-                                                        CPF
-                                                        @Html.TextBoxFor(m => m.LEAD_NR_CPF, new { @class = "form-control", autofocus = true, @id = "cpf" , data_toggle = "popover", data_content = "Informe o CPF associado ao lead", data_trigger="hover", data_placement="top" })
-                                                        @Html.ValidationMessageFor(m => m.LEAD_NR_CPF, "", new { @style = "color:red" })
-                                                    </div>
-                                                    <div class="col-lg-2 col-md-2 col-xs-12">
-                                                        CNPJ
-                                                        @Html.TextBoxFor(m => m.LEAD_NR_CNPJ, new { @class = "form-control", autofocus = true, @id = "cnpj" , data_toggle = "popover", data_content = "Informe o CNPJ associado ao lead", data_trigger="hover", data_placement="top" })
-                                                        @Html.ValidationMessageFor(m => m.LEAD_NR_CNPJ, "", new { @style = "color:red" })
-                                                    </div>
-                                                    <div class="col-lg-2 col-md-2 col-xs-12">
-                                                        Data de Nascimento
-                                                        @Html.TextBoxFor(m => m.LEAD_DT_NASCIMENTO, "{0:dd/MM/yyyy}", new { @class = "form-control date-picker", autofocus = true, @id = "dn" })
-                                                        @Html.ValidationMessageFor(m => m.LEAD_DT_NASCIMENTO, "", new { @style = "color:red" })
-                                                    </div>
-                                                </div>               
-                                            </div>                                    
-                                            <div class="row">
-                                                <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Informações de Contato</h4>
-                                                <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">                
-                                                    <div class="col-lg-4 col-md-4 col-xs-12">
-                                                        E-Mail*
-                                                        @Html.TextBoxFor(m => m.LEAD_EM_EMAIL, new { @class = "form-control", autofocus = true, data_toggle = "popover", data_content = "Informe o e-mail associado ao lead", data_trigger="hover", data_placement="top" })
-                                                        @Html.ValidationMessageFor(m => m.LEAD_EM_EMAIL, "", new { @style = "color:red" })
-                                                    </div>
-                                                    <div class="col-lg-2 col-md-2 col-xs-12">
-                                                        Celular
-                                                        @Html.TextBoxFor(m => m.LEAD_NR_CELULAR, new { @class = "form-control", autofocus = true, @id= "cel", data_toggle = "popover", data_content = "Informe o celular associado ao lead", data_trigger="hover", data_placement="top" })
-                                                        @Html.ValidationMessageFor(m => m.LEAD_NR_CELULAR, "", new { @style = "color:red" })
-                                                    </div>
-                                                </div>
-                                                <div class="form-group" style=" margin-left: -30px; margin-right: -15px;">
-                                                    <div class="col-lg-12 col-md-12 col-xs-12">
-                                                        Descrição (O WebDoctor vai preencher automaticamente esse campo)
-                                                        @Html.TextAreaFor(m => m.LEAD_DS_DESCRICAO, new { @class = "form-control", style = "width: 100%; height: 100px; overflow:auto;", autofocus = true, @id="desc", data_toggle = "popover", data_content = "Informe um texto que será acrescentado à descrição gerada automaticamente", data_trigger="hover", data_placement="top" })
-                                                        @Html.ValidationMessageFor(m => m.LEAD_DS_DESCRICAO, "", new { @style = "color:red" })
+                                                    <div class="form-group" style=" margin-left: -30px; margin-right: -15px;">
+                                                        <div class="col-lg-4 col-md-4 col-xs-12">
+                                                            Bairro
+                                                            @Html.TextBoxFor(m => m.LEAD_NM_BAIRRO, new { @class = "form-control", @id = "bairro", autofocus = true })
+                                                            @Html.ValidationMessageFor(m => m.LEAD_NM_BAIRRO, "", new { @style = "color:red" })
+                                                        </div>
+                                                        <div class="col-lg-5 col-md-5 col-xs-12">
+                                                            Cidade
+                                                            @Html.TextBoxFor(m => m.LEAD_NM_CIDADE, new { @class = "form-control", @id = "cidade", autofocus = true })
+                                                            @Html.ValidationMessageFor(m => m.LEAD_NM_CIDADE, "", new { @style = "color:red" })
+                                                        </div>
+                                                        <div class="col-lg-3 col-md-3 col-xs-12">
+                                                            UF
+                                                            @Html.DropDownListFor(m => m.UF_CD_ID, (SelectList)ViewBag.UF, "UF", new { @class = "form-control", @id = "uf", autofocus = true })
+                                                            @Html.ValidationMessageFor(m => m.UF_CD_ID, "", new { @style = "color:red" })
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div class="row">
-                                                <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Endereço</h4>
-                                                <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
-                                                    <div class="col-lg-2 col-md-2 col-xs-12">
-                                                        CEP
-                                                        <div class="input-group">
-                                                            @Html.TextBoxFor(m => m.LEAD_NR_CEP, new { @class = "form-control", @id = "cep", autofocus = true, @onblur = "PesquisaCep($('#cep').val(), $(this), 1)" })
-                                                            @Html.ValidationMessageFor(m => m.LEAD_NR_CEP, "", new { @style = "color:red" })
-                                                            <span class="input-group-btn">
-                                                                <span class="btn btn-warning btn-sm" id="btnBuscaCep" data_toggle = "popover" data_content = "Pesquisar o CEP informado" data_trigger="hover" data_placement="top" onclick="PesquisaCep($('#cep').val(), $(this), 1)">Buscar CEP</span>
-                                                            </span>
+
+                                            <div class="col-lg-4 col-md-4 col-xs-12">
+                                                <div class="row">
+                                                    <h4 style="margin-left: -15px; color:green; background-color: beige; font-weight:bold">Resumo do Lead</h4>
+                                                    <div class="form-group" style=" margin-left: -30px; margin-right: -15px;">
+                                                        <div class="col-lg-12 col-md-12 col-xs-12">
+                                                            Movimentações do Lead
+                                                            @Html.TextAreaFor(m => m.LEAD_DS_RESUMO_MOVIMENTO, new { @class = "form-control", style = "width: 100%; height: 800px; overflow:auto;", @tabindex = "-1", @readonly = "readonly" })
                                                         </div>
-                                                        <div class="col-lg-12 col-md-12 col-xs-12" style="display:none" id="cepval">
-                                                            <h5>CEP inválido</h5>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
-                                                    <div class="col-lg-4 col-md-4 col-xs-12">
-                                                        Endereço
-                                                        @Html.TextBoxFor(m => m.LEAD_NM_ENDERECO, new { @class = "form-control", @id = "endereco", autofocus = true })
-                                                        @Html.ValidationMessageFor(m => m.LEAD_NM_ENDERECO, "", new { @style = "color:red" })
-                                                    </div>
-                                                    <div class="col-lg-2 col-md-2 col-xs-12">
-                                                        Número
-                                                        @Html.TextBoxFor(m => m.LEAD_NR_NUMERO, new { @class = "form-control", @id = "nmr", autofocus = true })
-                                                        @Html.ValidationMessageFor(m => m.LEAD_NR_NUMERO, "", new { @style = "color:red" })
-                                                    </div>
-                                                    <div class="col-lg-2 col-md-2 col-xs-12">
-                                                        Complemento
-                                                        @Html.TextBoxFor(m => m.LEAD_NM_COMPLEMENTO, new { @class = "form-control", autofocus = true, @id = "complemento" })
-                                                        @Html.ValidationMessageFor(m => m.LEAD_NM_COMPLEMENTO, "", new { @style = "color:red" })
-                                                    </div>
-                                                </div>
-                                                <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
-                                                    <div class="col-lg-3 col-md-3 col-xs-12">
-                                                        Bairro
-                                                        @Html.TextBoxFor(m => m.LEAD_NM_BAIRRO, new { @class = "form-control", @id = "bairro", autofocus = true })
-                                                        @Html.ValidationMessageFor(m => m.LEAD_NM_BAIRRO, "", new { @style = "color:red" })
-                                                    </div>
-                                                    <div class="col-lg-3 col-md-3 col-xs-12">
-                                                        Cidade
-                                                        @Html.TextBoxFor(m => m.LEAD_NM_CIDADE, new { @class = "form-control", @id = "cidade", autofocus = true })
-                                                        @Html.ValidationMessageFor(m => m.LEAD_NM_CIDADE, "", new { @style = "color:red" })
-                                                    </div>
-                                                    <div class="col-lg-2 col-md-2 col-xs-12">
-                                                        UF
-                                                        @Html.DropDownListFor(m => m.UF_CD_ID, (SelectList)ViewBag.UF, "UF", new { @class = "form-control", @id = "uf", autofocus = true })
-                                                        @Html.ValidationMessageFor(m => m.UF_CD_ID, "", new { @style = "color:red" })
                                                     </div>
                                                 </div>
                                             </div>
@@ -1748,6 +2040,262 @@
             });          
         });   
      </script>
+
+    <script type="text/javascript">
+        // Guarda o valor anterior para restauração em caso de cancelamento
+        var valorAnteriorStatus = "";
+
+        function PrepararQualificacao(url) {
+            $('#urlExclusaoTemp').val(url); // Armazena a URL da Action com o ID do Lead
+            $('#modalConfirmacaoQuali').modal('show');
+        }
+
+        $(document).ready(function () {
+            // Armazena o valor inicial assim que a página carrega
+            valorAnteriorStatus = $("#ddlStatus").val();
+
+            // Detecta a mudança de opção no DropDownList
+            $("#ddlStatus").change(function () {
+                var valorSelecionado = $(this).val();
+            
+                // SUPOSIÇÃO: '1' representa o status "Qualificado" na sua tabela/enum. 
+                // Se for outro valor (ex: 2), altere abaixo.
+                if (valorSelecionado === "1") {
+                
+                    // Pegamos o ID do Lead que está sendo editado na tela. 
+                    // Se sua ViewModel tiver o campo de ID exposto, usamos m => m.LEAD_CD_ID
+                    var leadId = '@Model.LEAD_CD_ID'; 
+
+                    if (leadId !== "" && leadId !== "0") {
+                        // Monta a URL correspondente para o método do Controller
+                        var urlQualificacao = '/Administra/QualificarLead/' + leadId;
+                    
+                        // Dispara a abertura da modal passando a URL parametrizada
+                        PrepararQualificacao(urlQualificacao);
+                    }
+                } else {
+                    // Se escolheu outro status qualquer, atualiza o backup do valor anterior
+                    valorAnteriorStatus = valorSelecionado;
+                }
+            });
+
+            // 2. Ação do botão Confirmar dentro da modal
+            $('#btnConfirmarQualiSubmit').click(function () {
+                var urlFinal = $('#urlExclusaoTemp').val();
+                var $btn = $(this);
+
+                if (urlFinal !== "") {
+                    // Feedback visual de processamento
+                    $btn.prop('disabled', true).addClass('disabled');
+                    $btn.html('<i class="fa fa-spinner fa-spin"></i> Processando...');
+
+                    // Fecha a modal e redireciona
+                    $('#modalConfirmacaoQuali').modal('hide');
+            
+                    setTimeout(function () {
+                        $('.modal-backdrop').remove();
+                        $('#loadingIndicator').show();
+                    
+                        // Redireciona para Administra/QualificarLead/{id}
+                        window.location.href = urlFinal;
+                    }, 400);
+                }
+            });
+
+            // REVERSÃO DE SEGURANÇA: Se o usuário fechar a modal ou clicar em voltar, 
+            // o DropDownList volta para o status que estava antes automaticamente.
+            $('#modalConfirmacaoQuali').on('hidden.bs.modal', function () {
+                $('#urlExclusaoTemp').val("");
+                $('#ddlStatus').val(valorAnteriorStatus); // Restaura o valor para não ficar mentiroso na tela
+                $('#btnConfirmarQualiSubmit').prop('disabled', false).removeClass('disabled').html('Confirmar Qualificação');
+            });
+        });
+    </script>
+    <script type="text/javascript">
+        var valorAnteriorStatusTrans = "";
+
+        function AbrirModalTransicao(status) {
+            // Armazena o status alvo no input de controle
+            $('#targetStatusValue').val(status);
+        
+            // Reseta o formulário interno da modal
+            $('#txtJustificativaTransicao').val('');
+            $('#validaJustificativaTransicao').hide();
+
+            var $btnSubmit = $('#btnConfirmarTransicaoSubmit');
+            var $icon = $('#iconModalTransicao');
+
+            // Remove classes antigas de cores
+            $icon.removeClass('fa-check-circle fa-exclamation-triangle text-primary text-warning');
+            $btnSubmit.removeClass('btn-primary btn-warning');
+
+            if (status === "1") { 
+                // Configuração visual para CONVERTIDO (Azul)
+                $('#lblTituloModalTransicao').text('Confirmação de Conversão');
+                $('#lblSubTituloTransicao').text('Tem certeza que deseja CONVERTER esse lead?');
+                $('#lblDescricaoTransicao').text('O lead passará para a carteira de clientes ativos do sistema.');
+                $('#lblJustificativaTransicao').text('Justificativa da Conversão *');
+            
+                $icon.addClass('fa-check-circle text-primary');
+                $btnSubmit.addClass('btn-primary').html('Confirmar Conversão');
+            } 
+            else if (status === "2") { 
+                // Configuração visual para PERDIDO (Amarelo / Laranja)
+                $('#lblTituloModalTransicao').text('Confirmação de Lead Perdido');
+                $('#lblSubTituloTransicao').text('Deseja marcar este lead como PERDIDO?');
+                $('#lblDescricaoTransicao').text('O lead será arquivado e sairá do fluxo de prospecção ativo.');
+                $('#lblJustificativaTransicao').text('Motivo da Perda do Lead *');
+            
+                $icon.addClass('fa-exclamation-triangle text-warning');
+                $btnSubmit.addClass('btn-warning').html('Confirmar Perda');
+            }
+
+            // Abre a modal
+            $('#modalStatusTransicao').modal('show');
+        }
+
+        $(document).ready(function () {
+            // Guarda o valor inicial do DropDownList ao carregar a tela
+            valorAnteriorStatusTrans = $("#ddlStatusTransicao").val();
+
+            // Monitora a mudança do DropDownList
+            $("#ddlStatusTransicao").change(function () {
+                var statusEscolhido = $(this).val();
+
+                if (statusEscolhido === "1" || statusEscolhido === "2") {
+                    AbrirModalTransicao(statusEscolhido);
+                } else {
+                    valorAnteriorStatusTrans = statusEscolhido;
+                }
+            });
+
+            // Evento de clique no botão Confirmar dentro da Modal
+            $('#btnConfirmarTransicaoSubmit').click(function () {
+                var justificativaTxt = $('#txtJustificativaTransicao').val().trim();
+                var statusDestino = $('#targetStatusValue').val();
+                var leadId = '@Model.LEAD_CD_ID'; 
+
+                // Validação de texto em branco
+                if (justificativaTxt === "") {
+                    $('#validaJustificativaTransicao').show();
+                    $('#txtJustificativaTransicao').focus();
+                    return false;
+                }
+
+                var $btn = $(this);
+                $btn.prop('disabled', true).addClass('disabled');
+                $btn.html('<i class="fa fa-spinner fa-spin"></i> Processando...');
+                $('#loadingIndicator').show();
+
+                // Cria formulário virtual para disparar a Action via POST seguro
+                var form = document.createElement("form");
+                form.method = "POST";
+                form.action = '/Administra/MudarStatusLead'; // Nome da Action unificada
+
+                // Input 1: ID do Lead
+                var inputId = document.createElement("input");
+                inputId.type = "hidden";
+                inputId.name = "id";
+                inputId.value = leadId;
+                form.appendChild(inputId);
+
+                // Input 2: Novo Status (1 ou 2)
+                var inputStatus = document.createElement("input");
+                inputStatus.type = "hidden";
+                inputStatus.name = "novoStatus";
+                inputStatus.value = statusDestino;
+                form.appendChild(inputStatus);
+
+                // Input 3: Justificativa / Motivo
+                var inputJustificativa = document.createElement("input");
+                inputJustificativa.type = "hidden";
+                inputJustificativa.name = "justificativa";
+                inputJustificativa.value = justificativaTxt;
+                form.appendChild(inputJustificativa);
+
+                document.body.appendChild(form);
+                form.submit();
+            });
+
+            // Controle de reversão caso o usuário desista ou clique fora da modal
+            $('#modalStatusTransicao').on('hidden.bs.modal', function () {
+                $('#ddlStatusTransicao').val(valorAnteriorStatusTrans); // Restaura o dropdown para o valor correto
+                $('#targetStatusValue').val("");
+                $('#txtJustificativaTransicao').val('');
+                $('#validaJustificativaTransicao').hide();
+            });
+        });
+    </script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+        
+            // 1. Intercepta o clique do botão limpo (sem disparar o script global)
+            $('#btnExcluirLeadForm').on('click', function (e) {
+                e.preventDefault(); // Bloqueia o GET padrão do Link
+
+                // Reseta e limpa o formulário interno da modal
+                $('#txtMotivoExclusao').val('');
+                $('#validaMotivoExclusao').hide();
+
+                // Exibe a modal de forma limpa, sem ativar o spinner de fundo
+                $('#modalConfirmacaoExclusao').modal('show');
+            });
+
+            // 2. Ação do botão Confirmar dentro da modal
+            $('#btnConfirmarExclusaoSubmit').click(function () {
+                var motivoTxt = $('#txtMotivoExclusao').val().trim();
+                var leadId = '@Model.LEAD_CD_ID'; 
+
+                // Validação de campo obrigatório
+                if (motivoTxt === "") {
+                    $('#validaMotivoExclusao').show();
+                    $('#txtMotivoExclusao').focus();
+                    return false;
+                }
+
+                var $btn = $(this);
+            
+                // Trava o botão da modal para evitar cliques duplos acidentais
+                $btn.prop('disabled', true).addClass('disabled');
+                $btn.html('<i class="fa fa-spinner fa-spin"></i> Processando...');
+
+                // O PULO DO GATO: Fecha a modal e destrói o fundo cinza antes de disparar o POST
+                $('#modalConfirmacaoExclusao').modal('hide');
+                $('.modal-backdrop').remove();
+                $('body').removeClass('modal-open');
+
+                // Ativa o indicador de processamento global agora que a validação passou
+                $('#loadingIndicator').show();
+
+                // 3. Monta e dispara o formulário POST assíncrono para a Controller
+                var form = document.createElement("form");
+                form.method = "POST";
+                form.action = '/Administra/ExcluirLead';
+
+                var inputId = document.createElement("input");
+                inputId.type = "hidden";
+                inputId.name = "id";
+                inputId.value = leadId;
+                form.appendChild(inputId);
+
+                var inputMotivo = document.createElement("input");
+                inputMotivo.type = "hidden";
+                inputMotivo.name = "motivo";
+                inputMotivo.value = motivoTxt;
+                form.appendChild(inputMotivo);
+
+                document.body.appendChild(form);
+                form.submit();
+            });
+
+            // Limpeza completa ao cancelar a modal
+            $('#modalConfirmacaoExclusao').on('hidden.bs.modal', function () {
+                $('#txtMotivoExclusao').val('');
+                $('#validaMotivoExclusao').hide();
+                $('#btnConfirmarExclusaoSubmit').prop('disabled', false).removeClass('disabled').html('Confirmar Exclusão');
+            });
+        });
+    </script>    
     @if (ViewBag.Message != null)
     {
         <script type="text/javascript">

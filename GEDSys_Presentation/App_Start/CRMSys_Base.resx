@@ -1876,10 +1876,10 @@
     <value>Celular não informado</value>
   </data>
   <data name="M0608" xml:space="preserve">
-    <value>CPF não informado</value>
+    <value>CPF não informado ou inválido</value>
   </data>
   <data name="M0609" xml:space="preserve">
-    <value>CNPJ não informado</value>
+    <value>CNPJ não informado ou inválido</value>
   </data>
   <data name="M0610" xml:space="preserve">
     <value>Já existe um assinante com esse CPF/CNPJ</value>
