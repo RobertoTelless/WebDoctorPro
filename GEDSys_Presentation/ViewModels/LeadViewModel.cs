@@ -67,21 +67,21 @@ namespace ERP_Condominios_Solution.ViewModels
             {
                 if (LEAD_IN_STATUS == 0)
                 {
-                    return "Aguardando";
+                    return "Em Análise";
                 }
                 if (LEAD_IN_STATUS == 1)
                 {
-                    return "Processamento";
+                    return "Qualificado";
                 }
                 if (LEAD_IN_STATUS == 2)
                 {
-                    return "Encerrado";
+                    return "Convertido";
                 }
                 if (LEAD_IN_STATUS == 3)
                 {
-                    return "Pendente";
+                    return "Perdido";
                 }
-                return "Cancelado";
+                return "Não Qualificado";
             }
         }
 

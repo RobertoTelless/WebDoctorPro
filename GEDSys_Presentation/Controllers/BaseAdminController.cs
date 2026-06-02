@@ -42,6 +42,7 @@ using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
 using OfficeOpenXml;
 using System.IdentityModel.Tokens;
+using ModelServices.Interfaces.Repositories;
 
 namespace ERP_Condominios_Solution.Controllers
 {
@@ -85,6 +86,7 @@ namespace ERP_Condominios_Solution.Controllers
         private readonly IUnidadeAppService uniApp;
         private readonly ILaboratorioAppService labApp;
         private readonly ILeadAppService leaApp;
+        private readonly IVacinaAppService vacApp;
 
         private readonly string _connectionString = "DefaultEndpointsProtocol=https;AccountName=rtistoragemain;AccountKey=VowoS1r1iQ7OeHYB8COjfTPicHc1GxV1LvpPyKlKw0+GAb7MXIyWqX1uAGGNMOAHh7CsxabKbMaC+AStfHmdXQ==;EndpointSuffix=core.windows.net";
         private readonly string _containerName = "rti-datacontainer";
@@ -103,7 +105,7 @@ namespace ERP_Condominios_Solution.Controllers
         MENSAGENS_ENVIADAS_SISTEMA objetEnviadaoAntes = new MENSAGENS_ENVIADAS_SISTEMA();
         List<MENSAGENS_ENVIADAS_SISTEMA> listaMasterEnviada = new List<MENSAGENS_ENVIADAS_SISTEMA>();
 
-        public BaseAdminController(IUsuarioAppService baseApps, ILogAppService logApps, IUsuarioAppService usuApps, IConfiguracaoAppService confApps, IAssinanteAppService assiApps, IPlanoAppService planApps, ITemplateAppService temApps, IMensagemEnviadaSistemaAppService envApps, ITemplateEMailAppService mailApps, IEmpresaAppService empApps, IPerfilAppService perfApps, IMensagemAppService mensApps, IRecursividadeAppService recApps, IPacienteAppService pacApps, IGrupoAppService gruApps, IAcessoMetodoAppService aceApps, IConvenioAppService convApps, IEspecialidadeAppService espApps, IAvisoLembreteAppService avApps, ITemplateEMailAppService teApps, ITipoExameAppService tiApps, ITipoPacienteAppService tpApps, ITipoPagamentoAppService tgApps, ITipoValorConsultaAppService tcApps, ITipoAtestadoAppService taApps, IValorConsultaAppService vcApps, IPeriodicidadeAppService peApps, IConfiguracaoAnamneseAppService caApps, IConfiguracaoCalendarioAppService ccApps, ITemplateSMSAppService smsApps, ILocacaoAppService locApps, ITipoPagamentoAppService tpgApps, ITipoValorConsultaAppService ticoApps, IUnidadeAppService uniApps, ILaboratorioAppService labApps, ILeadAppService leaApps)
+        public BaseAdminController(IUsuarioAppService baseApps, ILogAppService logApps, IUsuarioAppService usuApps, IConfiguracaoAppService confApps, IAssinanteAppService assiApps, IPlanoAppService planApps, ITemplateAppService temApps, IMensagemEnviadaSistemaAppService envApps, ITemplateEMailAppService mailApps, IEmpresaAppService empApps, IPerfilAppService perfApps, IMensagemAppService mensApps, IRecursividadeAppService recApps, IPacienteAppService pacApps, IGrupoAppService gruApps, IAcessoMetodoAppService aceApps, IConvenioAppService convApps, IEspecialidadeAppService espApps, IAvisoLembreteAppService avApps, ITemplateEMailAppService teApps, ITipoExameAppService tiApps, ITipoPacienteAppService tpApps, ITipoPagamentoAppService tgApps, ITipoValorConsultaAppService tcApps, ITipoAtestadoAppService taApps, IValorConsultaAppService vcApps, IPeriodicidadeAppService peApps, IConfiguracaoAnamneseAppService caApps, IConfiguracaoCalendarioAppService ccApps, ITemplateSMSAppService smsApps, ILocacaoAppService locApps, ITipoPagamentoAppService tpgApps, ITipoValorConsultaAppService ticoApps, IUnidadeAppService uniApps, ILaboratorioAppService labApps, ILeadAppService leaApps, IVacinaAppService vacApps)
         {
             baseApp = baseApps;
             logApp = logApps;
@@ -140,6 +142,7 @@ namespace ERP_Condominios_Solution.Controllers
             uniApp = uniApps;
             labApp = labApps;
             leaApp = leaApps;
+            vacApp = vacApps;
         }
 
         public ActionResult CarregarAdmin()
@@ -1534,11 +1537,11 @@ namespace ERP_Condominios_Solution.Controllers
             {
                 ViewBag.Message = ex.Message;
                 Session["TipoVolta"] = 2;
-                Session["VoltaExcecao"] = "Paciente";
+                Session["VoltaExcecao"] = "Locacao";
                 Session["Excecao"] = ex;
                 Session["ExcecaoTipo"] = ex.GetType().ToString();
                 GravaLogExcecao grava = new GravaLogExcecao(usuApp);
-                Int32 voltaX = grava.GravarLogExcecao(ex, "Paciente", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Locacao", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
                 return null;
             }
         }
@@ -3525,36 +3528,36 @@ namespace ERP_Condominios_Solution.Controllers
                             return View(vm);
                         }
                     }
-                    if (vm.CEPBase == null)
-                    {
-                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0614", CultureInfo.CurrentCulture));
-                        return View(vm);
-                    }
-                    if (vm.Endereco == null)
-                    {
-                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0615", CultureInfo.CurrentCulture));
-                        return View(vm);
-                    }
-                    if (vm.Numero == null)
-                    {
-                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0616", CultureInfo.CurrentCulture));
-                        return View(vm);
-                    }
-                    if (vm.Bairro == null)
-                    {
-                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0617", CultureInfo.CurrentCulture));
-                        return View(vm);
-                    }
-                    if (vm.Cidade == null)
-                    {
-                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0618", CultureInfo.CurrentCulture));
-                        return View(vm);
-                    }
-                    if (vm.UF == 0)
-                    {
-                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0619", CultureInfo.CurrentCulture));
-                        return View(vm);
-                    }
+                    //if (vm.CEPBase == null)
+                    //{
+                    //    ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0614", CultureInfo.CurrentCulture));
+                    //    return View(vm);
+                    //}
+                    //if (vm.Endereco == null)
+                    //{
+                    //    ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0615", CultureInfo.CurrentCulture));
+                    //    return View(vm);
+                    //}
+                    //if (vm.Numero == null)
+                    //{
+                    //    ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0616", CultureInfo.CurrentCulture));
+                    //    return View(vm);
+                    //}
+                    //if (vm.Bairro == null)
+                    //{
+                    //    ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0617", CultureInfo.CurrentCulture));
+                    //    return View(vm);
+                    //}
+                    //if (vm.Cidade == null)
+                    //{
+                    //    ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0618", CultureInfo.CurrentCulture));
+                    //    return View(vm);
+                    //}
+                    //if (vm.UF == 0)
+                    //{
+                    //    ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0619", CultureInfo.CurrentCulture));
+                    //    return View(vm);
+                    //}
                     if (!ValidarItensDiversos.IsValidEmail(vm.Resposta))
                     {
                         ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0001", CultureInfo.CurrentCulture));
@@ -3567,7 +3570,7 @@ namespace ERP_Condominios_Solution.Controllers
                     Int32 novoPlano = 0;
                     if (vm.Tipo == 1)
                     {
-                        assBase = assList.Where(p => p.ASSI_NR_CPF == vm.CPF & p.ASSI_IN_TIPO == 2).FirstOrDefault();
+                        assBase = assList.Where(p => p.ASSI_NR_CPF == vm.CPF & p.ASSI_IN_TIPO == 1).FirstOrDefault();
                         if (assBase != null)
                         {
                             novoPlano = 1;
@@ -3642,7 +3645,7 @@ namespace ERP_Condominios_Solution.Controllers
                     Int32 voltaCria = await CriarAssinanteNormal(vm);
                     vm.LoginFinal = (String)Session["LoginDemo"];
                     vm.Senha = (String)Session["SenhaDemo"];
-                    if (voltaCria == 0)
+                    if (voltaCria == 1)
                     {
                         ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0622", CultureInfo.CurrentCulture));
                         return View(vm);
@@ -3691,6 +3694,7 @@ namespace ERP_Condominios_Solution.Controllers
             // Criar assinante
             Int32 retFlag = 0;
             FaleConoscoViewModel vm = fc;
+
             ASSINANTE assi = new ASSINANTE();
             assi.TIPE_CD_ID = vm.Tipo;
             assi.PLAN_CD_ID = 3;
@@ -3699,7 +3703,7 @@ namespace ERP_Condominios_Solution.Controllers
             assi.ASSI_DT_INICIO = DateTime.Today.Date;
             if (vm.TipoAssinatura == 1)
             {
-                assi.ASSI_IN_TIPO = 3;
+                assi.ASSI_IN_TIPO = 1;
             }
             else
             {
@@ -3722,11 +3726,13 @@ namespace ERP_Condominios_Solution.Controllers
             assi.ASSI_NR_NUMERO = vm.Numero;
             assi.ASSI_NR_TELEFONE = vm.TelefoneFixo;
             assi.UF_CD_ID = vm.UF;
+            assi.ASSI_IN_SISTEMA = 6;
             assi.ASSI_AQ_FOTO = "~/Imagens/Base/icone_morador.png";
             Int32 voltaC = assiApp.ValidateCreate(assi);
 
             Int32 idAss = assi.ASSI_CD_ID;
             Session["idNovoAssinante"] = idAss;
+            Session["idAssinante"] = idAss;
             ASSINANTE assinante = assiApp.GetItemById(idAss);
 
             // Cria assinante-plano-assinatura
@@ -3764,17 +3770,6 @@ namespace ERP_Condominios_Solution.Controllers
             // Salva assinante
             Int32 voltaAssi1 = assiApp.ValidateEdit(assinante);
 
-            // Cria pastas assinante
-            String caminho = "/Imagens/Assinante/" + idAss.ToString() + "/Anexos/";
-            String map = Server.MapPath(caminho);
-            Directory.CreateDirectory(Server.MapPath(caminho));
-            caminho = "/Imagens/Assinante/" + idAss.ToString() + "/Foto/";
-            map = Server.MapPath(caminho);
-            Directory.CreateDirectory(Server.MapPath(caminho));
-            caminho = "/Imagens/Assinante/" + idAss.ToString() + "/Pagamentos/";
-            map = Server.MapPath(caminho);
-            Directory.CreateDirectory(Server.MapPath(caminho));
-
             // Criar empresa
             EMPRESA emp = new EMPRESA();
             emp.ASSI_CD_ID = idAss;
@@ -3805,33 +3800,33 @@ namespace ERP_Condominios_Solution.Controllers
             // Recupera emmpresa
             EMPRESA empresa = empApp.GetItemById(emp.EMPR_CD_ID);
 
-            // Cria Empresa/Filial
-            EMPRESA_FILIAL emfi = new EMPRESA_FILIAL();
-            emfi.ASSI_CD_ID = idAss;
-            emfi.EMFI_AQ_LOGO = "~/Imagens/Base/prontuario_icon_3.png";
-            emfi.EMFI_DT_CADASTRO = DateTime.Today.Date;
-            emfi.EMFI_IN_ATIVO = 1;
-            emfi.EMFI_IN_MATRIZ = 1;
-            emfi.EMFI_NM_BAIRRO = vm.Bairro;
-            emfi.EMFI_NM_CIDADE = vm.Cidade;
-            emfi.EMFI_NR_COMPLEMENTO = vm.Complemento;
-            emfi.EMFI_NM_EMAIL = vm.Resposta;
-            emfi.EMFI_NM_ENDERECO = vm.Endereco;
-            emfi.EMFI_NM_GERENTE = "Nome";
-            emfi.EMFI_NM_APELIDO = "Nome";
-            emfi.EMFI_NM_NOME = vm.Nome;
-            emfi.EMFI_NR_NUMERO = vm.Numero;
-            emfi.EMFI_NM_RAZAO = vm.Razao;
-            emfi.EMFI_NR_CELULAR = vm.Celular;
-            emfi.EMFI_NR_CEP = vm.CEPBase;
-            emfi.EMFI_NR_CNPJ = vm.CNPJ;
-            emfi.EMFI_NR_CPF = vm.CPF;
-            emfi.EMFI_NR_TELEFONE = vm.Telefone;
-            emfi.EMPR_CD_ID = empresa.EMPR_CD_ID;
-            emfi.TIPE_CD_ID = vm.Tipo;
-            emfi.UF_CD_ID = vm.UF;
-            empresa.EMPRESA_FILIAL.Add(emfi);
-            voltaE = empApp.ValidateEdit(empresa, empresa);
+            //// Cria Empresa/Filial
+            //EMPRESA_FILIAL emfi = new EMPRESA_FILIAL();
+            //emfi.ASSI_CD_ID = idAss;
+            //emfi.EMFI_AQ_LOGO = "~/Imagens/Base/prontuario_icon_3.png";
+            //emfi.EMFI_DT_CADASTRO = DateTime.Today.Date;
+            //emfi.EMFI_IN_ATIVO = 1;
+            //emfi.EMFI_IN_MATRIZ = 1;
+            //emfi.EMFI_NM_BAIRRO = vm.Bairro;
+            //emfi.EMFI_NM_CIDADE = vm.Cidade;
+            //emfi.EMFI_NR_COMPLEMENTO = vm.Complemento;
+            //emfi.EMFI_NM_EMAIL = vm.Resposta;
+            //emfi.EMFI_NM_ENDERECO = vm.Endereco;
+            //emfi.EMFI_NM_GERENTE = "Nome";
+            //emfi.EMFI_NM_APELIDO = "Nome";
+            //emfi.EMFI_NM_NOME = vm.Nome;
+            //emfi.EMFI_NR_NUMERO = vm.Numero;
+            //emfi.EMFI_NM_RAZAO = vm.Razao;
+            //emfi.EMFI_NR_CELULAR = vm.Celular;
+            //emfi.EMFI_NR_CEP = vm.CEPBase;
+            //emfi.EMFI_NR_CNPJ = vm.CNPJ;
+            //emfi.EMFI_NR_CPF = vm.CPF;
+            //emfi.EMFI_NR_TELEFONE = vm.Telefone;
+            //emfi.EMPR_CD_ID = empresa.EMPR_CD_ID;
+            //emfi.TIPE_CD_ID = vm.Tipo;
+            //emfi.UF_CD_ID = vm.UF;
+            //empresa.EMPRESA_FILIAL.Add(emfi);
+            //voltaE = empApp.ValidateEdit(empresa, empresa);
 
             // Cria configuracao base
             CONFIGURACAO cf = new CONFIGURACAO();
@@ -3985,13 +3980,63 @@ namespace ERP_Condominios_Solution.Controllers
             Int32 voltaCF = confApp.ValidateCreate(cf);
             CONFIGURACAO conf = confApp.GetAllItems(idAss).FirstOrDefault();
 
+            // Carrega imagem do assinante
+            // 1. DEFINIÇÃO DO CAMINHO (Mesmo para Local e Azure)
+            // Removida a barra inicial para o Azure não criar uma pasta raiz vazia
+            String caminhoRelativo = "Imagens/Base/";
+            String fileName = "icone_morador.png";
+            String caminhoLocal = Server.MapPath("~/" + caminhoRelativo);
+            String fullPathLocal = Path.Combine(caminhoLocal, fileName);
+
+            // 2. RECUPERAÇÃO DO ARQUIVO INTERNO DO SITE
+            // Mapeia o caminho físico do ícone base que está no servidor IIS
+            string caminhoIconeBase = Server.MapPath("~/Imagens/Base/icone_morador.png");
+
+            if (!System.IO.File.Exists(caminhoIconeBase))
+            {
+                Session["MsgCRUD"] = "Erro: Arquivo base icone_morador.png não foi encontrado no servidor.";
+                Session["MensPaciente"] = 61;
+                return 1;
+            }
+
+            // 3. CÓPIA IDEMPOTENTE PARA O AZURE BLOB STORAGE
+            try
+            {
+                string connString = conf.CONF_NM_STORAGE_CONN;
+                string containerName = conf.CONF_NM_STORAGE_CONTAINER;
+
+                var blobServiceClient = new Azure.Storage.Blobs.BlobServiceClient(connString);
+                var containerClient = blobServiceClient.GetBlobContainerClient(containerName);
+
+                // IDEMPOTÊNCIA PARTE 1: Garante a existência do container na nuvem sem estourar erro se ele já existir
+                await containerClient.CreateIfNotExistsAsync(Azure.Storage.Blobs.Models.PublicAccessType.None);
+
+                // O nome do blob no Azure incluirá toda a estrutura de pastas
+                string blobName = caminhoRelativo + fileName;
+                var blobClient = containerClient.GetBlobClient(blobName);
+
+                // Abre o arquivo local como um FileStream para leitura
+                using (var fs = new FileStream(caminhoIconeBase, FileMode.Open, FileAccess.Read))
+                {
+                    // IDEMPOTÊNCIA PARTE 2: Upload configurado com 'overwrite: true'
+                    // Se o arquivo já existir exatamente neste caminho, ele será sobrescrito de forma limpa e transparente
+                    await blobClient.UploadAsync(fs, overwrite: true);
+                }
+            }
+            catch (Exception exAzure)
+            {
+                Session["MsgCRUD"] = "Erro na sincronização idempotente: " + exAzure.Message;
+                Session["MensPaciente"] = 61;
+                return 1;
+            }
+
             // Recupera empresa
             empresa = empApp.GetItemById(emp.EMPR_CD_ID);
 
             // Grava logo
-            String caminhoRelativo = "Imagens/" + idAss.ToString() + "/Empresa/" + empresa.EMPR_CD_ID.ToString() + "/Logo/";
-            String caminhoLocal = Server.MapPath("~/Imagens/Base/");
-            String fullPathLocal = Path.Combine(caminhoLocal, "prontuario_icon_3.png");
+            caminhoRelativo = "Imagens/" + idAss.ToString() + "/Empresa/" + empresa.EMPR_CD_ID.ToString() + "/Logo/";
+            caminhoLocal = Server.MapPath("~/Imagens/Base/");
+            fullPathLocal = Path.Combine(caminhoLocal, "prontuario_icon_3.png");
 
             try
             {
@@ -4173,11 +4218,11 @@ namespace ERP_Condominios_Solution.Controllers
             USUARIO usu = new USUARIO();
             usu.ASSI_CD_ID = idAss;
             usu.CAUS_CD_ID = 1;
-            usu.EMFI_CD_ID = empresa.EMPRESA_FILIAL.First().EMFI_CD_ID;
+            usu.EMFI_CD_ID = null;
             usu.EMPR_CD_ID = empresa.EMPR_CD_ID;
             usu.ESPE_CD_ID = especial.ESPE_CD_ID;
             usu.PERF_CD_ID = perfil.PERF_CD_ID;
-            usu.TICL_CD_ID = 8;
+            usu.TICL_CD_ID = 2;
             usu.USUA_AQ_FOTO = "~/Imagens/Base/icone_morador.png";
             usu.USUA_DT_ACESSO = DateTime.Today.Date;
             usu.USUA_DT_ALTERACAO = DateTime.Today.Date;
@@ -4185,7 +4230,7 @@ namespace ERP_Condominios_Solution.Controllers
             usu.USUA_DT_TROCA_SENHA = DateTime.Today.Date;
             usu.USUA_IN_ATIVO = 1;
             usu.USUA_IN_BLOQUEADO = 0;
-            usu.USUA_IN_ESPECIAL = 1;
+            usu.USUA_IN_ESPECIAL = 0;
             usu.USUA_IN_HUMANO = 1;
             usu.USUA_IN_LOGADO = 0;
             usu.USUA_IN_LOGIN_PROVISORIO = 0;
@@ -4207,6 +4252,8 @@ namespace ERP_Condominios_Solution.Controllers
             usu.USUA_NM_SENHA = hashedPassword;
             usu.USUA_NM_SALT = salt;
             usu.USUA_NM_SENHA_CONFIRMA = vm.SenhaBase;
+            usu.USUA_IN_CONSULTA = 1;
+            usu.USUA_NR_CLASSE = "1111";
             Int32 voltaUsu = usuApp.ValidateCreate(usu);
             USUARIO usuario = usuApp.GetItemById(usu.USUA_CD_ID);
 
@@ -4249,7 +4296,7 @@ namespace ERP_Condominios_Solution.Controllers
             // Cria primeiro aviso
             AVISO_LEMBRETE av = new AVISO_LEMBRETE();
             av.ASSI_CD_ID = idAss;
-            av.AVIS_DS_AVISO = "Bemvindo ao WebDoctorPro!";
+            av.AVIS_DS_AVISO = "Bem-vindo ao WebDoctorPro!";
             av.AVIS_DT_AVISO = DateTime.Now;
             av.AVIS_DT_CRIACAO = DateTime.Now;
             av.AVIS_IN_ATIVO = 1;
@@ -4333,6 +4380,16 @@ namespace ERP_Condominios_Solution.Controllers
             tg.TIPA_IN_ATIVO = 1;
             tg.USUA_CD_ID = usuario.USUA_CD_ID;
             Int32 voltaTG = tgApp.ValidateCreate(tg);
+
+            // Cria Vacina
+            VACINA te = new VACINA();
+            te.ASSI_CD_ID = idAss;
+            te.VACI_DS_DESCRICAO = "Vacina de Gripe";
+            te.VACI_IN_ATIVO = 1;
+            te.VACI_NM_FABRICANTE = "Butantã";
+            te.VACI_NM_NOME = "Gripe";
+            te.VACI_NR_PERIODO = 365;
+            Int32 voltaVac = vacApp.ValidateCreate(te, usuario);
 
             // Cria tipo de consulta
             TIPO_VALOR_CONSULTA tc = new TIPO_VALOR_CONSULTA();

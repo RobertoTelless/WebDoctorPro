@@ -2289,4 +2289,7 @@
   <data name="M0745" xml:space="preserve">
     <value>E-mail não especificado para o médico</value>
   </data>
+  <data name="M0746" xml:space="preserve">
+    <value>Impossível excluir esse lead. Existe um processo CRM ativo vinculado a ele. Encerre o processo.</value>
+  </data>
 </root>

@@ -149,6 +149,7 @@ namespace ApplicationServices.Services
             }
         }
 
+
         public Int32 ValidateDelete(LEAD item, USUARIO usuario)
         {
             try
@@ -161,7 +162,7 @@ namespace ApplicationServices.Services
                 };
 
                 // Checa integridade
-                if (item.CRM.Count() > 0)
+                if (item.CRM.Where(p => p.CRM1_IN_ATIVO != 2).Count() > 0)
                 {
                     return 1;
                 }

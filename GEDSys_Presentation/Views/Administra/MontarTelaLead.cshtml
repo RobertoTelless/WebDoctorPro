@@ -105,7 +105,8 @@
                                 @Html.ButtonActionSubmit(text: "Filtrar", htmlAttributes: new { @class = "show-spinner" })
                                 @Html.ButtonLinkIndex(text: "Novo Lead", controller: "Administra", action: "IncluirLead", buttonClass: "primary", htmlAttributes: new { @class = "btn-loading show-spinner" })
                                 @Html.ButtonLinkIndex(text: "Retirar Filtro", controller: "Administra", action: "RetirarFiltroLead", htmlAttributes: new { @class = "btn-loading show-spinner" })
-                                @Html.ButtonLinkIndex(text: "Imprimir Lista", controller: "Administra", action: "GerarRelatorioLead", htmlAttributes: new { @class = "btn-loading show-spinner" })
+                                @Html.ButtonLinkIndex(text: "Imprimir Lista", controller: "Administra", action: "GerarRelatorioLead")
+                                @*@Html.ButtonLinkIndex(text: "Gerar ID", controller: "Administra", action: "GerarID", htmlAttributes: new { @class = "btn-loading show-spinner" })*@
                                 @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaAdministra", controller: "Administra", htmlAttributes: new { @class = "btn-loading show-spinner" })
                                 <span id="loadingIndicator" style="display: none; margin-left: 10px; color: #007bff;">
                                     <i class="fa fa-spinner fa-spin"></i> Processando...
@@ -158,29 +159,29 @@
                                                 <span style="display:none; width: auto">@cond.LEAD_DT_ENTRADA.Value.ToString("yyyyMMdd")</span>
                                                 @cond.LEAD_DT_ENTRADA.Value.ToString("dd/MM/yyyy")
                                             </td>
-                                            <td style="width: auto; cursor: pointer; text-decoration: underline;"><a href="@Url.Action("EditarLead", "Administra", new { id = cond.LEAD_CD_ID })" class="show-spinner" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página de alteração de leads"/>@cond.LEAD_NM_NOME</td>
+                                            <td style="width: auto; cursor: pointer; text-decoration: underline;"><a href="@Url.Action("EditarLead", "Administra", new { id = cond.LEAD_CD_ID })" class="show-spinner" />@cond.LEAD_NM_NOME</td>
                                             <td style="width: auto">@cond.LEAD_EM_EMAIL</td>
                                             <td style="width: auto">@cond.LEAD_NR_CELULAR</td>
                                             <td style="width: auto">
                                                 @if (cond.LEAD_IN_STATUS == 1)
                                                 {
-                                                    <span class="status-badge status-active">Processamento</span>
+                                                    <span class="status-badge status-active">Qualificado</span>
                                                 }
                                                 else if (cond.LEAD_IN_STATUS == 2)
                                                 {
-                                                    <span class="status-badge status-finish">Encerrado</span>
+                                                    <span class="status-badge status-finish">Convertido</span>
                                                 }
                                                 else if (cond.LEAD_IN_STATUS == 3) 
                                                 {
-                                                    <span class="status-badge status-overdue">Pendente</span>
+                                                    <span class="status-badge status-overdue">Perdido</span>
                                                 }
                                                 else if (cond.LEAD_IN_STATUS == 4)
                                                 {
-                                                    <span class="status-badge status-cancel">Cancelado</span>
+                                                    <span class="status-badge status-cancel">Não Qualificado</span>
                                                 }
                                                 else if (cond.LEAD_IN_STATUS == 0) 
                                                 {
-                                                    <span class="status-badge status-pending">Aguardando</span>
+                                                    <span class="status-badge status-pending">Em Análise</span>
                                                 }
                                                 else 
                                                 {
@@ -189,7 +190,14 @@
                                             </td>
                                             <td style="width: auto">@cond.LEAD_NR_CPF</td>
                                             <td style="width: auto">@cond.LEAD_NM_CIDADE</td>
-                                            <td style="width: auto">@cond.UF.UF_SG_SIGLA</td>
+                                            @if (cond.UF != null)
+                                            {
+                                                <td style="width: auto">@cond.UF.UF_SG_SIGLA</td>
+                                            }
+                                            else
+                                            {
+                                                <td style="width: auto"> </td>
+                                            }
                                             <td style="width: auto; cursor: pointer; text-decoration: underline;"><a href="@Url.Action("AbrirProcesso", "Administra", new { id = cond.CRM1_CD_ID })" class="show-spinner" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página do processo associado ao  lead"/>@cond.LEAD_GU_IDENTIFICADOR</td>
                                             <td class="td-one-action">
                                                 @Html.TableLinkDetails(cond.LEAD_CD_ID, "EditarLead", "fa-edit show-spinner", "Alterar Lead")

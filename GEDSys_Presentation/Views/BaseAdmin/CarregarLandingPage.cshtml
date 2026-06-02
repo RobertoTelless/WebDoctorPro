@@ -20,6 +20,7 @@
     <!-- Primary Inspinia style -->
     @Styles.Render("~/Content/css")
     @Styles.Render("~/font-awesome/css")
+    @Styles.Render("~/Content/Spinner_Style.css")
     <link href="~/Content/Custom.css" rel="stylesheet" />
 </head>
 
@@ -41,10 +42,10 @@
                         <li><a class="page-scroll" href="#page-top">Início</a></li>
                         <li><a class="page-scroll" href="#features">Funcionalidades</a></li>
                         <li><a class="page-scroll" href="#pricing">Planos & Preços</a></li>
-                        <li><a class="page-scroll" style="font-size: 16px" onclick="location.href='@Url.Action("MontarTelaCompraBasicoNova", "BaseAdmin")'">Contratar</a></li>
-                        <li><a class="page-scroll pisca" style="font-size: 16px" onclick="location.href='@Url.Action("MontarTelaDemo", "BaseAdmin")'">Solicitar Demonstração</a></li>
-                        <li><a class="page-scroll" style="font-size: 16px" onclick="location.href='@Url.Action("MontarTelaFaleConoscoInicio", "BaseAdmin")'">Solicitar Informações</a></li>
-                        <li><a class="page-scroll" style="color: red; font-size: 22px" onclick="location.href='@Url.Action("Login", "ControleAcesso")'">Login</a></li>
+                        <li><a class="page-scroll" style="font-size: 16px"  class="show-spinner" onclick="location.href='@Url.Action("MontarTelaCompraBasicoNova", "BaseAdmin")'">Contratar</a></li>
+                        <li><a class="page-scroll pisca" style="font-size: 16px"   class="show-spinner"  onclick="location.href='@Url.Action("MontarTelaDemo", "BaseAdmin")'">Solicitar Demonstração</a></li>
+                        <li><a class="page-scroll" style="font-size: 16px"    class="show-spinner" onclick="location.href='@Url.Action("MontarTelaFaleConoscoInicio", "BaseAdmin")'">Solicitar Informações</a></li>
+                        <li><a class="page-scroll" style="color: red; font-size: 22px"   class="show-spinner"  onclick="location.href='@Url.Action("Login", "ControleAcesso")'">Login</a></li>
                     </ul>
                     <a class="btn btn-success btn-lg" href="@Url.Action("LoginAreaPaciente", "AreaPaciente")">Área do Paciente</a>&nbsp;&nbsp;
                     <a class="btn btn-success btn-lg" href="@Url.Action("MontarTelaValidacaoDocumento", "ValidacaoDocumento")">Validar Documentos</a>

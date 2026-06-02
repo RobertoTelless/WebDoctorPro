@@ -18,7 +18,7 @@ namespace DataServices.Repositories
         public List<TIPO_OCORRENCIA> GetAllItens(Int32 id)
         {
             IQueryable<TIPO_OCORRENCIA> query = Db.TIPO_OCORRENCIA;
-            query = query.Where(p => p.ASSI_CD_ID == id);
+            //query = query.Where(p => p.ASSI_CD_ID == id);
             return query.ToList();
         }
 

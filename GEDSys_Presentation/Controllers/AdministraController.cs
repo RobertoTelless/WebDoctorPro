@@ -60,6 +60,7 @@ namespace GEDSys_Presentation.Controllers
         private readonly IAssinanteAppService assApp;
         private readonly IPacienteAppService pacApp;
         private readonly INoticiaAppService notApp;
+        private readonly IFunilAppService funApp;
 
 #pragma warning disable CS0169 // O campo "PacienteController.msg" nunca é usado
         private String msg;
@@ -83,7 +84,7 @@ namespace GEDSys_Presentation.Controllers
         private NOTICIA objetoNotAntes = new NOTICIA();
         private List<NOTICIA> listaMasterNot = new List<NOTICIA>();
 
-        public AdministraController(ILeadAppService baseApps, ILogAppService logApps, IUsuarioAppService usuApps, IConfiguracaoAppService confApps, IEmpresaAppService empApps, IAcessoMetodoAppService aceApps, ICRMAppService crmApps, IAssinanteAppService assApps, IPacienteAppService pacApps, INoticiaAppService notApps)
+        public AdministraController(ILeadAppService baseApps, ILogAppService logApps, IUsuarioAppService usuApps, IConfiguracaoAppService confApps, IEmpresaAppService empApps, IAcessoMetodoAppService aceApps, ICRMAppService crmApps, IAssinanteAppService assApps, IPacienteAppService pacApps, INoticiaAppService notApps, IFunilAppService funApps)
         {
             baseApp = baseApps;
             logApp = logApps;
@@ -95,6 +96,7 @@ namespace GEDSys_Presentation.Controllers
             assApp = assApps;
             pacApp = pacApps;
             notApp = notApps;
+            funApp = funApps;
         }
 
         [HttpGet]
@@ -1536,13 +1538,13 @@ namespace GEDSys_Presentation.Controllers
                 }
                 ViewBag.Listas = (List<LEAD>)Session["ListaLead"];
                 ViewBag.Sexo = new SelectList(CarregaSexo(), "SEXO_CD_ID", "SEXO_NM_NOME");
-                ViewBag.UF = new SelectList(CarregaSexo(), "UF_CD_ID", "UF_NM_NOME");
+                ViewBag.UF = new SelectList(CarregaUF(), "UF_CD_ID", "UF_NM_NOME");
                 List<SelectListItem> status = new List<SelectListItem>();
-                status.Add(new SelectListItem() { Text = "Aguardando", Value = "0" });
-                status.Add(new SelectListItem() { Text = "Processamento", Value = "1" });
-                status.Add(new SelectListItem() { Text = "Encerrado", Value = "2" });
-                status.Add(new SelectListItem() { Text = "Pendente", Value = "3" });
-                status.Add(new SelectListItem() { Text = "Cancelado", Value = "4" });
+                status.Add(new SelectListItem() { Text = "Em Análise", Value = "0" });
+                status.Add(new SelectListItem() { Text = "Qualificado", Value = "1" });
+                status.Add(new SelectListItem() { Text = "Convertido", Value = "2" });
+                status.Add(new SelectListItem() { Text = "Pedido", Value = "3" });
+                status.Add(new SelectListItem() { Text = "Não Qualificado", Value = "4" });
                 ViewBag.Status = new SelectList(status, "Value", "Text");
                 Session["Lead"] = null;
 
@@ -1559,7 +1561,7 @@ namespace GEDSys_Presentation.Controllers
                     }
                     if ((Int32)Session["MensLead"] == 3)
                     {
-                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0557", CultureInfo.CurrentCulture));
+                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0746", CultureInfo.CurrentCulture));
                     }
                     if ((Int32)Session["MensLead"] == 61)
                     {
@@ -1682,20 +1684,29 @@ namespace GEDSys_Presentation.Controllers
                 Int32 idAss = (Int32)Session["IdAssinante"];
 
                 USUARIO usuarioLogado = (USUARIO)Session["UserCredentials"];
+
+                // Recupera lead
                 LEAD item = baseApp.GetItemById(id);
+                Int32? crmX = item.CRM1_CD_ID;
+
+                // Exclui lead
                 item.LEAD_IN_ATIVO = 0;
                 item.LEAD_DT_EXCLUSAO = DateTime.Today.Date;
                 item.LEAD_IN_STATUS = 4;
                 Int32 volta = baseApp.ValidateDelete(item, usuarioLogado);
-
-                Session["LeadAlterada"] = 1;
-                Session["ListaLead"] = null;
+                if (volta > 0)
+                {
+                    Session["MensLead"] = 3;
+                    return RedirectToAction("MontarTelaLead");
+                }
 
                 // Mensagem do CRUD
                 Session["MsgCRUD"] = "O lead de " + item.LEAD_NM_NOME.ToUpper() + " foi excluído com sucesso";
                 Session["MensLead"] = 61;
 
                 // Retorno
+                Session["LeadAlterada"] = 1;
+                Session["ListaLead"] = null;
                 return RedirectToAction("MontarTelaLead");
             }
             catch (Exception ex)
@@ -1743,7 +1754,7 @@ namespace GEDSys_Presentation.Controllers
 
                 // Prepara listas
                 ViewBag.Sexo = new SelectList(CarregaSexo(), "SEXO_CD_ID", "SEXO_NM_NOME");
-                ViewBag.UF = new SelectList(CarregaSexo(), "UF_CD_ID", "UF_NM_NOME");
+                ViewBag.UF = new SelectList(CarregaUF(), "UF_CD_ID", "UF_NM_NOME");
 
                 // Grava Acesso
                 ControleAcessoMetodo grava = new ControleAcessoMetodo(aceApp);
@@ -1759,6 +1770,7 @@ namespace GEDSys_Presentation.Controllers
                 vm.LEAD_DT_ENTRADA = DateTime.Now;
                 item.LEAD_IN_SISTEMA = 6;
                 item.LEAD_IN_ENVIOS = 0;
+                item.USUA_CD_ID = usuario.USUA_CD_ID;
                 return View(vm);
             }
             catch (Exception ex)
@@ -1783,8 +1795,9 @@ namespace GEDSys_Presentation.Controllers
                 return RedirectToAction("Logout", "ControleAcesso");
             }
             Int32 idAss = (Int32)Session["IdAssinante"];
+            USUARIO usuario = (USUARIO)Session["UserCredentials"];
             ViewBag.Sexo = new SelectList(CarregaSexo(), "SEXO_CD_ID", "SEXO_NM_NOME");
-            ViewBag.UF = new SelectList(CarregaSexo(), "UF_CD_ID", "UF_NM_NOME");
+            ViewBag.UF = new SelectList(CarregaUF(), "UF_CD_ID", "UF_NM_NOME");
             if (ModelState.IsValid)
             {
                 try
@@ -1796,6 +1809,8 @@ namespace GEDSys_Presentation.Controllers
                     vm.LEAD_NM_BAIRRO = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(vm.LEAD_NM_BAIRRO);
                     vm.LEAD_NM_CIDADE = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(vm.LEAD_NM_CIDADE);
                     vm.LEAD_NR_NUMERO = CrossCutting.UtilitariosGeral.CleanStringDocto(vm.LEAD_NR_NUMERO);
+                    vm.LEAD_IN_SISTEMA = 6;
+                    vm.USUA_CD_ID = usuario.USUA_CD_ID;
 
                     // Monta descrição
                     String desc = "Lead de " + vm.LEAD_NM_NOME.ToUpper() + " criado em " + vm.LEAD_DT_ENTRADA.Value.ToLongDateString();
@@ -1803,7 +1818,6 @@ namespace GEDSys_Presentation.Controllers
 
                     // Preparação
                     LEAD item = Mapper.Map<LeadViewModel, LEAD>(vm);
-                    USUARIO usuario = (USUARIO)Session["UserCredentials"];
 
                     // Processa
                     Int32 volta = baseApp.ValidateCreate(item, usuario);
@@ -1818,6 +1832,7 @@ namespace GEDSys_Presentation.Controllers
 
                     // Cria Processo
                     LEAD lead = baseApp.GetItemById(item.LEAD_CD_ID);
+                    FUNIL fun = CarregarFunil().Where(p => p.FUNI_IN_FIXO == 1).FirstOrDefault();
                     CRM crm = new CRM();
                     crm.ASSI_CD_ID = 1;
                     crm.CRM1_DS_DESCRICAO = "Processo referente ao lead de " + lead.LEAD_NM_NOME.ToUpper();
@@ -1831,11 +1846,15 @@ namespace GEDSys_Presentation.Controllers
                     crm.CRM1_NM_NOME = "Processo referente ao lead de " + lead.LEAD_NM_NOME.ToUpper();
                     crm.CRM1_NR_TEMPERATURA = 1;
                     crm.EMPR_CD_ID = 3;
-                    crm.FUNI_CD_ID = 1;
+                    crm.FUNI_CD_ID = fun.FUNI_CD_ID;
                     crm.LEAD_CD_ID = lead.LEAD_CD_ID;
                     crm.USUA_CD_ID = 49;
                     crm.CLIE_CD_ID = 2;
                     Int32 volta1 = crmApp.ValidateCreate(crm, usuario);
+
+                    // Atualiza lead
+                    lead.CRM1_CD_ID = crm.CRM1_CD_ID;
+                    Int32 voltaL = baseApp.ValidateEdit(lead, lead, usuario);
 
                     // Sucesso
                     listaMaster = new List<LEAD>();
@@ -1845,7 +1864,7 @@ namespace GEDSys_Presentation.Controllers
 
                     // Mensagem do CRUD
                     Session["MsgCRUD"] = "O lead de " + item.LEAD_NM_NOME.ToUpper() + " foi incluído com sucesso. Foi criado um processo associado ao lead";
-                    Session["MensMedico"] = 61;
+                    Session["MensLead"] = 61;
 
                     // Retorno
                     return RedirectToAction("MontarTelaLead");
@@ -1892,7 +1911,7 @@ namespace GEDSys_Presentation.Controllers
 
                 LEAD item = baseApp.GetItemById(id);
                 Session["Lead"] = item;
-                ViewBag.UF = new SelectList(CarregaUF(), "UF_CD_ID", "UF_SG_SIGLA");
+                ViewBag.UF = new SelectList(CarregaUF(), "UF_CD_ID", "UF_NM_NOME");
 
                 // Mensagens
                 if (Session["MensLead"] != null)
@@ -2581,11 +2600,6 @@ namespace GEDSys_Presentation.Controllers
         {
             try
             {
-                if ((String)Session["Ativa"] == null)
-                {
-                    return RedirectToAction("Logout", "ControleAcesso");
-                }
-
                 // Prepara geração
                 CONFIGURACAO conf = CarregaConfiguracaoGeral();
                 Int32 idAss = (Int32)Session["IdAssinante"];
@@ -2775,6 +2789,7 @@ namespace GEDSys_Presentation.Controllers
                 };
                 cell.Colspan = 1;
                 cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                table.AddCell(cell);
 
                 foreach (LEAD item in lista)
                 {
@@ -2820,7 +2835,7 @@ namespace GEDSys_Presentation.Controllers
 
                     if (item.LEAD_IN_STATUS == 1)
                     {
-                        cell = new PdfPCell(new Paragraph("Processamento", meuFont))
+                        cell = new PdfPCell(new Paragraph("Qualificado", meuFont))
                         {
                             VerticalAlignment = Element.ALIGN_MIDDLE,
                             HorizontalAlignment = Element.ALIGN_LEFT
@@ -2829,7 +2844,7 @@ namespace GEDSys_Presentation.Controllers
                     }
                     else if (item.LEAD_IN_STATUS == 2)
                     {
-                        cell = new PdfPCell(new Paragraph("Encerrado", meuFont))
+                        cell = new PdfPCell(new Paragraph("Convertido", meuFont))
                         {
                             VerticalAlignment = Element.ALIGN_MIDDLE,
                             HorizontalAlignment = Element.ALIGN_LEFT
@@ -2838,7 +2853,7 @@ namespace GEDSys_Presentation.Controllers
                     }
                     else if (item.LEAD_IN_STATUS == 3)
                     {
-                        cell = new PdfPCell(new Paragraph("Pendente", meuFont))
+                        cell = new PdfPCell(new Paragraph("Perdido", meuFont))
                         {
                             VerticalAlignment = Element.ALIGN_MIDDLE,
                             HorizontalAlignment = Element.ALIGN_LEFT
@@ -2847,7 +2862,7 @@ namespace GEDSys_Presentation.Controllers
                     }
                     else if (item.LEAD_IN_STATUS == 4)
                     {
-                        cell = new PdfPCell(new Paragraph("Cancelado", meuFont))
+                        cell = new PdfPCell(new Paragraph("Não Qualificado", meuFont))
                         {
                             VerticalAlignment = Element.ALIGN_MIDDLE,
                             HorizontalAlignment = Element.ALIGN_LEFT
@@ -2856,7 +2871,7 @@ namespace GEDSys_Presentation.Controllers
                     }
                     else if (item.LEAD_IN_STATUS == 0)
                     {
-                        cell = new PdfPCell(new Paragraph("Aguardando", meuFont))
+                        cell = new PdfPCell(new Paragraph("Em Análise", meuFont))
                         {
                             VerticalAlignment = Element.ALIGN_MIDDLE,
                             HorizontalAlignment = Element.ALIGN_LEFT
@@ -2871,12 +2886,24 @@ namespace GEDSys_Presentation.Controllers
                     };
                     table.AddCell(cell);
 
-                    cell = new PdfPCell(new Paragraph(item.UF.UF_SG_SIGLA, meuFont))
+                    if (item.UF != null)
                     {
-                        VerticalAlignment = Element.ALIGN_MIDDLE,
-                        HorizontalAlignment = Element.ALIGN_LEFT
-                    };
-                    table.AddCell(cell);
+                        cell = new PdfPCell(new Paragraph(item.UF.UF_SG_SIGLA, meuFont))
+                        {
+                            VerticalAlignment = Element.ALIGN_MIDDLE,
+                            HorizontalAlignment = Element.ALIGN_LEFT
+                        };
+                        table.AddCell(cell);
+                    }
+                    else
+                    {
+                        cell = new PdfPCell(new Paragraph(" ", meuFont))
+                        {
+                            VerticalAlignment = Element.ALIGN_MIDDLE,
+                            HorizontalAlignment = Element.ALIGN_LEFT
+                        };
+                        table.AddCell(cell);
+                    }
 
                     cell = new PdfPCell(new Paragraph(item.LEAD_GU_IDENTIFICADOR, meuFont))
                     {
@@ -2898,7 +2925,7 @@ namespace GEDSys_Presentation.Controllers
                 Response.End();
 
                 Session["NivelLead"] = 1;
-                return RedirectToAction("MontarTelaLead");
+                return RedirectToAction("VoltarBaseLead");
             }
             catch (Exception ex)
             {
@@ -3423,6 +3450,44 @@ namespace GEDSys_Presentation.Controllers
                 }
                 Session["AcaoAlterada"] = 0;
                 Session["Acoes"] = conf;
+                return conf;
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Administra";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Administra", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return null;
+            }
+        }
+
+        public List<FUNIL> CarregarFunil()
+        {
+            try
+            {
+                Int32 idAss = (Int32)Session["IdAssinante"];
+                List<FUNIL> conf = new List<FUNIL>();
+                if (Session["Funis"] == null)
+                {
+                    conf = funApp.GetAllItens(idAss);
+                }
+                else
+                {
+                    if ((Int32)Session["FunilAlterada"] == 1)
+                    {
+                        conf = funApp.GetAllItens(idAss);
+                    }
+                    else
+                    {
+                        conf = (List<FUNIL>)Session["Funis"];
+                    }
+                }
+                Session["FunilAlterada"] = 0;
+                Session["Funis"] = conf;
                 return conf;
             }
             catch (Exception ex)
@@ -5000,8 +5065,26 @@ namespace GEDSys_Presentation.Controllers
         //    }
         //}
 
+        public Int32 GerarId()
+        {
+            USUARIO usuario = (USUARIO)Session["UserCredentials"];
+            List<LEAD> leads = CarregarLead();
+            foreach (LEAD item in leads)
+            {
+                item.LEAD_GU_IDENTIFICADOR = Xid.NewXid().ToString();
+                Int32 volta = baseApp.ValidateEdit(item, item, usuario);
+            }
+            return 0;
+        }
 
-
+        public ActionResult VoltarBaseLead()
+        {
+            if ((String)Session["Ativa"] == null)
+            {
+                return RedirectToAction("Logout", "ControleAcesso");
+            }
+            return RedirectToAction("MonterTelaLead");
+        }
 
     }
 }

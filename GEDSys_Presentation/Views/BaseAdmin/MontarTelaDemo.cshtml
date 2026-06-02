@@ -16,11 +16,11 @@
                 </div>
                 <br />
                 <div class="form-group">
-                    @Html.ButtonLinkIndex(text: "Voltar", controller: "BaseAdmin", action: "CarregarLandingPage")
+                    @Html.ButtonLinkIndex(text: "Voltar", controller: "BaseAdmin", action: "CarregarLandingPage", htmlAttributes: new { @class = "show-spinner" })
                     <br />
                 </div>
                 <div class="ibox-content ibox-heading">
-                    <h3><i class="fa fa-credit-card"></i> Solicite uma assinatura de demonstração com validade de 30 dias e use o <b>WebDoctorPro</b> sem limites</h3>
+                    <h3><i class="fa fa-credit-card"></i> Solicite uma assinatura de demonstração com validade de 30 dias e use o <b>WebDoctorPro</b> sem limites e sem nenhum custo</h3>
                 </div>
 
                 <div class="ibox-content" style="height: 2100px">
@@ -31,13 +31,13 @@
                             @Html.ValidationSummary(false, "", new { @class = "text-primary" })
                         </div>
                     }
-                    @if (TempData["TemMensagem"] != null)
+                    @*@if (TempData["TemMensagem"] != null)
                     {
                         <div class="alert alert-success">
                             <button type="button" class="close" data-dismiss="alert">Fechar</button>
                             <span>@TempData["MensagemAcerto"]</span>
                         </div>
-                    }                    
+                    }*@                    
                     <div class="col-lg-12 col-md-12 col-xs-12">
                         <div class="col-lg-12 col-md-12 col-xs-12">
                             <div class="col-lg-12 col-md-12 col-xs-12 ibox float-e-margins" style="border-bottom: solid; border-bottom-color: darkblue; border-bottom-width: 2px; border-left: solid; border-left-color: darkblue; border-left-width: 1px; border-right: solid; border-right-color: darkblue; border-right-width: 1px; border-top: solid; border-top-color: darkblue; border-top-width: 1px">
@@ -48,13 +48,13 @@
                                     @using (Html.BeginForm("MontarTelaDemo", "BaseAdmin", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal", @id="pwd-container1" }))
                                     {
                                         <div class="row">
-                                            <h5 style="color: green; font-weight: bold">Preencha os campos abaixo com as suas informações.</h5>
-                                            <h5 style="color: green; font-weight: bold">Confirme a solicitação e logo você receberá um e-mail com a confirmação de sua solicitação e suas credenciais de acesso</h5>
+                                            <h5 style="color: green; font-weight: bold">Preencha os campos abaixo com as as informações solicitadas.</h5>
+                                            <h5 style="color: green; font-weight: bold">Assim que confirmar a solicitação, você receberá um e-mail de validação contendo suas credenciais de acesso</h5>
                                         </div> 
                                         <div class="row" id="Botoes">
                                             <div class="form-group">
                                                 <div class="col-lg-4 col-md-4 col-xs-12" id="Basico">
-                                                    @Html.ButtonActionSubmit(text: "Confirma a Solicitação de Assinatura de Demonstração", htmlAttributes: new { id = "basictoast", @class = "btn-loading1" })
+                                                    @Html.ButtonActionSubmit(text: "Confirmação da Solicitação de Assinatura de Demonstração", htmlAttributes: new { id = "basictoast", @class = "btn-loading1 show-spinner" })
                                                     <span id="loadingIndicator" style="display: none; margin-left: 10px; color: #007bff;">
                                                         <i class="fa fa-spinner fa-spin"></i> Processando...
                                                     </span>
@@ -152,12 +152,12 @@
                                                 </div>
                                                 <div class="form-group" style=" margin-left: -30px; margin-right: -30px;">
                                                     <div class="col-lg-7 col-md-7 col-xs-12">
-                                                        Endereço*
+                                                        Endereço
                                                         @Html.TextBoxFor(m => m.Endereco, new { @class = "form-control", @id = "endereco", autofocus = true })
                                                         @Html.ValidationMessageFor(m => m.Endereco, "", new { @style = "color:red" })
                                                     </div>
                                                     <div class="col-lg-2 col-md-2 col-xs-12">
-                                                        Número*
+                                                        Número
                                                         @Html.TextBoxFor(m => m.Numero, new { @class = "form-control", @id = "nmr", autofocus = true })
                                                         @Html.ValidationMessageFor(m => m.Numero, "", new { @style = "color:red" })
                                                     </div>
@@ -169,17 +169,17 @@
                                                 </div>
                                                 <div class="form-group" style=" margin-left: -30px; margin-right: -30px;">
                                                     <div class="col-lg-4 col-md-4 col-xs-12">
-                                                        Bairro*
+                                                        Bairro
                                                         @Html.TextBoxFor(m => m.Bairro, new { @class = "form-control", @id = "bairro", autofocus = true })
                                                         @Html.ValidationMessageFor(m => m.Bairro, "", new { @style = "color:red" })
                                                     </div>
                                                     <div class="col-lg-4 col-md-4 col-xs-12">
-                                                        Cidade*
+                                                        Cidade
                                                         @Html.TextBoxFor(m => m.Cidade, new { @class = "form-control", @id = "cidade", autofocus = true })
                                                         @Html.ValidationMessageFor(m => m.Cidade, "", new { @style = "color:red" })
                                                     </div>
                                                     <div class="col-lg-2 col-md-2 col-xs-12">
-                                                        UF*
+                                                        UF
                                                         @Html.DropDownListFor(m => m.UF, (SelectList)ViewBag.UF, "UF", new { @class = "form-control", @id = "uf", autofocus = true })
                                                         @Html.ValidationMessageFor(m => m.UF, "", new { @style = "color:red" })
                                                     </div>
@@ -218,7 +218,7 @@
                                         <div class="row" id="Botoes">
                                             <div class="form-group">
                                                 <div class="col-lg-6 col-md-6 col-xs-12" id="Basico">
-                                                    @Html.ButtonActionSubmit(text: "Confirma a Solicitação de Assinatura de Demonstração", htmlAttributes: new { id = "basictoast", @class = "btn-loading2" })
+                                                    @Html.ButtonActionSubmit(text: "Confirmação da Solicitação de Assinatura de Demonstração", htmlAttributes: new { id = "basictoast", @class = "btn-loading2 show-spinner" })
                                                     <span id="loadingIndicator1" style="display: none; margin-left: 10px; color: #007bff;">
                                                         <i class="fa fa-spinner fa-spin"></i> Processando...
                                                     </span>
@@ -246,6 +246,7 @@
     @Styles.Render("~/plugins/toastrStyles")
     @Styles.Render("~/Content/css")
     @Styles.Render("~/font-awesome/css")
+    @Styles.Render("~/Content/Spinner_Style.css")
     <link href="@Url.Content("~/Scripts/plugins/jquery-ui/jquery-ui.min.css")" rel="stylesheet" type="text/css" />
 
     <style>

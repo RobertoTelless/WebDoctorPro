@@ -12,7 +12,7 @@ namespace DataServices.Repositories
         {
             IQueryable<TIPO_ENVIO> query = Db.TIPO_ENVIO;
             query = query.Where(p => p.TIEN_NM_NOME == conta.TIEN_NM_NOME);
-            query = query.Where(p => p.ASSI_CD_ID == idAss);
+            //query = query.Where(p => p.ASSI_CD_ID == idAss);
             return query.FirstOrDefault();
         }
 
@@ -26,14 +26,14 @@ namespace DataServices.Repositories
         public List<TIPO_ENVIO> GetAllItens(Int32 idAss)
         {
             IQueryable<TIPO_ENVIO> query = Db.TIPO_ENVIO.Where(p => p.TIEN_IN_ATIVO == 1);
-            query = query.Where(p => p.ASSI_CD_ID == idAss);
+            //query = query.Where(p => p.ASSI_CD_ID == idAss);
             return query.ToList();
         }
 
         public List<TIPO_ENVIO> GetAllItensAdm(Int32 idAss)
         {
             IQueryable<TIPO_ENVIO> query = Db.TIPO_ENVIO;
-            query = query.Where(p => p.ASSI_CD_ID == idAss);
+            //query = query.Where(p => p.ASSI_CD_ID == idAss);
             return query.ToList();
         }
     }

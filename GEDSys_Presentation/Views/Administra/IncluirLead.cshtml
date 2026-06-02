@@ -46,7 +46,7 @@
                             <div class="form-group">
                                 <br />
                                 <div class="col-lg-12 col-md-12 col-xs-12">
-                                    @Html.ButtonActionSubmit(text: "Confirmar Inclusão do Lead", htmlAttributes: new { id = "basictoast", @class = "btn-loading show-spinner" })
+                                    @Html.ButtonActionSubmit(text: "Confirmar Inclusão do Lead", htmlAttributes: new { id = "basictoast", @class = "btn-loading1 show-spinner" })
                                     @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaLead", controller: "Administra", htmlAttributes: new { @class = "show-spinner" })  
                                     <span id="loadingIndicator" style="display: none; margin-left: 10px; color: #007bff;">
                                         <i class="fa fa-spinner fa-spin"></i> Processando...
@@ -84,6 +84,7 @@
                                                     @Html.HiddenFor(m => m.LEAD_DT_ENTRADA)
                                                     @Html.HiddenFor(m => m.LEAD_IN_SISTEMA)
                                                     @Html.HiddenFor(m => m.LEAD_IN_ENVIOS)
+                                                    @Html.HiddenFor(m => m.USUA_CD_ID)
                                                     Nome*
                                                     @Html.TextBoxFor(m => m.LEAD_NM_NOME, new { @class = "form-control", autofocus = true, data_toggle = "popover", data_content = "Informe o nome completo associado ao lead", data_trigger="hover", data_placement="top" })
                                                     @Html.ValidationMessageFor(m => m.LEAD_NM_NOME, "", new { @style = "color:red" })
@@ -119,7 +120,7 @@
                                                     @Html.ValidationMessageFor(m => m.LEAD_NR_CELULAR, "", new { @style = "color:red" })
                                                 </div>
                                             </div>
-                                            <div class="form-group" style=" margin-left: -30px; margin-right: -15px;">
+                                            <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
                                                 <div class="col-lg-12 col-md-12 col-xs-12">
                                                     Descrição (O WebDoctor vai preencher automaticamente esse campo)
                                                     @Html.TextAreaFor(m => m.LEAD_DS_DESCRICAO, new { @class = "form-control", style = "width: 100%; height: 100px; overflow:auto;", autofocus = true, @id="desc", data_toggle = "popover", data_content = "Informe um texto que será acrescentado à descrição gerada automaticamente", data_trigger="hover", data_placement="top" })

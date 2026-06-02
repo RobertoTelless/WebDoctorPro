@@ -7599,13 +7599,18 @@ namespace GEDSys_Presentation.Controllers
                 {
                     certificado = 0;
                 }
-                String caminhoBase = Server.MapPath("~/Certificados/");
-                String pastaCert = Path.Combine(caminhoBase, idAss.ToString());
-                String nomeArquivo = conf.CONF_NM_LOCAL_CERTIFICADO;
-                String caminhoFinal = Path.Combine(pastaCert, nomeArquivo);
-                if (!System.IO.File.Exists(caminhoFinal))
+                if (certificado == 1)
                 {
-                    certificado = 0;
+                    String caminhoBase = Server.MapPath("~/Certificados/");
+                    String pastaCert = Path.Combine(caminhoBase, idAss.ToString());
+                    String nomeArquivo = conf.CONF_NM_LOCAL_CERTIFICADO;
+                    String caminhoFinal = Path.Combine(pastaCert, nomeArquivo);
+                    if (!System.IO.File.Exists(caminhoFinal))
+                    {
+                        certificado = 0;
+                    }
+                    Session["TemCertificado"] = certificado;
+                    Session["VoltaCertificado"] = 3;
                 }
                 Session["TemCertificado"] = certificado;
                 Session["VoltaCertificado"] = 3;
@@ -8815,13 +8820,16 @@ namespace GEDSys_Presentation.Controllers
                 {
                     certificado = 0;
                 }
-                String caminhoBase = Server.MapPath("~/Certificados/");
-                String pastaCert = Path.Combine(caminhoBase, idAss.ToString());
-                String nomeArquivo = conf.CONF_NM_LOCAL_CERTIFICADO;
-                String caminhoFinal = Path.Combine(pastaCert, nomeArquivo);
-                if (!System.IO.File.Exists(caminhoFinal))
+                if (certificado == 1)
                 {
-                    certificado = 0;
+                    String caminhoBase = Server.MapPath("~/Certificados/");
+                    String pastaCert = Path.Combine(caminhoBase, idAss.ToString());
+                    String nomeArquivo = conf.CONF_NM_LOCAL_CERTIFICADO;
+                    String caminhoFinal = Path.Combine(pastaCert, nomeArquivo);
+                    if (!System.IO.File.Exists(caminhoFinal))
+                    {
+                        certificado = 0;
+                    }
                 }
                 Session["TemCertificado"] = certificado;
                 Session["VoltaCertificado"] = 1;
@@ -9561,13 +9569,16 @@ namespace GEDSys_Presentation.Controllers
                 {
                     certificado = 0;
                 }
-                String caminhoBase = Server.MapPath("~/Certificados/");
-                String pastaCert = Path.Combine(caminhoBase, idAss.ToString());
-                String nomeArquivo = conf.CONF_NM_LOCAL_CERTIFICADO;
-                String caminhoFinal = Path.Combine(pastaCert, nomeArquivo);
-                if (!System.IO.File.Exists(caminhoFinal))
+                if (certificado == 1)
                 {
-                    certificado = 0;
+                    String caminhoBase = Server.MapPath("~/Certificados/");
+                    String pastaCert = Path.Combine(caminhoBase, idAss.ToString());
+                    String nomeArquivo = conf.CONF_NM_LOCAL_CERTIFICADO;
+                    String caminhoFinal = Path.Combine(pastaCert, nomeArquivo);
+                    if (!System.IO.File.Exists(caminhoFinal))
+                    {
+                        certificado = 0;
+                    }
                 }
                 Session["TemCertificado"] = certificado;
                 Session["VoltaCertificado"] = 2;
@@ -24606,13 +24617,16 @@ namespace GEDSys_Presentation.Controllers
                 {
                     certificado = 0;
                 }
-                String caminhoBase = Server.MapPath("~/Certificados/");
-                String pastaCert = Path.Combine(caminhoBase, idAss.ToString());
-                String nomeArquivo = conf.CONF_NM_LOCAL_CERTIFICADO;
-                String caminhoFinal = Path.Combine(pastaCert, nomeArquivo);
-                if (!System.IO.File.Exists(caminhoFinal))
+                if (certificado == 1)
                 {
-                    certificado = 0;
+                    String caminhoBase = Server.MapPath("~/Certificados/");
+                    String pastaCert = Path.Combine(caminhoBase, idAss.ToString());
+                    String nomeArquivo = conf.CONF_NM_LOCAL_CERTIFICADO;
+                    String caminhoFinal = Path.Combine(pastaCert, nomeArquivo);
+                    if (!System.IO.File.Exists(caminhoFinal))
+                    {
+                        certificado = 0;
+                    }
                 }
                 Session["TemCertificado"] = certificado;
                 Session["VoltaCertificado"] = 1;
@@ -25876,7 +25890,6 @@ namespace GEDSys_Presentation.Controllers
                 }
                 Int32 idAss = (Int32)Session["IdAssinante"];
                 Session["ModuloAtual"] = "Prescrições";
-
 
                 // Checa classe
                 Int32 classe = 0;
