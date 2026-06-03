@@ -2,7 +2,7 @@
 @using CrossCutting;
 @model EntitiesServices.Model.FUNIL
 @{
-    Layout = "~/Views/Shared/_Layout_Adm.cshtml";
+    Layout = "~/Views/Shared/_Layout_Admin.cshtml";
 }
 <div class="wrapper wrapper-content animated fadeInRight">
     <div class="modal inmodal fade" id="modalConfirmacaoExclusao" tabindex="-1" role="dialog" aria-hidden="true">
@@ -15,14 +15,23 @@
 
                     <i class="fa fa-trash-o modal-icon text-danger" style="display: block;"></i>
                     <h4 class="modal-title">Confirmação de Exclusão</h4>
-                    <small class="font-bold">WebDoctorPro - Gestão de Processos</small>
+                    <small class="font-bold">WebDoctorPro - Funis de Processo</small>
                 </div>
-        
-                <div class="modal-body text-center">
-                    <h3>Confirma a exclusão deste funil de processo?</h3>
-                    <p>Esta ação excluirá o funil selecionado.</p>
+    
+                <div class="modal-body">
+                    <div class="text-center">
+                        <h3>Confirma a exclusão deste Funil?</h3>
+                        <p>Nenhum funil em uso por algum processo CRM poderá ser excluido.</p>
+                    </div>
+                    <br />
+                    <!-- NOVO CAMPO: Motivo da Exclusão -->
+                    <div class="form-group text-left">
+                        <label class="font-bold">Motivo da Exclusão *</label>
+                        <textarea class="form-control" id="txtMotivoExclusao" rows="3" maxlength="500" placeholder="Informe detalhadamente o motivo pelo qual este funil está sendo excluído..."></textarea>
+                        <span id="validaMotivoExclusao" style="color:red; display:none;">O motivo da exclusão é obrigatório.</span>
+                    </div>
                 </div>
-        
+    
                 <div class="modal-footer">
                     <button type="button" class="btn btn-white" data-dismiss="modal">Cancelar</button>
                     <button type="button" class="btn btn-danger" id="btnConfirmarExclusaoSubmit">Confirmar Exclusão</button>
@@ -30,7 +39,26 @@
             </div>
         </div>
     </div>
-
+    <div class="modalContainer">
+        <div id="modal" class="modal" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        @*Titulo gerado dinamicamente*@
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        @*Gerado dinamicamente*@
+                    </div>
+                    <div class="modal-footer">
+                        <button onclick="limpaModal()" type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
     <div class="page-title">
         <h3 class="title">Funis de Processos</h3>
         <br />
@@ -44,7 +72,8 @@
         </ol>
         <br />
     </div>
-   <div class="row">
+
+    <div class="row">
         <div class="col-lg-12 col-md-12 col-xs-12">
             <div class="col-lg-12 col-md-12 col-xs-12 ibox float-e-margins">
                 <div class="ibox-title">
@@ -61,9 +90,7 @@
                     <div class="row">
                         <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
                             <div class="col-lg-12 col-md-12 col-xs-12">
-                                <a href="@Url.Action("IncluirFunil", "Funil")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessa a página de criação de funis de processos" class="btn btn-sm btn-primary btn-loading show-spinner" id="emp" OnClick = "Fade()">Novo Funil</a>                
-                                @Html.ButtonLinkIndex(text: "Ver Ativos", controller: "Funil", action: "RetirarFiltroFunil", htmlAttributes: new { @class = "btn-loading show-spinner" })
-                                @Html.ButtonLinkIndex(text: "Ver Inativos", controller: "Funil", action: "MostrarTudoFunil", htmlAttributes: new { @class = "btn-loading show-spinner" })
+                                @Html.ButtonLinkIndex(text: "Novo Funil", controller: "Funil", action: "IncluirFunil", buttonClass: "primary", htmlAttributes: new { @class = "btn-loading show-spinner" })
                                 @Html.ButtonLinkIndex(text: "Voltar", controller: "Administra", action: "MontarTelaAdministra", htmlAttributes: new { @class = "btn-loading show-spinner" })
                                 <span id="loadingIndicator" style="display: none; margin-left: 10px; color: #007bff;">
                                     <i class="fa fa-spinner fa-spin"></i> Processando...
@@ -71,7 +98,6 @@
                             </div>
                         </div>
                         <br /><br />
-
                         @if (ViewBag.Listas != null &&(ViewBag.Listas as List<EntitiesServices.Model.FUNIL>).Count > 0)
                         {
                             <table class="table table-striped table-bordered table-hover dataTables-example">
@@ -90,11 +116,11 @@
                                     @foreach (var cond in (ViewBag.Listas as List<EntitiesServices.Model.FUNIL>))
                                     {
                                         <tr>
-                                            <td style="width: auto; cursor: pointer; text-decoration: underline;"><a href="@Url.Action("EditarFunil", "Funil", new { id = cond.FUNI_CD_ID })" class="btn-loading show-spinner" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Editar/Consultar funil"/>@cond.FUNI_NM_NOME</td>
+                                            <td style="width: auto"><a href="@Url.Action("EditarFunil", "Funil", new { id = cond.FUNI_CD_ID })" class="show-spinner" />@cond.FUNI_NM_NOME</td>
                                             <td style="width: auto">@cond.FUNI_SG_SIGLA</td>
                                             <td style="width: auto">@cond.FUNI_DS_DESCRICAO</td>
                                             <td style="width: auto">
-                                                @if (cond.FUNI_IN_RESPONSAVEL == 1) // ATIVA
+                                                @if (cond.FUNI_IN_RESPONSAVEL == 1)
                                                 {
                                                     <span class="status-badge status-active">Sim</span>
                                                 }
@@ -104,7 +130,7 @@
                                                 }
                                             </td>
                                             <td style="width: auto">
-                                                @if (cond.FUNI_IN_FIXO == 1) // ATIVA
+                                                @if (cond.FUNI_IN_RESPONSAVEL == 1)
                                                 {
                                                     <span class="status-badge status-active">Sim</span>
                                                 }
@@ -113,27 +139,35 @@
                                                     <span class="status-badge status-pending">Não</span>
                                                 }
                                             </td>
-
+                                            <td style="width: auto">@cond.FUNIL_ETAPA.Where(p => p.FUET_IN_ATIVO == 1).ToList().Count</td>
+                                            <td style="width: auto">
+                                                @if (cond.FUNI_IN_FIXO == 1)
+                                                {
+                                                    <span class="status-badge status-active">Sim</span>
+                                                }
+                                                else 
+                                                {
+                                                    <span class="status-badge status-pending">Não</span>
+                                                }
+                                            </td>
                                             <td class="td-one-action">
                                                 @if (cond.FUNI_IN_FIXO == 0)
                                                 {
-                                                    @Html.TableLinkDetails(cond.FUNI_CD_ID, "EditarFunil", "fa-edit btn-loading show-spinner", "Editar")
+                                                    @Html.TableLinkDetails(cond.FUNI_CD_ID, "EditarFunil", "fa-edit show-spinner", "Editar")
                                                     if (cond.FUNI_IN_ATIVO == 1)
                                                     {
-                                                        <span style="color: #337ab7; cursor:pointer;" 
-                                                                class="tbl-link fa-lg fa fa-trash-o" 
-                                                                onclick="ChamarModalExcluir('@cond.FUNI_CD_ID')" 
-                                                                title="Excluir"></span>
-                                                        @*<span style="color: #337ab7; cursor:pointer;" alt="Excluir" class="tbl-link fa-lg fa fa-trash-o btn-loading show-spinner" onclick="ShowModalExcluir('/Funil/ExcluirFunil/@cond.FUNI_CD_ID')" title="Excluir"></span>*@
-                                                    }
-                                                    else
-                                                    {
-                                                        <span style="color: #337ab7; cursor:pointer;" alt="Reativar" class="tbl-link fa-lg fa fa-refresh btn-loading show-spinner" onclick="ShowModalReativar('/Funil/ReativarFunil/@cond.FUNI_CD_ID')" title="Reativar"></span>
+                                                        if (cond.CRM.Count() == 0)
+                                                        {
+                                                            <span style="color: #337ab7; cursor:pointer;" 
+                                                                    class="tbl-link fa-lg fa fa-trash-o" 
+                                                                    onclick="ChamarModalExcluir('@cond.FUNI_CD_ID')" 
+                                                                    title="Excluir"></span>
+                                                        }
                                                     }
                                                 }
                                                 else
                                                 {
-                                                    @Html.TableLinkDetails(cond.FUNI_CD_ID, "EditarFunil", "fa-search btn-loading show-spinner", "Consultar")
+                                                    @Html.TableLinkDetails(cond.FUNI_CD_ID, "EditarFunil", "fa-search show-spinner", "Consultar")
                                                 }
                                             </td>
                                         </tr>
@@ -147,7 +181,7 @@
                                 <div class="col-lg-3 col-md-3 col-xs-2">
                                 </div>
                                 <div style="border: 5px solid #F6A54A; padding: 10px; border-radius: 8px 8px; " class="col-lg-6 col-md-6 col-xs-8">
-                                    <h2 style="font-weight: bold">Nenhum funil cadastrado</h2>
+                                    <h2 style="font-weight: bold">Sua pesquisa não retornou nenhum resultado ou nenhum funil cadastrado</h2>
                                 </div>
                                 <div class="col-lg-3 col-md-3 col-xs-2">
                                 </div>
@@ -161,6 +195,10 @@
 </div>
 
 @section Styles {
+    <link href="~/Content/themes/base/all.css" rel="stylesheet" />  
+    @Styles.Render("~/Content/plugins/dataTables/dataTablesStyles")
+    @Styles.Render("~/plugins/jasnyBootstrapStyles")
+
     <link href="~/Content/themes/base/jquery-ui.min.css" rel="stylesheet" />
     <link href="~/Content/themes/base/all.css" rel="stylesheet" />
     @Styles.Render("~/Content/plugins/dataTables/dataTablesStyles")
@@ -279,24 +317,17 @@
 
 @section Scripts {
 
-    @Scripts.Render("~/plugins/dataTables")
-    @Scripts.Render("~/bundles/inputmask")
-    @Scripts.Render("~/plugins/jasnyBootstrap")
-    <script src="~/Scripts/plugins/select2/select2.full.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.maskedinput/1.4.1/jquery.maskedinput.js"></script>
-
     @Scripts.Render("~/plugins/toastr")
     <script src="~/Scripts/jquery-ui-1.12.1.min.js"></script>
     @Scripts.Render("~/plugins/dataTables")
     @Scripts.Render("~/bundles/inputmask")
     @Scripts.Render("~/plugins/jasnyBootstrap")
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.maskedinput/1.4.1/jquery.maskedinput.js"></script>
-    <script src="~/Scripts/uploadAnexo.js"></script>
    
     <script type="text/javascript" src="~/Scripts/moment.min.js"></script>
     <script type="text/javascript" src="~/Scripts/bootstrap.min.js"></script>
    
-        <script>
+    <script>
         function Fade() {
             $('.dotContainer').fadeIn("fast");
             $('#login').css("filter", "blur(4px)");
@@ -398,11 +429,10 @@
                         }
                     }
                 ]
-
             });         
-
         });
     </script>
+
     <script type="text/javascript">
         $(document).ready(function () {
             // Configurações globais do Toastr
@@ -445,33 +475,63 @@
 
         function ChamarModalExcluir(id) {
             locacaoIdParaExcluir = id;
+            // Reseta o campo de texto e o aviso ao abrir a modal
+            $('#txtMotivoExclusao').val('');
+            $('#validaMotivoExclusao').hide();
             $('#modalConfirmacaoExclusao').modal('show');
         }
 
         $(document).ready(function () {
             $('#btnConfirmarExclusaoSubmit').click(function () {
                 if (locacaoIdParaExcluir != null) {
+                    var motivoTxt = $('#txtMotivoExclusao').val().trim();
+
+                    // Validação de campo obrigatório
+                    if (motivoTxt === "") {
+                        $('#validaMotivoExclusao').show();
+                        $('#txtMotivoExclusao').focus();
+                        return false;
+                    }
+
                     var $btn = $(this);
-                
-                    // Feedback visual
+            
+                    // Feedback visual de carregamento
                     $btn.prop('disabled', true).addClass('disabled');
                     $btn.html('<i class="fa fa-spinner fa-spin"></i> Excluindo...');
-                
                     $('#loadingIndicator').show();
 
-                    // Monta a URL e redireciona
-                    var urlFinal = '/Funil/ExcluirFunil/' + locacaoIdParaExcluir;
-                    window.location.href = urlFinal;
+                    // Criamos um formulário temporário em memória para enviar via POST seguro
+                    var form = document.createElement("form");
+                    form.method = "POST";
+                    form.action = '/Funil/ExcluirFunil';
+
+                    // Input do ID
+                    var inputId = document.createElement("input");
+                    inputId.type = "hidden";
+                    inputId.name = "id";
+                    inputId.value = locacaoIdParaExcluir;
+                    form.appendChild(inputId);
+
+                    // Input do Motivo (Varchar 500)
+                    var inputMotivo = document.createElement("input");
+                    inputMotivo.type = "hidden";
+                    inputMotivo.name = "motivo";
+                    inputMotivo.value = motivoTxt;
+                    form.appendChild(inputMotivo);
+
+                    document.body.appendChild(form);
+                    form.submit();
                 }
             });
 
             // Limpeza de segurança ao fechar a modal
             $('#modalConfirmacaoExclusao').on('hidden.bs.modal', function () {
                 locacaoIdParaExcluir = null;
+                $('#txtMotivoExclusao').val('');
+                $('#validaMotivoExclusao').hide();
             });
         });
     </script>
-
 
 }
 

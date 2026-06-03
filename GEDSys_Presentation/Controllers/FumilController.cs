@@ -67,9 +67,7 @@ namespace GEDSys_Presentation.Controllers
             {
                 return RedirectToAction("Logout", "ControleAcesso");
             }
-            LEAD item = new LEAD();
-            LeadViewModel vm = Mapper.Map<LEAD, LeadViewModel>(item);
-            return View(vm);
+            return View();
         }
 
         public ActionResult Voltar()
@@ -78,16 +76,7 @@ namespace GEDSys_Presentation.Controllers
             {
                 return RedirectToAction("Logout", "ControleAcesso");
             }
-            return RedirectToAction("MontarTelaDashboardCRMNovo", "CRM");
-        }
-
-        public ActionResult VoltarGeral()
-        {
-            if ((String)Session["Ativa"] == null)
-            {
-                return RedirectToAction("Logout", "ControleAcesso");
-            }
-            return RedirectToAction("CarregarBase", "BaseAdmin");
+            return RedirectToAction("MontarTelaAdministra", "Administra");
         }
 
         [HttpGet]
@@ -119,7 +108,6 @@ namespace GEDSys_Presentation.Controllers
                 }
                 ViewBag.Listas = (List<FUNIL>)Session["ListaFunilX"];
                 ViewBag.Title = "Funil";
-                Session["AjudaNivel"] = "../BaseAdmin/Ajuda/4/Ajuda4_1.pdf";
 
                 // Mensagens
                 if (Session["MensFunil"] != null)
@@ -147,13 +135,6 @@ namespace GEDSys_Presentation.Controllers
                     }
                 }
 
-                if ((Int32)Session["MensPermissao"] == 2)
-                {
-                    String mens = CRMSys_Base.ResourceManager.GetString("M0011", CultureInfo.CurrentCulture) + ". Módulo: " + (String)Session["ModuloPermissao"];
-                    ModelState.AddModelError("", mens);
-                    Session["MensPermissao"] = 0;
-                }
-
                 // Grava Acesso
                 ControleAcessoMetodo grava = new ControleAcessoMetodo(aceApp);
                 Int32 voltaX = grava.GravaAcesso(usuario.USUA_CD_ID, usuario.ASSI_CD_ID, "FUNIL", "Funil", "MontarTelaFunil");
@@ -170,62 +151,11 @@ namespace GEDSys_Presentation.Controllers
             {
                 ViewBag.Message = ex.Message;
                 Session["TipoVolta"] = 2;
-                Session["VoltaExcecao"] = "Funis";
-                Session["Excecao"] = ex;
-                Session["ExcecaoTipo"] = ex.GetType().ToString();
-                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
-                Int32 voltaX = grava.GravarLogExcecao(ex, "Funis", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
-                return RedirectToAction("TrataExcecao", "BaseAdmin");
-            }
-        }
-
-        public ActionResult RetirarFiltroFunil()
-        {
-            try
-            {
-                if ((String)Session["Ativa"] == null)
-                {
-                    return RedirectToAction("Logout", "ControleAcesso");
-                }
-                Int32 idAss = (Int32)Session["IdAssinante"];
-                Session["ListaFunilX"] = null;
-                return RedirectToAction("MontarTelaFunil");
-            }
-            catch (Exception ex)
-            {
-                ViewBag.Message = ex.Message;
-                Session["TipoVolta"] = 2;
                 Session["VoltaExcecao"] = "Funil";
                 Session["Excecao"] = ex;
                 Session["ExcecaoTipo"] = ex.GetType().ToString();
                 GravaLogExcecao grava = new GravaLogExcecao(usuApp);
-                Int32 voltaX = grava.GravarLogExcecao(ex, "Funil", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
-                return RedirectToAction("TrataExcecao", "BaseAdmin");
-            }
-        }
-
-        public ActionResult MostrarTudoFunil()
-        {
-            try
-            {
-                if ((String)Session["Ativa"] == null)
-                {
-                    return RedirectToAction("Logout", "ControleAcesso");
-                }
-                Int32 idAss = (Int32)Session["IdAssinante"];
-                listaMaster = baseApp.GetAllItensAdm(idAss);
-                Session["ListaFunilX"] = listaMaster;
-                return RedirectToAction("MontarTelaFunil");
-            }
-            catch (Exception ex)
-            {
-                ViewBag.Message = ex.Message;
-                Session["TipoVolta"] = 2;
-                Session["VoltaExcecao"] = "Funis";
-                Session["Excecao"] = ex;
-                Session["ExcecaoTipo"] = ex.GetType().ToString();
-                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
-                Int32 voltaX = grava.GravarLogExcecao(ex, "Funis", "CRMSys", 1, (USUARIO)Session["UserCredentials"]);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Funil", "WebDoctorPro", 1, (USUARIO)Session["UserCredentials"]);
                 return RedirectToAction("TrataExcecao", "BaseAdmin");
             }
         }
@@ -254,7 +184,6 @@ namespace GEDSys_Presentation.Controllers
                 if ((USUARIO)Session["UserCredentials"] != null)
                 {
                     usuario = (USUARIO)Session["UserCredentials"];
-
                 }
                 else
                 {
@@ -267,7 +196,6 @@ namespace GEDSys_Presentation.Controllers
                 aviso.Add(new SelectListItem() { Text = "Sim", Value = "1" });
                 aviso.Add(new SelectListItem() { Text = "Não", Value = "0" });
                 ViewBag.Aviso = new SelectList(aviso, "Value", "Text");
-                Session["AjudaNivel"] = "../BaseAdmin/Ajuda/4/Ajuda4_2.pdf";
 
                 // Grava Acesso
                 ControleAcessoMetodo grava = new ControleAcessoMetodo(aceApp);
@@ -282,19 +210,17 @@ namespace GEDSys_Presentation.Controllers
                 vm.FUNI_IN_FIXO = 0;
                 vm.FUNI_IN_TIPO = 1;
                 vm.FUNI_IN_CLIENTE = 0;
-                vm.FUNI_IN_LEAD = 0;
-                vm.FUNI_IN_SISTEMA = 6;
                 return View(vm);
             }
             catch (Exception ex)
             {
                 ViewBag.Message = ex.Message;
                 Session["TipoVolta"] = 2;
-                Session["VoltaExcecao"] = "Funis";
+                Session["VoltaExcecao"] = "Funil";
                 Session["Excecao"] = ex;
                 Session["ExcecaoTipo"] = ex.GetType().ToString();
                 GravaLogExcecao grava = new GravaLogExcecao(usuApp);
-                Int32 voltaX = grava.GravarLogExcecao(ex, "Funis", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Funil", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
                 return RedirectToAction("TrataExcecao", "BaseAdmin");
             }
         }
@@ -302,10 +228,6 @@ namespace GEDSys_Presentation.Controllers
         [HttpPost]
         public ActionResult IncluirFunil(FunilViewModel vm)
         {
-            List<SelectListItem> proposta = new List<SelectListItem>();
-            proposta.Add(new SelectListItem() { Text = "Sim", Value = "1" });
-            proposta.Add(new SelectListItem() { Text = "Não", Value = "0" });
-            ViewBag.Proposta = new SelectList(proposta, "Value", "Text");
             List<SelectListItem> aviso = new List<SelectListItem>();
             aviso.Add(new SelectListItem() { Text = "Sim", Value = "1" });
             aviso.Add(new SelectListItem() { Text = "Não", Value = "0" });
@@ -328,12 +250,13 @@ namespace GEDSys_Presentation.Controllers
                     // Verifica retorno
                     if (volta == 1)
                     {
+                        Session["MensFunil"] = 3;
                         ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0193", CultureInfo.CurrentCulture));
                         return View(vm);
                     }
 
                     // Mensagem do CRUD
-                    Session["MsgCRUD"] = "O funil " + item.FUNI_NM_NOME.ToUpper() + " foi criado com sucesso";
+                    Session["MsgCRUD"] = "O Funil " + item.FUNI_NM_NOME.ToUpper() + " foi incluído com sucesso e está disponível para criação de etapas";
                     Session["MensFunil"] = 61;
 
                     // Sucesso
@@ -343,142 +266,8 @@ namespace GEDSys_Presentation.Controllers
                     Session["FunilAlterada"] = 1;
                     Session["TabFunil"] = 2;
                     Session["FlagAlteraEstado"] = 1;
+                    Session["Funis"] = null;
                     return RedirectToAction("VoltarAnexoFunil");
-                }
-                catch (Exception ex)
-                {
-                    ViewBag.Message = ex.Message;
-                    Session["TipoVolta"] = 2;
-                    Session["VoltaExcecao"] = "Funil";
-                    Session["Excecao"] = ex;
-                    Session["ExcecaoTipo"] = ex.GetType().ToString();
-                    GravaLogExcecao grava = new GravaLogExcecao(usuApp);
-                    Int32 voltaX = grava.GravarLogExcecao(ex, "Funil", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
-                    return RedirectToAction("TrataExcecao", "BaseAdmin");
-                }
-            }
-            else
-            {
-                return View(vm);
-            }
-        }
-
-        [HttpGet]
-        public ActionResult EditarFunil(Int32 id)
-        {
-            try
-            {
-                // Verifica se tem usuario logado
-                USUARIO usuario = new USUARIO();
-                if ((String)Session["Ativa"] == null)
-                {
-                    return RedirectToAction("Logout", "ControleAcesso");
-                }
-                if ((USUARIO)Session["UserCredentials"] != null)
-                {
-                    usuario = (USUARIO)Session["UserCredentials"];
-
-                }
-                else
-                {
-                    return RedirectToAction("Logout", "ControleAcesso");
-                }
-                Int32 idAss = (Int32)Session["IdAssinante"];
-
-                // Listas
-                List<SelectListItem> aviso = new List<SelectListItem>();
-                aviso.Add(new SelectListItem() { Text = "Sim", Value = "1" });
-                aviso.Add(new SelectListItem() { Text = "Não", Value = "0" });
-                ViewBag.Aviso = new SelectList(aviso, "Value", "Text");
-                Session["AjudaNivel"] = "../BaseAdmin/Ajuda/4/Ajuda4_3.pdf";
-
-                // Mensagens
-                if (Session["MensFunil"] != null)
-                {
-                    if ((Int32)Session["MensFunil"] == 5)
-                    {
-                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0195", CultureInfo.CurrentCulture));
-                    }
-                    if ((Int32)Session["MensFunil"] == 61)
-                    {
-                        TempData["MensagemAcerto"] = (String)Session["MsgCRUD"];
-                        TempData["TemMensagem"] = 1;
-                    }
-                }
-
-                // Prepara view
-                FUNIL item = baseApp.GetItemById(id);
-                CONFIGURACAO conf = confApp.GetItemById(idAss);
-                Int32 etapa = 0;
-                if (item.FUNIL_ETAPA.Where(p => p.FUET_IN_ATIVO == 1).ToList().Count < conf.CONF_IN_ETAPAS_CRM)
-                {
-                    etapa = 1;
-                }
-                ViewBag.Etapa = etapa;
-
-                // Grava Acesso
-                ControleAcessoMetodo grava = new ControleAcessoMetodo(aceApp);
-                Int32 voltaX = grava.GravaAcesso(usuario.USUA_CD_ID, usuario.ASSI_CD_ID, "FUNIL_ALTERAR", "Funil", "EditarFunil");
-
-                // Indicadores
-                Session["VoltaFunil"] = 1;
-                objetoAntes = item;
-                Session["Funil"] = item;
-                Session["IdFunil"] = id;
-                FunilViewModel vm = Mapper.Map<FUNIL, FunilViewModel>(item);
-                return View(vm);
-
-            }
-            catch (Exception ex)
-            {
-                ViewBag.Message = ex.Message;
-                Session["TipoVolta"] = 2;
-                Session["VoltaExcecao"] = "Funil";
-                Session["Excecao"] = ex;
-                Session["ExcecaoTipo"] = ex.GetType().ToString();
-                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
-                Int32 voltaX = grava.GravarLogExcecao(ex, "Funil", "CRMSys", 1, (USUARIO)Session["UserCredentials"]);
-                return RedirectToAction("TrataExcecao", "BaseAdmin");
-            }
-        }
-
-        [HttpPost]
-        public ActionResult EditarFunil(FunilViewModel vm)
-        {
-            List<SelectListItem> proposta = new List<SelectListItem>();
-            proposta.Add(new SelectListItem() { Text = "Sim", Value = "1" });
-            proposta.Add(new SelectListItem() { Text = "Não", Value = "0" });
-            ViewBag.Proposta = new SelectList(proposta, "Value", "Text");
-            List<SelectListItem> aviso = new List<SelectListItem>();
-            aviso.Add(new SelectListItem() { Text = "Sim", Value = "1" });
-            aviso.Add(new SelectListItem() { Text = "Não", Value = "0" });
-            ViewBag.Aviso = new SelectList(aviso, "Value", "Text");
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    // Sanitização
-                    vm.FUNI_DS_DESCRICAO = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(vm.FUNI_DS_DESCRICAO);
-                    vm.FUNI_NM_NOME = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(vm.FUNI_NM_NOME);
-                    vm.FUNI_SG_SIGLA = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(vm.FUNI_SG_SIGLA);
-
-                    // Executa a operação
-                    Int32 idAss = (Int32)Session["IdAssinante"];
-                    USUARIO usuarioLogado = (USUARIO)Session["UserCredentials"];
-                    FUNIL item = Mapper.Map<FunilViewModel, FUNIL>(vm);
-                    Int32 volta = baseApp.ValidateEdit(item, objetoAntes, usuarioLogado);
-
-                    // Mensagem do CRUD
-                    Session["MsgCRUD"] = "O funil " + item.FUNI_NM_NOME.ToUpper() + " foi alterado com sucesso";
-                    Session["MensFunil"] = 61;
-
-                    // Sucesso
-                    listaMaster = new List<FUNIL>();
-                    Session["ListaFunilX"] = null;
-                    Session["FunilAlterada"] = 1;
-                    Session["FlagAlteraEstado"] = 1;
-                    Session["FlagAlteraEstado"] = 1;
-                    return RedirectToAction("MontarTelaFunil");
                 }
                 catch (Exception ex)
                 {
@@ -531,11 +320,13 @@ namespace GEDSys_Presentation.Controllers
                 }
 
                 // Mensagem do CRUD
-                Session["MsgCRUD"] = "O funil " + item.FUNI_NM_NOME + " foi excluído com sucesso";
+                Session["MsgCRUD"] = "O funil " + item.FUNI_NM_NOME.ToUpper() + " foi excluído com sucesso";
                 Session["MensFunil"] = 61;
 
+                // Retorno
                 listaMaster = new List<FUNIL>();
                 Session["ListaFunilX"] = null;
+                Session["Funis"] = null;
                 Session["FunilAlterada"] = 1;
                 return RedirectToAction("MontarTelaFunil");
             }
@@ -553,7 +344,7 @@ namespace GEDSys_Presentation.Controllers
         }
 
         [HttpGet]
-        public ActionResult ReativarFunil(Int32 id)
+        public ActionResult EditarFunil(Int32 id)
         {
             try
             {
@@ -573,21 +364,47 @@ namespace GEDSys_Presentation.Controllers
                 }
                 Int32 idAss = (Int32)Session["IdAssinante"];
 
-                // Executar
+                // Listas
+                List<SelectListItem> aviso = new List<SelectListItem>();
+                aviso.Add(new SelectListItem() { Text = "Sim", Value = "1" });
+                aviso.Add(new SelectListItem() { Text = "Não", Value = "0" });
+                ViewBag.Aviso = new SelectList(aviso, "Value", "Text");
+
+                // Mensagens
+                if (Session["MensFunil"] != null)
+                {
+                    if ((Int32)Session["MensFunil"] == 5)
+                    {
+                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0195", CultureInfo.CurrentCulture));
+                    }
+                    if ((Int32)Session["MensFunil"] == 61)
+                    {
+                        TempData["MensagemAcerto"] = (String)Session["MsgCRUD"];
+                        TempData["TemMensagem"] = 1;
+                    }
+                }
+
+                // Grava Acesso
+                ControleAcessoMetodo grava = new ControleAcessoMetodo(aceApp);
+                Int32 voltaX = grava.GravaAcesso(usuario.USUA_CD_ID, usuario.ASSI_CD_ID, "FUNIL_EDITAR", "Funil", "EditarFunil");
+
+                // Prepara view
                 FUNIL item = baseApp.GetItemById(id);
-                objetoAntes = (FUNIL)Session["Funil"];
-                item.FUNI_IN_ATIVO = 1;
-                Int32 volta = baseApp.ValidateReativar(item, usuario);
+                CONFIGURACAO conf = CarregaConfiguracaoGeral();
+                Int32 etapa = 0;
+                if (item.FUNIL_ETAPA.Where(p => p.FUET_IN_ATIVO == 1).ToList().Count < conf.CONF_IN_ETAPAS_CRM)
+                {
+                    etapa = 1;
+                }
+                ViewBag.Etapa = etapa;
 
-                // Mensagem do CRUD
-                Session["MsgCRUD"] = "O funil " + item.FUNI_NM_NOME + " foi reativado com sucesso";
-                Session["MensFunil"] = 61;
-
-                listaMaster = new List<FUNIL>();
-                Session["ListaFunilX"] = null;
-                Session["FunilAlterada"] = 1;
-                Session["FlagAlteraEstado"] = 1;
-                return RedirectToAction("MontarTelaFunil");
+                // Indicadores
+                Session["VoltaFunil"] = 1;
+                objetoAntes = item;
+                Session["Funil"] = item;
+                Session["IdFunil"] = id;
+                FunilViewModel vm = Mapper.Map<FUNIL, FunilViewModel>(item);
+                return View(vm);
             }
             catch (Exception ex)
             {
@@ -601,6 +418,61 @@ namespace GEDSys_Presentation.Controllers
                 return RedirectToAction("TrataExcecao", "BaseAdmin");
             }
         }
+
+        [HttpPost]
+        public ActionResult EditarFunil(FunilViewModel vm)
+        {
+            List<SelectListItem> aviso = new List<SelectListItem>();
+            aviso.Add(new SelectListItem() { Text = "Sim", Value = "1" });
+            aviso.Add(new SelectListItem() { Text = "Não", Value = "0" });
+            ViewBag.Aviso = new SelectList(aviso, "Value", "Text");
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    // Sanitização
+                    vm.FUNI_DS_DESCRICAO = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(vm.FUNI_DS_DESCRICAO);
+                    vm.FUNI_NM_NOME = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(vm.FUNI_NM_NOME);
+                    vm.FUNI_SG_SIGLA = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(vm.FUNI_SG_SIGLA);
+
+                    // Executa a operação
+                    Int32 idAss = (Int32)Session["IdAssinante"];
+                    USUARIO usuarioLogado = (USUARIO)Session["UserCredentials"];
+                    FUNIL item = Mapper.Map<FunilViewModel, FUNIL>(vm);
+                    Int32 volta = baseApp.ValidateEdit(item, objetoAntes, usuarioLogado);
+
+                    // Mensagem do CRUD
+                    Session["MsgCRUD"] = "O funil " + item.FUNI_NM_NOME.ToUpper() + " foi alterado com sucesso";
+                    Session["MensLead"] = 61;
+
+                    // Sucesso
+                    listaMaster = new List<FUNIL>();
+                    Session["ListaFunilX"] = null;
+                    Session["FunilAlterada"] = 1;
+                    Session["Funis"] = null;
+                    Session["FlagAlteraEstado"] = 1;
+                    Session["FlagAlteraEstado"] = 1;
+                    return RedirectToAction("MontarTelaFunil");
+                }
+                catch (Exception ex)
+                {
+                    ViewBag.Message = ex.Message;
+                    Session["TipoVolta"] = 2;
+                    Session["VoltaExcecao"] = "Funil";
+                    Session["Excecao"] = ex;
+                    Session["ExcecaoTipo"] = ex.GetType().ToString();
+                    GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                    Int32 voltaX = grava.GravarLogExcecao(ex, "Funil", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                    return RedirectToAction("TrataExcecao", "BaseAdmin");
+                }
+            }
+            else
+            {
+                return View(vm);
+            }
+        }
+
+
 
         public ActionResult VoltarAnexoFunil()
         {
@@ -645,7 +517,6 @@ namespace GEDSys_Presentation.Controllers
                 sms.Add(new SelectListItem() { Text = "Sim", Value = "1" });
                 sms.Add(new SelectListItem() { Text = "Não", Value = "0" });
                 ViewBag.SMS = new SelectList(sms, "Value", "Text");
-                Session["AjudaNivel"] = "../BaseAdmin/Ajuda/4/Ajuda4_5.pdf";
 
                 // Mensagens
                 if (Session["MensFunil"] != null)
@@ -686,7 +557,7 @@ namespace GEDSys_Presentation.Controllers
                 Session["Etapas"] = etapas;
 
                 // Verifica
-                CONFIGURACAO conf = confApp.GetItemById(idAss);
+                CONFIGURACAO conf = CarregaConfiguracaoGeral();
                 if (etapas.Count > conf.CONF_IN_ETAPAS_CRM)
                 {
                     Session["MensFunil"] = 5;
@@ -696,7 +567,7 @@ namespace GEDSys_Presentation.Controllers
 
                 // Grava Acesso
                 ControleAcessoMetodo grava = new ControleAcessoMetodo(aceApp);
-                Int32 voltaX = grava.GravaAcesso(usuario.USUA_CD_ID, usuario.ASSI_CD_ID, "ETAPA_ALTERAR", "Funil", "EditarEtapa");
+                Int32 voltaX = grava.GravaAcesso(usuario.USUA_CD_ID, usuario.ASSI_CD_ID, "FUNIL_ETAPA_EDITAR", "Funil", "EditarEtapa");
 
                 // Prepara view
                 FUNIL_ETAPA item = baseApp.GetEtapaById(id);
@@ -778,11 +649,9 @@ namespace GEDSys_Presentation.Controllers
                         if (lista.Count > 0)
                         {
                             Session["MensFunil"] = 8;
-                            ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0198", CultureInfo.CurrentCulture));
-                            return View(vm);
+                            return RedirectToAction("EditarEtapa");
                         }
                     }
-
 
                     // Executa a operação
                     USUARIO usuarioLogado = (USUARIO)Session["UserCredentials"];
@@ -805,8 +674,20 @@ namespace GEDSys_Presentation.Controllers
                         }
                     }
 
+                    // Monta Log
+                    LOG log = new LOG
+                    {
+                        LOG_DT_DATA = DateTime.Now,
+                        ASSI_CD_ID = usuarioLogado.ASSI_CD_ID,
+                        USUA_CD_ID = usuarioLogado.USUA_CD_ID,
+                        LOG_IN_ATIVO = 1,
+                        LOG_NM_OPERACAO = "Funil - Etapa - Alteração",
+                        LOG_TX_REGISTRO = "Funil: " + item.FUNIL.FUNI_NM_NOME + " - Etapa: " + item.FUET_NM_NOME,
+                        LOG_IN_SISTEMA = 6
+                    };
+
                     // Mensagem do CRUD
-                    Session["MsgCRUD"] = "A etapa " + item.FUET_NM_NOME.ToUpper() + " do funil " + funil.FUNI_NM_NOME + " foi alterada com sucesso";
+                    Session["MsgCRUD"] = "A etapa " + item.FUET_NM_NOME.ToUpper() + " do funil " + item.FUNIL.FUNI_NM_NOME.ToUpper() + " foi alterada com sucesso";
                     Session["MensFunil"] = 61;
 
                     // Verifica retorno
@@ -852,63 +733,31 @@ namespace GEDSys_Presentation.Controllers
                 }
                 Int32 idAss = (Int32)Session["IdAssinante"];
 
+                // Executa
                 FUNIL_ETAPA item = baseApp.GetEtapaById(id);
-                FUNIL funil = baseApp.GetItemById(item.FUNI_CD_ID);
                 objetoAntes = (FUNIL)Session["Funil"];
                 item.FUET_IN_ATIVO = 0;
                 Int32 volta = baseApp.ValidateEditEtapa(item);
+
+                // Monta Log
+                LOG log = new LOG
+                {
+                    LOG_DT_DATA = DateTime.Now,
+                    ASSI_CD_ID = usuario.ASSI_CD_ID,
+                    USUA_CD_ID = usuario.USUA_CD_ID,
+                    LOG_IN_ATIVO = 1,
+                    LOG_NM_OPERACAO = "Funil - Etapa - Exclusão",
+                    LOG_TX_REGISTRO = "Funil: " + item.FUNIL.FUNI_NM_NOME + " - Etapa: " + item.FUET_NM_NOME,
+                    LOG_IN_SISTEMA = 6
+
+                };
+
+                // Mensagem do CRUD
+                Session["MsgCRUD"] = "A etapa " + item.FUET_NM_NOME.ToUpper() + " do funil " + item.FUNIL.FUNI_NM_NOME.ToUpper() + " foi excluida com sucesso";
+                Session["MensFunil"] = 61;
+
+                // Retorno
                 Session["TabFunil"] = 2;
-
-                // Mensagem do CRUD
-                Session["MsgCRUD"] = "A etapa " + item.FUET_NM_NOME.ToUpper() + " do funil " + funil.FUNI_NM_NOME + " foi excluida com sucesso";
-                Session["MensFunil"] = 61;
-
-                return RedirectToAction("VoltarAnexoFunil");
-            }
-            catch (Exception ex)
-            {
-                ViewBag.Message = ex.Message;
-                Session["TipoVolta"] = 2;
-                Session["VoltaExcecao"] = "Funil";
-                Session["Excecao"] = ex;
-                Session["ExcecaoTipo"] = ex.GetType().ToString();
-                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
-                Int32 voltaX = grava.GravarLogExcecao(ex, "Funil", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
-                return RedirectToAction("TrataExcecao", "BaseAdmin");
-            }
-        }
-
-        [HttpGet]
-        public ActionResult ReativarEtapa(Int32 id)
-        {
-            try
-            {
-                // Verifica se tem usuario logado
-                USUARIO usuario = new USUARIO();
-                if ((String)Session["Ativa"] == null)
-                {
-                    return RedirectToAction("Logout", "ControleAcesso");
-                }
-                if ((USUARIO)Session["UserCredentials"] != null)
-                {
-                    usuario = (USUARIO)Session["UserCredentials"];
-                }
-                else
-                {
-                    return RedirectToAction("Logout", "ControleAcesso");
-                }
-                Int32 idAss = (Int32)Session["IdAssinante"];
-
-                FUNIL_ETAPA item = baseApp.GetEtapaById(id);
-                FUNIL funil = baseApp.GetItemById(item.FUNI_CD_ID);
-                objetoAntes = (FUNIL)Session["Funil"];
-                item.FUET_IN_ATIVO = 1;
-                Int32 volta = baseApp.ValidateEditEtapa(item);
-
-                // Mensagem do CRUD
-                Session["MsgCRUD"] = "A etapa " + item.FUET_NM_NOME.ToUpper() + " do funil " + funil.FUNI_NM_NOME + " foi reativada com sucesso";
-                Session["MensFunil"] = 61;
-
                 return RedirectToAction("VoltarAnexoFunil");
             }
             catch (Exception ex)
@@ -938,14 +787,6 @@ namespace GEDSys_Presentation.Controllers
                 if ((USUARIO)Session["UserCredentials"] != null)
                 {
                     usuario = (USUARIO)Session["UserCredentials"];
-
-                    // Verfifica permissão
-                    if (usuario.PERFIL.PERF_IN_ALTERACAO_FUNIL == 0)
-                    {
-                        Session["MensPermissao"] = 2;
-                        Session["ModuloPermissao"] = "Funis";
-                        return RedirectToAction("MontarTelaFunil", "Funil");
-                    }
                 }
                 else
                 {
@@ -966,7 +807,6 @@ namespace GEDSys_Presentation.Controllers
                 sms.Add(new SelectListItem() { Text = "Sim", Value = "1" });
                 sms.Add(new SelectListItem() { Text = "Não", Value = "0" });
                 ViewBag.SMS = new SelectList(sms, "Value", "Text");
-                Session["AjudaNivel"] = "../BaseAdmin/Ajuda/4/Ajuda4_4.pdf";
 
                 // Mensagens
                 if (Session["MensFunil"] != null)
@@ -987,6 +827,11 @@ namespace GEDSys_Presentation.Controllers
                     {
                         ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0199", CultureInfo.CurrentCulture));
                     }
+                    if ((Int32)Session["MensFunil"] == 61)
+                    {
+                        TempData["MensagemAcerto"] = (String)Session["MsgCRUD"];
+                        TempData["TemMensagem"] = 1;
+                    }
                 }
                 Session["MensFunil"] = null;
 
@@ -1003,7 +848,7 @@ namespace GEDSys_Presentation.Controllers
                 Session["Etapas"] = etapas;
 
                 // Verifica
-                CONFIGURACAO conf = confApp.GetItemById(idAss);
+                CONFIGURACAO conf = CarregaConfiguracaoGeral();
                 if (etapas.Count > conf.CONF_IN_ETAPAS_CRM)
                 {
                     Session["MensFunil"] = 5;
@@ -1013,7 +858,7 @@ namespace GEDSys_Presentation.Controllers
 
                 // Grava Acesso
                 ControleAcessoMetodo grava = new ControleAcessoMetodo(aceApp);
-                Int32 voltaX = grava.GravaAcesso(usuario.USUA_CD_ID, usuario.ASSI_CD_ID, "ETAPA_INCLUIR", "Funil", "IncluirEtapa");
+                Int32 voltaX = grava.GravaAcesso(usuario.USUA_CD_ID, usuario.ASSI_CD_ID, "FUNIL_ETAPA_INCLUIR", "Funil", "IncluirEtapa");
 
                 // Prepara view
                 FUNIL_ETAPA item = new FUNIL_ETAPA();
@@ -1052,6 +897,7 @@ namespace GEDSys_Presentation.Controllers
             sms.Add(new SelectListItem() { Text = "Sim", Value = "1" });
             sms.Add(new SelectListItem() { Text = "Não", Value = "0" });
             ViewBag.SMS = new SelectList(sms, "Value", "Text");
+            USUARIO usuario = (USUARIO)Session["UserCredentials"];
             if (ModelState.IsValid)
             {
                 try
@@ -1116,8 +962,21 @@ namespace GEDSys_Presentation.Controllers
                         }
                     }
 
+                    // Monta Log
+                    LOG log = new LOG
+                    {
+                        LOG_DT_DATA = DateTime.Now,
+                        ASSI_CD_ID = usuario.ASSI_CD_ID,
+                        USUA_CD_ID = usuario.USUA_CD_ID,
+                        LOG_IN_ATIVO = 1,
+                        LOG_NM_OPERACAO = "Funil - Etapa - Inclusão",
+                        LOG_TX_REGISTRO = "Funil: " + item.FUNIL.FUNI_NM_NOME + " - Etapa: " + item.FUET_NM_NOME,
+                        LOG_IN_SISTEMA = 6
+
+                    };
+
                     // Mensagem do CRUD
-                    Session["MsgCRUD"] = "A etapa " + item.FUET_NM_NOME.ToUpper() + " do funil " + funil.FUNI_NM_NOME + " foi incluida com sucesso";
+                    Session["MsgCRUD"] = "A etapa " + item.FUET_NM_NOME.ToUpper() + " do funil " + item.FUNIL.FUNI_NM_NOME.ToUpper() + " foi incluida com sucesso";
                     Session["MensFunil"] = 61;
 
                     // Verifica retorno
@@ -1201,5 +1060,45 @@ namespace GEDSys_Presentation.Controllers
                 return null;
             }
         }
+
+        public CONFIGURACAO CarregaConfiguracaoGeral()
+        {
+            try
+            {
+                Int32 idAss = (Int32)Session["IdAssinante"];
+                CONFIGURACAO conf = new CONFIGURACAO();
+                if (Session["Configuracao"] == null)
+                {
+                    conf = confApp.GetAllItems(idAss).FirstOrDefault();
+                }
+                else
+                {
+                    if ((Int32)Session["ConfAlterada"] == 1)
+                    {
+                        conf = confApp.GetAllItems(idAss).FirstOrDefault();
+                    }
+                    else
+                    {
+                        conf = (CONFIGURACAO)Session["Configuracao"];
+                    }
+                }
+                Session["ConfAlterada"] = 0;
+                Session["Configuracao"] = conf;
+                return conf;
+            }
+            catch (Exception ex)
+            {
+                Session["MensagemLogin"] = 100;
+                Session["MensagemErro"] = ex.Message;
+                Session["VoltaExcecao"] = "Funil";
+                Session["Excecao"] = ex;
+                Session["TipoVolta"] = 2;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Funil", "WebDoctor", 1, (USUARIO)Session["UsuarioArea"]);
+                return null;
+            }
+        }
+
     }
 }

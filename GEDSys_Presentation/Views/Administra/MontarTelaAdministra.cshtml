@@ -245,7 +245,7 @@
                             <div class="col-lg-12 col-md-12 col-xs-12">
                                 <div class="col-lg-12 col-md-12 col-xs-12 ibox float-e-margins" style="border-bottom: solid; border-bottom-color: darkblue; border-bottom-width: 2px; border-left: solid; border-left-color: darkblue; border-left-width: 1px; border-right: solid; border-right-color: darkblue; border-right-width: 1px; border-top: solid; border-top-color: darkblue; border-top-width: 1px">
                                     <div class="ibox-title">
-                                        <h4>Leads - Processamento (5 primeiros)</h4>
+                                        <h4>Leads - Qualificados (5 primeiros)</h4>
                                     </div>
                                     <div class="ibox-content">
                                         <div class="row">
@@ -259,7 +259,7 @@
                                                         </tr>
                                                     </thead>
                                                     <tbody>
-                                                        @foreach (var cond in (ViewBag.LeadsProcesso as List<EntitiesServices.Model.LEAD>).OrderBy(p => p.LEAD_DT_ENTRADA).Take(5))
+                                                        @foreach (var cond in (ViewBag.LeadsProcesso as List<EntitiesServices.Model.LEAD>).OrderByDescending(p => p.LEAD_DT_ENTRADA).Take(5))
                                                         {
                                                             <tr>
                                                                 <td style="width: auto; cursor: pointer; text-decoration: underline;"><a href="@Url.Action("EditarLead", "Administra", new { id = cond.LEAD_CD_ID})" class="btn-loading3 show-spinner"  data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Editar Lead" />@cond.LEAD_NM_NOME</td>
@@ -292,7 +292,7 @@
                             <div class="col-lg-12 col-md-12 col-xs-12">
                                 <div class="col-lg-12 col-md-12 col-xs-12 ibox float-e-margins" style="border-bottom: solid; border-bottom-color: darkblue; border-bottom-width: 2px; border-left: solid; border-left-color: darkblue; border-left-width: 1px; border-right: solid; border-right-color: darkblue; border-right-width: 1px; border-top: solid; border-top-color: darkblue; border-top-width: 1px">
                                     <div class="ibox-title">
-                                        <h4>Processos - Processamento (5 primeiros)</h4>
+                                        <h4>Processos - Ativos (5 primeiros)</h4>
                                     </div>
                                     <div class="ibox-content">
                                         <div class="row">
@@ -306,10 +306,10 @@
                                                         </tr>
                                                     </thead>
                                                     <tbody>
-                                                        @foreach (var cond in (ViewBag.CRMsProcesso as List<EntitiesServices.Model.CRM>).OrderBy(p => p.CRM1_DT_CRIACAO).Take(5))
+                                                        @foreach (var cond in (ViewBag.CRMsProcesso as List<EntitiesServices.Model.CRM>).OrderByDescending(p => p.CRM1_DT_CRIACAO).Take(5))
                                                         {
                                                             <tr>
-                                                                <td style="width: auto; cursor: pointer; text-decoration: underline;"><a href="@Url.Action("EditarCRM", "Administra", new { id = cond.CRM1_CD_ID})" class="btn-loading4 show-spinner"  data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Editar Lead" />@cond.CRM1_GU_GUID</td>
+                                                                <td style="width: auto; cursor: pointer; text-decoration: underline;"><a href="@Url.Action("EditarCRM", "Administra", new { id = cond.CRM1_CD_ID})" class="btn-loading4 show-spinner"  data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Editar Lead" />@cond.CRM1_NM_NOME</td>
                                                                 <td>@cond.CRM1_DT_CRIACAO.Value.ToShortDateString()</td>
                                                             </tr>
                                                         }

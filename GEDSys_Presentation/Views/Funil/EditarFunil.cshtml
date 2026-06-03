@@ -1,10 +1,44 @@
 ﻿@using Presentation.Extensions
 @model ERP_Condominios_Solution.ViewModels.FunilViewModel
 @{
-    Layout = "~/Views/Shared/_Layout_Adm.cshtml";
+    Layout = "~/Views/Shared/_Layout_Admin.cshtml";
 }
 
 <div class="wrapper wrapper-content animated fadeInRight">
+    <div class="modal inmodal fade" id="modalConfirmacaoExclusao" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header" style="position: relative; padding: 30px 15px;">
+                    <img src="@Url.Content("~/Images/Prontuario/prontuario_icon_3.png?v=1.1")" 
+                         style="position: absolute; left: 15px; top: 15px; width: 40px; height: auto;" 
+                         alt="Ícone" />
+
+                    <i class="fa fa-trash-o modal-icon text-danger" style="display: block;"></i>
+                    <h4 class="modal-title">Confirmação de Exclusão</h4>
+                    <small class="font-bold">WebDoctorPro - Etapas de Funis de Processo</small>
+                </div>
+    
+                <div class="modal-body">
+                    <div class="text-center">
+                        <h3>Confirma a exclusão desta Etapa?</h3>
+                        <p>Nenhum etapa de um funil em uso por algum processo CRM poderá ser excluido.</p>
+                    </div>
+                    <br />
+                    <!-- NOVO CAMPO: Motivo da Exclusão -->
+                    <div class="form-group text-left">
+                        <label class="font-bold">Motivo da Exclusão *</label>
+                        <textarea class="form-control" id="txtMotivoExclusao" rows="3" maxlength="500" placeholder="Informe detalhadamente o motivo pelo qual este funil está sendo excluído..."></textarea>
+                        <span id="validaMotivoExclusao" style="color:red; display:none;">O motivo da exclusão é obrigatório.</span>
+                    </div>
+                </div>
+    
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-white" data-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-danger" id="btnConfirmarExclusaoSubmit">Confirmar Exclusão</button>
+                </div>
+            </div>
+        </div>
+    </div>
     <div class="page-title">
         <h3 class="title">Funis de Processos</h3>
         <br />
@@ -16,7 +50,7 @@
                 <a href="@Url.Action("MontarTelaFunil", "Funil")">Funis de Processos</a>
             </li>
             <li class="active">
-                <strong>Funis de Processos - Edição</strong>
+                <strong>Funis de Processos - Alteração</strong>
             </li>
         </ol>
         <br />
@@ -25,7 +59,7 @@
         <div class="col-lg-12 col-md-12 col-xs-12">
             <div class="col-lg-12 col-md-12 col-xs-12 ibox float-e-margins">
                 <div class="ibox-title">
-                    <h5>Funis de Processos - Edição</h5>
+                    <h5>Funis de Processos - Alteração</h5>
                 </div>
                 <div class="ibox-content">
                     @Html.AntiForgeryToken()
@@ -37,7 +71,7 @@
                         </div>
                     }
                     <div class="form-group">
-                        @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarBaseFunil", controller: "Funil", htmlAttributes: new { @class = "btn-loading show-spinner" })
+                        @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarBaseFunil", controller: "Funil", htmlAttributes: new { @class = "show-spinner" })
                     </div>
                     <div class="tabs-container">
                         <ul class="nav nav-tabs">
@@ -69,33 +103,32 @@
                                                     @Html.HiddenFor(m => m.FUNI_IN_FIXO)
                                                     @Html.HiddenFor(m => m.FUNI_IN_TIPO)
                                                     @Html.HiddenFor(m => m.FUNI_IN_CLIENTE)
-                                                    @Html.HiddenFor(m => m.FUNI_IN_SISTEMA)
                                                     Nome*
-                                                    @Html.TextBoxFor(m => m.FUNI_NM_NOME, new { @class = "form-control", autofocus = true })
+                                                    @Html.TextBoxFor(m => m.FUNI_NM_NOME, new { @class = "form-control", autofocus = true, data_toggle = "popover", data_content = "Informe o nome associado ao funil", data_trigger="hover", data_placement="top" })
                                                     @Html.ValidationMessageFor(m => m.FUNI_NM_NOME, "", new { @style = "color:red" })
                                                 </div>
                                                 <div class="col-lg-2 col-md-2 col-xs-12">
                                                     Sigla*
-                                                    @Html.TextBoxFor(m => m.FUNI_SG_SIGLA, new { @class = "form-control", autofocus = true })
+                                                    @Html.TextBoxFor(m => m.FUNI_SG_SIGLA, new { @class = "form-control", autofocus = true, data_toggle = "popover", data_content = "Informe a sigla associada ao lead", data_trigger="hover", data_placement="top" })
                                                     @Html.ValidationMessageFor(m => m.FUNI_SG_SIGLA, "", new { @style = "color:red" })
                                                 </div>
                                                 <div class="col-lg-2 col-md-2 col-xs-12">
                                                     Notificação para Responsável?
-                                                    @Html.DropDownListFor(m => m.FUNI_IN_RESPONSAVEL, (SelectList)ViewBag.Aviso, new { @class = "form-control", autofocus = true })
+                                                    @Html.DropDownListFor(m => m.FUNI_IN_RESPONSAVEL, (SelectList)ViewBag.Aviso, new { @class = "form-control", autofocus = true, data_toggle = "popover", data_content = "Inform se envia mensagem ao responsável pelo processo a cada troca de etapa", data_trigger="hover", data_placement="top" })
                                                     @Html.ValidationMessageFor(m => m.FUNI_IN_RESPONSAVEL, "", new { @style = "color:red" })
                                                 </div>                                                
                                             </div>
                                             <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
                                                 <div class="col-lg-12 col-md-12 col-xs-12">
                                                     Descrição
-                                                    @Html.TextAreaFor(m => m.FUNI_DS_DESCRICAO, new { @class = "form-control", style = "width: 100%; height: 100px;", autofocus = true })
+                                                    @Html.TextAreaFor(m => m.FUNI_DS_DESCRICAO, new { @class = "form-control", style = "width: 100%; height: 100px; overflow:auto;", autofocus = true })
                                                     @Html.ValidationMessageFor(m => m.FUNI_DS_DESCRICAO, "", new { @style = "color:red" })
                                                 </div>
                                             </div>
                                             if (Model.FUNI_IN_FIXO == 0)
                                             {
                                                 <div class="form-group">
-                                                    @Html.ButtonActionSubmit(text: "Confirma edição de Funil de Processo", htmlAttributes: new { id = "basictoast", @class = "btn-loading show-spinner" })
+                                                    @Html.ButtonActionSubmit(text: "Confirma edição de Funil de Processo", htmlAttributes: new { id = "basictoast", @class = "show-spinner" })
                                                 </div>
                                             }
                                         }
@@ -117,33 +150,32 @@
                                                     @Html.HiddenFor(m => m.FUNI_IN_FIXO)
                                                     @Html.HiddenFor(m => m.FUNI_IN_TIPO)
                                                     @Html.HiddenFor(m => m.FUNI_IN_CLIENTE)
-                                                    @Html.HiddenFor(m => m.FUNI_IN_SISTEMA)
                                                     Nome*
-                                                    @Html.TextBoxFor(m => m.FUNI_NM_NOME, new { @class = "form-control", autofocus = true })
+                                                    @Html.TextBoxFor(m => m.FUNI_NM_NOME, new { @class = "form-control", autofocus = true, data_toggle = "popover", data_content = "Informe o nome associado ao funil", data_trigger="hover", data_placement="top" })
                                                     @Html.ValidationMessageFor(m => m.FUNI_NM_NOME, "", new { @style = "color:red" })
                                                 </div>
                                                 <div class="col-lg-2 col-md-2 col-xs-12">
                                                     Sigla*
-                                                    @Html.TextBoxFor(m => m.FUNI_SG_SIGLA, new { @class = "form-control", autofocus = true })
+                                                    @Html.TextBoxFor(m => m.FUNI_SG_SIGLA, new { @class = "form-control", autofocus = true, data_toggle = "popover", data_content = "Informe a sigla associada ao lead", data_trigger="hover", data_placement="top" })
                                                     @Html.ValidationMessageFor(m => m.FUNI_SG_SIGLA, "", new { @style = "color:red" })
                                                 </div>
                                                 <div class="col-lg-2 col-md-2 col-xs-12">
                                                     Notificação para Responsável?
-                                                    @Html.DropDownListFor(m => m.FUNI_IN_RESPONSAVEL, (SelectList)ViewBag.Aviso, new { @class = "form-control", autofocus = true })
+                                                    @Html.DropDownListFor(m => m.FUNI_IN_RESPONSAVEL, (SelectList)ViewBag.Aviso, new { @class = "form-control", autofocus = true, data_toggle = "popover", data_content = "Inform se envia mensagem ao responsável pelo processo a cada troca de etapa", data_trigger="hover", data_placement="top" })
                                                     @Html.ValidationMessageFor(m => m.FUNI_IN_RESPONSAVEL, "", new { @style = "color:red" })
                                                 </div>                                                
                                             </div>
                                             <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
                                                 <div class="col-lg-12 col-md-12 col-xs-12">
                                                     Descrição
-                                                    @Html.TextAreaFor(m => m.FUNI_DS_DESCRICAO, new { @class = "form-control", style = "width: 100%; height: 100px;", autofocus = true })
+                                                    @Html.TextAreaFor(m => m.FUNI_DS_DESCRICAO, new { @class = "form-control", style = "width: 100%; height: 100px; overflow:auto;", autofocus = true })
                                                     @Html.ValidationMessageFor(m => m.FUNI_DS_DESCRICAO, "", new { @style = "color:red" })
                                                 </div>
                                             </div>
                                             if (Model.FUNI_IN_FIXO == 0)
                                             {
                                                 <div class="form-group">
-                                                    @Html.ButtonActionSubmit(text: "Confirma edição de Funil de Processo", htmlAttributes: new { id = "basictoast", @class = "btn-loading show-spinner" })
+                                                    @Html.ButtonActionSubmit(text: "Confirma edição de Funil de Processo", htmlAttributes: new { id = "basictoast", @class = "show-spinner" })
                                                 </div>
                                             }
                                         }
@@ -181,47 +213,52 @@
                                                                 {
                                                                     <tr>
                                                                         <td style="width: auto; color: green; font-weight: bold">@cond.FUET_IN_ORDEM</td>
-                                                                        <td style="width: auto"><a href="@Url.Action("EditarEtapa", "Funil", new { id = cond.FUET_CD_ID })" />@cond.FUET_NM_NOME</td>
+                                                                        <td style="width: auto"><a href="@Url.Action("EditarEtapa", "Funil", new { id = cond.FUET_CD_ID })" class="show-spinner" />@cond.FUET_NM_NOME</td>
                                                                         <td style="width: auto">@cond.FUET_SG_SIGLA</td>
                                                                         <td style="width: auto">@cond.FUET_DS_DESCRICAO</td>
-                                                                        @if (cond.FUET_IN_ENCERRA ==  1)
-                                                                        {
-                                                                            <span class="status-badge status-active">Sim</span>
-                                                                        }
-                                                                        else
-                                                                        {
-                                                                            <span class="status-badge status-pending">Não</span>
-                                                                        }
-
-                                                                        @if (cond.FUET_IN_EMAIL ==  1)
-                                                                        {
-                                                                            <span class="status-badge status-active">Sim</span>
-                                                                        }
-                                                                        else
-                                                                        {
-                                                                            <span class="status-badge status-pending">Não</span>
-                                                                        }
-
-                                                                        @if (cond.FUET_IN_SMS ==  1)
-                                                                        {
-                                                                            <span class="status-badge status-active">Sim</span>
-                                                                        }
-                                                                        else
-                                                                        {
-                                                                            <span class="status-badge status-pending">Não</span>
-                                                                        }
-
+                                                                        <td style="width: auto">
+                                                                            @if (cond.FUET_IN_ENCERRA == 1)
+                                                                            {
+                                                                                <span class="status-badge status-active">Sim</span>
+                                                                            }
+                                                                            else 
+                                                                            {
+                                                                                <span class="status-badge status-pending">Não</span>
+                                                                            }
+                                                                        </td>
+                                                                        <td style="width: auto">
+                                                                            @if (cond.FUET_IN_EMAIL == 1)
+                                                                            {
+                                                                                <span class="status-badge status-active">Sim</span>
+                                                                            }
+                                                                            else 
+                                                                            {
+                                                                                <span class="status-badge status-pending">Não</span>
+                                                                            }
+                                                                        </td>
+                                                                        <td style="width: auto">
+                                                                            @if (cond.FUET_IN_SMS == 1)
+                                                                            {
+                                                                                <span class="status-badge status-active">Sim</span>
+                                                                            }
+                                                                            else 
+                                                                            {
+                                                                                <span class="status-badge status-pending">Não</span>
+                                                                            }
+                                                                        </td>
                                                                         <td class="td-one-action">
                                                                             @if (Model.FUNI_IN_FIXO == 0)
                                                                             {
-                                                                                @Html.TableLinkDetails(cond.FUET_CD_ID, "EditarEtapa", "fa-edit btn-loading show-spinner", "Editar")
+                                                                                @Html.TableLinkDetails(cond.FUET_CD_ID, "EditarEtapa", "fa-edit show-spinner", "Editar")
                                                                                 if (cond.FUET_IN_ATIVO == 1)
                                                                                 {
-                                                                                    @Html.TableLinkDetails(cond.FUET_CD_ID, "ExcluirEtapa", "fa-trash-o btn-loading show-spinner", "Desativar")
-                                                                                }
-                                                                                else
-                                                                                {
-                                                                                    @Html.TableLinkDetails(cond.FUET_CD_ID, "ReativarEtapa", "fa-refresh btn-loading show-spinner", "Reativar")
+                                                                                    if (cond.FUNIL.CRM.Count() == 0)
+                                                                                    {
+                                                                                        <span style="color: #337ab7; cursor:pointer;" 
+                                                                                                class="tbl-link fa-lg fa fa-trash-o" 
+                                                                                                onclick="ChamarModalExcluir('@cond.FUNI_CD_ID')" 
+                                                                                                title="Excluir"></span>
+                                                                                    }
                                                                                 }
                                                                             }
                                                                         </td>
@@ -236,7 +273,7 @@
                                         @if (ViewBag.Etapa == 1 & Model.FUNI_IN_FIXO == 0)
                                         {
                                             <div class="form-group">
-                                                @Html.ButtonLinkIndex(text: "Incluir Nova Etapa do Funil", action: "IncluirEtapa", controller: "Funil", htmlAttributes: new { @class = "btn-loading show-spinner" })
+                                                @Html.ButtonLinkIndex(text: "Incluir Nova Etapa do Funil", action: "IncluirEtapa", controller: "Funil")
                                             </div>
                                         }
                                     </div>
@@ -271,47 +308,52 @@
                                                                 {
                                                                     <tr>
                                                                         <td style="width: auto; color: green; font-weight: bold">@cond.FUET_IN_ORDEM</td>
-                                                                        <td style="width: auto"><a href="@Url.Action("EditarEtapa", "Funil", new { id = cond.FUET_CD_ID })" />@cond.FUET_NM_NOME</td>
+                                                                        <td style="width: auto"><a href="@Url.Action("EditarEtapa", "Funil", new { id = cond.FUET_CD_ID })" class="show-spinner" />@cond.FUET_NM_NOME</td>
                                                                         <td style="width: auto">@cond.FUET_SG_SIGLA</td>
                                                                         <td style="width: auto">@cond.FUET_DS_DESCRICAO</td>
-                                                                        @if (cond.FUET_IN_ENCERRA ==  1)
-                                                                        {
-                                                                            <span class="status-badge status-active">Sim</span>
-                                                                        }
-                                                                        else
-                                                                        {
-                                                                            <span class="status-badge status-pending">Não</span>
-                                                                        }
-
-                                                                        @if (cond.FUET_IN_EMAIL ==  1)
-                                                                        {
-                                                                            <span class="status-badge status-active">Sim</span>
-                                                                        }
-                                                                        else
-                                                                        {
-                                                                            <span class="status-badge status-pending">Não</span>
-                                                                        }
-
-                                                                        @if (cond.FUET_IN_SMS ==  1)
-                                                                        {
-                                                                            <span class="status-badge status-active">Sim</span>
-                                                                        }
-                                                                        else
-                                                                        {
-                                                                            <span class="status-badge status-pending">Não</span>
-                                                                        }
-
+                                                                        <td style="width: auto">
+                                                                            @if (cond.FUET_IN_ENCERRA == 1)
+                                                                            {
+                                                                                <span class="status-badge status-active">Sim</span>
+                                                                            }
+                                                                            else 
+                                                                            {
+                                                                                <span class="status-badge status-pending">Não</span>
+                                                                            }
+                                                                        </td>
+                                                                        <td style="width: auto">
+                                                                            @if (cond.FUET_IN_EMAIL == 1)
+                                                                            {
+                                                                                <span class="status-badge status-active">Sim</span>
+                                                                            }
+                                                                            else 
+                                                                            {
+                                                                                <span class="status-badge status-pending">Não</span>
+                                                                            }
+                                                                        </td>
+                                                                        <td style="width: auto">
+                                                                            @if (cond.FUET_IN_SMS == 1)
+                                                                            {
+                                                                                <span class="status-badge status-active">Sim</span>
+                                                                            }
+                                                                            else 
+                                                                            {
+                                                                                <span class="status-badge status-pending">Não</span>
+                                                                            }
+                                                                        </td>
                                                                         <td class="td-one-action">
                                                                             @if (Model.FUNI_IN_FIXO == 0)
                                                                             {
-                                                                                @Html.TableLinkDetails(cond.FUET_CD_ID, "EditarEtapa", "fa-edit btn-loading show-spinner", "Editar")
+                                                                                @Html.TableLinkDetails(cond.FUET_CD_ID, "EditarEtapa", "fa-edit show-spinner", "Editar")
                                                                                 if (cond.FUET_IN_ATIVO == 1)
                                                                                 {
-                                                                                    @Html.TableLinkDetails(cond.FUET_CD_ID, "ExcluirEtapa", "fa-trash-o btn-loading show-spinner", "Desativar")
-                                                                                }
-                                                                                else
-                                                                                {
-                                                                                    @Html.TableLinkDetails(cond.FUET_CD_ID, "ReativarEtapa", "fa-refresh btn-loading show-spinner", "Reativar")
+                                                                                    if (cond.FUNIL.CRM.Count() == 0)
+                                                                                    {
+                                                                                        <span style="color: #337ab7; cursor:pointer;" 
+                                                                                                class="tbl-link fa-lg fa fa-trash-o" 
+                                                                                                onclick="ChamarModalExcluir('@cond.FUNI_CD_ID')" 
+                                                                                                title="Excluir"></span>
+                                                                                    }
                                                                                 }
                                                                             }
                                                                         </td>
@@ -326,7 +368,7 @@
                                         @if (ViewBag.Etapa == 1 & Model.FUNI_IN_FIXO == 0)
                                         {
                                             <div class="form-group">
-                                                @Html.ButtonLinkIndex(text: "Incluir Nova Etapa do Funil", action: "IncluirEtapa", controller: "Funil", htmlAttributes: new { @class = "btn-loading show-spinner" })
+                                                @Html.ButtonLinkIndex(text: "Incluir Nova Etapa do Funil", action: "IncluirEtapa", controller: "Funil")
                                             </div>
                                         }
                                     </div>
@@ -342,6 +384,16 @@
 </div>
 
 @section Styles {
+    <link href="~/Content/themes/base/all.css" rel="stylesheet" />  
+    @Styles.Render("~/Content/plugins/dataTables/dataTablesStyles")
+    @Styles.Render("~/plugins/jasnyBootstrapStyles")
+
+    <link href="~/Content/themes/base/jquery-ui.min.css" rel="stylesheet" />
+    <link href="~/Content/themes/base/all.css" rel="stylesheet" />
+    @Styles.Render("~/Content/plugins/dataTables/dataTablesStyles")
+    @Styles.Render("~/plugins/jasnyBootstrapStyles")
+    @Styles.Render("~/plugins/toastrStyles")
+
     <style>
         /* 1. Aumenta a largura e garante o espaço interno */
         #toast-container > .toast {
@@ -452,24 +504,17 @@
     </style>
 }
 @section Scripts {
-    @Scripts.Render("~/plugins/dataTables")
-    @Scripts.Render("~/bundles/inputmask")
-    @Scripts.Render("~/plugins/jasnyBootstrap")
-    <script src="~/Scripts/plugins/select2/select2.full.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.maskedinput/1.4.1/jquery.maskedinput.js"></script>
-
     @Scripts.Render("~/plugins/toastr")
     <script src="~/Scripts/jquery-ui-1.12.1.min.js"></script>
     @Scripts.Render("~/plugins/dataTables")
     @Scripts.Render("~/bundles/inputmask")
     @Scripts.Render("~/plugins/jasnyBootstrap")
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.maskedinput/1.4.1/jquery.maskedinput.js"></script>
-    <script src="~/Scripts/uploadAnexo.js"></script>
    
     <script type="text/javascript" src="~/Scripts/moment.min.js"></script>
     <script type="text/javascript" src="~/Scripts/bootstrap.min.js"></script>
    
-        <script>
+    <script>
         function Fade() {
             $('.dotContainer').fadeIn("fast");
             $('#login').css("filter", "blur(4px)");
@@ -548,6 +593,108 @@
             });
         });
     </script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            // Configurações globais do Toastr
+            toastr.options = {
+                "closeButton": true,
+                //"debug": false,
+                "progressBar": true,
+                "preventDuplicates": false,
+                "positionClass": "toast-top-right",
+                "onclick": null,
+                "showDuration": "400",
+                "hideDuration": "1000",
+                "timeOut": "15000",
+                "extendedTimeOut": "5000",
+                "showEasing": "swing",
+                "hideEasing": "linear",
+                "showMethod": "fadeIn",
+                "hideMethod": "fadeOut"
+            //    "iconClass": "customer-toast-info", // Se quiser remover o ícone padrão totalmente
+            //    "titleClass": "toast-title",
+            //    "messageClass": "toast-message"
+            };
+
+            // Verifica se existe mensagem de sucesso no TempData (vinda do Redirect)
+            var msgSucesso = '@TempData["MensagemAcerto"]';
+            if (msgSucesso != '') {
+                toastr.success(msgSucesso, 'Sucesso!');
+            }
+
+            // Verifica se existe mensagem de erro
+            var msgErro = '@TempData["MensagemErro"]';
+            if (msgErro != '') {
+                toastr.error(msgErro, 'Erro!');
+            }
+        });
+    </script>
+
+    <script type="text/javascript">
+        var locacaoIdParaExcluir = null;
+
+        function ChamarModalExcluir(id) {
+            locacaoIdParaExcluir = id;
+            // Reseta o campo de texto e o aviso ao abrir a modal
+            $('#txtMotivoExclusao').val('');
+            $('#validaMotivoExclusao').hide();
+            $('#modalConfirmacaoExclusao').modal('show');
+        }
+
+        $(document).ready(function () {
+            $('#btnConfirmarExclusaoSubmit').click(function () {
+                if (locacaoIdParaExcluir != null) {
+                    var motivoTxt = $('#txtMotivoExclusao').val().trim();
+
+                    // Validação de campo obrigatório
+                    if (motivoTxt === "") {
+                        $('#validaMotivoExclusao').show();
+                        $('#txtMotivoExclusao').focus();
+                        return false;
+                    }
+
+                    var $btn = $(this);
+            
+                    // Feedback visual de carregamento
+                    $btn.prop('disabled', true).addClass('disabled');
+                    $btn.html('<i class="fa fa-spinner fa-spin"></i> Excluindo...');
+                    $('#loadingIndicator').show();
+
+                    // Criamos um formulário temporário em memória para enviar via POST seguro
+                    var form = document.createElement("form");
+                    form.method = "POST";
+                    form.action = '/Funil/ExcluirEtapa';
+
+                    // Input do ID
+                    var inputId = document.createElement("input");
+                    inputId.type = "hidden";
+                    inputId.name = "id";
+                    inputId.value = locacaoIdParaExcluir;
+                    form.appendChild(inputId);
+
+                    // Input do Motivo (Varchar 500)
+                    var inputMotivo = document.createElement("input");
+                    inputMotivo.type = "hidden";
+                    inputMotivo.name = "motivo";
+                    inputMotivo.value = motivoTxt;
+                    form.appendChild(inputMotivo);
+
+                    document.body.appendChild(form);
+                    form.submit();
+                }
+            });
+
+            // Limpeza de segurança ao fechar a modal
+            $('#modalConfirmacaoExclusao').on('hidden.bs.modal', function () {
+                locacaoIdParaExcluir = null;
+                $('#txtMotivoExclusao').val('');
+                $('#validaMotivoExclusao').hide();
+            });
+        });
+    </script>
+
+
     <script type="text/javascript">
         $(document).ready(function () {
 
@@ -561,7 +708,7 @@
 
             $('#basictoast').click(function () {
                 // Display a success toast, with a title
-                toastr.success('Alteração am andamento!')
+                toastr.success('Edição am andamento!')
             });
             $('#showtoast').click(function () {
                 var shortCutFunction = $("#toastTypeGroup input:radio:checked").val();
@@ -649,44 +796,6 @@
 
         });
     </script>
-
-    <script type="text/javascript">
-        $(document).ready(function () {
-            // Configurações globais do Toastr
-            toastr.options = {
-                "closeButton": true,
-                //"debug": false,
-                "progressBar": true,
-                "preventDuplicates": false,
-                "positionClass": "toast-top-right",
-                "onclick": null,
-                "showDuration": "400",
-                "hideDuration": "1000",
-                "timeOut": "15000",
-                "extendedTimeOut": "5000",
-                "showEasing": "swing",
-                "hideEasing": "linear",
-                "showMethod": "fadeIn",
-                "hideMethod": "fadeOut"
-            //    "iconClass": "customer-toast-info", // Se quiser remover o ícone padrão totalmente
-            //    "titleClass": "toast-title",
-            //    "messageClass": "toast-message"
-            };
-
-            // Verifica se existe mensagem de sucesso no TempData (vinda do Redirect)
-            var msgSucesso = '@TempData["MensagemAcerto"]';
-            if (msgSucesso != '') {
-                toastr.success(msgSucesso, 'Sucesso!');
-            }
-
-            // Verifica se existe mensagem de erro
-            var msgErro = '@TempData["MensagemErro"]';
-            if (msgErro != '') {
-                toastr.error(msgErro, 'Erro!');
-            }
-        });
-    </script>
-
 
     @if (ViewBag.Message != null)
     {

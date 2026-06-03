@@ -241,9 +241,12 @@
                                             <div class="col-lg-8 col-md-8 col-xs-12">
                                                 <div class="row" style="width: 100%;">
                                                     <h4 style="margin-left: -15px; color:green; background-color: beige; font-weight:bold">Criação</h4>
-                                                    <div class="form-group" style=" margin-left: -15px; margin-right: 5px;">
-                                                        @Html.ButtonActionSubmit(text: "Confirma alteração de lead", htmlAttributes: new { id = "basictoast", @class = "btn-loading1 show-spinner" })
-                                                    </div>
+                                                    @if (Model.LEAD_IN_STATUS == 0 || Model.LEAD_IN_STATUS == 1)
+                                                    {
+                                                        <div class="form-group" style=" margin-left: -15px; margin-right: 5px;">
+                                                            @Html.ButtonActionSubmit(text: "Confirma alteração de lead", htmlAttributes: new { id = "basictoast", @class = "btn-loading1 show-spinner" })
+                                                        </div>
+                                                    }
                                                     <div class="col-lg-12 col-md-12 col-xs-12">
                                                         <div class="form-group" style=" margin-left: -45px; margin-right: -15px;"> 
                                                             <div class="col-lg-2 col-md-2 col-xs-12">
@@ -280,7 +283,7 @@
                                                                         @Html.ValidationMessageFor(m => m.LEAD_IN_STATUS, "", new { @style = "color:red" })
                                                                     </div>
                                                                 }
-                                                                else if (Model.LEAD_IN_STATUS == 1)
+                                                                @if (Model.LEAD_IN_STATUS == 1)
                                                                 {
                                                                     <div class="col-lg-3 col-md-3 col-xs-12">
                                                                         Status*
@@ -475,9 +478,12 @@
                                             <div class="col-lg-8 col-md-8 col-xs-12">
                                                 <div class="row" style="width: 100%;">
                                                     <h4 style="margin-left: -15px; color:green; background-color: beige; font-weight:bold">Criação</h4>
-                                                    <div class="form-group" style=" margin-left: -15px; margin-right: 5px;">
-                                                        @Html.ButtonActionSubmit(text: "Confirma alteração de lead", htmlAttributes: new { id = "basictoast", @class = "btn-loading1 show-spinner" })
-                                                    </div>
+                                                    @if (Model.LEAD_IN_STATUS == 0 || Model.LEAD_IN_STATUS == 1)
+                                                    {
+                                                        <div class="form-group" style=" margin-left: -15px; margin-right: 5px;">
+                                                            @Html.ButtonActionSubmit(text: "Confirma alteração de lead", htmlAttributes: new { id = "basictoast", @class = "btn-loading1 show-spinner" })
+                                                        </div>
+                                                    }
                                                     <div class="col-lg-12 col-md-12 col-xs-12">
                                                         <div class="form-group" style=" margin-left: -45px; margin-right: -15px;"> 
                                                             <div class="col-lg-2 col-md-2 col-xs-12">
@@ -514,7 +520,7 @@
                                                                         @Html.ValidationMessageFor(m => m.LEAD_IN_STATUS, "", new { @style = "color:red" })
                                                                     </div>
                                                                 }
-                                                                else if (Model.LEAD_IN_STATUS == 1)
+                                                                @if (Model.LEAD_IN_STATUS == 1)
                                                                 {
                                                                     <div class="col-lg-3 col-md-3 col-xs-12">
                                                                         Status*
@@ -845,12 +851,15 @@
 
                                                         }
 
-                                                        <div class="form-group" style="margin-top: 20px;">
-                                                            <div class="col-lg-12">
-                                                                <input type="file" name="file" id="file" class="btn btn-sm btn-warning" style="float: left; margin-right: 5px;" />
-                                                                <input type="submit" value="Incluir Anexo" class="btn btn-sm btn-success" />
+                                                        if (Model.LEAD_IN_STATUS == 0 || Model.LEAD_IN_STATUS == 1)
+                                                        {
+                                                            <div class="form-group" style="margin-top: 20px;">
+                                                                <div class="col-lg-12">
+                                                                    <input type="file" name="file" id="file" class="btn btn-sm btn-warning" style="float: left; margin-right: 5px;" />
+                                                                    <input type="submit" value="Incluir Anexo" class="btn btn-sm btn-success" />
+                                                                </div>
                                                             </div>
-                                                        </div>
+                                                        }
                                                     }
                                                 </div>
                                             </div>
@@ -1002,12 +1011,15 @@
 
                                                         }
 
-                                                        <div class="form-group" style="margin-top: 20px;">
-                                                            <div class="col-lg-12">
-                                                                <input type="file" name="file" id="file" class="btn btn-sm btn-warning" style="float: left; margin-right: 5px;" />
-                                                                <input type="submit" value="Incluir Anexo" class="btn btn-sm btn-success" />
+                                                        if (Model.LEAD_IN_STATUS == 0 || Model.LEAD_IN_STATUS == 1)
+                                                        {
+                                                            <div class="form-group" style="margin-top: 20px;">
+                                                                <div class="col-lg-12">
+                                                                    <input type="file" name="file" id="file" class="btn btn-sm btn-warning" style="float: left; margin-right: 5px;" />
+                                                                    <input type="submit" value="Incluir Anexo" class="btn btn-sm btn-success" />
+                                                                </div>
                                                             </div>
-                                                        </div>
+                                                        }
                                                     }
                                                 </div>
                                             </div>
@@ -1130,7 +1142,7 @@
                                 </div>
                             }
 
-                            @*Notas Fiscais*@
+                            @*Processos CRM*@
                             @if ((Int32)Session["NivelLead"] == 4)
                             {
                                 <div id="tab-4" class="tab-pane active">
@@ -1955,7 +1967,6 @@
             });
         });
     </script>
-
     <script>
         $(document).ready(function () {
             $('.toggle-option').click(function () {
@@ -2129,7 +2140,7 @@
             $icon.removeClass('fa-check-circle fa-exclamation-triangle text-primary text-warning');
             $btnSubmit.removeClass('btn-primary btn-warning');
 
-            if (status === "1") { 
+            if (status === "2") { 
                 // Configuração visual para CONVERTIDO (Azul)
                 $('#lblTituloModalTransicao').text('Confirmação de Conversão');
                 $('#lblSubTituloTransicao').text('Tem certeza que deseja CONVERTER esse lead?');
@@ -2139,7 +2150,7 @@
                 $icon.addClass('fa-check-circle text-primary');
                 $btnSubmit.addClass('btn-primary').html('Confirmar Conversão');
             } 
-            else if (status === "2") { 
+            else if (status === "3") { 
                 // Configuração visual para PERDIDO (Amarelo / Laranja)
                 $('#lblTituloModalTransicao').text('Confirmação de Lead Perdido');
                 $('#lblSubTituloTransicao').text('Deseja marcar este lead como PERDIDO?');
@@ -2162,7 +2173,7 @@
             $("#ddlStatusTransicao").change(function () {
                 var statusEscolhido = $(this).val();
 
-                if (statusEscolhido === "1" || statusEscolhido === "2") {
+                if (statusEscolhido === "2" || statusEscolhido === "3") {
                     AbrirModalTransicao(statusEscolhido);
                 } else {
                     valorAnteriorStatusTrans = statusEscolhido;

@@ -45,6 +45,7 @@ using System.Configuration;
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
 using System.Net.Http;
+using iText.IO.Font.Otf;
 
 namespace GEDSys_Presentation.Controllers
 {
@@ -446,7 +447,7 @@ namespace GEDSys_Presentation.Controllers
                 // Leads em Processo
                 if (Session["LeadsProcesso"] == null)
                 {
-                    List<LEAD> proc = leads.Where(p => p.LEAD_IN_STATUS == 1).ToList();
+                    List<LEAD> proc = leads.Where(p => p.LEAD_IN_STATUS == 1).OrderByDescending(p => p.LEAD_DT_ENTRADA).ToList();
                     ViewBag.LeadsProcesso= proc;
                     Session["LeadsProcesso"] = proc;
                 }
@@ -458,7 +459,7 @@ namespace GEDSys_Presentation.Controllers
                 // CRM em Processo
                 if (Session["CRMsProcesso"] == null)
                 {
-                    List<CRM> procs = crms.Where(p => p.CRM1_IN_ATIVO == 1).ToList();
+                    List<CRM> procs = crms.Where(p => p.CRM1_IN_ATIVO == 1).OrderByDescending(p => p.CRM1_DT_CRIACAO).ToList();
                     ViewBag.CRMsProcesso = procs;
                     Session["CRMsProcesso"] = procs;
                 }
@@ -469,6 +470,7 @@ namespace GEDSys_Presentation.Controllers
 
                 // Acerta estado    
                 Session["LeadAlterada"] = 1;
+                Session["NivelLead"] = 1;
 
                 // Carrega view
                 objeto = new LEAD();
@@ -1872,6 +1874,7 @@ namespace GEDSys_Presentation.Controllers
                 // Retorno
                 Session["LeadAlterada"] = 1;
                 Session["ListaLead"] = null;
+                Session["Leads"] = null;
                 return RedirectToAction("MontarTelaLead");
             }
             catch (Exception ex)
@@ -2058,6 +2061,16 @@ namespace GEDSys_Presentation.Controllers
                     Session["ListaLead"] = null;
                     Session["IdLead"] = item.LEAD_CD_ID;
                     Session["LeadAlterada"] = 1;
+                    Session["Leads"] = null;
+
+                    Session["ListaLeadData"] = null;
+                    Session["ListaLeadMes"] = null;
+                    Session["ListaLeadStatus"] = null;
+                    Session["ListaCRMData"] = null;
+                    Session["ListaCRMMes"] = null;
+                    Session["ListaCRMStatus"] = null;
+                    Session["LeadsProcesso"] = null;
+                    Session["CRMsProcesso"] = null;
 
                     // Mensagem do CRUD
                     Session["MsgCRUD"] = "O lead de " + item.LEAD_NM_NOME.ToUpper() + " foi incluído com sucesso. Foi criado um processo associado ao lead";
@@ -2117,8 +2130,8 @@ namespace GEDSys_Presentation.Controllers
                 ViewBag.Status0 = new SelectList(status, "Value", "Text");
                 List<SelectListItem> status1 = new List<SelectListItem>();
                 status1.Add(new SelectListItem() { Text = "Convertido", Value = "2" });
-                status1.Add(new SelectListItem() { Text = "Pedido", Value = "3" });
-                ViewBag.Status1 = new SelectList(status, "Value", "Text");
+                status1.Add(new SelectListItem() { Text = "Perdido", Value = "3" });
+                ViewBag.Status1 = new SelectList(status1, "Value", "Text");
 
                 // Mensagens
                 if (Session["MensLead"] != null)
@@ -2179,8 +2192,8 @@ namespace GEDSys_Presentation.Controllers
             ViewBag.Status0 = new SelectList(status, "Value", "Text");
             List<SelectListItem> status1 = new List<SelectListItem>();
             status1.Add(new SelectListItem() { Text = "Convertido", Value = "2" });
-            status1.Add(new SelectListItem() { Text = "Pedido", Value = "3" });
-            ViewBag.Status1 = new SelectList(status, "Value", "Text");
+            status1.Add(new SelectListItem() { Text = "Perdido", Value = "3" });
+            ViewBag.Status1 = new SelectList(status1, "Value", "Text");
             if (ModelState.IsValid)
             {
                 try
@@ -2255,6 +2268,7 @@ namespace GEDSys_Presentation.Controllers
                         lead.LEAD_DS_RESUMO_MOVIMENTO = dataHoje + "\r\n" + novo;
                     }
 
+
                     // Grava movimentação
                     Int32 voltaW = baseApp.ValidateEdit(lead, lead, usuario);
 
@@ -2262,6 +2276,7 @@ namespace GEDSys_Presentation.Controllers
                     listaMaster = new List<LEAD>();
                     Session["ListaLead"] = null;
                     Session["LeadAlterada"] = 1;
+                    Session["Leads"] = null;
 
                     // Mensagem do CRUD
                     Session["MsgCRUD"] = "O lead " + item.LEAD_NM_NOME.ToUpper() + " foi alterado com sucesso";
@@ -2421,6 +2436,38 @@ namespace GEDSys_Presentation.Controllers
                 };
                 Int32 volta1 = logApp.ValidateCreate(log);
 
+                // Atualiza resumo
+                LEAD lead = baseApp.GetItemById(item.LEAD_CD_ID);
+                String velho = lead.LEAD_DS_RESUMO_MOVIMENTO;
+                String novo = "Inclusão de Anexo ao Lead - " + lead.LEAD_NM_NOME.ToUpper() + "\r\nArquivo: " + fileName.Trim();
+                String dataHoje = DateTime.Today.Date.ToLongDateString();
+                dataHoje = "*** Movimentação em [" + dataHoje + "] ***";
+                if (lead.LEAD_DS_RESUMO_MOVIMENTO != null)
+                {
+                    String anot = dataHoje + "\r\n" + novo;
+                    if (velho == null & novo != String.Empty)
+                    {
+                        lead.LEAD_DS_RESUMO_MOVIMENTO = dataHoje + "\r\n" + novo;
+                    }
+                    if (velho != null & novo != String.Empty)
+                    {
+                        String tripa = velho.Substring(velho.Length - 4, 4);
+                        if (tripa == "\r\n")
+                        {
+                            velho = velho.Substring(0, velho.Length - 4);
+                        }
+                        lead.LEAD_DS_RESUMO_MOVIMENTO = velho + "\r\n\r\n" + dataHoje + "\r\n" + novo;
+                    }
+                }
+                else
+                {
+                    velho = lead.LEAD_DS_RESUMO_MOVIMENTO;
+                    lead.LEAD_DS_RESUMO_MOVIMENTO = dataHoje + "\r\n" + novo;
+                }
+
+                // Grava movimentação
+                Int32 voltaW = baseApp.ValidateEdit(lead, lead, usu);
+
                 Session["NivelLead"] = 2;
                 Session["LeadAlterada"] = 1;
                 return RedirectToAction("VoltarAnexoLead");
@@ -2542,6 +2589,38 @@ namespace GEDSys_Presentation.Controllers
                     LOG_IN_SISTEMA = 6
                 };
                 Int32 volta1 = logApp.ValidateCreate(log);
+
+                // Atualiza resumo
+                LEAD lead = baseApp.GetItemById(item.LEAD_CD_ID);
+                String velho = lead.LEAD_DS_RESUMO_MOVIMENTO;
+                String novo = "Exclusão de Anexo ao Lead - " + lead.LEAD_NM_NOME.ToUpper() + "\r\nArquivo: " + item.LEAX_NM_TITULO.Trim();
+                String dataHoje = DateTime.Today.Date.ToLongDateString();
+                dataHoje = "*** Movimentação em [" + dataHoje + "] ***";
+                if (lead.LEAD_DS_RESUMO_MOVIMENTO != null)
+                {
+                    String anot = dataHoje + "\r\n" + novo;
+                    if (velho == null & novo != String.Empty)
+                    {
+                        lead.LEAD_DS_RESUMO_MOVIMENTO = dataHoje + "\r\n" + novo;
+                    }
+                    if (velho != null & novo != String.Empty)
+                    {
+                        String tripa = velho.Substring(velho.Length - 4, 4);
+                        if (tripa == "\r\n")
+                        {
+                            velho = velho.Substring(0, velho.Length - 4);
+                        }
+                        lead.LEAD_DS_RESUMO_MOVIMENTO = velho + "\r\n\r\n" + dataHoje + "\r\n" + novo;
+                    }
+                }
+                else
+                {
+                    velho = lead.LEAD_DS_RESUMO_MOVIMENTO;
+                    lead.LEAD_DS_RESUMO_MOVIMENTO = dataHoje + "\r\n" + novo;
+                }
+
+                // Grava movimentação
+                Int32 voltaW = baseApp.ValidateEdit(lead, lead, usuarioLogado);
 
                 Session["NivelLead"] = 2;
                 Session["LeadAlterada"] = 1;
@@ -5454,6 +5533,7 @@ namespace GEDSys_Presentation.Controllers
                         velho = lead.LEAD_DS_RESUMO_MOVIMENTO;
                         lead.LEAD_DS_RESUMO_MOVIMENTO = dataHoje + "\r\n" + novo;
                     }
+                    baseApp.ValidateEdit(lead, lead, usuarioLogado);
 
                     Session["MsgCRUD"] = "O lead de " + lead.LEAD_NM_NOME.ToUpper() + " foi qualificado com sucesso!";
                     Session["MensLead"] = 61;
@@ -5461,6 +5541,8 @@ namespace GEDSys_Presentation.Controllers
 
                 // Retorna para a grid geral de Leads atualizada
                 Session["ListaLead"] = null;
+                Session["Leads"] = null;
+                Session["LeadAlterada"] = 1;
                 return RedirectToAction("VoltarAnexoLead");
             }
             catch (Exception ex)
@@ -5501,7 +5583,7 @@ namespace GEDSys_Presentation.Controllers
                     lead.LEAD_DT_MOVIMENTO = DateTime.Now;
                     lead.LEAD_DS_MOTIVO_EXCLUSAO = justificativa;
 
-                    string tipoMovimentacao = (novoStatus == 1) ? "CONVERSÃO DE LEAD" : "LEAD MARCADO COMO PERDIDO";
+                    string tipoMovimentacao = (novoStatus == 2) ? "CONVERSÃO DE LEAD" : "LEAD MARCADO COMO PERDIDO";
 
                     // Monta o novo bloco de histórico para a transação
                     string dataHoje = DateTime.Today.Date.ToLongDateString();
@@ -5528,6 +5610,8 @@ namespace GEDSys_Presentation.Controllers
                     Session["MensLead"] = 61;
                 }
 
+                Session["LeadAlterada"] = 1;
+                Session["Leads"] = null;
                 Session["ListaLead"] = null; // Reseta cache da lista para forçar re-load
                 return RedirectToAction("VoltarAnexoLead");
             }
@@ -5544,8 +5628,45 @@ namespace GEDSys_Presentation.Controllers
             }
         }
 
+        public Int32 AcertarTelefone()
+        {
+            USUARIO usuario = (USUARIO)Session["UserCredentials"];
+            List<LEAD> leads = CarregarLead();
+            String novo = String.Empty;
+            foreach (LEAD item in leads)
+            {
+                if (item.LEAD_NR_CELULAR != null)
+                {
+                    String tel = item.LEAD_NR_CELULAR.Trim();
+                    if (!tel.Contains("-"))
+                    {
+                        novo = tel.Substring(0, 8) + "-" + tel.Substring(9);
+                    }
+                    else
+                    {
+                        continue;
+                    }
+                    item.LEAD_NR_CELULAR = novo;
+                    Int32 volta = baseApp.ValidateEdit(item, item, usuario);
+                }
+            }
+            return 0;
+        }
 
-
+        public Int32 AcertarData()
+        {
+            USUARIO usuario = (USUARIO)Session["UserCredentials"];
+            List<LEAD> leads = CarregarLead();
+            foreach (LEAD item in leads)
+            {
+                if (item.LEAD_IN_STATUS == 1)
+                {
+                    item.LEAD_DT_MOVIMENTO = item.LEAD_DT_ENTRADA.Value.Date;
+                    Int32 volta = baseApp.ValidateEdit(item, item, usuario);
+                }
+            }
+            return 0;
+        }
 
 
     }

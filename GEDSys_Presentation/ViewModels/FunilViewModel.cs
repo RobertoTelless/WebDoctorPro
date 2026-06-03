@@ -19,6 +19,7 @@ namespace ERP_Condominios_Solution.ViewModels
         [Required(ErrorMessage = "Campo SIGLA obrigatorio")]
         [StringLength(10, MinimumLength = 1, ErrorMessage = "A SIGLA deve conter no minimo 1 caracteres e no máximo 10 caracteres.")]
         public string FUNI_SG_SIGLA { get; set; }
+        [Required(ErrorMessage = "Campo DESCRIÇÃO obrigatorio")]
         [StringLength(500, ErrorMessage = "A DESCRIÇÃO deve conter no máximo 500 caracteres.")]
         public string FUNI_DS_DESCRICAO { get; set; }
         public System.DateTime FUNI_DT_CADASTRO { get; set; }

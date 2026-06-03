@@ -12,31 +12,6 @@
 
 <div class="wrapper wrapper-content animated fadeInRight">
     <div id="top"></div>
-    @*<div class="modal inmodal fade" id="modalConfirmacaoExclusao" tabindex="-1" role="dialog" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header" style="position: relative; padding: 30px 15px;">
-                    <img src="@Url.Content("~/Images/Prontuario/prontuario_icon_3.png?v=1.1")" 
-                         style="position: absolute; left: 15px; top: 15px; width: 40px; height: auto;" 
-                         alt="Ícone" />
-
-                    <i class="fa fa-trash-o modal-icon text-danger" style="display: block;"></i>
-                    <h4 class="modal-title">Confirmação de Exclusão</h4>
-                    <small class="font-bold">WebDoctorPro - Gestão de Leads</small>
-                </div>
-        
-                <div class="modal-body text-center">
-                    <h3>Confirma a exclusão deste Lead?</h3>
-                    <p>Esta ação excluirá o lead selecionado.</p>
-                </div>
-        
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-white" data-dismiss="modal">Cancelar</button>
-                    <button type="button" class="btn btn-danger" id="btnConfirmarExclusaoSubmit">Confirmar Exclusão</button>
-                </div>
-            </div>
-        </div>
-    </div>*@
     <div class="modal inmodal fade" id="modalConfirmacaoExclusao" tabindex="-1" role="dialog" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
@@ -143,6 +118,7 @@
                                 @Html.ButtonLinkIndex(text: "Imprimir Lista", controller: "Administra", action: "GerarRelatorioLead")
                                 @*@Html.ButtonLinkIndex(text: "Gerar ID", controller: "Administra", action: "GerarID", htmlAttributes: new { @class = "btn-loading show-spinner" })*@
                                 @*@Html.ButtonLinkIndex(text: "Gerar Resumo", controller: "Administra", action: "GerarResumo", htmlAttributes: new { @class = "btn-loading show-spinner" })*@
+                                @*@Html.ButtonLinkIndex(text: "Acertar Data", controller: "Administra", action: "AcertarData", htmlAttributes: new { @class = "btn-loading show-spinner" })*@
                                 @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaAdministra", controller: "Administra", htmlAttributes: new { @class = "btn-loading show-spinner" })
                                 <span id="loadingIndicator" style="display: none; margin-left: 10px; color: #007bff;">
                                     <i class="fa fa-spinner fa-spin"></i> Processando...
@@ -209,7 +185,7 @@
                                                 }
                                                 else if (cond.LEAD_IN_STATUS == 3) 
                                                 {
-                                                    <span class="status-badge status-overdue">Perdido</span>
+                                                    <span class="status-badge status-cancel">Perdido</span>
                                                 }
                                                 else if (cond.LEAD_IN_STATUS == 4)
                                                 {
@@ -236,7 +212,7 @@
                                             }
                                             <td style="width: auto; cursor: pointer; text-decoration: underline;"><a href="@Url.Action("VerProcessoCRM", "Administra", new { id = cond.CRM1_CD_ID })" class="show-spinner" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Acessar a página do processo associado ao  lead"/>@cond.LEAD_GU_IDENTIFICADOR</td>
                                             <td class="td-one-action">
-                                                @if (cond.LEAD_IN_STATUS != 4)
+                                                @if (cond.LEAD_IN_STATUS == 1 || cond.LEAD_IN_STATUS == 0)
                                                 {
                                                     @Html.TableLinkDetails(cond.LEAD_CD_ID, "EditarLead", "fa-edit show-spinner", "Alterar Lead")
                                                 }
@@ -407,6 +383,7 @@
         /* OVERDUE (Gray) - Status 3 */
         .status-overdue { background-color: #f3f4f6; color: #4b5563; }
         .status-overdue::before { background-color: #6b7280; }
+
     </style>
 
 }
@@ -563,6 +540,7 @@
 
             $('.dataTables-example').DataTable({
                 pageLength: 25,
+                order: [[0, 'desc']], // <-- Isso avisa o DataTables: "Ao carregar, ordene a coluna 0 como decrescente"
                 dom: '<"html5buttons"B>lTfgitp',
                 // --- NOVO BLOCO DE CONFIGURAÇÃO ---
                 columnDefs: [
@@ -661,37 +639,6 @@
         });
     </script>
 
-    @*<script type="text/javascript">
-        var locacaoIdParaExcluir = null;
-
-        function ChamarModalExcluir(id) {
-            locacaoIdParaExcluir = id;
-            $('#modalConfirmacaoExclusao').modal('show');
-        }
-
-        $(document).ready(function () {
-            $('#btnConfirmarExclusaoSubmit').click(function () {
-                if (locacaoIdParaExcluir != null) {
-                    var $btn = $(this);
-                
-                    // Feedback visual
-                    $btn.prop('disabled', true).addClass('disabled');
-                    $btn.html('<i class="fa fa-spinner fa-spin"></i> Excluindo...');
-                
-                    $('#loadingIndicator').show();
-
-                    // Monta a URL e redireciona
-                    var urlFinal = '/Administra/ExcluirLead/' + locacaoIdParaExcluir;
-                    window.location.href = urlFinal;
-                }
-            });
-
-            // Limpeza de segurança ao fechar a modal
-            $('#modalConfirmacaoExclusao').on('hidden.bs.modal', function () {
-                locacaoIdParaExcluir = null;
-            });
-        });
-    </script>*@
 
     <script type="text/javascript">
         var locacaoIdParaExcluir = null;
