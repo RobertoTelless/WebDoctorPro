@@ -2,7 +2,7 @@
 @using CrossCutting;
 @model EntitiesServices.Model.FUNIL
 @{
-    Layout = "~/Views/Shared/_Layout_Admin.cshtml";
+    Layout = "~/Views/Shared/_Layout_Adm.cshtml";
 }
 <div class="wrapper wrapper-content animated fadeInRight">
     <div class="modal inmodal fade" id="modalConfirmacaoExclusao" tabindex="-1" role="dialog" aria-hidden="true">
@@ -90,7 +90,7 @@
                     <div class="row">
                         <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
                             <div class="col-lg-12 col-md-12 col-xs-12">
-                                @Html.ButtonLinkIndex(text: "Novo Funil", controller: "Funil", action: "IncluirFunil", buttonClass: "primary", htmlAttributes: new { @class = "btn-loading show-spinner" })
+                                @*@Html.ButtonLinkIndex(text: "Novo Funil", controller: "Funil", action: "IncluirFunil", buttonClass: "primary", htmlAttributes: new { @class = "btn-loading show-spinner" })*@
                                 @Html.ButtonLinkIndex(text: "Voltar", controller: "Administra", action: "MontarTelaAdministra", htmlAttributes: new { @class = "btn-loading show-spinner" })
                                 <span id="loadingIndicator" style="display: none; margin-left: 10px; color: #007bff;">
                                     <i class="fa fa-spinner fa-spin"></i> Processando...
@@ -129,16 +129,6 @@
                                                     <span class="status-badge status-pending">Não</span>
                                                 }
                                             </td>
-                                            <td style="width: auto">
-                                                @if (cond.FUNI_IN_RESPONSAVEL == 1)
-                                                {
-                                                    <span class="status-badge status-active">Sim</span>
-                                                }
-                                                else 
-                                                {
-                                                    <span class="status-badge status-pending">Não</span>
-                                                }
-                                            </td>
                                             <td style="width: auto">@cond.FUNIL_ETAPA.Where(p => p.FUET_IN_ATIVO == 1).ToList().Count</td>
                                             <td style="width: auto">
                                                 @if (cond.FUNI_IN_FIXO == 1)
@@ -153,8 +143,8 @@
                                             <td class="td-one-action">
                                                 @if (cond.FUNI_IN_FIXO == 0)
                                                 {
-                                                    @Html.TableLinkDetails(cond.FUNI_CD_ID, "EditarFunil", "fa-edit show-spinner", "Editar")
-                                                    if (cond.FUNI_IN_ATIVO == 1)
+                                                    @Html.TableLinkDetails(cond.FUNI_CD_ID, "EditarFunil", "fa-edit show-spinner", "Ver Funil")
+                                                    @*if (cond.FUNI_IN_ATIVO == 1)
                                                     {
                                                         if (cond.CRM.Count() == 0)
                                                         {
@@ -163,11 +153,11 @@
                                                                     onclick="ChamarModalExcluir('@cond.FUNI_CD_ID')" 
                                                                     title="Excluir"></span>
                                                         }
-                                                    }
+                                                    }*@
                                                 }
                                                 else
                                                 {
-                                                    @Html.TableLinkDetails(cond.FUNI_CD_ID, "EditarFunil", "fa-search show-spinner", "Consultar")
+                                                    @Html.TableLinkDetails(cond.FUNI_CD_ID, "EditarFunil", "fa-search show-spinner", "Ver Funil")
                                                 }
                                             </td>
                                         </tr>
@@ -181,7 +171,7 @@
                                 <div class="col-lg-3 col-md-3 col-xs-2">
                                 </div>
                                 <div style="border: 5px solid #F6A54A; padding: 10px; border-radius: 8px 8px; " class="col-lg-6 col-md-6 col-xs-8">
-                                    <h2 style="font-weight: bold">Sua pesquisa não retornou nenhum resultado ou nenhum funil cadastrado</h2>
+                                    <h2 style="font-weight: bold">Nenhum funil cadastrado</h2>
                                 </div>
                                 <div class="col-lg-3 col-md-3 col-xs-2">
                                 </div>

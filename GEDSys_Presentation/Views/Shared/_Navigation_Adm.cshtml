@@ -53,9 +53,9 @@
             <li>
                 <a href="@Url.Action("MontarTelaAdministra", "Administra")"><i class="fa fa-th-large"></i> <span class="nav-label" data-i18n="nav.dashboard">Processos - CRM</span> <span class="fa arrow"></span></a>
                 <ul class="nav nav-second-level collapse @Html.IsSelected(controller: "Cadastros", cssClass: "in")">
-                    <li class="@Html.IsSelected(action: "MontarTelaCRM")"><a href="@Url.Action("MontarTelaCRM", "CRM")">Central de Processos</a></li>
-                    <li class="@Html.IsSelected(action: "VerAcoesUsuarioCRMPrevia")"><a href="@Url.Action("VerAcoesUsuarioCRMPrevia", "CRM")">Ações</a></li>
-                    <li class="@Html.IsSelected(action: "MontarTelaFunil")"><a href="@Url.Action("MontarTelaFunil", "Funil")">Funis de Processo</a></li>
+                    <li class="@Html.IsSelected(action: "MontarTelaCRM")"><a href="@Url.Action("MontarTelaCRM", "CRM")" class="show-spinner" >Central de Processos</a></li>
+                    <li class="@Html.IsSelected(action: "VerAcoesUsuarioCRMPrevia")"><a href="@Url.Action("VerAcoesUsuarioCRMPrevia", "CRM")" class="show-spinner" >Ações</a></li>
+                    <li class="@Html.IsSelected(action: "MontarTelaFunil")"><a href="@Url.Action("MontarTelaFunil", "Funil")" class="show-spinner" >Funis de Processo</a></li>
                 </ul>
             </li>
 

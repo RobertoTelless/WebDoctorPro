@@ -1,7 +1,7 @@
 ﻿@using Presentation.Extensions
 @model ERP_Condominios_Solution.ViewModels.FunilEtapaViewModel
 @{
-    Layout = "~/Views/Shared/_Layout_Admin.cshtml";
+    Layout = "~/Views/Shared/_Layout_Adm.cshtml";
 }
 
 <div class="wrapper wrapper-content animated fadeInRight">
@@ -88,7 +88,7 @@
                             </div>
                         </div>
                         <div class="form-group">
-                            @Html.ButtonActionSubmit(text: "Confirma Alteração de Etapa", htmlAttributes: new { id = "basictoast", @class = "btn-loading1 show-spinner" })
+                            @*@Html.ButtonActionSubmit(text: "Confirma Alteração de Etapa", htmlAttributes: new { id = "basictoast", @class = "btn-loading1 show-spinner" })*@
                             @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarAnexoFunil", controller: "Funil", htmlAttributes: new { @class = "btn-loading show-spinner" })
                             <span id="loadingIndicator" style="display: none; margin-left: 10px; color: #007bff;">
                                 <i class="fa fa-spinner fa-spin"></i> Processando...

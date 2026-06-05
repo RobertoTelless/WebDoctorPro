@@ -489,7 +489,7 @@ namespace GEDSys_Presentation.Controllers
                 Session["ExcecaoTipo"] = ex.GetType().ToString();
                 GravaLogExcecao grava = new GravaLogExcecao(usuApp);
                 Int32 voltaX = grava.GravarLogExcecao(ex, "Admin", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
-                return RedirectToAction("TrataExcecao", "BaseAdmin");
+                return RedirectToAction("TrataExcecao", "Administra");
             }
         }
 
@@ -5668,6 +5668,185 @@ namespace GEDSys_Presentation.Controllers
             return 0;
         }
 
+
+        public async Task<ActionResult> TrataExcecao()
+        {
+            try
+            {
+                // Recupera Assinante e configuração
+                CONFIGURACAO conf = null;
+                Int32 idAss = 0;
+                ASSINANTE assi = null;
+                USUARIO usuario = null;
+                if (Session["IdAssinante"] != null)
+                {
+                    idAss = (Int32)Session["IdAssinante"];
+                    conf = confApp.GetItemById(idAss);
+                    assi = assApp.GetItemById(idAss);
+                    usuario = (USUARIO)Session["UserCredentials"];
+                }
+
+                // Monta Exceção
+                ExcecaoViewModel exc = new ExcecaoViewModel();
+                Exception ex = (Exception)Session["Excecao"];
+                exc.DataExcecao = DateTime.Now;
+                exc.Gerador = (String)Session["VoltaExcecao"];
+                exc.Message = ex.Message;
+                exc.Source = ex.Source;
+                exc.StackTrace = ex.StackTrace;
+                if (ex.InnerException != null)
+                {
+                    exc.Inner = ex.InnerException.Message;
+                }
+                exc.tipoExcecao = (String)Session["ExcecaoTipo"];
+                exc.tipoVolta = (Int32)Session["TipoVolta"];
+                if (conf != null)
+                {
+                    exc.SuporteMail = conf.CONF_EM_CRMSYS;
+                    exc.SuporteZap = conf.CONF_NR_SUPORTE_ZAP;
+                }
+                else
+                {
+                    exc.SuporteMail = "suporte@rtiltda.net";
+                    exc.SuporteZap = "(21)97302-4096";
+                }
+                Session["ExcecaoView"] = exc;
+
+                // Gera mensagem automática para suporte
+                if (assi != null)
+                {
+                    MensagemViewModel mens = new MensagemViewModel();
+                    mens.NOME = assi.ASSI_NM_NOME;
+                    mens.ID = idAss;
+                    mens.MODELO = assi.ASSI_NM_EMAIL;
+                    mens.MENS_DT_CRIACAO = DateTime.Today.Date;
+                    mens.MENS_IN_TIPO = 1;
+                    mens.EXCECAO = exc;
+                    Int32 volta = await ProcessaEnvioEMailSuporte(mens, usuario);
+                }
+
+                // Mensagem
+                ModelState.AddModelError("", "O processamento do WebDoctor detectou uma falha. Uma mensagem urgente já foi enviada ao suporte com as informações abaixo e logo voce receberá a resposta. Se desejar reenvie a mensagem usando os botões disponíveis nesta página." + " ID do envio: " + (String)Session["IdMail"]);
+                Session["AjudaNivel"] = "../BaseAdmin/Ajuda/7/Ajuda7.pdf";
+                return View(exc);
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["VoltaExcecao"] = "Exceção";
+                Session["Excecao"] = ex;
+                Session["TipoVolta"] = 2;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                //Int32 voltaX = grava.GravarLogExcecao(ex, "Exceção", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return RedirectToAction("TrataExcecao", "BaseAdmin");
+            }
+        }
+
+                [ValidateInput(false)]
+        public async Task<Int32> ProcessaEnvioEMailSuporte(MensagemViewModel vm, USUARIO usuario)
+        {
+            // Recupera usuario
+            Int32 idAss = 0;
+            ASSINANTE assi = null;
+            if (Session["IdAssinante"] != null)
+            {
+                idAss = (Int32)Session["IdAssinante"];
+                assi = assApp.GetItemById(idAss);
+            }
+
+            // Processa e-mail
+            CONFIGURACAO conf = confApp.GetItemById(usuario.ASSI_CD_ID);
+            String mail1 = conf.CONF_EM_CRMSYS;
+            String mail2 = conf.CONF_EM_CRMSYS1;
+
+            // Prepara cabeçalho
+            String cab = "Prezado <b>Suporte RTi</b>";
+
+            // Prepara rodape
+            String rod = "<b>" + assi.ASSI_NM_NOME + "</b>";
+
+            // Prepara assinante
+            String doc = assi.TIPE_CD_ID == 1 ? assi.ASSI_NR_CPF : assi.ASSI_NR_CNPJ;
+            String nome = assi.ASSI_NM_NOME + (doc != null ? " - " + doc : String.Empty);
+
+            // Prepara lista de destinos
+            List<EmailAddress> emails = new List<EmailAddress>();
+            EmailAddress add = new EmailAddress(address: mail1, displayName: "Suporte 1");
+            emails.Add(add);
+            EmailAddress add1 = new EmailAddress(address: mail2, displayName: "Suporte 2");
+            emails.Add(add1);
+
+            // Prepara corpo do e-mail
+            String inner = String.Empty;
+            String mens = String.Empty;
+            String intro = "Por favor verifiquem a exceção abaixo e as condições em que ela ocorreu.<br />";
+            String contato = "Para mais informações entre em contato pelo telefone <b>" + conf.CONF_NR_SUPORTE_ZAP + "</b> ou pelo e-mail <b>" + conf.CONF_EM_CRMSYS + ".</b><br /><br />";
+            String final = "<br />Atenciosamente,<br /><br />";
+            String aplicacao = "<b>Aplicação: </b> WebDoctor" + "<br />";
+            String assinante = "<b>Assinante: </b>" + nome + "<br />";
+            String data = "<b>Data: </b>" + DateTime.Today.Date.ToShortDateString() + " " + DateTime.Now.ToShortTimeString() + "<br />";
+            String modulo = "<b>Módulo: </b>" + vm.EXCECAO.Gerador + "<br />";
+            String origem = "<b>Origem: </b>" + vm.EXCECAO.Source + "<br />";
+            String tipo = "<b>Tipo da Exceção: </b>" + vm.EXCECAO.tipoExcecao + "<br />";
+            String message = "<b>Exceção: </b>" + vm.EXCECAO.Message + "<br />";
+            if (vm.EXCECAO.Inner != null)
+            {
+                inner = "<b>Exceção Interna: </b>" + vm.EXCECAO.Inner + "<br /><br />";
+            }
+            String trace = "<b>Stack Trace: </b>" + vm.EXCECAO.StackTrace + "<br />";
+            String body = intro + contato + aplicacao + assinante + data + modulo + origem + tipo + message + inner + trace;
+
+            if (vm.MENS_TX_TEXTO != null)
+            {
+                mens = vm.MENS_TX_TEXTO + "<br />";
+            }
+            body = body + mens + final;
+            body = body.Replace("\r\n", "<br />");
+            String emailBody = cab + "<br /><br />" + body + "<br /><br />" + rod;
+
+            // Monta e-mail
+            NetworkCredential net = new NetworkCredential(conf.CONF_NM_SENDGRID_LOGIN, conf.CONF_NM_SENDGRID_PWD);
+            EmailAzure mensagem = new EmailAzure();
+            mensagem.ASSUNTO = "Solicitação de Suporte";
+            mensagem.CORPO = emailBody;
+            mensagem.DEFAULT_CREDENTIALS = false;
+            mensagem.EMAIL_TO_DESTINO = conf.CONF_EM_CRMSYS;
+            mensagem.NOME_EMISSOR_AZURE = conf.CONF_NM_EMISSOR_AZURE;
+            mensagem.ENABLE_SSL = true;
+            mensagem.NOME_EMISSOR = "WebDoctor";
+            mensagem.PORTA = conf.CONF_NM_PORTA_SMTP;
+            mensagem.PRIORIDADE = System.Net.Mail.MailPriority.High;
+            mensagem.SENHA_EMISSOR = conf.CONF_NM_SENDGRID_PWD;
+            mensagem.SMTP = conf.CONF_NM_HOST_SMTP;
+            mensagem.IS_HTML = true;
+            mensagem.NETWORK_CREDENTIAL = net;
+            mensagem.ConnectionString = conf.CONF_CS_CONNECTION_STRING_AZURE;
+#pragma warning disable CS0219 // A variável é atribuída, mas seu valor nunca é usado
+            String status = "Succeeded";
+#pragma warning restore CS0219 // A variável é atribuída, mas seu valor nunca é usado
+#pragma warning disable CS0219 // A variável é atribuída, mas seu valor nunca é usado
+            String iD = "xyz";
+#pragma warning restore CS0219 // A variável é atribuída, mas seu valor nunca é usado
+
+            // Envia mensagem
+            try
+            {
+                await CrossCutting.CommunicationAzurePackage.SendMailListAsync(mensagem, null, emails);
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "Suporte";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Suporte", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return 0;
+            }
+            return 0;
+        }
 
     }
 }

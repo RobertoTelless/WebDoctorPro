@@ -526,6 +526,7 @@
     <Compile Include="Controllers\BaseAdminController.cs" />
     <Compile Include="Controllers\ConfiguracaoController.cs" />
     <Compile Include="Controllers\ControleAcessoController.cs" />
+    <Compile Include="Controllers\CRMController.cs" />
     <Compile Include="Controllers\EmpresaController.cs" />
     <Compile Include="Controllers\EstoqueController.cs" />
     <Compile Include="Controllers\FinanceiroController.cs" />
@@ -5555,6 +5556,9 @@
     <Content Include="Views\Administra\EditarNoticia.cshtml" />
     <Content Include="Views\Administra\VerNoticia.cshtml" />
     <Content Include="Views\Administra\VerNoticiaEspecial.cshtml" />
+    <Content Include="Views\Administra\TrataExcecao.cshtml" />
+    <Content Include="Views\Funil\IncluirFunil - Cópia .cshtml" />
+    <Content Include="Views\CRM\MontarTelaCRM.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="BaseAdmin\BaseConhecimento\" />

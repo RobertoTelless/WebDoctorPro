@@ -137,6 +137,8 @@ namespace ERP_Condominios_Solution.Controllers
             Session["ListaLead"] = null;
             Session["Funis"] = null;
             Session["FunilAlterada"] = 0;
+            Session["Origens"] = null;
+            Session["OrigemAlterada"] = 0;
 
             // Permissões
             Session["PermProntuario"] = 0;

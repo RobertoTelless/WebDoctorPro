@@ -196,6 +196,7 @@ namespace GEDSys_Presentation.Controllers
                 aviso.Add(new SelectListItem() { Text = "Sim", Value = "1" });
                 aviso.Add(new SelectListItem() { Text = "Não", Value = "0" });
                 ViewBag.Aviso = new SelectList(aviso, "Value", "Text");
+                Session["AjudaNivel"] = "../BaseAdmin/Ajuda/4/Ajuda4_2.pdf";
 
                 // Grava Acesso
                 ControleAcessoMetodo grava = new ControleAcessoMetodo(aceApp);
@@ -216,11 +217,11 @@ namespace GEDSys_Presentation.Controllers
             {
                 ViewBag.Message = ex.Message;
                 Session["TipoVolta"] = 2;
-                Session["VoltaExcecao"] = "Funil";
+                Session["VoltaExcecao"] = "Funis";
                 Session["Excecao"] = ex;
                 Session["ExcecaoTipo"] = ex.GetType().ToString();
                 GravaLogExcecao grava = new GravaLogExcecao(usuApp);
-                Int32 voltaX = grava.GravarLogExcecao(ex, "Funil", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "Funis", "CRMSys", 1, (USUARIO)Session["UserCredentials"]);
                 return RedirectToAction("TrataExcecao", "BaseAdmin");
             }
         }
@@ -237,9 +238,9 @@ namespace GEDSys_Presentation.Controllers
                 try
                 {
                     // Sanitização
-                    vm.FUNI_DS_DESCRICAO = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(vm.FUNI_DS_DESCRICAO);
-                    vm.FUNI_NM_NOME = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(vm.FUNI_NM_NOME);
-                    vm.FUNI_SG_SIGLA = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(vm.FUNI_SG_SIGLA);
+                    vm.FUNI_DS_DESCRICAO = CrossCutting.UtilitariosGeral.CleanStringGeral(vm.FUNI_DS_DESCRICAO);
+                    vm.FUNI_NM_NOME = CrossCutting.UtilitariosGeral.CleanStringGeral(vm.FUNI_NM_NOME);
+                    vm.FUNI_SG_SIGLA = CrossCutting.UtilitariosGeral.CleanStringGeral(vm.FUNI_SG_SIGLA);
 
                     // Executa a operação
                     Int32 idAss = (Int32)Session["IdAssinante"];
@@ -256,7 +257,7 @@ namespace GEDSys_Presentation.Controllers
                     }
 
                     // Mensagem do CRUD
-                    Session["MsgCRUD"] = "O Funil " + item.FUNI_NM_NOME.ToUpper() + " foi incluído com sucesso e está disponível para criação de etapas";
+                    Session["MsgCRUD"] = "O funil " + item.FUNI_NM_NOME.ToUpper() + " foi incluido com sucesso";
                     Session["MensFunil"] = 61;
 
                     // Sucesso
@@ -266,7 +267,6 @@ namespace GEDSys_Presentation.Controllers
                     Session["FunilAlterada"] = 1;
                     Session["TabFunil"] = 2;
                     Session["FlagAlteraEstado"] = 1;
-                    Session["Funis"] = null;
                     return RedirectToAction("VoltarAnexoFunil");
                 }
                 catch (Exception ex)
@@ -277,7 +277,7 @@ namespace GEDSys_Presentation.Controllers
                     Session["Excecao"] = ex;
                     Session["ExcecaoTipo"] = ex.GetType().ToString();
                     GravaLogExcecao grava = new GravaLogExcecao(usuApp);
-                    Int32 voltaX = grava.GravarLogExcecao(ex, "Funil", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                    Int32 voltaX = grava.GravarLogExcecao(ex, "Funil", "CRMSys", 1, (USUARIO)Session["UserCredentials"]);
                     return RedirectToAction("TrataExcecao", "BaseAdmin");
                 }
             }

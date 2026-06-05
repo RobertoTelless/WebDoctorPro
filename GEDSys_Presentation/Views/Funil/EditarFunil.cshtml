@@ -1,7 +1,7 @@
 ﻿@using Presentation.Extensions
 @model ERP_Condominios_Solution.ViewModels.FunilViewModel
 @{
-    Layout = "~/Views/Shared/_Layout_Admin.cshtml";
+    Layout = "~/Views/Shared/_Layout_Adm.cshtml";
 }
 
 <div class="wrapper wrapper-content animated fadeInRight">
@@ -125,12 +125,12 @@
                                                     @Html.ValidationMessageFor(m => m.FUNI_DS_DESCRICAO, "", new { @style = "color:red" })
                                                 </div>
                                             </div>
-                                            if (Model.FUNI_IN_FIXO == 0)
+                                            @*if (Model.FUNI_IN_FIXO == 0)
                                             {
                                                 <div class="form-group">
                                                     @Html.ButtonActionSubmit(text: "Confirma edição de Funil de Processo", htmlAttributes: new { id = "basictoast", @class = "show-spinner" })
                                                 </div>
-                                            }
+                                            }*@
                                         }
                                     </div>
                                 </div>
@@ -172,12 +172,12 @@
                                                     @Html.ValidationMessageFor(m => m.FUNI_DS_DESCRICAO, "", new { @style = "color:red" })
                                                 </div>
                                             </div>
-                                            if (Model.FUNI_IN_FIXO == 0)
+                                            @*if (Model.FUNI_IN_FIXO == 0)
                                             {
                                                 <div class="form-group">
                                                     @Html.ButtonActionSubmit(text: "Confirma edição de Funil de Processo", htmlAttributes: new { id = "basictoast", @class = "show-spinner" })
                                                 </div>
-                                            }
+                                            }*@
                                         }
                                     </div>
                                 </div>
@@ -270,12 +270,12 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        @if (ViewBag.Etapa == 1 & Model.FUNI_IN_FIXO == 0)
+                                        @*@if (ViewBag.Etapa == 1 & Model.FUNI_IN_FIXO == 0)
                                         {
                                             <div class="form-group">
                                                 @Html.ButtonLinkIndex(text: "Incluir Nova Etapa do Funil", action: "IncluirEtapa", controller: "Funil")
                                             </div>
-                                        }
+                                        }*@
                                     </div>
                                 </div>
                             }
@@ -365,12 +365,12 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        @if (ViewBag.Etapa == 1 & Model.FUNI_IN_FIXO == 0)
+                                        @*@if (ViewBag.Etapa == 1 & Model.FUNI_IN_FIXO == 0)
                                         {
                                             <div class="form-group">
                                                 @Html.ButtonLinkIndex(text: "Incluir Nova Etapa do Funil", action: "IncluirEtapa", controller: "Funil")
                                             </div>
-                                        }
+                                        }*@
                                     </div>
                                 </div>
                             }
