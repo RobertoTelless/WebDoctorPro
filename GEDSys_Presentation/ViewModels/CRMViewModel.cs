@@ -19,27 +19,21 @@ namespace ERP_Condominios_Solution.ViewModels
         [DataType(DataType.Date, ErrorMessage = "A DATA DE CRIAÇÃO deve ser uma data válida")]
         public Nullable<System.DateTime> CRM1_DT_CRIACAO { get; set; }
         [StringLength(500, ErrorMessage = "A DESCRIÇÃO deve conter no máximo 500 caracteres.")]
-        [RegularExpression(@"^([a-zA-Zà-úÀ-Ú0-9]|-|_|\s)+$$", ErrorMessage = "Descrição inválida")]
         public string CRM1_DS_DESCRICAO { get; set; }
         [StringLength(5000, ErrorMessage = "AS INFORMAÇÕES GERAIS devem conter no máximo 5000 caracteres.")]
-        [RegularExpression(@"^([a-zA-Zà-úÀ-Ú0-9]|-|_|\s)+$$", ErrorMessage = "Informação inválida")]
         public string CRM1_TX_INFORMACOES_GERAIS { get; set; }
         [Required(ErrorMessage = "Campo STATUS obrigatorio")]
         public int CRM1_IN_STATUS { get; set; }
         [DataType(DataType.Date, ErrorMessage = "A DATA DE CANCELAMENTO deve ser uma data válida")]
         public Nullable<System.DateTime> CRM1_DT_CANCELAMENTO { get; set; }
         [StringLength(500, ErrorMessage = "O MOTIVO DE CANCELAMENTO deve conter no máximo 500 caracteres.")]
-        [RegularExpression(@"^([a-zA-Zà-úÀ-Ú0-9]|-|_|\s)+$$", ErrorMessage = "Justificativa inválida")]
         public string CRM1_DS_MOTIVO_CANCELAMENTO { get; set; }
         [DataType(DataType.Date, ErrorMessage = "A DATA DE ENCERRAMENTO deve ser uma data válida")]
         public Nullable<System.DateTime> CRM1_DT_ENCERRAMENTO { get; set; }
         [StringLength(5000, ErrorMessage = "AS INFORMAÇÕES DE ENCERRAMENTO devem conter no máximo 5000 caracteres.")]
-        [RegularExpression(@"^([a-zA-Zà-úÀ-Ú0-9]|-|_|\s)+$$", ErrorMessage = "Justificativa inválida")]
         public string CRM1_DS_INFORMACOES_ENCERRAMENTO { get; set; }
         public Nullable<int> CRM1_IN_ATIVO { get; set; }
-        [Required(ErrorMessage = "Campo NOME obrigatorio")]
         [StringLength(150, MinimumLength = 2, ErrorMessage = "O NOME deve conter no minimo 2 e no máximo 150 caracteres.")]
-        [RegularExpression(@"^([a-zA-Zà-úÀ-Ú0-9]|-|_|\s)+$$", ErrorMessage = "Nome inválido")]
         public string CRM1_NM_NOME { get; set; }
         public Nullable<int> USUA_CD_ID { get; set; }
         public Nullable<int> MENS_CD_ID { get; set; }
@@ -70,7 +64,6 @@ namespace ERP_Condominios_Solution.ViewModels
         public string CRM_DS_INFORMACOES_SAIDA { get; set; }
         public Nullable<int> EMPR_CD_ID { get; set; }
         [StringLength(500, ErrorMessage = "A CAMPANHA deve conter no máximo 50 caracteres.")]
-        [RegularExpression(@"^([a-zA-Zà-úÀ-Ú0-9]|-|_|\s)+$$", ErrorMessage = "Campanha inválida")]
         public string CRM1_NM_CAMPANHA { get; set; }
         public string CRM1_GU_GUID { get; set; }
         public Nullable<int> CRM1_IN_ENVIA_CLIENTE { get; set; }
@@ -80,6 +73,7 @@ namespace ERP_Condominios_Solution.ViewModels
         public Nullable<int> LEAD_CD_ID { get; set; }
         public Nullable<int> PACI_CD_ID { get; set; }
         public Nullable<System.DateTime> CRM1_DT_EXCLUSAO { get; set; }
+        public Nullable<int> CRM1_IN_SISTEMA { get; set; }
 
         public string NumeroProposta { get; set; }
         public string NomeProposta { get; set; }

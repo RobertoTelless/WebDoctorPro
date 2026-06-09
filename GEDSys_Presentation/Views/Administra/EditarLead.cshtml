@@ -283,6 +283,14 @@
                                                                         @Html.ValidationMessageFor(m => m.LEAD_IN_STATUS, "", new { @style = "color:red" })
                                                                     </div>
                                                                 }
+                                                                @if (Model.LEAD_IN_STATUS == 5)
+                                                                {
+                                                                    <div class="col-lg-3 col-md-3 col-xs-12">
+                                                                        Status*
+                                                                        @Html.DropDownListFor(m => m.LEAD_IN_STATUS, (SelectList)ViewBag.Status2, "Selecionar", new { @id = "ddlStatusTest", @class = "form-control", @style = "color: darkblue; font-weight: bold" })
+                                                                        @Html.ValidationMessageFor(m => m.LEAD_IN_STATUS, "", new { @style = "color:red" })
+                                                                    </div>
+                                                                }
                                                                 @if (Model.LEAD_IN_STATUS == 1)
                                                                 {
                                                                     <div class="col-lg-3 col-md-3 col-xs-12">
@@ -370,11 +378,6 @@
                                                             @Html.TextBoxFor(m => m.LEAD_NR_CNPJ, new { @class = "form-control", autofocus = true, @id = "cnpj" , data_toggle = "popover", data_content = "Informe o CNPJ associado ao lead", data_trigger="hover", data_placement="top" })
                                                             @Html.ValidationMessageFor(m => m.LEAD_NR_CNPJ, "", new { @style = "color:red" })
                                                         </div>
-                                                        @*<div class="col-lg-2 col-md-2 col-xs-12">
-                                                            Data de Nascimento
-                                                            @Html.TextBoxFor(m => m.LEAD_DT_NASCIMENTO, "{0:dd/MM/yyyy}", new { @class = "form-control date-picker", autofocus = true, @id = "dn" })
-                                                            @Html.ValidationMessageFor(m => m.LEAD_DT_NASCIMENTO, "", new { @style = "color:red" })
-                                                        </div>*@
                                                     </div>               
                                                 </div>                                    
                                                 <div class="row" style="width: 100%;">
@@ -520,6 +523,14 @@
                                                                         @Html.ValidationMessageFor(m => m.LEAD_IN_STATUS, "", new { @style = "color:red" })
                                                                     </div>
                                                                 }
+                                                                @if (Model.LEAD_IN_STATUS == 5)
+                                                                {
+                                                                    <div class="col-lg-3 col-md-3 col-xs-12">
+                                                                        Status*
+                                                                        @Html.DropDownListFor(m => m.LEAD_IN_STATUS, (SelectList)ViewBag.Status2, "Selecionar", new { @id = "ddlStatusTest", @class = "form-control", @style = "color: darkblue; font-weight: bold" })
+                                                                        @Html.ValidationMessageFor(m => m.LEAD_IN_STATUS, "", new { @style = "color:red" })
+                                                                    </div>
+                                                                }
                                                                 @if (Model.LEAD_IN_STATUS == 1)
                                                                 {
                                                                     <div class="col-lg-3 col-md-3 col-xs-12">
@@ -607,11 +618,6 @@
                                                             @Html.TextBoxFor(m => m.LEAD_NR_CNPJ, new { @class = "form-control", autofocus = true, @id = "cnpj" , data_toggle = "popover", data_content = "Informe o CNPJ associado ao lead", data_trigger="hover", data_placement="top" })
                                                             @Html.ValidationMessageFor(m => m.LEAD_NR_CNPJ, "", new { @style = "color:red" })
                                                         </div>
-                                                        @*<div class="col-lg-2 col-md-2 col-xs-12">
-                                                            Data de Nascimento
-                                                            @Html.TextBoxFor(m => m.LEAD_DT_NASCIMENTO, "{0:dd/MM/yyyy}", new { @class = "form-control date-picker", autofocus = true, @id = "dn" })
-                                                            @Html.ValidationMessageFor(m => m.LEAD_DT_NASCIMENTO, "", new { @style = "color:red" })
-                                                        </div>*@
                                                     </div>               
                                                 </div>                                    
                                                 <div class="row" style="width: 100%;">
@@ -1589,6 +1595,11 @@
         /* OVERDUE (Gray) - Status 3 */
         .status-overdue { background-color: #f3f4f6; color: #4b5563; }
         .status-overdue::before { background-color: #6b7280; }
+
+        /* TESTING (Light Blue/Cyan Pastel) */
+        .status-testing { background-color: #e0f7fa; color: #006064; }
+        .status-testing::before { background-color: #00bcd4; }
+
     </style>
 }
 
@@ -2122,6 +2133,8 @@
             });
         });
     </script>
+
+
     <script type="text/javascript">
         var valorAnteriorStatusTrans = "";
 
@@ -2144,7 +2157,7 @@
                 // Configuração visual para CONVERTIDO (Azul)
                 $('#lblTituloModalTransicao').text('Confirmação de Conversão');
                 $('#lblSubTituloTransicao').text('Tem certeza que deseja CONVERTER esse lead?');
-                $('#lblDescricaoTransicao').text('O lead passará para a carteira de clientes ativos do sistema.');
+                $('#lblDescricaoTransicao').text('O lead passará para a carteira de assinantes ativos do sistema.');
                 $('#lblJustificativaTransicao').text('Justificativa da Conversão *');
             
                 $icon.addClass('fa-check-circle text-primary');
@@ -2160,6 +2173,16 @@
                 $icon.addClass('fa-exclamation-triangle text-warning');
                 $btnSubmit.addClass('btn-warning').html('Confirmar Perda');
             }
+            else if (status === "5") { 
+                // Configuração visual para TESTE (Amarelo / Laranja)
+                $('#lblTituloModalTransicao').text('Confirmação de Lead em Testes');
+                $('#lblSubTituloTransicao').text('Deseja marcar este lead como TESTANDO?');
+                $('#lblDescricaoTransicao').text('O lead será alterado para status TESTANDO.');
+                $('#lblJustificativaTransicao').text('Informações do início de testes*');
+            
+                $icon.addClass('fa-exclamation-triangle text-warning');
+                $btnSubmit.addClass('btn-warning').html('Confirmar Teste');
+            }
 
             // Abre a modal
             $('#modalStatusTransicao').modal('show');
@@ -2173,7 +2196,7 @@
             $("#ddlStatusTransicao").change(function () {
                 var statusEscolhido = $(this).val();
 
-                if (statusEscolhido === "2" || statusEscolhido === "3") {
+                if (statusEscolhido === "2" || statusEscolhido === "3"  || statusEscolhido === "5") {
                     AbrirModalTransicao(statusEscolhido);
                 } else {
                     valorAnteriorStatusTrans = statusEscolhido;
@@ -2237,6 +2260,124 @@
             });
         });
     </script>
+
+    <script type="text/javascript">
+        var valorAnteriorStatusTrans = "";
+
+        function AbrirModalTest(status) {
+            // Armazena o status alvo no input de controle
+            $('#targetStatusValue').val(status);
+        
+            // Reseta o formulário interno da modal
+            $('#txtJustificativaTransicao').val('');
+            $('#validaJustificativaTransicao').hide();
+
+            var $btnSubmit = $('#btnConfirmarTransicaoSubmit');
+            var $icon = $('#iconModalTransicao');
+
+            // Remove classes antigas de cores
+            $icon.removeClass('fa-check-circle fa-exclamation-triangle text-primary text-warning');
+            $btnSubmit.removeClass('btn-primary btn-warning');
+
+            if (status === "2") { 
+                // Configuração visual para CONVERTIDO (Azul)
+                $('#lblTituloModalTransicao').text('Confirmação de Conversão');
+                $('#lblSubTituloTransicao').text('Tem certeza que deseja CONVERTER esse lead?');
+                $('#lblDescricaoTransicao').text('O lead passará para a carteira de assinantes ativos do sistema.');
+                $('#lblJustificativaTransicao').text('Justificativa da Conversão *');
+            
+                $icon.addClass('fa-check-circle text-primary');
+                $btnSubmit.addClass('btn-primary').html('Confirmar Conversão');
+            } 
+            else if (status === "3") { 
+                // Configuração visual para PERDIDO (Amarelo / Laranja)
+                $('#lblTituloModalTransicao').text('Confirmação de Lead Perdido');
+                $('#lblSubTituloTransicao').text('Deseja marcar este lead como PERDIDO?');
+                $('#lblDescricaoTransicao').text('O lead será arquivado e sairá do fluxo de prospecção ativo.');
+                $('#lblJustificativaTransicao').text('Motivo da Perda do Lead *');
+            
+                $icon.addClass('fa-exclamation-triangle text-warning');
+                $btnSubmit.addClass('btn-warning').html('Confirmar Perda');
+            }
+
+            // Abre a modal
+            $('#modalStatusTransicao').modal('show');
+        }
+
+        $(document).ready(function () {
+            // Guarda o valor inicial do DropDownList ao carregar a tela
+            valorAnteriorStatusTrans = $("#ddlStatusTest").val();
+
+            // Monitora a mudança do DropDownList
+            $("#ddlStatusTest").change(function () {
+                var statusEscolhido = $(this).val();
+
+                if (statusEscolhido === "2" || statusEscolhido === "3") {
+                    AbrirModalTest(statusEscolhido);
+                } else {
+                    valorAnteriorStatusTrans = statusEscolhido;
+                }
+            });
+
+            // Evento de clique no botão Confirmar dentro da Modal
+            $('#btnConfirmarTransicaoSubmit').click(function () {
+                var justificativaTxt = $('#txtJustificativaTransicao').val().trim();
+                var statusDestino = $('#targetStatusValue').val();
+                var leadId = '@Model.LEAD_CD_ID'; 
+
+                // Validação de texto em branco
+                if (justificativaTxt === "") {
+                    $('#validaJustificativaTransicao').show();
+                    $('#txtJustificativaTransicao').focus();
+                    return false;
+                }
+
+                var $btn = $(this);
+                $btn.prop('disabled', true).addClass('disabled');
+                $btn.html('<i class="fa fa-spinner fa-spin"></i> Processando...');
+                $('#loadingIndicator').show();
+
+                // Cria formulário virtual para disparar a Action via POST seguro
+                var form = document.createElement("form");
+                form.method = "POST";
+                form.action = '/Administra/MudarStatusLead'; // Nome da Action unificada
+
+                // Input 1: ID do Lead
+                var inputId = document.createElement("input");
+                inputId.type = "hidden";
+                inputId.name = "id";
+                inputId.value = leadId;
+                form.appendChild(inputId);
+
+                // Input 2: Novo Status (1 ou 2)
+                var inputStatus = document.createElement("input");
+                inputStatus.type = "hidden";
+                inputStatus.name = "novoStatus";
+                inputStatus.value = statusDestino;
+                form.appendChild(inputStatus);
+
+                // Input 3: Justificativa / Motivo
+                var inputJustificativa = document.createElement("input");
+                inputJustificativa.type = "hidden";
+                inputJustificativa.name = "justificativa";
+                inputJustificativa.value = justificativaTxt;
+                form.appendChild(inputJustificativa);
+
+                document.body.appendChild(form);
+                form.submit();
+            });
+
+            // Controle de reversão caso o usuário desista ou clique fora da modal
+            $('#modalStatusTransicao').on('hidden.bs.modal', function () {
+                $('#ddlStatusTransicao').val(valorAnteriorStatusTrans); // Restaura o dropdown para o valor correto
+                $('#targetStatusValue').val("");
+                $('#txtJustificativaTransicao').val('');
+                $('#validaJustificativaTransicao').hide();
+            });
+        });
+    </script>
+
+
     <script type="text/javascript">
         $(document).ready(function () {
         

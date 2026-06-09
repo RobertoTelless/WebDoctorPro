@@ -120,6 +120,8 @@ namespace MvcMapping.Mappers
             CreateMap<CRM_ORIGEM, CRMOrigemViewModel>();
             CreateMap<CRM, CRMViewModel>();
             CreateMap<MENSAGEM_FABRICANTE, MensagemFabricanteViewModel>();
+            CreateMap<AGENDA, AgendaViewModel>();
+            CreateMap<AGENDA_CONTATO, AgendaContatoViewModel>();
 
         }
     }

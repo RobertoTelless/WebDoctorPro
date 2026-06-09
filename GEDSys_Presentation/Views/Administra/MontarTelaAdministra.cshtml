@@ -99,9 +99,9 @@
                     @Html.ButtonLinkIndex(text: "Log", controller: "Administra", action: "MontarTelaLog", htmlAttributes: new { @class = "btn-loading show-spinner" })
                     @Html.ButtonLinkIndex(text: "Acessos", controller: "Administra", action: "MontarTelaAcesso", htmlAttributes: new { @class = "btn-loading show-spinner" })
                     @Html.ButtonLinkIndex(text: "Leads", controller: "Administra", action: "MontarTelaLead", htmlAttributes: new { @class = "btn-loading show-spinner" })
-                    @Html.ButtonLinkIndex(text: "Processos", controller: "Administra", action: "MontarTelaCRM", htmlAttributes: new { @class = "btn-loading show-spinner" })
+                    @Html.ButtonLinkIndex(text: "Processos", controller: "CRM", action: "MontarTelaCRM", htmlAttributes: new { @class = "btn-loading show-spinner" })
                     @Html.ButtonLinkIndex(text: "Avisos", controller: "Administra", action: "MontarTelaAviso", htmlAttributes: new { @class = "btn-loading show-spinner" })
-                    <a href="@Url.Action("ImportarPlanilhaProspecta", "BaseAdmin")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Importação de  e-mails" class="btn btn-sm btn-primary btn-danger btn-loading show-spinner" id="emp" OnClick = "Fade()">Importar Mails</a>                
+                    @*<a href="@Url.Action("ImportarPlanilhaProspecta", "BaseAdmin")" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Importação de  e-mails" class="btn btn-sm btn-primary btn-danger btn-loading show-spinner" id="emp" OnClick = "Fade()">Importar Mails</a>*@                
                     <span id="loadingIndicator" style="display: none; margin-left: 10px; color: #007bff;">
                         <i class="fa fa-spinner fa-spin"></i> Processando...
                     </span>
@@ -109,6 +109,7 @@
                 <br /><br />
             </div>
         </div>  
+
 
         @*Corpo*@
         <div class="row">

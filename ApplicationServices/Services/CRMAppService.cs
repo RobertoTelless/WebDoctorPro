@@ -185,6 +185,12 @@ namespace ApplicationServices.Services
         {
             try
             {
+                // Verifica existencia prévia
+                if (_baseService.CheckExist(item, usuario.USUA_CD_ID, usuario.ASSI_CD_ID) != null)
+                {
+                    return 1;
+                }
+
                 //Verifica Campos
                 if (item.TIPO_CRM != null)
                 {
@@ -223,8 +229,9 @@ namespace ApplicationServices.Services
                 dia.DIPR_DT_DATA = DateTime.Today.Date;
                 dia.CRM1_CD_ID = item.CRM1_CD_ID;
                 dia.DIPR_NM_OPERACAO = "Criação de Processo";
-                dia.DIPR_DS_DESCRICAO = "Criação do Processo " + item.CRM1_NM_NOME + ". Lead: " + cli.LEAD_NM_NOME;
+                dia.DIPR_DS_DESCRICAO = "Criação do Processo " + item.CRM1_NM_NOME.ToUpper() + " para o Lead " + cli.LEAD_NM_NOME.ToUpper();
                 dia.EMPR_CD_ID = usuario.EMPR_CD_ID;
+                dia.DIPR_IN_SISTEMA = 6;
                 Int32 volta1 = _baseService.CreateDiario(dia);
                 return 0;
             }
@@ -296,6 +303,17 @@ namespace ApplicationServices.Services
                         LOG_TX_REGISTRO_ANTES = jsonAntes,
                         LOG_IN_SISTEMA = 6
                     };
+
+                    // Gera diario
+                    DIARIO_PROCESSO dia1 = new DIARIO_PROCESSO();
+                    dia1.ASSI_CD_ID = usuario.ASSI_CD_ID;
+                    dia1.USUA_CD_ID = usuario.USUA_CD_ID;
+                    dia1.DIPR_DT_DATA = DateTime.Today.Date;
+                    dia1.CRM1_CD_ID = item.CRM1_CD_ID;
+                    dia1.DIPR_NM_OPERACAO = "Cancelamento de Processo";
+                    dia1.DIPR_DS_DESCRICAO = "Cancelamento do Processo " + item.CRM1_NM_NOME.ToUpper() + ". Lead: " + cli.LEAD_NM_NOME.ToUpper();
+                    Int32 volta4 = _baseService.CreateDiario(dia1);
+
                 }
                 else
                 {
@@ -304,30 +322,30 @@ namespace ApplicationServices.Services
                         LOG_DT_DATA = DateTime.Now,
                         USUA_CD_ID = usuario.USUA_CD_ID,
                         ASSI_CD_ID = usuario.ASSI_CD_ID,
-                        LOG_NM_OPERACAO = "Processo CRM - Alteração",
+                        LOG_NM_OPERACAO = "Processo CRM - Encerramento",
                         LOG_IN_ATIVO = 1,
                         LOG_TX_REGISTRO = json,
                         LOG_TX_REGISTRO_ANTES = jsonAntes,
                         LOG_IN_SISTEMA = 6
                     };
+
+                    // Gera diario
+                    DIARIO_PROCESSO dia1 = new DIARIO_PROCESSO();
+                    dia1.ASSI_CD_ID = usuario.ASSI_CD_ID;
+                    dia1.USUA_CD_ID = usuario.USUA_CD_ID;
+                    dia1.DIPR_DT_DATA = DateTime.Today.Date;
+                    dia1.CRM1_CD_ID = item.CRM1_CD_ID;
+                    dia1.DIPR_NM_OPERACAO = "Encerramento de Processo";
+                    dia1.DIPR_DS_DESCRICAO = "Encerramento do Processo " + item.CRM1_NM_NOME.ToUpper() + ". Lead: " + cli.LEAD_NM_NOME.ToUpper();
+                    Int32 volta4 = _baseService.CreateDiario(dia1);
+
                 }
 
                 // Persiste
                 item.LEAD = null;
                 item.CRM_ORIGEM = null;
                 Int32 volta = _baseService.Edit(item, log);
-
-                // Gera diario
-                DIARIO_PROCESSO dia = new DIARIO_PROCESSO();
-                dia.ASSI_CD_ID = usuario.ASSI_CD_ID;
-                dia.USUA_CD_ID = usuario.USUA_CD_ID;
-                dia.DIPR_DT_DATA = DateTime.Today.Date;
-                dia.CRM1_CD_ID = item.CRM1_CD_ID;
-                dia.DIPR_NM_OPERACAO = "Alteração de Processo";
-                dia.DIPR_DS_DESCRICAO = "Alteração do Processo " + item.CRM1_NM_NOME.ToUpper() + ". Lead: " + cli.LEAD_NM_NOME.ToUpper();
-                Int32 volta3 = _baseService.CreateDiario(dia);
-
-                return log.LOG_CD_ID;
+                return volta;
             }
             catch (Exception ex)
             {
@@ -403,7 +421,7 @@ namespace ApplicationServices.Services
                 }
 
                 // Persiste
-                item.LEAD = null;
+                //item.LEAD = null;
                 item.CRM_ORIGEM = null;
                 Int32 volta = _baseService.Edit(item);
                 return volta;

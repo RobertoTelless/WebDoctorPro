@@ -475,7 +475,7 @@
     <value>Impossível criar/reativar este pedido. Já existe um pedido sendo processado neste momento.</value>
   </data>
   <data name="M0141" xml:space="preserve">
-    <value>Cliente não especificado</value>
+    <value>Lead não especificado</value>
   </data>
   <data name="M0142" xml:space="preserve">
     <value>Tipo de ação não especificado</value>
@@ -2291,5 +2291,8 @@
   </data>
   <data name="M0746" xml:space="preserve">
     <value>Impossível excluir esse lead. Existe um processo CRM ativo vinculado a ele. Encerre o processo.</value>
+  </data>
+  <data name="M0747" xml:space="preserve">
+    <value>Já existe um processo ativo criado para este lead</value>
   </data>
 </root>

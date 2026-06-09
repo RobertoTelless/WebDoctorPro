@@ -17,8 +17,7 @@ namespace DataServices.Repositories
         public CRM CheckExist(CRM tarefa, Int32 idUsu, Int32 idAss)
         {
             IQueryable<CRM> query = Db.CRM;
-            query = query.Where(p => p.CRM1_NM_NOME == tarefa.CRM1_NM_NOME);
-            query = query.Where(p => p.USUA_CD_ID == idUsu);
+            query = query.Where(p => p.LEAD_CD_ID == tarefa.LEAD_CD_ID);
             query = query.Where(p => p.CRM1_IN_SISTEMA == 6);
             query = query.Where(p => p.CRM1_IN_ATIVO != 2);
             return query.FirstOrDefault();
@@ -58,8 +57,8 @@ namespace DataServices.Repositories
             query = query.Where(p => p.CRM1_IN_SISTEMA == 6);
             query = query.Include(p => p.CRM_COMENTARIO);
             query = query.Include(p => p.USUARIO);
-            query = query.Include(p => p.PACIENTE);
-            query = query.Include(p => p.PACIENTE.UF);
+            query = query.Include(p => p.LEAD);
+            query = query.Include(p => p.DIARIO_PROCESSO);
             query = query.Include(p => p.CRM_ACAO);
             query = query.Include(p => p.CRM_ANEXO);
             query = query.Include(p => p.FUNIL);
@@ -90,10 +89,6 @@ namespace DataServices.Repositories
         {
             List<CRM> lista = new List<CRM>();
             IQueryable<CRM> query = Db.CRM;
-            if (status > 0)
-            {
-                query = query.Where(p => p.CRM1_IN_STATUS == status);
-            }
             if (origem != null)
             {
                 query = query.Where(p => p.ORIG_CD_ID == origem);
@@ -105,10 +100,6 @@ namespace DataServices.Repositories
             if (estrela != null)
             {
                 query = query.Where(p => p.CRM1_IN_ESTRELA == estrela);
-            }
-            if (filial != null & filial > 0)
-            {
-                query = query.Where(p => p.EMFI_CD_ID == filial);
             }
             if (temperatura != null)
             {
@@ -139,15 +130,11 @@ namespace DataServices.Repositories
             }
             if (!String.IsNullOrEmpty(nome))
             {
-                query = query.Where(p => p.CRM1_NM_NOME.Contains(nome) || p.CRM1_DS_DESCRICAO.Contains(nome));        
-            }
-            if (!String.IsNullOrEmpty(campanha))
-            {
-                query = query.Where(p => p.CRM1_NM_CAMPANHA.Contains(campanha));
+                query = query.Where(p => p.CRM1_NM_NOME.ToUpper().Contains(nome.ToUpper()));        
             }
             if (!String.IsNullOrEmpty(busca))
             {
-                query = query.Where(p => p.PACIENTE.PACI_NM_NOME.Contains(busca) || p.PACIENTE.PACI_NR_CPF.Contains(busca));
+                query = query.Where(p => p.LEAD.LEAD_NM_NOME.ToUpper().Contains(busca.ToUpper()));
             }
 
             if ((dataInicio != DateTime.MinValue & dataInicio != null) & (dataFim == DateTime.MinValue & dataFim == null))
@@ -162,13 +149,8 @@ namespace DataServices.Repositories
             {
                 query = query.Where(p => DbFunctions.TruncateTime(p.CRM1_DT_CRIACAO) >= DbFunctions.TruncateTime(dataInicio) & DbFunctions.TruncateTime(p.CRM1_DT_CRIACAO) <= DbFunctions.TruncateTime(dataFim));
             }
-
-
-
-
             if (query != null)
             {
-                query = query.Where(p => p.CRM1_IN_ATIVO != 2);
                 query = query.Where(p => p.CRM1_IN_SISTEMA == 6);
                 query = query.OrderBy(a => a.CRM1_DT_CRIACAO);
                 lista = query.ToList<CRM>();

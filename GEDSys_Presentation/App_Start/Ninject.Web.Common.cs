@@ -129,6 +129,7 @@ namespace Presentation.Start
             kernel.Bind<ICRMOrigemAppService>().To<CRMOrigemAppService>();
             kernel.Bind<IFunilAppService>().To<FunilAppService>();
             kernel.Bind<ILeadAppService>().To<LeadAppService>();
+            kernel.Bind<IAgendaAppService>().To<AgendaAppService>();
 
             kernel.Bind(typeof(IServiceBase<>)).To(typeof(ServiceBase<>));
             kernel.Bind<IUsuarioService>().To<UsuarioService>();
@@ -192,6 +193,7 @@ namespace Presentation.Start
             kernel.Bind<ICRMService>().To<CRMService>();
             kernel.Bind<IFunilService>().To<FunilService>();
             kernel.Bind<ILeadService>().To<LeadService>();
+            kernel.Bind<IAgendaService>().To<AgendaService>();
 
             kernel.Bind(typeof(IRepositoryBase<>)).To(typeof(RepositoryBase<>));
             kernel.Bind<IConfiguracaoRepository>().To<ConfiguracaoRepository>();
@@ -370,6 +372,10 @@ namespace Presentation.Start
             kernel.Bind<ITipoAcaoRepository>().To<TipoAcaoRepository>();
             kernel.Bind<ITipoFollowRepository>().To<TipoFollowRepository>();
             kernel.Bind<IProspectaRepository>().To<ProspectaRepository>();
+            kernel.Bind<ICategoriaAgendaRepository>().To<CategoriaAgendaRepository>();
+            kernel.Bind<IAgendaRepository>().To<AgendaRepository>();
+            kernel.Bind<IAgendaAnexoRepository>().To<AgendaAnexoRepository>();
+            kernel.Bind<IAgendaContatoRepository>().To<AgendaContatoRepository>();
 
 
         }

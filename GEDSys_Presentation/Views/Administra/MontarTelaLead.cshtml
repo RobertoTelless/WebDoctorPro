@@ -195,6 +195,10 @@
                                                 {
                                                     <span class="status-badge status-pending">Em Análise</span>
                                                 }
+                                                else if (cond.LEAD_IN_STATUS == 5) 
+                                                {
+                                                    <span class="status-badge status-testing">Testando</span>
+                                                }
                                                 else 
                                                 {
                                                     <span class="status-badge status-pending">-</span>
@@ -384,8 +388,11 @@
         .status-overdue { background-color: #f3f4f6; color: #4b5563; }
         .status-overdue::before { background-color: #6b7280; }
 
-    </style>
+        /* TESTING (Light Blue/Cyan Pastel) */
+        .status-testing { background-color: #e0f7fa; color: #006064; }
+        .status-testing::before { background-color: #00bcd4; }
 
+    </style>
 }
 
 @section Scripts {

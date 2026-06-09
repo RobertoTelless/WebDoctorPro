@@ -18,6 +18,7 @@ namespace DataServices.Repositories
         {
             IQueryable<DIARIO_PROCESSO> query = Db.DIARIO_PROCESSO;
             query = query.Where(p => p.DIPR_DT_DATA == data);
+            query = query.Where(p => p.DIPR_IN_SISTEMA == 6);
             return query.FirstOrDefault();
         }
 
@@ -25,6 +26,7 @@ namespace DataServices.Repositories
         {
             IQueryable<DIARIO_PROCESSO> query = Db.DIARIO_PROCESSO;
             query = query.Where(p => p.DIPR_CD_ID == id);
+            query = query.Where(p => p.DIPR_IN_SISTEMA == 6);
             return query.FirstOrDefault();
         }
 
@@ -32,6 +34,9 @@ namespace DataServices.Repositories
         {
             IQueryable<DIARIO_PROCESSO> query = Db.DIARIO_PROCESSO;
             query = query.Where(p => p.ASSI_CD_ID == idAss);
+            query = query.Where(p => p.DIPR_IN_SISTEMA == 6);
+            query = query.Include(p => p.CRM);
+            query = query.Include(p => p.CRM.LEAD);
             query = query.OrderBy(a => a.DIPR_DT_DATA);
             return query.ToList();
         }
@@ -71,6 +76,7 @@ namespace DataServices.Repositories
             if (query != null)
             {
                 query = query.Where(p => p.ASSI_CD_ID == idAss);
+                query = query.Where(p => p.DIPR_IN_SISTEMA == 6);
                 query = query.OrderBy(a => a.DIPR_DT_DATA);
                 lista = query.ToList<DIARIO_PROCESSO>();
             }

@@ -327,6 +327,10 @@ namespace GEDSys_Presentation.Controllers
                             {
                                 nome = "Cancelado   ";
                             }
+                            else if (i == 5)
+                            {
+                                nome = "Testando";
+                            }
 
                             ModeloViewModel mod3 = new ModeloViewModel();
                             mod3.Nome = nome;
@@ -562,7 +566,7 @@ namespace GEDSys_Presentation.Controllers
                 Session["ExcecaoTipo"] = ex.GetType().ToString();
                 GravaLogExcecao grava = new GravaLogExcecao(usuApp);
                 Int32 voltaX = grava.GravarLogExcecao(ex, "Adminstra", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
-                return RedirectToAction("TrataExcecao", "BaseAdmin");
+                return RedirectToAction("TrataExcecao", "Administra");
             }
         }
 
@@ -603,7 +607,7 @@ namespace GEDSys_Presentation.Controllers
                 Session["ExcecaoTipo"] = ex.GetType().ToString();
                 GravaLogExcecao grava = new GravaLogExcecao(usuApp);
                 Int32 voltaX = grava.GravarLogExcecao(ex, "Administra", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
-                return RedirectToAction("TrataExcecao", "BaseAdmin");
+                return RedirectToAction("TrataExcecao", "Administra");
             }
         }
 
@@ -631,7 +635,7 @@ namespace GEDSys_Presentation.Controllers
                 Session["ExcecaoTipo"] = ex.GetType().ToString();
                 GravaLogExcecao grava = new GravaLogExcecao(usuApp);
                 Int32 voltaX = grava.GravarLogExcecao(ex, "Administra", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
-                return RedirectToAction("TrataExcecao", "BaseAdmin");
+                return RedirectToAction("TrataExcecao", "Administra");
             }
         }
 
@@ -659,7 +663,7 @@ namespace GEDSys_Presentation.Controllers
                 Session["ExcecaoTipo"] = ex.GetType().ToString();
                 GravaLogExcecao grava = new GravaLogExcecao(usuApp);
                 Int32 voltaX = grava.GravarLogExcecao(ex, "Administra", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
-                return RedirectToAction("TrataExcecao", "BaseAdmin");
+                return RedirectToAction("TrataExcecao", "Administra");
             }
         }
 
@@ -702,7 +706,7 @@ namespace GEDSys_Presentation.Controllers
                 Session["ExcecaoTipo"] = ex.GetType().ToString();
                 GravaLogExcecao grava = new GravaLogExcecao(usuApp);
                 Int32 voltaX = grava.GravarLogExcecao(ex, "Administra", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
-                return RedirectToAction("TrataExcecao", "BaseAdmin");
+                return RedirectToAction("TrataExcecao", "Administra");
             }
         }
 
@@ -879,7 +883,7 @@ namespace GEDSys_Presentation.Controllers
                 Session["ExcecaoTipo"] = ex.GetType().ToString();
                 GravaLogExcecao grava = new GravaLogExcecao(usuApp);
                 Int32 voltaX = grava.GravarLogExcecao(ex, "Administra", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
-                return RedirectToAction("TrataExcecao", "BaseAdmin");
+                return RedirectToAction("TrataExcecao", "Administra");
             }
         }
 
@@ -1146,7 +1150,7 @@ namespace GEDSys_Presentation.Controllers
                 Session["ExcecaoTipo"] = ex.GetType().ToString();
                 GravaLogExcecao grava = new GravaLogExcecao(usuApp);
                 Int32 voltaX = grava.GravarLogExcecao(ex, "Administra", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
-                return RedirectToAction("TrataExcecao", "BaseAdmin");
+                return RedirectToAction("TrataExcecao", "Administra");
             }
         }
 
@@ -1238,7 +1242,7 @@ namespace GEDSys_Presentation.Controllers
                 Session["ExcecaoTipo"] = ex.GetType().ToString();
                 GravaLogExcecao grava = new GravaLogExcecao(usuApp);
                 Int32 voltaX = grava.GravarLogExcecao(ex, "Administra", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
-                return RedirectToAction("TrataExcecao", "BaseAdmin");
+                return RedirectToAction("TrataExcecao", "Administra");
             }
         }
 
@@ -1286,7 +1290,7 @@ namespace GEDSys_Presentation.Controllers
                 Session["ExcecaoTipo"] = ex.GetType().ToString();
                 GravaLogExcecao grava = new GravaLogExcecao(usuApp);
                 Int32 voltaX = grava.GravarLogExcecao(ex, "Administra", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
-                return RedirectToAction("TrataExcecao", "BaseAdmin");
+                return RedirectToAction("TrataExcecao", "Administra");
             }
         }
 
@@ -1334,7 +1338,7 @@ namespace GEDSys_Presentation.Controllers
                 Session["ExcecaoTipo"] = ex.GetType().ToString();
                 GravaLogExcecao grava = new GravaLogExcecao(usuApp);
                 Int32 voltaX = grava.GravarLogExcecao(ex, "Administra", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
-                return RedirectToAction("TrataExcecao", "BaseAdmin");
+                return RedirectToAction("TrataExcecao", "Administra");
             }
         }
 
@@ -1420,7 +1424,7 @@ namespace GEDSys_Presentation.Controllers
                 Session["ExcecaoTipo"] = ex.GetType().ToString();
                 GravaLogExcecao grava = new GravaLogExcecao(usuApp);
                 Int32 voltaX = grava.GravarLogExcecao(ex, "Administra", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
-                return RedirectToAction("TrataExcecao", "BaseAdmin");
+                return RedirectToAction("TrataExcecao", "Administra");
             }
         }
 
@@ -1472,7 +1476,7 @@ namespace GEDSys_Presentation.Controllers
                 Session["ExcecaoTipo"] = ex.GetType().ToString();
                 GravaLogExcecao grava = new GravaLogExcecao(usuApp);
                 Int32 voltaX = grava.GravarLogExcecao(ex, "Administra", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
-                return RedirectToAction("TrataExcecao", "BaseAdmin");
+                return RedirectToAction("TrataExcecao", "Administra");
             }
         }
 
@@ -1506,7 +1510,7 @@ namespace GEDSys_Presentation.Controllers
                 Session["ExcecaoTipo"] = ex.GetType().ToString();
                 GravaLogExcecao grava = new GravaLogExcecao(usuApp);
                 Int32 voltaX = grava.GravarLogExcecao(ex, "Administra", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
-                return RedirectToAction("TrataExcecao", "BaseAdmin");
+                return RedirectToAction("TrataExcecao", "Administra");
             }
         }
 
@@ -1544,6 +1548,7 @@ namespace GEDSys_Presentation.Controllers
                 List<SelectListItem> status = new List<SelectListItem>();
                 status.Add(new SelectListItem() { Text = "Em Análise", Value = "0" });
                 status.Add(new SelectListItem() { Text = "Qualificado", Value = "1" });
+                status.Add(new SelectListItem() { Text = "Testando", Value = "5" });
                 status.Add(new SelectListItem() { Text = "Convertido", Value = "2" });
                 status.Add(new SelectListItem() { Text = "Pedido", Value = "3" });
                 status.Add(new SelectListItem() { Text = "Excluido", Value = "4" });
@@ -1593,7 +1598,7 @@ namespace GEDSys_Presentation.Controllers
                 Session["ExcecaoTipo"] = ex.GetType().ToString();
                 GravaLogExcecao grava = new GravaLogExcecao(usuApp);
                 Int32 voltaX = grava.GravarLogExcecao(ex, "Administra", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
-                return RedirectToAction("TrataExcecao", "BaseAdmin");
+                return RedirectToAction("TrataExcecao", "Administra");
             }
         }
 
@@ -1634,7 +1639,7 @@ namespace GEDSys_Presentation.Controllers
                 Session["ExcecaoTipo"] = ex.GetType().ToString();
                 GravaLogExcecao grava = new GravaLogExcecao(usuApp);
                 Int32 voltaX = grava.GravarLogExcecao(ex, "Administra", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
-                return RedirectToAction("TrataExcecao", "BaseAdmin");
+                return RedirectToAction("TrataExcecao", "Administra");
             }
 
         }
@@ -1660,7 +1665,7 @@ namespace GEDSys_Presentation.Controllers
                 Session["ExcecaoTipo"] = ex.GetType().ToString();
                 GravaLogExcecao grava = new GravaLogExcecao(usuApp);
                 Int32 voltaX = grava.GravarLogExcecao(ex, "Administra", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
-                return RedirectToAction("TrataExcecao", "BaseAdmin");
+                return RedirectToAction("TrataExcecao", "Administra");
             }
         }
 
@@ -1686,7 +1691,7 @@ namespace GEDSys_Presentation.Controllers
                 Session["ExcecaoTipo"] = ex.GetType().ToString();
                 GravaLogExcecao grava = new GravaLogExcecao(usuApp);
                 Int32 voltaX = grava.GravarLogExcecao(ex, "Administra", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
-                return RedirectToAction("TrataExcecao", "BaseAdmin");
+                return RedirectToAction("TrataExcecao", "Administra");
             }
         }
 
@@ -1778,7 +1783,7 @@ namespace GEDSys_Presentation.Controllers
         //        Session["ExcecaoTipo"] = ex.GetType().ToString();
         //        GravaLogExcecao grava = new GravaLogExcecao(usuApp);
         //        Int32 voltaX = grava.GravarLogExcecao(ex, "Administra", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
-        //        return RedirectToAction("TrataExcecao", "BaseAdmin");
+        //        return RedirectToAction("TrataExcecao", "Administra");
         //    }
         //}
 
@@ -1886,7 +1891,7 @@ namespace GEDSys_Presentation.Controllers
                 Session["ExcecaoTipo"] = ex.GetType().ToString();
                 GravaLogExcecao grava = new GravaLogExcecao(usuApp);
                 Int32 voltaX = grava.GravarLogExcecao(ex, "Administra", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
-                return RedirectToAction("TrataExcecao", "BaseAdmin");
+                return RedirectToAction("TrataExcecao", "Administra");
             }
         }
 
@@ -1950,7 +1955,7 @@ namespace GEDSys_Presentation.Controllers
                 Session["ExcecaoTipo"] = ex.GetType().ToString();
                 GravaLogExcecao grava = new GravaLogExcecao(usuApp);
                 Int32 voltaX = grava.GravarLogExcecao(ex, "Administra", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
-                return RedirectToAction("TrataExcecao", "BaseAdmin");
+                return RedirectToAction("TrataExcecao", "Administra");
             }
         }
 
@@ -2003,7 +2008,7 @@ namespace GEDSys_Presentation.Controllers
                     FUNIL fun = CarregarFunil().Where(p => p.FUNI_IN_FIXO == 1).FirstOrDefault();
                     CRM crm = new CRM();
                     crm.ASSI_CD_ID = 1;
-                    crm.CRM1_DS_DESCRICAO = "Processo referente ao lead de " + lead.LEAD_NM_NOME.ToUpper();
+                    crm.CRM1_DS_DESCRICAO = "Processo referente ao lead de " + lead.LEAD_NM_NOME.ToUpper() + " com identificador " + lead.LEAD_GU_IDENTIFICADOR + " e atribuido a " + usuario.USUA_NM_NOME.ToUpper();
                     crm.CRM1_DT_CRIACAO = DateTime.Today.Date;
                     crm.CRM1_GU_GUID = lead.LEAD_GU_IDENTIFICADOR;
                     crm.CRM1_IN_ATIVO = 1;
@@ -2016,8 +2021,9 @@ namespace GEDSys_Presentation.Controllers
                     crm.EMPR_CD_ID = 3;
                     crm.FUNI_CD_ID = fun.FUNI_CD_ID;
                     crm.LEAD_CD_ID = lead.LEAD_CD_ID;
-                    crm.USUA_CD_ID = 49;
+                    crm.USUA_CD_ID = usuario.USUA_CD_ID;
                     crm.CLIE_CD_ID = 2;
+                    crm.CRM1_DS_DESCRICAO = "Processo criado em " + DateTime.Today.Date.ToShortDateString() + " para o lead de " + lead.LEAD_NM_NOME + " com identificador " + lead.LEAD_GU_IDENTIFICADOR + " e atribuido a " + usuario.USUA_NM_NOME;
                     Int32 volta1 = crmApp.ValidateCreate(crm, usuario);
 
                     // Atualiza lead
@@ -2088,7 +2094,7 @@ namespace GEDSys_Presentation.Controllers
                     Session["ExcecaoTipo"] = ex.GetType().ToString();
                     GravaLogExcecao grava = new GravaLogExcecao(usuApp);
                     Int32 voltaX = grava.GravarLogExcecao(ex, "Administra", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
-                    return RedirectToAction("TrataExcecao", "BaseAdmin");
+                    return RedirectToAction("TrataExcecao", "Administra");
                 }
             }
             else
@@ -2130,8 +2136,13 @@ namespace GEDSys_Presentation.Controllers
                 ViewBag.Status0 = new SelectList(status, "Value", "Text");
                 List<SelectListItem> status1 = new List<SelectListItem>();
                 status1.Add(new SelectListItem() { Text = "Convertido", Value = "2" });
+                status1.Add(new SelectListItem() { Text = "Testando", Value = "5" });
                 status1.Add(new SelectListItem() { Text = "Perdido", Value = "3" });
                 ViewBag.Status1 = new SelectList(status1, "Value", "Text");
+                List<SelectListItem> status2 = new List<SelectListItem>();
+                status2.Add(new SelectListItem() { Text = "Convertido", Value = "2" });
+                status2.Add(new SelectListItem() { Text = "Perdido", Value = "3" });
+                ViewBag.Status2 = new SelectList(status2, "Value", "Text");
 
                 // Mensagens
                 if (Session["MensLead"] != null)
@@ -2177,7 +2188,7 @@ namespace GEDSys_Presentation.Controllers
                 Session["ExcecaoTipo"] = ex.GetType().ToString();
                 GravaLogExcecao grava = new GravaLogExcecao(usuApp);
                 Int32 voltaX = grava.GravarLogExcecao(ex, "Administra", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
-                return RedirectToAction("TrataExcecao", "BaseAdmin");
+                return RedirectToAction("TrataExcecao", "Administra");
             }
         }
 
@@ -2186,14 +2197,19 @@ namespace GEDSys_Presentation.Controllers
         public ActionResult EditarLead(LeadViewModel vm)
         {
             Int32 idAss = (Int32)Session["IdAssinante"];
-            ViewBag.UF = new SelectList(CarregaUF(), "UF_CD_ID", "UF_SG_SIGLA");
+            ViewBag.UF = new SelectList(CarregaUF(), "UF_CD_ID", "UF_NM_NOME");
             List<SelectListItem> status = new List<SelectListItem>();
             status.Add(new SelectListItem() { Text = "Qualificado", Value = "1" });
             ViewBag.Status0 = new SelectList(status, "Value", "Text");
             List<SelectListItem> status1 = new List<SelectListItem>();
             status1.Add(new SelectListItem() { Text = "Convertido", Value = "2" });
+            status1.Add(new SelectListItem() { Text = "Testando", Value = "5" });
             status1.Add(new SelectListItem() { Text = "Perdido", Value = "3" });
             ViewBag.Status1 = new SelectList(status1, "Value", "Text");
+            List<SelectListItem> status2 = new List<SelectListItem>();
+            status2.Add(new SelectListItem() { Text = "Convertido", Value = "2" });
+            status2.Add(new SelectListItem() { Text = "Perdido", Value = "3" });
+            ViewBag.Status2 = new SelectList(status2, "Value", "Text");
             if (ModelState.IsValid)
             {
                 try
@@ -2268,7 +2284,6 @@ namespace GEDSys_Presentation.Controllers
                         lead.LEAD_DS_RESUMO_MOVIMENTO = dataHoje + "\r\n" + novo;
                     }
 
-
                     // Grava movimentação
                     Int32 voltaW = baseApp.ValidateEdit(lead, lead, usuario);
 
@@ -2293,7 +2308,7 @@ namespace GEDSys_Presentation.Controllers
                     Session["ExcecaoTipo"] = ex.GetType().ToString();
                     GravaLogExcecao grava = new GravaLogExcecao(usuApp);
                     Int32 voltaX = grava.GravarLogExcecao(ex, "Administra", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
-                    return RedirectToAction("TrataExcecao", "BaseAdmin");
+                    return RedirectToAction("TrataExcecao", "Administra");
                 }
             }
             else
@@ -2481,7 +2496,7 @@ namespace GEDSys_Presentation.Controllers
                 Session["ExcecaoTipo"] = ex.GetType().ToString();
                 GravaLogExcecao grava = new GravaLogExcecao(usuApp);
                 Int32 voltaX = grava.GravarLogExcecao(ex, "Administra", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
-                return RedirectToAction("TrataExcecao", "BaseAdmin");
+                return RedirectToAction("TrataExcecao", "Administra");
             }
         }
 
@@ -2524,7 +2539,7 @@ namespace GEDSys_Presentation.Controllers
                 Session["ExcecaoTipo"] = ex.GetType().ToString();
                 GravaLogExcecao grava = new GravaLogExcecao(usuApp);
                 Int32 voltaX = grava.GravarLogExcecao(ex, "Administra", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
-                return RedirectToAction("TrataExcecao", "BaseAdmin");
+                return RedirectToAction("TrataExcecao", "Administra");
             }
         }
 
@@ -2556,7 +2571,7 @@ namespace GEDSys_Presentation.Controllers
                 Session["ExcecaoTipo"] = ex.GetType().ToString();
                 GravaLogExcecao grava = new GravaLogExcecao(usuApp);
                 Int32 voltaX = grava.GravarLogExcecao(ex, "Administra", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
-                return RedirectToAction("TrataExcecao", "BaseAdmin");
+                return RedirectToAction("TrataExcecao", "Administra");
             }
         }
 
@@ -2635,7 +2650,7 @@ namespace GEDSys_Presentation.Controllers
                 Session["ExcecaoTipo"] = ex.GetType().ToString();
                 GravaLogExcecao grava = new GravaLogExcecao(usuApp);
                 Int32 voltaX = grava.GravarLogExcecao(ex, "Administra", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
-                return RedirectToAction("TrataExcecao", "BaseAdmin");
+                return RedirectToAction("TrataExcecao", "Administra");
             }
         }
 
@@ -2764,7 +2779,7 @@ namespace GEDSys_Presentation.Controllers
                 Session["ExcecaoTipo"] = ex.GetType().ToString();
                 GravaLogExcecao grava = new GravaLogExcecao(usuApp);
                 Int32 voltaX = grava.GravarLogExcecao(ex, "Administra", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
-                return RedirectToAction("TrataExcecao", "BaseAdmin");
+                return RedirectToAction("TrataExcecao", "Administra");
             }
         }
 
@@ -2804,7 +2819,7 @@ namespace GEDSys_Presentation.Controllers
                     Session["ExcecaoTipo"] = ex.GetType().ToString();
                     GravaLogExcecao grava = new GravaLogExcecao(usuApp);
                     Int32 voltaX = grava.GravarLogExcecao(ex, "Administra", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
-                    return RedirectToAction("TrataExcecao", "BaseAdmin");
+                    return RedirectToAction("TrataExcecao", "Administra");
                 }
             }
             else
@@ -2852,7 +2867,7 @@ namespace GEDSys_Presentation.Controllers
                 Session["ExcecaoTipo"] = ex.GetType().ToString();
                 GravaLogExcecao grava = new GravaLogExcecao(usuApp);
                 Int32 voltaX = grava.GravarLogExcecao(ex, "Administra", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
-                return RedirectToAction("TrataExcecao", "BaseAdmin");
+                return RedirectToAction("TrataExcecao", "Administra");
             }
         }
 
@@ -2896,7 +2911,7 @@ namespace GEDSys_Presentation.Controllers
                 Session["ExcecaoTipo"] = ex.GetType().ToString();
                 GravaLogExcecao grava = new GravaLogExcecao(usuApp);
                 Int32 voltaX = grava.GravarLogExcecao(ex, "Administra", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
-                return RedirectToAction("TrataExcecao", "BaseAdmin");
+                return RedirectToAction("TrataExcecao", "Administra");
             }
         }
 
@@ -2935,7 +2950,7 @@ namespace GEDSys_Presentation.Controllers
                     Session["ExcecaoTipo"] = ex.GetType().ToString();
                     GravaLogExcecao grava = new GravaLogExcecao(usuApp);
                     Int32 voltaX = grava.GravarLogExcecao(ex, "Administra", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
-                    return RedirectToAction("TrataExcecao", "BaseAdmin");
+                    return RedirectToAction("TrataExcecao", "Administra");
                 }
             }
             else
@@ -3217,6 +3232,15 @@ namespace GEDSys_Presentation.Controllers
                         };
                         table.AddCell(cell);
                     }
+                    else if (item.LEAD_IN_STATUS == 5)
+                    {
+                        cell = new PdfPCell(new Paragraph("Testando", meuFont))
+                        {
+                            VerticalAlignment = Element.ALIGN_MIDDLE,
+                            HorizontalAlignment = Element.ALIGN_LEFT
+                        };
+                        table.AddCell(cell);
+                    }
                     else if (item.LEAD_IN_STATUS == 0)
                     {
                         cell = new PdfPCell(new Paragraph("Em Análise", meuFont))
@@ -3284,7 +3308,7 @@ namespace GEDSys_Presentation.Controllers
                 Session["ExcecaoTipo"] = ex.GetType().ToString();
                 GravaLogExcecao grava = new GravaLogExcecao(usuApp);
                 Int32 voltaX = grava.GravarLogExcecao(ex, "Administra", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
-                return RedirectToAction("TrataExcecao", "BaseAdmin");
+                return RedirectToAction("TrataExcecao", "Administra");
             }
         }
 
@@ -3357,7 +3381,7 @@ namespace GEDSys_Presentation.Controllers
                 Session["ExcecaoTipo"] = ex.GetType().ToString();
                 GravaLogExcecao grava = new GravaLogExcecao(usuApp);
                 Int32 voltaX = grava.GravarLogExcecao(ex, "Administra", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
-                return RedirectToAction("TrataExcecao", "BaseAdmin");
+                return RedirectToAction("TrataExcecao", "Administra");
             }
         }
 
@@ -3412,7 +3436,7 @@ namespace GEDSys_Presentation.Controllers
                 Session["ExcecaoTipo"] = ex.GetType().ToString();
                 GravaLogExcecao grava = new GravaLogExcecao(usuApp);
                 Int32 voltaX = grava.GravarLogExcecao(ex, "Administra", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
-                return RedirectToAction("TrataExcecao", "BaseAdmin");
+                return RedirectToAction("TrataExcecao", "Administra");
             }
         }
 
@@ -3471,7 +3495,7 @@ namespace GEDSys_Presentation.Controllers
                     Session["ExcecaoTipo"] = ex.GetType().ToString();
                     GravaLogExcecao grava = new GravaLogExcecao(usuApp);
                     Int32 voltaX = grava.GravarLogExcecao(ex, "Administra", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
-                    return RedirectToAction("TrataExcecao", "BaseAdmin");
+                    return RedirectToAction("TrataExcecao", "Administra");
                 }
             }
             else
@@ -3537,7 +3561,7 @@ namespace GEDSys_Presentation.Controllers
                 Session["ExcecaoTipo"] = ex.GetType().ToString();
                 GravaLogExcecao grava = new GravaLogExcecao(usuApp);
                 Int32 voltaX = grava.GravarLogExcecao(ex, "Administra", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
-                return RedirectToAction("TrataExcecao", "BaseAdmin");
+                return RedirectToAction("TrataExcecao", "Administra");
             }
         }
 
@@ -3592,7 +3616,7 @@ namespace GEDSys_Presentation.Controllers
                     Session["ExcecaoTipo"] = ex.GetType().ToString();
                     GravaLogExcecao grava = new GravaLogExcecao(usuApp);
                     Int32 voltaX = grava.GravarLogExcecao(ex, "Administra", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
-                    return RedirectToAction("TrataExcecao", "BaseAdmin");
+                    return RedirectToAction("TrataExcecao", "Administra");
                 }
             }
             else
@@ -3643,7 +3667,7 @@ namespace GEDSys_Presentation.Controllers
                 Session["ExcecaoTipo"] = ex.GetType().ToString();
                 GravaLogExcecao grava = new GravaLogExcecao(usuApp);
                 Int32 voltaX = grava.GravarLogExcecao(ex, "Administra", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
-                return RedirectToAction("TrataExcecao", "BaseAdmin");
+                return RedirectToAction("TrataExcecao", "Administra");
             }
         }
 
@@ -4577,7 +4601,7 @@ namespace GEDSys_Presentation.Controllers
                 Session["ExcecaoTipo"] = ex.GetType().ToString();
                 GravaLogExcecao grava = new GravaLogExcecao(usuApp);
                 Int32 voltaX = grava.GravarLogExcecao(ex, "Administra", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
-                return RedirectToAction("TrataExcecao", "BaseAdmin");
+                return RedirectToAction("TrataExcecao", "Administra");
             }
         }
 
@@ -4601,7 +4625,7 @@ namespace GEDSys_Presentation.Controllers
                 Session["ExcecaoTipo"] = ex.GetType().ToString();
                 GravaLogExcecao grava = new GravaLogExcecao(usuApp);
                 Int32 voltaX = grava.GravarLogExcecao(ex, "Administra", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
-                return RedirectToAction("TrataExcecao", "BaseAdmin");
+                return RedirectToAction("TrataExcecao", "Administra");
             }
         }
 
@@ -4627,7 +4651,7 @@ namespace GEDSys_Presentation.Controllers
                 Session["ExcecaoTipo"] = ex.GetType().ToString();
                 GravaLogExcecao grava = new GravaLogExcecao(usuApp);
                 Int32 voltaX = grava.GravarLogExcecao(ex, "Administra", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
-                return RedirectToAction("TrataExcecao", "BaseAdmin");
+                return RedirectToAction("TrataExcecao", "Administra");
             }
         }
 
@@ -4667,7 +4691,7 @@ namespace GEDSys_Presentation.Controllers
                 Session["ExcecaoTipo"] = ex.GetType().ToString();
                 GravaLogExcecao grava = new GravaLogExcecao(usuApp);
                 Int32 voltaX = grava.GravarLogExcecao(ex, "Administra", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
-                return RedirectToAction("TrataExcecao", "BaseAdmin");
+                return RedirectToAction("TrataExcecao", "Administra");
             }
         }
 
@@ -4785,7 +4809,7 @@ namespace GEDSys_Presentation.Controllers
                     Session["ExcecaoTipo"] = ex.GetType().ToString();
                     GravaLogExcecao grava = new GravaLogExcecao(usuApp);
                     Int32 voltaX = grava.GravarLogExcecao(ex, "Administra", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
-                    return RedirectToAction("TrataExcecao", "BaseAdmin");
+                    return RedirectToAction("TrataExcecao", "Administra");
                 }
             }
             else
@@ -5047,7 +5071,7 @@ namespace GEDSys_Presentation.Controllers
                     Session["ExcecaoTipo"] = ex.GetType().ToString();
                     GravaLogExcecao grava = new GravaLogExcecao(usuApp);
                     Int32 voltaX = grava.GravarLogExcecao(ex, "Administra", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
-                    return RedirectToAction("TrataExcecao", "BaseAdmin");
+                    return RedirectToAction("TrataExcecao", "Administra");
                 }
             }
             else
@@ -5101,7 +5125,7 @@ namespace GEDSys_Presentation.Controllers
                 Session["ExcecaoTipo"] = ex.GetType().ToString();
                 GravaLogExcecao grava = new GravaLogExcecao(usuApp);
                 Int32 voltaX = grava.GravarLogExcecao(ex, "Administra", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
-                return RedirectToAction("TrataExcecao", "BaseAdmin");
+                return RedirectToAction("TrataExcecao", "Administra");
             }
         }
 
@@ -5199,7 +5223,7 @@ namespace GEDSys_Presentation.Controllers
                 Session["ExcecaoTipo"] = ex.GetType().ToString();
                 GravaLogExcecao grava = new GravaLogExcecao(usuApp);
                 Int32 voltaX = grava.GravarLogExcecao(ex, "Administra", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
-                return RedirectToAction("TrataExcecao", "BaseAdmin");
+                return RedirectToAction("TrataExcecao", "Administra");
             }
         }
 
@@ -5409,7 +5433,7 @@ namespace GEDSys_Presentation.Controllers
         //        Session["ExcecaoTipo"] = ex.GetType().ToString();
         //        GravaLogExcecao grava = new GravaLogExcecao(usuApp);
         //        Int32 voltaX = grava.GravarLogExcecao(ex, "Locacao", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
-        //        return RedirectToAction("TrataExcecao", "BaseAdmin");
+        //        return RedirectToAction("TrataExcecao", "Administra");
         //    }
         //}
 
@@ -5535,9 +5559,10 @@ namespace GEDSys_Presentation.Controllers
                     }
                     baseApp.ValidateEdit(lead, lead, usuarioLogado);
 
-                    Session["MsgCRUD"] = "O lead de " + lead.LEAD_NM_NOME.ToUpper() + " foi qualificado com sucesso!";
+                    Session["MsgCRUD"] = "O lead de " + lead.LEAD_NM_NOME.ToUpper() + " foi qualificado com sucesso. Confirme a alteração para que seja efetivado";
                     Session["MensLead"] = 61;
                 }
+
 
                 // Retorna para a grid geral de Leads atualizada
                 Session["ListaLead"] = null;
@@ -5554,7 +5579,7 @@ namespace GEDSys_Presentation.Controllers
                 Session["ExcecaoTipo"] = ex.GetType().ToString();
                 GravaLogExcecao grava = new GravaLogExcecao(usuApp);
                 Int32 voltaX = grava.GravarLogExcecao(ex, "Administra", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
-                return RedirectToAction("TrataExcecao", "BaseAdmin");
+                return RedirectToAction("TrataExcecao", "Administra");
             }
         }
 
@@ -5583,8 +5608,8 @@ namespace GEDSys_Presentation.Controllers
                     lead.LEAD_DT_MOVIMENTO = DateTime.Now;
                     lead.LEAD_DS_MOTIVO_EXCLUSAO = justificativa;
 
-                    string tipoMovimentacao = (novoStatus == 2) ? "CONVERSÃO DE LEAD" : "LEAD MARCADO COMO PERDIDO";
-
+                    String tipoMovimentacao = (novoStatus == 2) ? "CONVERSÃO DE LEAD" :
+                                              (novoStatus == 5) ? "TESTANDO" : "LEAD MARCADO COMO PERDIDO";
                     // Monta o novo bloco de histórico para a transação
                     string dataHoje = DateTime.Today.Date.ToLongDateString();
                     string blocoMovimento = $"*** Movimentação em [{dataHoje}] ***\r\n" +
@@ -5624,7 +5649,7 @@ namespace GEDSys_Presentation.Controllers
                 Session["ExcecaoTipo"] = ex.GetType().ToString();
                 GravaLogExcecao grava = new GravaLogExcecao(usuApp);
                 grava.GravarLogExcecao(ex, "Administra", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
-                return RedirectToAction("TrataExcecao", "BaseAdmin");
+                return RedirectToAction("TrataExcecao", "Administra");
             }
         }
 
@@ -5739,7 +5764,7 @@ namespace GEDSys_Presentation.Controllers
                 Session["ExcecaoTipo"] = ex.GetType().ToString();
                 GravaLogExcecao grava = new GravaLogExcecao(usuApp);
                 //Int32 voltaX = grava.GravarLogExcecao(ex, "Exceção", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
-                return RedirectToAction("TrataExcecao", "BaseAdmin");
+                return RedirectToAction("TrataExcecao", "Administra");
             }
         }
 
