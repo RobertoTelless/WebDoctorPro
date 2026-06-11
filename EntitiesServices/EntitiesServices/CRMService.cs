@@ -111,6 +111,16 @@ namespace ModelServices.EntitiesServices
             return _conRepository.GetItemById(id);
         }
 
+        public MOTIVO_CANCELAMENTO GetMotivoCancelamentoById(Int32 id)
+        {
+            return _mcRepository.GetItemById(id);
+        }
+
+        public MOTIVO_ENCERRAMENTO GetMotivoEncerramentoById(Int32 id)
+        {
+            return _meRepository.GetItemById(id);
+        }
+
         public CRM_ACAO GetAcaoById(Int32 id)
         {
             return _acaRepository.GetItemById(id);

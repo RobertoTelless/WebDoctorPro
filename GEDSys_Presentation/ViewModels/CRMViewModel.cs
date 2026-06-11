@@ -74,6 +74,8 @@ namespace ERP_Condominios_Solution.ViewModels
         public Nullable<int> PACI_CD_ID { get; set; }
         public Nullable<System.DateTime> CRM1_DT_EXCLUSAO { get; set; }
         public Nullable<int> CRM1_IN_SISTEMA { get; set; }
+        public string CRM1_TX_RESUMO { get; set; }
+        public string CRM1_TX_RESUMO_OLD { get; set; }
 
         public string NumeroProposta { get; set; }
         public string NomeProposta { get; set; }

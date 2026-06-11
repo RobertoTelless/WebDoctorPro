@@ -165,6 +165,7 @@
         </ol>
         <br />
     </div>
+
     <div class="row">
         <div class="col-lg-12 col-md-12 col-xs-12">
             <div class="col-lg-12 col-md-12 col-xs-12 ibox float-e-margins">
@@ -185,6 +186,115 @@
                             @Html.ValidationSummary(false, "", new { @class = "text-danger" })
                         </div>
                     }
+
+                    <div class="row">
+                        @if (Model.LEAD_IN_STATUS == 4)
+                        {
+                            <div class="col-lg-2">
+                                <div class="widget style1 red-bg">
+                                    <div class="row vertical-align">
+                                        <div class="col-xs-2">
+                                            <i class="fa fa-times fa-3x"></i>
+                                        </div>
+                                        <div class="col-xs-9 text-right">
+                                            <h3 class="font-normal">Excluído</h3>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                        else if (Model.LEAD_IN_STATUS == 3)
+                        {
+                            <div class="col-lg-2">
+                                <div class="widget style1 red-bg">
+                                    <div class="row vertical-align">
+                                        <div class="col-xs-2">
+                                            <i class="fa fa-check fa-3x"></i>
+                                        </div>
+                                        <div class="col-xs-9 text-right">
+                                            <h3 class="font-normal">Perdido</h3>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+
+                        }
+                        else if (Model.LEAD_IN_STATUS == 0)
+                        {
+                            <div class="col-lg-2">
+                                <div class="widget style1 yellow-bg">
+                                    <div class="row vertical-align">
+                                        <div class="col-xs-2">
+                                            <i class="fa fa-check fa-3x"></i>
+                                        </div>
+                                        <div class="col-xs-9 text-right">
+                                            <h3 class="font-normal">Em Análise</h3>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                        else if (Model.LEAD_IN_STATUS == 1)
+                        {
+                            <div class="col-lg-2">
+                                <div class="widget style1 navy-bg">
+                                    <div class="row vertical-align">
+                                        <div class="col-xs-2">
+                                            <i class="fa fa-check fa-3x"></i>
+                                        </div>
+                                        <div class="col-xs-9 text-right">
+                                            <h3 class="font-normal">Qualificado</h3>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                        else if (Model.LEAD_IN_STATUS == 2)
+                        {
+                            <div class="col-lg-2">
+                                <div class="widget style1 blue-bg">
+                                    <div class="row vertical-align">
+                                        <div class="col-xs-2">
+                                            <i class="fa fa-check fa-3x"></i>
+                                        </div>
+                                        <div class="col-xs-9 text-right">
+                                            <h3 class="font-normal">Convertido</h3>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="col-lg-2">
+                                <div class="widget style1 yeellow-bg">
+                                    <div class="row vertical-align">
+                                        <div class="col-xs-2">
+                                            <i class="fa fa-check fa-3x"></i>
+                                        </div>
+                                        <div class="col-xs-9 text-right">
+                                            <h3 class="font-normal">Testando</h3>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+
+                        <div class="col-lg-3">
+                            <div class="widget style1 yellow-bg">
+                                <div class="row vertical-align">
+                                    <div class="col-xs-3">
+                                        <i class="fa fa-calendar fa-3x"></i>
+                                    </div>
+                                    <div class="col-xs-9 text-right">
+                                        <h3 class="font-normal">Criado em : @Model.LEAD_DT_ENTRADA.Value.ToShortDateString()</h3>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="form-group" style=" margin-left: 5px; margin-right: 5px;">
                         @if (Model.LEAD_IN_STATUS == 0)
                         {

@@ -1870,10 +1870,42 @@ namespace GEDSys_Presentation.Controllers
                 CRM crm = crmApp.GetItemById(lead.CRM1_CD_ID.Value);
                 crm.CRM1_IN_ATIVO = 2;
                 crm.CRM1_DT_EXCLUSAO = DateTime.Today.Date;
-                Int32 voltaC = crmApp.ValidateDelete(crm, usuario);
+                Int32 voltaC = crmApp.ValidateEdit(crm, crm, usuario);
+
+                // Atualiza resumo crm
+                CRM proc = crmApp.GetItemById(crm.CRM1_CD_ID);
+                velho = proc.CRM1_TX_RESUMO;
+                novo = "Exclusão de Processo - " + proc.CRM1_NM_NOME.ToUpper();
+                dataHoje = DateTime.Today.Date.ToLongDateString();
+                dataHoje = "*** Movimentação em [" + dataHoje + "] ***";
+                if (proc.CRM1_TX_RESUMO != null)
+                {
+                    String anot = dataHoje + "\r\n" + novo;
+                    if (velho == null & novo != String.Empty)
+                    {
+                        proc.CRM1_TX_RESUMO = dataHoje + "\r\n" + novo;
+                    }
+                    if (velho != null & novo != String.Empty)
+                    {
+                        String tripa = velho.Substring(velho.Length - 4, 4);
+                        if (tripa == "\r\n")
+                        {
+                            velho = velho.Substring(0, velho.Length - 4);
+                        }
+                        proc.CRM1_TX_RESUMO = velho + "\r\n\r\n" + dataHoje + "\r\n" + novo;
+                    }
+                }
+                else
+                {
+                    velho = proc.CRM1_TX_RESUMO;
+                    proc.CRM1_TX_RESUMO = dataHoje + "\r\n" + novo;
+                }
+
+                // Grava movimentação
+                Int32 voltaR = crmApp.ValidateEdit(proc, proc, usuario);
 
                 // Mensagem do CRUD
-                Session["MsgCRUD"] = "O lead de " + item.LEAD_NM_NOME.ToUpper() + " foi excluído com sucesso";
+                Session["MsgCRUD"] = "O lead de " + item.LEAD_NM_NOME.ToUpper() + " foi excluído com sucesso. O processo associado tambem foi excluido";
                 Session["MensLead"] = 61;
 
                 // Retorno
@@ -2030,7 +2062,7 @@ namespace GEDSys_Presentation.Controllers
                     lead.CRM1_CD_ID = crm.CRM1_CD_ID;
                     Int32 voltaL = baseApp.ValidateEdit(lead, lead, usuario);
 
-                    // Atualiza resumo
+                    // Atualiza resumo lead
                     lead = baseApp.GetItemById(lead.LEAD_CD_ID);
                     String velho = lead.LEAD_DS_RESUMO_MOVIMENTO;
                     String novo = "Criação de Lead - " + lead.LEAD_NM_NOME.ToUpper();
@@ -2059,8 +2091,37 @@ namespace GEDSys_Presentation.Controllers
                         lead.LEAD_DS_RESUMO_MOVIMENTO = dataHoje + "\r\n" + novo;
                     }
 
+                    // Atualiza resumo crm
+                    CRM proc = crmApp.GetItemById(crm.CRM1_CD_ID);
+                    velho = proc.CRM1_TX_RESUMO;
+                    novo = "Criação de Processo - " + proc.CRM1_NM_NOME.ToUpper();
+                    dataHoje = DateTime.Today.Date.ToLongDateString();
+                    dataHoje = "*** Movimentação em [" + dataHoje + "] ***";
+                    if (proc.CRM1_TX_RESUMO != null)
+                    {
+                        String anot = dataHoje + "\r\n" + novo;
+                        if (velho == null & novo != String.Empty)
+                        {
+                            proc.CRM1_TX_RESUMO = dataHoje + "\r\n" + novo;
+                        }
+                        if (velho != null & novo != String.Empty)
+                        {
+                            String tripa = velho.Substring(velho.Length - 4, 4);
+                            if (tripa == "\r\n")
+                            {
+                                velho = velho.Substring(0, velho.Length - 4);
+                            }
+                            proc.CRM1_TX_RESUMO = velho + "\r\n\r\n" + dataHoje + "\r\n" + novo;
+                        }
+                    }
+                    else
+                    {
+                        velho = proc.CRM1_TX_RESUMO;
+                        proc.CRM1_TX_RESUMO = dataHoje + "\r\n" + novo;
+                    }
+
                     // Grava movimentação
-                    Int32 voltaW = baseApp.ValidateEdit(lead, lead, usuario);
+                    Int32 voltaW = crmApp.ValidateEdit(proc, proc, usuario);
 
                     // Sucesso
                     listaMaster = new List<LEAD>();

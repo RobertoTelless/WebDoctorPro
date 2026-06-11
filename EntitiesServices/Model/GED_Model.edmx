@@ -1895,6 +1895,8 @@
           <Property Name="LEAD_CD_ID" Type="int" />
           <Property Name="PACI_CD_ID" Type="int" />
           <Property Name="CRM1_DT_EXCLUSAO" Type="date" />
+          <Property Name="CRM1_TX_RESUMO" Type="text" />
+          <Property Name="CRM1_TX_RESUMO_OLD" Type="text" />
         </EntityType>
         <EntityType Name="CRM_ACAO">
           <Key>
@@ -22748,6 +22750,8 @@
           <Property Name="PACI_CD_ID" Type="Int32" />
           <NavigationProperty Name="PACIENTE" Relationship="CRMSysDBModel.FK_CRM_PACIENTE" FromRole="CRM" ToRole="PACIENTE" />
           <Property Name="CRM1_DT_EXCLUSAO" Type="DateTime" Precision="0" />
+          <Property Name="CRM1_TX_RESUMO" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="CRM1_TX_RESUMO_OLD" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
         </EntityType>
         <EntityType Name="CRM_ACAO">
           <Key>
@@ -44570,6 +44574,8 @@
           <EntitySetMapping Name="CRM">
             <EntityTypeMapping TypeName="CRMSysDBModel.CRM">
               <MappingFragment StoreEntitySet="CRM">
+                <ScalarProperty Name="CRM1_TX_RESUMO_OLD" ColumnName="CRM1_TX_RESUMO_OLD" />
+                <ScalarProperty Name="CRM1_TX_RESUMO" ColumnName="CRM1_TX_RESUMO" />
                 <ScalarProperty Name="CRM1_DT_EXCLUSAO" ColumnName="CRM1_DT_EXCLUSAO" />
                 <ScalarProperty Name="PACI_CD_ID" ColumnName="PACI_CD_ID" />
                 <ScalarProperty Name="LEAD_CD_ID" ColumnName="LEAD_CD_ID" />

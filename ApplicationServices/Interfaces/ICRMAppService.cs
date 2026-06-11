@@ -34,6 +34,8 @@ namespace ApplicationServices.Interfaces
         List<CRM_FOLLOW> GetAllFollow(Int32 idAss);
         List<CRM_COMENTARIO> GetAllAnotacao(Int32 idAss);
         Int32 ValidateEditAnexo(CRM_ANEXO item);
+        MOTIVO_CANCELAMENTO GetMotivoCancelamentoById(Int32 id);
+        MOTIVO_ENCERRAMENTO GetMotivoEncerramentoById(Int32 id);
 
         List<CRM_ACAO> GetAllAcoes(Int32 idAss);
         List<CRM_ACAO> GetAllAcoes();

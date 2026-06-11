@@ -78,6 +78,8 @@ namespace EntitiesServices.Model
         public Nullable<int> LEAD_CD_ID { get; set; }
         public Nullable<int> PACI_CD_ID { get; set; }
         public Nullable<System.DateTime> CRM1_DT_EXCLUSAO { get; set; }
+        public string CRM1_TX_RESUMO { get; set; }
+        public string CRM1_TX_RESUMO_OLD { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<AGENDA> AGENDA { get; set; }

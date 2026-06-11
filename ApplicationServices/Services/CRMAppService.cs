@@ -61,6 +61,16 @@ namespace ApplicationServices.Services
             return item;
         }
 
+        public MOTIVO_CANCELAMENTO GetMotivoCancelamentoById(Int32 id)
+        {
+            return _baseService.GetMotivoCancelamentoById(id);
+        }
+
+        public MOTIVO_ENCERRAMENTO GetMotivoEncerramentoById(Int32 id)
+        {
+            return _baseService.GetMotivoEncerramentoById(id);
+        }
+
         public USUARIO GetUserById(Int32 id)
         {
             USUARIO item = _baseService.GetUserById(id);

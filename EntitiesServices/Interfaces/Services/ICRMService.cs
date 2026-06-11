@@ -34,6 +34,8 @@ namespace ModelServices.Interfaces.EntitiesServices
         USUARIO GetUserById(Int32 id);
         CRM_COMENTARIO GetComentarioById(Int32 id);
         CRM_FOLLOW GetFollowById(Int32 id);
+        MOTIVO_CANCELAMENTO GetMotivoCancelamentoById(Int32 id);
+        MOTIVO_ENCERRAMENTO GetMotivoEncerramentoById(Int32 id);
 
         List<CRM_FOLLOW> GetAllFollow(Int32 idAss);
         List<CRM_COMENTARIO> GetAllAnotacao(Int32 idAss);
