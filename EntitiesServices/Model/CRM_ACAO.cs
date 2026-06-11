@@ -37,6 +37,7 @@ namespace EntitiesServices.Model
         public Nullable<int> CRAC_IN_STATUS { get; set; }
         public Nullable<int> CRAC_IN_ATIVO { get; set; }
         public Nullable<int> CRAC_NR_ATRASO { get; set; }
+        public Nullable<int> CRAC_IN_SISTEMA { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<AGENDA> AGENDA { get; set; }

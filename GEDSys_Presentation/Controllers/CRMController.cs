@@ -1294,6 +1294,7 @@ namespace GEDSys_Presentation.Controllers
             CRM_ACAO acao = new CRM_ACAO();    
             LEAD lead = leaApp.GetItemById(lea.LEAD_CD_ID);
             CRM crm = baseApp.GetItemById(pro.CRM1_CD_ID);
+            FUNIL_ETAPA etapa = new FUNIL_ETAPA();
 
             // Configuração
             CONFIGURACAO conf = CarregaConfiguracaoGeral();
@@ -1312,6 +1313,11 @@ namespace GEDSys_Presentation.Controllers
             {
                 template = teApp.GetByCode("CRIAACAO", idAss);
                 acao = (CRM_ACAO)Session["AcaoMail"];
+            }
+            if (tipo == 4)
+            {
+                template = teApp.GetByCode("ETAPPROC", idAss);
+                etapa = (FUNIL_ETAPA)Session["EtapaMail"];
             }
 
             // Prepara cabeçalho
@@ -1416,6 +1422,34 @@ namespace GEDSys_Presentation.Controllers
                     texto = texto.Replace("{dias}", ((acao.CRAC_DT_PREVISTA.Value.Date - DateTime.Today.Date).Days).ToString());
                 }
             }
+            if (tipo == 4)
+            {
+                if (texto.Contains("{resp}"))
+                {
+                    texto = texto.Replace("{resp}", usuario.USUA_NM_NOME.ToUpper());
+                }
+                if (texto.Contains("{lead}"))
+                {
+                    texto = texto.Replace("{lead}", lead.LEAD_NM_NOME.ToUpper());
+                }
+                if (texto.Contains("{proc}"))
+                {
+                    texto = texto.Replace("{proc}", crm.CRM1_NM_NOME.ToUpper());
+                }
+                if (texto.Contains("{guid}"))
+                {
+                    texto = texto.Replace("{guid}", lead.LEAD_GU_IDENTIFICADOR);
+                }
+                if (texto.Contains("{data}"))
+                {
+                    texto = texto.Replace("{data}", crm.CRM1_DT_CRIACAO.Value.ToLongDateString());
+                }
+                if (texto.Contains("{etapa}"))
+                {
+                    texto = texto.Replace("{etapa}", etapa.FUET_NM_NOME.ToUpper());
+                }
+            }
+
             String emailBody = cab + "<br />" + texto + "<br /><br />" + assinatura;
 
             // Decriptografa chaves
@@ -1436,7 +1470,11 @@ namespace GEDSys_Presentation.Controllers
             }
             if (tipo == 3)
             {
-                mensagem.ASSUNTO = "Criação de Ação- " + acao.CRAC_NM_TITULO.ToUpper();
+                mensagem.ASSUNTO = "Criação de Ação - " + acao.CRAC_NM_TITULO.ToUpper();
+            }
+            if (tipo == 4)
+            {
+                mensagem.ASSUNTO = "Mudança de Etapa - " + etapa.FUET_NM_NOME.ToUpper();
             }
             mensagem.CORPO = emailBody;
             mensagem.DEFAULT_CREDENTIALS = false;
@@ -1491,6 +1529,10 @@ namespace GEDSys_Presentation.Controllers
                 {
                     mens.MENS_NM_NOME = "Criação de Ação - Envio de aviso ao responsável: " + usuario.USUA_NM_NOME;
                 }
+                if (tipo == 4)
+                {
+                    mens.MENS_NM_NOME = "Mudança de Etapa de Processo - Envio de aviso ao responsável: " + usuario.USUA_NM_NOME;
+                }
                 mens.MENS_GU_GUID = lead.LEAD_GU_IDENTIFICADOR;
                 mens.MENS_DT_AGENDAMENTO = crm.CRM1_DT_CRIACAO;
                 mens.MENS_DT_ENVIO = DateTime.Today.Date;
@@ -1516,6 +1558,10 @@ namespace GEDSys_Presentation.Controllers
                 if (tipo == 3)
                 {
                     Int32 voltaX = envio.GravarMensagemEnviada(mens, usuario, emailBody, status, iD, erro, "Processo CRM - Criação de Ação");
+                }
+                if (tipo == 4)
+                {
+                    Int32 voltaX = envio.GravarMensagemEnviada(mens, usuario, emailBody, status, iD, erro, "Processo CRM - Mudança de Etapa");
                 }
                 Session["IdMail"] = iD;
             }
@@ -2931,6 +2977,7 @@ namespace GEDSys_Presentation.Controllers
                 vm.ASSI_CD_ID = idAss;
                 vm.CRAC_DT_CRIACAO = DateTime.Now;
                 vm.CRAC_IN_STATUS = 1;
+                vm.CRAC_IN_SISTEMA = 6;
                 vm.USUA_CD_ID1 = usuario.USUA_CD_ID;
                 vm.CRAC_DT_PREVISTA = DateTime.Now.AddDays(Convert.ToDouble(conf.CONF_NR_DIAS_ACAO));
                 vm.EMPR_CD_ID = usuario.EMPR_CD_ID.Value;
@@ -3008,6 +3055,7 @@ namespace GEDSys_Presentation.Controllers
                     dia.EMPR_CD_ID = usuarioLogado.EMPR_CD_ID.Value;
                     dia.DIPR_NM_OPERACAO = "Criação de Ação";
                     dia.DIPR_DS_DESCRICAO = "Criação de Ação " + item.CRAC_NM_TITULO + ". Processo: " + not.CRM1_NM_NOME + ". Lead: " + cli.LEAD_NM_NOME;
+                    dia.DIPR_IN_SISTEMA = 6;
                     Int32 volta3 = diaApp.ValidateCreate(dia);
 
                     // Processa agenda
@@ -3046,6 +3094,7 @@ namespace GEDSys_Presentation.Controllers
                             dia.DIPR_NM_OPERACAO = "Agendamento de Ação";
                             dia.DIPR_DS_DESCRICAO = "Agendamento de Ação " + item.CRAC_NM_TITULO + ". Processo: " + not.CRM1_NM_NOME + ". Lead: " + cli.LEAD_NM_NOME + ". Data: " + ag.AGEN_DT_DATA.ToLongDateString();
                             dia.EMPR_CD_ID = usuarioLogado.EMPR_CD_ID.Value;
+                            dia.DIPR_IN_SISTEMA = 6;
                             Int32 volta4 = diaApp.ValidateCreate(dia);
                         }
                     }
@@ -3132,13 +3181,1175 @@ namespace GEDSys_Presentation.Controllers
             }
         }
 
+        [HttpGet]
+        public ActionResult EditarAcao(Int32 id)
+        {
+            try
+            {
+                // Verifica se tem usuario logado
+                USUARIO usuario = new USUARIO();
+                if ((String)Session["Ativa"] == null)
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+                if ((USUARIO)Session["UserCredentials"] != null)
+                {
+                    usuario = (USUARIO)Session["UserCredentials"];
+                }
+                else
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+                Int32 idAss = (Int32)Session["IdAssinante"];
+
+                // Verifica se pode editar ação
+                CRM_ACAO item = baseApp.GetAcaoById(id);
+                if (item.CRAC_IN_STATUS > 2)
+                {
+                    Session["MensCRM"] = 43;
+                    return RedirectToAction("VoltarAcompanhamentoCRM");
+                }
+
+                // Prepara view
+                ViewBag.Tipos = new SelectList(CarregaTipoAcao().Where(p => p.TIAC_IN_TIPO == 1).OrderBy(p => p.TIAC_NM_NOME), "TIAC_CD_ID", "TIAC_NM_NOME");
+                List<USUARIO> listaTotal = CarregaUsuario().Where(p => p.USUA_IN_ESPECIAL == 1).ToList();
+                ViewBag.Usuarios = new SelectList(listaTotal.OrderBy(p => p.USUA_NM_NOME), "USUA_CD_ID", "USUA_NM_NOME");
+
+                // Monta Status
+                List<SelectListItem> status = new List<SelectListItem>();
+                if (item.CRAC_IN_STATUS == 1)
+                {
+                    status.Add(new SelectListItem() { Text = "Pendente", Value = "2" });
+                    status.Add(new SelectListItem() { Text = "Encerrada", Value = "3" });
+                    ViewBag.Status = new SelectList(status, "Value", "Text");
+                }
+                else if (item.CRAC_IN_STATUS == 2)
+                {
+                    status.Add(new SelectListItem() { Text = "Ativa", Value = "1" });
+                    status.Add(new SelectListItem() { Text = "Encerrada", Value = "3" });
+                    ViewBag.Status = new SelectList(status, "Value", "Text");
+                }
 
 
+                // Grava Acesso
+                ControleAcessoMetodo grava = new ControleAcessoMetodo(aceApp);
+                Int32 voltaX = grava.GravaAcesso(usuario.USUA_CD_ID, usuario.ASSI_CD_ID, "ACAO_ALTERAR", "CRM", "EditarAcao");
 
+                // Processa
+                Session["Acao"] = item;
+                objetoAntes = (CRM)Session["CRM"];
+                CRMAcaoViewModel vm = Mapper.Map<CRM_ACAO, CRMAcaoViewModel>(item);
+                vm.DATA_PREVISTA = item.CRAC_DT_PREVISTA.Humanize(culture: new CultureInfo("pt-BR"));
+                vm.CRAC_IN_SISTEMA = 6;
+                Session["VoltaTela"] = 1;
+                ViewBag.Incluir = (Int32)Session["VoltaTela"];
+                return View(vm);
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "CRM";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "CRM", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return RedirectToAction("TrataExcecao", "Administra");
+            }
+        }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult EditarAcao(CRMAcaoViewModel vm)
+        {
+            if ((String)Session["Ativa"] == null)
+            {
+                return RedirectToAction("Logout", "ControleAcesso");
+            }
+            Int32 idAss = (Int32)Session["IdAssinante"];
+            USUARIO usuario = (USUARIO)Session["UserCredentials"];
+            ViewBag.Tipos = new SelectList(CarregaTipoAcao().Where(p => p.TIAC_IN_TIPO == 1).OrderBy(p => p.TIAC_NM_NOME), "TIAC_CD_ID", "TIAC_NM_NOME");
+            List<USUARIO> listaTotal = CarregaUsuario().Where(p => p.USUA_IN_ESPECIAL == 1).ToList();
+            ViewBag.Usuarios = new SelectList(listaTotal.OrderBy(p => p.USUA_NM_NOME), "USUA_CD_ID", "USUA_NM_NOME");
+            if (ModelState.IsValid)
+            {
+                try
+                {
 
+                    // Sanitização
+                    vm.CRAC_DS_DESCRICAO = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(vm.CRAC_DS_DESCRICAO);
+                    vm.CRAC_NM_TITULO = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(vm.CRAC_NM_TITULO);
 
+                    // Executa a operação
+                    CRM_ACAO item = Mapper.Map<CRMAcaoViewModel, CRM_ACAO>(vm);
+                    USUARIO usuarioLogado = (USUARIO)Session["UserCredentials"];
+                    Int32 volta = baseApp.ValidateEditAcao(item);
 
+                    // Gera diario
+                    CRM proc = baseApp.GetItemById(item.CRM1_CD_ID);
+                    LEAD cli = leaApp.GetItemById(proc.LEAD_CD_ID.Value);
+                    DIARIO_PROCESSO dia = new DIARIO_PROCESSO();
+                    dia.ASSI_CD_ID = usuarioLogado.ASSI_CD_ID;
+                    dia.USUA_CD_ID = usuarioLogado.USUA_CD_ID;
+                    dia.DIPR_DT_DATA = DateTime.Today.Date;
+                    dia.CRM1_CD_ID = item.CRM1_CD_ID;
+                    dia.CRAC_CD_ID = item.CRAC_CD_ID;
+                    dia.DIPR_NM_OPERACAO = "Alteração de Ação";
+                    dia.DIPR_DS_DESCRICAO = "Alteração de Ação " + item.CRAC_NM_TITULO.ToUpper() + ". Processo: " + proc.CRM1_NM_NOME.ToUpper() + ". Lead: " + cli.LEAD_NM_NOME.ToUpper();
+                    dia.EMPR_CD_ID = usuario.EMPR_CD_ID.Value;
+                    dia.DIPR_IN_SISTEMA = 6;
+                    Int32 volta3 = diaApp.ValidateCreate(dia);
+
+                    // Monta Log
+                    CRM_ACAO antes = (CRM_ACAO)Session["Acao"];
+                    LOG log = new LOG
+                    {
+                        LOG_DT_DATA = DateTime.Now,
+                        ASSI_CD_ID = usuarioLogado.ASSI_CD_ID,
+                        USUA_CD_ID = usuarioLogado.USUA_CD_ID,
+                        LOG_NM_OPERACAO = "CRM - Ação - Alteração",
+                        LOG_IN_ATIVO = 1,
+                        LOG_TX_REGISTRO = "Processo: " + proc.CRM1_NM_NOME.ToUpper() + " - Ação: " + item.CRAC_NM_TITULO.ToUpper(),
+                        LOG_TX_REGISTRO_ANTES = null,
+                        LOG_IN_SISTEMA = 6
+                    };
+                    Int32 volta2 = logApp.ValidateCreate(log);
+
+                    // Atualiza resumo
+                    String velho = proc.CRM1_TX_RESUMO;
+                    String novo = "Alteração de Ação - " + item.CRAC_NM_TITULO.ToUpper();
+                    String dataHoje = DateTime.Today.Date.ToLongDateString();
+                    dataHoje = "*** Movimentação em [" + dataHoje + "] ***";
+                    if (proc.CRM1_TX_RESUMO != null)
+                    {
+                        String anot = dataHoje + "\r\n" + novo;
+                        if (velho == null & novo != String.Empty)
+                        {
+                            proc.CRM1_TX_RESUMO = dataHoje + "\r\n" + novo;
+                        }
+                        if (velho != null & novo != String.Empty)
+                        {
+                            String tripa = velho.Substring(velho.Length - 4, 4);
+                            if (tripa == "\r\n")
+                            {
+                                velho = velho.Substring(0, velho.Length - 4);
+                            }
+                            proc.CRM1_TX_RESUMO = velho + "\r\n\r\n" + dataHoje + "\r\n" + novo;
+                        }
+                    }
+                    else
+                    {
+                        velho = proc.CRM1_TX_RESUMO;
+                        proc.CRM1_TX_RESUMO = dataHoje + "\r\n" + novo;
+                    }
+                    Int32 voltaR = baseApp.ValidateEdit(proc, proc);
+
+                    // Mensagem do CRUD
+                    Session["MsgCRUD"] = "A ação " + item.CRAC_NM_TITULO.ToUpper() + " foi alterada com sucesso. Processo: " + proc.CRM1_GU_GUID;
+                    Session["MensCRM"] = 161;
+
+                    // Verifica retorno
+                    Session["ListaCRM"] = null;
+                    Session["CRMAlterada"] = 1;
+                    Session["CRMAcaoAlterada"] = 1;
+                    Session["VoltaTela"] = 1;
+                    Session["FlagCRM"] = 1;
+                    Session["LinhaAlterada1"] = item.CRAC_CD_ID;
+                    ViewBag.Incluir = (Int32)Session["VoltaTela"];
+                    return RedirectToAction("VoltarAcaoCRM");
+                }
+                catch (Exception ex)
+                {
+                    ViewBag.Message = ex.Message;
+                    Session["TipoVolta"] = 2;
+                    Session["VoltaExcecao"] = "CRM";
+                    Session["Excecao"] = ex;
+                    Session["ExcecaoTipo"] = ex.GetType().ToString();
+                    GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                    Int32 voltaX = grava.GravarLogExcecao(ex, "CRM", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                    return RedirectToAction("TrataExcecao", "Administra");
+                }
+            }
+            else
+            {
+                return View(vm);
+            }
+        }
+
+        public ActionResult VerAcao(Int32 id)
+        {
+            try
+            {
+                // Verifica se tem usuario logado
+                if ((String)Session["Ativa"] == null)
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+                Int32 idAss = (Int32)Session["IdAssinante"];
+
+                // Processa
+                CRM_ACAO item = baseApp.GetAcaoById(id);
+                objetoAntes = (CRM)Session["CRM"];
+                CRMAcaoViewModel vm = Mapper.Map<CRM_ACAO, CRMAcaoViewModel>(item);
+                Session["VoltaTela"] = 1;
+                ViewBag.Incluir = (Int32)Session["VoltaTela"];
+                return View(vm);
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "CRM";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "CRM", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return RedirectToAction("TrataExcecao", "Administra");
+            }
+        }
+
+        [HttpGet]
+        public ActionResult ExcluirAcao(Int32 id)
+        {
+            try
+            {
+                // Verifica se tem usuario logado
+                USUARIO usuario = new USUARIO();
+                if ((String)Session["Ativa"] == null)
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+                if ((USUARIO)Session["UserCredentials"] != null)
+                {
+                    usuario = (USUARIO)Session["UserCredentials"];
+                }
+                else
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+                Int32 idAss = (Int32)Session["IdAssinante"];
+
+                // Processa
+                CRM_ACAO item = baseApp.GetAcaoById(id);
+                objetoAntes = (CRM)Session["CRM"];
+                item.CRAC_IN_ATIVO = 0;
+                item.CRAC_IN_STATUS = 4;
+                Int32 volta = baseApp.ValidateEditAcao(item);
+
+                // Exclui agendamentos
+                if (item.AGENDA.Count > 0)
+                {
+                    foreach (AGENDA age in item.AGENDA)
+                    {
+                        AGENDA nova = new AGENDA();
+                        nova.AGEN_CD_ID = age.AGEN_CD_ID;
+                        nova.AGEN_CD_USUARIO = age.AGEN_CD_USUARIO;
+                        nova.AGEN_DS_DESCRICAO = age.AGEN_DS_DESCRICAO;
+                        nova.AGEN_DT_DATA = age.AGEN_DT_DATA;
+                        nova.AGEN_HR_FINAL = age.AGEN_HR_FINAL;
+                        nova.AGEN_HR_HORA = age.AGEN_HR_HORA;
+                        nova.AGEN_IN_ATIVO = age.AGEN_IN_ATIVO;
+                        nova.AGEN_IN_CONFIRMADO = age.AGEN_IN_CONFIRMADO;
+                        nova.AGEN_IN_CORPORATIVA = age.AGEN_IN_CORPORATIVA;
+                        nova.AGEN_IN_STATUS = age.AGEN_IN_STATUS;
+                        nova.AGEN_LK_REUNIAO = age.AGEN_LK_REUNIAO;
+                        nova.AGEN_NM_TITULO = age.AGEN_NM_TITULO;
+                        nova.AGEN_TX_OBSERVACOES = age.AGEN_TX_OBSERVACOES;
+                        nova.ASSI_CD_ID = age.ASSI_CD_ID;
+                        nova.CAAG_CD_ID = age.CAAG_CD_ID;
+                        nova.TARE_CD_ID = age.TARE_CD_ID;
+                        nova.USUA_CD_ID = age.USUA_CD_ID;
+                        nova.CRM1_CD_ID = age.CRM1_CD_ID;
+                        nova.CRAC_CD_ID = age.CRAC_CD_ID;
+                        nova.EMPR_CD_ID = age.EMPR_CD_ID;
+                        nova.AGEN_IN_ATIVO = 0;
+                        Int32 volta1 = ageApp.ValidateEdit(nova, usuario);
+                    }
+                }
+
+                // Gera diario
+                CRM proc = baseApp.GetItemById(item.CRM1_CD_ID);
+                LEAD cli = leaApp.GetItemById(proc.LEAD_CD_ID.Value);
+                DIARIO_PROCESSO dia = new DIARIO_PROCESSO();
+                dia.ASSI_CD_ID = usuario.ASSI_CD_ID;
+                dia.USUA_CD_ID = usuario.USUA_CD_ID;
+                dia.DIPR_DT_DATA = DateTime.Today.Date;
+                dia.CRM1_CD_ID = item.CRM1_CD_ID;
+                dia.CRAC_CD_ID = item.CRAC_CD_ID;
+                dia.DIPR_NM_OPERACAO = "Exclusão de Ação";
+                dia.DIPR_DS_DESCRICAO = "Exclusão de Ação " + item.CRAC_NM_TITULO.ToUpper() + " - Processo: " + proc.CRM1_NM_NOME.ToUpper() + ". Lead: " + cli.LEAD_NM_NOME.ToUpper();
+                dia.EMPR_CD_ID = usuario.EMPR_CD_ID.Value;
+                dia.DIPR_IN_SISTEMA = 6;
+                Int32 volta3 = diaApp.ValidateCreate(dia);
+
+                // Monta Log
+                CRM_ACAO antes = (CRM_ACAO)Session["Acao"];
+                LOG log = new LOG
+                {
+                    LOG_DT_DATA = DateTime.Now,
+                    ASSI_CD_ID = usuario.ASSI_CD_ID,
+                    USUA_CD_ID = usuario.USUA_CD_ID,
+                    LOG_NM_OPERACAO = "CRM - Ação - Exclusão",
+                    LOG_IN_ATIVO = 1,
+                    LOG_TX_REGISTRO = "Processo: " + proc.CRM1_NM_NOME + " - Ação: " + item.CRAC_NM_TITULO,
+                    LOG_TX_REGISTRO_ANTES = null,
+                    LOG_IN_SISTEMA = 6
+                };
+                Int32 volta2 = logApp.ValidateCreate(log);
+
+                // Atualiza resumo
+                String velho = proc.CRM1_TX_RESUMO;
+                String novo = "Exclusão de Ação - " + item.CRAC_NM_TITULO.ToUpper();
+                String dataHoje = DateTime.Today.Date.ToLongDateString();
+                dataHoje = "*** Movimentação em [" + dataHoje + "] ***";
+                if (proc.CRM1_TX_RESUMO != null)
+                {
+                    String anot = dataHoje + "\r\n" + novo;
+                    if (velho == null & novo != String.Empty)
+                    {
+                        proc.CRM1_TX_RESUMO = dataHoje + "\r\n" + novo;
+                    }
+                    if (velho != null & novo != String.Empty)
+                    {
+                        String tripa = velho.Substring(velho.Length - 4, 4);
+                        if (tripa == "\r\n")
+                        {
+                            velho = velho.Substring(0, velho.Length - 4);
+                        }
+                        proc.CRM1_TX_RESUMO = velho + "\r\n\r\n" + dataHoje + "\r\n" + novo;
+                    }
+                }
+                else
+                {
+                    velho = proc.CRM1_TX_RESUMO;
+                    proc.CRM1_TX_RESUMO = dataHoje + "\r\n" + novo;
+                }
+                Int32 voltaR = baseApp.ValidateEdit(proc, proc);
+
+                // Mensagem do CRUD
+                Session["MsgCRUD"] = "A ação " + item.CRAC_NM_TITULO.ToUpper() + " foi excluida com sucesso. Processo: " + proc.CRM1_GU_GUID;
+                Session["MensCRM"] = 161;
+
+                Session["CRMAcaoAlterada"] = 1;
+                Session["CRMAlterada"] = 1;
+                Session["ListaCRM"] = null;
+                Session["VoltaTela"] = 1;
+                Session["FlagCRM"] = 1;
+                ViewBag.Incluir = (Int32)Session["VoltaTela"];
+
+                return RedirectToAction("VoltarAcompanhamentoCRM");
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "CRM";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "CRM", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return RedirectToAction("TrataExcecao", "Administra");
+            }
+        }
+
+        [HttpGet]
+        public ActionResult EncerrarAcao(Int32 id)
+        {
+            try
+            {
+                // Verifica se tem usuario logado
+                USUARIO usuario = new USUARIO();
+                if ((String)Session["Ativa"] == null)
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+                if ((USUARIO)Session["UserCredentials"] != null)
+                {
+                    usuario = (USUARIO)Session["UserCredentials"];
+                }
+                else
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+                Int32 idAss = (Int32)Session["IdAssinante"];
+
+                // Processa
+                CRM_ACAO item = baseApp.GetAcaoById(id);
+                objetoAntes = (CRM)Session["CRM"];
+                item.CRAC_IN_ATIVO = 0;
+                item.CRAC_IN_STATUS = 3;
+                Int32 volta = baseApp.ValidateEditAcao(item);
+
+                // Gera diario
+                CRM proc = baseApp.GetItemById(item.CRM1_CD_ID);
+                LEAD cli = leaApp.GetItemById(proc.LEAD_CD_ID.Value);
+                DIARIO_PROCESSO dia = new DIARIO_PROCESSO();
+                dia.ASSI_CD_ID = usuario.ASSI_CD_ID;
+                dia.USUA_CD_ID = usuario.USUA_CD_ID;
+                dia.DIPR_DT_DATA = DateTime.Today.Date;
+                dia.CRM1_CD_ID = item.CRM1_CD_ID;
+                dia.CRAC_CD_ID = item.CRAC_CD_ID;
+                dia.DIPR_IN_SISTEMA = 6;
+                dia.DIPR_NM_OPERACAO = "Encerramento de Ação";
+                dia.DIPR_DS_DESCRICAO = "Encerramento de Ação " + item.CRAC_NM_TITULO.ToUpper() + " - Processo: " + proc.CRM1_NM_NOME.ToUpper() + " - Lead: " + cli.LEAD_NM_NOME.ToUpper();
+                dia.EMPR_CD_ID = usuario.EMPR_CD_ID.Value;
+                Int32 volta3 = diaApp.ValidateCreate(dia);
+
+                // Monta Log
+                LOG log = new LOG
+                {
+                    LOG_DT_DATA = DateTime.Now,
+                    ASSI_CD_ID = usuario.ASSI_CD_ID,
+                    USUA_CD_ID = usuario.USUA_CD_ID,
+                    LOG_NM_OPERACAO = "CRM - Ação - Encerrar",
+                    LOG_IN_ATIVO = 1,
+                    LOG_TX_REGISTRO = "Processo: " + proc.CRM1_NM_NOME.ToUpper() + " - Ação: " + item.CRAC_NM_TITULO.ToUpper(),
+                    LOG_TX_REGISTRO_ANTES = null,
+                    LOG_IN_SISTEMA = 6
+                };
+                Int32 volta2 = logApp.ValidateCreate(log);
+
+                // Atualiza resumo
+                String velho = proc.CRM1_TX_RESUMO;
+                String novo = "Encerrramento de Ação - " + item.CRAC_NM_TITULO.ToUpper();
+                String dataHoje = DateTime.Today.Date.ToLongDateString();
+                dataHoje = "*** Movimentação em [" + dataHoje + "] ***";
+                if (proc.CRM1_TX_RESUMO != null)
+                {
+                    String anot = dataHoje + "\r\n" + novo;
+                    if (velho == null & novo != String.Empty)
+                    {
+                        proc.CRM1_TX_RESUMO = dataHoje + "\r\n" + novo;
+                    }
+                    if (velho != null & novo != String.Empty)
+                    {
+                        String tripa = velho.Substring(velho.Length - 4, 4);
+                        if (tripa == "\r\n")
+                        {
+                            velho = velho.Substring(0, velho.Length - 4);
+                        }
+                        proc.CRM1_TX_RESUMO = velho + "\r\n\r\n" + dataHoje + "\r\n" + novo;
+                    }
+                }
+                else
+                {
+                    velho = proc.CRM1_TX_RESUMO;
+                    proc.CRM1_TX_RESUMO = dataHoje + "\r\n" + novo;
+                }
+                Int32 voltaR = baseApp.ValidateEdit(proc, proc);
+
+                // Mensagem do CRUD
+                Session["MsgCRUD"] = "A ação " + item.CRAC_NM_TITULO.ToUpper() + " foi encerrada com sucesso. Processo: " + proc.CRM1_GU_GUID;
+                Session["MensCRM"] = 161;
+
+                Session["CRMAcaoAlterada"] = 1;
+                Session["VoltaTela"] = 1;
+                Session["FlagCRM"] = 1;
+                ViewBag.Incluir = (Int32)Session["VoltaTela"];
+                return RedirectToAction("VoltarAcompanhamentoCRMBase");
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "CRM";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "CRM", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return RedirectToAction("TrataExcecao", "Administra");
+            }
+        }
+
+        [HttpGet]
+        public async Task<ActionResult> ConfirmarEtapaAnterior()
+        {
+            try
+            {
+                // Verifica se tem usuario logado
+                USUARIO usuario = new USUARIO();
+                if ((String)Session["Ativa"] == null)
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+                if ((USUARIO)Session["UserCredentials"] != null)
+                {
+                    usuario = (USUARIO)Session["UserCredentials"];
+                }
+                else
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+                Int32 idAss = (Int32)Session["IdAssinante"];
+
+                // Volta etapa anterior
+                CRM crm = baseApp.GetItemById((Int32)Session["IdCRM"]);
+                CONFIGURACAO conf = CarregaConfiguracaoGeral();
+                Int32 etapaAtual = crm.CRM1_IN_STATUS;
+                FUNIL funil = funApp.GetItemById(crm.FUNI_CD_ID.Value);
+                FUNIL_ETAPA etapa = funil.FUNIL_ETAPA.Where(p => p.FUET_CD_ID == etapaAtual & p.FUET_IN_ATIVO == 1).FirstOrDefault();
+                Int32? ordem = etapa.FUET_IN_ORDEM;
+                Int32 etapas = (Int32)Session["NumEtapas"];
+                if (ordem == 1 || crm.CRM1_DT_ENCERRAMENTO != null)
+                {
+                    return RedirectToAction("AcompanhamentoProcessoCRM", new { id = (Int32)Session["IdCRM"] });
+                }
+
+                Int32 roda = 1;
+                Int32? novaEtapa = ordem;
+                FUNIL_ETAPA etapaNova = new FUNIL_ETAPA();
+                while (roda == 1)
+                {
+                    novaEtapa = novaEtapa - 1;
+                    etapaNova = funil.FUNIL_ETAPA.Where(p => p.FUNI_CD_ID == funil.FUNI_CD_ID & p.FUET_IN_ORDEM == novaEtapa & p.FUET_IN_ATIVO == 1).FirstOrDefault();
+                    if (etapaNova == null)
+                    {
+                        continue;
+                    }
+                    break;              
+                }           
+                crm.CRM1_IN_STATUS = etapaNova.FUET_CD_ID;
+                Int32 volta = baseApp.ValidateEditSimples(crm, crm, usuario);
+
+                // Mensagens 
+                if (etapa.FUET_IN_EMAIL == 1)
+                {
+                    CRM proc = baseApp.GetItemById(crm.CRM1_CD_ID);
+                    LEAD lead = leaApp.GetItemById(proc.LEAD_CD_ID.Value);
+                    USUARIO usuResp = usuApp.GetItemById(proc.USUA_CD_ID.Value);
+                    Session["EtapaMail"] = etapaNova;
+                    Int32 voltaEM = await ProcessaEnvioEMailProcesso(proc, lead, usuResp, 4);
+                }
+
+                // Gera diario
+                LEAD cli = leaApp.GetItemById(crm.LEAD_CD_ID.Value);
+                DIARIO_PROCESSO dia = new DIARIO_PROCESSO();
+                dia.ASSI_CD_ID = usuario.ASSI_CD_ID;
+                dia.USUA_CD_ID = usuario.USUA_CD_ID;
+                dia.DIPR_DT_DATA = DateTime.Today.Date;
+                dia.CRM1_CD_ID = crm.CRM1_CD_ID;
+                dia.DIPR_IN_SISTEMA = 6;
+                dia.DIPR_NM_OPERACAO = "Mudança de Etapa";
+                dia.DIPR_DS_DESCRICAO = "Mudança de Etapa. Processo: " + crm.CRM1_NM_NOME + ". Lead: " + cli.LEAD_NM_NOME.ToUpper() + ". Para " + etapaNova.FUET_NM_NOME.ToUpper();
+                dia.EMPR_CD_ID = usuario.EMPR_CD_ID.Value;
+                Int32 volta3 = diaApp.ValidateCreate(dia);
+
+                // Monta Log
+                LOG log = new LOG
+                {
+                    LOG_DT_DATA = DateTime.Now,
+                    ASSI_CD_ID = usuario.ASSI_CD_ID,
+                    USUA_CD_ID = usuario.USUA_CD_ID,
+                    LOG_NM_OPERACAO = "CRM - Etapa Anterior",
+                    LOG_IN_ATIVO = 1,
+                    LOG_TX_REGISTRO = "Mudança de Etapa. Processo: " + crm.CRM1_NM_NOME.ToUpper() + " - Lead: " + cli.LEAD_NM_NOME.ToUpper() + " - Para " + etapaNova.FUET_NM_NOME.ToUpper(),
+                    LOG_IN_SISTEMA = 6
+                };
+                Int32 volta1 = logApp.ValidateCreate(log);
+
+                // Atualiza resumo
+                String velho = crm.CRM1_TX_RESUMO;
+                String novo = "Mudança de Etapa - " + etapaNova.FUET_NM_NOME.ToUpper();
+                String dataHoje = DateTime.Today.Date.ToLongDateString();
+                dataHoje = "*** Movimentação em [" + dataHoje + "] ***";
+                if (crm.CRM1_TX_RESUMO != null)
+                {
+                    String anot = dataHoje + "\r\n" + novo;
+                    if (velho == null & novo != String.Empty)
+                    {
+                        crm.CRM1_TX_RESUMO = dataHoje + "\r\n" + novo;
+                    }
+                    if (velho != null & novo != String.Empty)
+                    {
+                        String tripa = velho.Substring(velho.Length - 4, 4);
+                        if (tripa == "\r\n")
+                        {
+                            velho = velho.Substring(0, velho.Length - 4);
+                        }
+                        crm.CRM1_TX_RESUMO = velho + "\r\n\r\n" + dataHoje + "\r\n" + novo;
+                    }
+                }
+                else
+                {
+                    velho = crm.CRM1_TX_RESUMO;
+                    crm.CRM1_TX_RESUMO = dataHoje + "\r\n" + novo;
+                }
+                Int32 voltaR = baseApp.ValidateEdit(crm, crm);
+
+                // Mensagem do CRUD
+                Session["MsgCRUD"] = "O processo " + crm.CRM1_NM_NOME.ToUpper() + " mudou de etapa com sucesso. Etapa: " + etapaNova.FUET_NM_NOME.ToUpper();
+                Session["MensCRM"] = 161;
+
+                // Retorno
+                Session["CRMAlterada"] = 1;
+                Session["FlagCRM"] = 1;
+                Session["VoltaTela"] = 0;
+                Session["FlagAlteraEstado"] = 1;
+                ViewBag.Incluir = (Int32)Session["VoltaTela"];
+                return RedirectToAction("AcompanhamentoProcessoCRM", new { id = (Int32)Session["IdCRM"] });
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "CRM";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "CRM", "CRMSys", 1, (USUARIO)Session["UserCredentials"]);
+                return RedirectToAction("TrataExcecao", "BaseAdmin");
+            }
+        }
+
+        [HttpGet]
+        public async Task<ActionResult> ConfirmarEtapaProxima()
+        {
+
+            try
+            {
+                // Verifica se tem usuario logado
+                USUARIO usuario = new USUARIO();
+                if ((String)Session["Ativa"] == null)
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+                if ((USUARIO)Session["UserCredentials"] != null)
+                {
+                    usuario = (USUARIO)Session["UserCredentials"];
+                }
+                else
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+                Int32 idAss = (Int32)Session["IdAssinante"];
+
+                // Processa etapa
+                CRM crm = baseApp.GetItemById((Int32)Session["IdCRM"]);
+                CONFIGURACAO conf = CarregaConfiguracaoGeral();
+                Int32? idFunil = crm.FUNI_CD_ID;
+                Int32 etapaAtual = crm.CRM1_IN_STATUS;
+                FUNIL funil = funApp.GetItemById(crm.FUNI_CD_ID.Value);
+                FUNIL_ETAPA etapa = funil.FUNIL_ETAPA.Where(p => p.FUET_CD_ID == etapaAtual).FirstOrDefault();
+                Int32? ordem = etapa.FUET_IN_ORDEM;
+                Int32 etapas = (Int32)Session["NumEtapas"];
+                if (ordem == etapas)
+                {
+                    return RedirectToAction("AcompanhamentoProcessoCRM", new { id = (Int32)Session["IdCRM"] });
+                }
+
+                Int32 roda = 1;
+                Int32? novaEtapa = ordem;
+                FUNIL_ETAPA etapaNova = new FUNIL_ETAPA();
+                while (roda == 1)
+                {
+                    novaEtapa = novaEtapa + 1;
+                    etapaNova = funil.FUNIL_ETAPA.Where(p => p.FUNI_CD_ID == funil.FUNI_CD_ID & p.FUET_IN_ORDEM == novaEtapa & p.FUET_IN_ATIVO == 1).FirstOrDefault();
+                    if (etapaNova == null)
+                    {
+                        continue;
+                    }
+                    break;
+                }
+                crm.CRM1_IN_STATUS = etapaNova.FUET_CD_ID;
+                Int32 volta = baseApp.ValidateEditSimples(crm, crm, usuario);
+
+                // Processa mensagem
+                if (etapa.FUET_IN_EMAIL == 1)
+                {
+                    CRM proc = baseApp.GetItemById(crm.CRM1_CD_ID);
+                    LEAD lead = leaApp.GetItemById(proc.LEAD_CD_ID.Value);
+                    USUARIO usuResp = usuApp.GetItemById(proc.USUA_CD_ID.Value);
+                    Session["EtapaMail"] = etapaNova;
+                    Int32 voltaEM = await ProcessaEnvioEMailProcesso(proc, lead, usuResp, 4);
+                }
+
+                // Gera diario
+                LEAD cli = leaApp.GetItemById(crm.LEAD_CD_ID.Value);
+                DIARIO_PROCESSO dia = new DIARIO_PROCESSO();
+                dia.ASSI_CD_ID = usuario.ASSI_CD_ID;
+                dia.USUA_CD_ID = usuario.USUA_CD_ID;
+                dia.DIPR_DT_DATA = DateTime.Today.Date;
+                dia.CRM1_CD_ID = crm.CRM1_CD_ID;
+                dia.DIPR_IN_SISTEMA = 6;
+                dia.DIPR_NM_OPERACAO = "Mudança de Etapa";
+                dia.DIPR_DS_DESCRICAO = "Mudança de Etapa. Processo: " + crm.CRM1_NM_NOME + ". Lead: " + cli.LEAD_NM_NOME.ToUpper() + ". Para " + etapaNova.FUET_NM_NOME.ToUpper();
+                dia.EMPR_CD_ID = usuario.EMPR_CD_ID.Value;
+                Int32 volta3 = diaApp.ValidateCreate(dia);
+
+                // Monta Log
+                LOG log = new LOG
+                {
+                    LOG_DT_DATA = DateTime.Now,
+                    ASSI_CD_ID = usuario.ASSI_CD_ID,
+                    USUA_CD_ID = usuario.USUA_CD_ID,
+                    LOG_NM_OPERACAO = "CRM - Proxima Etapa",
+                    LOG_IN_ATIVO = 1,
+                    LOG_TX_REGISTRO = "Mudança de Etapa. Processo: " + crm.CRM1_NM_NOME.ToUpper() + " - Lead: " + cli.LEAD_NM_NOME.ToUpper() + " - Para " + etapaNova.FUET_NM_NOME.ToUpper(),
+                    LOG_IN_SISTEMA = 6
+                };
+                Int32 volta1 = logApp.ValidateCreate(log);
+
+                // Atualiza resumo
+                String velho = crm.CRM1_TX_RESUMO;
+                String novo = "Mudança de Etapa - " + etapaNova.FUET_NM_NOME.ToUpper();
+                String dataHoje = DateTime.Today.Date.ToLongDateString();
+                dataHoje = "*** Movimentação em [" + dataHoje + "] ***";
+                if (crm.CRM1_TX_RESUMO != null)
+                {
+                    String anot = dataHoje + "\r\n" + novo;
+                    if (velho == null & novo != String.Empty)
+                    {
+                        crm.CRM1_TX_RESUMO = dataHoje + "\r\n" + novo;
+                    }
+                    if (velho != null & novo != String.Empty)
+                    {
+                        String tripa = velho.Substring(velho.Length - 4, 4);
+                        if (tripa == "\r\n")
+                        {
+                            velho = velho.Substring(0, velho.Length - 4);
+                        }
+                        crm.CRM1_TX_RESUMO = velho + "\r\n\r\n" + dataHoje + "\r\n" + novo;
+                    }
+                }
+                else
+                {
+                    velho = crm.CRM1_TX_RESUMO;
+                    crm.CRM1_TX_RESUMO = dataHoje + "\r\n" + novo;
+                }
+                Int32 voltaR = baseApp.ValidateEdit(crm, crm);
+
+                // Mensagem do CRUD
+                Session["MsgCRUD"] = "O processo " + crm.CRM1_NM_NOME.ToUpper() + " mudou de etapa com sucesso. Etapa: " + etapaNova.FUET_NM_NOME.ToUpper();
+                Session["MensCRM"] = 161;
+
+                // Retorno
+                Session["CRMAlterada"] = 1;
+                Session["VoltaTela"] = 0;
+                Session["FlagCRM"] = 1;
+                Session["FlagAlteraEstado"] = 1;
+                ViewBag.Incluir = (Int32)Session["VoltaTela"];
+                return RedirectToAction("AcompanhamentoProcessoCRM", new { id = (Int32)Session["IdCRM"] });
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "CRM";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "CRM", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return RedirectToAction("TrataExcecao", "Administra");
+            }
+        }
+
+        public async Task<ActionResult> UploadFileCRMBlob(HttpPostedFileBase file)
+        {
+            try
+            {
+                // Inicializa
+                if ((String)Session["Ativa"] == null)
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+                Int32 idNot = (Int32)Session["IdCRM"];
+                Int32 idAss = (Int32)Session["IdAssinante"];
+
+                // Recupera lead
+                CRM item = baseApp.GetItemById(idNot);
+                USUARIO usu = (USUARIO)Session["UserCredentials"];
+
+                // Criticas
+                if (file == null)
+                {
+                    Session["MensCRM"] = 15;
+                    return RedirectToAction("VoltarAcompanhamentoCRM");
+                }
+
+                // Critica tamanho nome
+                var fileName = Path.GetFileName(file.FileName);
+                if (fileName.Length > 250)
+                {
+                    Session["MensCRM"] = 16;
+                    return RedirectToAction("VoltarAcompanhamentoCRM");
+                }
+
+                // Critica tamanho arquivo
+                var fileSize = file.ContentLength;
+                if (fileSize > 50000000)
+                {
+                    Session["MensCRM"] = 17;
+                    return RedirectToAction("VoltarAcompanhamentoCRM");
+                }
+
+                //Recupera tipo de arquivo
+                extensao = Path.GetExtension(fileName);
+                String a = extensao;
+                if (!((String)Session["ExtensoesPossiveis"]).Contains(extensao.ToUpper()))
+                {
+                    Session["MensCRM"] = 18;
+                    return RedirectToAction("VoltarAcompanhamentoCRM");
+                }
+
+                // 1. DEFINIÇÃO DO CAMINHO (Mesmo para Local e Azure)
+                // Removida a barra inicial para o Azure não criar uma pasta raiz vazia
+                String caminhoRelativo = "Base/CRM/" + item.CRM1_CD_ID.ToString() + "/Anexos/";
+                String caminhoLocal = Server.MapPath("~/" + caminhoRelativo);
+                String fullPathLocal = Path.Combine(caminhoLocal, fileName);
+
+                // 3. CÓPIA PARA O AZURE BLOB STORAGE
+                try
+                {
+                    // Reinicia o ponteiro do stream para o início após a cópia local
+                    file.InputStream.Position = 0;
+
+                    CONFIGURACAO conf = CarregaConfiguracaoGeral();
+                    string connString = conf.CONF_NM_STORAGE_CONN;
+                    string containerName = conf.CONF_NM_STORAGE_CONTAINER;
+
+                    var blobServiceClient = new Azure.Storage.Blobs.BlobServiceClient(connString);
+                    var containerClient = blobServiceClient.GetBlobContainerClient(containerName);
+
+                    // O nome do blob no Azure incluirá toda a estrutura de pastas
+                    string blobName = caminhoRelativo + fileName;
+                    var blobClient = containerClient.GetBlobClient(blobName);
+
+                    // Upload para o Azure (Idempotente: Se já existe, sobrescreve com true)
+                    await blobClient.UploadAsync(file.InputStream, overwrite: true);
+                }
+                catch (Exception exAzure)
+                {
+                    Session["MsgCRUD"] = "Erro na sincronização: " + exAzure.Message;
+                    Session["MensCRM"] = 61;
+                    return RedirectToAction("VoltarAcompanhamentoCRM");
+                }
+
+                // Gravar registro
+                CRM_ANEXO foto = new CRM_ANEXO();
+                foto.CRAN_AQ_ARQUIVO = "~" + caminhoRelativo + fileName;
+                foto.CRAN_DT_ANEXO = DateTime.Today.Date;
+                foto.CRAN_IN_ATIVO = 1;
+                Int32 tipo = 3;
+                if (extensao.ToUpper() == ".JPG" || extensao.ToUpper() == ".GIF" || extensao.ToUpper() == ".PNG" || extensao.ToUpper() == ".JPEG")
+                {
+                    tipo = 1;
+                }
+                else if (extensao.ToUpper() == ".MP4" || extensao.ToUpper() == ".AVI" || extensao.ToUpper() == ".MPEG")
+                {
+                    tipo = 2;
+                }
+                else if (extensao.ToUpper() == ".PDF")
+                {
+                    tipo = 3;
+                }
+                else if (extensao.ToUpper() == ".MP3" || extensao.ToUpper() == ".MPEG")
+                {
+                    tipo = 4;
+                }
+                else if (extensao.ToUpper() == ".DOCX" || extensao.ToUpper() == ".DOC" || extensao.ToUpper() == ".ODT")
+                {
+                    tipo = 5;
+                }
+                else if (extensao.ToUpper() == ".XLSX" || extensao.ToUpper() == ".XLS" || extensao.ToUpper() == ".ODS")
+                {
+                    tipo = 6;
+                }
+                else
+                {
+                    tipo = 7;
+                }
+                foto.CRAN_IN_TIPO = tipo;
+                foto.CRAN_NM_TITULO = fileName;
+                foto.CRM1_CD_ID = item.CRM1_CD_ID;
+                item.CRM_ANEXO.Add(foto);
+                Int32 volta = baseApp.ValidateEdit(item, item, usu);
+
+                // Monta Log
+                LOG log = new LOG
+                {
+                    LOG_DT_DATA = DateTime.Now,
+                    ASSI_CD_ID = usu.ASSI_CD_ID,
+                    USUA_CD_ID = usu.USUA_CD_ID,
+                    LOG_NM_OPERACAO = "CRM - Anexo - Inclusão",
+                    LOG_IN_ATIVO = 1,
+                    LOG_TX_REGISTRO = "CRM: " + item.CRM1_NM_NOME.ToUpper() + " | Anexo: " + fileName + " | Data: " + DateTime.Today.Date,
+                    LOG_IN_SISTEMA = 6
+                };
+                Int32 volta1 = logApp.ValidateCreate(log);
+
+                // Atualiza resumo
+                String velho = item.CRM1_TX_RESUMO;
+                String novo = "Inclusão de Anexo - " + fileName.ToUpper();
+                String dataHoje = DateTime.Today.Date.ToLongDateString();
+                dataHoje = "*** Movimentação em [" + dataHoje + "] ***";
+                if (item.CRM1_TX_RESUMO != null)
+                {
+                    String anot = dataHoje + "\r\n" + novo;
+                    if (velho == null & novo != String.Empty)
+                    {
+                        item.CRM1_TX_RESUMO = dataHoje + "\r\n" + novo;
+                    }
+                    if (velho != null & novo != String.Empty)
+                    {
+                        String tripa = velho.Substring(velho.Length - 4, 4);
+                        if (tripa == "\r\n")
+                        {
+                            velho = velho.Substring(0, velho.Length - 4);
+                        }
+                        item.CRM1_TX_RESUMO = velho + "\r\n\r\n" + dataHoje + "\r\n" + novo;
+                    }
+                }
+                else
+                {
+                    velho = item.CRM1_TX_RESUMO;
+                    item.CRM1_TX_RESUMO = dataHoje + "\r\n" + novo;
+                }
+                Int32 voltaR = baseApp.ValidateEdit(item, item);
+
+                // Mensagem do CRUD
+                Session["MsgCRUD"] = "O arquivo " + fileName.ToUpper() + " foi anexado com sucesso. Processo: " + item.CRM1_NM_NOME.ToUpper();
+                Session["MensCRM"] = 161;
+
+                Session["NivelCRM"] = 2;
+                Session["CRMAlterada"] = 1;
+                return RedirectToAction("VoltarAcompanhamentoCRM");
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;   
+                Session["VoltaExcecao"] = "CRM";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "CRM", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return RedirectToAction("TrataExcecao", "Administra");
+            }
+        }
+
+        [HttpGet]
+        public ActionResult VerAnexoLead(Int32 id)
+        {
+            try
+            {
+                if ((String)Session["Ativa"] == null)
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+                // Prepara view
+                USUARIO usuario = (USUARIO)Session["UserCredentials"];
+                CRM_ANEXO item = baseApp.GetAnexoById(id);
+                Session["NivelCRM"] = 4;
+
+                // Grava Acesso
+                ControleAcessoMetodo grava = new ControleAcessoMetodo(aceApp);
+                Int32 voltaX = grava.GravaAcesso(usuario.USUA_CD_ID, usuario.ASSI_CD_ID, "CRM_ANEXO", "CRM", "VerAnexoCRM");
+                return View(item);
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "CRM";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "CRM", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return RedirectToAction("TrataExcecao", "Administra");
+            }
+        }
+
+        [HttpGet]
+        public ActionResult VerAnexoCRMAudio(Int32 id)
+        {
+            try
+            {
+                if ((String)Session["Ativa"] == null)
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+                // Prepara view
+                USUARIO usuario = (USUARIO)Session["UserCredentials"];
+                CRM_ANEXO item = baseApp.GetAnexoById(id);
+                Session["NivelCRM"] = 4;
+
+                // Grava Acesso
+                ControleAcessoMetodo grava = new ControleAcessoMetodo(aceApp);
+                Int32 voltaX = grava.GravaAcesso(usuario.USUA_CD_ID, usuario.ASSI_CD_ID, "CRM_ANEXO", "CRM", "VerAnexoCRM");
+                return View(item);
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "CRM";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "CRM", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return RedirectToAction("TrataExcecao", "Administra");
+            }
+        }
+
+        [HttpGet]
+        public ActionResult ExcluirAnexoLead(Int32 id)
+        {
+            if ((String)Session["Ativa"] == null)
+            {
+                return RedirectToAction("Logout", "ControleAcesso");
+            }
+
+            try
+            {
+                USUARIO usuarioLogado = (USUARIO)Session["UserCredentials"];
+                CRM_ANEXO item = baseApp.GetAnexoById(id);
+                CRM crm = baseApp.GetItemById(item.CRM1_CD_ID);
+
+                item.CRAN_IN_ATIVO = 0;
+                Int32 volta = baseApp.ValidateEditAnexo(item);
+
+                // Monta Log
+                LOG log = new LOG
+                {
+                    LOG_DT_DATA = DateTime.Now,
+                    ASSI_CD_ID = usuarioLogado.ASSI_CD_ID,
+                    USUA_CD_ID = usuarioLogado.USUA_CD_ID,
+                    LOG_NM_OPERACAO = "CRM - Anexo - Exclusão",
+                    LOG_IN_ATIVO = 1,
+                    LOG_TX_REGISTRO = "CRM: " + crm.CRM1_NM_NOME.ToUpper() + " | Anexo: " + item.CRAN_NM_TITULO.ToUpper() + " | Data: " + item.CRAN_DT_ANEXO.Value.ToShortDateString(),
+                    LOG_IN_SISTEMA = 6
+                };
+                Int32 volta1 = logApp.ValidateCreate(log);
+
+                // Atualiza resumo
+                String velho = crm.CRM1_TX_RESUMO;
+                String novo = "Exclusão de Anexo - " + item.CRAN_NM_TITULO.ToUpper();
+                String dataHoje = DateTime.Today.Date.ToLongDateString();
+                dataHoje = "*** Movimentação em [" + dataHoje + "] ***";
+                if (crm.CRM1_TX_RESUMO != null)
+                {
+                    String anot = dataHoje + "\r\n" + novo;
+                    if (velho == null & novo != String.Empty)
+                    {
+                        crm.CRM1_TX_RESUMO = dataHoje + "\r\n" + novo;
+                    }
+                    if (velho != null & novo != String.Empty)
+                    {
+                        String tripa = velho.Substring(velho.Length - 4, 4);
+                        if (tripa == "\r\n")
+                        {
+                            velho = velho.Substring(0, velho.Length - 4);
+                        }
+                        crm.CRM1_TX_RESUMO = velho + "\r\n\r\n" + dataHoje + "\r\n" + novo;
+                    }
+                }
+                else
+                {
+                    velho = crm.CRM1_TX_RESUMO;
+                    crm.CRM1_TX_RESUMO = dataHoje + "\r\n" + novo;
+                }
+                Int32 voltaR = baseApp.ValidateEdit(crm, crm);
+
+                // Mensagem do CRUD
+                Session["MsgCRUD"] = "O arquivo " + item.CRAN_NM_TITULO.ToUpper() + " foi desanexado com sucesso. Processo: " + crm.CRM1_NM_NOME.ToUpper();
+                Session["MensCRM"] = 161;
+
+                Session["NivelCRM"] = 2;
+                Session["CRMAlterada"] = 1;
+                return RedirectToAction("VoltarAcompanhamentoCRM");
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "CRM";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "CRM", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return RedirectToAction("TrataExcecao", "Administra");
+            }
+        }
+
+        [HttpGet]
+        public ActionResult DownloadCRM(Int32 id)
+        {
+            // Força o uso de TLS 1.2 (Obrigatório para Azure Storage no .NET 4.8)
+            System.Net.ServicePointManager.SecurityProtocol = System.Net.SecurityProtocolType.Tls12;
+
+            try
+            {
+                // 1. Carrega as configurações de Storage da sua tabela CONFIGURACAO
+                CONFIGURACAO conf = CarregaConfiguracaoGeral();
+                if (conf == null) return Content("Erro: Configurações de Storage não encontradas.");
+
+                string connString = conf.CONF_NM_STORAGE_CONN;
+                string containerName = conf.CONF_NM_STORAGE_CONTAINER;
+
+                if (string.IsNullOrEmpty(connString)) return Content("Erro: String de conexão do Azure está vazia.");
+
+                // 2. Busca o registro do anexo no banco
+                CRM_ANEXO item = baseApp.GetAnexoById(id);
+                if (item == null || string.IsNullOrEmpty(item.CRAN_AQ_ARQUIVO))
+                {
+                    return Content("Erro: Registro do anexo não encontrado no banco de dados.");
+                }
+
+                // 3. LIMPEZA DO CAMINHO (Tratamento para o Azure)
+                // Remove o '~', remove barras do início e padroniza as barras invertidas
+                string caminhoFormatado = item.CRAN_AQ_ARQUIVO.Replace("~", "");
+                caminhoFormatado = caminhoFormatado.TrimStart('/');
+                caminhoFormatado = caminhoFormatado.Replace("\\", "/");
+
+                // 4. Conexão com o Azure Blob Storage
+                var blobServiceClient = new Azure.Storage.Blobs.BlobServiceClient(connString);
+                var containerClient = blobServiceClient.GetBlobContainerClient(containerName);
+                var blobClient = containerClient.GetBlobClient(caminhoFormatado);
+
+                // 5. Verifica se o arquivo realmente existe no container
+                if (!blobClient.Exists())
+                {
+                    return Content("Erro: Arquivo não localizado no Azure. Caminho tentado: [" + caminhoFormatado + "]");
+                }
+
+                // 6. Download do conteúdo para a memória do servidor
+                var download = blobClient.DownloadContent();
+                byte[] dados = download.Value.Content.ToArray();
+
+                // 7. Define nome e tipo do arquivo
+                string nomeDownload = Path.GetFileName(caminhoFormatado);
+                string contentType = MimeMapping.GetMimeMapping(nomeDownload);
+
+                // 8. Entrega o arquivo forçando o download no navegador
+                Response.Clear();
+                Response.ClearContent();
+                Response.ClearHeaders();
+                Response.Buffer = true;
+
+                Response.ContentType = contentType;
+                // Aspas duplas no nome do arquivo tratam nomes com espaços
+                Response.AddHeader("Content-Disposition", "attachment; filename=\"" + nomeDownload + "\"");
+
+                Response.BinaryWrite(dados);
+                Response.Flush();
+                Response.End();
+
+                return null;
+            }
+            catch (Exception ex)
+            {
+                // Gravação de Log de Exceção padrão WebDoctor/RTI
+                try
+                {
+                    var user = Session["UserCredentials"] as USUARIO;
+                    GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                    grava.GravarLogExcecao(ex, "Paciente", "WebDoctor", 1, user);
+                }
+                catch { /* Evita erro no catch se a sessão estiver expirada */ }
+
+                return Content("Erro técnico ao realizar download: " + ex.Message);
+            }
+        }
 
 
 
@@ -3452,6 +4663,67 @@ namespace GEDSys_Presentation.Controllers
                 return null;
             }
         }
+
+        public ActionResult VoltarAcaoCRM()
+        {
+            if ((String)Session["Ativa"] == null)
+            {
+                return RedirectToAction("Logout", "ControleAcesso");
+            }
+            Int32 x = (Int32)Session["PontoAcao"];
+            if ((Int32)Session["VoltaAcao"] == 84)
+            {
+                return RedirectToAction("MontarTelaCRM", "CRM");
+            }
+            if ((Int32)Session["VoltaCRM"] == 84)
+            {
+                return RedirectToAction("VerAcoesUsuarioCRM", "CRM");
+            }
+            if ((Int32)Session["PontoAcao"] == 100)
+            {
+                return RedirectToAction("MontarTelaDashboardCRMNovo", "CRM");
+            }
+            if ((Int32)Session["PontoAcao"] == 101)
+            {
+                return RedirectToAction("MontarTelaCRM", "CRM");
+            }
+            if ((Int32)Session["PontoAcao"] == 91)
+            {
+                return RedirectToAction("MontarCentralMensagens", "BaseAdmin");
+            }
+            if ((Int32)Session["PontoAcao"] == 1)
+            {
+                return RedirectToAction("VerAcoesUsuarioCRMPrevia");
+            }
+            if ((Int32)Session["PontoAcao"] == 2)
+            {
+                return RedirectToAction("AcompanhamentoProcessoCRM", new { id = (Int32)Session["IdCRM"] });
+            }
+            if ((Int32)Session["PontoAcao"] == 22)
+            {
+                return RedirectToAction("MontarTelaHistorico", "CRM");
+            }
+            if ((Int32)Session["PontoAcao"] == 55)
+            {
+                return RedirectToAction("VerAcoesUsuarioCRM", "CRM");
+            }
+            return RedirectToAction("AcompanhamentoProcessoCRM", new { id = (Int32)Session["IdCRM"] });
+        }
+
+        [HttpGet]
+        public ActionResult EncerrarProcessoChamada()
+        {
+            if ((String)Session["Ativa"] == null)
+            {
+                return RedirectToAction("Logout", "ControleAcesso");
+            }
+            return RedirectToAction("EncerrarProcessoCRM", new { id = (Int32)Session["IdCRM"] });
+        }
+
+
+
+
+
 
     }
 }

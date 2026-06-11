@@ -5568,6 +5568,10 @@
     <Content Include="Views\CRM\EnviarSMSCliente.cshtml" />
     <Content Include="Views\CRM\EnviarEMailCliente.cshtml" />
     <Content Include="Views\CRM\IncluirAcao.cshtml" />
+    <Content Include="Views\CRM\EditarAcao.cshtml" />
+    <Content Include="Views\CRM\VerAcao.cshtml" />
+    <Content Include="Views\CRM\VerAnexoLead.cshtml" />
+    <Content Include="Views\CRM\VerAnexoCRMAudio.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="BaseAdmin\BaseConhecimento\" />

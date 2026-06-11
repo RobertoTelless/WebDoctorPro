@@ -44,6 +44,7 @@ namespace ERP_Condominios_Solution.ViewModels
         public Nullable<int> CRIA_AGENDA { get; set; }
         public Nullable<int> EMPR_CD_ID { get; set; }
         public string DATA_PREVISTA { get; set; }
+        public Nullable<int> CRAC_IN_SISTEMA { get; set; }
 
         public virtual CRM CRM { get; set; }
         public virtual TIPO_ACAO TIPO_ACAO { get; set; }

@@ -1918,6 +1918,7 @@
           <Property Name="CRAC_IN_STATUS" Type="int" />
           <Property Name="CRAC_IN_ATIVO" Type="int" />
           <Property Name="CRAC_NR_ATRASO" Type="int" StoreGeneratedPattern="Computed" />
+          <Property Name="CRAC_IN_SISTEMA" Type="int" />
         </EntityType>
         <EntityType Name="CRM_ANEXO">
           <Key>
@@ -22780,6 +22781,7 @@
           <NavigationProperty Name="USUARIO" Relationship="Self.FK_CRM_ACAO_USUARIO" FromRole="CRM_ACAO" ToRole="USUARIO" />
           <NavigationProperty Name="USUARIO1" Relationship="Self.FK_CRM_ACAO_USUARIO1" FromRole="CRM_ACAO" ToRole="USUARIO" />
           <NavigationProperty Name="DIARIO_PROCESSO" Relationship="Self.FK_DIARIO_PROCESSO_CRM_ACAO" FromRole="CRM_ACAO" ToRole="DIARIO_PROCESSO" />
+          <Property Name="CRAC_IN_SISTEMA" Type="Int32" />
         </EntityType>
         <EntityType Name="CRM_ANEXO">
           <Key>
@@ -44630,6 +44632,7 @@
           <EntitySetMapping Name="CRM_ACAO">
             <EntityTypeMapping TypeName="CRMSysDBModel.CRM_ACAO">
               <MappingFragment StoreEntitySet="CRM_ACAO">
+                <ScalarProperty Name="CRAC_IN_SISTEMA" ColumnName="CRAC_IN_SISTEMA" />
                 <ScalarProperty Name="CRAC_CD_ID" ColumnName="CRAC_CD_ID" />
                 <ScalarProperty Name="CRM1_CD_ID" ColumnName="CRM1_CD_ID" />
                 <ScalarProperty Name="ASSI_CD_ID" ColumnName="ASSI_CD_ID" />

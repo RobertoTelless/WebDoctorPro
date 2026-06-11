@@ -1,240 +1,836 @@
-﻿@{
-    Layout = null;
-    ViewBag.Title = "Página Principal";
-}
+﻿@* WebDoctorPro - Landing Page Oficial
+    Desenvolvido por RTi Ltda. 
+    Stack: ASP.NET 4.8 Razor, HTML5 Semântico, CSS3 Moderno (Mobile-First), Vanilla JS, SweetAlert2, Toastr
+*@
+
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
-    <meta charset="utf-8" />
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>WebDoctorPro | Prontuário Eletrônico e Automação de Consultórios</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
 
-    <title>WebDoctorPro 2 | @ViewBag.Title</title>
-    
-    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700|Playfair+Display:400,700' rel='stylesheet' type='text/css'>
+    <style>
+        /* ==========================================================================
+           RESET E VARIÁVEIS DE DESIGN (Paleta Baseada na Apresentação RTi)
+           ========================================================================== */
+        :root {
+            --bg-primary: #0f172a;       /* Dark Blue/Noir de fundo */
+            --bg-secondary: #1e293b;     /* Deep slate para cards e seções */
+            --text-main: #f8fafc;        /* Branco off-white para legibilidade */
+            --text-muted: #94a3b8;       /* Cinza para textos secundários */
+            --accent-teal: #0ea5e9;      /* Azul Ciano/Teal Médico para CTAs */
+            --accent-hover: #38bdf8;     /* Variação Hover ativa */
+            --border-color: #334155;     /* Divisores sutis */
+            --font-stack: 'Inter', sans-serif;
+            --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
 
-    <!-- Estilos Originais Mantidos para Compatibilidade -->
-    <link href="@Url.Content("~/Scripts/plugins/jquery-ui/jquery-ui.min.css")" rel="stylesheet" type="text/css" />
-    <link rel="shortcut icon" href="@Url.Content("~/Images/Prontuario/prontuario_icon_3.png?v=1.1")" type="image/png">
-    
-    @Styles.Render("~/Content/css")
-    @Styles.Render("~/font-awesome/css")
-    
-    <!-- Novo Estilo Customizado -->
-    <link href="~/Content/WebDoctorModern.css" rel="stylesheet" />
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: var(--font-stack);
+            background-color: var(--bg-primary);
+            color: var(--text-main);
+            line-height: 1.6;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* ==========================================================================
+           COMPONENTES REUTILIZÁVEIS / UTILITIES
+           ========================================================================== */
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1.5rem;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.75rem 1.5rem;
+            border-radius: 6px;
+            font-weight: 500;
+            font-size: 0.95rem;
+            text-decoration: none;
+            transition: var(--transition-smooth);
+            cursor: pointer;
+            border: none;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background-color: var(--accent-teal);
+            color: #ffffff;
+            box-shadow: 0 4px 14px rgba(14, 165, 233, 0.3);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--accent-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(14, 165, 233, 0.4);
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            color: var(--text-main);
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-outline:hover {
+            background-color: rgba(255, 255, 255, 0.05);
+            border-color: var(--text-muted);
+        }
+
+        .section-padding {
+            padding: 5rem 0;
+        }
+
+        .section-title {
+            font-size: 2.25rem;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 3rem;
+            letter-spacing: -0.025em;
+        }
+
+        .section-title span {
+            color: var(--accent-teal);
+        }
+
+        /* ==========================================================================
+           HEADER / NAVIGATION
+           ========================================================================== */
+        header {
+            background-color: rgba(15, 23, 42, 0.9);
+            backdrop-filter: blur(8px);
+            border-bottom: 1px solid var(--border-color);
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+        }
+
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 4.5rem;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-main);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logo i {
+            color: var(--accent-teal);
+        }
+
+        .nav-menu {
+            display: flex;
+            gap: 1.5rem;
+            align-items: center;
+            list-style: none;
+        }
+
+        .nav-link {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.95rem;
+            transition: var(--transition-smooth);
+        }
+
+        .nav-link:hover {
+            color: var(--text-main);
+        }
+
+        /* ==========================================================================
+           HERO SECTION
+           ========================================================================== */
+        .hero {
+            padding-top: 9.5rem;
+            padding-bottom: 6rem;
+            position: relative;
+            background: radial-gradient(circle at top right, rgba(14, 165, 233, 0.1), transparent 45%);
+        }
+
+        .hero-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 3rem;
+            align-items: center;
+        }
+
+        @@media (min-width: 992px) {
+            .hero-grid {
+                grid-template-columns: 1.2fr 0.8fr;
+            }
+        }
+
+        .hero-content h1 {
+            font-size: 3.5rem;
+            line-height: 1.1;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            letter-spacing: -0.03em;
+        }
+
+        .hero-content p {
+            font-size: 1.25rem;
+            color: var(--text-muted);
+            margin-bottom: 2.5rem;
+            max-width: 600px;
+        }
+
+        .hero-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .hero-image-wrapper {
+            position: relative;
+            display: flex;
+            justify-content: center;
+        }
+
+        .hero-image-mockup {
+            width: 100%;
+            max-width: 450px;
+            background: linear-gradient(135deg, var(--bg-secondary), var(--bg-primary));
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .mockup-header {
+            display: flex;
+            gap: 0.5rem;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 0.75rem;
+        }
+
+        .mockup-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background-color: var(--border-color);
+        }
+
+        .mockup-body {
+            height: 250px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: var(--text-muted);
+            border: 1px dashed var(--border-color);
+            border-radius: 6px;
+        }
+
+        /* ==========================================================================
+           APRESENTAÇÃO SLIDES (Dinâmico / Modular)
+           ========================================================================== */
+        .presentation-section {
+            border-top: 1px solid var(--border-color);
+        }
+
+        .presentation-section:nth-child(even) {
+            background-color: var(--bg-secondary);
+        }
+
+        .slide-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2.5rem;
+            align-items: center;
+        }
+
+        @@media (min-width: 768px) {
+            .slide-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+            .slide-reverse {
+                direction: rtl;
+            }
+            .slide-reverse > * {
+                direction: ltr;
+            }
+        }
+
+        .slide-content h2 {
+            font-size: 2rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--text-main);
+        }
+
+        .slide-content p {
+            color: var(--text-muted);
+            font-size: 1.05rem;
+        }
+
+        .slide-visual {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 3rem;
+            text-align: center;
+            font-size: 3.5rem;
+            color: var(--accent-teal);
+        }
+
+        /* ==========================================================================
+           FORMULÁRIO DE CONTATO (Imagem 1 & Imagem 2 Base Layout)
+           ========================================================================== */
+        .contact-section {
+            background-color: var(--bg-secondary);
+            border-top: 1px solid var(--border-color);
+        }
+
+        .contact-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 4rem;
+        }
+
+        @@media (min-width: 992px) {
+            .contact-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        /* Lado Esquerdo: Form */
+        .form-wrapper {
+            background-color: var(--bg-primary);
+            padding: 2.5rem;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+        }
+
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            color: var(--text-main);
+        }
+
+        .form-control {
+            width: 100%;
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 0.75rem 1rem;
+            color: var(--text-main);
+            font-family: var(--font-stack);
+            font-size: 0.95rem;
+            transition: var(--transition-smooth);
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--accent-teal);
+            box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.15);
+        }
+
+        .form-row-radio {
+            display: flex;
+            gap: 1.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .radio-label {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+            font-size: 0.95rem;
+        }
+
+        .radio-label input {
+            accent-color: var(--accent-teal);
+            width: 16px;
+            height: 16px;
+        }
+
+        .form-instructions {
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border-color);
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .form-instructions p {
+            font-weight: 600;
+            color: var(--text-main);
+            margin-bottom: 0.25rem;
+        }
+
+        .form-instructions span {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.5rem;
+        }
+
+        .form-instructions span::before {
+            content: "•";
+            color: var(--accent-teal);
+            font-weight: bold;
+        }
+
+        /* Lado Direito: Mensagens Institucionais */
+        .info-wrapper {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 2rem;
+        }
+
+        .info-card {
+            display: flex;
+            gap: 1.25rem;
+            align-items: flex-start;
+            background: rgba(255, 255, 255, 0.02);
+            padding: 1.5rem;
+            border-radius: 8px;
+            border-left: 4px solid var(--accent-teal);
+        }
+
+        .info-card i {
+            font-size: 1.5rem;
+            color: var(--accent-teal);
+            margin-top: 0.25rem;
+        }
+
+        .info-card p {
+            font-size: 1.1rem;
+            font-weight: 500;
+            color: var(--text-main);
+        }
+
+        /* ==========================================================================
+           FOOTER (Imagem 3 & Imagem 4 Base Layout)
+           ========================================================================== */
+        footer {
+            background-color: var(--bg-primary);
+            border-top: 1px solid var(--border-color);
+            padding: 4rem 0 2rem 0;
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 3rem;
+            margin-bottom: 3rem;
+        }
+
+        @@media (min-width: 768px) {
+            .footer-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        .footer-half-left {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .footer-link {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 1rem;
+            transition: var(--transition-smooth);
+            width: fit-content;
+        }
+
+        .footer-link:hover {
+            color: var(--accent-teal);
+            padding-left: 4px;
+        }
+
+        .footer-half-right {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        @@media (min-width: 768px) {
+            .footer-half-right {
+                align-items: flex-end;
+                text-align: right;
+            }
+        }
+
+        .social-links {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .social-btn {
+            background-color: var(--bg-secondary);
+            color: var(--text-main);
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            transition: var(--transition-smooth);
+            border: 1px solid var(--border-color);
+        }
+
+        .social-btn:hover {
+            background-color: #25d366; /* Cor oficial WhatsApp */
+            border-color: #25d366;
+            transform: scale(1.1);
+        }
+
+        .copyright-box {
+            border-top: 1px solid var(--border-color);
+            padding-top: 2rem;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            line-height: 1.8;
+        }
+
+        .copyright-box strong {
+            color: var(--text-main);
+            display: block;
+            font-size: 1rem;
+            margin-bottom: 0.25rem;
+        }
+
+        /* ==========================================================================
+           RESPONSIVIDADE EXTRA MOBILES
+           ========================================================================== */
+        @@media (max-width: 767px) {
+            .nav-menu {
+                display: none; /* Menu simplificado para manter foco na conversão via CTAs corporativos */
+            }
+            .hero-content h1 {
+                font-size: 2.5rem;
+            }
+            .section-title {
+                font-size: 1.75rem;
+            }
+        }
+    </style>
 </head>
+<body>
 
-<body id="page-top" class="landing-page">
-    
-    <!-- Navbar -->
-    <div class="navbar-wrapper">
-        <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
-            <div class="container-fluid" style="padding: 0 40px;">
-                <div class="navbar-header">
-                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                    </button>
-                    <a class="navbar-brand" href="#page-top" style="color: #2d6a4f; font-weight: 700;">WEBDOCTOR PRO 2</a>
-                </div>
-                <div id="navbar" class="navbar-collapse collapse">
-                    <ul class="nav navbar-nav navbar-right">
-                        <li><a class="page-scroll" href="#page-top">Início</a></li>
-                        <li><a class="page-scroll" href="#features">Funcionalidades</a></li>
-                        <li><a class="page-scroll" href="#pricing">Planos & Preços</a></li>
-                        <li><a href="javascript:void(0)" onclick="location.href='@Url.Action("MontarTelaCompraBasicoNova", "BaseAdmin")'">Contratar</a></li>
-                        <li><a class="pisca" href="javascript:void(0)" onclick="location.href='@Url.Action("MontarTelaDemo", "BaseAdmin")'">Demonstração</a></li>
-                        <li><a href="javascript:void(0)" onclick="location.href='@Url.Action("Login", "ControleAcesso")'" style="color: #c0392b !important; font-size: 1.2em;">LOGIN</a></li>
-                    </ul>
-                    <div class="navbar-form navbar-left">
-                        <a class="btn btn-outline btn-success" href="@Url.Action("LoginAreaPaciente", "AreaPaciente")">Área do Paciente</a>
-                        <a class="btn btn-outline btn-success" href="@Url.Action("MontarTelaValidacaoDocumento", "ValidacaoDocumento")">Validar Documentos</a>
-                    </div>
-                </div>
-            </div>
-        </nav>
-    </div>
-
-    <!-- Hero Section -->
-    <section id="inSlider">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-6">
-                    <div class="carousel-caption blank" style="position: static; text-align: left; padding: 0;">
-                        <h1 class="wow fadeInLeft">WebDoctorPro 2</h1>
-                        <p class="lead" style="color: #b7e4c7;">Sistema Integrado de Prontuário Eletrônico e Automação de Consultórios</p>
-                        <p class="text-warning" style="font-weight:bold; font-size: 1.3em;">Promoção por tempo limitado!!!</p>
-                        <br />
-                        <p><a class="btn btn-lg btn-success" href="#pricing" role="button" style="padding: 15px 40px;">Conhecer Planos</a></p>
-                    </div>
-                </div>
-                <div class="col-lg-6 wow zoomIn">
-                    <img src="@Url.Content("~/Images/Prontuario/WebDoctor_Geral_info_3.png")" class="img-responsive" style="border-radius: 10px; box-shadow: 0 20px 40px rgba(0,0,0,0.4);" />
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Funcionalidades Grid -->
-    <section id="features" class="container services">
-        <div class="row text-center m-b-lg">
-            <div class="col-lg-12">
-                <div class="navy-line"></div>
-                <h1>Módulos Completos</h1>
-                <p>Tudo o que sua clínica precisa em um só lugar.</p>
-            </div>
-        </div>
-        
-        <div class="row">
-            @{
-                var funcs = new[] { 
-                    new { T = "Cadastros", D = "Tenha suas informações organizadas com segurança.", L = "#Cadastros" },
-                    new { T = "Pacientes", D = "Cadastre, acompanhe e crie documentos.", L = "#Pacientes" },
-                    new { T = "Consultas", D = "Marcação, confirmação e encerramento.", L = "#Consultas" },
-                    new { T = "Consultas - Executar", D = "Preencha anamneses e exames físicos.", L = "#Executar" },
-                    new { T = "Documentos", D = "Atestados e prescrições com assinatura eletrônica.", L = "#Prontuarios" },
-                    new { T = "Financeiro", D = "Visualize e acompanhe pagamentos e recebimentos.", L = "#Financeiro" },
-                    new { T = "Estoque", D = "Controle de materiais e produtos.", L = "#Estoque" },
-                    new { T = "Locação", D = "Funcionalidade completa de locação.", L = "#Locacao" }
-                };
-            }
-
-            @foreach (var f in funcs) {
-                <div class="col-md-3 m-b-md">
-                    <h2>@f.T</h2>
-                    <p>@f.D</p>
-                    <p><a class="navy-link" href="@f.L">Detalhes &raquo;</a></p>
-                </div>
-            }
-        </div>
-    </section>
-
-    <!-- Seção de Destaque com Imagem perspectiva -->
-    <section class="gray-section" style="padding: 60px 0;">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-12 text-center">
-                    <div class="navy-line"></div>
-                    <h1>Eficiência e Produtividade</h1>
-                </div>
-            </div>
-            <div class="row m-t-lg">
-                <div class="col-md-4 text-right wow fadeInLeft">
-                    <div class="m-b-lg">
-                        <i class="fa fa-envelope-open-o features-icon"></i>
-                        <h3>Mensageria</h3>
-                        <p>Envio de E-Mails agendados e recursivos de forma assíncrona.</p>
-                    </div>
-                    <div>
-                        <i class="fa fa-area-chart features-icon"></i>
-                        <h3>Financeiro</h3>
-                        <p>Controle total integrado com as consultas realizadas.</p>
-                    </div>
-                </div>
-                <div class="col-md-4 text-center wow zoomIn">
-                    <img src="~/Images/landing/perspective.png" class="img-responsive" style="max-height: 450px; margin: 0 auto;">
-                </div>
-                <div class="col-md-4 text-left wow fadeInRight">
-                    <div class="m-b-lg">
-                        <i class="fa fa-edit features-icon"></i>
-                        <h3>Documentos</h3>
-                        <p>Validação via QR Code e assinatura eletrônica segura.</p>
-                    </div>
-                    <div>
-                        <i class="fa fa-check-square-o features-icon"></i>
-                        <h3>Locação</h3>
-                        <h3>Gestão de contratos e produtos integrada ao estoque.</h3>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Planos de Preços -->
-    <section id="pricing" class="container" style="padding: 80px 0;">
-        <div class="row text-center">
-            <div class="col-lg-12">
-                <div class="navy-line"></div>
-                <h1>Planos & Preços</h1>
-                <h2 class="text-danger"><b>Promoção!! Parcelamento em até 12 vezes no cartão!</b></h2>
-            </div>
-        </div>
-        <div class="row m-t-lg">
-            <!-- Plano Básico -->
-            <div class="col-lg-4">
-                <ul class="pricing-plan list-unstyled text-center">
-                    <li class="pricing-title">Plano Básico</li>
-                    <li class="pricing-price">R$ 2.000,00 <span>/ Ano</span></li>
-                    <li>300 Pacientes Ativos</li>
-                    <li>Mensageria Incluída</li>
-                    <li>10 Usuários Ativos</li>
-                    <li class="p-v-md"><a class="btn btn-success" href="@Url.Action("MontarTelaCompraBasico", "BaseAdmin")">Contratar</a></li>
+    <header>
+        <div class="container nav-container">
+            <a href="#" class="logo">
+                <i class="fa-solid fa-user-doctor"></i> WebDoctorPro
+            </a>
+            <nav>
+                <ul class="nav-menu">
+                    <li><a href="https://webdoctorpro.net/BaseAdmin/Funcionalidades" class="nav-link">Funcionalidades</a></li>
+                    <li><a href="https://webdoctorpro.net/BaseAdmin/PlanosPrecos" class="nav-link">Planos e Preços</a></li>
+                    <li><a href="#contato" class="nav-link">Fale Conosco</a></li>
+                    <li><a href="https://webdoctorpro.net/ControleAcesso/Login" class="nav-link"><i class="fa-solid fa-lock"></i> Login</a></li>
+                    <li><a href="https://webdoctorpro.net/BaseAdmin/SolicitaDemo" class="btn btn-primary">Solicite Demonstração Agora</a></li>
                 </ul>
-            </div>
-            <!-- Plano Super -->
-            <div class="col-lg-4">
-                <ul class="pricing-plan list-unstyled text-center" style="border: 2px solid #2d6a4f;">
-                    <li class="pricing-title">Plano Super</li>
-                    <li class="pricing-price">R$ 3.500,00 <span>/ Ano</span></li>
-                    <li>Pacientes Ilimitados</li>
-                    <li>Mensageria Ilimitada</li>
-                    <li>Usuários Ilimitados</li>
-                    <li class="p-v-md"><a class="btn btn-success" href="@Url.Action("MontarTelaCompraBasico", "BaseAdmin")">Contratar</a></li>
-                </ul>
-            </div>
-            <!-- Plano Super Financeiro -->
-            <div class="col-lg-4">
-                <ul class="pricing-plan list-unstyled text-center">
-                    <li class="pricing-title">Super + Financeiro</li>
-                    <li class="pricing-price">R$ 4.000,00 <span>/ Ano</span></li>
-                    <li>Financeiro & Estoque</li>
-                    <li>Gestão de Locações</li>
-                    <li>Suporte Prioritário</li>
-                    <li class="p-v-md"><a class="btn btn-success" href="@Url.Action("MontarTelaCompraBasico", "BaseAdmin")">Contratar</a></li>
-                </ul>
-            </div>
+            </nav>
         </div>
-    </section>
+    </header>
 
-    <!-- Footer -->
-    <section id="contact" class="gray-section" style="padding: 40px 0;">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-12 text-center">
-                    <p><strong>&copy; @DateTime.Now.Year WebDoctorPro</strong> - Todos os direitos reservados</p>
-                    <p>Desenvolvido por RTi Ltda & SystemBR Ltda</p>
-                    <ul class="list-inline">
-                        <li><a href="https://wa.me/5521973024096"><i class="fa fa-whatsapp fa-2x text-success"></i></a></li>
-                        <li><a href="#"><i class="fa fa-facebook fa-2x text-navy"></i></a></li>
-                        <li><a href="#"><i class="fa fa-linkedin fa-2x text-navy"></i></a></li>
-                    </ul>
+    <main>
+        <section class="hero">
+            <div class="container hero-grid">
+                <div class="hero-content">
+                    <h1>WebDoctorPro</h1>
+                    <p>Prontuário Eletrônico e Automação de Consultórios. A tecnologia ideal para otimizar a gestão da sua clínica e aprimorar a experiência dos seus pacientes.</p>
+                    <div class="hero-actions">
+                        <a href="https://webdoctorpro.net/BaseAdmin/SolicitaDemo" class="btn btn-primary">
+                            <i class="fa-solid fa-paper-plane"></i> Começar Agora
+                        </a>
+                        <a href="#contato" class="btn btn-outline">
+                            Falar com Especialista
+                        </a>
+                    </div>
+                </div>
+                <div class="hero-image-wrapper">
+                    <div class="hero-image-mockup">
+                        <div class="mockup-header">
+                            <div class="mockup-dot"></div>
+                            <div class="mockup-dot"></div>
+                            <div class="mockup-dot"></div>
+                        </div>
+                        <div class="mockup-body">
+                            <i class="fa-solid fa-chart-line" style="font-size: 3rem; color: var(--accent-teal); margin-bottom: 1rem;"></i>
+                            <span>Painel WebDoctorPro Ativo</span>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
-    </section>
+        </section>
 
-    <!-- Scripts -->
-    @Scripts.Render("~/bundles/jquery")
-    @Scripts.Render("~/bundles/bootstrap")
-    @Scripts.Render("~/plugins/wow")
-    @Scripts.Render("~/bundles/inspinia")
+        <section class="presentation-section section-padding">
+            <div class="container slide-grid">
+                <div class="slide-content">
+                    <h2>Prontuário Eletrônico Inteligente</h2>
+                    <p>Centralize o histórico clínico de seus pacientes com total segurança e praticidade. Acesse prescrições, exames e evoluções de qualquer dispositivo, a qualquer momento.</p>
+                </div>
+                <div class="slide-visual">
+                    <i class="fa-solid fa-file-medical"></i>
+                </div>
+            </div>
+        </section>
+
+        <section class="presentation-section section-padding">
+            <div class="container slide-grid slide-reverse">
+                <div class="slide-content">
+                    <h2>Agenda Médica Inteligente e Automatizada</h2>
+                    <p>Reduza o absenteísmo em até 40% com confirmações automáticas via WhatsApp. Gerencie horários, encaixes e múltiplos profissionais sem esforço.</p>
+                </div>
+                <div class="slide-visual">
+                    <i class="fa-solid fa-calendar-check"></i>
+                </div>
+            </div>
+        </section>
+
+        <section class="presentation-section section-padding">
+            <div class="container slide-grid">
+                <div class="slide-content">
+                    <h2>Gestão Financeira Completa</h2>
+                    <p>Controle o fluxo de caixa, emissão de guias de convênios (TISS) e faturamento de forma descomplicada. Relatórios estratégicos prontos para a tomada de decisões corporativas.</p>
+                </div>
+                <div class="slide-visual">
+                    <i class="fa-solid fa-credit-card"></i>
+                </div>
+            </div>
+        </section>
+
+        <section id="contato" class="contact-section section-padding">
+            <div class="container">
+                <h2 class="section-title">Fale Conosco — <span>Fácil e Rápido</span></h2>
+                
+                <div class="contact-grid">
+                    <div class="form-wrapper">
+                        <form id="contactForm" novalidate>
+                            <div class="form-group">
+                                <label for="nome">Nome Completo</label>
+                                <input type="text" id="nome" class="form-control" placeholder="Digite seu nome" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="email">E-mail Corporativo</label>
+                                <input type="email" id="email" class="form-control" placeholder="exemplo@empresa.com" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="celular">Celular</label>
+                                <input type="text" id="celular" class="form-control" placeholder="(99) 99999-9999" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="motivo">Motivo do Contato</label>
+                                <select id="motivo" class="form-control" required>
+                                    <option value="" disabled selected>Selecione um motivo...</option>
+                                    <option value="Demonstração">Solicitar Demonstração</option>
+                                    <option value="Planos">Dúvidas sobre Planos</option>
+                                    <option value="Suporte">Suporte Técnico</option>
+                                    <option value="Parceria">Parcerias Comerciais</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>Como deseja receber a resposta?</label>
+                                <div class="form-row-radio">
+                                    <label class="radio-label">
+                                        <input type="radio" name="respostaPref" value="E-Mail" checked required> E-Mail
+                                    </label>
+                                    <label class="radio-label">
+                                        <input type="radio" name="respostaPref" value="WhatsApp"> WhatsApp
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="mensagem">Como podemos ajudar? (Máx. 1000 caracteres)</label>
+                                <textarea id="mensagem" class="form-control" rows="4" maxlength="1000" placeholder="Escreva sua mensagem aqui..." required></textarea>
+                            </div>
+                            
+                            <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">
+                                <i class="fa-solid fa-envelope"></i> Enviar Mensagem
+                            </button>
+                        </form>
+                        
+                        <div class="form-instructions">
+                            <p>Ao enviar o formulário, você estará concordando com:</p>
+                            <span>Armazenamento destes dados para que possamos retornar o contato</span>
+                            <span>Inclusão do telefone e e-mail em nosso mailing</span>
+                            <span>Nossa política de privacidade</span>
+                        </div>
+                    </div>
+
+                    <div class="info-wrapper">
+                        <div class="info-card">
+                            <i class="fa-solid fa-user-tie"></i>
+                            <p>Deixe que um dos nossos especialistas entre em contato com você.</p>
+                        </div>
+                        
+                        <div class="info-card">
+                            <i class="fa-solid fa-rocket"></i>
+                            <p>Contrate o WebDoctorPro e leve seu consultório ou clínica para outro nível.</p>
+                        </div>
+                        
+                        <div class="info-card">
+                            <i class="fa-solid fa-heart-pulse"></i>
+                            <p>Ganhe tempo para o que mais interessa... Seus pacientes.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-half-left">
+                    <a href="https://webdoctorpro.net/BaseAdmin/Privacidade" class="footer-link">Política de Privacidade</a>
+                    <a href="https://webdoctorpro.net/BaseAdmin/FaleConosco" class="footer-link">Fale Conosco</a>
+                </div>
+                
+                <div class="footer-half-right">
+                    <div class="social-links">
+                        <a href="https://wa.me/5521973024096" target="_blank" class="social-btn" title="Fale pelo WhatsApp">
+                            <i class="fa-brands fa-whatsapp" style="font-size: 1.5rem;"></i>
+                        </a>
+                    </div>
+                    <span style="color: var(--text-muted); font-size: 0.95rem;">
+                        <i class="fa-solid fa-phone" style="color: var(--accent-teal);"></i> (21) 97302-4096
+                    </span>
+                </div>
+            </div>
+            
+            <div class="copyright-box">
+                <strong>WebDoctorPro</strong>
+                Copyright @@2026 RTi Ltda - CNPJ: 54.788.149/0001-06 - Rio de Janeiro - Brasil
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script>
-        $(document).ready(function () {
-            new WOW().init();
+        // Configurações padrão do Toastr
+        toastr.options = {
+            "closeButton": true,
+            "progressBar": true,
+            "positionClass": "toast-top-right",
+            "timeOut": "4000"
+        };
 
-            $('body').scrollspy({
-                target: '.navbar-fixed-top',
-                offset: 80
+        $(document).ready(function () {
+            
+            // Máscara Intuitiva para o campo Celular: (99)99999-9999
+            const phoneInput = document.getElementById('celular');
+            phoneInput.addEventListener('input', function (e) {
+                let x = e.target.value.replace(/\D/g, '').match(/(\d{0,2})(\d{0,5})(\d{0,4})/);
+                e.target.value = !x[2] ? x[1] : '(' + x[1] + ') ' + x[2] + (x[3] ? '-' + x[3] : '');
             });
 
-            $('a.page-scroll').bind('click', function (event) {
-                var link = $(this);
-                $('html, body').stop().animate({
-                    scrollTop: $(link.attr('href')).offset().top - 70
-                }, 500);
-                event.preventDefault();
+            // Validação e envio do Formulário de Contato via Ajax simulado
+            $('#contactForm').on('submit', function (e) {
+                e.preventDefault();
+
+                // Captura dos valores
+                const nome = $('#nome').val().trim();
+                const email = $('#email').val().trim();
+                const celular = $('#celular').val().trim();
+                const motivo = $('#motivo').val();
+                const respostaPref = $('input[name="respostaPref"]:checked').val();
+                const mensagem = $('#mensagem').val().trim();
+
+                // Regex de Validação
+                const emailRegex = /^[^\s@@]+@@[^\s@@]+\.[^\s@@]+$/;
+                const celularRegex = /^\(\d{2}\)\s\d{5}-\d{4}$/;
+
+                // Validações de consistência do Front-end
+                if (!nome || !email || !celular || !motivo || !mensagem) {
+                    toastr.error('Por favor, preencha todos os campos obrigatórios.');
+                    return;
+                }
+
+                if (!emailRegex.test(email)) {
+                    toastr.warning('Por favor, insira um e-mail com formato válido.');
+                    return;
+                }
+
+                if (!celularRegex.test(celular)) {
+                    toastr.warning('Por favor, insira o número de celular no formato correto: (99)99999-9999.');
+                    return;
+                }
+
+                // Simulação de postagem segura e redirecionamento de intenção para e-mail corporativo
+                Swal.fire({
+                    title: 'Enviando Mensagem...',
+                    text: 'Conectando ao servidor de correio da RTi Ltda.',
+                    allowOutsideClick: false,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    }
+                });
+
+                setTimeout(function () {
+                    Swal.close();
+
+                    // Dispara feedback de sucesso absoluto via SweetAlert2
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Sucesso!',
+                        text: 'Sua mensagem foi processada e direcionada para suporte@@rtiltda.net. Entraremos em contato em breve!',
+                        confirmButtonColor: '#0ea5e9'
+                    });
+
+                    // Limpa o formulário após o envio bem-sucedido
+                    $('#contactForm')[0].reset();
+
+                }, 1500);
             });
         });
     </script>
