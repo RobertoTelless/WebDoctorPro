@@ -291,6 +291,7 @@ namespace GEDSys_Presentation.Controllers
                 Session["FlagMensagensEnviadas"] = 6;
                 Session["PontoAcao"] = 101;
                 Session["VoltaPedidoView"] = 200;
+                Session["NivelCRM"] = 1;
                 objeto = new CRM();
                 if (Session["FiltroCRM"] != null)
                 {
@@ -818,6 +819,7 @@ namespace GEDSys_Presentation.Controllers
                         return RedirectToAction("IncluirProcessoCRM", "CRM");
                     }
 
+                    Session["NivelCRM"] = 1;
                     Session["CRMAtendimento"] = 0;
                     Session["PontoProposta"] = 0;
                     Session["CRMAlterada"] = 1;
@@ -2984,6 +2986,7 @@ namespace GEDSys_Presentation.Controllers
                 vm.CRIA_AGENDA = 2;
                 Session["VoltaTela"] = 1;
                 ViewBag.Incluir = (Int32)Session["VoltaTela"];
+                Session["NivelCRM"] = 2;
                 return View(vm);
             }
             catch (Exception ex)
@@ -3154,6 +3157,7 @@ namespace GEDSys_Presentation.Controllers
                     Session["MensCRM"] = 161;
 
                     // Verifica retorno
+                    Session["NivelCRM"] = 2;
                     Session["CRMAcaoAlterada"] = 1;
                     Session["CRMAlterada"] = 1;
                     Session["ListaCRM"] = null;
@@ -3243,6 +3247,7 @@ namespace GEDSys_Presentation.Controllers
                 vm.CRAC_IN_SISTEMA = 6;
                 Session["VoltaTela"] = 1;
                 ViewBag.Incluir = (Int32)Session["VoltaTela"];
+                Session["NivelCRM"] = 2;
                 return View(vm);
             }
             catch (Exception ex)
@@ -3354,6 +3359,7 @@ namespace GEDSys_Presentation.Controllers
                     Session["CRMAcaoAlterada"] = 1;
                     Session["VoltaTela"] = 1;
                     Session["FlagCRM"] = 1;
+                    Session["NivelCRM"] = 2;
                     Session["LinhaAlterada1"] = item.CRAC_CD_ID;
                     ViewBag.Incluir = (Int32)Session["VoltaTela"];
                     return RedirectToAction("VoltarAcaoCRM");
@@ -3530,11 +3536,13 @@ namespace GEDSys_Presentation.Controllers
                 Session["MsgCRUD"] = "A ação " + item.CRAC_NM_TITULO.ToUpper() + " foi excluida com sucesso. Processo: " + proc.CRM1_GU_GUID;
                 Session["MensCRM"] = 161;
 
+                Session["NivelCRM"] = 2;
                 Session["CRMAcaoAlterada"] = 1;
                 Session["CRMAlterada"] = 1;
                 Session["ListaCRM"] = null;
                 Session["VoltaTela"] = 1;
                 Session["FlagCRM"] = 1;
+                Session["NivelCRM"] = 2;
                 ViewBag.Incluir = (Int32)Session["VoltaTela"];
 
                 return RedirectToAction("VoltarAcompanhamentoCRM");
@@ -3642,6 +3650,7 @@ namespace GEDSys_Presentation.Controllers
                 Session["MsgCRUD"] = "A ação " + item.CRAC_NM_TITULO.ToUpper() + " foi encerrada com sucesso. Processo: " + proc.CRM1_GU_GUID;
                 Session["MensCRM"] = 161;
 
+                Session["NivelCRM"] = 2;
                 Session["CRMAcaoAlterada"] = 1;
                 Session["VoltaTela"] = 1;
                 Session["FlagCRM"] = 1;
@@ -4128,7 +4137,7 @@ namespace GEDSys_Presentation.Controllers
         }
 
         [HttpGet]
-        public ActionResult VerAnexoLead(Int32 id)
+        public ActionResult VerAnexoCRM(Int32 id)
         {
             try
             {
@@ -4176,6 +4185,7 @@ namespace GEDSys_Presentation.Controllers
                 // Grava Acesso
                 ControleAcessoMetodo grava = new ControleAcessoMetodo(aceApp);
                 Int32 voltaX = grava.GravaAcesso(usuario.USUA_CD_ID, usuario.ASSI_CD_ID, "CRM_ANEXO", "CRM", "VerAnexoCRM");
+                Session["NivelCRM"] = 4;
                 return View(item);
             }
             catch (Exception ex)
@@ -4192,7 +4202,7 @@ namespace GEDSys_Presentation.Controllers
         }
 
         [HttpGet]
-        public ActionResult ExcluirAnexoLead(Int32 id)
+        public ActionResult ExcluirAnexoCRM(Int32 id)
         {
             if ((String)Session["Ativa"] == null)
             {
@@ -4254,7 +4264,7 @@ namespace GEDSys_Presentation.Controllers
                 Session["MsgCRUD"] = "O arquivo " + item.CRAN_NM_TITULO.ToUpper() + " foi desanexado com sucesso. Processo: " + crm.CRM1_NM_NOME.ToUpper();
                 Session["MensCRM"] = 161;
 
-                Session["NivelCRM"] = 2;
+                Session["NivelCRM"] = 4;
                 Session["CRMAlterada"] = 1;
                 return RedirectToAction("VoltarAcompanhamentoCRM");
             }
@@ -4333,6 +4343,7 @@ namespace GEDSys_Presentation.Controllers
                 Response.BinaryWrite(dados);
                 Response.Flush();
                 Response.End();
+                Session["NivelCRM"] = 4;
 
                 return null;
             }
@@ -4350,6 +4361,497 @@ namespace GEDSys_Presentation.Controllers
                 return Content("Erro técnico ao realizar download: " + ex.Message);
             }
         }
+
+        public ActionResult IncluirAnotacaoCRM()
+        {
+            try
+            {
+                // Verifica se tem usuario logado
+                USUARIO usuario = new USUARIO();
+                if ((String)Session["Ativa"] == null)
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+                if ((USUARIO)Session["UserCredentials"] != null)
+                {
+                    usuario = (USUARIO)Session["UserCredentials"];
+                }
+                else
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+                Int32 idAss = (Int32)Session["IdAssinante"];
+                Session["NivelCRM"] = 3;
+
+                CRM item = baseApp.GetItemById((Int32)Session["IdCRM"]);
+                USUARIO usuarioLogado = (USUARIO)Session["UserCredentials"];
+                CRM_COMENTARIO coment = new CRM_COMENTARIO();
+                CRMComentarioViewModel vm = Mapper.Map<CRM_COMENTARIO, CRMComentarioViewModel>(coment);
+                vm.CRCM_DT_COMENTARIO = DateTime.Now;
+                vm.CRCM_IN_ATIVO = 1;
+                vm.CRM1_CD_ID = item.CRM1_CD_ID;
+                vm.USUARIO = usuarioLogado;
+                vm.USUA_CD_ID = usuarioLogado.USUA_CD_ID;
+
+                // Grava Acesso
+                ControleAcessoMetodo grava = new ControleAcessoMetodo(aceApp);
+                Int32 voltaX = grava.GravaAcesso(usuario.USUA_CD_ID, usuario.ASSI_CD_ID, "CRM_ANOTACAO_INCLUIR", "CRM", "IncluirAnotacaoCRM");
+                return View(vm);
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "CRM";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "CRM", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return RedirectToAction("TrataExcecao", "Administra");
+            }
+        }
+
+        [HttpPost]
+        public ActionResult IncluirAnotacaoCRM(CRMComentarioViewModel vm)
+        {
+            if ((String)Session["Ativa"] == null)
+            {
+                return RedirectToAction("Logout", "ControleAcesso");
+            }
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    // Sanitização
+                    vm.CRCM_DS_COMENTARIO = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(vm.CRCM_DS_COMENTARIO);
+
+                    // Executa a operação
+                    CRM_COMENTARIO item = Mapper.Map<CRMComentarioViewModel, CRM_COMENTARIO>(vm);
+                    USUARIO usuarioLogado = (USUARIO)Session["UserCredentials"];
+                    CRM proc = baseApp.GetItemById((Int32)Session["IdCRM"]);
+
+                    item.USUARIO = null;
+                    proc.CRM_COMENTARIO.Add(item);
+                    Int32 volta = baseApp.ValidateEdit(proc, proc, usuarioLogado);
+
+                    // Atualiza resumo
+                    String velho = proc.CRM1_TX_RESUMO;
+                    String novo = "Criação de Anotação";
+                    String dataHoje = DateTime.Today.Date.ToLongDateString();
+                    dataHoje = "*** Movimentação em [" + dataHoje + "] ***";
+                    if (proc.CRM1_TX_RESUMO != null)
+                    {
+                        String anot = dataHoje + "\r\n" + novo;
+                        if (velho == null & novo != String.Empty)
+                        {
+                            proc.CRM1_TX_RESUMO = dataHoje + "\r\n" + novo;
+                        }
+                        if (velho != null & novo != String.Empty)
+                        {
+                            String tripa = velho.Substring(velho.Length - 4, 4);
+                            if (tripa == "\r\n")
+                            {
+                                velho = velho.Substring(0, velho.Length - 4);
+                            }
+                            proc.CRM1_TX_RESUMO = velho + "\r\n\r\n" + dataHoje + "\r\n" + novo;
+                        }
+                    }
+                    else
+                    {
+                        velho = proc.CRM1_TX_RESUMO;
+                        proc.CRM1_TX_RESUMO = dataHoje + "\r\n" + novo;
+                    }
+                    Int32 voltaR = baseApp.ValidateEdit(proc, proc);
+
+                    // Mensagem do CRUD
+                    Session["MsgCRUD"] = "A anotação foi criada com sucesso. Processo: " + proc.CRM1_GU_GUID;
+                    Session["MensCRM"] = 161;
+
+                    // Sucesso
+                    Session["NivelCRM"] = 3;
+                    return RedirectToAction("VoltarAcompanhamentoCRM");
+                }
+                catch (Exception ex)
+                {
+                    ViewBag.Message = ex.Message;
+                    Session["TipoVolta"] = 2;
+                    Session["VoltaExcecao"] = "CRM";
+                    Session["Excecao"] = ex;
+                    Session["ExcecaoTipo"] = ex.GetType().ToString();
+                    GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                    Int32 voltaX = grava.GravarLogExcecao(ex, "CRM", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                    return RedirectToAction("TrataExcecao", "Administra");
+                }
+            }
+            else
+            {
+                return View(vm);
+            }
+        }
+
+        [HttpGet]
+        public ActionResult ExcluirAnotacaoCRM(Int32 id)
+        {
+            try
+            {
+                // Verifica se tem usuario logado
+                USUARIO usuario = new USUARIO();
+                if ((String)Session["Ativa"] == null)
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+                if ((USUARIO)Session["UserCredentials"] != null)
+                {
+                    usuario = (USUARIO)Session["UserCredentials"];
+                }
+                else
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+                Int32 idAss = (Int32)Session["IdAssinante"];
+
+                USUARIO usuarioLogado = (USUARIO)Session["UserCredentials"];
+                CRM_COMENTARIO item = baseApp.GetComentarioById(id);
+                CRM proc = baseApp.GetItemById((Int32)Session["IdCRM"]);
+                item.CRCM_IN_ATIVO = 0;
+                Int32 volta = baseApp.ValidateEditAnotacao(item);
+                Session["CRMAlterada"] = 1;
+                Session["NivelCRM"] = 3;
+
+                // Atualiza resumo
+                String velho = proc.CRM1_TX_RESUMO;
+                String novo = "Exclusão de Anotação";
+                String dataHoje = DateTime.Today.Date.ToLongDateString();
+                dataHoje = "*** Movimentação em [" + dataHoje + "] ***";
+                if (proc.CRM1_TX_RESUMO != null)
+                {
+                    String anot = dataHoje + "\r\n" + novo;
+                    if (velho == null & novo != String.Empty)
+                    {
+                        proc.CRM1_TX_RESUMO = dataHoje + "\r\n" + novo;
+                    }
+                    if (velho != null & novo != String.Empty)
+                    {
+                        String tripa = velho.Substring(velho.Length - 4, 4);
+                        if (tripa == "\r\n")
+                        {
+                            velho = velho.Substring(0, velho.Length - 4);
+                        }
+                        proc.CRM1_TX_RESUMO = velho + "\r\n\r\n" + dataHoje + "\r\n" + novo;
+                    }
+                }
+                else
+                {
+                    velho = proc.CRM1_TX_RESUMO;
+                    proc.CRM1_TX_RESUMO = dataHoje + "\r\n" + novo;
+                }
+                Int32 voltaR = baseApp.ValidateEdit(proc, proc);
+
+                // Mensagem do CRUD
+                Session["MsgCRUD"] = "A anotação foi excluida com sucesso. Processo: " + proc.CRM1_GU_GUID;
+                Session["MensCRM"] = 161;
+
+                return RedirectToAction("VoltarAcompanhamentoCRM");
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "CRM";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "CRM", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return RedirectToAction("TrataExcecao", "Administra");
+            }
+        }
+
+        [HttpGet]
+        public ActionResult EditarAnotacaoCRM(Int32 id)
+        {
+            try
+            {
+                // Verifica se tem usuario logado
+                USUARIO usuario = new USUARIO();
+                if ((String)Session["Ativa"] == null)
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+                if ((USUARIO)Session["UserCredentials"] != null)
+                {
+                    usuario = (USUARIO)Session["UserCredentials"];
+                }
+                else
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+                Int32 idAss = (Int32)Session["IdAssinante"];
+
+                // Prepara view
+                Session["NivelLead"] = 3;
+                CRM_COMENTARIO item = baseApp.GetComentarioById(id);
+                CRMComentarioViewModel vm = Mapper.Map<CRM_COMENTARIO, CRMComentarioViewModel>(item);
+
+                // Grava Acesso
+                ControleAcessoMetodo grava = new ControleAcessoMetodo(aceApp);
+                Int32 voltaX = grava.GravaAcesso(usuario.USUA_CD_ID, usuario.ASSI_CD_ID, "CRM_ANOTACAO_EDITAR", "CRM", "EditarAnotacaoCRM");
+                return View(vm);
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "CRM";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "CRM", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return RedirectToAction("TrataExcecao", "Administra");
+            }
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult EditarAnotacaoCRM(CRMComentarioViewModel vm)
+        {
+            if ((String)Session["Ativa"] == null)
+            {
+                return RedirectToAction("Logout", "ControleAcesso");
+            }
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    // Sanitização
+                    vm.CRCM_DS_COMENTARIO = CrossCutting.UtilitariosGeral.CleanStringGeralNoBreak(vm.CRCM_DS_COMENTARIO);
+
+                    // Executa a operação
+                    USUARIO usuarioLogado = (USUARIO)Session["UserCredentials"];
+                    CRM_COMENTARIO item = Mapper.Map<CRMComentarioViewModel, CRM_COMENTARIO>(vm);
+                    CRM copa = baseApp.GetItemById(item.CRM1_CD_ID);
+                    Int32 volta = baseApp.ValidateEditAnotacao(item);
+
+                    // Verifica retorno
+                    Session["CRMAlterada"] = 1;
+                    Session["NivelCRM"] = 3;
+                    return RedirectToAction("VoltarAcompanhamentoCRM");
+                }
+                catch (Exception ex)
+                {
+                    ViewBag.Message = ex.Message;
+                    Session["TipoVolta"] = 2;
+                    Session["VoltaExcecao"] = "CRM";
+                    Session["Excecao"] = ex;
+                    Session["ExcecaoTipo"] = ex.GetType().ToString();
+                    GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                    Int32 voltaX = grava.GravarLogExcecao(ex, "CRM", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                    return RedirectToAction("TrataExcecao", "Administra");
+                }
+            }
+            else
+            {
+                return View(vm);
+            }
+        }
+
+        public ActionResult VerAcoesUsuarioCRMPrevia1()
+        {
+            Session["AcoesUsuario"] = 1;
+            Session["PontoAcao"] = 101;
+            return RedirectToAction("VerAcoesUsuarioCRM");
+        }
+
+        [HttpGet]
+        public ActionResult VisualizarProcessoCRM(Int32 id)
+        {
+            try
+            {
+                // Verifica se tem usuario logado
+                USUARIO usuario = new USUARIO();
+                if ((String)Session["Ativa"] == null)
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+                if ((USUARIO)Session["UserCredentials"] != null)
+                {
+                    usuario = (USUARIO)Session["UserCredentials"];
+                }
+                else
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+                Int32 idAss = (Int32)Session["IdAssinante"];
+
+                Session["IdCRM"] = id;
+                CRM item = baseApp.GetItemById(id);
+                CRMViewModel vm = Mapper.Map<CRM, CRMViewModel>(item);
+
+                List<CRM_ACAO> acoes = item.CRM_ACAO.ToList().OrderByDescending(p => p.CRAC_DT_CRIACAO).ToList();
+                CRM_ACAO acao = acoes.Where(p => p.CRAC_IN_STATUS == 1).FirstOrDefault();
+                Session["ClienteCRM"] = item.CLIENTE.CLIE_NM_NOME;
+                LEAD clie = leaApp.GetItemById(item.LEAD_CD_ID.Value);
+                Session["ClienteBase"] = clie;
+                ViewBag.Acoes = acoes;
+
+                // Recupera dados do funil
+                FUNIL funil = funApp.GetItemById(item.FUNI_CD_ID.Value);
+                Session["TemProposta"] = funil.FUNI_IN_PROPOSTA;
+                Session["Funil"] = funil.FUNI_NM_NOME;
+                List<FUNIL_ETAPA> etapas = funil.FUNIL_ETAPA.ToList();
+                ViewBag.Etapas = etapas.Count;
+                Session["NumEtapas"] = etapas.Count;
+
+                Int32 atual = item.CRM1_IN_STATUS;
+                FUNIL_ETAPA etapaAtual = etapas.Where(p => p.FUET_CD_ID == atual).FirstOrDefault();
+                String nomeEtapa = etapaAtual.FUET_NM_NOME;
+                ViewBag.NomeEtapa = nomeEtapa;
+                Session["EtapaAtual"] = atual;
+                ViewBag.EtapaProposta = etapaAtual.FUET_IN_PROPOSTA;
+                ViewBag.EtapaFaturamento = etapaAtual.FUET_IN_FATURAMENTO;
+                ViewBag.EtapaExpedicao = etapaAtual.FUET_IN_EXPEDICAO;
+
+                Int32 encerra = etapaAtual.FUET_IN_ENCERRA;
+                ViewBag.Encerra = encerra;
+                Int32? etapaEncerra = etapas.Where(p => p.FUET_IN_ENCERRA == 1).FirstOrDefault().FUET_IN_ORDEM;
+                Session["EtapaEncerra"] = etapaEncerra;
+                ViewBag.EtapaEncerra = etapaEncerra;
+
+                Session["VoltaTela"] = 0;
+                ViewBag.Incluir = (Int32)Session["VoltaTela"];
+                return View(vm);
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "CRM";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "CRM", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                return RedirectToAction("TrataExcecao", "Administra");
+            }
+        }
+
+        public ActionResult VerAcoesUsuarioCRM()
+        {
+            try
+            {
+                // Verifica se tem usuario logado
+                if ((String)Session["Ativa"] == null)
+                {
+                    return RedirectToAction("Logout", "ControleAcesso");
+                }
+                USUARIO usuario = (USUARIO)Session["UserCredentials"];
+                Int32 idAss = (Int32)Session["IdAssinante"];
+
+                // Processa
+                List<CRM_ACAO> lista = baseApp.GetAllAcoes().Where(p => p.USUA_CD_ID2 == usuario.USUA_CD_ID & p.CRM.CRM1_IN_ATIVO != 2).OrderByDescending(m => m.CRAC_DT_PREVISTA).ToList();
+                List<CRM_ACAO> totalPendente = lista.Where(p => p.CRAC_IN_STATUS == 1).OrderByDescending(m => m.CRAC_DT_PREVISTA).ToList();
+                List<CRM_ACAO> totalEncerrada = lista.Where(p => p.CRAC_IN_STATUS == 3).OrderByDescending(m => m.CRAC_DT_PREVISTA).ToList();
+                List<CRM_ACAO> totalAtrasada = lista.Where(p => p.CRAC_IN_STATUS != 3 & p.CRAC_DT_PREVISTA < DateTime.Today.Date).OrderByDescending(m => m.CRAC_DT_PREVISTA).ToList();
+
+                if ((Int32)Session["AcoesUsuario"] == 1)
+                {
+                    ViewBag.Lista = lista;
+                    ViewBag.TotalAcoes = lista.Count;
+                }
+                if ((Int32)Session["AcoesUsuario"] == 2)
+                {
+                    ViewBag.Lista = totalPendente;
+                    ViewBag.TotalAcoes = totalPendente.Count;
+                }
+                if ((Int32)Session["AcoesUsuario"] == 3)
+                {
+                    ViewBag.Lista = totalEncerrada;
+                    ViewBag.TotalAcoes = totalEncerrada.Count;
+                }
+                if ((Int32)Session["AcoesUsuario"] == 4)
+                {
+                    ViewBag.Lista = totalAtrasada;
+                    ViewBag.TotalAcoes = totalAtrasada.Count;
+                }
+
+                ViewBag.TotalPendentes = totalPendente.Count;
+                ViewBag.TotalEncerradas = totalEncerrada.Count;
+                ViewBag.TotalAtrasadas = totalAtrasada.Count;
+
+                ViewBag.Nome = usuario.USUA_NM_NOME.Substring(0, usuario.USUA_NM_NOME.IndexOf(" "));
+                ViewBag.Foto = usuario.USUA_AQ_FOTO;
+                ViewBag.Cargo = usuario.CARGO.CARG_NM_NOME;
+                Session["VoltaCRM"] = 84;
+                Session["VoltaAcao"] = 84;
+                return View();
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+                Session["TipoVolta"] = 2;
+                Session["VoltaExcecao"] = "CRM";
+                Session["Excecao"] = ex;
+                Session["ExcecaoTipo"] = ex.GetType().ToString();
+                GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                Int32 voltaX = grava.GravarLogExcecao(ex, "CRM", "CRMSys", 1, (USUARIO)Session["UserCredentials"]);
+                return RedirectToAction("TrataExcecao", "BaseAdmin");
+            }
+        }
+
+        public ActionResult VerAcoesUsuarioCRMPrevia()
+        {
+            Session["AcoesUsuario"] = 1;
+            Session["PontoAcao"] = 100;
+            return RedirectToAction("VerAcoesUsuarioCRM");
+        }
+
+        public ActionResult VerAcoesUsuarioCRMPendentePrevia()
+        {
+            Session["AcoesUsuario"] = 2;
+            return RedirectToAction("VerAcoesUsuarioCRM");
+        }
+
+        public ActionResult VerAcoesUsuarioCRMEncerradaPrevia()
+        {
+            Session["AcoesUsuario"] = 3;
+            return RedirectToAction("VerAcoesUsuarioCRM");
+        }
+
+        public ActionResult VerAcoesUsuarioCRMAtrasadaPrevia()
+        {
+            Session["AcoesUsuario"] = 4;
+            return RedirectToAction("VerAcoesUsuarioCRM");
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -4719,7 +5221,6 @@ namespace GEDSys_Presentation.Controllers
             }
             return RedirectToAction("EncerrarProcessoCRM", new { id = (Int32)Session["IdCRM"] });
         }
-
 
 
 

@@ -31,16 +31,22 @@
         <div class="col-lg-12 col-md-12 col-xs-12">
             <div class="col-lg-12 col-md-12 col-xs-12 ibox float-e-margins">
                 <div class="ibox-title">
-                    <h5>Lead - Ver Anexo</h5>
+                    <h5>Processo CRM - Ver Anexo</h5>
                 </div>
-                @using (Html.BeginForm("VerAnexoCRMAudio", "CRM", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal", @id = "pwd-container1" }))
+                @using (Html.BeginForm("VerAnexoCRM", "CRM", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal", @id = "pwd-container1" }))
                 {
                     <div class="ibox-content">
+                        <div class="form-group">
+                            @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarAcompanhamentoCRM", controller: "CRM", htmlAttributes: new { @class = "btn-loading show-spinner" })
+                            <span id="loadingIndicator" style="display: none; margin-left: 10px; color: #007bff;">
+                                <i class="fa fa-spinner fa-spin"></i> Processando...
+                            </span>
+                        </div>
                         <div class="row">
                             <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
                                 <div class="col-lg-6 col-md-6 col-xs-12">
                                     Titulo
-                                    @Html.TextBoxFor(m => m.CRAN_NM_TITULO, new { @class = "form-control", @readonly = "readonly", @style = "color: green; font-weight: bold" })
+                                    @Html.TextBoxFor(m => m.CRAN_NM_TITULO, new { @class = "form-control", @readonly = "readonly", @style = "color: green; font-weight: bold"})
                                 </div>
                                 <div class="col-lg-2 col-md-2 col-xs-12">
                                     Data
@@ -49,25 +55,36 @@
                             </div>
                         </div>
                         <div class="form-group">
-                            @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarAcompanhamentoCRM", controller: "CRM", htmlAttributes: new { @class = "btn-loading show-spinner" })
-                            <span id="loadingIndicator" style="display: none; margin-left: 10px; color: #007bff;">
-                                <i class="fa fa-spinner fa-spin"></i> Processando...
-                            </span>
-                        </div>
-                        <div class="form-group">
-                            <div class="col-lg-12 col-md-12 col-sm-12">
-                                <audio controls>
-                                    @{
-                                        // 1. Removemos o "~/ " ou "~" do início do caminho vindo do banco
-                                        var blobPathAudio = Model.CRAN_AQ_ARQUIVO.Replace("~/", "").Replace("~", "");
+                            @if (Model.CRAN_IN_TIPO == 1)
+                            {
+                                <div class="col-lg-12">
+                                    @* Container para posicionamento absoluto dos Pins *@
+                                    <div id="image-container" style="position: relative; display: inline-block; cursor: crosshair;">
         
-                                        // 2. Montamos a URL completa do Azure Blob Storage
-                                        var urlAudioAzure = "https://rtistoragemain.blob.core.windows.net/rti-datacontainer/" + blobPathAudio;
-                                    }
-                                    <source src="@urlAudioAzure" type="audio/mpeg" />
-                                    Seu navegador não suporta o elemento de áudio.
-                                </audio>
-                            </div>
+                                        <img id="img-exame" 
+                                             src="@("https://rtistoragemain.blob.core.windows.net/rti-datacontainer/" + Model.CRAN_AQ_ARQUIVO.Replace("~/", "").Replace("~", ""))" 
+                                             class="img-responsive" 
+                                             style="max-height: 1530px; max-width: 100%;"
+                                             onerror="this.onerror=null;this.src='@Url.Content("~/Images/icone_imagem.jpg")';">
+
+                                    </div> 
+                                </div>
+                            }
+
+                            @if (Model.CRAN_IN_TIPO == 2)
+                            {
+                                <div class="col-lg-12 col-md-12 col-sm-12">
+                                    <figure>
+                                        @{
+                                            var urlVideoAzure = "https://rtistoragemain.blob.core.windows.net/rti-datacontainer/" + Model.CRAN_AQ_ARQUIVO.Replace("~/", "").Replace("~", "");
+                                        }
+                                        <video width="900" height="600" controls style="background: #000;">
+                                            <source src="@urlVideoAzure" type="video/mp4">
+                                            Seu navegador não suporta a tag de vídeo.
+                                        </video>
+                                    </figure>
+                                </div>
+                            }
                         </div>
                     </div>
                 }
@@ -94,6 +111,7 @@
             $('body').hasClass('fullscreen-video') ? $('body').removeClass('fullscreen-video') : $('body').addClass('fullscreen-video')
         });
     </script>
+
     <script type="text/javascript">
         $(document).ready(function () { 
             $('.btn-loading').on('click', function (e) {            
@@ -112,6 +130,7 @@
             });
         });
     </script>
+
     @if (ViewBag.Message != null)
     {
         <script type="text/javascript">

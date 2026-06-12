@@ -139,7 +139,7 @@
                             }
                         }
                         @Html.ButtonLinkIndex(text: "Histórico Diário do Processo", action: "MontarTelaHistorico", controller: "CRM", htmlAttributes: new { @class = "btn-loading show-spinner" })
-                        @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarBaseCRM", controller: "CRM", htmlAttributes: new { @class = "btn-loading show-spinner" })
+                        @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaCRM", controller: "CRM", htmlAttributes: new { @class = "btn-loading show-spinner" })
                         <span id="loadingIndicator" style="display: none; margin-left: 10px; color: #007bff;">
                             <i class="fa fa-spinner fa-spin"></i> Processando...
                         </span>
@@ -148,28 +148,28 @@
                     <h4 style="color: green; font-weight: bold; background-color:antiquewhite">Identificador: @Model.CRM1_ID_IDENTIFICADOR</h4><br />
                     <div class="tabs-container">
                         <ul class="nav nav-tabs">
-                            @if (ViewBag.Incluir == 0)
+                            @if ((Int32)Session["NivelCRM"] == 1)
                             {
                                 <li class="active"><a data-toggle="tab" href="#tab-1">Informações do Processo</a></li>
                                 <li class=""><a data-toggle="tab" href="#tab-5">Ações</a></li>
                                 <li class=""><a data-toggle="tab" href="#tab-4">Anotações & Acompanhamento</a></li>
                                 <li class=""><a data-toggle="tab" href="#tab-2">Anexos</a></li>
                             }
-                            @if (ViewBag.Incluir == 1)
+                            @if ((Int32)Session["NivelCRM"] == 2)
                             {
                                 <li class=""><a data-toggle="tab" href="#tab-1">Informações do Processo</a></li>
                                 <li class="active"><a data-toggle="tab" href="#tab-5">Ações</a></li>
                                 <li class=""><a data-toggle="tab" href="#tab-4">Anotações & Acompanhamento</a></li>
                                 <li class=""><a data-toggle="tab" href="#tab-2">Anexos</a></li>
                             }
-                            @if (ViewBag.Incluir == 3)
+                            @if ((Int32)Session["NivelCRM"] == 3)
                             {
                                 <li class=""><a data-toggle="tab" href="#tab-1">Informações do Processo</a></li>
                                 <li class=""><a data-toggle="tab" href="#tab-5">Ações</a></li>
                                 <li class="active"><a data-toggle="tab" href="#tab-4">Anotações & Acompanhamento</a></li>
                                 <li class=""><a data-toggle="tab" href="#tab-2">Anexos</a></li>
                             }
-                            @if (ViewBag.Incluir == 4)
+                            @if ((Int32)Session["NivelCRM"] == 4)
                             {
                                 <li class=""><a data-toggle="tab" href="#tab-1">Informações do Processo</a></li>
                                 <li class=""><a data-toggle="tab" href="#tab-5">Ações</a></li>
@@ -179,7 +179,7 @@
                         </ul>
                         <div class="tab-content">
                             @*Dados Gerais*@
-                            @if (ViewBag.Incluir == 0)
+                            @if ((Int32)Session["NivelCRM"] == 1)
                             {
                                 <div id="tab-1" class="tab-pane active">
                                     <div class="panel-body">
@@ -255,7 +255,7 @@
                                                 <div class="col-lg-8">
                                                     <div class="ibox float-e-margins" style="border-bottom: solid; border-bottom-color: darkblue; border-bottom-width: 1px; border-left: solid; border-left-color: darkblue; border-left-width: 1px; border-right: solid; border-right-color: darkblue; border-right-width: 1px; border-top: solid; border-top-color: darkblue; border-top-width: 1px; height: 250px" >
                                                         <div class="ibox-title" style="color: black">
-                                                            <h5 style="color: black"><a href="@Url.Action("EditarProcessoCRM", "CRM", new { id = Model.CRM1_CD_ID })"></a>Dados Básicos do Processo</h5>
+                                                            <h5>Dados Básicos do Processo</h5>
                                                             @if (Model.CRM1_IN_ENCERRADO == 1)
                                                             {
                                                                 <span class="badge badge-success" style="float:right">Encerrado</span>                                                        
@@ -481,7 +481,7 @@
                                                 <div class="col-lg-8">
                                                     <div class="ibox float-e-margins" style="border-bottom: solid; border-bottom-color: darkblue; border-bottom-width: 1px; border-left: solid; border-left-color: darkblue; border-left-width: 1px; border-right: solid; border-right-color: darkblue; border-right-width: 1px; border-top: solid; border-top-color: darkblue; border-top-width: 1px; height: 250px" >
                                                         <div class="ibox-title" style="color: black">
-                                                            <h5 style="color: black"><a href="@Url.Action("EditarProcessoCRM", "CRM", new { id = Model.CRM1_CD_ID })"></a>Dados Básicos do Processo</h5>
+                                                            <h5>Dados Básicos do Processo</h5>
                                                             @if (Model.CRM1_IN_ENCERRADO == 1)
                                                             {
                                                                 <span class="badge badge-success" style="float:right">Encerrado</span>                                                        
@@ -633,7 +633,7 @@
                             }
 
                             @*Imagens - Foto e Anexos*@
-                            @if (ViewBag.Incluir == 4)
+                            @if ((Int32)Session["NivelCRM"] == 4)
                             {
                                 <div id="tab-2" class="tab-pane active">
                                     <div class="panel-body">
@@ -720,7 +720,7 @@
                                                                                     <div style="height: 90px; display: flex; align-items: center; justify-content: center; width: 100%;">
                                                                                         @if (cond.CRAN_IN_TIPO == 1) 
                                                                                         {
-                                                                                            <a href="@Url.Action("VerAnexoLead", "Administra", new { id = cond.CRAN_CD_ID })" title="Visualizar Imagem">
+                                                                                            <a href="@Url.Action("VerAnexoCRM", "CRM", new { id = cond.CRAN_CD_ID })" title="Visualizar Imagem">
                                                                                                 <img src="@("https://rtistoragemain.blob.core.windows.net/rti-datacontainer/" + cond.CRAN_AQ_ARQUIVO.Replace("~/", "").Replace("~", ""))" 
                                                                                                      class="img-thumbnail" 
                                                                                                      style="width: 70px; height: 70px; object-fit: cover; border: 1px solid #eee;"
@@ -879,7 +879,7 @@
                                                                                     <div style="height: 90px; display: flex; align-items: center; justify-content: center; width: 100%;">
                                                                                         @if (cond.CRAN_IN_TIPO == 1) 
                                                                                         {
-                                                                                            <a href="@Url.Action("VerAnexoLead", "Administra", new { id = cond.CRAN_CD_ID })" title="Visualizar Imagem">
+                                                                                            <a href="@Url.Action("VerAnexoCRM", "CRM", new { id = cond.CRAN_CD_ID })" title="Visualizar Imagem">
                                                                                                 <img src="@("https://rtistoragemain.blob.core.windows.net/rti-datacontainer/" + cond.CRAN_AQ_ARQUIVO.Replace("~/", "").Replace("~", ""))" 
                                                                                                      class="img-thumbnail" 
                                                                                                      style="width: 70px; height: 70px; object-fit: cover; border: 1px solid #eee;"
@@ -953,7 +953,7 @@
                             }
 
                             @*Comentários*@
-                            @if (ViewBag.Incluir == 3)
+                            @if ((Int32)Session["NivelCRM"] == 3)
                             {
                                 <div id="tab-4" class="tab-pane active">
                                     <div class="panel-body">
@@ -1067,7 +1067,7 @@
                             }
 
                             @*Ações*@
-                            @if (ViewBag.Incluir == 1)
+                            @if ((Int32)Session["NivelCRM"] == 2)
                             {
                                 <div id="tab-5" class="tab-pane active">
                                     <div class="panel-body">

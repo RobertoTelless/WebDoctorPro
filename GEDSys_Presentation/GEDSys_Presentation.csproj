@@ -5570,8 +5570,12 @@
     <Content Include="Views\CRM\IncluirAcao.cshtml" />
     <Content Include="Views\CRM\EditarAcao.cshtml" />
     <Content Include="Views\CRM\VerAcao.cshtml" />
-    <Content Include="Views\CRM\VerAnexoLead.cshtml" />
     <Content Include="Views\CRM\VerAnexoCRMAudio.cshtml" />
+    <Content Include="Views\CRM\IncluirAnotacaoCRM.cshtml" />
+    <Content Include="Views\CRM\VerAnexoCRM.cshtml" />
+    <Content Include="Views\CRM\EditarAnotacaoCRM.cshtml" />
+    <Content Include="Views\CRM\VisualizarProcessoCRM.cshtml" />
+    <Content Include="Views\CRM\VerAcoesUsuarioCRM.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="BaseAdmin\BaseConhecimento\" />
