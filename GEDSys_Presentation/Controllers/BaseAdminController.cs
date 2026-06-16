@@ -177,6 +177,27 @@ namespace ERP_Condominios_Solution.Controllers
             return View();
         }
 
+        //public ActionResult NovoSite()
+        //{
+        //    // Grava Acesso
+        //    String ip = Request.ServerVariables["HTTP_X_FORWARDED_FOR"];
+        //    if (String.IsNullOrEmpty(ip))
+        //    {
+        //        ip = Request.ServerVariables["REMOTE_ADDR"];
+        //    }
+        //    if (ip == "::1")
+        //    {
+        //        ip = "127.0.0.1";
+        //    }
+        //    Session["IPBase"] = ip;
+        //    ControleAcessoMetodo grava = new ControleAcessoMetodo(aceApp);
+        //    Int32 voltaX = grava.GravaAcesso("BaseAdmin", "Site", ip);
+
+        //    Session["CompraState"] = null;
+        //    Session["MensagemLogin"] = null;
+        //    return View();
+        //}
+
         public JsonResult GetRefreshTime()
         {
             Int32 idAss = (Int32)Session["IdAssinante"];

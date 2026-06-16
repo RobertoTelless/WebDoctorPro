@@ -2637,6 +2637,20 @@
     <Content Include="Images\ImagemBase_1.png" />
     <Content Include="Images\ImagemBase_2.jpg" />
     <Content Include="Images\Imagem_Teste.jpg" />
+    <Content Include="Images\Imagens_Site\HeroSection.png" />
+    <Content Include="Images\Imagens_Site\Seção 1.png" />
+    <Content Include="Images\Imagens_Site\Seção 10.png" />
+    <Content Include="Images\Imagens_Site\Seção 11.png" />
+    <Content Include="Images\Imagens_Site\Seção 12.png" />
+    <Content Include="Images\Imagens_Site\Seção 13.png" />
+    <Content Include="Images\Imagens_Site\Seção 2.png" />
+    <Content Include="Images\Imagens_Site\Seção 3.png" />
+    <Content Include="Images\Imagens_Site\Seção 4.png" />
+    <Content Include="Images\Imagens_Site\Seção 5.png" />
+    <Content Include="Images\Imagens_Site\Seção 6.png" />
+    <Content Include="Images\Imagens_Site\Seção 7.png" />
+    <Content Include="Images\Imagens_Site\Seção 8.png" />
+    <Content Include="Images\Imagens_Site\Seção 9.png" />
     <Content Include="Images\Indicadores_Cliente.png" />
     <Content Include="Images\Kanban_CRM.png" />
     <Content Include="Images\landing\avatar1.jpg" />
@@ -5097,6 +5111,7 @@
     <Content Include="TemplatesHTML\CRALTLAN\CRALTLAN.html" />
     <Content Include="TemplatesHTML\CRPARREC\CRPARREC.html" />
     <Content Include="TemplatesHTML\FINPATR1\FINPATR1.html" />
+    <Content Include="Views\BaseAdmin\CarregarLandingPage_OLD.cshtml" />
     <Content Include="Views\Mensagem\IncluirMensagemEMail.cshtml" />
     <Content Include="Views\Mensagem\MontarTelaDashboardMensagens.cshtml" />
     <Content Include="Views\Mensagem\MontarTelaMensagemEMail.cshtml" />
@@ -5349,7 +5364,6 @@
     <Content Include="Views\Paciente2\MontarTelaAusencias.cshtml" />
     <Content Include="Views\Paciente2\MontarTelaAvisosRTi.cshtml" />
     <Content Include="Views\Paciente2\ImportarPlanilhaPaciente.cshtml" />
-    <Content Include="Views\BaseAdmin\CarregarLandingPage.cshtml" />
     <Content Include="Views\BaseAdmin\MontarTelaFaleConoscoInicio.cshtml" />
     <Content Include="Views\Paciente2\VerAnamneseCompleta.cshtml" />
     <Content Include="Views\BaseAdmin\MontarTelaControleAcessoNova.cshtml" />
@@ -5520,7 +5534,6 @@
     <Content Include="Views\Vacina\EditarVacina.cshtml" />
     <Content Include="Views\Noticia\VerNoticia.cshtml" />
     <Content Include="Views\Noticia\MontarTelaNoticiaQuadro.cshtml" />
-    <Content Include="Views\BaseAdmin\CarregarLandingPageNova.cshtml" />
     <Content Include="Temp\Placeholder.pdf" />
     <Content Include="Views\Noticia\IncluirComentarioNoticia.cshtml" />
     <Content Include="Views\AreaPaciente\EnviarInformacaoConsulta.cshtml" />
@@ -5576,6 +5589,7 @@
     <Content Include="Views\CRM\EditarAnotacaoCRM.cshtml" />
     <Content Include="Views\CRM\VisualizarProcessoCRM.cshtml" />
     <Content Include="Views\CRM\VerAcoesUsuarioCRM.cshtml" />
+    <Content Include="Views\BaseAdmin\CarregarLandingPage.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="BaseAdmin\BaseConhecimento\" />

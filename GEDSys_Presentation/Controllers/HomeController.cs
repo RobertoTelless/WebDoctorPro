@@ -55,7 +55,6 @@ namespace CRMPresentation.Controllers
                 Session["TemCookie"] = 1;
                 return RedirectToAction("Login", "ControleAcesso");
             }
-            //return RedirectToAction("Login", "ControleAcesso");
             return RedirectToAction("CarregarLandingPage", "BaseAdmin");
         }
 
