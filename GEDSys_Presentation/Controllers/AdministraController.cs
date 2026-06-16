@@ -2051,6 +2051,7 @@ namespace GEDSys_Presentation.Controllers
                     crm.CRM1_NM_NOME = "Processo referente ao lead de " + lead.LEAD_NM_NOME.ToUpper();
                     crm.CRM1_NR_TEMPERATURA = 1;
                     crm.EMPR_CD_ID = 3;
+                    crm.ORIG_CD_ID = 8;
                     crm.FUNI_CD_ID = fun.FUNI_CD_ID;
                     crm.LEAD_CD_ID = lead.LEAD_CD_ID;
                     crm.USUA_CD_ID = usuario.USUA_CD_ID;
@@ -2090,6 +2091,7 @@ namespace GEDSys_Presentation.Controllers
                         velho = lead.LEAD_DS_RESUMO_MOVIMENTO;
                         lead.LEAD_DS_RESUMO_MOVIMENTO = dataHoje + "\r\n" + novo;
                     }
+                    Int32 volta1L = baseApp.ValidateEdit(lead, lead, usuario);
 
                     // Atualiza resumo crm
                     CRM proc = crmApp.GetItemById(crm.CRM1_CD_ID);

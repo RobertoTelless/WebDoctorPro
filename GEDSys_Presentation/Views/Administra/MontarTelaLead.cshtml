@@ -70,6 +70,10 @@
                 {
                     <div class="ibox-content">
                         <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+                            <div class="col-lg-3 col-md-3 col-xs-12">
+                                Nome ou Fragmento do nome
+                                @Html.TextBoxFor(m => m.LEAD_NM_NOME, new { @class = "form-control", autofocus = true, @id = "txtNome" })
+                            </div>
                             <div class="col-lg-2 col-md-2 col-xs-12">
                                 Data Inicial
                                 @Html.TextBoxFor(m => m.LEAD_DT_ENTRADA, "{0:dd/MM/yyyy}", new { @class = "form-control date-picker", autofocus = true, @id = "dn", data_toggle = "popover", data_content = "Informe a data inicial da faixa de datas a ser pesquisada", data_trigger="hover", data_placement="top" })
@@ -77,10 +81,6 @@
                             <div class="col-lg-2 col-md-2 col-xs-12">
                                 Data Final
                                 @Html.TextBoxFor(m => m.LEAD_DT_DUMMY, new { @class = "form-control", autofocus = true, @id = "dn1", data_toggle = "popover", data_content = "Informe a data final da faixa de datas a ser pesquisada", data_trigger="hover", data_placement="top" })
-                            </div>
-                            <div class="col-lg-3 col-md-3 col-xs-12">
-                                Nome ou Fragmento do nome
-                                @Html.TextBoxFor(m => m.LEAD_NM_NOME, new { @class = "form-control", autofocus = true, @id = "txtNome" })
                             </div>
                             <div class="col-lg-3 col-md-3 col-xs-12">
                                 E-Mail ou Fragmento do E-Mail
@@ -236,7 +236,10 @@
                                                 }
                                                 @if (cond.CRM1_CD_ID != null & cond.CRM1_CD_ID > 0)
                                                 {
-                                                    @Html.TableLinkDetails(cond.CRM1_CD_ID.Value, "VerProcessoCRM", "fa-cogs show-spinner", "Ver Processo")
+                                                    if (cond.LEAD_IN_STATUS == 1 || cond.LEAD_IN_STATUS == 2 || cond.LEAD_IN_STATUS == 5)
+                                                    {
+                                                        @Html.TableLinkDetails(cond.CRM1_CD_ID.Value, "VerProcessoCRM", "fa-cogs show-spinner", "Ver Processo")
+                                                    }
                                                 }
                                             </td>
                                         </tr>

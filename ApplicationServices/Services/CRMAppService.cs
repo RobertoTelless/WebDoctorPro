@@ -325,7 +325,7 @@ namespace ApplicationServices.Services
                     Int32 volta4 = _baseService.CreateDiario(dia1);
 
                 }
-                else
+                else if (item.CRM1_DT_ENCERRAMENTO != null)
                 {
                     log = new LOG
                     {
@@ -350,9 +350,34 @@ namespace ApplicationServices.Services
                     Int32 volta4 = _baseService.CreateDiario(dia1);
 
                 }
+                else
+                {
+                    log = new LOG
+                    {
+                        LOG_DT_DATA = DateTime.Now,
+                        USUA_CD_ID = usuario.USUA_CD_ID,
+                        ASSI_CD_ID = usuario.ASSI_CD_ID,
+                        LOG_NM_OPERACAO = "Processo CRM - Alteração",
+                        LOG_IN_ATIVO = 1,
+                        LOG_TX_REGISTRO = json,
+                        LOG_TX_REGISTRO_ANTES = jsonAntes,
+                        LOG_IN_SISTEMA = 6
+                    };
+
+                    // Gera diario
+                    DIARIO_PROCESSO dia1 = new DIARIO_PROCESSO();
+                    dia1.ASSI_CD_ID = usuario.ASSI_CD_ID;
+                    dia1.USUA_CD_ID = usuario.USUA_CD_ID;
+                    dia1.DIPR_DT_DATA = DateTime.Today.Date;
+                    dia1.CRM1_CD_ID = item.CRM1_CD_ID;
+                    dia1.DIPR_NM_OPERACAO = "Alteração de Processo";
+                    dia1.DIPR_DS_DESCRICAO = "Alteração do Processo " + item.CRM1_NM_NOME.ToUpper() + ". Lead: " + cli.LEAD_NM_NOME.ToUpper();
+                    Int32 volta4 = _baseService.CreateDiario(dia1);
+
+                }
 
                 // Persiste
-                item.LEAD = null;
+                //item.LEAD = null;
                 item.CRM_ORIGEM = null;
                 Int32 volta = _baseService.Edit(item, log);
                 return volta;

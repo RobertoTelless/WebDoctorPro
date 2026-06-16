@@ -301,7 +301,15 @@
                             @Html.ButtonLinkIndex(text: "Excluir Lead", action: "ExcluirLead", controller: "Administra", htmlAttributes: new { id = "btnExcluirLeadForm", @class = "btn btn-danger btn-trigger-exclusao" })
                         }
                         @Html.ButtonLinkIndex(text: "Enviar Mensagem", action: "EnviarMensagemLead", controller: "Administra", htmlAttributes: new { @class = "btn-loading show-spinner" })
-                        @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaLead", controller: "Administra", htmlAttributes: new { @class = "btn-loading show-spinner" })
+                        @if ((Int32)Session["VoltaLead"] == 1)
+                        {
+                            @Html.ButtonLinkIndex(text: "Voltar", action: "MontarTelaLead", controller: "Administra", htmlAttributes: new { @class = "btn-loading show-spinner" })
+                        }
+                        else
+                        {
+                            @Html.ButtonLinkIndex(text: "Voltar", action: "VoltarAcompanhamentoCRM", controller: "CRM", htmlAttributes: new { @class = "btn-loading show-spinner" })
+                        }
+
                         <span id="loadingIndicator" style="display: none; margin-left: 10px; color: #007bff;">
                             <i class="fa fa-spinner fa-spin"></i> Processando...
                         </span>

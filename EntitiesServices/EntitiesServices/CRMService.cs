@@ -249,8 +249,8 @@ namespace ModelServices.EntitiesServices
             {
                 try
                 {
-                    item.FUNIL = null;
-                    item.USUARIO = null;
+                    //item.FUNIL = null;
+                    //item.USUARIO = null;
                     item.EMPRESA_FILIAL = null;
                     CRM obj = _baseRepository.GetById(item.CRM1_CD_ID);
                     _baseRepository.Detach(obj);

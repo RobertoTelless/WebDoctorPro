@@ -29,6 +29,7 @@ namespace DataServices.Repositories
             query = query.Where(p => p.CRM1_DT_CRIACAO == data);
             query = query.Where(p => p.CRM1_IN_SISTEMA == 6);
             query = query.Where(p => p.CRM1_IN_ATIVO != 2);
+            query = query.Include(p => p.LEAD);
             return query.ToList();
         }
 
@@ -38,6 +39,7 @@ namespace DataServices.Repositories
             query = query.Where(p => p.USUA_CD_ID == user);
             query = query.Where(p => p.CRM1_IN_ATIVO != 2);
             query = query.Where(p => p.CRM1_IN_SISTEMA == 6);
+            query = query.Include(p => p.LEAD);
             return query.ToList();
         }
 
@@ -47,6 +49,7 @@ namespace DataServices.Repositories
             query = query.Where(p => p.CRM1_IN_SISTEMA == 6);
             query = query.Where(p => p.CRM1_IN_STATUS == tipo);
             query = query.Where(p => p.CRM1_IN_ATIVO != 2);
+            query = query.Include(p => p.LEAD);
             return query.ToList();
         }
 
@@ -73,6 +76,7 @@ namespace DataServices.Repositories
             query = query.Where(p => p.CRM1_IN_SISTEMA == 6);
             query = query.Include(p => p.FUNIL);
             query = query.Include(p => p.FUNIL.FUNIL_ETAPA);
+            query = query.Include(p => p.LEAD);
             return query.ToList();
         }
 
@@ -82,6 +86,7 @@ namespace DataServices.Repositories
             query = query.Where(p => p.CRM1_IN_SISTEMA == 6);
             query = query.Include(p => p.FUNIL);
             query = query.Include(p => p.FUNIL.FUNIL_ETAPA);
+            query = query.Include(p => p.LEAD);
             return query.ToList();
         }
 
@@ -151,6 +156,7 @@ namespace DataServices.Repositories
             }
             if (query != null)
             {
+                query = query.Include(p => p.LEAD);
                 query = query.Where(p => p.CRM1_IN_SISTEMA == 6);
                 query = query.OrderBy(a => a.CRM1_DT_CRIACAO);
                 lista = query.ToList<CRM>();

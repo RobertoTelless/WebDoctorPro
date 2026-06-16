@@ -34,10 +34,8 @@ namespace ERP_Condominios_Solution.ViewModels
         public Nullable<int> TIAC_CD_ID { get; set; }
         public Nullable<int> CRAC_IN_STATUS { get; set; }
         public Nullable<int> CRAC_IN_ATIVO { get; set; }
-        [Required(ErrorMessage = "Campo INÍCIO obrigatorio")]
         [CheckTimeAttributeMain(ErrorMessage = "Hora:Minuto inválido")]
         public Nullable<System.TimeSpan> CRAC_HR_INICIO { get; set; }
-        [Required(ErrorMessage = "Campo FINAL obrigatorio")]
         [CheckTimeAttributeMain(ErrorMessage = "Hora:Minuto inválido")]
         public Nullable<System.TimeSpan> CRAC_HR_FINAL { get; set; }
 

@@ -251,7 +251,6 @@
                                         <th style="width: auto">Processo</th>
                                         <th style="width: auto">Funil</th>
                                         <th style="width: auto">Etapa</th>
-                                        <th style="width: auto">Lead</th>
                                         <th style="width: auto">Próxima Ação</th>
                                         <th style="width: auto">Data Prevista</th>
                                         <th style="width: auto">Origem</th>
@@ -322,8 +321,6 @@
                                                         <td>@cond.FUNIL.FUNI_NM_NOME</td>
 
                                                         <td style="width: auto; color: green; font-weight:bold">@cond.FUNIL.FUNIL_ETAPA.Where(p => p.FUET_CD_ID == cond.CRM1_IN_STATUS).First().FUET_NM_NOME</td>
-
-                                                        <td><a href="@Url.Action("EditarLeadForm", "CRM", new { id = cond.LEAD_CD_ID })" class="show-spinner" />@cond.LEAD.LEAD_NM_NOME</td>
 
                                                         @if (cond.CRM_ACAO.Where(p => p.CRAC_IN_STATUS == 1).ToList().Count > 0)
                                                         {
@@ -458,8 +455,6 @@
 
                                                         <td style="width: auto; color: green; font-weight:bold">@cond.FUNIL.FUNIL_ETAPA.Where(p => p.FUET_CD_ID == cond.CRM1_IN_STATUS).First().FUET_NM_NOME</td>
 
-                                                        <td><a href="@Url.Action("EditarLeadForm", "CRM", new { id = cond.CLIE_CD_ID })" class="show-spinner" />@cond.CLIENTE.CLIE_NM_NOME</td>
-
                                                         @if (cond.CRM_ACAO.Where(p => p.CRAC_IN_STATUS == 1).ToList().Count > 0)
                                                         {
                                                             <td style="width: auto">@cond.CRM_ACAO.Where(p => p.CRAC_IN_STATUS == 1).OrderByDescending(m => m.CRAC_DT_PREVISTA).FirstOrDefault().CRAC_NM_TITULO</td>
@@ -592,8 +587,6 @@
 
                                                         <td style="width: auto; color: green; font-weight:bold">@cond.FUNIL.FUNIL_ETAPA.Where(p => p.FUET_CD_ID == cond.CRM1_IN_STATUS).First().FUET_NM_NOME</td>
 
-                                                        <td><a href="@Url.Action("EditarLeadForm", "CRM", new { id = cond.CLIE_CD_ID })" class="show-spinner" />@cond.CLIENTE.CLIE_NM_NOME</td>
-
                                                         @if (cond.CRM_ACAO.Where(p => p.CRAC_IN_STATUS == 1).ToList().Count > 0)
                                                         {
                                                             <td style="width: auto">@cond.CRM_ACAO.Where(p => p.CRAC_IN_STATUS == 1).OrderByDescending(m => m.CRAC_DT_PREVISTA).FirstOrDefault().CRAC_NM_TITULO</td>
@@ -718,8 +711,6 @@
                                                         <td>@cond.FUNIL.FUNI_NM_NOME</td>
 
                                                         <td style="width: auto; color: green; font-weight:bold">@cond.FUNIL.FUNIL_ETAPA.Where(p => p.FUET_CD_ID == cond.CRM1_IN_STATUS).First().FUET_NM_NOME</td>
-
-                                                        <td><a href="@Url.Action("EditarLeadForm", "CRM", new { id = cond.CLIE_CD_ID })" class="show-spinner" />@cond.CLIENTE.CLIE_NM_NOME</td>
 
                                                         @if (cond.CRM_ACAO.Where(p => p.CRAC_IN_STATUS == 1).ToList().Count > 0)
                                                         {
@@ -852,8 +843,6 @@
 
                                                         <td style="width: auto; color: green; font-weight:bold">@cond.FUNIL.FUNIL_ETAPA.Where(p => p.FUET_CD_ID == cond.CRM1_IN_STATUS).First().FUET_NM_NOME</td>
 
-                                                        <td><a href="@Url.Action("EditarLeadForm", "CRM", new { id = cond.CLIE_CD_ID })" class="show-spinner" />@cond.CLIENTE.CLIE_NM_NOME</td>
-
                                                         @if (cond.CRM_ACAO.Where(p => p.CRAC_IN_STATUS == 1).ToList().Count > 0)
                                                         {
                                                             <td style="width: auto">@cond.CRM_ACAO.Where(p => p.CRAC_IN_STATUS == 1).OrderByDescending(m => m.CRAC_DT_PREVISTA).FirstOrDefault().CRAC_NM_TITULO</td>
@@ -985,8 +974,6 @@
                                                         <td>@cond.FUNIL.FUNI_NM_NOME</td>
 
                                                         <td style="width: auto; color: green; font-weight:bold">@cond.FUNIL.FUNIL_ETAPA.Where(p => p.FUET_CD_ID == cond.CRM1_IN_STATUS).First().FUET_NM_NOME</td>
-
-                                                        <td><a href="@Url.Action("EditarLeadForm", "CRM", new { id = cond.CLIE_CD_ID })" class="show-spinner" />@cond.CLIENTE.CLIE_NM_NOME</td>
 
                                                         @if (cond.CRM_ACAO.Where(p => p.CRAC_IN_STATUS == 1).ToList().Count > 0)
                                                         {
@@ -1124,8 +1111,6 @@
 
                                                         <td style="width: auto; color: green; font-weight:bold">@cond.FUNIL.FUNIL_ETAPA.Where(p => p.FUET_CD_ID == cond.CRM1_IN_STATUS).First().FUET_NM_NOME</td>
 
-                                                        <td><a href="@Url.Action("EditarLeadForm", "CRM", new { id = cond.CLIE_CD_ID })" class="show-spinner" />@cond.CLIENTE.CLIE_NM_NOME</td>
-
                                                         @if (cond.CRM_ACAO.Where(p => p.CRAC_IN_STATUS == 1).ToList().Count > 0)
                                                         {
                                                             <td style="width: auto">@cond.CRM_ACAO.Where(p => p.CRAC_IN_STATUS == 1).OrderByDescending(m => m.CRAC_DT_PREVISTA).FirstOrDefault().CRAC_NM_TITULO</td>
@@ -1256,8 +1241,6 @@
                                                         <td>@cond.FUNIL.FUNI_NM_NOME</td>
 
                                                         <td style="width: auto; color: green; font-weight:bold">@cond.FUNIL.FUNIL_ETAPA.Where(p => p.FUET_CD_ID == cond.CRM1_IN_STATUS).First().FUET_NM_NOME</td>
-
-                                                        <td><a href="@Url.Action("EditarLeadForm", "CRM", new { id = cond.CLIE_CD_ID })" class="show-spinner" />@cond.CLIENTE.CLIE_NM_NOME</td>
 
                                                         @if (cond.CRM_ACAO.Where(p => p.CRAC_IN_STATUS == 1).ToList().Count > 0)
                                                         {
@@ -1390,8 +1373,6 @@
                                                         <td>@cond.FUNIL.FUNI_NM_NOME</td>
 
                                                         <td style="width: auto; color: green; font-weight:bold">@cond.FUNIL.FUNIL_ETAPA.Where(p => p.FUET_CD_ID == cond.CRM1_IN_STATUS).First().FUET_NM_NOME</td>
-
-                                                        <td><a href="@Url.Action("EditarLeadForm", "CRM", new { id = cond.CLIE_CD_ID })" class="show-spinner" />@cond.CLIENTE.CLIE_NM_NOME</td>
 
                                                         @if (cond.CRM_ACAO.Where(p => p.CRAC_IN_STATUS == 1).ToList().Count > 0)
                                                         {

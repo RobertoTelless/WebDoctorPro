@@ -53,7 +53,7 @@
                                 </div>
                                 <div class="col-lg-3 col-md-3 col-xs-12">
                                     Identificãdor do Processo
-                                    @Html.TextBoxFor(m => m.CRM.CRM1_ID_IDENTIFICADOR, new { @class = "form-control", @tabindex = "-1", @readonly="readonly", style = "font-weight: bold; color: brown;" })
+                                    @Html.TextBoxFor(m => m.CRM.CRM1_GU_GUID, new { @class = "form-control", @tabindex = "-1", @readonly="readonly", style = "font-weight: bold; color: brown;" })
                                 </div>
                             </div>
                             <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">                
@@ -80,8 +80,9 @@
                                     @Html.TextBoxFor(m => m.CRAC_DT_PREVISTA, new { @class = "form-control date-picker", autofocus = true, @id = "dn", style = "font-weight: bold; color: darkblue;" })
                                     @Html.ValidationMessageFor(m => m.CRAC_DT_PREVISTA, "", new { @style = "color:red" })
                                 </div>
-                                <div class="col-lg-1 col-md-1 col-xs-12">
-                                    Início*
+
+                                @*<div class="col-lg-1 col-md-1 col-xs-12">
+                                    Início
                                     <div class='input-group date' id='datetimepicker3'>
                                         @Html.TextBoxFor(m => m.CRAC_HR_INICIO, new { @class = "form-control time-picker", autofocus = true, @id = "hora" })
                                         @Html.ValidationMessageFor(m => m.CRAC_HR_INICIO, "", new { @style = "color:red" })
@@ -91,7 +92,7 @@
                                     </div>
                                 </div>
                                 <div class="col-lg-1 col-md-1 col-xs-12">
-                                    Final*
+                                    Final
                                     <div class='input-group date' id='datetimepicker3'>
                                         @Html.TextBoxFor(m => m.CRAC_HR_FINAL, new { @class = "form-control time-picker1", autofocus = true, @id = "hora1" })
                                         @Html.ValidationMessageFor(m => m.CRAC_HR_FINAL, "", new { @style = "color:red" })
@@ -104,7 +105,34 @@
                                     Cria Agenda?*
                                     @Html.DropDownListFor(m => m.CRIA_AGENDA, (SelectList)ViewBag.Agenda, "Selecionar", new { @class = "form-control", autofocus = true })
                                     @Html.ValidationMessageFor(m => m.CRIA_AGENDA, "", new { @style = "color:red" })
+                                </div>*@
+                                <div class="col-lg-1 col-md-1 col-xs-12">
+                                    Início
+                                    <div class='input-group date' id='datetimepicker_inicio'>
+                                        @Html.TextBoxFor(m => m.CRAC_HR_INICIO, new { @class = "form-control time-picker", @id = "hora" })
+                                        @Html.ValidationMessageFor(m => m.CRAC_HR_INICIO, "", new { @style = "color:red" })
+                                        <span class="input-group-addon">
+                                            <span style="cursor: pointer;" class="glyphicon glyphicon-time"></span>
+                                        </span>
+                                    </div>
                                 </div>
+                                <div class="col-lg-1 col-md-1 col-xs-12">
+                                    Final
+                                    <div class='input-group date' id='datetimepicker_final'>
+                                        @Html.TextBoxFor(m => m.CRAC_HR_FINAL, new { @class = "form-control time-picker1", @id = "hora1" })
+                                        @Html.ValidationMessageFor(m => m.CRAC_HR_FINAL, "", new { @style = "color:red" })
+                                        <span class="input-group-addon">
+                                            <span style="cursor: pointer;" class="glyphicon glyphicon-time"></span>
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="col-lg-2 col-md-2 col-xs-12">
+                                    Cria Agenda?*
+                                    @Html.DropDownListFor(m => m.CRIA_AGENDA, (SelectList)ViewBag.Agenda, "Selecionar", new { @class = "form-control", @id = "criaAgenda", @disabled = "disabled" })
+                                    @Html.ValidationMessageFor(m => m.CRIA_AGENDA, "", new { @style = "color:red" })
+                                    <small id="avisoHoras" class="text-muted">Preencha os horários corretamente para liberar este campo.</small>
+                                </div>
+
                             </div>
                             <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">                
                                 <div class="col-lg-12 col-md-12 col-xs-12">
@@ -343,6 +371,52 @@
                 toastr.clear();
             });
 
+        });
+    </script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            // Função responsável por validar as regras e gerenciar a DropDown
+            function validarHorarios() {
+                var horaInicio = $('#hora').val().trim();
+                var horaFinal = $('#hora1').val().trim();
+                var $dropAgenda = $('#criaAgenda');
+                var $aviso = $('#avisoHoras');
+
+                // 1. Verifica se ambos os campos estão preenchidos
+                if (horaInicio === "" || horaFinal === "") {
+                    $dropAgenda.prop('disabled', true).val(""); // Reseta a seleção se bloqueado
+                    $aviso.text("Preencha os horários corretamente para liberar este campo.").removeClass('text-danger').addClass('text-muted');
+                    return;
+                }
+
+                // 2. Converte as strings "HH:mm" em minutos para uma comparação numérica precisa
+                var partesInicio = horaInicio.split(':');
+                var partesFinal = horaFinal.split(':');
+
+                var minutosInicio = (parseInt(partesInicio[0], 10) * 60) + parseInt(partesInicio[1], 10);
+                var minutosFinal = (parseInt(partesFinal[0], 10) * 60) + parseInt(partesFinal[1], 10);
+
+                // 3. Valida se a hora de início é estritamente menor que a hora final
+                if (minutosInicio >= minutosFinal) {
+                    $dropAgenda.prop('disabled', true).val("");
+                    $aviso.text("A hora de início deve ser menor que a hora final.").removeClass('text-muted').addClass('text-danger');
+                } else {
+                    // Sucesso total: Desbloqueia a DropDown
+                    $dropAgenda.prop('disabled', false);
+                    $aviso.text("Campo liberado!").removeClass('text-danger').addClass('text-success');
+                }
+            }
+
+            // Monitora as alterações em tempo real (digitação ou seleção do plugin picker)
+            $('#hora, #hora1').on('change keyup input', function () {
+                validarHorarios();
+            });
+
+            // Se o seu plugin de DateTimePicker disparar eventos customizados, vincule-os aqui também:
+            $('#datetimepicker_inicio, #datetimepicker_final').on('dp.change change.datetimepicker', function () {
+                validarHorarios();
+            });
         });
     </script>
 

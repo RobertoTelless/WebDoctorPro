@@ -190,6 +190,7 @@ namespace GEDSys_Presentation.Controllers
                 Session["FlagMensagensEnviadas"] = 7;
                 Session["VerDia"] = 1;
                 Session["LinhaAlterada"] = 0;
+                Session["NivelCRM"] = 1;
                 ViewBag.Incluir = (Int32)Session["VoltaTela"];
 
                 List<SelectListItem> relat = new List<SelectListItem>();
@@ -421,6 +422,7 @@ namespace GEDSys_Presentation.Controllers
                 Int32 volta = baseApp.ValidateEdit(item, item);
 
                 // Gera diario
+                item = baseApp.GetItemById(id);
                 LEAD cli = leaApp.GetItemById(item.LEAD_CD_ID.Value);
                 DIARIO_PROCESSO dia = new DIARIO_PROCESSO();
                 dia.ASSI_CD_ID = usuario.ASSI_CD_ID;
@@ -508,6 +510,7 @@ namespace GEDSys_Presentation.Controllers
                 Int32 volta = baseApp.ValidateEdit(item, item);
 
                 // Gera diario
+                item = baseApp.GetItemById(id);
                 LEAD cli = leaApp.GetItemById(item.LEAD_CD_ID.Value);
                 DIARIO_PROCESSO dia = new DIARIO_PROCESSO();
                 dia.ASSI_CD_ID = usuario.ASSI_CD_ID;
@@ -1834,12 +1837,25 @@ namespace GEDSys_Presentation.Controllers
                     }
                     table.AddCell(cell);
 
-                    cell = new PdfPCell(new Paragraph(item.CRM_ORIGEM.CROR_NM_NOME, meuFont))
+                    if (item.CRM_ORIGEM != null)
                     {
-                        VerticalAlignment = Element.ALIGN_MIDDLE,
-                        HorizontalAlignment = Element.ALIGN_LEFT
-                    };
-                    table.AddCell(cell);
+                        cell = new PdfPCell(new Paragraph(item.CRM_ORIGEM.CROR_NM_NOME, meuFont))
+                        {
+                            VerticalAlignment = Element.ALIGN_MIDDLE,
+                            HorizontalAlignment = Element.ALIGN_LEFT
+                        };
+                        table.AddCell(cell);
+                    }
+                    else
+                    {
+                        cell = new PdfPCell(new Paragraph("-", meuFont))
+                        {
+                            VerticalAlignment = Element.ALIGN_MIDDLE,
+                            HorizontalAlignment = Element.ALIGN_LEFT
+                        };
+                        table.AddCell(cell);
+
+                    }
 
                     if (item.CRM1_IN_ATIVO == 1)
                     {
@@ -2288,7 +2304,7 @@ namespace GEDSys_Presentation.Controllers
                 CRM item = baseApp.GetItemById(id);
                 CRMViewModel vm = Mapper.Map<CRM, CRMViewModel>(item);
                 List<CRM_ACAO> acoes = item.CRM_ACAO.ToList().OrderByDescending(p => p.CRAC_DT_CRIACAO).ToList();
-                CRM_ACAO acao = acoes.Where(p => p.CRAC_IN_STATUS == 1).FirstOrDefault();
+                CRM_ACAO acao = acoes.Where(p => p.CRAC_IN_STATUS == 1 & p.CRAC_IN_ATIVO == 1).FirstOrDefault();
                 Session["ClienteCRM"] = item.LEAD.LEAD_NM_NOME;
                 LEAD clie = leaApp.GetItemById(item.LEAD_CD_ID.Value);
                 Session["ClienteBase"] = clie;
@@ -2300,6 +2316,7 @@ namespace GEDSys_Presentation.Controllers
                 Session["NivelLead"] = 1;
                 Session["VoltaCRM"] = 11;
                 Session["VoltaAgenda"] = 11;
+                Session["VoltaLead"] = 2;
 
                 // Recupera dados do funil
                 FUNIL funil = funApp.GetItemById(item.FUNI_CD_ID.Value);
@@ -2366,7 +2383,7 @@ namespace GEDSys_Presentation.Controllers
                 Session["Usuarios"] = null;
                 Session["AbaAgenda"] = 1;
                 Session["NaoFezNada"] = 5;
-                vm.CRM1_TX_RESUMO_OLD = item.CRM1_TX_RESUMO;
+                vm.CRM1_TX_RESUMO_OLD = String.Empty;
                 return View(vm);
             }
             catch (Exception ex)
@@ -2438,10 +2455,10 @@ namespace GEDSys_Presentation.Controllers
                     String dataHoje = DateTime.Today.Date.ToLongDateString();
                     dataHoje = "*** Alteração em [" + dataHoje + "] ***";
 
-                    if (vm.CRM1_TX_RESUMO != null)
+                    if (vm.CRM1_TX_RESUMO_OLD != null)
                     {
-                        String velho = vm.CRM1_TX_RESUMO_OLD;
-                        String  novo = vm.CRM1_TX_RESUMO;
+                        String velho = vm.CRM1_TX_RESUMO;
+                        String  novo = vm.CRM1_TX_RESUMO_OLD;
                         String anot = dataHoje + "\r\n" + novo;
                         if (velho == null & novo != String.Empty)
                         {
@@ -2459,7 +2476,7 @@ namespace GEDSys_Presentation.Controllers
                     }
                     else
                     {
-                        String velho = vm.CRM1_TX_RESUMO_OLD;
+                        String velho = vm.CRM1_TX_RESUMO;
                         vm.CRM1_TX_RESUMO = velho;
                     }
 
@@ -3104,7 +3121,7 @@ namespace GEDSys_Presentation.Controllers
 
                     // Mensagem para responsavel
                     CRM proc = baseApp.GetItemById(item.CRM1_CD_ID);
-                    LEAD lead = leaApp.GetItemById(item.CRM.LEAD_CD_ID.Value);
+                    //LEAD lead = leaApp.GetItemById(proc.LEAD_CD_ID.Value);
                     USUARIO usuResp = usuApp.GetItemById(item.USUA_CD_ID2.Value);
                     Session["AcaoMail"] = item;
                     Int32 voltaEM = await ProcessaEnvioEMailProcesso(proc, cli, usuResp, 3);
@@ -3124,7 +3141,7 @@ namespace GEDSys_Presentation.Controllers
 
                     // Atualiza resumo
                     String velho = proc.CRM1_TX_RESUMO;
-                    String novo = "Criação de Ação - " + item.CRAC_NM_TITULO.ToUpper();
+                    String novo = "Criação de Ação - " + item.CRAC_NM_TITULO.ToUpper() + "\r\n" + item.CRAC_NM_TITULO;
                     String dataHoje = DateTime.Today.Date.ToLongDateString();
                     dataHoje = "*** Movimentação em [" + dataHoje + "] ***";
                     if (proc.CRM1_TX_RESUMO != null)
@@ -4119,7 +4136,7 @@ namespace GEDSys_Presentation.Controllers
                 Session["MsgCRUD"] = "O arquivo " + fileName.ToUpper() + " foi anexado com sucesso. Processo: " + item.CRM1_NM_NOME.ToUpper();
                 Session["MensCRM"] = 161;
 
-                Session["NivelCRM"] = 2;
+                Session["NivelCRM"] = 4;
                 Session["CRMAlterada"] = 1;
                 return RedirectToAction("VoltarAcompanhamentoCRM");
             }
@@ -4214,6 +4231,7 @@ namespace GEDSys_Presentation.Controllers
                 USUARIO usuarioLogado = (USUARIO)Session["UserCredentials"];
                 CRM_ANEXO item = baseApp.GetAnexoById(id);
                 CRM crm = baseApp.GetItemById(item.CRM1_CD_ID);
+                Session["IdCRM"] = crm.CRM1_CD_ID;
 
                 item.CRAN_IN_ATIVO = 0;
                 Int32 volta = baseApp.ValidateEditAnexo(item);

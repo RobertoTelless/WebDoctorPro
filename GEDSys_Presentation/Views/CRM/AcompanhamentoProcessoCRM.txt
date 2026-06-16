@@ -647,8 +647,7 @@
                                                                                 <td class="td-one-action">
 
                                                                                     @*<span class="fa fa-trash-o" onclick="PrepararExclusaoAnexo('/CRM/ExcluirAnexoCRM/@cond.CRAN_CD_ID')" style="cursor:pointer; color:#337ab7"></span>*@
-                                                                                    <span class="fa fa-trash-o" onclick="DispararExclusaoAnexo(event, '/CRM/ExcluirAnexoCRM/@cond.CRAN_CD_ID')" style="cursor:pointer; color:#337ab7" title="Excluir"></span>
-                                                                                    @*<span class="fa fa-trash-o btn-excluir-anexo" data-url="/CRM/ExcluirAnexoCRM/@cond.CRAN_CD_ID" style="cursor:pointer; color:#337ab7" title="Excluir"></span>*@
+                                                                                    <span class="fa fa-trash-o btn-excluir-anexo" data-url="/CRM/ExcluirAnexoCRM/@cond.CRAN_CD_ID" style="cursor:pointer; color:#337ab7" title="Excluir"></span>
                                                                                     <a href="@Url.Action("DownloadCRM", "CRM", new { id = cond.CRAN_CD_ID })" class="btn btn-default" title="Download">
                                                                                         <i class="fa fa-download"></i>
                                                                                     </a>
@@ -705,12 +704,9 @@
                                                                                     @*<span style="cursor:pointer;" onclick="PrepararExclusaoAnexo('/CRM/ExcluirAnexoCRM/@cond.CRAN_CD_ID')" title="Excluir">
                                                                                         <i class="fa fa-trash-o fa-lg text-navy"></i>
                                                                                     </span>*@
-                                                                                    <span style="cursor:pointer;" onclick="DispararExclusaoAnexo(event, '/CRM/ExcluirAnexoCRM/@cond.CRAN_CD_ID')" title="Excluir">
+                                                                                    <span style="cursor:pointer;" class="btn-excluir-anexo" data-url="/CRM/ExcluirAnexoCRM/@cond.CRAN_CD_ID" title="Excluir">
                                                                                         <i class="fa fa-trash-o fa-lg text-navy"></i>
                                                                                     </span>
-                                                                                    @*<span style="cursor:pointer;" class="btn-excluir-anexo" data-url="/CRM/ExcluirAnexoCRM/@cond.CRAN_CD_ID" title="Excluir">
-                                                                                        <i class="fa fa-trash-o fa-lg text-navy"></i>
-                                                                                    </span>*@
                                                                                     <a href="@Url.Action("DownloadCRM", "CRM", new { id = cond.CRAN_CD_ID })" title="Download">
                                                                                         <i class="fa fa-download fa-lg text-navy"></i>
                                                                                     </a>
@@ -798,10 +794,7 @@
                                                                                 <td>@cond.CRAN_DT_ANEXO.Value.ToShortDateString()</td>
                                                                                 <td>@(cond.CRAN_IN_TIPO == 1 ? "Imagem" : cond.CRAN_IN_TIPO == 2 ? "Vídeo" : cond.CRAN_IN_TIPO == 3 ? "PDF" : "Outros")</td>
                                                                                 <td class="td-one-action">
-
-                                                                                    @*<span class="fa fa-trash-o" onclick="PrepararExclusaoAnexo('/CRM/ExcluirAnexoCRM/@cond.CRAN_CD_ID')" style="cursor:pointer; color:#337ab7"></span>*@
-                                                                                    <span class="fa fa-trash-o" onclick="DispararExclusaoAnexo(event, '/CRM/ExcluirAnexoCRM/@cond.CRAN_CD_ID')" style="cursor:pointer; color:#337ab7" title="Excluir"></span>
-                                                                                    @*<span class="fa fa-trash-o btn-excluir-anexo" data-url="/CRM/ExcluirAnexoCRM/@cond.CRAN_CD_ID" style="cursor:pointer; color:#337ab7" title="Excluir"></span>*@
+                                                                                    <span class="fa fa-trash-o" onclick="PrepararExclusaoAnexo('/CRM/ExcluirAnexoCRM/@cond.CRAN_CD_ID')" style="cursor:pointer; color:#337ab7"></span>
                                                                                     <a href="@Url.Action("DownloadCRM", "CRM", new { id = cond.CRAN_CD_ID })" class="btn btn-default" title="Download">
                                                                                         <i class="fa fa-download"></i>
                                                                                     </a>
@@ -854,16 +847,9 @@
                                                                                     @cond.CRAN_NM_TITULO
                                                                                 </div>
                                                                                 <div style="margin-top: 10px; display: flex; gap: 15px; justify-content: center;">
-
-                                                                                    @*<span style="cursor:pointer;" onclick="PrepararExclusaoAnexo('/CRM/ExcluirAnexoCRM/@cond.CRAN_CD_ID')" title="Excluir">
-                                                                                        <i class="fa fa-trash-o fa-lg text-navy"></i>
-                                                                                    </span>*@
-                                                                                    <span style="cursor:pointer;" onclick="DispararExclusaoAnexo(event, '/CRM/ExcluirAnexoCRM/@cond.CRAN_CD_ID')" title="Excluir">
+                                                                                    <span style="cursor:pointer;" onclick="PrepararExclusaoAnexo('/CRM/ExcluirAnexoCRM/@cond.CRAN_CD_ID')" title="Excluir">
                                                                                         <i class="fa fa-trash-o fa-lg text-navy"></i>
                                                                                     </span>
-                                                                                    @*<span style="cursor:pointer;" class="btn-excluir-anexo" data-url="/CRM/ExcluirAnexoCRM/@cond.CRAN_CD_ID" title="Excluir">
-                                                                                        <i class="fa fa-trash-o fa-lg text-navy"></i>
-                                                                                    </span>*@
                                                                                     <a href="@Url.Action("DownloadCRM", "CRM", new { id = cond.CRAN_CD_ID })" title="Download">
                                                                                         <i class="fa fa-download fa-lg text-navy"></i>
                                                                                     </a>
@@ -937,7 +923,7 @@
                                         </div>
                                         <br />
                                         <div class="form-group">
-                                            @Html.ButtonLinkIndex(text: "Incluir Nova Anotação", action: "IncluirAnotacaoCRM", controller: "CRM", buttonClass: "success", htmlAttributes: new { @class = "btn-loading show-spinner" })
+                                            @Html.ButtonLinkIndex(text: "Incluir Nova Anotação", action: "IncluirAnotacaoCRM", controller: "CRM", htmlAttributes: new { @class = "btn-loading show-spinner" })
                                         </div>
                                     </div>
                                 </div>
@@ -986,7 +972,7 @@
                                         </div>
                                         <br />
                                         <div class="form-group">
-                                            @Html.ButtonLinkIndex(text: "Incluir Nova Anotação", action: "IncluirAnotacaoCRM", controller: "CRM", buttonClass: "success", htmlAttributes: new { @class = "btn-loading show-spinner" })
+                                            @Html.ButtonLinkIndex(text: "Incluir Nova Anotação", action: "IncluirAnotacaoCRM", controller: "CRM", htmlAttributes: new { @class = "btn-loading show-spinner" })
                                         </div>
                                     </div>
                                 </div>
@@ -1048,7 +1034,7 @@
                                                                                         @cond.CRAC_DT_PREVISTA.Value.ToString("dd/MM/yyyy")
                                                                                     </td>
                                                     
-                                                                                    @if (cond.CRAC_IN_ATIVO == 1 && (cond.CRAC_IN_STATUS == 1 || cond.CRAC_IN_STATUS == 2))
+                                                                                    @if (cond.CRAC_IN_ATIVO == 1 && cond.CRAC_IN_STATUS != 1)
                                                                                     {
                                                                                         var dias = (cond.CRAC_DT_PREVISTA.Value.Date - DateTime.Today.Date).Days;
                                                                                         if (dias > 0) { <td style="color: green;">@dias</td> }
@@ -1096,12 +1082,15 @@
                                                             </div>
                                                         </div>
                                                     </div>
-                                                    <br />
+
                                                     @if (ViewBag.Acao == null && Model.CRM1_IN_STATUS != ViewBag.EtapaEncerra)
                                                     {
-                                                        <div class="form-group">
-                                                            @Html.ButtonLinkIndex(text: "Incluir Nova Ação", action: "IncluirAcao", controller: "CRM", buttonClass: "success", htmlAttributes: new { @class = "show-spinner" })
-                                                        </div>
+                                                        if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_INCLUSAO_ACAO == 1)
+                                                        {
+                                                            <div class="form-group">
+                                                                @Html.ButtonLinkIndex(text: "Incluir Nova Ação", action: "IncluirAcao", controller: "CRM", htmlAttributes: new { @class = "show-spinner" })
+                                                            </div>
+                                                        }
                                                     }
                                                     <br />
 
@@ -1166,11 +1155,11 @@
                                                             </div>
                                                         </div>
                                                     </div>
-                                                    <br />
+
                                                     @if (Model.CRM1_IN_STATUS != ViewBag.EtapaEncerra)
                                                     {
                                                         <div class="form-group">
-                                                            @Html.ButtonLinkIndex(text: "Novo Evento no Processo", action: "MostrarIncluirAgenda", controller: "CRM", buttonClass: "success", htmlAttributes: new { @class = "show-spinner" })
+                                                            @Html.ButtonLinkIndex(text: "Novo Evento no Processo", action: "MostrarIncluirAgenda", controller: "CRM", htmlAttributes: new { @class = "show-spinner" })
                                                             @Html.ButtonLinkIndex(text: "Ver Calendário", action: "MostrarTelaAgendaCalendario", controller: "CRM", htmlAttributes: new { @class = "show-spinner" })
                                                         </div>
                                                     }
@@ -1211,11 +1200,9 @@
                                                                 else
                                                                 {
                                                                     <div class="row">
-                                                                        <div class="col-lg-1 col-md-1 col-xs-2"></div>
-                                                                        <div style="border: 5px solid #F6A54A; padding: 10px; border-radius: 8px;" class="col-lg-10 col-md-10 col-xs-8 text-center">
+                                                                        <div style="border: 5px solid #F6A54A; padding: 10px; border-radius: 8px;" class="col-lg-12 col-md-12 col-xs-8 text-center">
                                                                             <h2 style="font-weight: bold">Nenhuma ação cadastrada nesse processo</h2>
                                                                         </div>
-                                                                        <div class="col-lg-1 col-md-1 col-xs-2"></div>
                                                                     </div>
                                                                 }
                                                             </div>
@@ -1283,7 +1270,7 @@
                                                                                         @cond.CRAC_DT_PREVISTA.Value.ToString("dd/MM/yyyy")
                                                                                     </td>
                                                     
-                                                                                    @if (cond.CRAC_IN_ATIVO == 1 && (cond.CRAC_IN_STATUS == 1 || cond.CRAC_IN_STATUS == 2))
+                                                                                    @if (cond.CRAC_IN_ATIVO == 1 && cond.CRAC_IN_STATUS != 1)
                                                                                     {
                                                                                         var dias = (cond.CRAC_DT_PREVISTA.Value.Date - DateTime.Today.Date).Days;
                                                                                         if (dias > 0) { <td style="color: green;">@dias</td> }
@@ -1334,9 +1321,12 @@
                                                     <br />
                                                     @if (ViewBag.Acao == null && Model.CRM1_IN_STATUS != ViewBag.EtapaEncerra)
                                                     {
-                                                        <div class="form-group">
-                                                            @Html.ButtonLinkIndex(text: "Incluir Nova Ação", action: "IncluirAcao", controller: "CRM", buttonClass: "success", htmlAttributes: new { @class = "show-spinner" })
-                                                        </div>
+                                                        if (((EntitiesServices.Model.PERFIL)Session["PerfilUsuario"]).PERF_IN_INCLUSAO_ACAO == 1)
+                                                        {
+                                                            <div class="form-group">
+                                                                @Html.ButtonLinkIndex(text: "Incluir Nova Ação", action: "IncluirAcao", controller: "CRM", htmlAttributes: new { @class = "show-spinner" })
+                                                            </div>
+                                                        }
                                                     }
                                                     <br />
 
@@ -1405,7 +1395,7 @@
                                                     @if (Model.CRM1_IN_STATUS != ViewBag.EtapaEncerra)
                                                     {
                                                         <div class="form-group">
-                                                            @Html.ButtonLinkIndex(text: "Novo Evento no Processo", action: "MostrarIncluirAgenda", controller: "CRM", buttonClass: "success", htmlAttributes: new { @class = "show-spinner" })
+                                                            @Html.ButtonLinkIndex(text: "Novo Evento no Processo", action: "MostrarIncluirAgenda", controller: "CRM", htmlAttributes: new { @class = "show-spinner" })
                                                             @Html.ButtonLinkIndex(text: "Ver Calendário", action: "MostrarTelaAgendaCalendario", controller: "CRM", htmlAttributes: new { @class = "show-spinner" })
                                                         </div>
                                                     }
@@ -1448,7 +1438,7 @@
                                                                     <div class="row">
                                                                         <div class="col-lg-1 col-md-1 col-xs-2"></div>
                                                                         <div style="border: 5px solid #F6A54A; padding: 10px; border-radius: 8px;" class="col-lg-10 col-md-10 col-xs-8 text-center">
-                                                                            <h2 style="font-weight: bold">Nenhuma ação cadastrada nesse processo</h2>
+                                                                            <h2 style="font-weight: bold">Nenhuma ação cadastrada para este processo</h2>
                                                                         </div>
                                                                         <div class="col-lg-1 col-md-1 col-xs-2"></div>
                                                                     </div>
@@ -2094,52 +2084,48 @@
     </script>*@
 
     <script type="text/javascript">
-            // 1. Função global acionada pelo clique direto do botão
-            function DispararExclusaoAnexo(e, url) {
-                if (e) {
-                    e.preventDefault();
-                    e.stopPropagation(); // Trava o submit do formulário pai de ganhar vida
-                }
+        $(document).ready(function () {
+        
+            // 1. Captura o clique em qualquer lixeira (tabela ou ícone) de forma segura
+            $(document).on('click', '.btn-excluir-anexo', function (e) {
+                e.preventDefault();
+                e.stopPropagation(); // Evita disparar spinners ou submits do form pai
+
+                var urlExclusao = $(this).data('url');
             
-                // Força a gravação do valor no input corrigido
-                $('#urlExclusaoTemp').val(url); 
-            
-                // Abre a modal explicitamente
+                // Grava no input hidden corrigido e abre a modal
+                $('#urlExclusaoTemp').val(urlExclusao); 
                 $('#modalConfirmacaoExclusaoAnexo').modal('show');
-            }
-
-            $(document).ready(function () {
-                // 2. Ação do botão Confirmar dentro da modal
-                $('#btnConfirmarExclusaoAnexo').unbind('click').click(function (e) {
-                    e.preventDefault();
-                    var urlFinal = $('#urlExclusaoTemp').val();
-                    var $btn = $(this);
-
-                    if (urlFinal && urlFinal !== "") {
-                        // Feedback visual
-                        $btn.prop('disabled', true).addClass('disabled');
-                        $btn.html('<i class="fa fa-spinner fa-spin"></i> Excluindo...');
-
-                        // Fecha a modal e força a limpeza de backdrops fantasmas
-                        $('#modalConfirmacaoExclusaoAnexo').modal('hide');
-                
-                        setTimeout(function () {
-                            $('.modal-backdrop').remove();
-                            $('#loadingIndicator').show();
-                            window.location.href = urlFinal;
-                        }, 300);
-                    }
-                });
-
-                // Limpeza de segurança ao fechar a modal
-                $('#modalConfirmacaoExclusaoAnexo').on('hidden.bs.modal', function () {
-                    $('#urlExclusaoTemp').val("");
-                    $('#btnConfirmarExclusaoAnexo').prop('disabled', false).removeClass('disabled').html('Confirmar Exclusão');
-                });
             });
-        </script>
 
+            // 2. Ação do botão Confirmar dentro da modal
+            $('#btnConfirmarExclusaoAnexo').click(function () {
+                var urlFinal = $('#urlExclusaoTemp').val();
+                var $btn = $(this);
 
+                if (urlFinal && urlFinal !== "") {
+                    // Feedback visual
+                    $btn.prop('disabled', true).addClass('disabled');
+                    $btn.html('<i class="fa fa-spinner fa-spin"></i> Excluindo...');
+
+                    // Fecha a modal e redireciona
+                    $('#modalConfirmacaoExclusaoAnexo').modal('hide');
+            
+                    setTimeout(function () {
+                        $('.modal-backdrop').remove();
+                        $('#loadingIndicator').show();
+                        window.location.href = urlFinal;
+                    }, 400);
+                }
+            });
+
+            // Limpeza de segurança ao fechar a modal
+            $('#modalConfirmacaoExclusaoAnexo').on('hidden.bs.modal', function () {
+                $('#urlExclusaoTemp').val("");
+                $('#btnConfirmarExclusaoAnexo').prop('disabled', false).removeClass('disabled').html('Confirmar Exclusão');
+            });
+        });
+    </script>
 
     @if (ViewBag.Message != null)
     {
