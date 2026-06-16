@@ -1,0 +1,520 @@
+@{
+    Layout = null; // Mude para o seu layout padrão se houver, ex: "~/Views/Shared/_Layout.cshtml"
+}
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Planos e Preços - WebDoctorPro</title>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <style>
+        /* --- DESIGN SYSTEM & PALETA DE CORES --- */
+        :root {
+            --bg-principal: #eff2f6;
+            --texto-base: #051a2c;
+            --texto-secundario: #4a5d6e;
+            --azul-brand: #0b3961;
+            --azul-destaque: #0056b3;
+            --azul-gradient: linear-gradient(135deg, #0f4c81 0%, #0056b3 100%);
+            --branco: #ffffff;
+            --borda: #d1d9e0;
+            --tag-popular: #e21c5a;
+            --transicao: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-principal);
+            color: var(--texto-base);
+            padding: 40px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        /* --- CONTÊINER PRINCIPAL --- */
+        .pricing-container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        /* --- BOTÃO DE VOLTAR (NOVO) --- */
+        .btn-back {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            color: var(--texto-secundario);
+            font-size: 0.95rem;
+            font-weight: 600;
+            padding: 10px 16px;
+            border-radius: 8px;
+            border: 1px solid transparent;
+            transition: var(--transicao);
+            background-color: transparent;
+            margin-bottom: 20px;
+        }
+
+        .btn-back i {
+            font-size: 0.85rem;
+            transition: var(--transicao);
+        }
+
+        .btn-back:hover {
+            color: var(--azul-brand);
+            background-color: rgba(11, 57, 97, 0.05);
+            border-color: rgba(11, 57, 97, 0.15);
+        }
+
+        .btn-back:hover i {
+            transform: translateX(-4px);
+        }
+
+        /* --- HEADER & CHAVEAMENTO (TOGGLE) --- */
+        .pricing-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .toggle-wrapper {
+            display: inline-flex;
+            background-color: var(--branco);
+            padding: 6px;
+            border-radius: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            margin-bottom: 15px;
+            position: relative;
+        }
+
+        .toggle-btn {
+            background: none;
+            border: none;
+            padding: 10px 24px;
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--texto-secundario);
+            cursor: pointer;
+            border-radius: 25px;
+            transition: var(--transicao);
+        }
+
+        .toggle-btn.active {
+            background-color: var(--azul-brand);
+            color: var(--branco);
+        }
+
+        .pricing-badges {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            align-items: center;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: #28a745;
+        }
+
+        .badge-secondary {
+            color: var(--texto-secundario);
+            font-size: 0.85rem;
+        }
+
+        /* --- GRID DE PLANOS --- */
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(1, 1fr);
+            gap: 24px;
+            align-items: stretch;
+            margin-bottom: 40px;
+        }
+
+        /* --- CARD DE PLANO --- */
+        .plan-card {
+            background-color: var(--branco);
+            border: 1px solid var(--borda);
+            border-radius: 16px;
+            padding: 32px 24px;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            transition: var(--transicao);
+        }
+
+        .plan-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 24px rgba(5, 26, 44, 0.08);
+        }
+
+        .plan-card.featured {
+            border: 2px solid var(--azul-destaque);
+            box-shadow: 0 8px 20px rgba(0, 86, 179, 0.1);
+        }
+
+        .popular-tag {
+            position: absolute;
+            top: -12px;
+            right: 24px;
+            background-color: var(--tag-popular);
+            color: var(--branco);
+            padding: 4px 14px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* --- MÍDIA DE PREÇOS e TEXTOS --- */
+        .plan-name {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--texto-base);
+            margin-bottom: 4px;
+        }
+
+        .plan-desc {
+            font-size: 0.9rem;
+            color: var(--texto-secundario);
+            margin-bottom: 24px;
+            min-height: 40px;
+        }
+
+        .plan-price-box {
+            margin-bottom: 24px;
+        }
+
+        .price-currency {
+            font-size: 1.5rem;
+            font-weight: 700;
+            vertical-align: super;
+        }
+
+        .price-value {
+            font-size: 3rem;
+            font-weight: 700;
+        }
+
+        .price-period {
+            font-size: 0.9rem;
+            color: var(--texto-secundario);
+        }
+
+        .price-annual-note {
+            font-size: 0.85rem;
+            color: var(--texto-secundario);
+            margin-top: 4px;
+            display: block;
+            min-height: 20px;
+        }
+
+        /* --- BOTÕES --- */
+        .btn-select {
+            display: block;
+            width: 100%;
+            padding: 14px;
+            text-align: center;
+            border-radius: 30px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            transition: var(--transicao);
+            margin-bottom: 32px;
+            border: 1px solid var(--azul-destaque);
+            background-color: var(--branco);
+            color: var(--azul-destaque);
+        }
+
+        .btn-select:hover {
+            background-color: var(--azul-destaque);
+            color: var(--branco);
+        }
+
+        .featured .btn-select {
+            background: var(--azul-gradient);
+            color: var(--branco);
+            border: none;
+        }
+
+        .featured .btn-select:hover {
+            filter: brightness(1.1);
+            box-shadow: 0 4px 12px rgba(0, 86, 179, 0.3);
+        }
+
+        /* --- LISTA DE REQUISITOS (FEATURES) --- */
+        .features-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            border-top: 1px solid #eff2f6;
+            padding-top: 24px;
+            margin-top: 10px; 
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            font-size: 0.92rem;
+            color: var(--texto-base);
+            line-height: 1.4;
+        }
+
+        .feature-item i {
+            color: #28a745;
+            margin-top: 3px;
+            font-size: 0.95rem;
+        }
+
+        .feature-item.parent-info {
+            font-weight: 600;
+            color: var(--azul-brand);
+        }
+
+        /* --- MOLDURA DE OBSERVAÇÕES --- */
+        .notes-frame {
+            background-color: var(--branco);
+            border: 1px dashed var(--borda);
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 40px;
+        }
+
+        .notes-title {
+            font-size: 0.95rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--texto-base);
+        }
+
+        .notes-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .notes-list li {
+            font-size: 0.85rem;
+            color: var(--texto-secundario);
+            line-height: 1.5;
+        }
+
+        /* --- RESPONSIVIDADE --- */
+        @@media (min-width: 768px) {
+            .pricing-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            .pricing-header h1 {
+                font-size: 2.5rem;
+            }
+            /* Em telas maiores, fixa o botão de voltar no canto superior esquerdo */
+            .btn-back {
+                position: absolute;
+                top: 0;
+                left: 0;
+                margin-bottom: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <main class="pricing-container">
+        
+        <a href="@Url.Action("CarregarLandingPage", "BaseAdmin")" class="btn-back">
+            <i class="fa-solid fa-arrow-left"></i> Voltar
+        </a>
+        
+        <header class="pricing-header">
+            <div class="toggle-wrapper">
+                <button type="button" class="toggle-btn active" id="btn-mensal" onclick="changePeriod('mensal')">Pagamento mensal</button>
+                <button type="button" class="toggle-btn" id="btn-anual" onclick="changePeriod('anual')">Pagar por ano</button>
+            </div>
+            <div class="pricing-badges">
+                <span id="economy-text"><i class="fa-solid fa-leaf"></i> Economize dois meses com o plano anual</span>
+                <span class="badge-secondary" id="installment-text" style="display:none;"><i class="fa-solid fa-credit-card"></i> Parcelamento em até 12 vezes no cartão para o plano anual</span>
+            </div>
+        </header>
+
+        <section class="pricing-grid">
+            
+            <article class="plan-card">
+                <h2 class="plan-name">Básico</h2>
+                <p class="plan-desc">Acesso a todas as funcionalidades com limite de número.</p>
+                
+                <div class="plan-price-box">
+                    <span class="price-currency">R$</span>
+                    <span class="price-value" id="price-basico">200</span>
+                    <span class="price-period" id="period-basico">/ usuário / mês</span>
+                    <small class="price-annual-note" id="note-basico">Cobrado mensalmente</small>
+                </div>
+
+                <button class="btn-select" onclick="selectPlan(1, 'Básico')">Selecionar</button>
+
+                <ul class="features-list">
+                    <li class="feature-item"><i class="fa-solid fa-check"></i> Cadastro de Pacientes</li>
+                    <li class="feature-item"><i class="fa-solid fa-check"></i> Limitado a 300 pacientes ativos</li>
+                    <li class="feature-item"><i class="fa-solid fa-check"></i> Limitado a 10 usuários</li>
+                    <li class="feature-item"><i class="fa-solid fa-check"></i> Prontuário Completo</li>
+                    <li class="feature-item"><i class="fa-solid fa-check"></i> Gerencia e acompanhamento de consultas</li>
+                    <li class="feature-item"><i class="fa-solid fa-check"></i> Emissão de documentos</li>
+                    <li class="feature-item"><i class="fa-solid fa-check"></i> Mensageria com limitação de envios (*)</li>
+                    <li class="feature-item"><i class="fa-solid fa-check"></i> Migração de outras plataformas (**)</li>
+                </ul>
+            </article>
+
+            <article class="plan-card featured">
+                <div class="popular-tag">Mais Popular</div>
+                <h2 class="plan-name">Super</h2>
+                <p class="plan-desc">Acesso a todas as funcionalidades sem limite de número.</p>
+                
+                <div class="plan-price-box">
+                    <span class="price-currency">R$</span>
+                    <span class="price-value" id="price-super">300</span>
+                    <span class="price-period" id="period-super">/ usuário / mês</span>
+                    <small class="price-annual-note" id="note-super">Cobrado mensalmente</small>
+                </div>
+
+                <button class="btn-select" onclick="selectPlan(2, 'Super')">Selecionar</button>
+                <ul class="features-list">
+                    <li class="feature-item parent-info"><i class="fa-solid fa-circle-plus"></i> Tudo do Plano Básico</li>
+                    <li class="feature-item"><i class="fa-solid fa-check"></i> Sem nenhum limite de utilização</li>
+                </ul>
+            </article>
+
+            <article class="plan-card">
+                <h2 class="plan-name">Total</h2>
+                <p class="plan-desc">Acesso total sem limites e ferramentas financeiras e de estoque extras.</p>
+                
+                <div class="plan-price-box">
+                    <span class="price-currency">R$</span>
+                    <span class="price-value" id="price-total">400</span>
+                    <span class="price-period" id="period-total">/ usuário / mês</span>
+                    <small class="price-annual-note" id="note-total">Cobrado mensalmente</small>
+                </div>
+
+                <button class="btn-select" onclick="selectPlan(3, 'Total')">Selecionar</button>
+                <ul class="features-list">
+                    <li class="feature-item parent-info"><i class="fa-solid fa-circle-plus"></i> Tudo do Plano Super</li>
+                    <li class="feature-item"><i class="fa-solid fa-check"></i> Funcionalidades Financeiras</li>
+                    <li class="feature-item"><i class="fa-solid fa-check"></i> Controle de Estoque</li>
+                    <li class="feature-item"><i class="fa-solid fa-check"></i> Controle de Locações</li>
+                </ul>
+            </article>
+
+        </section>
+
+        <footer class="notes-frame">
+            <h3 class="notes-title">Observações importantes:</h3>
+            <ul class="notes-list">
+                <li><strong>(*)</strong> Limitado a 300 e-mails/Mês e 100 SMS/Mês.</li>
+                <li><strong>(**)</strong> A migração de dados de outras plataformas estará sujeita a avaliação técnica e à viabilidade de segurança.</li>
+            </ul>
+        </footer>
+
+    </main>
+
+    <script>
+        // Configuração inicial do Toastr
+        toastr.options = {
+            "closeButton": true,
+            "progressBar": true,
+            "positionClass": "toast-top-right",
+            "timeOut": "3000"
+        };
+
+        // Função de Chaveamento de Período (Mensal / Anual)
+        function changePeriod(tipo) {
+            const btnMensal = document.getElementById('btn-mensal');
+            const btnAnual = document.getElementById('btn-anual');
+            const instText = document.getElementById('installment-text');
+
+            // Elementos de Preço
+            const priceB = document.getElementById('price-basico');
+            const priceS = document.getElementById('price-super');
+            const priceT = document.getElementById('price-total');
+
+            // Elementos de Nota de Cobrança
+            const noteB = document.getElementById('note-basico');
+            const noteS = document.getElementById('note-super');
+            const noteT = document.getElementById('note-total');
+
+            if (tipo === 'anual') {
+                btnMensal.classList.remove('active');
+                btnAnual.classList.add('active');
+                instText.style.display = 'block';
+
+                priceB.innerText = "166"; 
+                priceS.innerText = "250"; 
+                priceT.innerText = "333"; 
+
+                noteB.innerText = "R$ 2.000,00 cobrados anualmente";
+                noteS.innerText = "R$ 3.000,00 cobrados anualmente";
+                noteT.innerText = "R$ 4.000,00 cobrados anualmente";
+
+                toastr.success("Exibindo valores promocionais do plano Anual!");
+            } else {
+                btnAnual.classList.remove('active');
+                btnMensal.classList.add('active');
+                instText.style.display = 'none';
+
+                priceB.innerText = "200";
+                priceS.innerText = "300";
+                priceT.innerText = "400";
+
+                noteB.innerText = "Cobrado mensalmente";
+                noteS.innerText = "Cobrado mensalmente";
+                noteT.innerText = "Cobrado mensalmente";
+
+                toastr.info("Exibindo valores do plano Mensal.");
+            }
+        }
+
+        // Feedback visual SweetAlert ao selecionar plano
+        function selectPlan(idPlano, nomePlano) {
+            const periodoAtivo = document.getElementById('btn-anual').classList.contains('active') ? 'Anual' : 'Mensal';
+    
+            Swal.fire({
+                title: 'Excelente escolha!',
+                text: `Você escolheu prosseguir com o Plano ${nomePlano} (${periodoAtivo}). Deseja ir para o formulário de cadastro?`,
+                icon: 'success',
+                showCancelButton: true,
+                confirmButtonColor: '#0b3961',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Sim, ir para o cadastro',
+                cancelButtonText: 'Cancelar'
+            }).then((result) => {
+                // Verifica se o usuário clicou no botão de confirmação
+                if (result.isConfirmed) {
+                    // Constrói a URL usando o helper do Razor apontando para a sua Action
+                    // Substitua 'SeuController' pelo nome real do seu Controller em C#
+                    var url = '@Url.Action("MontarTelaCompraBasico", "BaseAdmin")' + '?idPlano=' + idPlano + '&periodo=' + periodoAtivo;
+            
+                    // Redireciona o usuário abrindo a nova tela na mesma aba
+                    window.location.href = url;
+                }
+            });
+        }
+
+    </script>
+</body>
+</html>

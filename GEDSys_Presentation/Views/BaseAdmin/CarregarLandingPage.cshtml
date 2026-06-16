@@ -208,6 +208,14 @@
             display: block;
         }
 
+        .hero-img-large {
+            width: 100%;          /* Obriga a imagem a ocupar toda a largura da meia tela */
+            height: auto;         /* Calcula a altura proporcionalmente para NÃO cortar nada */
+            max-height: 80vh;     /* Limita a altura máxima para não estourar a tela */
+            object-fit: contain;  /* Garante que a imagem inteira caiba dentro do espaço disponível */
+            display: block;
+        }
+
         /* Se você quiser que o bloco pai (flex-grid) permita que ela quebre linha e ocupe o espaço todo */
         .col-full {
             flex: 0 0 100%;
@@ -602,13 +610,15 @@
                     <div class="col-half hero-text">
                         <h2>Prontuário Eletrônico e Automação de Consultórios</h2>
                         <p>A solução definitiva para médicos e clínicas que buscam centralizar prontuários, automatizar fluxos de atendimento e elevar a experiência de cuidado aos pacientes a um novo patamar de segurança e eficiência.</p>
-                        @*<a href="@Url.Action("MontarTelaDemo", "BaseAdmin")" target="_blank" class="btn-custom btn-primary-custom">Começar Agora <i class="fa fa-arrow-right" style="margin-left:8px;"></i></a>*@
                         <a href="@Url.Action("MontarTelaAreaPaciente", "AreaPaciente")" target="_blank" class="btn-custom btn-success-custom">Área do Paciente<i class="fa fa-arrow-right" style="margin-left:8px;"></i></a>
                         <a href="@Url.Action("MontarTelaValidacaoDocumento", "ValidacaoDocumento")" target="_blank" class="btn-custom btn-danger-custom">Validação de Documentos<i class="fa fa-arrow-right" style="margin-left:8px;"></i></a>
                     </div>
                     <div class="col-half hero-image-wrapper">
-                        <img src="/Images/Imagens_Site/HeroSection.png" class="hero-img" alt="Prontuário Eletrônico WebDoctorPro" />
+                        <img src="/Images/Imagens_Site/HeroSection.png" class="hero-img hero-img-large" alt="Prontuário Eletrônico WebDoctorPro" />
                     </div>
+                    @*<div class="col-half hero-image-wrapper">
+                        <img src="/Images/Imagens_Site/HeroSection.png" class="hero-img" alt="Prontuário Eletrônico WebDoctorPro" />
+                    </div>*@
                 </div>
             </div>
         </section>

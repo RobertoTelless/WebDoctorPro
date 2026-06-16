@@ -12,7 +12,7 @@
         <div class="col-lg-12">
             <div class="ibox float-e-margins">
                 <div class="ibox-title">
-                    <h3>Contratação - Planos de Assinatura</h3>
+                    <h3>Contratação de Assinatura</h3>
                 </div>
                 <br />
                 <div class="form-group">
@@ -20,7 +20,7 @@
                     <br />
                 </div>
                 <div class="ibox-content ibox-heading">
-                    <h3><i class="fa fa-credit-card"></i> Selecione o plano que melhor atende às suas necessidades</h3>
+                    <h3><i class="fa fa-credit-card"></i>Bem-vindo a página de contratação de assinatura do <b>WebDoctorPro</b></h3>
                 </div>
 
                 <div class="ibox-content" style="height: 2100px">
@@ -41,23 +41,41 @@
                                     @using (Html.BeginForm("MontarTelaCompraBasico", "BaseAdmin", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal", @id="pwd-container1" }))
                                     {
                                         <div class="row">
-                                            <h5 style="color: green; font-weight: bold">Preencha os campos abaixo com as suas informações.</h5>
-                                            <h5 style="color: green; font-weight: bold">Clique no botão de pagamento, preencha as informações,   e encerre a contratação e logo você receberá um e-mail com a confirmação de sua assinatura e suas credenciais de acesso</h5>
+                                            <h5 style="color: brown; font-weight: bold">Preencha os campos abaixo com as suas informações.</h5>
+                                            <h5 style="color: brown; font-weight: bold">Clique no botão de confirmação e logo você receberá um e-mail com a confirmação de sua assinatura e suas credenciais de acesso</h5>
                                         </div> 
+                                        <div class="row" id="Botoes">
+                                            <div class="form-group">
+                                                <div class="col-lg-4 col-md-4 col-xs-12" id="Basico">
+                                                    @Html.ButtonActionSubmit(text: "Confirmar a Contratação e Ir para Pagamento", htmlAttributes: new { id = "basictoast", @class = "btn-loading1 show-spinner" })
+                                                    <span id="loadingIndicator" style="display: none; margin-left: 10px; color: #007bff;">
+                                                        <i class="fa fa-spinner fa-spin"></i> Processando...
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+
                                         <div class="row" id="Planos">
                                             <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Seleção do Plano de Assinatura</h4>
                                             <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">                
+                                                @Html.HiddenFor(m => m.Telefone)
+                                                @Html.HiddenFor(m => m.EMail)
+                                                @Html.HiddenFor(m => m.Mensagem)
+                                                @Html.HiddenFor(m => m.Assunto)
+                                                @Html.HiddenFor(m => m.Comeco)
+                                                @Html.HiddenFor(m => m.Fim)
+                                                @Html.HiddenFor(m => m.Especialidade)
                                                 <div class="col-lg-4 col-md-4 col-xs-12">
-                                                    Plano de Assinatura*
-                                                    @Html.DropDownListFor(m => m.Plano, (SelectList)ViewBag.Planos, "Selecionar", new { @class = "form-control", autofocus = true, @id = "plano", onchange = "ValidaPlano($(this).val())"  })
+                                                    Plano de Assinatura
+                                                    @Html.TextBoxFor(m => m.Mensagem, new { @class = "form-control", @tabindex = "-1", @readonly="readonly", style = "font-weight: bold; color: green;"  })
                                                 </div>
                                                 <div class="col-lg-3 col-md-3 col-xs-12">
                                                     Início
-                                                    @Html.TextBoxFor(m => m.Comeco, new { @class = "form-control", autofocus = true, @readonly = "readonly" })
+                                                    @Html.TextBoxFor(m => m.Comeco, new { @class = "form-control", @tabindex = "-1", @readonly = "readonly" })
                                                 </div>
                                                 <div class="col-lg-3 col-md-3 col-xs-12">
                                                     Término
-                                                    @Html.TextBoxFor(m => m.Fim, new { @class = "form-control", autofocus = true, @readonly = "readonly" })
+                                                    @Html.TextBoxFor(m => m.Fim, new { @class = "form-control", @tabindex = "-1", @readonly = "readonly" })
                                                 </div>
                                             </div>
                                         </div>
@@ -213,21 +231,14 @@
                                             </div>
                                         </div>
 
-                                        <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
-                                            <div class="col-lg-2 col-md-2 col-xs-12" id="Basico"  style="display: none">
-                                                <a href="https://pag.ae/7_Q-riVCN/button" target="_blank" title="Pagar com PagBank"><img src="//assets.pagseguro.com.br/ps-integration-assets/botoes/pagamentos/205x30-pagar-azul.gif" alt="Pague com PagBank - é rápido, grátis e seguro!" /></a>                                               
-                                            </div>
-                                            <div class="col-lg-2 col-md-2 col-xs-12" id="Super"  style="display: none">
-                                                <a href="https://pag.ae/7_Q-ufiCH/button" target="_blank" title="Pagar com PagBank"><img src="//assets.pagseguro.com.br/ps-integration-assets/botoes/pagamentos/205x30-pagar-azul.gif" alt="Pague com PagBank - é rápido, grátis e seguro!" /></a>
-                                            </div>
-                                            <div class="col-lg-2 col-md-2 col-xs-12" id="SuperFinanceiro"  style="display: none">
-                                                @*<a href="https://pag.ae/7_Q-vbfS8/button" target="_blank" title="Pagar com PagBank"><img src="//assets.pagseguro.com.br/ps-integration-assets/botoes/pagamentos/205x30-pagar-azul.gif" alt="Pague com PagBank - é rápido, grátis e seguro!" /></a>*@
-                                            
-                                                <a href="https://pag.ae/7_Sh5VMX3/button" target="_blank" title="Pagar com PagBank"><img src="//assets.pagseguro.com.br/ps-integration-assets/botoes/pagamentos/205x30-pagar.gif" alt="Pague com PagBank - é rápido, grátis e seguro!" /></a>                                            
-                                            
-                                            </div>
-                                            <div class="col-lg-2 col-md-2 col-xs-12">
-                                                @Html.ButtonActionSubmit(text: "Encerrar a Contratação", htmlAttributes: new { id = "basictoast" })
+                                        <div class="row" id="Botoes">
+                                            <div class="form-group">
+                                                <div class="col-lg-6 col-md-6 col-xs-12" id="Basico">
+                                                    @Html.ButtonActionSubmit(text: "Confirmar a Contratação e Ir para Pagamento", htmlAttributes: new { id = "basictoast", @class = "btn-loading2 show-spinner" })
+                                                    <span id="loadingIndicator1" style="display: none; margin-left: 10px; color: #007bff;">
+                                                        <i class="fa fa-spinner fa-spin"></i> Processando...
+                                                    </span>
+                                                </div>
                                             </div>
                                         </div>
                                     }
@@ -251,7 +262,78 @@
     @Styles.Render("~/plugins/toastrStyles")
     @Styles.Render("~/Content/css")
     @Styles.Render("~/font-awesome/css")
+    @Styles.Render("~/Content/Spinner_Style.css")
     <link href="@Url.Content("~/Scripts/plugins/jquery-ui/jquery-ui.min.css")" rel="stylesheet" type="text/css" />
+
+    <style>
+        /* 1. Aumenta a largura e garante o espaço interno */
+        #toast-container > .toast {
+            width: 500px !important; 
+            max-width: 500px !important;
+            opacity: 0.95 !important;
+        }
+
+        /* 2. Remove o ícone nativo do Toastr (Background Image) */
+        #toast-container > .toast-success {
+            background-image: none !important;
+        }
+
+        /* 3. Remove ícones do FontAwesome/Inspinia injetados via ::before no Título */
+        .toast-success .toast-title::before, 
+        .toast-success .toast-title::after,
+        .toast-success::before {
+            content: none !important;
+            display: none !important;
+        }
+
+        /* 4. Ajusta o recuo do texto já que removemos o ícone */
+        .toast-success .toast-title, 
+        .toast-success .toast-message {
+            padding-left: 10px !important;
+        }
+    </style>
+    <style>
+        /* Estilo Base */
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .status-badge::before {
+            content: "";
+            display: inline-block;
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            margin-right: 6px;
+        }
+
+        /* PENDING (Gold) - Status 0 */
+        .status-pending { background-color: #fef9c3; color: #a16207; }
+        .status-pending::before { background-color: #ca8a04; }
+
+        /* ACTIVE (Green) - Status 1 */
+        .status-active { background-color: #dcfce7; color: #15803d; }
+        .status-active::before { background-color: #16a34a; }
+
+        /* CANCEL (Red) - Status 4 */
+        .status-cancel { background-color: #fee2e2; color: #b91c1c; }
+        .status-cancel::before { background-color: #dc2626; }
+
+        /* FINISH (Dark Blue) - Status 2 */
+        .status-finish { background-color: #dbeafe; color: #1e40af; }
+        .status-finish::before { background-color: #2563eb; }
+
+        /* OVERDUE (Gray) - Status 3 */
+        .status-overdue { background-color: #f3f4f6; color: #4b5563; }
+        .status-overdue::before { background-color: #6b7280; }
+    </style>
 }
 @section Scripts {
     @Scripts.Render("~/plugins/toastr")
@@ -264,7 +346,6 @@
     <script type="text/javascript" src="~/Scripts/moment.min.js"></script>
     <script type="text/javascript" src="~/Scripts/bootstrap.min.js"></script>
     @Scripts.Render("~/plugins/passwordMeter")
-    
     <script type="text/javascript">
         $(document).ready(function () {
             $('[data-toggle="popover"]').popover();
@@ -276,6 +357,51 @@
             var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-toggle="popover"]'));
             var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
                 return new bootstrap.Popover(popoverTriggerEl);
+            });
+        });
+    </script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('.btn-loading1').on('click', function (e) {
+            
+                var $this = $(this);
+                var tagName = $this.prop('tagName').toLowerCase();
+                $this.addClass('disabled'); 
+                $('#loadingIndicator').show();
+
+                if (tagName === 'a') {
+                    e.preventDefault();
+                
+                    var targetUrl = $this.attr('href');
+                    window.location.href = targetUrl;
+                
+                } else if (tagName === 'button' || tagName === 'input') {               
+                    $this.closest('form').submit();
+                    $this.prop('disabled', true);
+                }
+            });
+        });
+    </script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('.btn-loading2').on('click', function (e) {
+            
+                var $this = $(this);
+                var tagName = $this.prop('tagName').toLowerCase();
+                $this.addClass('disabled'); 
+                $('#loadingIndicator1').show();
+
+                if (tagName === 'a') {
+                    e.preventDefault();
+                
+                    var targetUrl = $this.attr('href');
+                    window.location.href = targetUrl;
+                
+                } else if (tagName === 'button' || tagName === 'input') {               
+                    $this.closest('form').submit();
+                    $this.prop('disabled', true);
+                }
             });
         });
     </script>
@@ -419,7 +545,100 @@
             } 
         }
     </script>
+    <!-- 1. Estrutura do Modal (Coloque preferencialmente no final do seu arquivo .cshtml) -->
+    <div class="modal fade" id="modalAssinaturaSucesso" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header" style="background-color: #1ab394; color: white; border-radius: 4px 4px 0 0;">
+                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Fechar</span></button>
+                    <h4 class="modal-title"><i class="fa fa-check-circle"></i> WebDoctorPro</h4>
+                </div>
+                <div class="modal-body">
+                    <p style="font-size: 16px; color: #676a6c; text-align: center; margin-top: 15px;">
+                        Sua assinatura está sendo criada nesse momento. 
+                        Você receberá um e-mail dentro de instantes com as instruções de uso. 
+                        <br /><br />
+                        <strong>Obrigado por escolher o WebDoctorPro!</strong>
+                    </p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-dismiss="modal" style="border-radius: 4px; padding-left: 30px; padding-right: 30px;">OK</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
+    <!-- 2. Script para disparar o Modal -->
+    <script type="text/javascript">
+        function exibirModalSucesso() {
+            $('#modalAssinaturaSucesso').modal({
+                backdrop: 'static',
+                keyboard: false
+            });
+            $('#modalAssinaturaSucesso').modal('show');
+        }
+
+        $(document).ready(function () {
+            // Alterado de ViewBag para TempData
+            @if (TempData["ExibirSucesso"] != null && (bool)TempData["ExibirSucesso"])
+            {
+                <text>exibirModalSucesso();</text>
+            }
+        });
+    </script>
+
+    <style>
+        /* Estilo adicional para garantir que o modal fique centralizado e bonito no Inspinia */
+        .modal-dialog-centered {
+            display: flex;
+            align-items: center;
+            min-height: calc(100% - 1rem);
+        }
+    
+        /* Usamos @@ para escapar o símbolo no Razor e evitar erro de variável inexistente */
+        @@media (min-width: 576px) {
+            .modal-dialog-centered {
+                min-height: calc(100% - 3.5rem);
+            }
+        }
+    </style>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            // Configurações globais do Toastr
+            toastr.options = {
+                "closeButton": true,
+                //"debug": false,
+                "progressBar": true,
+                "preventDuplicates": false,
+                "positionClass": "toast-top-right",
+                "onclick": null,
+                "showDuration": "400",
+                "hideDuration": "1000",
+                "timeOut": "15000",
+                "extendedTimeOut": "5000",
+                "showEasing": "swing",
+                "hideEasing": "linear",
+                "showMethod": "fadeIn",
+                "hideMethod": "fadeOut"
+            //    "iconClass": "customer-toast-info", // Se quiser remover o ícone padrão totalmente
+            //    "titleClass": "toast-title",
+            //    "messageClass": "toast-message"
+            };
+
+            // Verifica se existe mensagem de sucesso no TempData (vinda do Redirect)
+            var msgSucesso = '@TempData["MensagemAcerto"]';
+            if (msgSucesso != '') {
+                toastr.success(msgSucesso, 'Sucesso!');
+            }
+
+            // Verifica se existe mensagem de erro
+            var msgErro = '@TempData["MensagemErro"]';
+            if (msgErro != '') {
+                toastr.error(msgErro, 'Erro!');
+            }
+        });
+    </script>
 
 }
 @if (ViewBag.Message != null)

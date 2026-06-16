@@ -177,6 +177,11 @@ namespace ERP_Condominios_Solution.Controllers
             return View();
         }
 
+        public ActionResult MontarTelaPrecos()
+        {
+            return View();
+        }
+
         //public ActionResult NovoSite()
         //{
         //    // Grava Acesso
@@ -3759,32 +3764,24 @@ namespace ERP_Condominios_Solution.Controllers
             // Cria assinante-plano-assinatura
             ASSINANTE_PLANO_ASSINATURA assPlanoAss = new ASSINANTE_PLANO_ASSINATURA();
             assPlanoAss.ASSI_CD_ID = idAss;
-            if (vm.Plano == 18)
+            if (vm.Plano == 1)
             {
                 assPlanoAss.PLAS_CD_ID = 18;
                 assPlanoAss.ASPA_IN_PRECO = 2000;
             }
-            if (vm.Plano == 20)
+            if (vm.Plano == 2)
             {
                 assPlanoAss.PLAS_CD_ID = 20;
                 assPlanoAss.ASPA_IN_PRECO = 3500;
             }
-            if (vm.Plano == 24)
+            if (vm.Plano == 3)
             {
                 assPlanoAss.PLAS_CD_ID = 24;
                 assPlanoAss.ASPA_IN_PRECO = 4000;
             }
             assPlanoAss.ASPA_IN_ATIVO = 1;
             assPlanoAss.ASPA_DT_INICIO = DateTime.Today.Date;
-            if (vm.TipoAssinatura == 1)
-            {
-                assPlanoAss.ASPA_DT_VALIDADE = DateTime.Today.Date.AddDays(365);
-            }
-            else
-            {
-                assPlanoAss.ASPA_DT_VALIDADE = DateTime.Today.Date.AddDays(30);
-
-            }
+            assPlanoAss.ASPA_DT_VALIDADE = DateTime.Today.Date.AddDays(365);
             assPlanoAss.ASPA_IN_SISTEMA = 6;
             assinante.ASSINANTE_PLANO_ASSINATURA.Add(assPlanoAss);
 
@@ -3820,34 +3817,6 @@ namespace ERP_Condominios_Solution.Controllers
 
             // Recupera emmpresa
             EMPRESA empresa = empApp.GetItemById(emp.EMPR_CD_ID);
-
-            //// Cria Empresa/Filial
-            //EMPRESA_FILIAL emfi = new EMPRESA_FILIAL();
-            //emfi.ASSI_CD_ID = idAss;
-            //emfi.EMFI_AQ_LOGO = "~/Imagens/Base/prontuario_icon_3.png";
-            //emfi.EMFI_DT_CADASTRO = DateTime.Today.Date;
-            //emfi.EMFI_IN_ATIVO = 1;
-            //emfi.EMFI_IN_MATRIZ = 1;
-            //emfi.EMFI_NM_BAIRRO = vm.Bairro;
-            //emfi.EMFI_NM_CIDADE = vm.Cidade;
-            //emfi.EMFI_NR_COMPLEMENTO = vm.Complemento;
-            //emfi.EMFI_NM_EMAIL = vm.Resposta;
-            //emfi.EMFI_NM_ENDERECO = vm.Endereco;
-            //emfi.EMFI_NM_GERENTE = "Nome";
-            //emfi.EMFI_NM_APELIDO = "Nome";
-            //emfi.EMFI_NM_NOME = vm.Nome;
-            //emfi.EMFI_NR_NUMERO = vm.Numero;
-            //emfi.EMFI_NM_RAZAO = vm.Razao;
-            //emfi.EMFI_NR_CELULAR = vm.Celular;
-            //emfi.EMFI_NR_CEP = vm.CEPBase;
-            //emfi.EMFI_NR_CNPJ = vm.CNPJ;
-            //emfi.EMFI_NR_CPF = vm.CPF;
-            //emfi.EMFI_NR_TELEFONE = vm.Telefone;
-            //emfi.EMPR_CD_ID = empresa.EMPR_CD_ID;
-            //emfi.TIPE_CD_ID = vm.Tipo;
-            //emfi.UF_CD_ID = vm.UF;
-            //empresa.EMPRESA_FILIAL.Add(emfi);
-            //voltaE = empApp.ValidateEdit(empresa, empresa);
 
             // Cria configuracao base
             CONFIGURACAO cf = new CONFIGURACAO();
@@ -6001,21 +5970,27 @@ namespace ERP_Condominios_Solution.Controllers
         }
 
         [HttpGet]
-        public ActionResult MontarTelaCompraBasico()
+        public ActionResult MontarTelaCompraBasico(Int32 idPlano, String periodo)
         {
             try
             {
+                // Você pode passar os dados para a nova View usando a ViewBag
+                ViewBag.IdPlano = idPlano;
+                ViewBag.Periodo = periodo;
+
+                // Ou pode criar um mapeamento amigável para o nome do plano
+                String nomePlano = "Básico";
+                if (idPlano == 2) nomePlano = "Super";
+                else if (idPlano == 3) nomePlano = "Total";
+
+                ViewBag.NomePlano = nomePlano;
+
                 // Monta objeto
                 List<SelectListItem> tipo = new List<SelectListItem>();
                 tipo.Add(new SelectListItem() { Text = "Pessoa Física", Value = "1" });
                 tipo.Add(new SelectListItem() { Text = "Pessoa Jurídica", Value = "2" });
                 ViewBag.Tipo = new SelectList(tipo, "Value", "Text");
                 ViewBag.UF = new SelectList(empApp.GetAllUF(), "UF_CD_ID", "UF_SG_SIGLA");
-                List<SelectListItem> plano = new List<SelectListItem>();
-                plano.Add(new SelectListItem() { Text = "Básico - R$ 2.000,00/Ano", Value = "18" });
-                plano.Add(new SelectListItem() { Text = "Super - R$ 3.500,00/Ano", Value = "20" });
-                plano.Add(new SelectListItem() { Text = "Super Financeiro - R$ 4.000,00/Ano", Value = "24" });
-                ViewBag.Planos = new SelectList(plano, "Value", "Text");
 
                 if (Session["MensFC"] != null)
                 {
@@ -6036,7 +6011,9 @@ namespace ERP_Condominios_Solution.Controllers
                 fale.EMail = "suporte@rtiltda.net";
                 fale.Resposta = String.Empty;
                 fale.Nome = String.Empty;
-                fale.Assunto = null;
+                fale.Mensagem = nomePlano;
+                fale.Assunto = idPlano;
+                fale.Especialidade = periodo;
                 fale.Comeco = DateTime.Today.Date.ToLongDateString();
                 fale.Fim = DateTime.Today.Date.AddYears(1).ToLongDateString();
                 return View(fale);
@@ -6055,25 +6032,11 @@ namespace ERP_Condominios_Solution.Controllers
             tipo.Add(new SelectListItem() { Text = "Pessoa Jurídica", Value = "2" });
             ViewBag.Tipo = new SelectList(tipo, "Value", "Text");
             ViewBag.UF = new SelectList(empApp.GetAllUF(), "UF_CD_ID", "UF_SG_SIGLA");
-            List<SelectListItem> plano = new List<SelectListItem>();
-            plano.Add(new SelectListItem() { Text = "Básico - R$ 2.000,00/Ano", Value = "18" });
-            plano.Add(new SelectListItem() { Text = "Super - R$ 3.500,00/Ano", Value = "20" });
-            plano.Add(new SelectListItem() { Text = "Super Financeiro - R$ 4.000,00/Ano", Value = "24" });
-            ViewBag.Planos = new SelectList(plano, "Value", "Text");
             if (ModelState.IsValid)
             {
                 try
                 {
                     // Criticas
-                    if (vm.Plano == null || vm.Plano == 0)
-                    {
-                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0621", CultureInfo.CurrentCulture));
-                        return View(vm);
-                    }
-                    else
-                    {
-                        vm.NomePlano = vm.Plano == 1 ? "Básico" : (vm.Plano == 2 ? "Super" : "Super - Financeiro");
-                    }
                     if (vm.Tipo == null || vm.Tipo == 0)
                     {
                         ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0611", CultureInfo.CurrentCulture));
@@ -6152,16 +6115,17 @@ namespace ERP_Condominios_Solution.Controllers
                     }
 
                     // Verifica assinante
-                    List<ASSINANTE> assList = assiApp.GetAllItens().Where(p => p.ASSI_IN_ATIVO == 1).ToList();
+                    List<ASSINANTE> assList = assiApp.GetAllItens().Where(p => p.ASSI_IN_ATIVO == 1 & p.ASSI_IN_SISTEMA == 6).ToList();
                     ASSINANTE assBase = null;
                     ASSINANTE assBase1 = null;
                     Int32 novoPlano = 0;
+                    Int32 idPlano = vm.Plano == 1 ? 18 : (vm.Plano == 2 ? 20 : 24);  
                     if (vm.Tipo == 1)
                     {
                         assBase = assList.Where(p => p.ASSI_NR_CPF == vm.CPF).FirstOrDefault();
                         if (assBase != null)
                         {
-                            assBase1 = assList.Where(p => p.ASSI_NR_CPF == vm.CPF & p.ASSINANTE_PLANO_ASSINATURA.FirstOrDefault().PLAS_CD_ID == vm.Plano).FirstOrDefault();
+                            assBase1 = assList.Where(p => p.ASSI_NR_CPF == vm.CPF & p.ASSINANTE_PLANO_ASSINATURA.FirstOrDefault().PLAS_CD_ID == idPlano).FirstOrDefault();
                             if (assBase1 == null)
                             {
                                 novoPlano = 1;
@@ -6173,7 +6137,7 @@ namespace ERP_Condominios_Solution.Controllers
                         assBase = assList.Where(p => p.ASSI_NR_CNPJ == vm.CNPJ).FirstOrDefault();
                         if (assBase != null)
                         {
-                            assBase1 = assList.Where(p => p.ASSI_NR_CNPJ == vm.CNPJ & p.ASSINANTE_PLANO_ASSINATURA.FirstOrDefault().PLAS_CD_ID == vm.Plano).FirstOrDefault();
+                            assBase1 = assList.Where(p => p.ASSI_NR_CNPJ == vm.CNPJ & p.ASSINANTE_PLANO_ASSINATURA.FirstOrDefault().PLAS_CD_ID == idPlano).FirstOrDefault();
                             if (assBase1 == null)
                             {
                                 novoPlano = 1;
@@ -6184,6 +6148,16 @@ namespace ERP_Condominios_Solution.Controllers
                     {
                         ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0628", CultureInfo.CurrentCulture));
                         return View(vm);
+                    }
+
+                    // Valor do Plano
+                    if (vm.Especialidade == "Mensal")
+                    {
+                        vm.Preco = vm.Tipo == 1 ? 200 : (vm.Tipo == 2 ? 300 : 400);
+                    }
+                    else
+                    {
+                        vm.Preco = vm.Tipo == 1 ? 2000 : (vm.Tipo == 2 ? 3000 : 4000);
                     }
 
                     // Critica de login e Senha
@@ -6235,59 +6209,9 @@ namespace ERP_Condominios_Solution.Controllers
                         return View(vm);
                     }
 
-                    // Cria/Altera assinante
-                    if (novoPlano == 0)
-                    {
-                        // Cria assinante
-                        vm.TipoAssinatura = 1;
-                        Int32 voltaCria = await CriarAssinanteNormal(vm);
-                        vm.LoginFinal = (String)Session["LoginDemo"];
-                        vm.Senha = (String)Session["SenhaDemo"];
-                        if (voltaCria == 0)
-                        {
-                            ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0622", CultureInfo.CurrentCulture));
-                            return View(vm);
-                        }
-                    }
-                    else
-                    {
-                        // Altera assinante
-                        Int32 voltaAtl= AlterarAssinante(vm);
-                        if (voltaAtl == 1)
-                        {
-                            ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0634", CultureInfo.CurrentCulture));
-                            return View(vm);
-                        }
-                        if (voltaAtl == 2)
-                        {
-                            ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0635", CultureInfo.CurrentCulture));
-                            return View(vm);
-                        }
-                    }
-
-                    // Prepara mensagem
-                    MensagemViewModel mens = new MensagemViewModel();
-                    mens.NOME = vm.Nome;
-                    mens.ID = null;
-                    mens.MODELO = vm.Resposta;
-                    mens.MENS_DT_CRIACAO = DateTime.Today.Date;
-                    mens.MENS_IN_TIPO = 1;
-                    mens.MENS_TX_TEXTO = String.Empty;
-                    mens.MENS_NM_LINK = null;
-                    mens.MENS_NM_NOME = vm.Nome;
-                    mens.MENS_NM_CAMPANHA = "Contratação/Alteração de Assinatura";
-                    mens.MENS_NM_RODAPE = vm.Resposta;
-                    mens.MENS_NM_LINK = "https://eprontuario.azurewebsites.net/";
-                    mens.CELULAR = vm.Telefone;
-                    mens.MENS_NM_CABECALHO = vm.CPF;
-                    mens.MENS_NM_ASSINATURA = vm.CNPJ;
-                    mens.CIDADE = vm.Celular;
-                    mens.MENS_IN_CRM = novoPlano;
-                    await ProcessaEnvioEMailCompra(mens, vm);
-
-                    // Sucesso
-                    Session["MensFC"] = 333;
-                    return RedirectToAction("MontarTelaCompraBasico");
+                    // Processa pagamento
+                    Session["DTOAssinatura"] = vm;
+                    return RedirectToAction("ProcessarPagamento");
                 }
                 catch (Exception ex)
                 {
@@ -6344,16 +6268,19 @@ namespace ERP_Condominios_Solution.Controllers
             novo.ASPA_IN_SISTEMA = 6;
             novo.ASSI_CD_ID = assBase.ASSI_CD_ID;
             novo.PLAS_CD_ID = vm.Plano.Value;
-            if (vm.Plano == 18)
+            if (vm.Plano == 1)
             {
+                novo.PLAS_CD_ID = 18;
                 novo.ASPA_IN_PRECO = 2000;
             }
-            else if (vm.Plano == 20)
+            else if (vm.Plano == 2)
             {
+                novo.PLAS_CD_ID = 20;
                 novo.ASPA_IN_PRECO = 3500;
             }
             else
             {
+                novo.PLAS_CD_ID = 24;
                 novo.ASPA_IN_PRECO = 4000;
             }
             voltaPlan = assiApp.ValidateCreatePlanoAss(novo);
@@ -7710,6 +7637,267 @@ namespace ERP_Condominios_Solution.Controllers
             }
         }
 
+        [HttpGet]
+        public ActionResult ProcessarPagamento()
+        {
+            try
+            {
+                FaleConoscoViewModel vm = (FaleConoscoViewModel)Session["DTOPagamento"];
+
+
+
+
+
+
+
+
+
+                return View(vm);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> ProcessarPagamento(FaleConoscoViewModel vm)
+        {
+            List<SelectListItem> tipo = new List<SelectListItem>();
+            tipo.Add(new SelectListItem() { Text = "Pessoa Física", Value = "1" });
+            tipo.Add(new SelectListItem() { Text = "Pessoa Jurídica", Value = "2" });
+            ViewBag.Tipo = new SelectList(tipo, "Value", "Text");
+            ViewBag.UF = new SelectList(empApp.GetAllUF(), "UF_CD_ID", "UF_SG_SIGLA");
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    // Criticas
+                    if (vm.Tipo == null || vm.Tipo == 0)
+                    {
+                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0611", CultureInfo.CurrentCulture));
+                        return View(vm);
+                    }
+                    if (vm.Nome == null)
+                    {
+                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0592", CultureInfo.CurrentCulture));
+                        return View(vm);
+                    }
+                    if (vm.Resposta == null)
+                    {
+                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0591", CultureInfo.CurrentCulture));
+                        return View(vm);
+                    }
+                    if (vm.Celular == null)
+                    {
+                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0613", CultureInfo.CurrentCulture));
+                        return View(vm);
+                    }
+                    if (vm.Tipo == 1)
+                    {
+                        if (vm.CPF == null)
+                        {
+                            ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0608", CultureInfo.CurrentCulture));
+                            return View(vm);
+                        }
+                    }
+                    if (vm.Tipo == 2)
+                    {
+                        if (vm.CNPJ == null)
+                        {
+                            ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0609", CultureInfo.CurrentCulture));
+                            return View(vm);
+                        }
+                        if (vm.Razao == null)
+                        {
+                            ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0612", CultureInfo.CurrentCulture));
+                            return View(vm);
+                        }
+                    }
+                    if (vm.CEP == null)
+                    {
+                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0614", CultureInfo.CurrentCulture));
+                        return View(vm);
+                    }
+                    if (vm.Endereco == null)
+                    {
+                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0615", CultureInfo.CurrentCulture));
+                        return View(vm);
+                    }
+                    if (vm.Numero == null)
+                    {
+                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0616", CultureInfo.CurrentCulture));
+                        return View(vm);
+                    }
+                    if (vm.Bairro == null)
+                    {
+                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0617", CultureInfo.CurrentCulture));
+                        return View(vm);
+                    }
+                    if (vm.Cidade == null)
+                    {
+                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0618", CultureInfo.CurrentCulture));
+                        return View(vm);
+                    }
+                    if (vm.UF == 0)
+                    {
+                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0619", CultureInfo.CurrentCulture));
+                        return View(vm);
+                    }
+                    if (!ValidarItensDiversos.IsValidEmail(vm.Resposta))
+                    {
+                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0001", CultureInfo.CurrentCulture));
+                        return View(vm);
+                    }
+
+                    // Verifica assinante
+                    List<ASSINANTE> assList = assiApp.GetAllItens().Where(p => p.ASSI_IN_ATIVO == 1 & p.ASSI_IN_SISTEMA == 6).ToList();
+                    ASSINANTE assBase = null;
+                    ASSINANTE assBase1 = null;
+                    Int32 novoPlano = 0;
+                    if (vm.Tipo == 1)
+                    {
+                        assBase = assList.Where(p => p.ASSI_NR_CPF == vm.CPF).FirstOrDefault();
+                        if (assBase != null)
+                        {
+                            assBase1 = assList.Where(p => p.ASSI_NR_CPF == vm.CPF & p.ASSINANTE_PLANO_ASSINATURA.FirstOrDefault().PLAS_CD_ID == vm.Plano).FirstOrDefault();
+                            if (assBase1 == null)
+                            {
+                                novoPlano = 1;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        assBase = assList.Where(p => p.ASSI_NR_CNPJ == vm.CNPJ).FirstOrDefault();
+                        if (assBase != null)
+                        {
+                            assBase1 = assList.Where(p => p.ASSI_NR_CNPJ == vm.CNPJ & p.ASSINANTE_PLANO_ASSINATURA.FirstOrDefault().PLAS_CD_ID == vm.Plano).FirstOrDefault();
+                            if (assBase1 == null)
+                            {
+                                novoPlano = 1;
+                            }
+                        }
+                    }
+                    if (assBase != null & novoPlano == 0)
+                    {
+                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0628", CultureInfo.CurrentCulture));
+                        return View(vm);
+                    }
+
+                    // Critica de login e Senha
+                    if (vm.LoginBase == null)
+                    {
+                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0620", CultureInfo.CurrentCulture));
+                        return View(vm);
+                    }
+                    if (vm.SenhaBase == null)
+                    {
+                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0629", CultureInfo.CurrentCulture));
+                        return View(vm);
+                    }
+                    if (vm.SenhaBaseConfirma == null)
+                    {
+                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0630", CultureInfo.CurrentCulture));
+                        return View(vm);
+                    }
+                    if (vm.SenhaBaseConfirma != vm.SenhaBase)
+                    {
+                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0631", CultureInfo.CurrentCulture));
+                        return View(vm);
+                    }
+                    if (vm.SenhaBase.Length < 3)
+                    {
+                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0223", CultureInfo.CurrentCulture));
+                        return View(vm);
+                    }
+                    if (!vm.SenhaBase.Any(char.IsUpper) || !vm.SenhaBase.Any(char.IsLower) && !vm.SenhaBase.Any(char.IsDigit))
+                    {
+                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0224", CultureInfo.CurrentCulture));
+                        return View(vm);
+                    }
+                    if (!vm.SenhaBase.Any(p => !char.IsLetterOrDigit(p)))
+                    {
+                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0225", CultureInfo.CurrentCulture));
+                        return View(vm);
+                    }
+                    if (vm.SenhaBase.Contains(vm.LoginBase) || vm.SenhaBase.Contains(vm.Nome) || vm.SenhaBase.Contains(vm.Resposta))
+                    {
+                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0226", CultureInfo.CurrentCulture));
+                        return View(vm);
+                    }
+
+                    // verifica existencia login
+                    if (usuApp.GetByLogin(vm.LoginBase, 1) != null)
+                    {
+                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0633", CultureInfo.CurrentCulture));
+                        return View(vm);
+                    }
+
+                    // Cria/Altera assinante
+                    if (novoPlano == 0)
+                    {
+                        // Cria assinante
+                        vm.TipoAssinatura = 1;
+                        Int32 voltaCria = await CriarAssinanteNormal(vm);
+                        vm.LoginFinal = (String)Session["LoginDemo"];
+                        vm.Senha = (String)Session["SenhaDemo"];
+                        if (voltaCria == 0)
+                        {
+                            ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0622", CultureInfo.CurrentCulture));
+                            return View(vm);
+                        }
+                    }
+                    else
+                    {
+                        // Altera assinante
+                        Int32 voltaAtl= AlterarAssinante(vm);
+                        if (voltaAtl == 1)
+                        {
+                            ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0634", CultureInfo.CurrentCulture));
+                            return View(vm);
+                        }
+                        if (voltaAtl == 2)
+                        {
+                            ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0635", CultureInfo.CurrentCulture));
+                            return View(vm);
+                        }
+                    }
+
+                    // Prepara mensagem
+                    MensagemViewModel mens = new MensagemViewModel();
+                    mens.NOME = vm.Nome;
+                    mens.ID = null;
+                    mens.MODELO = vm.Resposta;
+                    mens.MENS_DT_CRIACAO = DateTime.Today.Date;
+                    mens.MENS_IN_TIPO = 1;
+                    mens.MENS_TX_TEXTO = String.Empty;
+                    mens.MENS_NM_LINK = null;
+                    mens.MENS_NM_NOME = vm.Nome;
+                    mens.MENS_NM_CAMPANHA = "Contratação/Alteração de Assinatura";
+                    mens.MENS_NM_RODAPE = vm.Resposta;
+                    mens.MENS_NM_LINK = "https://eprontuario.azurewebsites.net/";
+                    mens.CELULAR = vm.Telefone;
+                    mens.MENS_NM_CABECALHO = vm.CPF;
+                    mens.MENS_NM_ASSINATURA = vm.CNPJ;
+                    mens.CIDADE = vm.Celular;
+                    mens.MENS_IN_CRM = novoPlano;
+                    await ProcessaEnvioEMailCompra(mens, vm);
+
+                    // Sucesso
+                    Session["MensFC"] = 333;
+                    return RedirectToAction("CarregarLandingPage");
+                }
+                catch (Exception ex)
+                {
+                    throw ex;
+                }
+            }
+            else
+            {
+                return View(vm);
+            }
+        }
 
 
 

@@ -5111,7 +5111,6 @@
     <Content Include="TemplatesHTML\CRALTLAN\CRALTLAN.html" />
     <Content Include="TemplatesHTML\CRPARREC\CRPARREC.html" />
     <Content Include="TemplatesHTML\FINPATR1\FINPATR1.html" />
-    <Content Include="Views\BaseAdmin\CarregarLandingPage_OLD.cshtml" />
     <Content Include="Views\Mensagem\IncluirMensagemEMail.cshtml" />
     <Content Include="Views\Mensagem\MontarTelaDashboardMensagens.cshtml" />
     <Content Include="Views\Mensagem\MontarTelaMensagemEMail.cshtml" />
@@ -5590,6 +5589,8 @@
     <Content Include="Views\CRM\VisualizarProcessoCRM.cshtml" />
     <Content Include="Views\CRM\VerAcoesUsuarioCRM.cshtml" />
     <Content Include="Views\BaseAdmin\CarregarLandingPage.cshtml" />
+    <Content Include="Views\BaseAdmin\MontarTelaPrecos.cshtml" />
+    <Content Include="Views\BaseAdmin\ProcessarPagamento.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="BaseAdmin\BaseConhecimento\" />
